@@ -9,7 +9,7 @@ const NAV_LINKS = Object.freeze([
   { id: 'contract', label: 'Contract', href: PAGE_PATHS.contract },
   { id: 'hangar', label: 'Hangar', href: PAGE_PATHS.hangar },
   { id: 'codex', label: 'Codex', href: PAGE_PATHS.codex },
-  { id: 'faq', label: 'FAQ', href: PAGE_PATHS.faq },
+  { id: 'how-to-play', label: 'How to Play', href: PAGE_PATHS.howToPlay },
   { id: 'about', label: 'About', href: PAGE_PATHS.about },
 ]);
 
@@ -42,7 +42,12 @@ export function renderPageShell({
       </div>
       <footer class="menu-footer">
         <span>IRON VANGUARD / COMMAND CENTER</span>
-        <span>PLAN · EQUIP · DEPLOY</span>
+        <nav class="menu-footer-links" aria-label="Footer navigation">
+          <a href="${PAGE_PATHS.howToPlay}">How to Play</a>
+          <a href="${PAGE_PATHS.about}">About</a>
+          <a href="${PAGE_PATHS.privacyPolicy}">Privacy Policy</a>
+          <a href="${PAGE_PATHS.contact}">Contact</a>
+        </nav>
       </footer>
     </main>
   `;

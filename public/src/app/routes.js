@@ -8,8 +8,10 @@ export const PAGE_PATHS = Object.freeze({
   campaign: '/campaign',
   survival: '/survival',
   contract: '/contract',
-  faq: '/faq',
+  howToPlay: '/how-to-play',
   about: '/about',
+  privacyPolicy: '/privacy-policy',
+  contact: '/contact',
 });
 
 export function pageUrl(page, params = null) {
@@ -57,9 +59,15 @@ export function resolveLegacyHashRedirect(hash) {
       return pageUrl('codex', param ? { item: param } : null);
     case 'guide':
     case 'faq':
-      return PAGE_PATHS.faq;
+    case 'how-to-play':
+      return PAGE_PATHS.howToPlay;
     case 'about':
       return PAGE_PATHS.about;
+    case 'privacy':
+    case 'privacy-policy':
+      return PAGE_PATHS.privacyPolicy;
+    case 'contact':
+      return PAGE_PATHS.contact;
     default:
       return null;
   }

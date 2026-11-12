@@ -1,5 +1,5 @@
 /**
- * Pre-renders the initial HTML structure into `<div id="root">...</div>` for all 8 pages
+ * Pre-renders the initial HTML structure into `<div id="root">...</div>` for all 10 pages
  * so static content and menu shells are served directly in HTML before JS executes.
  */
 import fs from 'node:fs';
@@ -9,9 +9,11 @@ import { CAMPAIGN_MISSIONS } from '../public/src/game/campaign.js';
 import { CONTRACTS_CATALOG } from '../public/src/sim/index.js';
 import { renderAbout } from '../public/src/views/about.js';
 import { renderCampaign } from '../public/src/views/campaign.js';
+import { renderContact } from '../public/src/views/contact.js';
 import { renderContracts } from '../public/src/views/contracts.js';
-import { renderFaq } from '../public/src/views/faq.js';
 import { renderHome } from '../public/src/views/home.js';
+import { renderHowToPlay } from '../public/src/views/how-to-play.js';
+import { renderPrivacyPolicy } from '../public/src/views/privacy-policy.js';
 import { renderSurvival } from '../public/src/views/survival.js';
 
 function wrapMenuScreen(pageId, innerHtml) {
@@ -24,13 +26,13 @@ const PAGES = [
     render: () => renderHome(),
   },
   {
-    file: 'public/faq.html',
+    file: 'public/how-to-play.html',
     render: () =>
       renderPageShell({
-        activePage: 'faq',
-        title: 'Field Guide & FAQ',
-        className: 'faq-content',
-        bodyHtml: renderFaq(),
+        activePage: 'how-to-play',
+        title: 'How to Play',
+        className: 'how-to-play-content',
+        bodyHtml: renderHowToPlay(),
       }),
   },
   {
@@ -41,6 +43,26 @@ const PAGES = [
         title: 'About Iron Vanguard',
         className: 'about-content',
         bodyHtml: renderAbout(),
+      }),
+  },
+  {
+    file: 'public/privacy-policy.html',
+    render: () =>
+      renderPageShell({
+        activePage: 'privacy-policy',
+        title: 'Privacy Policy',
+        className: 'privacy-content',
+        bodyHtml: renderPrivacyPolicy(),
+      }),
+  },
+  {
+    file: 'public/contact.html',
+    render: () =>
+      renderPageShell({
+        activePage: 'contact',
+        title: 'Contact',
+        className: 'contact-content',
+        bodyHtml: renderContact(),
       }),
   },
   {
