@@ -4,11 +4,43 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IRON VANGUARD — 3D Tank Assault</title>
-    <meta name="description" content="Modern 3D isometric tactical tank assault game inspired by Battle City, built with Vanilla JS and Three.js featuring free mouse aiming, destructible 36x36 arenas, modular 3D tank upgrades, APS, homing missiles, and boss battles." />
+    <meta name="description" content="Play IRON VANGUARD, a free 3D isometric tactical tank game inspired by Battle City. Upgrade modular tanks, smash 36x36 arenas, and battle sector bosses." />
+    <meta name="theme-color" content="#0B1120" />
+    <link rel="canonical" href="https://iron-vanguard-cuz.pages.dev/" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta property="og:site_name" content="IRON VANGUARD" />
     <meta property="og:title" content="IRON VANGUARD — 3D Tank Assault" />
-    <meta property="og:description" content="Modern 3D isometric tactical tank assault game inspired by Battle City, built with Vanilla JS and Three.js featuring free mouse aiming, destructible 36x36 arenas, modular 3D tank upgrades, APS, homing missiles, and boss battles." />
+    <meta property="og:description" content="Play IRON VANGUARD, a free 3D isometric tactical tank game inspired by Battle City. Upgrade modular tanks, smash 36x36 arenas, and battle sector bosses." />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://iron-vanguard-cuz.pages.dev/" />
+    <meta property="og:image" content="https://iron-vanguard-cuz.pages.dev/images/og-battle.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="IRON VANGUARD 3D tactical tank advancing through a destructible city battlefield" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="IRON VANGUARD — 3D Tank Assault" />
+    <meta name="twitter:description" content="Play IRON VANGUARD, a free 3D isometric tactical tank game inspired by Battle City. Upgrade modular tanks, smash 36x36 arenas, and battle sector bosses." />
+    <meta name="twitter:image" content="https://iron-vanguard-cuz.pages.dev/images/og-battle.jpg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "IRON VANGUARD — 3D Tank Assault",
+        "url": "https://iron-vanguard-cuz.pages.dev/",
+        "image": "https://iron-vanguard-cuz.pages.dev/images/og-battle.jpg",
+        "description": "Free 3D isometric tactical tank assault browser game inspired by Battle City featuring destructible 36x36 arenas, 5-tier modular tank upgrades, APS, homing missiles, and boss battles.",
+        "genre": ["Action", "Tactical", "Shooter"],
+        "gamePlatform": "Web Browser",
+        "applicationCategory": "Game",
+        "operatingSystem": "Any",
+        "inLanguage": "en",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
     <link rel="stylesheet" href="./src/index.css" />
     <script type="importmap">
       {
@@ -21,6 +53,13 @@
   </head>
   <body class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
     <div id="root"></div>
+    <noscript>
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>IRON VANGUARD — 3D Tank Assault</h1>
+        <p>Play IRON VANGUARD, a free 3D isometric tactical tank game inspired by Battle City. Upgrade modular tanks across 5 tiers, smash destructible 36x36 arenas, and battle sector bosses.</p>
+        <p>JavaScript and WebGL are required to launch the battlefield.</p>
+      </main>
+    </noscript>
     <script type="module" src="./src/main.js"></script>
   </body>
 </html>

@@ -6,6 +6,15 @@
 /vendor/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
+/images/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/audio/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/favicon.svg
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
 /src/*
   Cache-Control: no-cache
 

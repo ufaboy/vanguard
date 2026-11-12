@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://iron-vanguard-cuz.pages.dev/sitemap.xml
+
