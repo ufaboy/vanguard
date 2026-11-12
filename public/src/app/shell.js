@@ -26,6 +26,7 @@ export function renderPageShell({
   title,
   backHref = PAGE_PATHS.index,
   backLabel = 'Main menu',
+  showBack = true,
   className = '',
   bodyHtml = '',
 }) {
@@ -36,7 +37,7 @@ export function renderPageShell({
         ${renderPageNav(activePage)}
       </header>
       <div class="menu-content ${className}">
-        <a class="menu-back" href="${backHref}">← ${backLabel}</a>
+        ${showBack && backHref ? `<a class="menu-back" href="${backHref}">← ${backLabel}</a>` : ''}
         <h1 tabindex="-1">${title}</h1>
         ${bodyHtml}
       </div>

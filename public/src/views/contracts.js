@@ -1,6 +1,64 @@
 /** Contracts screen: logistics raid and sabotage operations briefing. */
 import { CONTRACTS_CATALOG, CONTRACT_TYPES, LAST_CARGO_CONTRACT } from '../sim/contract.js';
 
+export function renderContractBrief(selected, completedMissions = {}) {
+  const completed = Boolean(completedMissions?.[selected.id]);
+  const isSabotage = selected.contractType === CONTRACT_TYPES.SABOTAGE_PROTOCOL;
+  const accentColor = isSabotage ? '#a855f7' : '#38bdf8';
+
+  const cargoItems = selected.containers
+    .map(
+      (c) =>
+        `<li><span><strong>${c.slot}${c.slot === 3 ? ' ★' : ''} · ${c.name}</strong> <small>(${c.row}, ${c.col}) · ${c.gateId.toUpperCase()} GATE</small></span><strong>+$${selected.payouts.PER_CARGO}</strong></li>`
+    )
+    .join('');
+
+  const groupItems = Object.values(selected.groups)
+    .map((g) => {
+      const counts = {};
+      for (const t of g.roster) {
+        const key = String(t).toUpperCase();
+        counts[key] = (counts[key] || 0) + 1;
+      }
+      const summary = Object.entries(counts)
+        .map(([k, v]) => `${v}× ${k}`)
+        .join(', ');
+      return `<li><span><strong>${g.id}</strong> · ${g.assignment.replaceAll('_', ' ')} <small>(${summary})</small></span><strong>${g.roster.length} units</strong></li>`;
+    })
+    .join('');
+
+  return `<aside class="campaign-brief" aria-label="Selected contract briefing" style="--chapter-color:${accentColor}">
+      <div class="menu-kicker">${selected.code}</div>
+      <h2>${selected.name}</h2>
+      <p class="campaign-theme">${selected.theme} · ${selected.targetDuration}</p>
+      <dl>
+        <dt>${isSabotage ? 'Radar & ECM Relays (Demolish 2, 3rd Optional ★)' : 'Data Containers (Deliver 2, 3rd Optional ★)'}</dt>
+        <dd><ul class="campaign-roster">${cargoItems}</ul></dd>
+        <dt>Payout Structure (Idempotent Per Attempt)</dt>
+        <dd>
+          <ul class="campaign-roster">
+            <li><span>${isSabotage ? 'Each demolished relay (secured on detonation)' : 'Each delivered container (secured immediately)'}</span><strong>+$${selected.payouts.PER_CARGO}</strong></li>
+            <li><span>Successful extraction (at least 2 completed)</span><strong>+$${selected.payouts.EXTRACTION_BASE}</strong></li>
+            <li><span>Full 3/3 extraction bonus ★</span><strong>+$${selected.payouts.THIRD_CARGO_BONUS}</strong></li>
+          </ul>
+        </dd>
+        <dt>Encounter Schedule · 24 Tanks Finite Budget (Max 6 Live)</dt>
+        <dd><ul class="campaign-roster">${groupItems}</ul></dd>
+        <dt>Target Difficulty</dt>
+        <dd>${selected.difficulty}</dd>
+      </dl>
+      <div class="campaign-planned">
+        <strong>${completed ? 'COMPLETED · REPLAYABLE' : 'READY TO DEPLOY'}</strong>
+        <p>Eliminating all enemies never completes the contract. Abort or defeat preserves already secured objective payouts and kill bounties.</p>
+      </div>
+      <button class="menu-primary" data-action="start-contract" data-contract="${selected.id}">${completed ? 'Replay' : 'Deploy'} ${selected.name} →</button>
+      <div class="campaign-brief-nav">
+        <a class="menu-secondary" href="/hangar">Hangar &amp; Workshop</a>
+        <a class="menu-secondary" href="/">← Main menu</a>
+      </div>
+    </aside>`;
+}
+
 export function renderContracts(selectedContractId, completedMissions = {}) {
   const selected =
     CONTRACTS_CATALOG.find((item) => item.id === selectedContractId) || LAST_CARGO_CONTRACT;
@@ -111,35 +169,6 @@ export function renderContracts(selectedContractId, completedMissions = {}) {
       </div>
     </section>
 
-    <aside class="campaign-brief" aria-label="Selected contract briefing" style="--chapter-color:${accentColor}">
-      <div class="menu-kicker">${selected.code}</div>
-      <h2>${selected.name}</h2>
-      <p class="campaign-theme">${selected.theme} · ${selected.targetDuration}</p>
-      <dl>
-        <dt>${isSabotage ? 'Radar & ECM Relays (Demolish 2, 3rd Optional ★)' : 'Data Containers (Deliver 2, 3rd Optional ★)'}</dt>
-        <dd><ul class="campaign-roster">${cargoItems}</ul></dd>
-        <dt>Payout Structure (Idempotent Per Attempt)</dt>
-        <dd>
-          <ul class="campaign-roster">
-            <li><span>${isSabotage ? 'Each demolished relay (secured on detonation)' : 'Each delivered container (secured immediately)'}</span><strong>+$${selected.payouts.PER_CARGO}</strong></li>
-            <li><span>Successful extraction (at least 2 completed)</span><strong>+$${selected.payouts.EXTRACTION_BASE}</strong></li>
-            <li><span>Full 3/3 extraction bonus ★</span><strong>+$${selected.payouts.THIRD_CARGO_BONUS}</strong></li>
-          </ul>
-        </dd>
-        <dt>Encounter Schedule · 24 Tanks Finite Budget (Max 6 Live)</dt>
-        <dd><ul class="campaign-roster">${groupItems}</ul></dd>
-        <dt>Target Difficulty</dt>
-        <dd>${selected.difficulty}</dd>
-      </dl>
-      <div class="campaign-planned">
-        <strong>${completed ? 'COMPLETED · REPLAYABLE' : 'READY TO DEPLOY'}</strong>
-        <p>Eliminating all enemies never completes the contract. Abort or defeat preserves already secured objective payouts and kill bounties.</p>
-      </div>
-      <button class="menu-primary" data-action="start-contract" data-contract="${selected.id}">${completed ? 'Replay' : 'Deploy'} ${selected.name} →</button>
-      <div class="campaign-brief-nav">
-        <a class="menu-secondary" href="/hangar">Hangar &amp; Workshop</a>
-        <a class="menu-secondary" href="/">← Main menu</a>
-      </div>
-    </aside>
+    ${renderContractBrief(selected, completedMissions)}
   </div>`;
 }

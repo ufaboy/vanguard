@@ -37,6 +37,8 @@ import {
 } from './game/components/index.js';
 import { CODEX_ITEMS } from './game/codex.js';
 import { renderCodex } from './views/codex.js';
+import { renderCampaignBrief } from './views/campaign.js';
+import { renderContractBrief } from './views/contracts.js';
 import {
   renderPowerUpBadgeSvg,
 } from './game/icons.js';
@@ -61,6 +63,7 @@ const INITIAL_STATS = computeTankStats({
 const state = {
   menuPage: 'home',
   selectedCampaignMission: CAMPAIGN_MISSIONS[0].id,
+  campaignDrawerOpen: true,
   selectedContract: CONTRACTS_CATALOG[0]?.id || 'contract-last-cargo',
   selectedSector: 0,
   cameraPreset: 'ISOMETRIC',
@@ -198,7 +201,7 @@ let engine = null;
 let resolveEngineReady;
 const engineReady = new Promise((resolve) => (resolveEngineReady = resolve));
 // Menu actions that work before the engine is ready; anything else is replayed once it is
-const UI_ONLY_ACTIONS = new Set(['menu-page', 'toggle-sound', 'cycle-quality', 'cycle-fps', 'select-campaign-mission', 'select-contract']);
+const UI_ONLY_ACTIONS = new Set(['menu-page', 'toggle-sound', 'cycle-quality', 'cycle-fps', 'select-campaign-mission', 'select-contract', 'toggle-campaign-brief', 'close-campaign-brief']);
 
 function getSelectedCodexItem() {
   return (
@@ -597,21 +600,52 @@ function setupDelegatedEvents(root) {
         document.querySelector('.menu-page h1')?.focus();
         break;
       case 'select-campaign-mission': {
-        if (!CAMPAIGN_MISSIONS.some(mission => mission.id === btn.dataset.mission)) break;
-        const map = document.querySelector('.campaign-map-scroll');
-        const scrollLeft = map?.scrollLeft || 0;
-        const scrollTop = map?.scrollTop || 0;
-        state.selectedCampaignMission = btn.dataset.mission;
-        renderUI(true);
-        const nextMap = document.querySelector('.campaign-map-scroll');
-        if (nextMap) { nextMap.scrollLeft = scrollLeft; nextMap.scrollTop = scrollTop; }
-        const checkpoint = document.querySelector('.campaign-checkpoint.is-selected');
-        checkpoint?.focus({ preventScroll: true });
-        if (nextMap && checkpoint) {
-          const x = checkpoint.offsetLeft;
-          const y = checkpoint.offsetTop;
-          if (x < nextMap.scrollLeft + 24 || x > nextMap.scrollLeft + nextMap.clientWidth - 24) nextMap.scrollLeft = x - nextMap.clientWidth / 2;
-          if (y < nextMap.scrollTop + 24 || y > nextMap.scrollTop + nextMap.clientHeight - 24) nextMap.scrollTop = y - nextMap.clientHeight / 2;
+        const missionId = btn.dataset.mission;
+        const mission = CAMPAIGN_MISSIONS.find((m) => m.id === missionId);
+        if (!mission) break;
+        state.selectedCampaignMission = missionId;
+        state.campaignDrawerOpen = true;
+
+        // Targeted node update without full page re-render:
+        const nodes = document.querySelectorAll('.cinematic-node');
+        if (nodes.length > 0) {
+          nodes.forEach((node) => {
+            const isSelected = node.dataset.mission === missionId;
+            node.classList.toggle('is-selected', isSelected);
+            node.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+          });
+        }
+
+        // Targeted brief drawer update:
+        const drawer = document.querySelector('.cinematic-brief-drawer');
+        if (drawer) {
+          drawer.outerHTML = renderCampaignBrief(mission, state.hud?.playerSave?.completedMissions || {}, true);
+        } else {
+          renderUI(true);
+        }
+        syncRoute({ page: 'campaign', param: missionId });
+        break;
+      }
+      case 'toggle-campaign-brief': {
+        const drawer = document.querySelector('.cinematic-brief-drawer');
+        if (drawer) {
+          const willOpen = !drawer.classList.contains('is-open');
+          state.campaignDrawerOpen = willOpen;
+          drawer.classList.toggle('is-open', willOpen);
+          drawer.classList.toggle('is-closed', !willOpen);
+          const toggleBtn = drawer.querySelector('.drawer-toggle-btn');
+          if (toggleBtn) toggleBtn.textContent = willOpen ? '✕' : '▲';
+        }
+        break;
+      }
+      case 'close-campaign-brief': {
+        const drawer = document.querySelector('.cinematic-brief-drawer');
+        if (drawer) {
+          state.campaignDrawerOpen = false;
+          drawer.classList.remove('is-open');
+          drawer.classList.add('is-closed');
+          const toggleBtn = drawer.querySelector('.drawer-toggle-btn');
+          if (toggleBtn) toggleBtn.textContent = '▲';
         }
         break;
       }
@@ -622,9 +656,34 @@ function setupDelegatedEvents(root) {
         break;
       }
       case 'select-contract': {
-        if (!CONTRACTS_CATALOG.some((item) => item.id === btn.dataset.contract)) break;
-        state.selectedContract = btn.dataset.contract;
-        renderUI(true);
+        const contractId = btn.dataset.contract;
+        const contract = CONTRACTS_CATALOG.find((item) => item.id === contractId);
+        if (!contract) break;
+        state.selectedContract = contractId;
+
+        // Targeted update of contract cards:
+        document.querySelectorAll('[data-action="select-contract"]').forEach((card) => {
+          const isSelected = card.dataset.contract === contractId;
+          const isSabotage = card.querySelector('.border-purple-500') || card.classList.contains('border-purple-400');
+          card.classList.toggle('border-sky-400', isSelected && !isSabotage);
+          card.classList.toggle('bg-sky-950/35', isSelected && !isSabotage);
+          card.classList.toggle('ring-1', isSelected);
+          card.classList.toggle('ring-sky-400/60', isSelected && !isSabotage);
+          card.classList.toggle('border-purple-400', isSelected && isSabotage);
+          card.classList.toggle('bg-purple-950/35', isSelected && isSabotage);
+          card.classList.toggle('ring-purple-400/60', isSelected && isSabotage);
+          card.classList.toggle('border-slate-700/80', !isSelected);
+          card.classList.toggle('bg-slate-900/60', !isSelected);
+        });
+
+        // Targeted update of brief panel:
+        const briefAside = document.querySelector('.campaign-brief');
+        if (briefAside) {
+          briefAside.outerHTML = renderContractBrief(contract, state.hud?.playerSave?.completedMissions || {});
+        } else {
+          renderUI(true);
+        }
+        syncRoute({ page: 'contract', param: contractId });
         break;
       }
       case 'start-contract': {
@@ -1744,7 +1803,7 @@ function renderUI(forceModals = false) {
     }
     renderCodexStudio();
     setHidden(statusModal, false);
-    if (forceModals || statusModal.dataset.page !== state.menuPage) {
+    if (statusModal.dataset.page !== state.menuPage) {
       setHtml(statusModal, renderMenu(state, CAMERA_LABELS));
       statusModal.dataset.page = state.menuPage;
     }

@@ -9,7 +9,8 @@ const MENU_SCREENS = Object.freeze({
   campaign: {
     title: 'Road to the capital',
     className: 'campaign-content',
-    render: (state) => renderCampaign(state.selectedCampaignMission, state.hud?.playerSave?.completedMissions),
+    showBack: false,
+    render: (state) => renderCampaign(state.selectedCampaignMission, state.hud?.playerSave?.completedMissions, state.campaignDrawerOpen !== false),
   },
   contracts: {
     title: 'Tactical contracts',
@@ -33,6 +34,7 @@ export function renderMenu(state) {
     title: screen.title,
     backHref: PAGE_PATHS.index,
     backLabel: 'Main menu',
+    showBack: screen.showBack !== false,
     className: screen.className,
     bodyHtml: screen.render(state),
   });

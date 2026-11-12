@@ -73,6 +73,7 @@ const PAGES = [
         renderPageShell({
           activePage: 'campaign',
           title: 'Road to the capital',
+          showBack: false,
           className: 'campaign-content',
           bodyHtml: renderCampaign(CAMPAIGN_MISSIONS[0].id, []),
         })
