@@ -296,7 +296,7 @@ export function renderCodex(state, selectedItem) {
     <div class="codex-header">
       <div>
         <div class="text-[10px] font-mono uppercase tracking-[0.18em] text-teal-400">
-          IRON VANGUARD // INTERACTIVE 3D ENCYCLOPEDIA & PROVING GROUNDS
+          BATTLE TANK // INTERACTIVE 3D ENCYCLOPEDIA & PROVING GROUNDS
         </div>
         <h2 class="text-lg font-bold tracking-wider uppercase text-white">
           TACTICAL CODEX (${CODEX_ITEMS.length} 3D SPECIMENS)

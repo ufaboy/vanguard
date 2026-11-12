@@ -74,7 +74,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
   const bars = level => `<span class="hangar-tier-bars" aria-label="Tier ${level} of 5">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= level ? 'filled' : ''}"></i>`).join('')}</span>`;
   return `
     <header class="hangar-header">
-      <div class="hangar-heading"><span class="hangar-eyebrow">IRON VANGUARD / ENGINEERING DIVISION</span><h1>Hangar <span>04</span></h1></div>
+      <div class="hangar-heading"><span class="hangar-eyebrow">BATTLE TANK / ENGINEERING DIVISION</span><h1>Hangar <span>04</span></h1></div>
       <div class="hangar-wallet"><span>AVAILABLE CREDITS</span><strong>$ ${money(credits)}</strong></div>
       <button class="hangar-exit" data-action="toggle-upgrades" aria-label="Close hangar">${hud.isHangarPaused ? 'Return to battle' : 'Back to operations'} <kbd>ESC</kbd></button>
     </header>

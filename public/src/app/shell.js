@@ -32,7 +32,7 @@ export function renderPageShell({
   return `
     <main class="menu-page">
       <header class="menu-header">
-        <a class="menu-brand" href="${PAGE_PATHS.index}">IV <span>IRON VANGUARD</span></a>
+        <a class="menu-brand" href="${PAGE_PATHS.index}">BT <span>BATTLE TANK</span></a>
         ${renderPageNav(activePage)}
       </header>
       <div class="menu-content ${className}">
@@ -41,7 +41,7 @@ export function renderPageShell({
         ${bodyHtml}
       </div>
       <footer class="menu-footer">
-        <span>IRON VANGUARD / COMMAND CENTER</span>
+        <span>BATTLE TANK / COMMAND CENTER</span>
         <nav class="menu-footer-links" aria-label="Footer navigation">
           <a href="${PAGE_PATHS.howToPlay}">How to Play</a>
           <a href="${PAGE_PATHS.about}">About</a>

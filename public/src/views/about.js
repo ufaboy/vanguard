@@ -1,7 +1,7 @@
 /** About view: game overview, core systems, and technical stack. */
 export function renderAbout() {
   return `
-    <p class="menu-lead">IRON VANGUARD is a 3D isometric tactical tank assault game inspired by classic Battle City, engineered with modular armored warfare and destructible 36×36 arenas.</p>
+    <p class="menu-lead">BATTLE TANK is a 3D isometric tactical tank assault game inspired by classic Battle City, engineered with modular armored warfare and destructible 36×36 arenas.</p>
     <div class="menu-grid">
       <article class="menu-card" style="cursor:default">
         <span class="menu-kicker">DESTRUCTIBLE ARENAS</span>

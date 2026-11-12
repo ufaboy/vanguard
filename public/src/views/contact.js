@@ -3,7 +3,7 @@ import { PAGE_PATHS } from '../app/routes.js';
 
 export function renderContact() {
   return `
-    <p class="menu-lead">Have a bug report, balance suggestion, or question about IRON VANGUARD? Use the channels below to reach the project maintainer.</p>
+    <p class="menu-lead">Have a bug report, balance suggestion, or question about BATTLE TANK? Use the channels below to reach the project maintainer.</p>
     <div class="menu-grid">
       <article class="menu-card" style="cursor:default">
         <span class="menu-kicker">BUG REPORTS &amp; FEEDBACK</span>
@@ -14,7 +14,7 @@ export function renderContact() {
       <article class="menu-card" style="cursor:default">
         <span class="menu-kicker">PROJECT REPOSITORY</span>
         <strong>Source &amp; Releases</strong>
-        <p>Browse release notes, engineering documentation, and recent updates for IRON VANGUARD on GitHub.</p>
+        <p>Browse release notes, engineering documentation, and recent updates for BATTLE TANK on GitHub.</p>
         <a class="menu-secondary" href="https://github.com/ufaboy/vanguard" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
       </article>
       <article class="menu-card" style="cursor:default">

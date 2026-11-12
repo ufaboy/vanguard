@@ -48,7 +48,7 @@ export function renderHowToPlay() {
   ).join('');
 
   return `
-    <p class="menu-lead">Complete field manual for IRON VANGUARD: controls, game modes, directional armor, modular upgrades, and battlefield survival.</p>
+    <p class="menu-lead">Complete field manual for BATTLE TANK: controls, game modes, directional armor, modular upgrades, and battlefield survival.</p>
     <div class="menu-guide">
       <section>
         <h2>Controls</h2>

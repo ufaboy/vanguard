@@ -1,6 +1,6 @@
 import { pageUrl } from './app/routes.js';
 
-const APP_TITLE = 'IRON VANGUARD';
+const APP_TITLE = 'BATTLE TANK';
 
 const PAGE_TITLES = Object.freeze({
   home: `${APP_TITLE} — 3D Tank Assault`,

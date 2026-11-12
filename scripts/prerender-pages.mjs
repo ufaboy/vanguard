@@ -40,7 +40,7 @@ const PAGES = [
     render: () =>
       renderPageShell({
         activePage: 'about',
-        title: 'About Iron Vanguard',
+        title: 'About Battle Tank',
         className: 'about-content',
         bodyHtml: renderAbout(),
       }),
