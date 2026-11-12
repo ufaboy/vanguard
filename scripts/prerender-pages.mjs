@@ -194,20 +194,6 @@ const PAGES = [
       ),
   },
   {
-    file: 'public/hangar.html',
-    render: () =>
-      wrapGameShell(
-        'hangar',
-        renderPageShell({
-          activePage: 'hangar',
-          title: 'Hangar & Workshop',
-          subtitle: 'Vehicle Maintenance & Engineering',
-          showBack: true,
-          bodyHtml: '<p class="menu-lead">Initializing 3D Hangar bay and component workshop…</p>',
-        })
-      ),
-  },
-  {
     file: 'public/codex.html',
     render: () =>
       wrapGameShell(

@@ -19,13 +19,11 @@ const PAGE_TITLES = Object.freeze({
   contact: `Contact — ${APP_TITLE}`,
   settings: `Settings — ${APP_TITLE}`,
   codex: `Codex — ${APP_TITLE}`,
-  hangar: `Hangar — ${APP_TITLE}`,
 });
 
 /** Pages that require the 3D engine immediately on load. */
 export const ENGINE_PAGES = Object.freeze([
   'codex',
-  'hangar',
   'contract-last-cargo',
   'contract-blackout-protocol',
 ]);

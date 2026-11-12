@@ -390,9 +390,10 @@ function initApp() {
       state.showTacticalMap = !state.showTacticalMap;
       renderUI(true);
     } else if (e.code === 'KeyU') {
+      if (state.hud.status === GameStatus.MENU) return;
       const willOpen = !state.showUpgradeDrawer;
       if (willOpen) {
-        const ok = engine ? engine.setHangarOpen(true) : true;
+        const ok = engine ? engine.setHangarOpen(true) : false;
         if (ok) {
           state.showUpgradeDrawer = true;
           renderUI(true);
@@ -413,10 +414,6 @@ function initApp() {
       if (state.showUpgradeDrawer) {
         state.showUpgradeDrawer = false;
         engine?.setHangarOpen(false);
-        if (state.hud.status === GameStatus.MENU && document.body?.dataset?.page === 'hangar') {
-          location.href = PAGE_PATHS.index;
-          return;
-        }
         renderUI(true);
         return;
       }
@@ -452,7 +449,6 @@ let routePendingEngine = false;
 function routeFromState() {
   if (state.hud.status !== GameStatus.MENU) return null;
   if (state.showCodexModal) return { page: 'codex', param: state.codexSelectedId };
-  if (state.showUpgradeDrawer) return { page: 'hangar', param: '' };
   const param =
     state.menuPage === 'campaign'
       ? state.selectedCampaignMission
@@ -469,8 +465,7 @@ function applyRoute(route) {
     routePendingEngine = true;
     engineReady.then(() => {
       routePendingEngine = false;
-      window.addEventListener('popstate', () => applyRoute(parseRoute()));
-  applyRoute(parseRoute());
+      applyRoute(parseRoute());
     });
     return;
   }
@@ -497,11 +492,6 @@ function applyRoute(route) {
   if (state.showCodexModal) {
     state.showCodexModal = false;
     engine?.setCodexMode(false);
-  }
-  if (route.page === 'hangar') {
-    if (!state.showUpgradeDrawer && engine.setHangarOpen(true)) state.showUpgradeDrawer = true;
-    renderUI(true);
-    return;
   }
   if (state.showUpgradeDrawer) {
     state.showUpgradeDrawer = false;
@@ -874,7 +864,8 @@ function setupDelegatedEvents(root) {
       case 'toggle-upgrades': {
         const willOpen = !state.showUpgradeDrawer;
         if (willOpen) {
-          const ok = engine ? engine.setHangarOpen(true) : true;
+          if (state.hud.status === GameStatus.MENU) break;
+          const ok = engine ? engine.setHangarOpen(true) : false;
           if (ok) {
             state.showUpgradeDrawer = true;
             renderUI(true);
@@ -882,10 +873,6 @@ function setupDelegatedEvents(root) {
         } else {
           state.showUpgradeDrawer = false;
           engine?.setHangarOpen(false);
-          if (state.hud.status === GameStatus.MENU && document.body?.dataset?.page === 'hangar') {
-            location.href = PAGE_PATHS.index;
-            break;
-          }
           renderUI(true);
         }
         break;

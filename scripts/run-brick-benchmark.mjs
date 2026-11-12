@@ -43,7 +43,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (url.pathname === '/__home-smoke.html' || url.pathname === '/__hangar-smoke.html') {
       res.setHeader('Content-Type', 'text/html');
-      const template = home ? 'public/index.html' : 'public/hangar.html';
+      const template = home ? 'public/index.html' : 'public/campaign.html';
       res.end((await readFile(template, 'utf8')).replace('</body>', `<script type="module" src="/${home ? '__home-smoke.js' : '__hangar-smoke.js'}"></script></body>`));
       return;
     }

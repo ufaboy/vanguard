@@ -31,11 +31,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://battletank.online/hangar</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://battletank.online/codex</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
