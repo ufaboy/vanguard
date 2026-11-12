@@ -39,11 +39,15 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-// Tests, scripts and the HTML entry may use source exports, so they count as consumers.
+// Tests, scripts and the HTML entries may use source exports, so they count as consumers.
+const htmlFiles = fs
+  .readdirSync('public')
+  .filter((name) => name.endsWith('.html'))
+  .map((name) => path.join('public', name));
 const consumers = [
   ...getJsFiles('tests', ['.js', '.mjs']),
   ...getJsFiles('scripts', ['.js', '.mjs']),
-  'public/index.html',
+  ...htmlFiles,
 ].filter((file) => fs.existsSync(file));
 const dead = checkDeadCode(files, consumers);
 for (const problem of dead) {

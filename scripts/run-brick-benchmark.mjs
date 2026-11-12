@@ -35,7 +35,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (url.pathname === '/__damage-ui.html') {
       res.setHeader('Content-Type', 'text/html');
-      res.end((await readFile('public/index.html', 'utf8')).replace('./src/main.js', '/__damage-ui.js')); return;
+      res.end((await readFile('public/campaign.html', 'utf8')).replace('./src/main.js', '/__damage-ui.js')); return;
     }
     if (url.pathname === '/__damage.html') {
       res.setHeader('Content-Type', 'text/html');
@@ -43,7 +43,8 @@ const server = http.createServer(async (req, res) => {
     }
     if (url.pathname === '/__home-smoke.html' || url.pathname === '/__hangar-smoke.html') {
       res.setHeader('Content-Type', 'text/html');
-      res.end((await readFile('public/index.html', 'utf8')).replace('</body>', `<script type="module" src="/${home ? '__home-smoke.js' : '__hangar-smoke.js'}"></script></body>`));
+      const template = home ? 'public/index.html' : 'public/hangar.html';
+      res.end((await readFile(template, 'utf8')).replace('</body>', `<script type="module" src="/${home ? '__home-smoke.js' : '__hangar-smoke.js'}"></script></body>`));
       return;
     }
     if (url.pathname === '/__mountains.html') {

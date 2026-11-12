@@ -1,6 +1,15 @@
 import { renderComponentCondition } from './component-condition-ui.js';
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
 import { MENU_PAGES, renderMenu } from './menu.js';
+import { PAGE_PATHS } from './app/routes.js';
+import { attachSettingsModal } from './app/shell.js';
+import {
+  CAMERA_LABELS,
+  FPS_CAP_OPTIONS,
+  loadPreferences,
+  loadUpgrades,
+  savePreferences as persistPreferences,
+} from './app/state.js';
 import { ENGINE_PAGES, parseRoute, setCurrentRoutePage, syncRoute } from './router.js';
 import { renderHangar, HANGAR_TRACKS } from './hangar-ui.js';
 import { QUALITY_PRESETS, TankGameEngine } from './game/engine.js';
@@ -35,15 +44,7 @@ import {
   CONTRACTS_CATALOG,
 } from './sim/index.js';
 
-const CAMERA_LABELS = {
-  ISOMETRIC: 'ISOMETRIC 45°',
-  TACTICAL_HIGH: 'TACTICAL OVERVIEW',
-  CLOSE_COMBAT: 'CLOSE COMBAT',
-};
-
 const APS_LABELS = ['FR', 'RR', 'RL', 'FL'];
-// Frame-rate cap choices cycled in Settings (0 = unlimited)
-const FPS_CAP_OPTIONS = [60, 30, 0];
 
 const INITIAL_STATS = computeTankStats({
   gun: CANNONS.CANNON_Mk1,
@@ -164,50 +165,25 @@ const state = {
   },
 };
 
-try {
-  const saved = localStorage.getItem('iron_vanguard_upgrades_v3');
-  if (saved) {
-    const parsed = JSON.parse(saved);
-    if (parsed && typeof parsed.cannon === 'number') {
-      state.upgrades = {
-        cannon: parsed.cannon || 1,
-        chassis: parsed.chassis || parsed.vehicleFrame || 1,
-        frame: parsed.frame || parsed.vehicleFrame || 1,
-        engine: parsed.engine || 1,
-        armor: parsed.armor || 1,
-      };
-      state.codexPreviewUpgrades = {
-        ...state.codexPreviewUpgrades,
-        ...state.upgrades,
-      };
-    }
-  }
-} catch {
-  // ignore
-}
+state.upgrades = loadUpgrades();
+state.codexPreviewUpgrades = {
+  ...state.codexPreviewUpgrades,
+  ...state.upgrades,
+};
 
-try {
-  const preferences = JSON.parse(localStorage.getItem('iron_vanguard_settings_v1') || '{}');
-  if (typeof preferences.soundEnabled === 'boolean') state.soundEnabled = preferences.soundEnabled;
-  if (Object.hasOwn(CAMERA_LABELS, preferences.cameraPreset)) state.cameraPreset = preferences.cameraPreset;
-  if (Object.hasOwn(QUALITY_PRESETS, preferences.graphicsQuality)) state.graphicsQuality = preferences.graphicsQuality;
-  if (FPS_CAP_OPTIONS.includes(preferences.fpsCap)) state.fpsCap = preferences.fpsCap;
-} catch {
-  // Use defaults when local preferences are unavailable.
-}
-sound.enabled = state.soundEnabled;
+const initialPrefs = loadPreferences();
+state.soundEnabled = initialPrefs.soundEnabled;
+state.cameraPreset = initialPrefs.cameraPreset;
+state.graphicsQuality = initialPrefs.graphicsQuality;
+state.fpsCap = initialPrefs.fpsCap;
 
 function savePreferences() {
-  try {
-    localStorage.setItem('iron_vanguard_settings_v1', JSON.stringify({
-        soundEnabled: state.soundEnabled,
-        cameraPreset: state.cameraPreset,
-        graphicsQuality: state.graphicsQuality,
-        fpsCap: state.fpsCap,
-      }));
-  } catch {
-    // Preferences still apply for this session when storage is unavailable.
-  }
+  persistPreferences({
+    soundEnabled: state.soundEnabled,
+    cameraPreset: state.cameraPreset,
+    graphicsQuality: state.graphicsQuality,
+    fpsCap: state.fpsCap,
+  });
 }
 
 let engine = null;
@@ -252,6 +228,10 @@ function toggleCodexStudio(forceOpen) {
     }
   } else {
     engine?.setCodexMode(false);
+    if (state.hud.status === GameStatus.MENU && document.body?.dataset?.page === 'codex') {
+      location.href = PAGE_PATHS.index;
+      return;
+    }
   }
   renderUI(true);
 }
@@ -357,7 +337,9 @@ function initApp() {
     }
 
     if (state.hud.status === GameStatus.MENU && !state.showUpgradeDrawer) {
-      if (e.code === 'Escape') { state.menuPage = 'home'; renderUI(true); }
+      if (e.code === 'Escape' && document.body?.dataset?.page && document.body.dataset.page !== 'home') {
+        location.href = PAGE_PATHS.index;
+      }
       return;
     }
 
@@ -391,6 +373,10 @@ function initApp() {
       if (state.showUpgradeDrawer) {
         state.showUpgradeDrawer = false;
         engine?.setHangarOpen(false);
+        if (state.hud.status === GameStatus.MENU && document.body?.dataset?.page === 'hangar') {
+          location.href = PAGE_PATHS.index;
+          return;
+        }
         renderUI(true);
         return;
       }
@@ -404,8 +390,17 @@ function initApp() {
   });
 
   setupDelegatedEvents(root);
-  window.addEventListener('hashchange', () => applyRoute(parseRoute(location.hash)));
-  applyRoute(parseRoute(location.hash));
+  attachSettingsModal(root, (prefs) => {
+    state.soundEnabled = prefs.soundEnabled;
+    state.cameraPreset = prefs.cameraPreset;
+    state.graphicsQuality = prefs.graphicsQuality;
+    state.fpsCap = prefs.fpsCap;
+    engine?.setCameraPreset(prefs.cameraPreset);
+    engine?.setQuality(prefs.graphicsQuality);
+    engine?.setFpsCap(prefs.fpsCap);
+    renderUI(true);
+  });
+  applyRoute(parseRoute());
   renderUI(true);
 }
 
@@ -433,7 +428,7 @@ function applyRoute(route) {
     routePendingEngine = true;
     engineReady.then(() => {
       routePendingEngine = false;
-      applyRoute(parseRoute(location.hash));
+      applyRoute(parseRoute());
     });
     return;
   }
@@ -470,7 +465,8 @@ function applyRoute(route) {
     state.showUpgradeDrawer = false;
     engine?.setHangarOpen(false);
   }
-  state.menuPage = MENU_PAGES.includes(route.page) ? route.page : 'home';
+  const normalizedPage = route.page === 'contract' ? 'contracts' : route.page;
+  state.menuPage = MENU_PAGES.includes(normalizedPage) ? normalizedPage : 'home';
   if (state.menuPage === 'campaign' && CAMPAIGN_MISSIONS.some((mission) => mission.id === route.param)) {
     state.selectedCampaignMission = route.param;
   } else if (state.menuPage === 'contracts' && CONTRACTS_CATALOG.some((c) => c.id === route.param)) {
@@ -629,8 +625,12 @@ function setupDelegatedEvents(root) {
         renderUI(true);
         break;
       case 'main-menu':
-        state.menuPage = 'home';
         engine?.abortMissionToHangar();
+        if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
+          location.href = PAGE_PATHS.index;
+          break;
+        }
+        state.menuPage = 'home';
         renderUI(true);
         break;
       case 'toggle-codex':
@@ -742,6 +742,10 @@ function setupDelegatedEvents(root) {
         } else {
           state.showUpgradeDrawer = false;
           engine?.setHangarOpen(false);
+          if (state.hud.status === GameStatus.MENU && document.body?.dataset?.page === 'hangar') {
+            location.href = PAGE_PATHS.index;
+            break;
+          }
           renderUI(true);
         }
         break;
@@ -842,8 +846,12 @@ function setupDelegatedEvents(root) {
         renderUI(true);
         break;
       case 'abort-mission':
-        state.menuPage = 'home';
         engine?.abortMissionToHangar();
+        if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
+          location.href = PAGE_PATHS.index;
+          break;
+        }
+        state.menuPage = 'home';
         renderUI(true);
         break;
       case 'cycle-fps': {
