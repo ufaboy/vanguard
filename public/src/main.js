@@ -23,8 +23,10 @@ import {
   POWERUP,
   POWERUP_TYPES,
   computeTankStats,
+  CANNON_AMMO,
   getMaxApsAmmo,
   getMaxMissileAmmo,
+  getMaxCannonAmmo,
 } from './game/constants.js';
 import {
   CANNONS,
@@ -137,6 +139,8 @@ const state = {
     apsMaxAmmo: getMaxApsAmmo(1),
     missileAmmo: 2,
     missileMaxAmmo: getMaxMissileAmmo(1),
+    cannonAmmo: CANNON_AMMO.START_ROUNDS,
+    cannonMaxAmmo: getMaxCannonAmmo(1),
     missileCooldown: 0,
     repairKitCount: 1,
     empTimer: 0,
@@ -807,6 +811,12 @@ function setupDelegatedEvents(root) {
           state.hangarFeedback = result.reason;
           renderUI(true);
         }
+        break;
+      }
+      case 'buy-cannon-ammo': {
+        const res = engine?.buyCannonAmmoInHangar();
+        if (res?.reason) state.hangarFeedback = res.reason;
+        renderUI(true);
         break;
       }
       case 'buy-missile': {
@@ -2154,7 +2164,7 @@ function renderUI(forceModals = false) {
             <!-- Main Gun Reload Cooldown Bar (No 12/24 Ammo Counter per Section 14.2) -->
             <div class="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider mb-1">
               <span class="text-amber-300 font-bold">
-                MAIN GUN: ${hud.cannonName} (${reloadRemaining <= 0 ? 'READY' : `RELOADING ${reloadRemaining.toFixed(2)}s`})
+                MAIN GUN: ${hud.cannonName} [ <span class="${(hud.cannonAmmo ?? 15) <= 5 ? 'text-amber-400 font-bold animate-pulse' : 'text-slate-100'}">${hud.cannonAmmo ?? 15}</span> / ${hud.cannonMaxAmmo ?? 15} ] (${(hud.cannonAmmo ?? 15) <= 0 ? '<span class="text-red-400 font-bold">NO AMMO</span>' : reloadRemaining <= 0 ? 'READY' : `RELOADING ${reloadRemaining.toFixed(2)}s`})
               </span>
               <div class="flex gap-1">${subBadgesHtml}</div>
             </div>

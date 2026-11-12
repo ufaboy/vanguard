@@ -1,10 +1,14 @@
 /** Decide whether a field supply can currently benefit the player. */
 import { POWERUP } from './powerups.js';
-import { APS, MISSILE, DURABILITY, getMaxApsAmmo, getMaxMissileAmmo } from './constants.js';
+import { APS, MISSILE, CANNON_AMMO, DURABILITY, getMaxApsAmmo, getMaxMissileAmmo, getMaxCannonAmmo } from './constants.js';
 
 export function isUsefulPowerUp(type, state, pending = []) {
   const count = pending.filter((item) => item.type === type).length;
   switch (type) {
+    case POWERUP.AMMO: {
+      const maxAmmo = state.cannonMaxAmmo ?? getMaxCannonAmmo(state.upgrades?.frame || 1);
+      return (state.cannonAmmo ?? 0) + count * CANNON_AMMO.PICKUP_AMMO < maxAmmo;
+    }
     case POWERUP.MISSILE: {
       const maxMissiles = state.missileMaxAmmo ?? getMaxMissileAmmo(state.upgrades?.frame || 1);
       return state.missileAmmo + count * MISSILE.PICKUP_AMMO < maxMissiles;

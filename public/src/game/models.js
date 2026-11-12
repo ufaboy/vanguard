@@ -2857,6 +2857,26 @@ export class ModelFactory extends TextureGenerator {
         break;
       }
 
+      case POWERUP.AMMO: {
+        const shellGroup = new THREE.Group();
+        shellGroup.rotation.x = -Math.PI / 4;
+        trophy.add(shellGroup);
+
+        const casing = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.12, 0.12, 0.48, 12),
+          accentMat
+        );
+        shellGroup.add(casing);
+
+        const tip = new THREE.Mesh(
+          new THREE.ConeGeometry(0.12, 0.24, 12),
+          brightMat
+        );
+        tip.position.y = 0.36;
+        shellGroup.add(tip);
+        break;
+      }
+
       case POWERUP.MISSILE: {
         const rocketGroup = new THREE.Group();
         rocketGroup.rotation.x = -Math.PI / 4;

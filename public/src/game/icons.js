@@ -57,6 +57,8 @@ export function renderPowerUpBadgeSvg(powerupType, size = 38, showCode = false) 
     glyph = `<circle cx="20" cy="20" r="8" stroke="${color}" stroke-width="2" stroke-dasharray="4 2"/><circle cx="20" cy="20" r="3" fill="${color}"/>`;
   } else if (powerupType === POWERUP.MISSILE) {
     glyph = `<path d="M20 10L25 22L20 20L15 22L20 10ZM16 26H24" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>`;
+  } else if (powerupType === POWERUP.AMMO) {
+    glyph = `<path d="M17 12h6v12h-6zM17 24l3 6 3-6" fill="${color}"/><rect x="16" y="8" width="8" height="3" rx="1" fill="${color}"/>`;
   }
 
   return `
@@ -82,6 +84,7 @@ export const POWERUP_FAMILY = Object.freeze({
   [POWERUP.REPAIR]: 'instant',
   [POWERUP.APS]: 'instant',
   [POWERUP.MISSILE]: 'instant',
+  [POWERUP.AMMO]: 'instant',
   [POWERUP.EMP]: 'timed',
   [POWERUP.BASE_RESTORE]: 'instant',
 });
@@ -97,6 +100,7 @@ const POWERUP_SHORT_LABEL = Object.freeze({
   [POWERUP.BASE_RESTORE]: 'HQ+',
   [POWERUP.APS]: 'APS',
   [POWERUP.MISSILE]: 'ATGM',
+  [POWERUP.AMMO]: 'AMMO',
 });
 
 const PICTOGRAMS = {
@@ -242,6 +246,17 @@ const PICTOGRAMS = {
       g.lineTo(Math.cos(a) * 42, Math.sin(a) * 42);
       g.stroke();
     }
+  },
+  [POWERUP.AMMO](g, c) {
+    g.fillStyle = c;
+    g.fillRect(-6, -10, 12, 22);
+    g.beginPath();
+    g.moveTo(-6, -10);
+    g.lineTo(0, -22);
+    g.lineTo(6, -10);
+    g.closePath();
+    g.fill();
+    g.fillRect(-8, 12, 16, 4);
   },
   [POWERUP.MISSILE](g, c) {
     g.save();
