@@ -132,7 +132,7 @@ export function renderHome() {
           <span class="plate-arrow" aria-hidden="true">»</span>
         </a>
 
-        <a class="armored-mode-plate" href="${PAGE_PATHS.contract}">
+        <a class="armored-mode-plate" href="${PAGE_PATHS.contracts}">
           <span class="plate-rivet tl" aria-hidden="true"></span>
           <span class="plate-rivet tr" aria-hidden="true"></span>
           <div class="plate-index">03</div>

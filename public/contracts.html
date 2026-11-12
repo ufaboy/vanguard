@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tactical Contracts — BATTLE TANK</title>
+    <meta name="description" content="Hold the Iron Crucible against endless combined-arms waves and Sector Bosses starting from a Tier I tank." />
+    <meta name="theme-color" content="#0B1120" />
+    <meta name="google-adsense-account" content="ca-pub-8276955482906894">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8276955482906894" crossorigin="anonymous"></script>
+    <link rel="canonical" href="https://battletank.online/contracts" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta property="og:site_name" content="BATTLE TANK" />
+    <meta property="og:title" content="Endless Survival — BATTLE TANK" />
+    <meta property="og:description" content="Hold the Iron Crucible against endless combined-arms waves and Sector Bosses starting from a Tier I tank." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://battletank.online/contracts" />
+    <meta property="og:image" content="https://battletank.online/images/og-battle.jpg" />
+    <link rel="stylesheet" href="./src/index.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/build/three.module.js",
+          "three/addons/": "./vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body data-page="contracts" class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
+    <div id="root"><!-- prerender:start -->
+<div id="game-shell" class="relative w-screen h-screen overflow-hidden bg-[#0B0F17] text-[#F8FAFC] select-none font-sans">
+      <!-- 100% Full-bleed 3D WebGL Canvas Mount -->
+      <div id="canvas-mount" class="fixed inset-0 w-full h-full cursor-crosshair"></div>
+
+      <!-- Top-Left Compact Telemetry Bar -->
+      <header id="top-telemetry" class="hidden fixed top-4 left-4 z-20 flex flex-wrap items-center gap-3 bg-[#0B0F17]/95 border border-slate-700/70 px-4 py-2.5 rounded shadow-lg"></header>
+
+      <!-- Top-Right Compact Utility Controls -->
+      <div id="top-controls" class="hidden fixed top-4 right-4 z-20 flex items-center gap-2"></div>
+
+      <!-- Top-Right North-Up Sensor Minimap -->
+      <div id="sensor-minimap" class="hidden fixed top-16 right-4 z-20 bg-[#0B0F17]/95 border border-slate-700/80 rounded p-2 shadow-2xl"></div>
+
+      <!-- Contract Cargo & Gate Warning HUD -->
+      <div id="contract-hud" class="hidden fixed top-20 left-4 z-20 flex flex-col gap-2 max-w-[min(560px,92vw)]"></div>
+
+      <!-- Contextual Contract Interaction / Extraction Control Bar -->
+      <div id="contract-action-bar" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"></div>
+
+      <!-- Boss Condition Banner -->
+      <div id="boss-banner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-20 w-[min(560px,90vw)] bg-[#0B0F17]/95 border border-red-500/70 px-5 py-3 rounded shadow-2xl"></div>
+
+      <!-- Observed Target Condition Badge -->
+      <div id="target-badge" class="hidden fixed top-36 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-teal-500/70 px-4 py-1.5 rounded text-xs font-mono uppercase tracking-wider shadow-lg"></div>
+
+      <!-- Tactical Status Toast -->
+      <div id="status-toast" class="hidden fixed top-48 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-amber-500/70 px-5 py-2 rounded text-xs font-mono uppercase tracking-[0.12em] text-amber-300 shadow-lg"></div>
+
+      <!-- Active Combat Modifiers Strip -->
+      <div id="modifiers-strip" class="hidden fixed top-64 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
+
+      <!-- Expanded Mechanical Diagnostics Overlay [H] -->
+      <div id="diagnostics-panel" class="hidden fixed bottom-28 left-4 z-20 w-80 bg-[#0B0F17]/95 border border-teal-500/60 rounded p-3.5 shadow-2xl font-mono text-xs"></div>
+
+      <!-- Tactical Sector Map & Manual Route Planner Overlay [M] -->
+      <div id="tactical-map-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center bg-black/75 p-4"></div>
+
+      <!-- Interactive 3D Codex & Proving Grounds Studio Overlay [I] -->
+      <div id="codex-modal" class="hidden codex-overlay"></div>
+
+      <!-- Modular Tank Hangar, Workshop & 5x5 Engineering Drawer [U] -->
+      <div id="upgrade-drawer" class="hidden hangar-shell" role="dialog" aria-modal="true" aria-label="Vehicle maintenance hangar"></div>
+
+      <!-- Bottom Docked Tactical HUD -->
+      <footer id="bottom-hud" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-20 w-[min(1120px,96vw)] bg-[#0B0F17]/95 border border-slate-700/70 px-5 py-3 rounded shadow-2xl flex flex-wrap items-center justify-between gap-4"></footer>
+
+      <!-- Modal Overlays: Menu, Pause, Victory, Game Over -->
+      <div id="status-modal" class="fixed inset-0 z-30 menu-screen" data-page="contracts">
+        
+    <main class="menu-page">
+      <header class="armored-header">
+        <div class="armored-header-primary">
+          <div class="armored-header-left">
+            
+      <a class="armored-back-btn" href="/" aria-label="Return to BACK">
+        <span class="btn-rivet top-left" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+        <span class="back-arrow" aria-hidden="true">◄</span>
+        <span class="back-label">BACK</span>
+        <span class="btn-rivet top-right" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+      </a>
+    
+          </div>
+
+          <nav class="armored-nav" aria-label="Primary navigation">
+            <div class="armored-nav-track">
+              
+      <a class="armored-tab"  href="/campaign">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">CAMPAIGN</span>
+      </a>
+    
+      <a class="armored-tab"  href="/survival">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">SURVIVAL</span>
+      </a>
+    
+      <a class="armored-tab is-active" aria-current="page" href="/contracts">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">CONTRACTS</span>
+      </a>
+    
+      <a class="armored-tab"  href="/hangar">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">HANGAR</span>
+      </a>
+    
+      <a class="armored-tab"  href="/codex">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">CODEX</span>
+      </a>
+    
+      <a class="armored-tab"  href="/how-to-play">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">HOW TO PLAY</span>
+      </a>
+    
+      <a class="armored-tab"  href="/about">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">ABOUT</span>
+      </a>
+    
+            </div>
+          </nav>
+
+          <div class="armored-header-right">
+            <button type="button" class="armored-settings-btn" data-action="open-settings" aria-label="Settings">
+              <span class="btn-rivet top-left" aria-hidden="true"></span>
+              <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+              <span class="settings-gear" aria-hidden="true">⚙</span>
+              <span class="btn-rivet top-right" aria-hidden="true"></span>
+              <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="menu-content campaign-content">
+        <h1 class="menu-page-title" tabindex="-1">Tactical contracts</h1>
+        
+    <div class="contracts-hero-view">
+      <section class="contracts-hero-board" aria-label="Tactical contracts board">
+        <span class="board-rivet top-left" aria-hidden="true"></span>
+        <span class="board-rivet top-right" aria-hidden="true"></span>
+        <span class="board-rivet bottom-left" aria-hidden="true"></span>
+        <span class="board-rivet bottom-right" aria-hidden="true"></span>
+
+        <img
+          class="contracts-hero-art"
+          src="./images/contracts-hero.jpg"
+          alt="Military command tent overlooking a twilight mountain valley"
+          fetchpriority="high"
+          width="1920"
+          height="1080"
+        >
+        <div class="contracts-hero-atmosphere" aria-hidden="true"></div>
+
+        <header class="contracts-header-stage">
+          <div class="contracts-crest-row">
+            <span class="crest-wing left" aria-hidden="true"></span>
+            <div class="contracts-title-plate">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fbbf24" stroke-width="2" aria-hidden="true">
+                <rect x="5" y="4" width="14" height="17" rx="2"/>
+                <path d="M9 4V2h6v2M9 11l2 2 4-4M9 16h6"/>
+              </svg>
+              <h2>CONTRACTS</h2>
+            </div>
+            <span class="crest-wing right" aria-hidden="true"></span>
+          </div>
+          <p class="contracts-subtitle">— Complete special missions, secure objective payouts, and extract. —</p>
+        </header>
+
+        <div class="contracts-banner-list" role="region" aria-label="Available tactical contracts">
+          
+      <div
+        class="contract-banner is-recovery"
+        data-contract-card="contract-last-cargo"
+      >
+        <span class="plate-rivet tl" aria-hidden="true"></span>
+        <span class="plate-rivet tr" aria-hidden="true"></span>
+        <span class="plate-rivet bl" aria-hidden="true"></span>
+        <span class="plate-rivet br" aria-hidden="true"></span>
+
+        <a
+          class="contract-banner-select"
+          href="/contract-last-cargo"
+        >
+          <div class="contract-shield-wrap">
+            <div class="contract-shield">
+              
+    <svg viewBox="0 0 36 36" width="32" height="32" fill="none" aria-hidden="true">
+      <path d="M8 12l10-5 10 5v12l-10 5-10-5V12z" stroke="#f8fafc" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M8 12l10 5 10-5M18 17v12" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  
+            </div>
+          </div>
+
+          <div class="contract-thumb-wrap" aria-hidden="true">
+            <img src="./images/region-thumb-industrial.jpg" alt="" loading="lazy">
+            <div class="contract-thumb-fade"></div>
+          </div>
+
+          <div class="contract-banner-info">
+            <div class="contract-banner-meta">
+              <span class="contract-code-badge">CONTRACT-01 // LOGISTICS RAID</span>
+              <span class="contract-status-tag">2/3 REQUIRED · 3RD ★</span>
+            </div>
+            <div class="contract-banner-title-row">
+              <strong class="contract-banner-title">Last Cargo</strong>
+              <span class="contract-banner-sub">RIVER TERMINAL DATA RECOVERY</span>
+            </div>
+            <p class="contract-banner-summary">Recover two of three sealed data containers from a river terminal and extract from the southern delivery pad. The third container is an optional high-risk run for bonus credits.</p>
+            <div class="contract-progress-row" aria-hidden="true">
+              <div class="contract-progress-track">
+                <span class="seg is-ready"></span>
+                <span class="seg is-ready"></span>
+                <span class="seg"></span>
+              </div>
+              <span class="contract-duration">8–12 minutes (no global timer) · High (Late-Game Tier III–V)</span>
+            </div>
+          </div>
+        </a>
+
+        <div class="contract-banner-reward">
+          <div class="reward-col">
+            <span class="reward-label">REWARD</span>
+            <strong class="reward-amount">$10,000</strong>
+            <small class="reward-sub">+$1500 / OBJ</small>
+          </div>
+          <a
+            class="contract-quick-go"
+            href="/contract-last-cargo"
+            aria-label="Deploy Last Cargo"
+          >»</a>
+        </div>
+      </div>
+    
+      <div
+        class="contract-banner is-sabotage"
+        data-contract-card="contract-blackout-protocol"
+      >
+        <span class="plate-rivet tl" aria-hidden="true"></span>
+        <span class="plate-rivet tr" aria-hidden="true"></span>
+        <span class="plate-rivet bl" aria-hidden="true"></span>
+        <span class="plate-rivet br" aria-hidden="true"></span>
+
+        <a
+          class="contract-banner-select"
+          href="/contract-blackout-protocol"
+        >
+          <div class="contract-shield-wrap">
+            <div class="contract-shield">
+              
+      <svg viewBox="0 0 36 36" width="32" height="32" fill="none" aria-hidden="true">
+        <circle cx="18" cy="18" r="10" stroke="#f8fafc" stroke-width="2"/>
+        <circle cx="18" cy="18" r="4" stroke="#f59e0b" stroke-width="2"/>
+        <path d="M18 4v6M18 26v6M4 18h6M26 18h6" stroke="#f8fafc" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    
+            </div>
+          </div>
+
+          <div class="contract-thumb-wrap" aria-hidden="true">
+            <img src="./images/region-thumb-alpine.jpg" alt="" loading="lazy">
+            <div class="contract-thumb-fade"></div>
+          </div>
+
+          <div class="contract-banner-info">
+            <div class="contract-banner-meta">
+              <span class="contract-code-badge">CONTRACT-02 // SABOTAGE RAID</span>
+              <span class="contract-status-tag">2/3 REQUIRED · 3RD ★</span>
+            </div>
+            <div class="contract-banner-title-row">
+              <strong class="contract-banner-title">Blackout Protocol</strong>
+              <span class="contract-banner-sub">RADAR & ECM RELAY DEMOLITION</span>
+            </div>
+            <p class="contract-banner-summary">Infiltrate the northern communications array, plant timed demolition charges [E] on at least two of three armored radar/ECM relays, clear the 3-cell blast zone before the 8-second fuse detonates, and extract from the southern pad.</p>
+            <div class="contract-progress-row" aria-hidden="true">
+              <div class="contract-progress-track">
+                <span class="seg is-ready"></span>
+                <span class="seg is-ready"></span>
+                <span class="seg"></span>
+              </div>
+              <span class="contract-duration">7–11 minutes (8.0s blast fuses) · Very High (Stealth / Jammer / Breacher QRF)</span>
+            </div>
+          </div>
+        </a>
+
+        <div class="contract-banner-reward">
+          <div class="reward-col">
+            <span class="reward-label">REWARD</span>
+            <strong class="reward-amount">$10,000</strong>
+            <small class="reward-sub">+$1500 / OBJ</small>
+          </div>
+          <a
+            class="contract-quick-go"
+            href="/contract-blackout-protocol"
+            aria-label="Deploy Blackout Protocol"
+          >»</a>
+        </div>
+      </div>
+    
+        </div>
+      </section>
+    </div>
+  
+      </div>
+
+      <footer class="armored-footer">
+        <div class="armored-footer-bracket" aria-hidden="true">
+          <span class="btn-rivet" aria-hidden="true"></span>
+          <span class="bracket-notch" aria-hidden="true"></span>
+          <span class="btn-rivet" aria-hidden="true"></span>
+        </div>
+
+        <div class="armored-footer-inner">
+          <div class="footer-left-zone">
+            <span class="footer-bracket-plate left" aria-hidden="true">
+              <span class="btn-rivet" aria-hidden="true"></span>
+              <span class="btn-rivet" aria-hidden="true"></span>
+            </span>
+            <div class="footer-telemetry">
+              <span class="telemetry-beacon" aria-hidden="true"></span>
+              <div class="telemetry-text">
+                <strong class="telemetry-callsign">IRON VANGUARD</strong>
+                <span class="telemetry-sep">//</span>
+                <span class="telemetry-node">SECTOR OPS TERMINAL</span>
+              </div>
+              <span class="telemetry-ver">SYS.VER 1.3.2</span>
+            </div>
+          </div>
+
+          <div class="footer-right-zone">
+            <nav class="footer-links" aria-label="Footer navigation">
+              <a href="/how-to-play">HOW TO PLAY</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="/about">ABOUT</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="/privacy-policy">PRIVACY POLICY</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="/contact">CONTACT</a>
+            </nav>
+            <span class="footer-bracket-plate right" aria-hidden="true">
+              <span class="btn-rivet" aria-hidden="true"></span>
+              <span class="btn-rivet" aria-hidden="true"></span>
+            </span>
+          </div>
+        </div>
+      </footer>
+    </main>
+  
+      </div>
+    </div>
+    <!-- prerender:end --></div>
+    <noscript>
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>Endless Survival — BATTLE TANK</h1>
+        <p>Hold the Iron Crucible against endless waves and Sector Bosses. JavaScript and WebGL are required.</p>
+      </main>
+    </noscript>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
+

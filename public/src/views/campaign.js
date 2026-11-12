@@ -210,17 +210,6 @@ export function renderCampaignBrief(selectedOrId, completedMissions = {}, drawer
           </svg>
         </div>
 
-        <!-- Difficulty Stars Plaque -->
-        <div class="brief-difficulty-block">
-          <span class="difficulty-lead">/// DIFFICULTY ///</span>
-          <div class="difficulty-plaque">
-            <div class="difficulty-stars" aria-label="${starCount} of 3 stars">
-              ${starsHtml}
-            </div>
-            <span class="difficulty-name">${selected.difficulty.toUpperCase()}</span>
-          </div>
-        </div>
-
         <!-- Right Block: Massive Start Button -->
         <div class="brief-action-block">
           ${
@@ -242,7 +231,7 @@ export function renderCampaignBrief(selectedOrId, completedMissions = {}, drawer
               class="brief-start-btn is-locked"
               disabled
             >
-              <span class="start-text">LOCKED 🔒</span>
+              <span class="start-text">LOCKED</span>
               <small class="locked-sub">Pass Sector ${selected.number - 1}</small>
             </button>
           `
@@ -251,6 +240,72 @@ export function renderCampaignBrief(selectedOrId, completedMissions = {}, drawer
       </div>
     </aside>
   `;
+}
+
+function getMissionNodeView(mission, completedMissions = {}) {
+  const isDone = Boolean(completedMissions[mission.id]);
+  const isAvail = mission.status === 'available';
+  const isUnlock = isCampaignMissionUnlocked(mission.id, completedMissions);
+  const nodeStatus = isDone ? 'completed' : !isAvail ? 'planned' : isUnlock ? 'available' : 'locked';
+  const nodeNum = String(mission.number).padStart(2, '0');
+
+  let badgeContent = '';
+  if (nodeStatus === 'completed') {
+    badgeContent = `<span class="node-num">${nodeNum}</span><span class="node-stars" aria-label="3 stars">★★★</span>`;
+  } else if (nodeStatus === 'available') {
+    badgeContent = `<span class="node-num">${nodeNum}</span>`;
+  } else {
+    badgeContent = `<span class="node-num">${nodeNum}</span><span class="node-lock" aria-label="Locked">🔒</span>`;
+  }
+  return { nodeStatus, badgeContent };
+}
+
+/** Updates campaign map node states, active route path, and drawer in-place without re-rendering the whole page. */
+export function syncCampaignMapState(completedMissions = {}, selectedId = null, drawerOpen = true) {
+  const selected = CAMPAIGN_MISSIONS.find((m) => m.id === selectedId) || CAMPAIGN_MISSIONS[0];
+  const highestUnlockedIndex = CAMPAIGN_MISSIONS.reduce(
+    (max, m, idx) => (isCampaignMissionUnlocked(m.id, completedMissions) ? Math.max(max, idx) : max),
+    0
+  );
+
+  document.querySelectorAll('.cinematic-node[data-mission]').forEach((nodeEl) => {
+    const mission = CAMPAIGN_MISSIONS.find((m) => m.id === nodeEl.dataset.mission);
+    if (!mission) return;
+    const { nodeStatus, badgeContent } = getMissionNodeView(mission, completedMissions);
+    const isSelected = selected.id === mission.id;
+
+    nodeEl.classList.remove('is-completed', 'is-available', 'is-locked', 'is-planned');
+    nodeEl.classList.add(`is-${nodeStatus}`);
+    nodeEl.classList.toggle('is-selected', isSelected);
+    nodeEl.setAttribute('aria-pressed', String(isSelected));
+    nodeEl.setAttribute('aria-label', `Mission ${mission.number}: ${mission.name}. ${nodeStatus}.`);
+
+    const existingPulse = nodeEl.querySelector('.node-pulse');
+    if (nodeStatus === 'available' && !existingPulse) {
+      const pulse = document.createElement('div');
+      pulse.className = 'node-pulse';
+      pulse.setAttribute('aria-hidden', 'true');
+      nodeEl.prepend(pulse);
+    } else if (nodeStatus !== 'available' && existingPulse) {
+      existingPulse.remove();
+    }
+
+    const badge = nodeEl.querySelector('.node-badge');
+    if (badge && badge.innerHTML !== badgeContent) {
+      badge.innerHTML = badgeContent;
+    }
+  });
+
+  const activePath = document.querySelector('.cinematic-path-svg .path-active');
+  if (activePath) {
+    activePath.setAttribute('d', buildSvgPath(highestUnlockedIndex));
+  }
+
+  const drawer = document.querySelector('.cinematic-brief-drawer');
+  if (drawer) {
+    const isOpen = drawer.classList.contains('is-open');
+    drawer.outerHTML = renderCampaignBrief(selected, completedMissions, isOpen ?? drawerOpen);
+  }
 }
 
 export function renderCampaign(selectedId, completedMissions = {}, drawerOpen = true) {
@@ -277,21 +332,8 @@ export function renderCampaign(selectedId, completedMissions = {}, drawerOpen = 
   // 35 Nodes
   const nodesHtml = CAMPAIGN_MISSIONS.map((mission, index) => {
     const pt = CAMPAIGN_COORDINATES[index] || { x: 50, y: 50 };
-    const isDone = Boolean(completedMissions[mission.id]);
-    const isAvail = mission.status === 'available';
-    const isUnlock = isCampaignMissionUnlocked(mission.id, completedMissions);
-    const nodeStatus = isDone ? 'completed' : !isAvail ? 'planned' : isUnlock ? 'available' : 'locked';
+    const { nodeStatus, badgeContent } = getMissionNodeView(mission, completedMissions);
     const isSelected = selected.id === mission.id;
-    const nodeNum = String(mission.number).padStart(2, '0');
-
-    let badgeContent = '';
-    if (nodeStatus === 'completed') {
-      badgeContent = `<span class="node-num">${nodeNum}</span><span class="node-stars" aria-label="3 stars">★★★</span>`;
-    } else if (nodeStatus === 'available') {
-      badgeContent = `<span class="node-num">${nodeNum}</span>`;
-    } else {
-      badgeContent = `<span class="node-num">${nodeNum}</span><span class="node-lock" aria-label="Locked">🔒</span>`;
-    }
 
     return `
       <button

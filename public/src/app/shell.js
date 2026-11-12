@@ -6,7 +6,7 @@ import { sound } from '../game/sound.js';
 const NAV_LINKS = Object.freeze([
   { id: 'campaign', label: 'Campaign', href: PAGE_PATHS.campaign },
   { id: 'survival', label: 'Survival', href: PAGE_PATHS.survival },
-  { id: 'contract', label: 'Contracts', href: PAGE_PATHS.contract },
+  { id: 'contracts', label: 'Contracts', href: PAGE_PATHS.contracts },
   { id: 'hangar', label: 'Hangar', href: PAGE_PATHS.hangar },
   { id: 'codex', label: 'Codex', href: PAGE_PATHS.codex },
   { id: 'how-to-play', label: 'How to Play', href: PAGE_PATHS.howToPlay },
@@ -24,7 +24,7 @@ export function renderPageShell({
 }) {
   const isHome = activePage === 'home';
   const showBackButton = showBack && !isHome && backHref;
-  const showTitle = !isHome && activePage !== 'campaign';
+  const showTitle = !isHome && activePage !== 'campaign' && activePage !== 'survival' && activePage !== 'contract';
 
   const leftButtonHtml = showBackButton
     ? `
@@ -141,18 +141,30 @@ export function attachSettingsModal(root, onSettingsChange = null) {
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'settings-modal';
-    modal.className = 'fixed inset-0 z-30 flex items-center justify-center bg-[#06090F]/95 hidden p-4';
+    modal.className = 'settings-modal-backdrop hidden';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'settings-modal-title');
     document.body.appendChild(modal);
   }
 
   function renderModal() {
     modal.innerHTML = `
-      <div class="w-[min(760px,94vw)] max-h-[85vh] overflow-y-auto bg-[#131e24] border border-[#3b4948] p-6 text-slate-100">
-        <div class="flex items-center justify-between border-b border-[#34403e] pb-4 mb-2">
-          <h2 class="text-xl font-bold tracking-tight">Settings</h2>
+      <div class="settings-modal-panel">
+        <span class="board-rivet top-left" aria-hidden="true"></span>
+        <span class="board-rivet top-right" aria-hidden="true"></span>
+        <span class="board-rivet bottom-left" aria-hidden="true"></span>
+        <span class="board-rivet bottom-right" aria-hidden="true"></span>
+        <div class="settings-modal-header">
+          <div>
+            <small class="settings-modal-kicker">/// SYSTEM PREFERENCES</small>
+            <h2 id="settings-modal-title" class="settings-modal-title">Settings</h2>
+          </div>
           <button type="button" class="menu-secondary" data-action="close-settings">Close [ESC]</button>
         </div>
-        ${renderSettings(prefs, CAMERA_LABELS)}
+        <div class="settings-modal-body">
+          ${renderSettings(prefs, CAMERA_LABELS)}
+        </div>
       </div>
     `;
   }

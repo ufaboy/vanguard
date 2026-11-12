@@ -1,7 +1,8 @@
 import { renderComponentCondition } from './component-condition-ui.js';
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
 import { MENU_PAGES, renderMenu } from './menu.js';
-import { PAGE_PATHS } from './app/routes.js';
+import { syncCampaignMapState } from './views/campaign.js';
+import { CONTRACT_PAGE_PATHS, PAGE_PATHS } from './app/routes.js';
 import { attachSettingsModal } from './app/shell.js';
 import {
   CAMERA_LABELS,
@@ -38,7 +39,6 @@ import {
 import { CODEX_ITEMS } from './game/codex.js';
 import { renderCodex } from './views/codex.js';
 import { renderCampaignBrief } from './views/campaign.js';
-import { renderContractBrief } from './views/contracts.js';
 import {
   renderPowerUpBadgeSvg,
 } from './game/icons.js';
@@ -64,7 +64,7 @@ const state = {
   menuPage: 'home',
   selectedCampaignMission: CAMPAIGN_MISSIONS[0].id,
   campaignDrawerOpen: true,
-  selectedContract: CONTRACTS_CATALOG[0]?.id || 'contract-last-cargo',
+  selectedContract: '',
   selectedSector: 0,
   cameraPreset: 'ISOMETRIC',
   soundEnabled: true,
@@ -440,6 +440,7 @@ function initApp() {
     engine?.setFpsCap(prefs.fpsCap);
     renderUI(true);
   });
+  window.addEventListener('popstate', () => applyRoute(parseRoute()));
   applyRoute(parseRoute());
   renderUI(true);
 }
@@ -468,7 +469,8 @@ function applyRoute(route) {
     routePendingEngine = true;
     engineReady.then(() => {
       routePendingEngine = false;
-      applyRoute(parseRoute());
+      window.addEventListener('popstate', () => applyRoute(parseRoute()));
+  applyRoute(parseRoute());
     });
     return;
   }
@@ -505,6 +507,15 @@ function applyRoute(route) {
     state.showUpgradeDrawer = false;
     engine?.setHangarOpen(false);
   }
+  if (CONTRACT_PAGE_PATHS[route.page]) {
+    const index = SECTORS.findIndex(
+      (sector) => sector.mapId === route.page || sector.contractId === route.page
+    );
+    if (index >= 0) {
+      startSector(index);
+      return;
+    }
+  }
   const normalizedPage = route.page === 'contract' ? 'contracts' : route.page;
   const targetPage = MENU_PAGES.includes(normalizedPage) ? normalizedPage : 'home';
   const pageChanged = state.menuPage !== targetPage;
@@ -520,13 +531,16 @@ function applyRoute(route) {
         return;
       }
     }
-  } else if (state.menuPage === 'contracts' && CONTRACTS_CATALOG.some((c) => c.id === route.param)) {
-    if (state.selectedContract !== route.param) {
-      state.selectedContract = route.param;
+  } else if (state.menuPage === 'contracts') {
+    const nextContract = CONTRACTS_CATALOG.some((c) => c.id === route.param) ? route.param : '';
+    if (state.selectedContract !== nextContract) {
+      state.selectedContract = nextContract;
       if (!pageChanged) {
-        renderContractBrief(route.param, state.hud?.playerSave?.completedMissions);
-        document.querySelectorAll('.contract-card').forEach((card) => {
-          card.classList.toggle('is-active', card.dataset.contract === route.param);
+        document.querySelectorAll('.contract-banner[data-contract-card]').forEach((card) => {
+          const isSelected = card.dataset.contractCard === nextContract;
+          card.classList.toggle('is-selected', isSelected);
+          const selectBtn = card.querySelector('[data-action="select-contract"]');
+          if (selectBtn) selectBtn.setAttribute('aria-pressed', String(isSelected));
         });
         return;
       }
@@ -696,29 +710,14 @@ function setupDelegatedEvents(root) {
         if (!contract) break;
         state.selectedContract = contractId;
 
-        // Targeted update of contract cards:
-        document.querySelectorAll('[data-action="select-contract"]').forEach((card) => {
-          const isSelected = card.dataset.contract === contractId;
-          const isSabotage = card.querySelector('.border-purple-500') || card.classList.contains('border-purple-400');
-          card.classList.toggle('border-sky-400', isSelected && !isSabotage);
-          card.classList.toggle('bg-sky-950/35', isSelected && !isSabotage);
-          card.classList.toggle('ring-1', isSelected);
-          card.classList.toggle('ring-sky-400/60', isSelected && !isSabotage);
-          card.classList.toggle('border-purple-400', isSelected && isSabotage);
-          card.classList.toggle('bg-purple-950/35', isSelected && isSabotage);
-          card.classList.toggle('ring-purple-400/60', isSelected && isSabotage);
-          card.classList.toggle('border-slate-700/80', !isSelected);
-          card.classList.toggle('bg-slate-900/60', !isSelected);
+        document.querySelectorAll('.contract-banner[data-contract-card]').forEach((card) => {
+          const isSelected = card.dataset.contractCard === contractId;
+          card.classList.toggle('is-selected', isSelected);
+          const selectBtn = card.querySelector('[data-action="select-contract"]');
+          if (selectBtn) selectBtn.setAttribute('aria-pressed', String(isSelected));
         });
 
-        // Targeted update of brief panel:
-        const briefAside = document.querySelector('.campaign-brief');
-        if (briefAside) {
-          briefAside.outerHTML = renderContractBrief(contract, state.hud?.playerSave?.completedMissions || {});
-        } else {
-          renderUI(true);
-        }
-        syncRoute({ page: 'contract', param: contractId });
+        syncRoute({ page: 'contract', param: contractId }, { push: true });
         break;
       }
       case 'start-contract': {
@@ -744,6 +743,10 @@ function setupDelegatedEvents(root) {
         renderUI(false);
         break;
       case 'return-contracts':
+        if (CONTRACT_PAGE_PATHS[document.body?.dataset?.page]) {
+          location.href = PAGE_PATHS.contracts;
+          break;
+        }
         state.menuPage = 'contracts';
         engine?.abortMissionToHangar();
         renderUI(true);
@@ -1841,6 +1844,8 @@ function renderUI(forceModals = false) {
     if (statusModal.dataset.page !== state.menuPage) {
       setHtml(statusModal, renderMenu(state, CAMERA_LABELS));
       statusModal.dataset.page = state.menuPage;
+    } else if (state.menuPage === 'campaign') {
+      syncCampaignMapState(state.hud?.playerSave?.completedMissions || {}, state.selectedCampaignMission);
     }
     return;
   }

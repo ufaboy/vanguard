@@ -6,7 +6,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { renderPageShell } from '../public/src/app/shell.js';
 import { CAMPAIGN_MISSIONS } from '../public/src/game/campaign.js';
-import { CONTRACTS_CATALOG } from '../public/src/sim/index.js';
 import { renderAbout } from '../public/src/views/about.js';
 import { renderCampaign } from '../public/src/views/campaign.js';
 import { renderContact } from '../public/src/views/contact.js';
@@ -152,17 +151,45 @@ const PAGES = [
       ),
   },
   {
-    file: 'public/contract.html',
+    file: 'public/contracts.html',
     render: () =>
       wrapGameShell(
         'contracts',
         renderPageShell({
-          activePage: 'contract',
+          activePage: 'contracts',
           title: 'Tactical contracts',
           subtitle: 'High-Stakes Extraction & Sabotage',
           showBack: true,
           className: 'campaign-content',
-          bodyHtml: renderContracts(CONTRACTS_CATALOG[0]?.id || 'contract-last-cargo', []),
+          bodyHtml: renderContracts('', []),
+        })
+      ),
+  },
+  {
+    file: 'public/contract-last-cargo.html',
+    render: () =>
+      wrapGameShell(
+        'contract-last-cargo',
+        renderPageShell({
+          activePage: 'contracts',
+          title: 'Last Cargo',
+          subtitle: 'Deploying Tactical Contract…',
+          showBack: true,
+          bodyHtml: '<p class="menu-lead">Deploying Last Cargo contract mission…</p>',
+        })
+      ),
+  },
+  {
+    file: 'public/contract-blackout-protocol.html',
+    render: () =>
+      wrapGameShell(
+        'contract-blackout-protocol',
+        renderPageShell({
+          activePage: 'contracts',
+          title: 'Blackout Protocol',
+          subtitle: 'Deploying Tactical Contract…',
+          showBack: true,
+          bodyHtml: '<p class="menu-lead">Deploying Blackout Protocol contract mission…</p>',
         })
       ),
   },
