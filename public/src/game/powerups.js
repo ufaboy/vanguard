@@ -6,6 +6,7 @@ export const POWERUP = Object.freeze({
   BASE_RESTORE: 'base_restore',
   APS: 'aps',
   MISSILE: 'missile',
+  AMMO: 'ammo',
 });
 
 export const POWERUP_MAX_ON_MAP = 16;
@@ -16,6 +17,7 @@ export const POWERUP_EFFECT = Object.freeze({
   BASE_RESTORE: 'baseRestore',
   APS: 'aps',
   MISSILE: 'missile',
+  AMMO: 'ammo',
 });
 
 /** Master catalog of all field Power-Ups with their characteristics and descriptions. */
@@ -104,6 +106,23 @@ export const POWERUP_TYPES = Object.freeze({
       'Adds +1 homing ATGM anti-tank missile to the standalone Turret ATGM Launcher module (30 damage, 80% armor penetration, max 5).',
     specs: Object.freeze([
       Object.freeze({ label: 'CRATE CODE', value: 'MISSILE' }),
+      Object.freeze({ label: 'EFFECT DURATION', value: 'Instant / Permanent' }),
+      Object.freeze({ label: 'FIELD LIFETIME', value: 'Until collected' }),
+    ]),
+  }),
+  [POWERUP.AMMO]: Object.freeze({
+    id: POWERUP.AMMO,
+    code: 'AMMO',
+    name: 'Cannon Shells (+6)',
+    role: 'Ammunition Crate',
+    duration: 0,
+    effect: POWERUP_EFFECT.AMMO,
+    colorHex: 0xf59e0b,
+    accentHex: '#f59e0b',
+    description:
+      'Replenishes +6 cannon rounds for the main gun (capped by Frame tier capacity 15..50).',
+    specs: Object.freeze([
+      Object.freeze({ label: 'CRATE CODE', value: 'AMMO' }),
       Object.freeze({ label: 'EFFECT DURATION', value: 'Instant / Permanent' }),
       Object.freeze({ label: 'FIELD LIFETIME', value: 'Until collected' }),
     ]),

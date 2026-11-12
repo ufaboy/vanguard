@@ -27,8 +27,10 @@ import {
   BULLET_POWER,
   computeEffectiveDamage,
   computeTankStats,
+  CANNON_AMMO,
   getMaxApsAmmo,
   getMaxMissileAmmo,
+  getMaxCannonAmmo,
   DEFENSE_TURRET_CONFIGS,
   DEFENSE_TURRET_TYPES,
   DURABILITY,
@@ -295,6 +297,8 @@ export class TankGameEngine {
     this.apsRearmTimer = 0;
     this.missileAmmo = Number.isInteger(this.playerSave.missileAmmo)
       ? Math.max(0, Math.min(MISSILE.MAX_AMMO, this.playerSave.missileAmmo)) : 2;
+    this.cannonAmmo = this.playerSave.cannonAmmo;
+    this.cannonBaseRearmTimer = 0;
     this.missileCooldown = 0;
     this.repairKitCount = 1;
     this.empTimer = 0;
@@ -542,6 +546,7 @@ export class TankGameEngine {
             : this.campaignSaveRepo?.loadPlayerSave().credits ?? this.playerSave.credits;
         this.playerSave.apsAmmo = [...this.apsAmmo];
         this.playerSave.missileAmmo = this.missileAmmo;
+        this.playerSave.cannonAmmo = this.cannonAmmo;
         this.playerSave.repairKitCharges = 0;
         this.playerSave.componentDamage = { ...this.componentDamage };
         this.playerSave.componentDamageCooldown = 0;
@@ -747,6 +752,10 @@ export class TankGameEngine {
     }
 
     this.syncPlayerVisuals(0, this.clock ? this.clock.getElapsed() : 0);
+  }
+
+  getPlayerMaxCannonAmmo() {
+    return getMaxCannonAmmo(this.upgrades?.frame || 1);
   }
 
   getPlayerMaxApsAmmo() {
@@ -1992,6 +2001,7 @@ export class TankGameEngine {
     if (isIsolatedSector) {
       this.initApsLaunchers(APS.START_ROUNDS);
       this.missileAmmo = 2;
+      this.cannonAmmo = CANNON_AMMO.START_ROUNDS;
     } else if (Array.isArray(this.playerSave?.apsAmmo)) {
       this.apsAmmo = [...this.playerSave.apsAmmo];
       const total = this.apsAmmo.reduce((a, b) => a + b, 0);
@@ -3141,6 +3151,27 @@ export class TankGameEngine {
     return { success: true, reason: `Upgraded to Tier ${nextTier}` };
   }
 
+  buyCannonAmmoInHangar() {
+    if (!this.isHangarOpen) return { success: false, reason: 'Open the hangar to purchase ammunition.' };
+    const maxAmmo = this.getPlayerMaxCannonAmmo();
+    if (this.cannonAmmo >= maxAmmo) {
+      return { success: false, reason: `Ammunition magazine is full (${maxAmmo} shells).` };
+    }
+    const cost = CANNON_AMMO.CREDIT_PRICE_PER_PACK;
+    if ((this.playerSave.credits || 0) < cost) {
+      return { success: false, reason: `Insufficient Credits (Need ${cost}).` };
+    }
+    this.playerSave.credits -= cost;
+    this.cannonAmmo = Math.min(maxAmmo, this.cannonAmmo + CANNON_AMMO.SHELLS_PER_PACK);
+    this.syncCampaignCredits();
+    this.playerSave.cannonAmmo = this.cannonAmmo;
+    this.saveRepo.savePlayerSave(this.playerSave);
+    sound.playPowerUp();
+    this.setStatusBanner(`+${CANNON_AMMO.SHELLS_PER_PACK} SHELLS PURCHASED! (${this.cannonAmmo}/${maxAmmo}) (-${cost})`, 2.5);
+    this.emitHudUpdate();
+    return { success: true, reason: `+${CANNON_AMMO.SHELLS_PER_PACK} shells purchased (${this.cannonAmmo}/${maxAmmo}).` };
+  }
+
   buyMissileInHangar() {
     if (!this.isHangarOpen) return { success: false, reason: 'Open the hangar to purchase missiles.' };
     const maxMissiles = this.getPlayerMaxMissileAmmo();
@@ -4146,10 +4177,25 @@ export class TankGameEngine {
         }
       }
 
+      const maxCannon = this.getPlayerMaxCannonAmmo();
+      if (this.cannonAmmo < maxCannon) {
+        this.cannonBaseRearmTimer += dt;
+        if (this.cannonBaseRearmTimer >= CANNON_AMMO.BASE_REARM_INTERVAL_SEC) {
+          this.cannonBaseRearmTimer = 0;
+          this.cannonAmmo = Math.min(maxCannon, this.cannonAmmo + 1);
+          this.playerSave.cannonAmmo = this.cannonAmmo;
+          this.spawnSparks(this.playerX, 0.7, this.playerZ, 0xf59e0b, 2);
+          repairedAny = true;
+          this.emitHudUpdate();
+        }
+      } else {
+        this.cannonBaseRearmTimer = 0;
+      }
+
       if (repairedAny) {
         if (!wasInZone && !this.statusMessage) {
           this.setStatusBanner(
-            'ALLIED BASE REPAIR BAY ACTIVE — RESTORING HULL & SUBSYSTEM INTEGRITY',
+            'ALLIED BASE REPAIR & REARM BAY ACTIVE',
             2.2
           );
         }
@@ -4295,6 +4341,13 @@ export class TankGameEngine {
 
   tryPlayerFire() {
     if (this.playerFireCooldown > 0) return;
+    if (this.cannonAmmo <= 0) {
+      sound.playDryFire();
+      this.setStatusBanner('OUT OF AMMO! REARM AT BASE OR FIND AMMO CRATES', 2.0);
+      return;
+    }
+    this.cannonAmmo--;
+    this.playerSave.cannonAmmo = this.cannonAmmo;
 
     this.playerFlashTimer = 0.06;
     this.shotsFired++;
@@ -8938,6 +8991,15 @@ export class TankGameEngine {
         );
         break;
 
+      case POWERUP.AMMO: {
+        const maxShells = this.getPlayerMaxCannonAmmo();
+        this.cannonAmmo = Math.min(maxShells, this.cannonAmmo + CANNON_AMMO.PICKUP_AMMO);
+        this.playerSave.cannonAmmo = this.cannonAmmo;
+        this.saveRepo.savePlayerSave(this.playerSave);
+        this.setStatusBanner(`AMMO CRATE COLLECTED: +${CANNON_AMMO.PICKUP_AMMO} SHELLS (${this.cannonAmmo}/${maxShells})`, 2.5);
+        break;
+      }
+
       case POWERUP.MISSILE: {
         const maxMissiles = this.getPlayerMaxMissileAmmo();
         this.missileAmmo = Math.min(
@@ -9382,6 +9444,8 @@ export class TankGameEngine {
       apsMaxAmmo: this.getPlayerMaxApsAmmo(),
       missileAmmo: this.missileAmmo,
       missileMaxAmmo: this.getPlayerMaxMissileAmmo(),
+      cannonAmmo: this.cannonAmmo,
+      cannonMaxAmmo: this.getPlayerMaxCannonAmmo(),
       missileCooldown: this.missileCooldown,
       repairKitCount: this.repairKitCount,
       empTimer: this.empTimer,

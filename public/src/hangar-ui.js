@@ -1,6 +1,6 @@
 import { effectiveUpgradeTiers, componentRepairCost } from './sim/component-damage.js';
 import { PLAYER_UPGRADES } from './game/components/index.js';
-import { computeTankStats, APS, MISSILE, getMaxApsAmmo, getMaxMissileAmmo } from './game/constants.js';
+import { computeTankStats, APS, MISSILE, CANNON_AMMO, getMaxApsAmmo, getMaxMissileAmmo, getMaxCannonAmmo } from './game/constants.js';
 import { renderTrackBadgeSvg } from './game/icons.js';
 import { PLAYER_TANK_CONFIG } from './game/tanks.js';
 
@@ -35,7 +35,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
   const apsMax = hud.apsMaxAmmo ?? getMaxApsAmmo(purchasedFrame);
   const missileTotal = hud.missileAmmo || 0;
   const missileMax = hud.missileMaxAmmo ?? getMaxMissileAmmo(purchasedFrame);
-  const supplyCard = (kind, label, count, max, price, action) => {
+  const supplyCard = (kind, label, count, max, price, action, amountLabel = '+1') => {
     const full = count >= max;
     const affordable = credits >= price;
     const icon = kind === 'aps'
@@ -46,7 +46,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       <div class="hangar-supply-heading"><span class="hangar-supply-icon">${glyph}</span><div><h3>${label}</h3><strong>${count}<small> / ${max}</small></strong></div></div>
       <div class="hangar-supply-slots" role="img" aria-label="${count} of ${max} ${label} loaded">${Array.from({ length: max }, (_, i) => `<span class="${i < count ? 'is-loaded' : i === count && !full ? 'is-next' : ''}" aria-hidden="true">${i < count ? glyph : i === count && !full ? '+' : ''}</span>`).join('')}</div>
       <button class="hangar-supply-buy" data-action="${action}" ${full || !affordable ? 'disabled' : ''} aria-label="${full ? `${label} full` : `Buy one ${label} for ${price} credits${affordable ? '' : ', not enough credits'}`}">
-        <span class="hangar-supply-add">${full ? '✓' : '+1'}${full ? '' : glyph}</span><span class="hangar-supply-price">${full ? 'FULL' : `<span aria-hidden="true" class="hangar-credit-coin">$</span> ${money(price)}`}</span>
+        <span class="hangar-supply-add">${full ? '✓' : amountLabel}${full ? '' : glyph}</span><span class="hangar-supply-price">${full ? 'FULL' : `<span aria-hidden="true" class="hangar-credit-coin">$</span> ${money(price)}`}</span>
       </button><small class="hangar-supply-hint">${full ? 'Ready!' : !affordable ? `Need $ ${money(price - credits)} more` : 'Add one'}</small>
     </article>`;
   };
@@ -59,10 +59,12 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
   after.apsMaxAmmo = getMaxApsAmmo(Math.min(5, purchasedFrame + 1));
   before.missileMaxAmmo = getMaxMissileAmmo(purchasedFrame);
   after.missileMaxAmmo = getMaxMissileAmmo(Math.min(5, purchasedFrame + 1));
+  before.cannonMaxAmmo = getMaxCannonAmmo(purchasedFrame);
+  after.cannonMaxAmmo = getMaxCannonAmmo(Math.min(5, purchasedFrame + 1));
   const metrics = {
     cannon: [['Damage', 'damage', '', false], ['Penetration', 'penetration', '%', false], ['Reload', 'fireCooldown', ' s', true]],
     chassis: [['Travel speed', 'moveSpeed', ' cells/s', false], ['Total mass', 'totalMass', ' t', true]],
-    frame: [['Durability', 'maxHP', ' HP', false], ['APS capacity', 'apsMaxAmmo', '', false], ['Missile capacity', 'missileMaxAmmo', '', false], ['Total mass', 'totalMass', ' t', true], ['Travel speed', 'moveSpeed', ' cells/s', false]],
+    frame: [['Durability', 'maxHP', ' HP', false], ['APS capacity', 'apsMaxAmmo', '', false], ['Missile capacity', 'missileMaxAmmo', '', false], ['Shells capacity', 'cannonMaxAmmo', '', false], ['Total mass', 'totalMass', ' t', true], ['Travel speed', 'moveSpeed', ' cells/s', false]],
     engine: [['Travel speed', 'moveSpeed', ' cells/s', false], ['Total mass', 'totalMass', ' t', true]],
     armor: [['Damage reduction', 'armor', '%', false], ['Durability', 'maxHP', ' HP', false], ['Total mass', 'totalMass', ' t', true]],
   }[track.key];
@@ -90,7 +92,8 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       <span class="hangar-bay-stamp">BAY 04 <i></i> VEHICLE SECURED</span>
     </section>
     <aside class="hangar-upgrade-panel" aria-label="Upgrades and ammunition">
-        <section class="hangar-supplies" aria-label="Buy ammunition"><h2>Stock up</h2><div class="hangar-supply-grid">
+        <section class="hangar-supplies" aria-label="Buy ammunition"><h2>Stock up</h2><div class="hangar-supply-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+          ${supplyCard('cannon', 'Shells', hud.cannonAmmo ?? 15, hud.cannonMaxAmmo ?? getMaxCannonAmmo(purchasedFrame), CANNON_AMMO.CREDIT_PRICE_PER_PACK, 'buy-cannon-ammo', '+5')}
           ${supplyCard('aps', 'APS', apsTotal, apsMax, apsPrice, 'buy-aps-charge')}
           ${supplyCard('missile', 'Missile', missileTotal, missileMax, MISSILE.CREDIT_PRICE, 'buy-missile')}
         </div></section>
@@ -118,6 +121,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       <div><span>COMBAT MASS</span><strong>${number(before.totalMass)} <small>t</small></strong></div>
       <div class="hangar-equipment">
         <span>SUPPORT EQUIPMENT</span>
+        <strong>SHELLS <small>${hud.cannonAmmo ?? 15}/${hud.cannonMaxAmmo ?? getMaxCannonAmmo(purchasedFrame)}</small></strong>
         <strong>APS <small>${apsTotal}/${apsMax} charges</small></strong>
         <p>ATGM · ${missileTotal}/${missileMax} missiles</p>
 

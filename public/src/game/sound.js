@@ -234,6 +234,11 @@ class SoundManager {
     source.start(ctx.currentTime);
   }
 
+  playDryFire() {
+    if (this.shouldThrottle('dry_fire', 0.15)) return;
+    this.playBuffer('armor_hit', { volume: 0.35, pitchVariation: 0.15 });
+  }
+
   playCannonShot(isHeavy = false, caliber = 1, pos = null) {
     if (this.shouldThrottle('cannon', 0.04)) return;
     const heavy = isHeavy || caliber >= 4;

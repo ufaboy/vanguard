@@ -92,6 +92,15 @@ export const APS = Object.freeze({
   LAUNCHER_OFFSET: 0.34, // Hull offset distance in world units for launcher pod mounting
 });
 
+export const CANNON_AMMO = Object.freeze({
+  START_ROUNDS: 15, // Default shells available upon fresh start
+  MAX_AMMO_BY_FRAME: Object.freeze([15, 22, 30, 40, 50]), // Max cannon shell capacity per Frame tier 1..5
+  PICKUP_AMMO: 6, // Shells replenished upon collecting an AMMO power-up from a BOX cache
+  CREDIT_PRICE_PER_PACK: 150, // Credit cost in Hangar per ammunition pack
+  SHELLS_PER_PACK: 5, // Shells added per Hangar pack purchase
+  BASE_REARM_INTERVAL_SEC: 1.25, // Auto-rearm interval in seconds while parked in the Command Base repair zone
+});
+
 export const ENEMY_KILL_CREDITS = Object.freeze({
   [EnemyClass.SCOUT]: 50, // Fast reconnaissance unit bounty
   [EnemyClass.KAMIKAZE]: 50, // Explosive suicide rammer bounty
@@ -302,6 +311,12 @@ export function getMaxApsAmmo(frameTier = 1) {
 export function getMaxMissileAmmo(frameTier = 1) {
   const idx = Math.max(0, Math.min(MISSILE.MAX_AMMO_BY_FRAME.length - 1, Math.floor(frameTier || 1) - 1));
   return MISSILE.MAX_AMMO_BY_FRAME[idx];
+}
+
+/** Maximum player cannon shell capacity for the given purchased Frame tier (1..5). */
+export function getMaxCannonAmmo(frameTier = 1) {
+  const idx = Math.max(0, Math.min(CANNON_AMMO.MAX_AMMO_BY_FRAME.length - 1, Math.floor(frameTier || 1) - 1));
+  return CANNON_AMMO.MAX_AMMO_BY_FRAME[idx];
 }
 
 export const FLAME_STREAM = Object.freeze({

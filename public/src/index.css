@@ -653,6 +653,7 @@ html, body {
 .hangar-supply-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .hangar-supply-card{--supply-color:#7dd3fc;background:#101d24;border:1px solid #425968;border-radius:12px;padding:10px;min-width:0}
 .hangar-supply-card.supply-missile{--supply-color:#fbbf75;background:#251f19;border-color:#6b5540}
+.hangar-supply-card.supply-cannon{--supply-color:#38bdf8;background:#10222e;border-color:#3b6982}
 .hangar-supply-heading{display:flex;align-items:center;gap:8px}
 .hangar-supply-icon{color:var(--supply-color);display:flex;flex-shrink:0}
 .hangar-supply-icon svg{width:38px;height:38px}
