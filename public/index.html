@@ -55,30 +55,276 @@
   </head>
   <body data-page="home" class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 scrollable-page">
     <div id="root"><!-- prerender:start -->
-<main class="menu-page command-home">
-    <header class="command-header">
-      <a class="command-brand" href="/" aria-label="Battle Tank home"><span class="command-insignia" aria-hidden="true">BT</span><span>BATTLE TANK<small>TACTICAL TANK ASSAULT</small></span></a>
-      <nav aria-label="Main navigation"><a href="/hangar">Hangar</a><a href="/codex">Codex</a><a href="/how-to-play">How to Play</a><a href="/about">About</a><button type="button" data-action="open-settings">Settings</button></nav>
-    </header>
-    <section class="command-hero" aria-labelledby="command-title">
-      <img class="command-art" src="./images/home-battle.webp" alt="Player tank advancing through a rubble-strewn city street" fetchpriority="high" width="1600" height="1100">
-      <div class="command-atmosphere" aria-hidden="true"></div>
-      <div class="command-copy"><p class="command-eyebrow"><span></span> ARMORED WARFARE / YOUR COMMAND</p>
-        <h1 id="command-title" tabindex="-1">BATTLE<br><span>TANK</span></h1>
-        <p class="command-tagline">Steel yourself.<br> Break the line.</p>
-        <p class="command-description">Take command of your tank. Tear through enemy defenses, survive the counterattack, and build a machine that hits harder.</p>
-        <div class="command-actions"><a class="command-deploy" href="/campaign"><span><small>CHOOSE YOUR OPERATION</small>Play Campaign</span><span aria-hidden="true">→</span></a><a class="command-hangar" href="/hangar">Hangar &amp; Workshop <span aria-hidden="true">↗</span></a></div>
+<main class="menu-page">
+      <header class="armored-header">
+        <div class="armored-header-primary">
+          <div class="armored-header-left">
+            
+      <a class="armored-brand-btn" href="/" aria-label="Battle Tank Home">
+        <span class="btn-rivet top-left" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+        <span class="brand-insignia" aria-hidden="true">BT</span>
+        <span class="brand-text">BATTLE TANK</span>
+        <span class="btn-rivet top-right" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+      </a>
+    
+          </div>
+
+          <nav class="armored-nav" aria-label="Primary navigation">
+            <div class="armored-nav-track">
+              
+      <a class="armored-tab"  href="/campaign">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">CAMPAIGN</span>
+      </a>
+    
+      <a class="armored-tab"  href="/survival">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">SURVIVAL</span>
+      </a>
+    
+      <a class="armored-tab"  href="/contract">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">CONTRACTS</span>
+      </a>
+    
+      <a class="armored-tab"  href="/hangar">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">HANGAR</span>
+      </a>
+    
+      <a class="armored-tab"  href="/codex">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">CODEX</span>
+      </a>
+    
+      <a class="armored-tab"  href="/how-to-play">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">HOW TO PLAY</span>
+      </a>
+    
+      <a class="armored-tab"  href="/about">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">ABOUT</span>
+      </a>
+    
+            </div>
+          </nav>
+
+          <div class="armored-header-right">
+            <button type="button" class="armored-settings-btn" data-action="open-settings" aria-label="Settings">
+              <span class="btn-rivet top-left" aria-hidden="true"></span>
+              <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+              <span class="settings-gear" aria-hidden="true">⚙</span>
+              <span class="btn-rivet top-right" aria-hidden="true"></span>
+              <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="menu-content command-home-content">
+        <h1 class="sr-only" tabindex="-1">Command Center</h1>
+        
+    <div class="command-home-view">
+      <section class="armored-hero-board" aria-labelledby="command-title">
+        <span class="board-rivet top-left" aria-hidden="true"></span>
+        <span class="board-rivet top-right" aria-hidden="true"></span>
+        <span class="board-rivet bottom-left" aria-hidden="true"></span>
+        <span class="board-rivet bottom-right" aria-hidden="true"></span>
+
+        <div class="board-top-accent" aria-hidden="true">
+          <span class="accent-line"></span>
+          <span class="accent-notch">/// SECTOR OPS TERMINAL ///</span>
+          <span class="accent-line"></span>
+        </div>
+
+        <img class="armored-hero-art" src="./images/home-hero.jpg" alt="Player tank advancing with three colossal Sector Bosses in the background" fetchpriority="high" width="1920" height="1080">
+        
+        <div class="armored-hero-atmosphere" aria-hidden="true"></div>
+        <div class="armored-hero-vignette" aria-hidden="true"></div>
+
+        <div class="hero-command-flank">
+          <div class="tactical-kicker">
+            <span class="kicker-beacon" aria-hidden="true"></span>
+            <span>ARMORED WARFARE // STRATEGIC COMMAND</span>
+          </div>
+
+          <h2 id="command-title" class="hero-tactical-title" tabindex="-1">
+            IRON<br><span class="highlight-gold">VANGUARD</span>
+          </h2>
+
+          <p class="hero-tactical-tagline">Steel yourself. Break the siege. Eliminate the Colossi.</p>
+
+          <p class="hero-tactical-desc">
+            Take command of the prototype Main Battle Tank across 36×36 destructible combat sectors.
+            Upgrade modular chassis, high-velocity cannons, and active defense systems to face the three rogue Sector Dreadnoughts.
+          </p>
+
+          <div class="hero-tactical-actions">
+            <a class="armored-action-btn primary" href="/campaign">
+              <span class="btn-chamfer" aria-hidden="true"></span>
+              <span class="btn-body">
+                <small>PRIMARY CAMPAIGN</small>
+                <strong>DEPLOY TO THE FRONT <span class="action-arrow" aria-hidden="true">»</span></strong>
+              </span>
+            </a>
+
+            <a class="armored-action-btn secondary" href="/hangar">
+              <span class="btn-body">
+                <small>WORKSHOP &amp; UPGRADES</small>
+                <strong>HANGAR DOCK <span class="action-arrow" aria-hidden="true">↗</span></strong>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <aside class="hero-threat-intel" aria-label="Sector Threat Recon">
+          <div class="intel-header">
+            <span class="intel-badge">WARNING</span>
+            <span class="intel-title">PRIORITY THREAT INTEL</span>
+          </div>
+          
+          <div class="intel-threat-list">
+            <div class="threat-item boss-titan">
+              <div class="threat-indicator rail"></div>
+              <div class="threat-info">
+                <div class="threat-meta"><span class="threat-role">SECTOR 03 BOSS</span><span class="threat-hp">200 HP</span></div>
+                <strong class="threat-name">BOSS TITAN</strong>
+                <p class="threat-specs">Rail Fortress · Aegis Citadel · ECM Jammer</p>
+              </div>
+            </div>
+
+            <div class="threat-item boss-hydra">
+              <div class="threat-indicator mlrs"></div>
+              <div class="threat-info">
+                <div class="threat-meta"><span class="threat-role">SECTOR 02 BOSS</span><span class="threat-hp">132 HP</span></div>
+                <strong class="threat-name">BOSS HYDRA</strong>
+                <p class="threat-specs">Amphibious Cruiser · Standoff MLRS Salvos</p>
+              </div>
+            </div>
+
+            <div class="threat-item boss-mammoth">
+              <div class="threat-indicator siege"></div>
+              <div class="threat-info">
+                <div class="threat-meta"><span class="threat-role">SECTOR 01 BOSS</span><span class="threat-hp">136 HP</span></div>
+                <strong class="threat-name">BOSS MAMMOTH</strong>
+                <p class="threat-specs">Siege Dreadnought · Twin Cannons · ATGM Pods</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="intel-footer">
+            <span class="intel-beacon" aria-hidden="true"></span>
+            <span>STATUS: ACTIVE HOSTILITY // INTERCEPT REQUIRED</span>
+          </div>
+        </aside>
+
+        <div class="hero-vehicle-plate" aria-hidden="true">
+          <div class="plate-marker"></div>
+          <div class="plate-text">
+            <small>UNIT DESIGNATION</small>
+            <strong>VANGUARD MK-I // MAIN BATTLE TANK</strong>
+          </div>
+        </div>
+      </section>
+
+      <nav class="command-modes-deck" aria-label="Operational Modes">
+        <a class="armored-mode-plate" href="/campaign">
+          <span class="plate-rivet tl" aria-hidden="true"></span>
+          <span class="plate-rivet tr" aria-hidden="true"></span>
+          <div class="plate-index">01</div>
+          <div class="plate-content">
+            <small>CAMPAIGN ASSAULT</small>
+            <strong>Road to the Capital</strong>
+            <p>35 Sectors · 7 Tactical Regions · Break the Siege</p>
+          </div>
+          <span class="plate-arrow" aria-hidden="true">»</span>
+        </a>
+
+        <a class="armored-mode-plate" href="/survival">
+          <span class="plate-rivet tl" aria-hidden="true"></span>
+          <span class="plate-rivet tr" aria-hidden="true"></span>
+          <div class="plate-index">02</div>
+          <div class="plate-content">
+            <small>ENDLESS CRUCIBLE</small>
+            <strong>Survival Mode</strong>
+            <p>Withstand continuous waves · Defend Allied HQ</p>
+          </div>
+          <span class="plate-arrow" aria-hidden="true">»</span>
+        </a>
+
+        <a class="armored-mode-plate" href="/contract">
+          <span class="plate-rivet tl" aria-hidden="true"></span>
+          <span class="plate-rivet tr" aria-hidden="true"></span>
+          <div class="plate-index">03</div>
+          <div class="plate-content">
+            <small>HIGH-STAKES RAIDS</small>
+            <strong>Contracts</strong>
+            <p>Sabotage radar arrays · Extract prototype cargo</p>
+          </div>
+          <span class="plate-arrow" aria-hidden="true">»</span>
+        </a>
+
+        <a class="armored-mode-plate" href="/hangar">
+          <span class="plate-rivet tl" aria-hidden="true"></span>
+          <span class="plate-rivet tr" aria-hidden="true"></span>
+          <div class="plate-index">04</div>
+          <div class="plate-content">
+            <small>MODULAR WORKSHOP</small>
+            <strong>Hangar &amp; Upgrades</strong>
+            <p>5 Tracks × 5 Tiers · APS Shielding · Guided ATGMs</p>
+          </div>
+          <span class="plate-arrow" aria-hidden="true">»</span>
+        </a>
+      </nav>
+    </div>
+  
       </div>
-      <div class="command-vehicle-tag" aria-hidden="true"><span>PLAYER / MAIN BATTLE TANK</span><strong>BUILT TO BREAK THROUGH</strong><i></i></div>
-      <div class="command-coordinate" aria-hidden="true">36 × 36 / DESTRUCTIBLE BATTLEFIELDS</div>
-    </section>
-    <section class="command-features" aria-label="Combat essentials">
-      <a href="/campaign"><span class="command-feature-number">01</span><span><small>THE FRONT LINE</small><strong>Campaign</strong><p>Choose a mission. Break the siege.</p></span><b aria-hidden="true">↗</b></a>
-      <a href="/survival"><span class="command-feature-number">02</span><span><small>ENDLESS WAVES</small><strong>Survival</strong><p>Hold the Iron Crucible from Tier I.</p></span><b aria-hidden="true">↗</b></a>
-      <a href="/contract"><span class="command-feature-number">03</span><span><small>HIGH-STAKES RAIDS</small><strong>Contracts</strong><p>Recover cargo or sabotage radar nodes.</p></span><b aria-hidden="true">↗</b></a>
-    </section>
-    <footer class="command-footer"><span>BATTLE TANK <i>/</i> FIELD COMMAND</span><nav class="command-footer-links" aria-label="Footer navigation"><a href="/privacy-policy">Privacy Policy</a><a href="/contact">Contact</a></nav></footer>
-  </main>
+
+      <footer class="armored-footer">
+        <div class="armored-footer-bracket" aria-hidden="true">
+          <span class="btn-rivet" aria-hidden="true"></span>
+          <span class="bracket-notch" aria-hidden="true"></span>
+          <span class="btn-rivet" aria-hidden="true"></span>
+        </div>
+
+        <div class="armored-footer-inner">
+          <div class="footer-left-zone">
+            <span class="footer-bracket-plate left" aria-hidden="true">
+              <span class="btn-rivet" aria-hidden="true"></span>
+              <span class="btn-rivet" aria-hidden="true"></span>
+            </span>
+            <div class="footer-telemetry">
+              <span class="telemetry-beacon" aria-hidden="true"></span>
+              <div class="telemetry-text">
+                <strong class="telemetry-callsign">IRON VANGUARD</strong>
+                <span class="telemetry-sep">//</span>
+                <span class="telemetry-node">SECTOR OPS TERMINAL</span>
+              </div>
+              <span class="telemetry-ver">SYS.VER 1.3.2</span>
+            </div>
+          </div>
+
+          <div class="footer-right-zone">
+            <nav class="footer-links" aria-label="Footer navigation">
+              <a href="/how-to-play">HOW TO PLAY</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="/about">ABOUT</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="/privacy-policy">PRIVACY POLICY</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="/contact">CONTACT</a>
+            </nav>
+            <span class="footer-bracket-plate right" aria-hidden="true">
+              <span class="btn-rivet" aria-hidden="true"></span>
+              <span class="btn-rivet" aria-hidden="true"></span>
+            </span>
+          </div>
+        </div>
+      </footer>
+    </main>
     <!-- prerender:end --></div>
     <noscript>
       <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">

@@ -15,25 +15,25 @@ const CAMPAIGN_COORDINATES = Object.freeze([
   { x: 16.2, y: 56.2 },
   { x: 22.2, y: 58.5 },
   // 11-15: Desert Crossing
-  { x: 10.5, y: 77.0 },
-  { x: 15.8, y: 75.8 },
-  { x: 21.2, y: 79.2 },
-  { x: 27.2, y: 80.5 },
-  { x: 33.2, y: 82.2 },
+  { x: 10.5, y: 72.0 },
+  { x: 16.2, y: 71.0 },
+  { x: 21.8, y: 72.5 },
+  { x: 27.5, y: 73.2 },
+  { x: 33.2, y: 73.0 },
   // 16-20: Coastal Wetlands
-  { x: 41.8, y: 83.5 },
-  { x: 49.8, y: 81.2 },
-  { x: 57.0, y: 82.2 },
-  { x: 64.0, y: 84.2 },
-  { x: 70.5, y: 84.8 },
+  { x: 41.5, y: 72.5 },
+  { x: 49.5, y: 69.5 },
+  { x: 57.5, y: 71.5 },
+  { x: 64.5, y: 72.5 },
+  { x: 71.5, y: 72.8 },
   // 21-25: Frozen Highlands
   { x: 78.2, y: 81.8 },
   { x: 78.2, y: 73.5 },
-  { x: 81.0, y: 66.5 },
+  { x: 75.5, y: 66.5 },
   { x: 85.5, y: 62.5 },
   { x: 83.0, y: 55.0 },
   // 26-30: Industrial Belt
-  { x: 83.5, y: 45.5 },
+  { x: 82.5, y: 49.0 },
   { x: 76.5, y: 49.5 },
   { x: 71.8, y: 49.0 },
   { x: 68.5, y: 43.5 },
@@ -67,7 +67,7 @@ const CAMPAIGN_REGIONS = Object.freeze([
     id: 'desert',
     name: 'Desert Crossing',
     x: 3.5,
-    y: 69.0,
+    y: 64.0,
     color: '#f59e0b',
     iconSvg: '<path d="M12 3v18M8 8v4a4 4 0 008 0V7M5 12h3M16 11h3"/>',
   },
@@ -75,7 +75,7 @@ const CAMPAIGN_REGIONS = Object.freeze([
     id: 'coast',
     name: 'Coastal Wetlands',
     x: 42.0,
-    y: 69.5,
+    y: 63.5,
     color: '#2dd4bf',
     iconSvg: '<path d="M2 20c3-1 6-1 9 0s6 1 9 0M2 16c3-1 6-1 9 0s6 1 9 0M6 4v10M12 2v12M18 6v8"/>',
   },
@@ -91,7 +91,7 @@ const CAMPAIGN_REGIONS = Object.freeze([
     id: 'industrial',
     name: 'Industrial Belt',
     x: 85.0,
-    y: 43.5,
+    y: 41.5,
     color: '#fb923c',
     iconSvg: '<path d="M2 20h20M4 20V10l6 4V10l6 4V4h4v16"/>',
   },
@@ -125,114 +125,128 @@ function buildSvgPath(maxIdx, width = 1376, height = 768) {
   return d;
 }
 
-export function renderCampaignBrief(selected, completedMissions = {}, drawerOpen = true) {
+export function renderCampaignBrief(selectedOrId, completedMissions = {}, drawerOpen = true) {
+  const selected = typeof selectedOrId === 'string'
+    ? CAMPAIGN_MISSIONS.find((m) => m.id === selectedOrId) || CAMPAIGN_MISSIONS[0]
+    : selectedOrId || CAMPAIGN_MISSIONS[0];
   const sector = SECTORS.find((item) => item.mapId === selected.id);
   const chapter = CAMPAIGN_CHAPTERS.find((c) => c.missions.some((m) => m.id === selected.id)) || CAMPAIGN_CHAPTERS[0];
+  const region = CAMPAIGN_REGIONS.find((r) => r.id === chapter.id) || CAMPAIGN_REGIONS[0];
   const available = selected.status === 'available' && Boolean(sector);
   const playable = available && isCampaignMissionUnlocked(selected.id, completedMissions);
   const completed = Boolean(completedMissions[selected.id]);
 
-  const bossNote = sector?.rules.spawnSectorBossOnClear
-    ? `Sector boss: ${sector.bossName}.`
-    : 'No sector boss.';
-  const statusSummary = sector?.rules.victoryOnEnemyBaseDestroyed
-    ? `Destroy the enemy command core${sector?.rules.spawnSectorBossOnClear ? ' and sector boss' : ''}. Up to ${selected.enemyTotal} hostiles; clearing all defenders is optional. Your base provides repairs. ${bossNote}`
-    : sector?.defeatOnBaseLoss
-    ? `Defend the allied HQ and clear all ${selected.enemyTotal} hostiles. Losing the HQ ends the mission. ${bossNote}`
-    : `Clear all ${selected.enemyTotal} hostiles. Your base provides repairs; losing it does not end the mission. ${bossNote}`;
-
-  const roster = selected.enemyRoster
-    .map((group) => {
-      const isBoss = group.phase === 'boss';
-      const isEscort = group.phase === 'bossEscort';
-      const label = group.type.replaceAll('_', ' ');
-      return `<li><span>${label}${
-        isBoss
-          ? ' <small class="text-rose-400 font-bold">(BOSS)</small>'
-          : isEscort
-          ? ' <small class="text-amber-400 font-semibold">(ESCORT)</small>'
-          : ''
-      }</span><strong>× ${group.count}</strong></li>`;
-    })
-    .join('');
+  const starCount = completed ? 3 : playable ? 2 : 0;
+  const starsHtml = `
+    <span class="star-item ${starCount >= 1 ? 'is-filled' : ''}">★</span>
+    <span class="star-item ${starCount >= 2 ? 'is-filled' : ''}">★</span>
+    <span class="star-item ${starCount >= 3 ? 'is-filled' : ''}">★</span>
+  `;
 
   return `
     <aside
       class="cinematic-brief-drawer ${drawerOpen ? 'is-open' : 'is-closed'}"
       aria-label="Selected mission briefing"
-      style="--chapter-color:${selected.color};"
+      style="--chapter-color:${selected.color};--region-color:${region.color};"
     >
-      <div class="drawer-handle-bar">
-        <div class="drawer-header-left">
-          <span class="drawer-tag" style="border-color:${selected.color};color:${selected.color};background:${selected.color}15;">
-            ${chapter.name}
-          </span>
-          <span class="drawer-sector-code">SECTOR ${String(selected.number).padStart(2, '0')} / 35</span>
-          <h2 class="drawer-title">${selected.name}</h2>
+      <!-- Top Center Armored Pull Handle -->
+      <button
+        type="button"
+        class="brief-handle-btn"
+        data-action="toggle-campaign-brief"
+        aria-label="${drawerOpen ? 'Collapse briefing drawer' : 'Expand briefing drawer'}"
+      >
+        <span class="btn-rivet left" aria-hidden="true"></span>
+        <span class="handle-chevron" aria-hidden="true">${drawerOpen ? '︾' : '︽'}</span>
+        <span class="btn-rivet right" aria-hidden="true"></span>
+      </button>
+
+      <div class="brief-card-chassis">
+        <!-- Corner Rivets -->
+        <span class="btn-rivet top-left" aria-hidden="true"></span>
+        <span class="btn-rivet top-right" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+
+        <!-- Left Block: Landscape Preview Frame -->
+        <div class="brief-thumb-frame">
+          <img
+            class="brief-thumb-img"
+            src="/images/region-thumb-${chapter.id}.jpg"
+            alt="${chapter.name} terrain preview"
+            loading="lazy"
+            width="360"
+            height="200"
+          />
+          <div class="brief-thumb-overlay" aria-hidden="true"></div>
         </div>
-        <div class="drawer-header-right">
-          <span class="drawer-status-pill is-${completed ? 'completed' : playable ? 'available' : 'locked'}">
-            ${completed ? '✓ COMPLETED' : playable ? '● READY TO DEPLOY' : '🔒 LOCKED'}
-          </span>
-          <button
-            type="button"
-            class="drawer-toggle-btn"
-            data-action="toggle-campaign-brief"
-            aria-label="${drawerOpen ? 'Hide briefing drawer' : 'Open briefing drawer'}"
-          >
-            ${drawerOpen ? '✕' : '▲'}
-          </button>
+
+        <!-- Center Block: Region Badge & Mission Identity -->
+        <div class="brief-info-block">
+          <div class="brief-region-badge">
+            <svg class="region-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              ${region.iconSvg}
+            </svg>
+            <span class="region-badge-name">${chapter.name.toUpperCase()}</span>
+          </div>
+
+          <div class="brief-mission-details">
+            <div class="brief-sector-code">SECTOR ${String(selected.number).padStart(2, '0')} // 35</div>
+            <h2 class="brief-mission-title">${selected.name}</h2>
+            <p class="brief-mission-desc">${selected.objective} · ${selected.enemyTotal} hostiles</p>
+          </div>
+
+          <!-- Subtle Background Tank Watermark Silhouette -->
+          <svg class="brief-tank-watermark" viewBox="0 0 160 48" fill="none" aria-hidden="true">
+            <rect x="88" y="22" width="16" height="3" rx="1" fill="currentColor"/>
+            <path d="M72 21H88L85 27H74L72 21Z" fill="currentColor"/>
+            <path d="M66 27H94L98 33H62L66 27Z" fill="currentColor"/>
+            <rect x="62" y="33" width="36" height="7" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="67" cy="36.5" r="2" fill="currentColor"/>
+            <circle cx="73.5" cy="36.5" r="2" fill="currentColor"/>
+            <circle cx="80" cy="36.5" r="2" fill="currentColor"/>
+            <circle cx="86.5" cy="36.5" r="2" fill="currentColor"/>
+            <circle cx="93" cy="36.5" r="2" fill="currentColor"/>
+          </svg>
         </div>
-      </div>
 
-      <div class="drawer-body">
-        <div class="drawer-grid">
-          <!-- Col 1: Recon & Objectives -->
-          <div class="drawer-col drawer-recon">
-            <div class="drawer-section-heading">TACTICAL RECON</div>
-            <dl class="drawer-recon-list">
-              <dt>Objective</dt>
-              <dd>${selected.objective}</dd>
-              <dt>Battlefield Geography</dt>
-              <dd>${selected.layout}</dd>
-              <dt>Combat Conditions</dt>
-              <dd>${statusSummary}</dd>
-            </dl>
-          </div>
-
-          <!-- Col 2: Hostile Palette & Deployment -->
-          <div class="drawer-col drawer-hostiles">
-            <div class="drawer-section-heading">HOSTILE DETECTIONS · ${selected.enemyTotal} TOTAL</div>
-            <ul class="cinematic-roster">
-              ${roster}
-            </ul>
-            <div class="drawer-deployment-intel">
-              <strong>DEPLOYMENT:</strong> ${selected.deploymentPlan.initialCount} initial / ${selected.deploymentPlan.maxConcurrent} max concurrent
-              <p>${selected.deploymentPlan.notes}</p>
+        <!-- Difficulty Stars Plaque -->
+        <div class="brief-difficulty-block">
+          <span class="difficulty-lead">/// DIFFICULTY ///</span>
+          <div class="difficulty-plaque">
+            <div class="difficulty-stars" aria-label="${starCount} of 3 stars">
+              ${starsHtml}
             </div>
+            <span class="difficulty-name">${selected.difficulty.toUpperCase()}</span>
           </div>
+        </div>
 
-          <!-- Col 3: Deploy Action -->
-          <div class="drawer-col drawer-action">
-            <div class="drawer-difficulty-badge is-${selected.difficulty.toLowerCase()}">
-              DIFFICULTY: ${selected.difficulty.toUpperCase()}
-            </div>
-
-            ${
-              playable
-                ? `
-              <button class="cinematic-deploy-btn" data-action="start-campaign-mission" data-mission="${selected.id}">
-                <span class="deploy-label">Start</span>
-              </button>
-            `
-                : `
-              <button class="cinematic-deploy-btn is-disabled" disabled>
-                <span class="deploy-label">Locked</span>
-                <small class="deploy-sub">Complete mission ${selected.number - 1} first</small>
-              </button>
-            `
-            }
-          </div>
+        <!-- Right Block: Massive Start Button -->
+        <div class="brief-action-block">
+          ${
+            playable
+              ? `
+            <button
+              type="button"
+              class="brief-start-btn"
+              data-action="start-campaign-mission"
+              data-mission="${selected.id}"
+            >
+              <span class="start-text">START »</span>
+              <span class="start-glow" aria-hidden="true"></span>
+            </button>
+          `
+              : `
+            <button
+              type="button"
+              class="brief-start-btn is-locked"
+              disabled
+            >
+              <span class="start-text">LOCKED 🔒</span>
+              <small class="locked-sub">Pass Sector ${selected.number - 1}</small>
+            </button>
+          `
+          }
         </div>
       </div>
     </aside>
@@ -241,7 +255,6 @@ export function renderCampaignBrief(selected, completedMissions = {}, drawerOpen
 
 export function renderCampaign(selectedId, completedMissions = {}, drawerOpen = true) {
   const selected = CAMPAIGN_MISSIONS.find((m) => m.id === selectedId) || CAMPAIGN_MISSIONS[0];
-  const completedCount = CAMPAIGN_MISSIONS.filter((m) => Boolean(completedMissions[m.id])).length;
   const highestUnlockedIndex = CAMPAIGN_MISSIONS.reduce(
     (max, m, idx) => (isCampaignMissionUnlocked(m.id, completedMissions) ? Math.max(max, idx) : max),
     0
@@ -301,22 +314,6 @@ export function renderCampaign(selectedId, completedMissions = {}, drawerOpen = 
 
   return `
     <div class="cinematic-campaign">
-      <!-- Top Tactical Bar -->
-      <div class="cinematic-top-bar">
-        <div class="cinematic-lead">
-          <strong>ROAD TO THE CAPITAL</strong>
-          <span>35 Missions · Seven Regions · Linear Campaign</span>
-        </div>
-        <div class="cinematic-legend">
-          <span class="legend-pill is-avail"><i class="legend-dot"></i> Available</span>
-          <span class="legend-pill is-done"><i class="legend-star">★</i> Completed</span>
-          <span class="legend-pill is-locked"><i class="legend-lock">🔒</i> Locked</span>
-          <div class="cinematic-progress-counter">
-            <strong>${completedCount} / 35</strong> SECURED
-          </div>
-        </div>
-      </div>
-
       <!-- Main Map Board -->
       <div class="cinematic-map-scroll">
         <div class="cinematic-map-board">

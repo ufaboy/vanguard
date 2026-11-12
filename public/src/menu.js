@@ -8,18 +8,23 @@ import { renderSurvival } from './views/survival.js';
 const MENU_SCREENS = Object.freeze({
   campaign: {
     title: 'Road to the capital',
+    subtitle: 'Seven Regions Tactical Campaign',
     className: 'campaign-content',
-    showBack: false,
+    showBack: true,
     render: (state) => renderCampaign(state.selectedCampaignMission, state.hud?.playerSave?.completedMissions, state.campaignDrawerOpen !== false),
   },
   contracts: {
     title: 'Tactical contracts',
+    subtitle: 'High-Stakes Extraction & Sabotage',
     className: 'campaign-content',
+    showBack: true,
     render: (state) => renderContracts(state.selectedContract, state.hud?.playerSave?.completedMissions),
   },
   survival: {
     title: 'Endless survival',
+    subtitle: 'The Iron Crucible',
     className: 'campaign-content',
+    showBack: true,
     render: (state) => renderSurvival(state.hud?.playerSave),
   },
 });
@@ -32,8 +37,9 @@ export function renderMenu(state) {
   return renderPageShell({
     activePage: state.menuPage === 'contracts' ? 'contract' : state.menuPage,
     title: screen.title,
+    subtitle: screen.subtitle,
     backHref: PAGE_PATHS.index,
-    backLabel: 'Main menu',
+    backLabel: 'BACK',
     showBack: screen.showBack !== false,
     className: screen.className,
     bodyHtml: screen.render(state),
