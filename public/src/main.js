@@ -39,6 +39,7 @@ import {
   renderPowerUpBadgeSvg,
 } from './game/icons.js';
 import { sound } from './game/sound.js';
+import { adManager } from './app/ads.js';
 import {
   getPartCatalogEntry,
   CONTRACTS_CATALOG,
@@ -71,6 +72,8 @@ const state = {
   hangarTrack: 'cannon',
   hangarView: 'front',
   hangarFeedback: '',
+  adRewardClaimed: false,
+  adRewardFeedback: '',
   upgradeTab: 'HANGAR', // 'HANGAR' | 'TRACKS_5X5'
   showCodexModal: false,
   codexCategory: 'TANKS',
@@ -293,12 +296,32 @@ function initApp() {
   `;
 
   const mountEl = document.getElementById('canvas-mount');
+  adManager.init({
+    soundEnabled: state.soundEnabled,
+    onPause: () => engine?.setAdPaused(true),
+    onResume: () => {
+      sound.enabled = state.soundEnabled;
+      engine?.setAdPaused(false);
+    },
+  });
   const createEngine = (pregenerated) => {
     engine = new TankGameEngine(mountEl, (snapshot, syncedUpgrades) => {
       const prevStatus = state.hud.status;
       state.hud = snapshot;
       if (syncedUpgrades) {
         state.upgrades = syncedUpgrades;
+      }
+      if (
+        prevStatus === GameStatus.PLAYING &&
+        (snapshot.status === GameStatus.VICTORY || snapshot.status === GameStatus.GAME_OVER)
+      ) {
+        state.adRewardClaimed = false;
+        state.adRewardFeedback = '';
+        adManager.onBattleEnd({
+          outcome: snapshot.status === GameStatus.VICTORY ? 'victory' : 'defeat',
+          mode: snapshot.gameMode,
+          sectorId: snapshot.sectorId,
+        });
       }
       renderUI(prevStatus !== snapshot.status);
     }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated });
@@ -492,7 +515,10 @@ function cycleCameraPreset() {
   renderUI(true);
 }
 
-function startSector(sectorIndex) {
+let startingSector = false;
+
+async function startSector(sectorIndex) {
+  if (startingSector) return;
   if (!Number.isInteger(sectorIndex) || !SECTORS[sectorIndex]) return;
   const targetSector = SECTORS[sectorIndex];
   if (
@@ -502,23 +528,36 @@ function startSector(sectorIndex) {
   ) {
     return;
   }
-  if (targetSector.gameMode === 'contract') {
-    state.selectedContract = targetSector.contractId || targetSector.mapId;
-  } else if (targetSector.gameMode !== 'survival') {
-    state.selectedCampaignMission = targetSector.mapId;
+  startingSector = true;
+  try {
+    if (state.hud.status !== GameStatus.MENU) {
+      await adManager.onLevelTransition({
+        fromSectorId: state.hud.sectorId,
+        toSectorId: sectorIndex,
+      });
+    }
+    if (targetSector.gameMode === 'contract') {
+      state.selectedContract = targetSector.contractId || targetSector.mapId;
+    } else if (targetSector.gameMode !== 'survival') {
+      state.selectedCampaignMission = targetSector.mapId;
+    }
+    sound.playPowerUp();
+    state.selectedSector = sectorIndex;
+    state.adRewardClaimed = false;
+    state.adRewardFeedback = '';
+    if (state.showUpgradeDrawer) engine?.setHangarOpen(false);
+    state.showUpgradeDrawer = false;
+    state.showTacticalMap = false;
+    if (state.showCodexModal) {
+      state.showCodexModal = false;
+      engine?.setCodexMode(false);
+    }
+    engine?.setInspectMode(false);
+    engine?.startSector(sectorIndex);
+    renderUI(true);
+  } finally {
+    startingSector = false;
   }
-  sound.playPowerUp();
-  state.selectedSector = sectorIndex;
-  if (state.showUpgradeDrawer) engine?.setHangarOpen(false);
-  state.showUpgradeDrawer = false;
-  state.showTacticalMap = false;
-  if (state.showCodexModal) {
-    state.showCodexModal = false;
-    engine?.setCodexMode(false);
-  }
-  engine?.setInspectMode(false);
-  engine?.startSector(sectorIndex);
-  renderUI(true);
 }
 
 function setupDelegatedEvents(root) {
@@ -872,9 +911,34 @@ function setupDelegatedEvents(root) {
       case 'toggle-sound':
         state.soundEnabled = !state.soundEnabled;
         sound.enabled = state.soundEnabled;
+        adManager.syncSound(state.soundEnabled);
         savePreferences();
         renderUI(true);
         break;
+      case 'watch-rewarded-ad': {
+        if (state.adRewardClaimed || adManager.isShowingAd) break;
+        adManager
+          .showRewarded({
+            name: 'battle-bonus-credits',
+            onReward: () => {
+              const granted = engine?.grantCredits(150) ?? 0;
+              if (granted > 0) {
+                state.adRewardClaimed = true;
+                state.adRewardFeedback = `+$${granted} BONUS CREDITS AWARDED`;
+              }
+            },
+          })
+          .then((res) => {
+            if (!res.rewarded && !state.adRewardClaimed) {
+              state.adRewardFeedback =
+                res.status === 'dismissed'
+                  ? 'AD CLOSED EARLY — NO BONUS AWARDED'
+                  : 'AD UNAVAILABLE RIGHT NOW — CONTINUE PLAYING';
+            }
+            renderUI(true);
+          });
+        break;
+      }
       case 'toggle-pause':
         engine?.togglePause();
         break;
@@ -2158,6 +2222,24 @@ function renderUI(forceModals = false) {
 
   renderHangarAndWorkshopDrawer(hud, upgrades);
 
+  const renderRewardedAdSlot = () => {
+    if (state.adRewardClaimed) {
+      return `<div class="mb-4 px-3 py-2 rounded border border-emerald-500/40 bg-emerald-950/30 font-mono text-xs text-emerald-300">${state.adRewardFeedback || '+$150 BONUS CREDITS AWARDED'}</div>`;
+    }
+    return `
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3 px-3.5 py-2.5 rounded border border-amber-500/40 bg-slate-900/80 font-mono text-xs">
+        <span class="text-slate-300">${state.adRewardFeedback || 'OPTIONAL SUPPLY DROP: Watch a short ad for +$150 bonus credits.'}</span>
+        <button
+          type="button"
+          data-action="watch-rewarded-ad"
+          class="px-3.5 py-1.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/60 font-bold uppercase tracking-wider cursor-pointer"
+        >
+          WATCH AD (+$150)
+        </button>
+      </div>
+    `;
+  };
+
   // 8. Status Modal (Menu, Pause, Victory, Game Over with Loot Settlement Summary)
   if (statusModal) {
     if (
@@ -2242,6 +2324,7 @@ function renderUI(forceModals = false) {
                   <span class="text-lg font-bold text-emerald-300 tabular-nums">+$ ${s?.totalObjectiveCredits ?? 0}</span>
                 </div>
               </div>
+              ${renderRewardedAdSlot()}
 
               <div class="flex flex-wrap items-center justify-between gap-3">
                 <button
@@ -2302,6 +2385,7 @@ function renderUI(forceModals = false) {
                   <span class="text-lg font-bold text-sky-400 tabular-nums">${accuracy}%</span>
                 </div>
               </div>
+              ${renderRewardedAdSlot()}
 
               <div class="flex flex-wrap items-center justify-between gap-3">
                 <button
@@ -2414,6 +2498,7 @@ function renderUI(forceModals = false) {
                   <span class="text-lg font-bold text-emerald-400 tabular-nums">${hud.kills}</span>
                 </div>
               </div>
+              ${renderRewardedAdSlot()}
 
               <div class="flex flex-wrap gap-3">
                 <button

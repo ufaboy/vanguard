@@ -303,6 +303,7 @@ export class TankGameEngine {
     this.inBaseRepairZone = false;
     this.isHangarOpen = false;
     this.isHangarPaused = false;
+    this.isAdPaused = false;
     this.creditsEarnedThisMission = 0;
     this.baseAlive = true;
     this.enemyBaseAlive = false;
@@ -3262,7 +3263,7 @@ export class TankGameEngine {
 
   bindEvents() {
     this.handleKeyDown = (e) => {
-      if (this.isHangarOpen) return;
+      if (this.isHangarOpen || this.isAdPaused) return;
       this.keys[e.code] = true;
       if (e.code === 'F3') {
         e.preventDefault();
@@ -3350,7 +3351,7 @@ export class TankGameEngine {
       }
 
       this.handlePointerMove(e);
-      if (this.status !== GameStatus.PLAYING) return;
+      if (this.status !== GameStatus.PLAYING || this.isAdPaused) return;
 
       if (e.button === 2) {
         let clickedEnemy = null;
@@ -3459,8 +3460,34 @@ export class TankGameEngine {
     const audioPaused =
       this.status === GameStatus.PAUSED ||
       Boolean(this.isHangarPaused) ||
+      Boolean(this.isAdPaused) ||
       Boolean(this.codexOpen);
     sound.setPaused(audioPaused);
+  }
+
+  /** Pauses or resumes simulation, input, and audio around ad breaks. */
+  setAdPaused(paused) {
+    const next = Boolean(paused);
+    if (this.isAdPaused === next) return;
+    this.isAdPaused = next;
+    this.keys = {};
+    this.isMouseDown = false;
+    this.cameraRotating = false;
+    this.syncAudioPauseState();
+    if (!next && this.status === GameStatus.PLAYING) {
+      this.renderer?.domElement?.focus?.({ preventScroll: true });
+    }
+    this.emitHudUpdate();
+  }
+
+  /** Grants bonus credits (e.g. from voluntary rewarded ads) and persists to save. */
+  grantCredits(amount) {
+    const delta = Math.max(0, Math.floor(Number(amount) || 0));
+    if (!delta || !this.playerSave) return 0;
+    this.playerSave.credits = (this.playerSave.credits || 0) + delta;
+    this.saveRepo?.savePlayerSave?.(this.playerSave);
+    this.emitHudUpdate();
+    return delta;
   }
 
   togglePause() {
@@ -3681,7 +3708,7 @@ export class TankGameEngine {
       return;
     }
 
-    if (this.isHangarPaused) {
+    if (this.isHangarPaused || this.isAdPaused) {
       if (this.playerRig) {
         this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;
         this.syncPlayerVisuals(dt * 1.2, elapsed);
@@ -8654,7 +8681,7 @@ export class TankGameEngine {
   }
 
   updateBarrelExplosions(dt) {
-    if (this.isDisposed || this.isHangarPaused || this.status !== GameStatus.PLAYING) return;
+    if (this.isDisposed || this.isHangarPaused || this.isAdPaused || this.status !== GameStatus.PLAYING) return;
     const pending = this.pendingBarrelExplosions || [];
     this.pendingBarrelExplosions = [];
     for (const event of pending) {
