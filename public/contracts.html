@@ -33,16 +33,20 @@
       <div id="canvas-mount" class="fixed inset-0 w-full h-full cursor-crosshair"></div>
 
       <!-- Top-Left Compact Telemetry Bar -->
-      <header id="top-telemetry" class="hidden fixed top-4 left-4 z-20 flex flex-wrap items-center gap-3 bg-[#0B0F17]/95 border border-slate-700/70 px-4 py-2.5 rounded shadow-lg"></header>
+      <!-- Top-Left Hull HP, Turret & Sector Telemetry -->
+      <header id="top-telemetry" class="hidden fixed top-3 left-4 z-20 flex flex-col gap-1.5 pointer-events-none"></header>
 
-      <!-- Top-Right Compact Utility Controls -->
-      <div id="top-controls" class="hidden fixed top-4 right-4 z-20 flex items-center gap-2"></div>
+      <!-- Top-Center Live Azimuth Compass -->
+      <div id="top-compass" class="hidden fixed top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none"></div>
 
-      <!-- Top-Right North-Up Sensor Minimap -->
-      <div id="sensor-minimap" class="hidden fixed top-16 right-4 z-20 bg-[#0B0F17]/95 border border-slate-700/80 rounded p-2 shadow-2xl"></div>
+      <!-- Top-Right APS Status & Utility Controls -->
+      <div id="top-controls" class="hidden fixed top-3 right-4 z-20 flex flex-col items-end gap-1.5"></div>
+
+      <!-- Bottom-Right Circular Tactical Radar -->
+      <div id="sensor-minimap" class="hidden fixed bottom-3 right-4 z-20 pointer-events-none"></div>
 
       <!-- Contract Cargo & Gate Warning HUD -->
-      <div id="contract-hud" class="hidden fixed top-20 left-4 z-20 flex flex-col gap-2 max-w-[min(560px,92vw)]"></div>
+      <div id="contract-hud" class="hidden fixed top-40 left-4 z-20 flex flex-col gap-2 max-w-[min(560px,92vw)]"></div>
 
       <!-- Contextual Contract Interaction / Extraction Control Bar -->
       <div id="contract-action-bar" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"></div>
@@ -57,13 +61,7 @@
       <div id="status-toast" class="hidden fixed top-48 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-amber-500/70 px-5 py-2 rounded text-xs font-mono uppercase tracking-[0.12em] text-amber-300 shadow-lg"></div>
 
       <!-- Active Combat Modifiers Strip -->
-      <div id="modifiers-strip" class="hidden fixed top-64 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
-
-      <!-- Expanded Mechanical Diagnostics Overlay [H] -->
-      <div id="diagnostics-panel" class="hidden fixed bottom-28 left-4 z-20 w-80 bg-[#0B0F17]/95 border border-teal-500/60 rounded p-3.5 shadow-2xl font-mono text-xs"></div>
-
-      <!-- Tactical Sector Map & Manual Route Planner Overlay [M] -->
-      <div id="tactical-map-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center bg-black/75 p-4"></div>
+      <div id="modifiers-strip" class="hidden fixed top-24 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
 
       <!-- Interactive 3D Codex & Proving Grounds Studio Overlay [I] -->
       <div id="codex-modal" class="hidden codex-overlay"></div>
@@ -71,8 +69,8 @@
       <!-- Modular Tank Hangar, Workshop & 5x5 Engineering Drawer [U] -->
       <div id="upgrade-drawer" class="hidden hangar-shell" role="dialog" aria-modal="true" aria-label="Vehicle maintenance hangar"></div>
 
-      <!-- Bottom Docked Tactical HUD -->
-      <footer id="bottom-hud" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-20 w-[min(1120px,96vw)] bg-[#0B0F17]/95 border border-slate-700/70 px-5 py-3 rounded shadow-2xl flex flex-wrap items-center justify-between gap-4"></footer>
+      <!-- Bottom Docked Tactical HUD (Speed/Gear + Weapons/Reload/Modules) -->
+      <footer id="bottom-hud" class="hidden fixed bottom-3 left-4 right-48 z-20 flex items-end justify-between gap-3 pointer-events-none"></footer>
 
       <!-- Modal Overlays: Menu, Pause, Victory, Game Over -->
       <div id="status-modal" class="fixed inset-0 z-30 menu-screen" data-page="contracts">

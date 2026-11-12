@@ -15,7 +15,6 @@ export function createInitialPlayerSave() {
   return {
     saveVersion: 1,
     credits: 500,
-    cannonAmmo: 15,
     activeTankId: 'tank_alpha',
     unlockedMissions: ['mission_01', 'mission_02', 'mission_03'],
     completedMissions: {},
@@ -373,6 +372,7 @@ export class SaveRepository {
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.parts)) {
           delete parsed.alloys;
+          delete parsed.cannonAmmo;
           if (typeof parsed.credits !== 'number') {
             parsed.credits = 500;
           }

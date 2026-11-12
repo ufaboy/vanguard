@@ -271,7 +271,6 @@ export class TankGameEngine {
     this.lootContainers = [];
     this.activeMissionRun = null;
     this.lastSettlementSummary = null;
-    this.manualRoutePoints = [];
     this.currentSurface = TERRAIN_SURFACES.dirt;
     this.playerForwardSpeed = 0;
 
@@ -297,7 +296,7 @@ export class TankGameEngine {
     this.apsRearmTimer = 0;
     this.missileAmmo = Number.isInteger(this.playerSave.missileAmmo)
       ? Math.max(0, Math.min(MISSILE.MAX_AMMO, this.playerSave.missileAmmo)) : 2;
-    this.cannonAmmo = this.playerSave.cannonAmmo;
+    this.cannonAmmo = CANNON_AMMO.START_ROUNDS;
     this.cannonBaseRearmTimer = 0;
     this.missileCooldown = 0;
     this.repairKitCount = 1;
@@ -523,6 +522,7 @@ export class TankGameEngine {
     this.componentWaterEgress = false;
     this.initApsLaunchers(APS.START_ROUNDS);
     this.missileAmmo = 2;
+    this.cannonAmmo = getMaxCannonAmmo(1);
     this.repairKitState = createRepairKitState(0);
   }
 
@@ -546,7 +546,6 @@ export class TankGameEngine {
             : this.campaignSaveRepo?.loadPlayerSave().credits ?? this.playerSave.credits;
         this.playerSave.apsAmmo = [...this.apsAmmo];
         this.playerSave.missileAmmo = this.missileAmmo;
-        this.playerSave.cannonAmmo = this.cannonAmmo;
         this.playerSave.repairKitCharges = 0;
         this.playerSave.componentDamage = { ...this.componentDamage };
         this.playerSave.componentDamageCooldown = 0;
@@ -568,6 +567,7 @@ export class TankGameEngine {
         ? this.playerSave.repairKitCharges
         : 0;
       this.repairKitState = createRepairKitState(savedRepairCharges);
+      this.cannonAmmo = this.getPlayerMaxCannonAmmo();
     }
     this.recomputePlayerStats(false);
   }
@@ -2001,7 +2001,6 @@ export class TankGameEngine {
     if (isIsolatedSector) {
       this.initApsLaunchers(APS.START_ROUNDS);
       this.missileAmmo = 2;
-      this.cannonAmmo = CANNON_AMMO.START_ROUNDS;
     } else if (Array.isArray(this.playerSave?.apsAmmo)) {
       this.apsAmmo = [...this.playerSave.apsAmmo];
       const total = this.apsAmmo.reduce((a, b) => a + b, 0);
@@ -2015,6 +2014,8 @@ export class TankGameEngine {
     if (!isIsolatedSector) {
       this.missileAmmo = Math.max(this.missileAmmo, 2);
     }
+    this.cannonAmmo = this.getPlayerMaxCannonAmmo();
+    this.cannonBaseRearmTimer = 0;
     this.missileCooldown = 0;
     this.repairKitCount = REPAIR_KIT.MAX;
 
@@ -3164,7 +3165,6 @@ export class TankGameEngine {
     this.playerSave.credits -= cost;
     this.cannonAmmo = Math.min(maxAmmo, this.cannonAmmo + CANNON_AMMO.SHELLS_PER_PACK);
     this.syncCampaignCredits();
-    this.playerSave.cannonAmmo = this.cannonAmmo;
     this.saveRepo.savePlayerSave(this.playerSave);
     sound.playPowerUp();
     this.setStatusBanner(`+${CANNON_AMMO.SHELLS_PER_PACK} SHELLS PURCHASED! (${this.cannonAmmo}/${maxAmmo}) (-${cost})`, 2.5);
@@ -3276,19 +3276,6 @@ export class TankGameEngine {
     this.status = GameStatus.MENU;
     sound.stopEngineLoop();
     this.syncAudioPauseState();
-    this.emitHudUpdate();
-  }
-
-  addManualRoutePoint(worldX, worldZ) {
-    this.manualRoutePoints.push({ x: worldX, z: worldZ });
-    if (this.manualRoutePoints.length > 6) {
-      this.manualRoutePoints.shift();
-    }
-    this.emitHudUpdate();
-  }
-
-  clearManualRoute() {
-    this.manualRoutePoints = [];
     this.emitHudUpdate();
   }
 
@@ -4188,7 +4175,6 @@ export class TankGameEngine {
         if (this.cannonBaseRearmTimer >= CANNON_AMMO.BASE_REARM_INTERVAL_SEC) {
           this.cannonBaseRearmTimer = 0;
           this.cannonAmmo = Math.min(maxCannon, this.cannonAmmo + 1);
-          this.playerSave.cannonAmmo = this.cannonAmmo;
           this.spawnSparks(this.playerX, 0.7, this.playerZ, 0xf59e0b, 2);
           repairedAny = true;
           this.emitHudUpdate();
@@ -4352,7 +4338,6 @@ export class TankGameEngine {
       return;
     }
     this.cannonAmmo--;
-    this.playerSave.cannonAmmo = this.cannonAmmo;
 
     this.playerFlashTimer = 0.06;
     this.shotsFired++;
@@ -8999,8 +8984,6 @@ export class TankGameEngine {
       case POWERUP.AMMO: {
         const maxShells = this.getPlayerMaxCannonAmmo();
         this.cannonAmmo = Math.min(maxShells, this.cannonAmmo + CANNON_AMMO.PICKUP_AMMO);
-        this.playerSave.cannonAmmo = this.cannonAmmo;
-        this.saveRepo.savePlayerSave(this.playerSave);
         this.setStatusBanner(`AMMO CRATE COLLECTED: +${CANNON_AMMO.PICKUP_AMMO} SHELLS (${this.cannonAmmo}/${maxShells})`, 2.5);
         break;
       }
@@ -9409,6 +9392,7 @@ export class TankGameEngine {
       playerFireCooldown: Math.max(0, this.playerFireCooldown),
       playerMaxFireCooldown: Math.max(0.1, this.playerMaxFireCooldown || this.playerStats?.fireCooldown || 1.25),
       speedKmh: Math.round(Math.abs(this.playerForwardSpeed || 0) * 9.5),
+      playerForwardSpeed: this.playerForwardSpeed || 0,
       currentSurface:
         typeof this.currentSurface === 'string'
           ? this.currentSurface
@@ -9438,7 +9422,6 @@ export class TankGameEngine {
       assembledTank: this.assembledTank,
       lastSettlementSummary: this.lastSettlementSummary,
       aiDebugMode: this.aiDebugMode,
-      manualRoutePoints: this.manualRoutePoints,
       playerX: this.playerX,
       playerZ: this.playerZ,
       playerHullAngle: this.playerHullAngle,

@@ -1,4 +1,3 @@
-import { renderComponentCondition } from './component-condition-ui.js';
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
 import { MENU_PAGES, renderMenu } from './menu.js';
 import { syncCampaignMapState } from './views/campaign.js';
@@ -49,8 +48,6 @@ import {
   CONTRACTS_CATALOG,
 } from './sim/index.js';
 
-const APS_LABELS = ['FR', 'RR', 'RL', 'FL'];
-
 const INITIAL_STATS = computeTankStats({
   gun: CANNONS.CANNON_Mk1,
   chassis: CHASSIS.CH1,
@@ -71,8 +68,6 @@ const state = {
   graphicsQuality: 'high', // 'low' | 'medium' | 'high' (QUALITY_PRESETS in engine.js)
   fpsCap: 60, // frame-rate cap: 60 | 30 | 0 (unlimited)
   hudCollapsed: false,
-  showDiagnosticsPanel: false,
-  showTacticalMap: false,
   showUpgradeDrawer: false,
   hangarTrack: 'cannon',
   hangarView: 'front',
@@ -131,7 +126,6 @@ const state = {
     assembledTank: null,
     lastSettlementSummary: null,
     aiDebugMode: false,
-    manualRoutePoints: [],
     playerX: 0,
     playerZ: 0,
     playerHullAngle: 0,
@@ -218,7 +212,6 @@ function toggleCodexStudio(forceOpen) {
   if (state.showCodexModal) {
     if (state.showUpgradeDrawer) engine?.setHangarOpen(false);
     state.showUpgradeDrawer = false;
-    state.showTacticalMap = false;
     engine?.setInspectMode(false);
     state.codexPreviewUpgrades = {
       ...state.codexPreviewUpgrades,
@@ -283,12 +276,6 @@ function initApp() {
 
       <!-- Active Combat Modifiers Strip -->
       <div id="modifiers-strip" class="fixed top-64 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
-
-      <!-- Expanded Mechanical Diagnostics Overlay [H] -->
-      <div id="diagnostics-panel" class="hidden fixed bottom-28 left-4 z-20 w-80 bg-[#0B0F17]/95 border border-teal-500/60 rounded p-3.5 shadow-2xl font-mono text-xs"></div>
-
-      <!-- Tactical Sector Map & Manual Route Planner Overlay [M] -->
-      <div id="tactical-map-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center bg-black/75 p-4"></div>
 
       <!-- Interactive 3D Codex & Proving Grounds Studio Overlay [I] -->
       <div id="codex-modal" class="hidden codex-overlay"></div>
@@ -383,13 +370,7 @@ function initApp() {
       return;
     }
 
-    if (e.code === 'KeyH') {
-      state.showDiagnosticsPanel = !state.showDiagnosticsPanel;
-      renderUI(false);
-    } else if (e.code === 'KeyM') {
-      state.showTacticalMap = !state.showTacticalMap;
-      renderUI(true);
-    } else if (e.code === 'KeyU') {
+    if (e.code === 'KeyU') {
       if (state.hud.status === GameStatus.MENU) return;
       const willOpen = !state.showUpgradeDrawer;
       if (willOpen) {
@@ -406,11 +387,6 @@ function initApp() {
     } else if (e.code === 'KeyC') {
       cycleCameraPreset();
     } else if (e.code === 'Escape' || e.code === 'KeyP') {
-      if (state.showTacticalMap) {
-        state.showTacticalMap = false;
-        renderUI(true);
-        return;
-      }
       if (state.showUpgradeDrawer) {
         state.showUpgradeDrawer = false;
         engine?.setHangarOpen(false);
@@ -591,7 +567,6 @@ async function startSector(sectorIndex) {
     state.adRewardFeedback = '';
     if (state.showUpgradeDrawer) engine?.setHangarOpen(false);
     state.showUpgradeDrawer = false;
-    state.showTacticalMap = false;
     if (state.showCodexModal) {
       state.showCodexModal = false;
       engine?.setCodexMode(false);
@@ -606,18 +581,6 @@ async function startSector(sectorIndex) {
 
 function setupDelegatedEvents(root) {
   root.addEventListener('click', (e) => {
-    const mapPlotEl = e.target.closest('[data-map-canvas]');
-    if (mapPlotEl && engine) {
-      const rect = mapPlotEl.getBoundingClientRect();
-      const nx = (e.clientX - rect.left) / rect.width;
-      const nz = (e.clientY - rect.top) / rect.height;
-      const worldX = (nx - 0.5) * 72;
-      const worldZ = (nz - 0.5) * 72;
-      engine.addManualRoutePoint(worldX, worldZ);
-      renderUI(true);
-      return;
-    }
-
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
     const action = btn.getAttribute('data-action');
@@ -966,18 +929,6 @@ function setupDelegatedEvents(root) {
         }
         break;
       }
-      case 'toggle-diagnostics':
-        state.showDiagnosticsPanel = !state.showDiagnosticsPanel;
-        renderUI(false);
-        break;
-      case 'toggle-tactical-map':
-        state.showTacticalMap = !state.showTacticalMap;
-        renderUI(true);
-        break;
-      case 'clear-manual-route':
-        engine?.clearManualRoute();
-        renderUI(true);
-        break;
       case 'abort-mission':
         engine?.abortMissionToHangar();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
@@ -1094,34 +1045,34 @@ function setHtml(el, html) {
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const MINIMAP_SKELETON = `
-  <div class="flex items-center justify-between gap-2 mb-1 font-mono text-[9px] uppercase tracking-wider">
-    <span class="text-teal-400 font-bold">NORTH-UP SENSOR MAP</span>
-    <span class="text-slate-400">[M] PLAN</span>
-  </div>
-  <div class="relative w-36 h-36 bg-slate-950 border border-slate-800 rounded overflow-hidden">
-    <svg viewBox="0 0 100 100" class="w-full h-full">
-      <!-- Grid lines -->
-      <line x1="50" y1="0" x2="50" y2="100" stroke="#1e293b" stroke-width="0.6" />
-      <line x1="0" y1="50" x2="100" y2="50" stroke="#1e293b" stroke-width="0.6" />
-      <!-- Command HQ marker -->
-      <rect x="47" y="88" width="6" height="6" fill="#38bdf8" opacity="0.85" />
-      <g data-mm="contract"></g>
-      <polyline data-mm="route" fill="none" stroke="#38bdf8" stroke-width="1.3" stroke-dasharray="2.5 1.5" />
-      <g data-mm="loot"></g>
-      <g data-mm="contacts"></g>
-      <!-- Player Hull & Turret -->
-      <g data-mm="player">
-        <line data-mm="camera" x1="0" y1="0" stroke="#64748b" stroke-width="0.9" stroke-dasharray="1.5 1.5" />
-        <g data-mm="hull">
-          <rect x="-2.4" y="-3.4" width="4.8" height="6.8" fill="#10b981" stroke="#052e16" stroke-width="0.7" />
+  <div class="hud-radar-wrap">
+    <div class="hud-radar-screen">
+      <svg viewBox="0 0 100 100" class="w-full h-full">
+        <circle cx="50" cy="50" r="16" fill="none" stroke="rgba(74, 222, 128, 0.22)" stroke-width="0.7" />
+        <circle cx="50" cy="50" r="32" fill="none" stroke="rgba(74, 222, 128, 0.22)" stroke-width="0.7" />
+        <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(74, 222, 128, 0.35)" stroke-width="0.9" />
+        <line x1="50" y1="2" x2="50" y2="98" stroke="rgba(74, 222, 128, 0.2)" stroke-width="0.6" />
+        <line x1="2" y1="50" x2="98" y2="50" stroke="rgba(74, 222, 128, 0.2)" stroke-width="0.6" />
+        <rect x="47" y="88" width="6" height="6" fill="#38bdf8" opacity="0.9" />
+        <g data-mm="contract"></g>
+        <g data-mm="loot"></g>
+        <g data-mm="contacts"></g>
+        <g data-mm="player">
+          <line data-mm="camera" x1="0" y1="0" stroke="#64748b" stroke-width="0.9" stroke-dasharray="1.5 1.5" />
+          <g data-mm="hull">
+            <rect x="-2.4" y="-3.4" width="4.8" height="6.8" fill="#4ade80" stroke="#052e16" stroke-width="0.7" />
+          </g>
+          <g data-mm="turret">
+            <line x1="0" y1="0" x2="0" y2="7.2" stroke="#bbf7d0" stroke-width="1.5" />
+          </g>
         </g>
-        <g data-mm="turret">
-          <line x1="0" y1="0" x2="0" y2="7.2" stroke="#34d399" stroke-width="1.5" />
-        </g>
-      </g>
-    </svg>
-    <span class="absolute top-0.5 left-1/2 -translate-x-1/2 text-[8px] font-mono text-slate-400 font-bold">N</span>
-    <span data-mm="footer" class="absolute bottom-0.5 left-1 text-[8px] font-mono"></span>
+      </svg>
+    </div>
+    <span class="hud-radar-cardinal is-n">N</span>
+    <span class="hud-radar-cardinal is-s">S</span>
+    <span class="hud-radar-cardinal is-w">W</span>
+    <span class="hud-radar-cardinal is-e">E</span>
+    <span data-mm="footer" class="hud-radar-cam"></span>
   </div>
 `;
 
@@ -1229,13 +1180,6 @@ function renderNorthUpSensorMinimap(hud) {
     }
   }
 
-  const routePts = hud.manualRoutePoints || [];
-  const route =
-    routePts.length > 0
-      ? [`${fmt(px)},${fmt(pz)}`, ...routePts.map((pt) => `${fmt(toPct(pt.x))},${fmt(toPct(pt.z))}`)].join(' ')
-      : '';
-  setAttr(mm.route, 'points', route);
-
   setAttr(mm.player, 'transform', `translate(${fmt(px)}, ${fmt(pz)})`);
   setAttr(mm.camera, 'x2', fmt(Math.sin(hud.cameraAzimuth || 0) * 12));
   setAttr(mm.camera, 'y2', fmt(Math.cos(hud.cameraAzimuth || 0) * 12));
@@ -1246,202 +1190,6 @@ function renderNorthUpSensorMinimap(hud) {
   if (mm.footer.textContent !== footer) mm.footer.textContent = footer;
   mm.footer.classList.remove('text-teal-300');
   mm.footer.classList.add('text-slate-500');
-}
-
-function renderDiagnosticsOverlay(hud) {
-  const panel = document.getElementById('diagnostics-panel');
-  if (!panel) return;
-
-  if (!state.showDiagnosticsPanel || !hud.subsystems) {
-    setHidden(panel, true);
-    return;
-  }
-  setHidden(panel, false);
-
-  const subLabels = [
-    { key: 'leftTrack', label: 'LEFT TRACK' },
-    { key: 'rightTrack', label: 'RIGHT TRACK' },
-    { key: 'engine', label: 'ENGINE DRIVE' },
-    { key: 'turretDrive', label: 'TURRET RING' },
-    { key: 'cannon', label: 'MAIN BREECH' },
-    { key: 'stabilizer', label: 'GYRO STAB' },
-  ];
-
-  const rowsHtml = subLabels
-    .map((item) => {
-      const s = hud.subsystems[item.key];
-      if (!s) return '';
-      const pct = Math.round((s.hp / Math.max(1, s.maxHp)) * 100);
-      const color =
-        pct <= 0
-          ? 'text-red-400'
-          : pct < 50
-          ? 'text-amber-400'
-          : 'text-emerald-400';
-      const repairTag =
-        s.fieldRepairState === 'repairing'
-          ? ` (REPAIR ${s.fieldRepairProgress.toFixed(1)}/4s)`
-          : s.fieldRepairState === 'waiting'
-          ? ` (WAIT ${(7 - s.fieldRepairTimer).toFixed(1)}s)`
-          : '';
-      return `
-        <div class="flex items-center justify-between py-1 border-b border-slate-800/80">
-          <span class="text-slate-300">${item.label}${repairTag}</span>
-          <span class="font-bold ${color}">${pct}% (${Math.ceil(s.hp)}/${s.maxHp})</span>
-        </div>
-      `;
-    })
-    .join('');
-
-  const panelsList = Object.entries(hud.playerArmorPanels || {})
-    .map(([socketId, p]) => {
-      if (!p) return '';
-      const pct = Math.max(0, Math.round((p.integrity / Math.max(1, p.maxIntegrity)) * 100));
-      return `
-        <div class="flex items-center justify-between py-0.5 text-[11px]">
-          <span class="text-slate-400">${socketId.replace('SOCKET_ARMOR_', '')} (${p.name})</span>
-          <span class="${p.destroyed ? 'text-red-400' : 'text-sky-300'} font-bold">
-            ${p.destroyed ? 'SHATTERED' : `${pct}% (${Math.ceil(p.integrity)} HP)`}
-          </span>
-        </div>
-      `;
-    })
-    .join('');
-
-  setHtml(panel, `
-    <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-slate-700">
-      <span class="text-teal-400 font-bold uppercase tracking-wider">MECHANICAL DIAGNOSTICS [H]</span>
-      <span class="text-[10px] text-slate-400">SURF: ${(hud.currentSurface || 'asphalt').toUpperCase()}</span>
-    </div>
-    <div class="space-y-0.5 mb-2">${rowsHtml}</div>
-    <div class="text-[10px] uppercase tracking-wider text-amber-400 font-bold mb-1">
-      MOUNTED ADD-ON ARMOR PANELS:
-    </div>
-    <div class="space-y-0.5">${panelsList || '<div class="text-slate-500">None Mounted</div>'}</div>
-  `);
-}
-
-function renderTacticalMapModal(hud) {
-  const modal = document.getElementById('tactical-map-modal');
-  if (!modal) return;
-
-  if (!state.showTacticalMap) {
-    setHidden(modal, true);
-    return;
-  }
-  setHidden(modal, false);
-
-  const toPct = (coord) => Math.max(3, Math.min(97, ((coord + 36) / 72) * 100));
-  const px = toPct(hud.playerX || 0);
-  const pz = toPct(hud.playerZ || 0);
-
-  const routePts = hud.manualRoutePoints || [];
-  const pts = [`${px.toFixed(1)},${pz.toFixed(1)}`];
-  for (const pt of routePts) {
-    pts.push(`${toPct(pt.x).toFixed(1)},${toPct(pt.z).toFixed(1)}`);
-  }
-
-  const waypointsCircles = routePts
-    .map((pt, i) => {
-      const wx = toPct(pt.x);
-      const wz = toPct(pt.z);
-      return `
-        <circle cx="${wx.toFixed(1)}" cy="${wz.toFixed(1)}" r="2.2" fill="#38bdf8" />
-        <text x="${(wx + 2.8).toFixed(1)}" y="${(wz + 1).toFixed(1)}" fill="#e2e8f0" font-size="3.5" font-family="monospace">WP${i + 1}</text>
-      `;
-    })
-    .join('');
-
-  const contactsCircles = (hud.sensorContacts || [])
-    .map((c) => {
-      const cx = toPct(c.x);
-      const cz = toPct(c.z);
-      return `<circle cx="${cx.toFixed(1)}" cy="${cz.toFixed(1)}" r="2.6" fill="${c.active ? '#ef4444' : '#f59e0b'}" />`;
-    })
-    .join('');
-
-  const contractOverlaySvg = hud.contract?.containers?.length
-    ? (() => {
-        const isSabotage = Boolean(hud.contract.isSabotage);
-        const cellToPct = (cell) => Math.max(3, Math.min(97, ((cell + 0.5) / 36) * 100));
-        const pad = hud.contract.deliveryPad;
-        const padX = (pad.minCol / 36) * 100;
-        const padY = (pad.minRow / 36) * 100;
-        const padW = ((pad.maxCol - pad.minCol + 1) / 36) * 100;
-        const padH = ((pad.maxRow - pad.minRow + 1) / 36) * 100;
-        const cargoSvg = hud.contract.containers
-          .map((c) => {
-            const cx = cellToPct(c.col);
-            const cy = cellToPct(c.row);
-            const fill =
-              c.status === 'delivered'
-                ? '#10b981'
-                : c.status === 'armed'
-                ? '#f43f5e'
-                : c.status === 'carried' || c.status === 'unloading'
-                ? '#fbbf24'
-                : isSabotage
-                ? '#a855f7'
-                : '#38bdf8';
-            const label = isSabotage ? `RELAY ${c.slot}` : `CARGO ${c.slot}`;
-            const stateSuffix =
-              c.status === 'delivered'
-                ? ' ✓'
-                : c.status === 'armed'
-                ? ` [FUSE ${Math.ceil(c.fuseTimer || 0)}s]`
-                : '';
-            return `
-              <rect x="${(cx - 2.4).toFixed(1)}" y="${(cy - 2.4).toFixed(1)}" width="4.8" height="4.8" rx="0.8" fill="${fill}" stroke="#0b0f17" stroke-width="0.6" />
-              <text x="${(cx + 3.2).toFixed(1)}" y="${(cy + 1.2).toFixed(1)}" fill="${fill}" font-size="3.0" font-family="monospace" font-weight="bold">${label}${stateSuffix}</text>
-            `;
-          })
-          .join('');
-        return `
-          <rect x="${padX.toFixed(1)}" y="${padY.toFixed(1)}" width="${padW.toFixed(1)}" height="${padH.toFixed(1)}" fill="#10b981" fill-opacity="0.25" stroke="#34d399" stroke-width="0.8" />
-          <text x="${(padX - 2).toFixed(1)}" y="${(padY - 1.5).toFixed(1)}" fill="#34d399" font-size="3.0" font-family="monospace" font-weight="bold">${isSabotage ? 'EXTRACTION PAD' : 'DELIVERY PAD'}</text>
-          ${cargoSvg}
-        `;
-      })()
-    : '';
-
-  setHtml(modal, `
-    <div class="w-full max-w-2xl bg-[#0B0F17] border border-slate-700 rounded p-6 shadow-2xl font-mono">
-      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-        <div>
-          <div class="text-[10px] uppercase tracking-widest text-teal-400">NORTH-UP TACTICAL SECTOR OVERLAY [M]</div>
-          <h3 class="text-lg font-bold text-white uppercase">MANUAL NAVIGATION ROUTE PLANNER (NO AUTOPILOT)</h3>
-        </div>
-        <div class="flex gap-2">
-          <button data-action="clear-manual-route" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs cursor-pointer">
-            CLEAR ROUTE
-          </button>
-          <button data-action="toggle-tactical-map" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded text-xs cursor-pointer">
-            ✕ CLOSE [M]
-          </button>
-        </div>
-      </div>
-      <p class="text-xs text-slate-300 mb-3">
-        Click anywhere on the North-Up grid below to plot manual route guide waypoints (<span class="text-sky-400">WP1..WP6</span>). Only sensor-detected hostiles (Optical LOS) appear on the map.
-      </p>
-      <div data-map-canvas="true" class="relative w-full aspect-square max-h-[55vh] mx-auto bg-slate-950 border border-slate-700 rounded cursor-crosshair overflow-hidden">
-        <svg viewBox="0 0 100 100" class="w-full h-full">
-          <line x1="25" y1="0" x2="25" y2="100" stroke="#1e293b" stroke-width="0.4" />
-          <line x1="50" y1="0" x2="50" y2="100" stroke="#334155" stroke-width="0.6" />
-          <line x1="75" y1="0" x2="75" y2="100" stroke="#1e293b" stroke-width="0.4" />
-          <line x1="0" y1="25" x2="100" y2="25" stroke="#1e293b" stroke-width="0.4" />
-          <line x1="0" y1="50" x2="100" y2="50" stroke="#334155" stroke-width="0.6" />
-          <line x1="0" y1="75" x2="100" y2="75" stroke="#1e293b" stroke-width="0.4" />
-          <rect x="46" y="88" width="8" height="6" fill="#38bdf8" />
-          <text x="41" y="86" fill="#38bdf8" font-size="3.2" font-family="monospace">COMMAND HQ</text>
-          ${contractOverlaySvg}
-          <polyline points="${pts.join(' ')}" fill="none" stroke="#38bdf8" stroke-width="1.1" stroke-dasharray="2.5 1.5" />
-          ${waypointsCircles}
-          ${contactsCircles}
-          <circle cx="${px.toFixed(1)}" cy="${pz.toFixed(1)}" r="3.0" fill="#10b981" stroke="#ffffff" stroke-width="0.7" />
-        </svg>
-      </div>
-    </div>
-  `);
 }
 
 function renderCodexStudio() {
@@ -1560,9 +1308,9 @@ function renderContractHud(hud) {
     setHtml(
       hudEl,
       `
-        <div class="bg-[#0B0F17]/95 border border-slate-700/80 px-3 py-2 rounded shadow-xl flex flex-wrap items-center gap-2">
+        <div class="hud-card hud-objectives-card">
           ${phaseBadge}
-          ${statsBadge}
+          <div class="mt-1.5">${statsBadge}</div>
         </div>
         ${baseDownWarn}
       `
@@ -1612,41 +1360,34 @@ function renderContractHud(hud) {
 
   setHidden(hudEl, false);
   const isSabotage = Boolean(contract.isSabotage);
-  const cargoSilhouettes = contract.containers
+  const cargoRows = contract.containers
     .map((c) => {
       const isOptional = c.slot === 3;
-      const starBadge = isOptional ? '<span class="text-amber-300 ml-0.5" title="Optional 3rd Objective Bonus (+$4,000)">★</span>' : '';
+      const starBadge = isOptional ? ' <span class="text-amber-300" title="Optional 3rd Objective Bonus (+$4,000)">★</span>' : '';
       let stateIcon = isSabotage ? '◈' : '▭';
-      let stateLabel = isSabotage ? 'ACTIVE' : 'WAITING';
-      let pillCls = isSabotage
-        ? 'border-dashed border-purple-400/70 bg-slate-950/90 text-purple-200'
-        : 'border-dashed border-sky-400/70 bg-slate-950/90 text-sky-200';
+      let stateLabel = isSabotage ? 'ACTIVE' : 'WAIT';
+      let rowCls = '';
       if (c.status === 'delivered') {
         stateIcon = '✓';
-        stateLabel = isSabotage ? 'DEMOLISHED' : 'SECURED';
-        pillCls = 'border-emerald-400 bg-emerald-950/85 text-emerald-200';
+        stateLabel = isSabotage ? 'DONE' : 'SECURED';
+        rowCls = ' is-done';
       } else if (c.status === 'armed') {
         stateIcon = '💣';
-        stateLabel = `FUSE ${Math.ceil(c.fuseTimer || 0)}s`;
-        pillCls = 'border-rose-400 bg-rose-950/90 text-rose-200 ring-1 ring-rose-400/70';
+        stateLabel = `${Math.ceil(c.fuseTimer || 0)}s`;
+        rowCls = ' is-armed';
       } else if (c.status === 'carried' || c.status === 'unloading') {
         stateIcon = '⛟';
-        stateLabel = c.status === 'unloading' ? 'UNLOADING' : 'CARRIED';
-        pillCls = 'border-amber-400 bg-amber-950/90 text-amber-200 ring-1 ring-amber-400/60';
+        stateLabel = c.status === 'unloading' ? 'UNLOAD' : 'CARRIED';
+        rowCls = ' is-active';
       } else if (c.status === 'loading') {
         stateIcon = '⟳';
-        stateLabel = isSabotage ? 'ARMING' : 'LOADING';
-        pillCls = isSabotage
-          ? 'border-purple-300 bg-purple-950/90 text-purple-100 ring-1 ring-purple-300/60'
-          : 'border-sky-300 bg-sky-950/90 text-sky-100 ring-1 ring-sky-300/60';
+        stateLabel = isSabotage ? 'ARMING' : 'LOAD';
+        rowCls = ' is-active';
       }
       return `
-        <div class="px-2.5 py-1.5 rounded border ${pillCls} flex items-center gap-2 font-mono text-xs min-w-[116px]">
-          <span class="text-base font-bold leading-none">${stateIcon}</span>
-          <div class="leading-tight">
-            <div class="font-bold text-[11px]">#${c.slot} ${c.shortName}${starBadge}</div>
-            <div class="text-[9px] uppercase tracking-wider opacity-85">${stateLabel}</div>
-          </div>
+        <div class="hud-obj-row${rowCls}">
+          <span class="hud-obj-name">${stateIcon} #${c.slot} ${c.shortName}${starBadge}</span>
+          <span class="hud-obj-state">${stateLabel}</span>
         </div>
       `;
     })
@@ -1654,39 +1395,29 @@ function renderContractHud(hud) {
 
   const minReq = contract.minRequiredDeliveries || 2;
   const exitUnlocked = contract.deliveredCount >= minReq;
-  const counterBadge = exitUnlocked
-    ? `<div class="px-3 py-1.5 rounded border border-emerald-400 bg-emerald-950/90 text-emerald-200 font-mono text-xs flex items-center gap-2 font-bold">
-         <span class="text-base leading-none">⇥</span>
-         <div>
-           <div class="text-[11px]">${contract.deliveredCount}/${minReq} ${isSabotage ? 'DEMOLISHED' : 'DELIVERED'}</div>
-           <div class="text-[9px] text-emerald-300">EXIT UNLOCKED ON PAD</div>
-         </div>
-       </div>`
-    : `<div class="px-3 py-1.5 rounded border border-slate-700 bg-slate-900/95 text-slate-200 font-mono text-xs flex items-center gap-2">
-         <span class="text-amber-400 font-bold text-sm">${contract.deliveredCount}/${minReq}</span>
-         <div class="leading-tight">
-           <div class="text-[10px] font-bold uppercase">${isSabotage ? 'REQUIRED RELAYS' : 'REQUIRED CARGO'}</div>
-           <div class="text-[9px] text-slate-400">+$1,500 EACH · 3RD ★ +$4,000</div>
-         </div>
-       </div>`;
+  const headTitle = exitUnlocked
+    ? 'EXTRACT AT PAD'
+    : isSabotage
+    ? 'RELAYS'
+    : 'CARGO';
 
   const warn = contract.gateWarning;
   const warnHtml = warn
-    ? `<div class="bg-red-950/95 border border-red-500/80 px-3.5 py-1.5 rounded flex items-center gap-2.5 font-mono text-xs text-red-100 shadow-lg">
-         <span class="text-amber-300 font-bold text-sm">↓ ${warn.gateLabel}</span>
-         <span class="text-red-200 font-semibold">${warn.label}: ${(warn.previewUnits || []).map((u) => `⛨ ${u}`).join(' · ')}</span>
-         <span class="px-1.5 py-0.5 rounded bg-red-900/90 border border-red-400/60 text-[10px] font-bold text-amber-200">
-           ${warn.waitingAtCap ? 'REINFORCEMENTS WAITING (6/6 ACTIVE)' : warn.GateTimerText || (warn.gateTimer > 0 ? `IN ${Math.ceil(warn.gateTimer)}s` : `${warn.remainingPackets} PKT QUEUED`)}
-         </span>
+    ? `<div class="hud-card px-2.5 py-1.5 border-l-2 border-red-500 font-mono text-[10px] text-red-200 leading-tight">
+         <div class="font-bold text-amber-300">↓ ${warn.gateLabel} · ${warn.waitingAtCap ? '6/6 ACTIVE' : warn.GateTimerText || (warn.gateTimer > 0 ? `${Math.ceil(warn.gateTimer)}s` : `${warn.remainingPackets} PKT`)}</div>
+         <div class="truncate opacity-90">${(warn.previewUnits || []).join(' · ')}</div>
        </div>`
     : '';
 
   setHtml(
     hudEl,
     `
-      <div class="bg-[#0B0F17]/95 border border-slate-700/80 px-3 py-2 rounded shadow-xl flex flex-wrap items-center justify-center gap-2">
-        ${cargoSilhouettes}
-        ${counterBadge}
+      <div class="hud-card hud-objectives-card${isSabotage ? ' is-sabotage' : ''}${exitUnlocked ? ' is-done' : ''}">
+        <div class="hud-obj-head">
+          <span class="hud-label">${headTitle}</span>
+          <span class="hud-obj-count">${contract.deliveredCount}/${minReq}${exitUnlocked ? ' ✓' : ''}</span>
+        </div>
+        <div class="hud-obj-list">${cargoRows}</div>
       </div>
       ${warnHtml}
     `
@@ -1808,6 +1539,7 @@ function renderUI(forceModals = false) {
   const isLowHp = hud.playerHp / Math.max(1, hud.playerMaxHp) < 0.33;
 
   const topTelemetry = document.getElementById('top-telemetry');
+  const topCompass = document.getElementById('top-compass');
   const topControls = document.getElementById('top-controls');
   const sensorMinimap = document.getElementById('sensor-minimap');
   const bossBanner = document.getElementById('boss-banner');
@@ -1823,7 +1555,7 @@ function renderUI(forceModals = false) {
   // The menu screen is opaque: let the engine skip simulating and drawing the hidden scene
   engine?.setSceneOccluded(menuVisible);
   if (menuVisible) {
-    for (const id of ['top-telemetry', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'status-toast', 'modifiers-strip', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'upgrade-drawer', 'diagnostics-panel', 'tactical-map-modal']) {
+    for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'status-toast', 'modifiers-strip', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'upgrade-drawer']) {
       setHidden(document.getElementById(id), true);
     }
     renderCodexStudio();
@@ -1839,7 +1571,7 @@ function renderUI(forceModals = false) {
   if (statusModal) delete statusModal.dataset.page;
 
   if (state.showUpgradeDrawer) {
-    for (const id of ['top-telemetry', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'status-toast', 'modifiers-strip', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'status-modal', 'diagnostics-panel', 'tactical-map-modal', 'codex-modal']) {
+    for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'status-toast', 'modifiers-strip', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'status-modal', 'codex-modal']) {
       setHidden(document.getElementById(id), true);
     }
     renderHangarAndWorkshopDrawer(hud, upgrades);
@@ -1849,6 +1581,7 @@ function renderUI(forceModals = false) {
 
   if (state.showCodexModal) {
     setHidden(topTelemetry, true);
+    setHidden(topCompass, true);
     setHidden(topControls, true);
     setHidden(sensorMinimap, true);
     setHidden(bossBanner, true);
@@ -1864,17 +1597,19 @@ function renderUI(forceModals = false) {
     return;
   } else {
     setHidden(topTelemetry, false);
+    setHidden(topCompass, false);
     setHidden(topControls, false);
     setHidden(modifiersStrip, false);
     renderCodexStudio();
   }
 
   renderNorthUpSensorMinimap(hud);
-  renderDiagnosticsOverlay(hud);
-  renderTacticalMapModal(hud);
   renderContractHud(hud);
 
-  // 1. Top-Left Telemetry
+  // 1. Top-Left Telemetry (HULL HP, TURRET & Compact Sector Strip)
+  const turretAzimuthDeg =
+    ((Math.round((-(hud.playerTurretAngle || 0) * 180) / Math.PI + 180) % 360) + 360) % 360;
+
   if (topTelemetry) {
     const baseStatusColor = !hud.baseAlive
       ? 'text-red-400'
@@ -1883,130 +1618,156 @@ function renderUI(forceModals = false) {
       : 'text-amber-300';
 
     const baseStatusText = !hud.baseAlive
-      ? 'OFFLINE (NO REPAIR)'
+      ? 'OFFLINE'
       : hud.inBaseRepairZone
       ? 'REPAIR +3/s'
       : 'ONLINE';
 
     const enemyCitadelHtml = hud.enemyBaseAlive
-      ? `<div>
-          <span class="text-slate-400 block text-[10px] uppercase tracking-wider">ENEMY CITADEL</span>
-          <span class="text-red-400 font-semibold text-sm tabular-nums">${hud.enemyBaseHp}/${hud.enemyBaseMaxHp} HP</span>
-        </div>`
+      ? `<span>CITADEL <b class="text-red-400">${hud.enemyBaseHp}/${hud.enemyBaseMaxHp}</b></span>`
       : '';
 
+    const activeHpSegs = isOverhealed
+      ? 8
+      : Math.max(0, Math.min(8, Math.ceil((hpPercent / 100) * 8)));
+    const hpSegsHtml = Array.from(
+      { length: 8 },
+      (_, idx) => `<span class="${idx < activeHpSegs ? 'is-on' : ''}"></span>`
+    ).join('');
+
     setHtml(topTelemetry, `
-      <div class="flex items-center gap-2.5 pr-3 border-r border-slate-700/60">
-        <div class="w-2.5 h-2.5 bg-amber-500 rotate-45"></div>
-        <div>
-          <div class="text-[10px] font-mono uppercase tracking-[0.14em] text-amber-400">
-            ${currentSector.code} · ${(hud.mapObjectiveLabel || currentSector.rules?.shortLabel || 'DESTROY ALL HOSTILES')}
+      <div class="hud-top-row">
+        <div class="hud-card hud-hp-card${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}">
+          <div class="hud-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 36 22" width="32" height="20" fill="none">
+              <path d="M5 12h24l3 4v3H3v-3l2-4z" fill="#4ade80" fill-opacity="0.25" stroke="#4ade80" stroke-width="1.4"/>
+              <path d="M11 7h11l3 5H9l2-5z" fill="#4ade80" fill-opacity="0.45" stroke="#86efac" stroke-width="1.3"/>
+              <path d="M22 9h12" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+            </svg>
           </div>
-          <div class="text-sm font-bold tracking-wider uppercase text-slate-100">
-            ${currentSector.name}
+          <div>
+            <span class="hud-label">HULL HP</span>
+            <div class="hud-hp-segs" aria-hidden="true">${hpSegsHtml}</div>
+            <div class="hud-hp-val">${Math.ceil(hud.playerHp)} <small>/ ${hud.playerMaxHp}</small></div>
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-4 px-1 font-mono text-xs">
-        <div>
-          <span class="text-slate-400 block text-[10px] uppercase tracking-wider">CREDITS</span>
-          <span class="text-emerald-400 font-semibold text-sm tabular-nums">$ ${hud.credits ?? 0}</span>
-        </div>
-        <div>
-          <span class="text-slate-400 block text-[10px] uppercase tracking-wider">SPEED</span>
-          <span class="text-teal-300 font-semibold text-sm tabular-nums">${hud.speedKmh || 0} km/h</span>
-        </div>
-        <div>
-          <span class="text-slate-400 block text-[10px] uppercase tracking-wider">REPAIR BASE</span>
-          <span class="font-semibold text-sm tabular-nums ${baseStatusColor}">${baseStatusText}</span>
-        </div>
-        <div>
-          <span class="text-slate-400 block text-[10px] uppercase tracking-wider">HOSTILES</span>
-          <span class="text-emerald-400 font-semibold text-sm tabular-nums">
-            ${hud.enemiesRemaining} / ${hud.totalEnemiesInSector}
-          </span>
-        </div>
+
+      <div class="hud-card hud-sector-strip">
+        <strong>${currentSector.code} · ${currentSector.name}</strong>
+        <span>HOSTILES <b class="text-emerald-400">${hud.enemiesRemaining}/${hud.totalEnemiesInSector}</b></span>
+        <span>CREDITS <b class="text-emerald-400">$${hud.credits ?? 0}</b></span>
+        <span>BASE <b class="${baseStatusColor}">${baseStatusText}</b></span>
         ${enemyCitadelHtml}
       </div>
     `);
   }
 
-  // 2. Top-Right Utility Controls
+  // 1b. Top-Center Live Compass
+  if (topCompass) {
+    const compassLabels = { 0: 'N', 45: 'NE', 90: 'E', 135: 'SE', 180: 'S', 225: 'SW', 270: 'W', 315: 'NW' };
+    const ticks = [];
+    for (let offset = -75; offset <= 75; offset += 15) {
+      const snapped = Math.round((turretAzimuthDeg + offset) / 15) * 15;
+      const deg = ((snapped % 360) + 360) % 360;
+      const diff = snapped - turretAzimuthDeg;
+      const pct = 50 + (diff / 150) * 100;
+      if (pct < 4 || pct > 96) continue;
+      const lbl = compassLabels[deg] || (deg % 30 === 0 ? String(deg).padStart(3, '0') : '');
+      const isCard = Boolean(compassLabels[deg]);
+      const isNorth = deg === 0;
+      ticks.push(
+        `<span class="hud-compass-tick${isCard ? ' is-cardinal' : ''}${isNorth ? ' is-north' : ''}" style="left:${pct.toFixed(1)}%">${lbl || '&nbsp;'}<i></i></span>`
+      );
+    }
+    setHtml(
+      topCompass,
+      `<div class="hud-card hud-compass"><div class="hud-compass-track">${ticks.join('')}</div><span class="hud-compass-pointer"></span></div>`
+    );
+  }
+
+  // 2. Top-Right APS Badge & Compact Utility Controls
   if (topControls) {
+    const apsTotal = hud.apsTotal ?? 0;
+    const apsMax = hud.apsMaxAmmo ?? 0;
+    const apsReady = apsTotal > 0 && !(hud.jammedTimer > 0);
+    const apsStatusText = hud.jammedTimer > 0
+      ? 'JAMMED'
+      : apsMax <= 0
+      ? 'NO APS'
+      : apsReady
+      ? `READY (${apsTotal}/${apsMax})`
+      : 'DEPLETED';
+
     setHtml(topControls, `
-      <button
-        data-action="toggle-codex"
-        class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border px-3 py-2 rounded text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer border-teal-400/80 text-teal-300"
-        title="Open 3D Tactical Codex & Showcase [I]"
-      >
-        <span class="text-teal-400">◈</span>
-        <span class="hidden md:inline">CODEX [I]</span>
-      </button>
+      <div class="hud-card hud-aps-badge${apsReady ? '' : ' is-offline'}">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
+          <path d="M12 3l7 3v5c0 4.8-3 8.6-7 10-4-1.4-7-5.2-7-10V6l7-3z" fill="${apsReady ? 'rgba(74, 222, 128, 0.2)' : 'rgba(100, 116, 139, 0.15)'}" stroke="${apsReady ? '#4ade80' : '#64748b'}" stroke-width="1.6"/>
+          <path d="M9 12l2 2 4-4" stroke="${apsReady ? '#86efac' : '#64748b'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div>
+          <span class="hud-label">APS</span>
+          <div class="hud-aps-status">${apsStatusText}</div>
+        </div>
+      </div>
 
-      <button
-        data-action="toggle-tactical-map"
-        class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-3 py-2 rounded text-xs font-mono uppercase tracking-wider text-sky-300 transition-colors cursor-pointer"
-        title="Open North-Up Tactical Map & Route Planner [M]"
-      >
-        <span>🗺</span>
-        <span class="hidden sm:inline">MAP [M]</span>
-      </button>
+      <div class="hud-util-row">
+        <button
+          data-action="toggle-upgrades"
+          class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border ${
+            hud.inBaseRepairZone
+              ? 'border-teal-400 text-teal-300 ring-2 ring-teal-400/50 animate-pulse'
+              : 'border-amber-500/60 text-amber-400'
+          } px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+          title="Allied Base Hangar & Upgrades [U]"
+        >
+          <span>⚙</span>
+          <span class="hidden sm:inline">HANGAR [U]</span>
+        </button>
 
-      <button
-        data-action="cycle-camera"
-        class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-3 py-2 rounded text-xs font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
-        title="Reset Azimuth & Cycle Camera Angle [C] (MMB Drag to Rotate)"
-      >
-        <span class="text-amber-400">⌖</span>
-        <span class="hidden sm:inline">${CAMERA_LABELS[state.cameraPreset]}</span>
-      </button>
+        <button
+          data-action="toggle-codex"
+          class="flex items-center gap-1 bg-[#0B0F17]/95 hover:bg-slate-800 border border-teal-400/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-teal-300 transition-colors cursor-pointer"
+          title="Open 3D Tactical Codex & Showcase [I]"
+        >
+          <span>◈</span>
+          <span class="hidden md:inline">[I]</span>
+        </button>
 
-      <button
-        data-action="toggle-upgrades"
-        class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border ${
-          hud.inBaseRepairZone
-            ? 'border-teal-400 text-teal-300 ring-2 ring-teal-400/50 animate-pulse'
-            : 'border-amber-500/60 text-amber-400'
-        } px-3 py-2 rounded text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
-        title="Allied Base Hangar & Upgrades [U]"
-      >
-        <span>⚙</span>
-        <span class="hidden sm:inline">HANGAR [U]</span>
-      </button>
+        <button
+          data-action="cycle-camera"
+          class="flex items-center gap-1 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
+          title="Cycle Camera Angle [C]"
+        >
+          <span class="text-amber-400">⌖</span>
+          <span class="hidden lg:inline">${CAMERA_LABELS[state.cameraPreset]}</span>
+        </button>
 
-      <button
-        data-action="toggle-diagnostics"
-        class="bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-2 rounded text-xs font-mono text-teal-300 hover:text-white transition-colors cursor-pointer"
-        title="Toggle Expanded Subsystem & Armor Panel Diagnostics [H]"
-      >
-        DIAG [H]
-      </button>
+        <button
+          data-action="toggle-sound"
+          aria-pressed="${state.soundEnabled}"
+          class="bg-[#0B0F17]/95 hover:bg-slate-800 border ${
+            state.soundEnabled
+              ? 'border-slate-700/70 text-slate-200 hover:text-white'
+              : 'border-red-500/70 text-red-300 hover:text-red-200'
+          } px-2 py-1.5 rounded text-[11px] font-mono transition-colors cursor-pointer"
+          title="Toggle Combat Audio"
+        >
+          ${state.soundEnabled ? '🔊' : '🔇'}
+        </button>
 
-      <button
-        data-action="toggle-sound"
-        aria-pressed="${state.soundEnabled}"
-        class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border ${
-          state.soundEnabled
-            ? 'border-slate-700/70 text-slate-200 hover:text-white'
-            : 'border-red-500/70 text-red-300 hover:text-red-200'
-        } px-2.5 py-2 rounded text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
-        title="Toggle Combat Audio (Mute / Unmute)"
-      >
-        <span>${state.soundEnabled ? '🔊' : '🔇'}</span>
-        <span class="hidden md:inline">${state.soundEnabled ? 'SFX' : 'MUTED'}</span>
-      </button>
-
-      ${
-        hud.status === GameStatus.PLAYING || hud.status === GameStatus.PAUSED
-          ? `<button
-              data-action="toggle-pause"
-              class="bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-2 rounded text-xs font-mono text-amber-400 hover:text-white transition-colors cursor-pointer"
-              title="Pause [ESC / P]"
-            >
-              ${hud.status === GameStatus.PAUSED ? '▶ RESUME' : '❚❚ PAUSE'}
-            </button>`
-          : ''
-      }
+        ${
+          hud.status === GameStatus.PLAYING || hud.status === GameStatus.PAUSED
+            ? `<button
+                data-action="toggle-pause"
+                class="bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono text-amber-400 hover:text-white transition-colors cursor-pointer"
+                title="Pause [ESC / P]"
+              >
+                ${hud.status === GameStatus.PAUSED ? '▶' : '❚❚'}
+              </button>`
+            : ''
+        }
+      </div>
     `);
   }
 
@@ -2137,36 +1898,45 @@ function renderUI(forceModals = false) {
     setHtml(modifiersStrip, items.join(''));
   }
 
-  // 6. Bottom Docked Tactical HUD (Reload Cooldown Bar, Subsystem Strip, Active Modules [1][2][3], APS & ATGM)
+  // 6. Bottom Docked Tactical HUD (Bottom-Left Speed/Gear + Bottom-Center Weapons/Reload/Modules)
   if (bottomHud) {
     if (state.hudCollapsed) {
       setHidden(bottomHud, true);
     } else {
       setHidden(bottomHud, false);
-      const hpBarColor = isOverhealed
-        ? 'bg-cyan-400'
-        : hpPercent > 50
-        ? 'bg-emerald-500'
-        : hpPercent > 33
-        ? 'bg-amber-500'
-        : 'bg-red-500';
-
-      const hpTextColor = isOverhealed
-        ? 'text-cyan-300'
-        : isLowHp
-        ? 'text-red-400'
-        : 'text-emerald-400';
-
       const reloadRemaining = hud.playerFireCooldown || 0;
       const reloadMax = hud.playerMaxFireCooldown || 0.55;
       const reloadPct = reloadRemaining <= 0
         ? 100
         : Math.max(0, Math.min(100, Math.round((1 - reloadRemaining / reloadMax) * 100)));
+      const reloadReady = reloadRemaining <= 0;
+      const filledReloadSegs = reloadReady ? 8 : Math.max(0, Math.min(8, Math.floor((reloadPct / 100) * 8)));
+      const reloadSegsHtml = Array.from(
+        { length: 8 },
+        (_, idx) => `<span class="${idx < filledReloadSegs ? 'is-filled' : ''}"></span>`
+      ).join('');
+
+      const speedKmh = hud.speedKmh || 0;
+      const fwd = hud.playerForwardSpeed || 0;
+      const gearLabel = speedKmh < 1
+        ? 'N'
+        : fwd < -0.15
+        ? 'R'
+        : speedKmh < 14
+        ? 'D1'
+        : speedKmh < 26
+        ? 'D2'
+        : speedKmh < 38
+        ? 'D3'
+        : 'D4';
+
+      const cannonAmmo = hud.cannonAmmo ?? 15;
+      const cannonMax = hud.cannonMaxAmmo ?? 15;
 
       // Alert pills for damaged components/subsystems only (intact components are hidden to avoid clutter)
       const damagedFaults = Object.entries(hud.componentDamage || {})
         .filter(([, isDamaged]) => isDamaged)
-        .map(([track]) => `<span class="px-1.5 py-0.5 border border-red-500/80 bg-red-950/80 text-red-300 rounded text-[9px] font-mono font-bold animate-pulse">⚠ ${track.toUpperCase()} FAULT (-1 TIER)</span>`);
+        .map(([track]) => `<span class="px-1.5 py-0.5 border border-red-500/80 bg-red-950/80 text-red-300 rounded text-[9px] font-mono font-bold animate-pulse">⚠ ${track.toUpperCase()} FAULT</span>`);
 
       const sub = hud.subsystems;
       const damagedSubBadges = sub
@@ -2206,109 +1976,91 @@ function renderUI(forceModals = false) {
           ? `CD ${hud.smokeCooldown.toFixed(0)}s`
           : `SMOKE (${hud.smokeCharges ?? 2})`;
 
-      const apsCellsHtml = hud.apsAmmo
-        .map(
-          (ammo, idx) => `
-          <div class="px-1.5 py-0.5 rounded text-center border text-[10px] ${
-            ammo > 0
-              ? 'bg-emerald-950/70 border-emerald-500/60 text-emerald-300'
-              : 'bg-slate-950 border-slate-800 text-slate-600'
-          }">
-            <div class="text-[8px] text-slate-400">${APS_LABELS[idx]}</div>
-            <div class="font-bold">${ammo}</div>
-          </div>
-        `
-        )
-        .join('');
-
       const canFireMissile = hud.missileAmmo > 0 && hud.missileCooldown <= 0;
 
-      // Separate sections so a change in one (e.g. a subsystem %) does not rebuild the rest
       if (!bottomHud.__sections) {
         bottomHud.innerHTML =
-          '<div style="display: contents"></div><div style="display: contents"></div><div style="display: contents"></div>';
+          '<div style="display: contents"></div><div class="hud-bottom-center"></div>';
         bottomHud.__sections = Array.from(bottomHud.children);
       }
-      const [hullSection, moduleSection, weaponSection] = bottomHud.__sections;
-      setHtml(hullSection, `
-        <div class="flex items-center gap-4 min-w-[290px] flex-1">
-          ${renderComponentCondition(upgrades, hud.componentDamage)}
-          <div class="w-full">
-            <div class="flex items-center justify-between text-xs font-mono uppercase tracking-wider mb-1">
-              <span class="flex items-center gap-1.5 text-slate-200 font-semibold">
-                HULL INTEGRITY (${hud.playerStats.totalMass}t)
-              </span>
-              <span class="tabular-nums font-bold ${hpTextColor}">
-                ${Math.ceil(hud.playerHp)} / ${hud.playerMaxHp} HP
-              </span>
-            </div>
-
-            <div class="w-full h-2.5 bg-slate-900 border border-slate-800 rounded-xs overflow-hidden relative mb-1.5">
-              <div class="h-full transition-all duration-150 ${hpBarColor}" style="width: ${Math.min(100, hpPercent)}%"></div>
-            </div>
-
-            <!-- Main Gun Reload Cooldown Bar (No 12/24 Ammo Counter per Section 14.2) -->
-            <div class="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider mb-1">
-              <span class="text-amber-300 font-bold">
-                MAIN GUN: ${hud.cannonName} [ <span class="${(hud.cannonAmmo ?? 15) <= 5 ? 'text-amber-400 font-bold animate-pulse' : 'text-slate-100'}">${hud.cannonAmmo ?? 15}</span> / ${hud.cannonMaxAmmo ?? 15} ] (${(hud.cannonAmmo ?? 15) <= 0 ? '<span class="text-red-400 font-bold">NO AMMO</span>' : reloadRemaining <= 0 ? 'READY' : `RELOADING ${reloadRemaining.toFixed(2)}s`})
-              </span>
-              <div class="flex gap-1">${subBadgesHtml}</div>
-            </div>
-            <div class="w-full h-1.5 bg-slate-900 border border-slate-800 rounded-xs overflow-hidden">
-              <div class="h-full bg-amber-400 transition-all duration-75" style="width: ${reloadPct}%"></div>
-            </div>
+      const [speedSection, centerSection] = bottomHud.__sections;
+      setHtml(speedSection, `
+        <div class="hud-card hud-speed-card">
+          <div>
+            <span class="hud-label">SPEED</span>
+            <div class="hud-speed-val">${speedKmh} <small>km/h</small></div>
+          </div>
+          <div class="hud-gear-box">
+            <span class="hud-label">GEAR</span>
+            <div class="hud-gear-val">${gearLabel}</div>
           </div>
         </div>
-`);
-      setHtml(moduleSection, `        <!-- Active Tactical Modules [1] RM-1 Repair, [2] Smoke Screen -->
-        <div class="flex items-center gap-2 font-mono text-xs">
-          <button
-            data-action="activate-module-slot"
-            data-slot="1"
-            class="px-2.5 py-1.5 rounded border border-emerald-500/60 bg-slate-900 hover:bg-emerald-950/60 text-emerald-300 cursor-pointer text-left"
-            title="Activate RM-1 Field Repair Kit [Key 1]: Restore damaged components and regenerate 25 HP over 10s. Collect surplus REPAIR for charges."
-          >
-            <div class="text-[9px] text-slate-400">[KEY 1]</div>
-            <div class="font-bold">${rkLabel}</div>
-          </button>
-
-          <button
-            data-action="activate-module-slot"
-            data-slot="2"
-            class="px-2.5 py-1.5 rounded border border-sky-500/60 bg-slate-900 hover:bg-sky-950/60 text-sky-300 cursor-pointer text-left"
-            title="Deploy Tucha-S Aerosol Smoke Screen [Key 2]: Blocks enemy optical LOS for 8s"
-          >
-            <div class="text-[9px] text-slate-400">[KEY 2]</div>
-            <div class="font-bold">${smokeLabel}</div>
-          </button>
-        </div>
-
       `);
-      setHtml(weaponSection, `
-        <div class="flex items-center gap-2.5">
-          <div class="px-2.5 py-1 rounded border border-emerald-500/40 bg-slate-900/90 font-mono text-xs flex items-center gap-2">
-            ${renderPowerUpBadgeSvg(POWERUP.APS, 32, false)}
-            <div class="grid grid-cols-4 gap-1">${apsCellsHtml}</div>
-          </div>
 
-          <button
-            data-action="fire-missile"
-            ${canFireMissile ? '' : 'disabled'}
-            class="px-2.5 py-1 rounded border font-mono text-xs uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
-              canFireMissile
-                ? 'bg-amber-500/15 hover:bg-amber-500/25 border-amber-400 text-amber-300 cursor-pointer'
-                : 'bg-slate-900/80 border-slate-800 text-slate-500 cursor-not-allowed'
-            }"
-            title="Launch Homing ATGM Missile [Space] · Right-Click Enemy to Designate Priority Target"
-          >
-            ${renderPowerUpBadgeSvg(POWERUP.MISSILE, 32, false)}
-            <div class="text-left">
-              <div class="text-[9px] text-slate-400">[SPACE] ATGM</div>
-              <div class="font-bold">${hud.missileAmmo}/${hud.missileMaxAmmo ?? getMaxMissileAmmo(upgrades.frame)}</div>
+      setHtml(centerSection, `
+        <div class="flex flex-col items-center gap-1.5">
+          ${subBadgesHtml ? `<div class="flex flex-wrap justify-center gap-1">${subBadgesHtml}</div>` : ''}
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <div class="hud-card hud-weapon-card">
+              <div class="hud-ammo-block">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
+                  <path d="M7 20V9l2-5 2 5v11H7zM13 20V9l2-5 2 5v11h-4z" fill="#cbd5e1" fill-opacity="0.85"/>
+                </svg>
+                <div>
+                  <span class="hud-label">${hud.cannonName}</span>
+                  <div class="hud-ammo-val"><span class="${cannonAmmo <= 5 ? 'text-amber-400 animate-pulse' : ''}">${cannonAmmo}</span> <small>/ ${cannonMax}</small></div>
+                </div>
+              </div>
+              <div class="hud-reload-block">
+                <span class="hud-label">RELOAD</span>
+                <div class="hud-reload-row">
+                  <div class="hud-reload-segs${reloadReady ? ' is-ready' : ''}" aria-hidden="true">${reloadSegsHtml}</div>
+                  <span class="hud-reload-time">${cannonAmmo <= 0 ? 'EMPTY' : reloadReady ? 'READY' : `${reloadRemaining.toFixed(1)} s`}</span>
+                </div>
+              </div>
             </div>
-          </button>
+
+            <div class="hud-card hud-modules-card">
+              <button
+                data-action="activate-module-slot"
+                data-slot="1"
+                class="px-2 py-1 rounded border border-emerald-500/60 bg-slate-900 hover:bg-emerald-950/60 text-emerald-300 cursor-pointer text-left font-mono text-[11px]"
+                title="Activate RM-1 Field Repair Kit [Key 1]"
+              >
+                <div class="text-[8px] text-slate-400">[1]</div>
+                <div class="font-bold">${rkLabel}</div>
+              </button>
+
+              <button
+                data-action="activate-module-slot"
+                data-slot="2"
+                class="px-2 py-1 rounded border border-sky-500/60 bg-slate-900 hover:bg-sky-950/60 text-sky-300 cursor-pointer text-left font-mono text-[11px]"
+                title="Deploy Aerosol Smoke Screen [Key 2]"
+              >
+                <div class="text-[8px] text-slate-400">[2]</div>
+                <div class="font-bold">${smokeLabel}</div>
+              </button>
+
+              <button
+                data-action="fire-missile"
+                ${canFireMissile ? '' : 'disabled'}
+                class="px-2 py-1 rounded border font-mono text-[11px] uppercase tracking-wider transition-colors flex items-center gap-1 ${
+                  canFireMissile
+                    ? 'bg-amber-500/15 hover:bg-amber-500/25 border-amber-400 text-amber-300 cursor-pointer'
+                    : 'bg-slate-900/80 border-slate-800 text-slate-500 cursor-not-allowed'
+                }"
+                title="Launch Homing ATGM Missile [Space]"
+              >
+                ${renderPowerUpBadgeSvg(POWERUP.MISSILE, 22, false)}
+                <div class="text-left">
+                  <div class="text-[8px] text-slate-400">[SPC] ATGM</div>
+                  <div class="font-bold">${hud.missileAmmo}/${hud.missileMaxAmmo ?? getMaxMissileAmmo(upgrades.frame)}</div>
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
-`);
+      `);
     }
   }
 
@@ -2341,8 +2093,7 @@ function renderUI(forceModals = false) {
     if (
       hud.status === GameStatus.PLAYING ||
       hud.status === GameStatus.BOSS_INTRO ||
-      state.showUpgradeDrawer ||
-      state.showTacticalMap
+      state.showUpgradeDrawer
     ) {
       setHidden(statusModal, true);
     } else {
