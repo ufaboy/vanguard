@@ -137,8 +137,8 @@ export function renderContracts(selectedContractId, completedMissions = {}) {
       </div>
       <button class="menu-primary" data-action="start-contract" data-contract="${selected.id}">${completed ? 'Replay' : 'Deploy'} ${selected.name} →</button>
       <div class="campaign-brief-nav">
-        <button class="menu-secondary" data-action="toggle-upgrades">Hangar & Workshop [U]</button>
-        <button class="menu-secondary" data-action="menu-page" data-page="play">← Game modes</button>
+        <a class="menu-secondary" href="/hangar">Hangar &amp; Workshop</a>
+        <a class="menu-secondary" href="/">← Main menu</a>
       </div>
     </aside>
   </div>`;

@@ -81,7 +81,7 @@ export function renderSurvival(playerSave = {}) {
       </div>
       <button class="menu-primary" data-action="start-survival">Deploy to ${SURVIVAL_CONFIG.NAME} →</button>
       <div class="campaign-brief-nav">
-        <button class="menu-secondary" data-action="menu-page" data-page="play">← Game modes</button>
+        <a class="menu-secondary" href="/">← Main menu</a>
       </div>
     </aside>
   </div>`;

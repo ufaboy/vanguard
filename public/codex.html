@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Codex — IRON VANGUARD</title>
+    <meta name="description" content="Inspect every player upgrade, enemy tank class, sector boss, equipment module, and destructible terrain in the interactive 3D Codex." />
+    <meta name="theme-color" content="#0B1120" />
+    <link rel="canonical" href="https://iron-vanguard-cuz.pages.dev/codex" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta property="og:site_name" content="IRON VANGUARD" />
+    <meta property="og:title" content="3D Codex — IRON VANGUARD" />
+    <meta property="og:description" content="Inspect every player upgrade, enemy tank class, sector boss, equipment module, and destructible terrain in the interactive 3D Codex." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://iron-vanguard-cuz.pages.dev/codex" />
+    <meta property="og:image" content="https://iron-vanguard-cuz.pages.dev/images/og-battle.jpg" />
+    <link rel="stylesheet" href="./src/index.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/build/three.module.js",
+          "three/addons/": "./vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body data-page="codex" class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
+    <div id="root"></div>
+    <noscript>
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>3D Codex — IRON VANGUARD</h1>
+        <p>Inspect enemy armor, weapons, bosses, and terrain in 3D. JavaScript and WebGL are required to open the 3D Codex.</p>
+      </main>
+    </noscript>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
+

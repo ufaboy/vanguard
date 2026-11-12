@@ -670,3 +670,28 @@ html, body {
 .hangar-upgrade-panel{overflow-y:auto}.hangar-upgrade-content{flex:none;overflow:visible}
 @media(max-width:1100px) and (min-width:761px){.hangar-supply-grid{gap:6px}.hangar-supply-card{padding:7px}.hangar-supply-add svg{display:none}.hangar-credit-coin{display:none}}
 @media(max-width:360px){.hangar-supply-grid{grid-template-columns:1fr}}
+
+/* Multi-page navigation & standalone scrollable pages */
+html:has(body.scrollable-page), body.scrollable-page { overflow-y: auto; height: auto; min-height: 100%; }
+body.scrollable-page #root { min-height: 100vh; display: flex; flex-direction: column; }
+body.scrollable-page .menu-page { min-height: 100vh; display: flex; flex-direction: column; }
+body.scrollable-page .menu-content { flex: 1; width: 100%; }
+.menu-brand, .menu-back, .menu-primary, .menu-secondary, .command-brand, .command-deploy, .command-hangar, .command-header nav a, .command-features a { text-decoration: none; }
+.menu-primary, .menu-secondary { display: inline-flex; align-items: center; justify-content: center; }
+.menu-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+.menu-nav-link { background: none; border: 0; padding: 6px 0; color: #c6cecb; font-size: 13px; text-decoration: none; cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; }
+.menu-nav-link:hover { color: #d6e7a0; }
+.menu-nav-link.is-active { color: #d6e7a0; border-bottom-color: #d6e7a0; font-weight: 600; }
+.command-header nav a { background: none; border: 0; color: #c6cecb; font-size: 13px; cursor: pointer; padding: 9px 0; }
+.command-header nav a:hover { color: #f5b957; }
+.command-features a { display: flex; gap: 15px; align-items: flex-start; text-align: left; padding: 25px 22px; background: #152021; border: 0; border-right: 1px solid #69736a40; color: #e2e8df; cursor: pointer; }
+.command-features a:first-child { border-left: 1px solid #69736a40; }
+.command-features a:hover { background: #25312c; }
+@media (max-width: 800px) {
+  .command-features a { padding: 20px 12px; gap: 9px; }
+}
+@media (max-width: 560px) {
+  .menu-nav { gap: 12px; }
+  .command-header nav a { font-size: 12px; padding: 0; }
+  .command-features a { border-bottom: 1px solid #69736a40; border-left: 1px solid #69736a40; padding: 18px; }
+}
