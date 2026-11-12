@@ -1,7 +1,8 @@
 import { renderComponentCondition } from './component-condition-ui.js';
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
 import { MENU_PAGES, renderMenu } from './menu.js';
-import { PAGE_PATHS } from './app/routes.js';
+import { syncCampaignMapState } from './views/campaign.js';
+import { CONTRACT_PAGE_PATHS, PAGE_PATHS } from './app/routes.js';
 import { attachSettingsModal } from './app/shell.js';
 import {
   CAMERA_LABELS,
@@ -37,6 +38,7 @@ import {
 } from './game/components/index.js';
 import { CODEX_ITEMS } from './game/codex.js';
 import { renderCodex } from './views/codex.js';
+import { renderCampaignBrief } from './views/campaign.js';
 import {
   renderPowerUpBadgeSvg,
 } from './game/icons.js';
@@ -61,7 +63,8 @@ const INITIAL_STATS = computeTankStats({
 const state = {
   menuPage: 'home',
   selectedCampaignMission: CAMPAIGN_MISSIONS[0].id,
-  selectedContract: CONTRACTS_CATALOG[0]?.id || 'contract-last-cargo',
+  campaignDrawerOpen: true,
+  selectedContract: '',
   selectedSector: 0,
   cameraPreset: 'ISOMETRIC',
   soundEnabled: true,
@@ -198,7 +201,7 @@ let engine = null;
 let resolveEngineReady;
 const engineReady = new Promise((resolve) => (resolveEngineReady = resolve));
 // Menu actions that work before the engine is ready; anything else is replayed once it is
-const UI_ONLY_ACTIONS = new Set(['menu-page', 'toggle-sound', 'cycle-quality', 'cycle-fps', 'select-campaign-mission', 'select-contract']);
+const UI_ONLY_ACTIONS = new Set(['menu-page', 'toggle-sound', 'cycle-quality', 'cycle-fps', 'select-campaign-mission', 'select-contract', 'toggle-campaign-brief', 'close-campaign-brief']);
 
 function getSelectedCodexItem() {
   return (
@@ -247,7 +250,9 @@ function initApp() {
   const root = document.getElementById('root');
   if (!root) return;
 
-  root.innerHTML = `
+  const existingShell = document.getElementById('game-shell');
+  if (!existingShell) {
+    root.innerHTML = `
     <div id="game-shell" class="relative w-screen h-screen overflow-hidden bg-[#0B0F17] text-[#F8FAFC] select-none font-sans">
       <!-- 100% Full-bleed 3D WebGL Canvas Mount -->
       <div id="canvas-mount" class="fixed inset-0 w-full h-full cursor-crosshair"></div>
@@ -298,6 +303,14 @@ function initApp() {
       <div id="status-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center bg-black/75 p-4"></div>
     </div>
   `;
+  }
+
+  const statusModal = document.getElementById('status-modal');
+  if (statusModal?.dataset?.page) {
+    state.menuPage = statusModal.dataset.page;
+  } else if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
+    state.menuPage = document.body.dataset.page;
+  }
 
   const mountEl = document.getElementById('canvas-mount');
   adManager.init({
@@ -427,6 +440,7 @@ function initApp() {
     engine?.setFpsCap(prefs.fpsCap);
     renderUI(true);
   });
+  window.addEventListener('popstate', () => applyRoute(parseRoute()));
   applyRoute(parseRoute());
   renderUI(true);
 }
@@ -455,7 +469,8 @@ function applyRoute(route) {
     routePendingEngine = true;
     engineReady.then(() => {
       routePendingEngine = false;
-      applyRoute(parseRoute());
+      window.addEventListener('popstate', () => applyRoute(parseRoute()));
+  applyRoute(parseRoute());
     });
     return;
   }
@@ -492,15 +507,50 @@ function applyRoute(route) {
     state.showUpgradeDrawer = false;
     engine?.setHangarOpen(false);
   }
-  const normalizedPage = route.page === 'contract' ? 'contracts' : route.page;
-  state.menuPage = MENU_PAGES.includes(normalizedPage) ? normalizedPage : 'home';
-  if (state.menuPage === 'campaign' && CAMPAIGN_MISSIONS.some((mission) => mission.id === route.param)) {
-    state.selectedCampaignMission = route.param;
-  } else if (state.menuPage === 'contracts' && CONTRACTS_CATALOG.some((c) => c.id === route.param)) {
-    state.selectedContract = route.param;
+  if (CONTRACT_PAGE_PATHS[route.page]) {
+    const index = SECTORS.findIndex(
+      (sector) => sector.mapId === route.page || sector.contractId === route.page
+    );
+    if (index >= 0) {
+      startSector(index);
+      return;
+    }
   }
-  renderUI(true);
-  document.querySelector('.menu-page h1')?.focus();
+  const normalizedPage = route.page === 'contract' ? 'contracts' : route.page;
+  const targetPage = MENU_PAGES.includes(normalizedPage) ? normalizedPage : 'home';
+  const pageChanged = state.menuPage !== targetPage;
+  state.menuPage = targetPage;
+  if (state.menuPage === 'campaign' && CAMPAIGN_MISSIONS.some((mission) => mission.id === route.param)) {
+    if (state.selectedCampaignMission !== route.param) {
+      state.selectedCampaignMission = route.param;
+      if (!pageChanged) {
+        renderCampaignBrief(route.param, state.hud?.playerSave?.completedMissions);
+        document.querySelectorAll('.cinematic-node').forEach((node) => {
+          node.classList.toggle('is-selected', node.dataset.mission === route.param);
+        });
+        return;
+      }
+    }
+  } else if (state.menuPage === 'contracts') {
+    const nextContract = CONTRACTS_CATALOG.some((c) => c.id === route.param) ? route.param : '';
+    if (state.selectedContract !== nextContract) {
+      state.selectedContract = nextContract;
+      if (!pageChanged) {
+        document.querySelectorAll('.contract-banner[data-contract-card]').forEach((card) => {
+          const isSelected = card.dataset.contractCard === nextContract;
+          card.classList.toggle('is-selected', isSelected);
+          const selectBtn = card.querySelector('[data-action="select-contract"]');
+          if (selectBtn) selectBtn.setAttribute('aria-pressed', String(isSelected));
+        });
+        return;
+      }
+    }
+  }
+  const statusModal = document.getElementById('status-modal');
+  if (pageChanged || !statusModal?.dataset?.page) {
+    renderUI(true);
+    document.querySelector('.menu-page h1')?.focus();
+  }
 }
 
 function cycleCameraPreset() {
@@ -597,21 +647,54 @@ function setupDelegatedEvents(root) {
         document.querySelector('.menu-page h1')?.focus();
         break;
       case 'select-campaign-mission': {
-        if (!CAMPAIGN_MISSIONS.some(mission => mission.id === btn.dataset.mission)) break;
-        const map = document.querySelector('.campaign-map-scroll');
-        const scrollLeft = map?.scrollLeft || 0;
-        const scrollTop = map?.scrollTop || 0;
-        state.selectedCampaignMission = btn.dataset.mission;
-        renderUI(true);
-        const nextMap = document.querySelector('.campaign-map-scroll');
-        if (nextMap) { nextMap.scrollLeft = scrollLeft; nextMap.scrollTop = scrollTop; }
-        const checkpoint = document.querySelector('.campaign-checkpoint.is-selected');
-        checkpoint?.focus({ preventScroll: true });
-        if (nextMap && checkpoint) {
-          const x = checkpoint.offsetLeft;
-          const y = checkpoint.offsetTop;
-          if (x < nextMap.scrollLeft + 24 || x > nextMap.scrollLeft + nextMap.clientWidth - 24) nextMap.scrollLeft = x - nextMap.clientWidth / 2;
-          if (y < nextMap.scrollTop + 24 || y > nextMap.scrollTop + nextMap.clientHeight - 24) nextMap.scrollTop = y - nextMap.clientHeight / 2;
+        const missionId = btn.dataset.mission;
+        const mission = CAMPAIGN_MISSIONS.find((m) => m.id === missionId);
+        if (!mission) break;
+        state.selectedCampaignMission = missionId;
+        state.campaignDrawerOpen = true;
+
+        // Targeted node update without full page re-render:
+        const nodes = document.querySelectorAll('.cinematic-node');
+        if (nodes.length > 0) {
+          nodes.forEach((node) => {
+            const isSelected = node.dataset.mission === missionId;
+            node.classList.toggle('is-selected', isSelected);
+            node.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+          });
+        }
+
+        // Targeted brief drawer update:
+        const drawer = document.querySelector('.cinematic-brief-drawer');
+        if (drawer) {
+          drawer.outerHTML = renderCampaignBrief(mission, state.hud?.playerSave?.completedMissions || {}, true);
+        } else {
+          renderUI(true);
+        }
+        syncRoute({ page: 'campaign', param: missionId });
+        break;
+      }
+      case 'toggle-campaign-brief': {
+        const drawer = document.querySelector('.cinematic-brief-drawer');
+        if (drawer) {
+          const willOpen = !drawer.classList.contains('is-open');
+          state.campaignDrawerOpen = willOpen;
+          drawer.classList.toggle('is-open', willOpen);
+          drawer.classList.toggle('is-closed', !willOpen);
+          const chevron = drawer.querySelector('.handle-chevron');
+          if (chevron) chevron.textContent = willOpen ? '︾' : '︽';
+          const toggleBtn = drawer.querySelector('.drawer-toggle-btn');
+          if (toggleBtn) toggleBtn.textContent = willOpen ? '✕' : '▲';
+        }
+        break;
+      }
+      case 'close-campaign-brief': {
+        const drawer = document.querySelector('.cinematic-brief-drawer');
+        if (drawer) {
+          state.campaignDrawerOpen = false;
+          drawer.classList.remove('is-open');
+          drawer.classList.add('is-closed');
+          const toggleBtn = drawer.querySelector('.drawer-toggle-btn');
+          if (toggleBtn) toggleBtn.textContent = '▲';
         }
         break;
       }
@@ -622,9 +705,19 @@ function setupDelegatedEvents(root) {
         break;
       }
       case 'select-contract': {
-        if (!CONTRACTS_CATALOG.some((item) => item.id === btn.dataset.contract)) break;
-        state.selectedContract = btn.dataset.contract;
-        renderUI(true);
+        const contractId = btn.dataset.contract;
+        const contract = CONTRACTS_CATALOG.find((item) => item.id === contractId);
+        if (!contract) break;
+        state.selectedContract = contractId;
+
+        document.querySelectorAll('.contract-banner[data-contract-card]').forEach((card) => {
+          const isSelected = card.dataset.contractCard === contractId;
+          card.classList.toggle('is-selected', isSelected);
+          const selectBtn = card.querySelector('[data-action="select-contract"]');
+          if (selectBtn) selectBtn.setAttribute('aria-pressed', String(isSelected));
+        });
+
+        syncRoute({ page: 'contract', param: contractId }, { push: true });
         break;
       }
       case 'start-contract': {
@@ -650,6 +743,10 @@ function setupDelegatedEvents(root) {
         renderUI(false);
         break;
       case 'return-contracts':
+        if (CONTRACT_PAGE_PATHS[document.body?.dataset?.page]) {
+          location.href = PAGE_PATHS.contracts;
+          break;
+        }
         state.menuPage = 'contracts';
         engine?.abortMissionToHangar();
         renderUI(true);
@@ -1744,9 +1841,11 @@ function renderUI(forceModals = false) {
     }
     renderCodexStudio();
     setHidden(statusModal, false);
-    if (forceModals || statusModal.dataset.page !== state.menuPage) {
+    if (statusModal.dataset.page !== state.menuPage) {
       setHtml(statusModal, renderMenu(state, CAMERA_LABELS));
       statusModal.dataset.page = state.menuPage;
+    } else if (state.menuPage === 'campaign') {
+      syncCampaignMapState(state.hud?.playerSave?.completedMissions || {}, state.selectedCampaignMission);
     }
     return;
   }

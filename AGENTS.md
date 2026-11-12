@@ -35,11 +35,15 @@
    - **Bolt-on attachments are standalone modules, not part of a core component.** Elements such as a dozer blade (`DOZER_BLADE`) belong in `OPTIONAL_EQUIPMENT` and appear on a model only when the tank's loadout lists that module.
 6. **Clarify Before Building a Tank Model**:
    - Before creating or rebuilding any tank model (Blender or procedural), **always confirm with the user**: which additional / optional modules the tank carries, its intended size relative to other tanks, and any distinctive features or elements it must (or must not) have.
-7. **Release Before Deploy**:
-   - Before running a production deploy (`npm run deploy`), **always create a release first**: ensure all changes are committed, then create an annotated Git tag matching the current `package.json` version (e.g., `git tag -a v1.1.1 -m "Release v1.1.1"`), and create a remote/GitHub release if a remote is configured. Do not deploy uncommitted work directly to production without a release.
+7. **Release Before Deploy (On `main` After PR Merge)**:
+   - Do **not** create Git tags or GitHub releases on a feature/PR branch or prior to PR merge.
+   - Only **after** a PR is merged/squashed into `main`, create the annotated Git tag matching the `package.json` version on the resulting squash commit on `main` (e.g., `git tag -a v1.4.1 -m "Release v1.4.1"`) and create the remote/GitHub release, then run production deploy (`npm run deploy`). Do not deploy uncommitted work directly to production without a release.
 8. **Version Bump Policy (Branches & PRs)**:
    - The `.githooks/pre-commit` hook auto-bumps the patch version **only** on direct commits to `main` (it skips feature branches, merges/rebases, and commits where `package.json` version is already staged).
-   - When creating a Pull Request into `main`, **always bump the version** (`node scripts/bump-version.mjs` or manually in `package.json` / `package-lock.json`) on the PR branch if it has not already been bumped relative to `main`.
+   - While working on a feature branch, do **not** bump the version on intermediate commits. Bump the version (`node scripts/bump-version.mjs` or manually in `package.json` / `package-lock.json`) **only immediately before creating the Pull Request into `main`** (if it has not already been bumped relative to `main`), without creating any tag or release yet.
+9. **Target Platform & Viewport Orientation (Desktop & Landscape Tablets)**:
+   - The game UI, HUD, tactical 36×36 isometric arena, and cinematic operations screens are designed exclusively for **Desktop displays and Tablets in Landscape orientation** (16:9 or wider aspect ratio recommended).
+   - Mobile phones and portrait orientations are strictly non-target configurations. Layouts, interactive controls, and visual styling must optimize for horizontal widescreen viewing.
 
 ---
 

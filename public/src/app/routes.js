@@ -7,11 +7,18 @@ export const PAGE_PATHS = Object.freeze({
   codex: '/codex',
   campaign: '/campaign',
   survival: '/survival',
-  contract: '/contract',
+  contracts: '/contracts',
+  contractLastCargo: '/contract-last-cargo',
+  contractBlackoutProtocol: '/contract-blackout-protocol',
   howToPlay: '/how-to-play',
   about: '/about',
   privacyPolicy: '/privacy-policy',
   contact: '/contact',
+});
+
+export const CONTRACT_PAGE_PATHS = Object.freeze({
+  'contract-last-cargo': PAGE_PATHS.contractLastCargo,
+  'contract-blackout-protocol': PAGE_PATHS.contractBlackoutProtocol,
 });
 
 export function pageUrl(page, params = null) {
@@ -50,7 +57,7 @@ export function resolveLegacyHashRedirect(hash) {
       return pageUrl('campaign', param ? { mission: param } : null);
     case 'contracts':
     case 'contract':
-      return pageUrl('contract', param ? { id: param } : null);
+      return CONTRACT_PAGE_PATHS[param] || PAGE_PATHS.contracts;
     case 'survival':
       return PAGE_PATHS.survival;
     case 'hangar':

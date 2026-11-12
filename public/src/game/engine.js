@@ -3438,6 +3438,7 @@ export class TankGameEngine {
       if (this.isDisposed) return;
       const width = this.container.clientWidth || window.innerWidth;
       const height = this.container.clientHeight || window.innerHeight;
+      if (!width || !height) return;
       const aspect = width / height;
 
       this.camera.left = (-this.frustumSize * aspect) / 2;
@@ -3446,12 +3447,16 @@ export class TankGameEngine {
       this.camera.bottom = -this.frustumSize / 2;
       this.camera.updateProjectionMatrix();
 
-      this.renderer.setSize(width, height);
+      this.renderer.setSize(width, height, false);
     };
 
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('resize', this.handleResize);
+    if (typeof ResizeObserver === 'function' && this.container) {
+      this._resizeObserver = new ResizeObserver(() => this.handleResize());
+      this._resizeObserver.observe(this.container);
+    }
 
     const canvas = this.renderer.domElement;
     canvas.addEventListener('pointermove', this.handlePointerMove);
@@ -9705,6 +9710,8 @@ export class TankGameEngine {
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keyup', this.handleKeyUp);
     window.removeEventListener('resize', this.handleResize);
+    this._resizeObserver?.disconnect();
+    this._resizeObserver = null;
     window.removeEventListener('pointerup', this.handlePointerUp);
 
     const canvas = this.renderer.domElement;

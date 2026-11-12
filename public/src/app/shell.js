@@ -6,48 +6,129 @@ import { sound } from '../game/sound.js';
 const NAV_LINKS = Object.freeze([
   { id: 'campaign', label: 'Campaign', href: PAGE_PATHS.campaign },
   { id: 'survival', label: 'Survival', href: PAGE_PATHS.survival },
-  { id: 'contract', label: 'Contract', href: PAGE_PATHS.contract },
+  { id: 'contracts', label: 'Contracts', href: PAGE_PATHS.contracts },
   { id: 'hangar', label: 'Hangar', href: PAGE_PATHS.hangar },
   { id: 'codex', label: 'Codex', href: PAGE_PATHS.codex },
   { id: 'how-to-play', label: 'How to Play', href: PAGE_PATHS.howToPlay },
   { id: 'about', label: 'About', href: PAGE_PATHS.about },
 ]);
 
-function renderPageNav(activePage = '') {
-  const links = NAV_LINKS.map((item) => {
-    const active = item.id === activePage ? ' is-active" aria-current="page' : '';
-    return `<a class="menu-nav-link${active}" href="${item.href}">${item.label}</a>`;
-  }).join('');
-  return `<nav class="menu-nav" aria-label="Primary navigation">${links}<button type="button" class="menu-nav-link" data-action="open-settings">Settings</button></nav>`;
-}
-
 export function renderPageShell({
   activePage = '',
-  title,
+  title = 'BATTLE TANK',
   backHref = PAGE_PATHS.index,
-  backLabel = 'Main menu',
+  backLabel = 'BACK',
+  showBack = true,
   className = '',
   bodyHtml = '',
 }) {
+  const isHome = activePage === 'home';
+  const showBackButton = showBack && !isHome && backHref;
+  const showTitle = !isHome && activePage !== 'campaign' && activePage !== 'survival' && activePage !== 'contract';
+
+  const leftButtonHtml = showBackButton
+    ? `
+      <a class="armored-back-btn" href="${backHref}" aria-label="Return to ${backLabel}">
+        <span class="btn-rivet top-left" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+        <span class="back-arrow" aria-hidden="true">◄</span>
+        <span class="back-label">${backLabel}</span>
+        <span class="btn-rivet top-right" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+      </a>
+    `
+    : `
+      <a class="armored-brand-btn" href="${PAGE_PATHS.index}" aria-label="Battle Tank Home">
+        <span class="btn-rivet top-left" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+        <span class="brand-insignia" aria-hidden="true">BT</span>
+        <span class="brand-text">BATTLE TANK</span>
+        <span class="btn-rivet top-right" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+      </a>
+    `;
+
+  const navTabsHtml = NAV_LINKS.map((item) => {
+    const isActive = item.id === activePage;
+    return `
+      <a class="armored-tab${isActive ? ' is-active' : ''}" ${isActive ? 'aria-current="page"' : ''} href="${item.href}">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">${item.label.toUpperCase()}</span>
+      </a>
+    `;
+  }).join('');
+
   return `
     <main class="menu-page">
-      <header class="menu-header">
-        <a class="menu-brand" href="${PAGE_PATHS.index}">BT <span>BATTLE TANK</span></a>
-        ${renderPageNav(activePage)}
+      <header class="armored-header">
+        <div class="armored-header-primary">
+          <div class="armored-header-left">
+            ${leftButtonHtml}
+          </div>
+
+          <nav class="armored-nav" aria-label="Primary navigation">
+            <div class="armored-nav-track">
+              ${navTabsHtml}
+            </div>
+          </nav>
+
+          <div class="armored-header-right">
+            <button type="button" class="armored-settings-btn" data-action="open-settings" aria-label="Settings">
+              <span class="btn-rivet top-left" aria-hidden="true"></span>
+              <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+              <span class="settings-gear" aria-hidden="true">⚙</span>
+              <span class="btn-rivet top-right" aria-hidden="true"></span>
+              <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
       </header>
+
       <div class="menu-content ${className}">
-        <a class="menu-back" href="${backHref}">← ${backLabel}</a>
-        <h1 tabindex="-1">${title}</h1>
+        ${showTitle ? `<h1 class="menu-page-title" tabindex="-1">${title}</h1>` : `<h1 class="sr-only" tabindex="-1">${title}</h1>`}
         ${bodyHtml}
       </div>
-      <footer class="menu-footer">
-        <span>BATTLE TANK / COMMAND CENTER</span>
-        <nav class="menu-footer-links" aria-label="Footer navigation">
-          <a href="${PAGE_PATHS.howToPlay}">How to Play</a>
-          <a href="${PAGE_PATHS.about}">About</a>
-          <a href="${PAGE_PATHS.privacyPolicy}">Privacy Policy</a>
-          <a href="${PAGE_PATHS.contact}">Contact</a>
-        </nav>
+
+      <footer class="armored-footer">
+        <div class="armored-footer-bracket" aria-hidden="true">
+          <span class="btn-rivet" aria-hidden="true"></span>
+          <span class="bracket-notch" aria-hidden="true"></span>
+          <span class="btn-rivet" aria-hidden="true"></span>
+        </div>
+
+        <div class="armored-footer-inner">
+          <div class="footer-left-zone">
+            <span class="footer-bracket-plate left" aria-hidden="true">
+              <span class="btn-rivet" aria-hidden="true"></span>
+              <span class="btn-rivet" aria-hidden="true"></span>
+            </span>
+            <div class="footer-telemetry">
+              <span class="telemetry-beacon" aria-hidden="true"></span>
+              <div class="telemetry-text">
+                <strong class="telemetry-callsign">IRON VANGUARD</strong>
+                <span class="telemetry-sep">//</span>
+                <span class="telemetry-node">SECTOR OPS TERMINAL</span>
+              </div>
+              <span class="telemetry-ver">SYS.VER 1.3.2</span>
+            </div>
+          </div>
+
+          <div class="footer-right-zone">
+            <nav class="footer-links" aria-label="Footer navigation">
+              <a href="${PAGE_PATHS.howToPlay}">HOW TO PLAY</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="${PAGE_PATHS.about}">ABOUT</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="${PAGE_PATHS.privacyPolicy}">PRIVACY POLICY</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="${PAGE_PATHS.contact}">CONTACT</a>
+            </nav>
+            <span class="footer-bracket-plate right" aria-hidden="true">
+              <span class="btn-rivet" aria-hidden="true"></span>
+              <span class="btn-rivet" aria-hidden="true"></span>
+            </span>
+          </div>
+        </div>
       </footer>
     </main>
   `;
@@ -60,18 +141,30 @@ export function attachSettingsModal(root, onSettingsChange = null) {
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'settings-modal';
-    modal.className = 'fixed inset-0 z-30 flex items-center justify-center bg-[#06090F]/95 hidden p-4';
+    modal.className = 'settings-modal-backdrop hidden';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'settings-modal-title');
     document.body.appendChild(modal);
   }
 
   function renderModal() {
     modal.innerHTML = `
-      <div class="w-[min(760px,94vw)] max-h-[85vh] overflow-y-auto bg-[#131e24] border border-[#3b4948] p-6 text-slate-100">
-        <div class="flex items-center justify-between border-b border-[#34403e] pb-4 mb-2">
-          <h2 class="text-xl font-bold tracking-tight">Settings</h2>
+      <div class="settings-modal-panel">
+        <span class="board-rivet top-left" aria-hidden="true"></span>
+        <span class="board-rivet top-right" aria-hidden="true"></span>
+        <span class="board-rivet bottom-left" aria-hidden="true"></span>
+        <span class="board-rivet bottom-right" aria-hidden="true"></span>
+        <div class="settings-modal-header">
+          <div>
+            <small class="settings-modal-kicker">/// SYSTEM PREFERENCES</small>
+            <h2 id="settings-modal-title" class="settings-modal-title">Settings</h2>
+          </div>
           <button type="button" class="menu-secondary" data-action="close-settings">Close [ESC]</button>
         </div>
-        ${renderSettings(prefs, CAMERA_LABELS)}
+        <div class="settings-modal-body">
+          ${renderSettings(prefs, CAMERA_LABELS)}
+        </div>
       </div>
     `;
   }

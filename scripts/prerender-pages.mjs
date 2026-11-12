@@ -6,7 +6,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { renderPageShell } from '../public/src/app/shell.js';
 import { CAMPAIGN_MISSIONS } from '../public/src/game/campaign.js';
-import { CONTRACTS_CATALOG } from '../public/src/sim/index.js';
 import { renderAbout } from '../public/src/views/about.js';
 import { renderCampaign } from '../public/src/views/campaign.js';
 import { renderContact } from '../public/src/views/contact.js';
@@ -16,8 +15,60 @@ import { renderHowToPlay } from '../public/src/views/how-to-play.js';
 import { renderPrivacyPolicy } from '../public/src/views/privacy-policy.js';
 import { renderSurvival } from '../public/src/views/survival.js';
 
-function wrapMenuScreen(pageId, innerHtml) {
-  return `<div id="status-modal" class="fixed inset-0 z-30 flex items-center justify-center bg-[#06090F]/95 p-4 menu-screen" data-page="${pageId}">${innerHtml}</div>`;
+function wrapGameShell(pageId, innerHtml) {
+  return `
+    <div id="game-shell" class="relative w-screen h-screen overflow-hidden bg-[#0B0F17] text-[#F8FAFC] select-none font-sans">
+      <!-- 100% Full-bleed 3D WebGL Canvas Mount -->
+      <div id="canvas-mount" class="fixed inset-0 w-full h-full cursor-crosshair"></div>
+
+      <!-- Top-Left Compact Telemetry Bar -->
+      <header id="top-telemetry" class="hidden fixed top-4 left-4 z-20 flex flex-wrap items-center gap-3 bg-[#0B0F17]/95 border border-slate-700/70 px-4 py-2.5 rounded shadow-lg"></header>
+
+      <!-- Top-Right Compact Utility Controls -->
+      <div id="top-controls" class="hidden fixed top-4 right-4 z-20 flex items-center gap-2"></div>
+
+      <!-- Top-Right North-Up Sensor Minimap -->
+      <div id="sensor-minimap" class="hidden fixed top-16 right-4 z-20 bg-[#0B0F17]/95 border border-slate-700/80 rounded p-2 shadow-2xl"></div>
+
+      <!-- Contract Cargo & Gate Warning HUD -->
+      <div id="contract-hud" class="hidden fixed top-20 left-4 z-20 flex flex-col gap-2 max-w-[min(560px,92vw)]"></div>
+
+      <!-- Contextual Contract Interaction / Extraction Control Bar -->
+      <div id="contract-action-bar" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"></div>
+
+      <!-- Boss Condition Banner -->
+      <div id="boss-banner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-20 w-[min(560px,90vw)] bg-[#0B0F17]/95 border border-red-500/70 px-5 py-3 rounded shadow-2xl"></div>
+
+      <!-- Observed Target Condition Badge -->
+      <div id="target-badge" class="hidden fixed top-36 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-teal-500/70 px-4 py-1.5 rounded text-xs font-mono uppercase tracking-wider shadow-lg"></div>
+
+      <!-- Tactical Status Toast -->
+      <div id="status-toast" class="hidden fixed top-48 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-amber-500/70 px-5 py-2 rounded text-xs font-mono uppercase tracking-[0.12em] text-amber-300 shadow-lg"></div>
+
+      <!-- Active Combat Modifiers Strip -->
+      <div id="modifiers-strip" class="hidden fixed top-64 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
+
+      <!-- Expanded Mechanical Diagnostics Overlay [H] -->
+      <div id="diagnostics-panel" class="hidden fixed bottom-28 left-4 z-20 w-80 bg-[#0B0F17]/95 border border-teal-500/60 rounded p-3.5 shadow-2xl font-mono text-xs"></div>
+
+      <!-- Tactical Sector Map & Manual Route Planner Overlay [M] -->
+      <div id="tactical-map-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center bg-black/75 p-4"></div>
+
+      <!-- Interactive 3D Codex & Proving Grounds Studio Overlay [I] -->
+      <div id="codex-modal" class="hidden codex-overlay"></div>
+
+      <!-- Modular Tank Hangar, Workshop & 5x5 Engineering Drawer [U] -->
+      <div id="upgrade-drawer" class="hidden hangar-shell" role="dialog" aria-modal="true" aria-label="Vehicle maintenance hangar"></div>
+
+      <!-- Bottom Docked Tactical HUD -->
+      <footer id="bottom-hud" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-20 w-[min(1120px,96vw)] bg-[#0B0F17]/95 border border-slate-700/70 px-5 py-3 rounded shadow-2xl flex flex-wrap items-center justify-between gap-4"></footer>
+
+      <!-- Modal Overlays: Menu, Pause, Victory, Game Over -->
+      <div id="status-modal" class="fixed inset-0 z-30 menu-screen" data-page="${pageId}">
+        ${innerHtml}
+      </div>
+    </div>
+  `.trim();
 }
 
 const PAGES = [
@@ -31,6 +82,7 @@ const PAGES = [
       renderPageShell({
         activePage: 'how-to-play',
         title: 'How to Play',
+        subtitle: 'Field Manual & Tactical Controls',
         className: 'how-to-play-content',
         bodyHtml: renderHowToPlay(),
       }),
@@ -41,6 +93,7 @@ const PAGES = [
       renderPageShell({
         activePage: 'about',
         title: 'About Battle Tank',
+        subtitle: 'Project Overview & Architecture',
         className: 'about-content',
         bodyHtml: renderAbout(),
       }),
@@ -51,6 +104,7 @@ const PAGES = [
       renderPageShell({
         activePage: 'privacy-policy',
         title: 'Privacy Policy',
+        subtitle: 'Classification & Data Protections',
         className: 'privacy-content',
         bodyHtml: renderPrivacyPolicy(),
       }),
@@ -60,7 +114,8 @@ const PAGES = [
     render: () =>
       renderPageShell({
         activePage: 'contact',
-        title: 'Contact',
+        title: 'Command Inquiries',
+        subtitle: 'Signal HQ & Operations',
         className: 'contact-content',
         bodyHtml: renderContact(),
       }),
@@ -68,11 +123,13 @@ const PAGES = [
   {
     file: 'public/campaign.html',
     render: () =>
-      wrapMenuScreen(
+      wrapGameShell(
         'campaign',
         renderPageShell({
           activePage: 'campaign',
           title: 'Road to the capital',
+          subtitle: 'Seven Regions Tactical Campaign',
+          showBack: true,
           className: 'campaign-content',
           bodyHtml: renderCampaign(CAMPAIGN_MISSIONS[0].id, []),
         })
@@ -81,37 +138,71 @@ const PAGES = [
   {
     file: 'public/survival.html',
     render: () =>
-      wrapMenuScreen(
+      wrapGameShell(
         'survival',
         renderPageShell({
           activePage: 'survival',
           title: 'Endless survival',
+          subtitle: 'The Iron Crucible',
+          showBack: true,
           className: 'campaign-content',
           bodyHtml: renderSurvival(null),
         })
       ),
   },
   {
-    file: 'public/contract.html',
+    file: 'public/contracts.html',
     render: () =>
-      wrapMenuScreen(
+      wrapGameShell(
         'contracts',
         renderPageShell({
-          activePage: 'contract',
+          activePage: 'contracts',
           title: 'Tactical contracts',
+          subtitle: 'High-Stakes Extraction & Sabotage',
+          showBack: true,
           className: 'campaign-content',
-          bodyHtml: renderContracts(CONTRACTS_CATALOG[0]?.id || 'contract-last-cargo', []),
+          bodyHtml: renderContracts('', []),
+        })
+      ),
+  },
+  {
+    file: 'public/contract-last-cargo.html',
+    render: () =>
+      wrapGameShell(
+        'contract-last-cargo',
+        renderPageShell({
+          activePage: 'contracts',
+          title: 'Last Cargo',
+          subtitle: 'Deploying Tactical Contract…',
+          showBack: true,
+          bodyHtml: '<p class="menu-lead">Deploying Last Cargo contract mission…</p>',
+        })
+      ),
+  },
+  {
+    file: 'public/contract-blackout-protocol.html',
+    render: () =>
+      wrapGameShell(
+        'contract-blackout-protocol',
+        renderPageShell({
+          activePage: 'contracts',
+          title: 'Blackout Protocol',
+          subtitle: 'Deploying Tactical Contract…',
+          showBack: true,
+          bodyHtml: '<p class="menu-lead">Deploying Blackout Protocol contract mission…</p>',
         })
       ),
   },
   {
     file: 'public/hangar.html',
     render: () =>
-      wrapMenuScreen(
+      wrapGameShell(
         'hangar',
         renderPageShell({
           activePage: 'hangar',
           title: 'Hangar & Workshop',
+          subtitle: 'Vehicle Maintenance & Engineering',
+          showBack: true,
           bodyHtml: '<p class="menu-lead">Initializing 3D Hangar bay and component workshop…</p>',
         })
       ),
@@ -119,11 +210,13 @@ const PAGES = [
   {
     file: 'public/codex.html',
     render: () =>
-      wrapMenuScreen(
+      wrapGameShell(
         'codex',
         renderPageShell({
           activePage: 'codex',
-          title: '3D Codex',
+          title: 'Tactical Codex',
+          subtitle: '3D Vehicle, Weapon & Surface Showcase',
+          showBack: true,
           bodyHtml: '<p class="menu-lead">Initializing 3D vehicle, weapon, and terrain showcase…</p>',
         })
       ),

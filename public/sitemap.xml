@@ -16,9 +16,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://battletank.online/contract</loc>
+    <loc>https://battletank.online/contracts</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://battletank.online/contract-last-cargo</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://battletank.online/contract-blackout-protocol</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://battletank.online/hangar</loc>

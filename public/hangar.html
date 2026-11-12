@@ -28,28 +28,174 @@
   </head>
   <body data-page="hangar" class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
     <div id="root"><!-- prerender:start -->
-<div id="status-modal" class="fixed inset-0 z-30 flex items-center justify-center bg-[#06090F]/95 p-4 menu-screen" data-page="hangar">
+<div id="game-shell" class="relative w-screen h-screen overflow-hidden bg-[#0B0F17] text-[#F8FAFC] select-none font-sans">
+      <!-- 100% Full-bleed 3D WebGL Canvas Mount -->
+      <div id="canvas-mount" class="fixed inset-0 w-full h-full cursor-crosshair"></div>
+
+      <!-- Top-Left Compact Telemetry Bar -->
+      <header id="top-telemetry" class="hidden fixed top-4 left-4 z-20 flex flex-wrap items-center gap-3 bg-[#0B0F17]/95 border border-slate-700/70 px-4 py-2.5 rounded shadow-lg"></header>
+
+      <!-- Top-Right Compact Utility Controls -->
+      <div id="top-controls" class="hidden fixed top-4 right-4 z-20 flex items-center gap-2"></div>
+
+      <!-- Top-Right North-Up Sensor Minimap -->
+      <div id="sensor-minimap" class="hidden fixed top-16 right-4 z-20 bg-[#0B0F17]/95 border border-slate-700/80 rounded p-2 shadow-2xl"></div>
+
+      <!-- Contract Cargo & Gate Warning HUD -->
+      <div id="contract-hud" class="hidden fixed top-20 left-4 z-20 flex flex-col gap-2 max-w-[min(560px,92vw)]"></div>
+
+      <!-- Contextual Contract Interaction / Extraction Control Bar -->
+      <div id="contract-action-bar" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"></div>
+
+      <!-- Boss Condition Banner -->
+      <div id="boss-banner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-20 w-[min(560px,90vw)] bg-[#0B0F17]/95 border border-red-500/70 px-5 py-3 rounded shadow-2xl"></div>
+
+      <!-- Observed Target Condition Badge -->
+      <div id="target-badge" class="hidden fixed top-36 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-teal-500/70 px-4 py-1.5 rounded text-xs font-mono uppercase tracking-wider shadow-lg"></div>
+
+      <!-- Tactical Status Toast -->
+      <div id="status-toast" class="hidden fixed top-48 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-amber-500/70 px-5 py-2 rounded text-xs font-mono uppercase tracking-[0.12em] text-amber-300 shadow-lg"></div>
+
+      <!-- Active Combat Modifiers Strip -->
+      <div id="modifiers-strip" class="hidden fixed top-64 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
+
+      <!-- Expanded Mechanical Diagnostics Overlay [H] -->
+      <div id="diagnostics-panel" class="hidden fixed bottom-28 left-4 z-20 w-80 bg-[#0B0F17]/95 border border-teal-500/60 rounded p-3.5 shadow-2xl font-mono text-xs"></div>
+
+      <!-- Tactical Sector Map & Manual Route Planner Overlay [M] -->
+      <div id="tactical-map-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center bg-black/75 p-4"></div>
+
+      <!-- Interactive 3D Codex & Proving Grounds Studio Overlay [I] -->
+      <div id="codex-modal" class="hidden codex-overlay"></div>
+
+      <!-- Modular Tank Hangar, Workshop & 5x5 Engineering Drawer [U] -->
+      <div id="upgrade-drawer" class="hidden hangar-shell" role="dialog" aria-modal="true" aria-label="Vehicle maintenance hangar"></div>
+
+      <!-- Bottom Docked Tactical HUD -->
+      <footer id="bottom-hud" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-20 w-[min(1120px,96vw)] bg-[#0B0F17]/95 border border-slate-700/70 px-5 py-3 rounded shadow-2xl flex flex-wrap items-center justify-between gap-4"></footer>
+
+      <!-- Modal Overlays: Menu, Pause, Victory, Game Over -->
+      <div id="status-modal" class="fixed inset-0 z-30 menu-screen" data-page="hangar">
+        
     <main class="menu-page">
-      <header class="menu-header">
-        <a class="menu-brand" href="/">BT <span>BATTLE TANK</span></a>
-        <nav class="menu-nav" aria-label="Primary navigation"><a class="menu-nav-link" href="/campaign">Campaign</a><a class="menu-nav-link" href="/survival">Survival</a><a class="menu-nav-link" href="/contract">Contract</a><a class="menu-nav-link is-active" aria-current="page" href="/hangar">Hangar</a><a class="menu-nav-link" href="/codex">Codex</a><a class="menu-nav-link" href="/how-to-play">How to Play</a><a class="menu-nav-link" href="/about">About</a><button type="button" class="menu-nav-link" data-action="open-settings">Settings</button></nav>
+      <header class="armored-header">
+        <div class="armored-header-primary">
+          <div class="armored-header-left">
+            
+      <a class="armored-back-btn" href="/" aria-label="Return to BACK">
+        <span class="btn-rivet top-left" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+        <span class="back-arrow" aria-hidden="true">◄</span>
+        <span class="back-label">BACK</span>
+        <span class="btn-rivet top-right" aria-hidden="true"></span>
+        <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+      </a>
+    
+          </div>
+
+          <nav class="armored-nav" aria-label="Primary navigation">
+            <div class="armored-nav-track">
+              
+      <a class="armored-tab"  href="/campaign">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">CAMPAIGN</span>
+      </a>
+    
+      <a class="armored-tab"  href="/survival">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">SURVIVAL</span>
+      </a>
+    
+      <a class="armored-tab"  href="/contracts">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">CONTRACTS</span>
+      </a>
+    
+      <a class="armored-tab is-active" aria-current="page" href="/hangar">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">HANGAR</span>
+      </a>
+    
+      <a class="armored-tab"  href="/codex">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">CODEX</span>
+      </a>
+    
+      <a class="armored-tab"  href="/how-to-play">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">HOW TO PLAY</span>
+      </a>
+    
+      <a class="armored-tab"  href="/about">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <span class="tab-label">ABOUT</span>
+      </a>
+    
+            </div>
+          </nav>
+
+          <div class="armored-header-right">
+            <button type="button" class="armored-settings-btn" data-action="open-settings" aria-label="Settings">
+              <span class="btn-rivet top-left" aria-hidden="true"></span>
+              <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+              <span class="settings-gear" aria-hidden="true">⚙</span>
+              <span class="btn-rivet top-right" aria-hidden="true"></span>
+              <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
       </header>
+
       <div class="menu-content ">
-        <a class="menu-back" href="/">← Main menu</a>
-        <h1 tabindex="-1">Hangar & Workshop</h1>
+        <h1 class="menu-page-title" tabindex="-1">Hangar & Workshop</h1>
         <p class="menu-lead">Initializing 3D Hangar bay and component workshop…</p>
       </div>
-      <footer class="menu-footer">
-        <span>BATTLE TANK / COMMAND CENTER</span>
-        <nav class="menu-footer-links" aria-label="Footer navigation">
-          <a href="/how-to-play">How to Play</a>
-          <a href="/about">About</a>
-          <a href="/privacy-policy">Privacy Policy</a>
-          <a href="/contact">Contact</a>
-        </nav>
+
+      <footer class="armored-footer">
+        <div class="armored-footer-bracket" aria-hidden="true">
+          <span class="btn-rivet" aria-hidden="true"></span>
+          <span class="bracket-notch" aria-hidden="true"></span>
+          <span class="btn-rivet" aria-hidden="true"></span>
+        </div>
+
+        <div class="armored-footer-inner">
+          <div class="footer-left-zone">
+            <span class="footer-bracket-plate left" aria-hidden="true">
+              <span class="btn-rivet" aria-hidden="true"></span>
+              <span class="btn-rivet" aria-hidden="true"></span>
+            </span>
+            <div class="footer-telemetry">
+              <span class="telemetry-beacon" aria-hidden="true"></span>
+              <div class="telemetry-text">
+                <strong class="telemetry-callsign">IRON VANGUARD</strong>
+                <span class="telemetry-sep">//</span>
+                <span class="telemetry-node">SECTOR OPS TERMINAL</span>
+              </div>
+              <span class="telemetry-ver">SYS.VER 1.3.2</span>
+            </div>
+          </div>
+
+          <div class="footer-right-zone">
+            <nav class="footer-links" aria-label="Footer navigation">
+              <a href="/how-to-play">HOW TO PLAY</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="/about">ABOUT</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="/privacy-policy">PRIVACY POLICY</a>
+              <span class="footer-sep" aria-hidden="true">/</span>
+              <a href="/contact">CONTACT</a>
+            </nav>
+            <span class="footer-bracket-plate right" aria-hidden="true">
+              <span class="btn-rivet" aria-hidden="true"></span>
+              <span class="btn-rivet" aria-hidden="true"></span>
+            </span>
+          </div>
+        </div>
       </footer>
     </main>
-  </div>
+  
+      </div>
+    </div>
     <!-- prerender:end --></div>
     <noscript>
       <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">

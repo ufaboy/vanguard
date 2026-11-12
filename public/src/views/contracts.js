@@ -1,145 +1,143 @@
-/** Contracts screen: logistics raid and sabotage operations briefing. */
-import { CONTRACTS_CATALOG, CONTRACT_TYPES, LAST_CARGO_CONTRACT } from '../sim/contract.js';
+/** Contracts screen: armored operations board and horizontal contract banners. */
+import { CONTRACT_PAGE_PATHS, PAGE_PATHS } from '../app/routes.js';
+import { CONTRACTS_CATALOG, CONTRACT_TYPES } from '../sim/contract.js';
+
+function getContractThumb(contractId) {
+  return contractId === 'contract-blackout-protocol'
+    ? './images/region-thumb-alpine.jpg'
+    : './images/region-thumb-industrial.jpg';
+}
+
+function getShieldSvg(isSabotage) {
+  if (isSabotage) {
+    return `
+      <svg viewBox="0 0 36 36" width="32" height="32" fill="none" aria-hidden="true">
+        <circle cx="18" cy="18" r="10" stroke="#f8fafc" stroke-width="2"/>
+        <circle cx="18" cy="18" r="4" stroke="#f59e0b" stroke-width="2"/>
+        <path d="M18 4v6M18 26v6M4 18h6M26 18h6" stroke="#f8fafc" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    `;
+  }
+  return `
+    <svg viewBox="0 0 36 36" width="32" height="32" fill="none" aria-hidden="true">
+      <path d="M8 12l10-5 10 5v12l-10 5-10-5V12z" stroke="#f8fafc" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M8 12l10 5 10-5M18 17v12" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  `;
+}
 
 export function renderContracts(selectedContractId, completedMissions = {}) {
-  const selected =
-    CONTRACTS_CATALOG.find((item) => item.id === selectedContractId) || LAST_CARGO_CONTRACT;
-  const completed = Boolean(completedMissions?.[selected.id]);
-  const isSabotage = selected.contractType === CONTRACT_TYPES.SABOTAGE_PROTOCOL;
-  const accentColor = isSabotage ? '#a855f7' : '#38bdf8';
+  const selectedId =
+    CONTRACTS_CATALOG.find((item) => item.id === selectedContractId)?.id || '';
 
-  const contractCards = CONTRACTS_CATALOG.map((item) => {
-    const isSelected = item.id === selected.id;
+  const contractBanners = CONTRACTS_CATALOG.map((item) => {
+    const isSelected = item.id === selectedId;
     const isDone = Boolean(completedMissions?.[item.id]);
     const itemSabotage = item.contractType === CONTRACT_TYPES.SABOTAGE_PROTOCOL;
-    const borderCls = isSelected
-      ? itemSabotage
-        ? 'border-purple-400 bg-purple-950/35 ring-1 ring-purple-400/60'
-        : 'border-sky-400 bg-sky-950/35 ring-1 ring-sky-400/60'
-      : 'border-slate-700/80 bg-slate-900/60 hover:border-slate-500';
-    const badgeCls = itemSabotage
-      ? 'text-purple-300 border-purple-500/50 bg-purple-950/80'
-      : 'text-sky-300 border-sky-500/50 bg-sky-950/80';
+    const modeClass = itemSabotage ? 'is-sabotage' : 'is-recovery';
+    const maxPayout =
+      item.payouts.PER_CARGO * 3 + item.payouts.EXTRACTION_BASE + item.payouts.THIRD_CARGO_BONUS;
+    const contractHref = CONTRACT_PAGE_PATHS[item.id] || PAGE_PATHS.contracts;
+
     return `
-      <button
-        type="button"
-        data-action="select-contract"
-        data-contract="${item.id}"
-        class="w-full text-left p-3.5 rounded border ${borderCls} transition cursor-pointer flex flex-col gap-1.5"
+      <div
+        class="contract-banner ${modeClass}${isSelected ? ' is-selected' : ''}"
+        data-contract-card="${item.id}"
       >
-        <div class="flex items-center justify-between gap-2 font-mono text-[11px]">
-          <span class="px-2 py-0.5 rounded border ${badgeCls} font-bold">${item.code}</span>
-          <span class="${isDone ? 'text-emerald-400 font-bold' : 'text-amber-300'}">${isDone ? '✓ COMPLETED' : 'UP TO $10,000'}</span>
+        <span class="plate-rivet tl" aria-hidden="true"></span>
+        <span class="plate-rivet tr" aria-hidden="true"></span>
+        <span class="plate-rivet bl" aria-hidden="true"></span>
+        <span class="plate-rivet br" aria-hidden="true"></span>
+
+        <a
+          class="contract-banner-select"
+          href="${contractHref}"
+        >
+          <div class="contract-shield-wrap">
+            <div class="contract-shield">
+              ${getShieldSvg(itemSabotage)}
+            </div>
+          </div>
+
+          <div class="contract-thumb-wrap" aria-hidden="true">
+            <img src="${getContractThumb(item.id)}" alt="" loading="lazy">
+            <div class="contract-thumb-fade"></div>
+          </div>
+
+          <div class="contract-banner-info">
+            <div class="contract-banner-meta">
+              <span class="contract-code-badge">${item.code}</span>
+              <span class="contract-status-tag${isDone ? ' is-done' : ''}">${isDone ? '✓ COMPLETED' : '2/3 REQUIRED · 3RD ★'}</span>
+            </div>
+            <div class="contract-banner-title-row">
+              <strong class="contract-banner-title">${item.name}</strong>
+              <span class="contract-banner-sub">${item.subtitle}</span>
+            </div>
+            <p class="contract-banner-summary">${item.summary}</p>
+            <div class="contract-progress-row" aria-hidden="true">
+              <div class="contract-progress-track">
+                <span class="seg${isDone ? ' is-filled' : ' is-ready'}"></span>
+                <span class="seg${isDone ? ' is-filled' : ' is-ready'}"></span>
+                <span class="seg${isDone ? ' is-filled' : ''}"></span>
+              </div>
+              <span class="contract-duration">${item.targetDuration} · ${item.difficulty}</span>
+            </div>
+          </div>
+        </a>
+
+        <div class="contract-banner-reward">
+          <div class="reward-col">
+            <span class="reward-label">REWARD</span>
+            <strong class="reward-amount">$${maxPayout.toLocaleString('en-US')}</strong>
+            <small class="reward-sub">+$${item.payouts.PER_CARGO} / OBJ</small>
+          </div>
+          <a
+            class="contract-quick-go"
+            href="${contractHref}"
+            aria-label="Deploy ${item.name}"
+          >»</a>
         </div>
-        <div class="text-base font-bold text-white flex items-center justify-between">
-          <span>${item.name}</span>
-          <span class="text-xs font-mono text-slate-400">${item.subtitle}</span>
-        </div>
-        <p class="text-xs text-slate-300 leading-relaxed m-0">${item.summary}</p>
-      </button>
+      </div>
     `;
   }).join('');
 
-  const cargoItems = selected.containers
-    .map(
-      (c) =>
-        `<li><span><strong>${c.slot}${c.slot === 3 ? ' ★' : ''} · ${c.name}</strong> <small>(${c.row}, ${c.col}) · ${c.gateId.toUpperCase()} GATE</small></span><strong>+$${selected.payouts.PER_CARGO}</strong></li>`
-    )
-    .join('');
+  return `
+    <div class="contracts-hero-view">
+      <section class="contracts-hero-board" aria-label="Tactical contracts board">
+        <span class="board-rivet top-left" aria-hidden="true"></span>
+        <span class="board-rivet top-right" aria-hidden="true"></span>
+        <span class="board-rivet bottom-left" aria-hidden="true"></span>
+        <span class="board-rivet bottom-right" aria-hidden="true"></span>
 
-  const groupItems = Object.values(selected.groups)
-    .map((g) => {
-      const counts = {};
-      for (const t of g.roster) {
-        const key = String(t).toUpperCase();
-        counts[key] = (counts[key] || 0) + 1;
-      }
-      const summary = Object.entries(counts)
-        .map(([k, v]) => `${v}× ${k}`)
-        .join(', ');
-      return `<li><span><strong>${g.id}</strong> · ${g.assignment.replaceAll('_', ' ')} <small>(${summary})</small></span><strong>${g.roster.length} units</strong></li>`;
-    })
-    .join('');
+        <img
+          class="contracts-hero-art"
+          src="./images/contracts-hero.jpg"
+          alt="Military command tent overlooking a twilight mountain valley"
+          fetchpriority="high"
+          width="1920"
+          height="1080"
+        >
+        <div class="contracts-hero-atmosphere" aria-hidden="true"></div>
 
-  const rulesSection = isSabotage
-    ? `<dl class="mt-4 space-y-2 text-xs font-mono text-slate-300">
-        <div>
-          <dt class="text-purple-400 uppercase">1. Plant Demolition Charge [E]</dt>
-          <dd>Stop within 1.5 cells of an armored Radar/ECM Relay and press <strong>[E]</strong> (or the Arm button) for <strong>2.5 seconds</strong>. Movement or leaving range cancels arming; enemy hits do not.</dd>
-        </div>
-        <div>
-          <dt class="text-rose-400 uppercase">2. 8.0s Blast Fuse & Shockwave Clearance</dt>
-          <dd>Once armed, an <strong>8.0-second countdown fuse</strong> starts with a red 3-cell blast ring. Clear the blast radius before detonation! The explosion destroys the relay, shatters nearby walls/enemies, and immediately secures <strong>+$1,500</strong>.</dd>
-        </div>
-        <div>
-          <dt class="text-emerald-400 uppercase">3. Deliberate Southern Extraction [E]</dt>
-          <dd>After <strong>2 relays</strong> are demolished, drive onto the southern extraction pad (rows 30–32, cols 16–19) and press <strong>[E]</strong> (3.0s countdown). Extracting at 2/3 pays <strong>$6,000</strong> total; demolishing all 3 relays and extracting pays <strong>$10,000</strong> total.</dd>
-        </div>
-      </dl>`
-    : `<dl class="mt-4 space-y-2 text-xs font-mono text-slate-300">
-        <div>
-          <dt class="text-amber-400 uppercase">1. Explicit Cargo Loading [E]</dt>
-          <dd>Stop within 1.5 cells of a sealed data capsule and press <strong>[E]</strong> (or the Cargo button) for 2.0 seconds. Movement or leaving range cancels loading; enemy hits do not.</dd>
-        </div>
-        <div>
-          <dt class="text-sky-400 uppercase">2. Southern Delivery Pad Unloading</dt>
-          <dd>Drive onto the southern delivery pad (rows 30–32, cols 16–19) and hold position for 2.0 seconds. Movement pauses unloading; leaving the pad resets progress. Each delivered container immediately secures <strong>+$1,500</strong>.</dd>
-        </div>
-        <div>
-          <dt class="text-emerald-400 uppercase">3. Deliberate Extraction [E]</dt>
-          <dd>After 2 deliveries, the <strong>Extract [E]</strong> control unlocks on the pad (3.0s countdown). Leaving the pad cancels extraction; taking damage or fighting on the pad does not. Extracting at 2/3 pays <strong>$6,000</strong> total; delivering all 3 and extracting pays <strong>$10,000</strong> total.</dd>
-        </div>
-      </dl>`;
+        <header class="contracts-header-stage">
+          <div class="contracts-crest-row">
+            <span class="crest-wing left" aria-hidden="true"></span>
+            <div class="contracts-title-plate">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fbbf24" stroke-width="2" aria-hidden="true">
+                <rect x="5" y="4" width="14" height="17" rx="2"/>
+                <path d="M9 4V2h6v2M9 11l2 2 4-4M9 16h6"/>
+              </svg>
+              <h2>CONTRACTS</h2>
+            </div>
+            <span class="crest-wing right" aria-hidden="true"></span>
+          </div>
+          <p class="contracts-subtitle">— Complete special missions, secure objective payouts, and extract. —</p>
+        </header>
 
-  return `<p class="menu-lead">High-stakes tactical operations with explicit objectives and extraction rules.<br>Select a contract below, complete at least 2 of 3 primary objectives, and decide whether to extract or risk the 3rd target for a massive bonus.</p>
-  <div class="campaign-summary">
-    <span>${CONTRACTS_CATALOG.length} ACTIVE CONTRACTS</span>
-    <span>◈ 2 OF 3 OBJECTIVES REQUIRED</span>
-    <span>★ 3RD OBJECTIVE BONUS (+$4,000)</span>
-    <span>✓ OBJECTIVE CREDITS SECURED IMMEDIATELY</span>
-  </div>
-  <div class="campaign-layout">
-    <section class="menu-card" aria-label="Contract operations list">
-      <span class="menu-kicker">AVAILABLE OPERATIONS</span>
-      <h2>Select Tactical Contract</h2>
-      <div class="mt-3 flex flex-col gap-3">
-        ${contractCards}
-      </div>
-      <div class="mt-5 pt-4 border-t border-slate-800">
-        <span class="menu-kicker">${selected.code} // RULES OF ENGAGEMENT</span>
-        ${rulesSection}
-      </div>
-    </section>
-
-    <aside class="campaign-brief" aria-label="Selected contract briefing" style="--chapter-color:${accentColor}">
-      <div class="menu-kicker">${selected.code}</div>
-      <h2>${selected.name}</h2>
-      <p class="campaign-theme">${selected.theme} · ${selected.targetDuration}</p>
-      <dl>
-        <dt>${isSabotage ? 'Radar & ECM Relays (Demolish 2, 3rd Optional ★)' : 'Data Containers (Deliver 2, 3rd Optional ★)'}</dt>
-        <dd><ul class="campaign-roster">${cargoItems}</ul></dd>
-        <dt>Payout Structure (Idempotent Per Attempt)</dt>
-        <dd>
-          <ul class="campaign-roster">
-            <li><span>${isSabotage ? 'Each demolished relay (secured on detonation)' : 'Each delivered container (secured immediately)'}</span><strong>+$${selected.payouts.PER_CARGO}</strong></li>
-            <li><span>Successful extraction (at least 2 completed)</span><strong>+$${selected.payouts.EXTRACTION_BASE}</strong></li>
-            <li><span>Full 3/3 extraction bonus ★</span><strong>+$${selected.payouts.THIRD_CARGO_BONUS}</strong></li>
-          </ul>
-        </dd>
-        <dt>Encounter Schedule · 24 Tanks Finite Budget (Max 6 Live)</dt>
-        <dd><ul class="campaign-roster">${groupItems}</ul></dd>
-        <dt>Target Difficulty</dt>
-        <dd>${selected.difficulty}</dd>
-      </dl>
-      <div class="campaign-planned">
-        <strong>${completed ? 'COMPLETED · REPLAYABLE' : 'READY TO DEPLOY'}</strong>
-        <p>Eliminating all enemies never completes the contract. Abort or defeat preserves already secured objective payouts and kill bounties.</p>
-      </div>
-      <button class="menu-primary" data-action="start-contract" data-contract="${selected.id}">${completed ? 'Replay' : 'Deploy'} ${selected.name} →</button>
-      <div class="campaign-brief-nav">
-        <a class="menu-secondary" href="/hangar">Hangar &amp; Workshop</a>
-        <a class="menu-secondary" href="/">← Main menu</a>
-      </div>
-    </aside>
-  </div>`;
+        <div class="contracts-banner-list" role="region" aria-label="Available tactical contracts">
+          ${contractBanners}
+        </div>
+      </section>
+    </div>
+  `;
 }
