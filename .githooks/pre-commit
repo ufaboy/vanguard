@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+# Skip auto-bump if package.json version is already changed in the staged diff
+if git diff --cached -- package.json | grep -q '^[+-][[:space:]]*"version":'; then
+  exit 0
+fi
+
+node scripts/bump-version.mjs
+git add package.json
+if [ -f package-lock.json ]; then
+  git add package-lock.json
+fi
+

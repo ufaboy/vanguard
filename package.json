@@ -1,7 +1,7 @@
 {
   "name": "iron-vanguard",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "scripts": {
     "dev": "npx --yes serve public -l 3000",
@@ -15,7 +15,8 @@
     "deploy": "node scripts/deploy.mjs",
     "deploy:preview": "node scripts/deploy.mjs --preview",
     "pages:dev": "npx wrangler pages dev public",
-    "test:hangar": "node scripts/run-brick-benchmark.mjs --hangar"
+    "test:hangar": "node scripts/run-brick-benchmark.mjs --hangar",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "three": "^0.187.0"
