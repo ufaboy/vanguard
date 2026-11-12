@@ -1,0 +1,669 @@
+{
+  "mapId": "campaign-32",
+  "id": 32,
+  "name": "Boulevard of Steel",
+  "subtitle": "SECTOR 32 // GRAND MINISTRY AVENUE",
+  "objective": "Destroy the boulevard stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 5,
+      "col": 18
+    },
+    "name": "Boulevard Ministry Bastion",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 1150
+  },
+  "environment": {
+    "theme": "capital",
+    "tint": "#dda4a1",
+    "fogColor": "#3c3538",
+    "groundColor": "#646866"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "A fortified central ceremonial avenue held by howitzer and armor batteries is balanced by two destructible side-block routes through the West Arcade and East Chancellery districts where engineer teams reinforce brickwork.",
+    "breaches": [
+      {
+        "name": "West Arcade courtyard wall",
+        "cells": [
+          {
+            "row": 19,
+            "col": 7
+          },
+          {
+            "row": 19,
+            "col": 8
+          }
+        ],
+        "start": {
+          "row": 21,
+          "col": 7
+        },
+        "end": {
+          "row": 17,
+          "col": 7
+        },
+        "purpose": "Blast directly through the West Arcade block divider instead of detouring around the outer terrace."
+      },
+      {
+        "name": "East Chancellery gallery wall",
+        "cells": [
+          {
+            "row": 19,
+            "col": 28
+          },
+          {
+            "row": 19,
+            "col": 29
+          }
+        ],
+        "start": {
+          "row": 21,
+          "col": 28
+        },
+        "end": {
+          "row": 17,
+          "col": 28
+        },
+        "purpose": "Punch through the East Chancellery side block to bypass the central boulevard crossfire."
+      },
+      {
+        "name": "West colonnade bastion breach",
+        "cells": [
+          {
+            "row": 12,
+            "col": 12
+          },
+          {
+            "row": 13,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 10
+        },
+        "end": {
+          "row": 12,
+          "col": 14
+        },
+        "purpose": "Breach the western colonnade wall from the West Arcade route into the Boulevard Ministry Bastion court."
+      },
+      {
+        "name": "East colonnade bastion breach",
+        "cells": [
+          {
+            "row": 12,
+            "col": 24
+          },
+          {
+            "row": 13,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 26
+        },
+        "end": {
+          "row": 12,
+          "col": 22
+        },
+        "purpose": "Break through the eastern colonnade wall from the East Chancellery flank to strike the bastion from the side."
+      }
+    ],
+    "densityRevision": "The central Grand Boulevard features staggered concrete monuments and artillery firing pockets, while both the West Arcade and East Chancellery side blocks provide brick-walled urban bypass routes with open map edges and no outer concrete perimeter box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 32322026,
+    "theme": "capital",
+    "zones": [
+      {
+        "id": "capital-district-pavers",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "pavers",
+        "density": 0.16,
+        "details": [
+          "cracks",
+          "rubble",
+          "leaves"
+        ]
+      },
+      {
+        "id": "west-arcade-side-block",
+        "bounds": [
+          4,
+          3,
+          28,
+          11
+        ],
+        "surface": "concrete",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "central-boulevard-of-steel",
+        "bounds": [
+          2,
+          12,
+          33,
+          23
+        ],
+        "surface": "asphalt",
+        "density": 0.24,
+        "details": [
+          "tracks",
+          "cracks",
+          "oil",
+          "rubble"
+        ]
+      },
+      {
+        "id": "east-chancellery-side-block",
+        "bounds": [
+          4,
+          24,
+          28,
+          32
+        ],
+        "surface": "concrete",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "ministry-bastion-plaza",
+        "bounds": [
+          7,
+          13,
+          15,
+          22
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil"
+        ]
+      },
+      {
+        "id": "vanguard-entry-square",
+        "bounds": [
+          29,
+          11,
+          35,
+          24
+        ],
+        "surface": "pavers",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "cracks",
+          "leaves"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "grand-central-boulevard-highway",
+        "surface": "asphalt",
+        "width": 4,
+        "marking": "dashed",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            16,
+            18
+          ],
+          [
+            6,
+            18
+          ]
+        ]
+      },
+      {
+        "id": "west-arcade-flank-avenue",
+        "surface": "asphalt",
+        "width": 3,
+        "marking": "edges",
+        "points": [
+          [
+            31,
+            14
+          ],
+          [
+            26,
+            6
+          ],
+          [
+            16,
+            6
+          ],
+          [
+            9,
+            8
+          ],
+          [
+            8,
+            15
+          ]
+        ]
+      },
+      {
+        "id": "east-chancellery-flank-avenue",
+        "surface": "asphalt",
+        "width": 3,
+        "marking": "edges",
+        "points": [
+          [
+            31,
+            20
+          ],
+          [
+            26,
+            28
+          ],
+          [
+            16,
+            28
+          ],
+          [
+            9,
+            27
+          ],
+          [
+            8,
+            21
+          ]
+        ]
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "south-boulevard-crosswalk",
+        "kind": "crosswalk",
+        "row": 27,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "mid-boulevard-crosswalk",
+        "kind": "crosswalk",
+        "row": 16,
+        "col": 18,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "bastion-forecourt-loading",
+        "kind": "loading",
+        "row": 13,
+        "col": 18,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "west-arcade-parking",
+        "kind": "parking",
+        "row": 22,
+        "col": 6,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "east-chancellery-parking",
+        "kind": "parking",
+        "row": 22,
+        "col": 28,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-arcade-label",
+        "kind": "label",
+        "row": 15,
+        "col": 6,
+        "size": 3,
+        "text": "WEST ARCADE"
+      },
+      {
+        "id": "grand-boulevard-label",
+        "kind": "label",
+        "row": 20,
+        "col": 18,
+        "size": 3,
+        "text": "STEEL BLVD"
+      },
+      {
+        "id": "east-chancellery-label",
+        "kind": "label",
+        "row": 15,
+        "col": 28,
+        "size": 3,
+        "text": "CHANCELLERY"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 29,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "boulevard-north-gate",
+        "row": 2,
+        "col": 18
+      },
+      {
+        "id": "west-arcade-head",
+        "row": 2,
+        "col": 6
+      },
+      {
+        "id": "east-chancellery-head",
+        "row": 2,
+        "col": 29
+      },
+      {
+        "id": "bastion-west-ramp",
+        "row": 7,
+        "col": 11
+      },
+      {
+        "id": "bastion-east-ramp",
+        "row": 7,
+        "col": 24
+      }
+    ],
+    "encounters": [
+      {
+        "id": "boulevard-vanguard-screen",
+        "label": "BOULEVARD VANGUARD & ARTILLERY SCREEN DEPLOYED",
+        "recoverySec": 0,
+        "entrances": [
+          "boulevard-north-gate",
+          "west-arcade-head",
+          "east-chancellery-head"
+        ],
+        "initialCells": [
+          {
+            "row": 7,
+            "col": 15
+          },
+          {
+            "row": 7,
+            "col": 21
+          },
+          {
+            "row": 6,
+            "col": 6
+          },
+          {
+            "row": 6,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 18
+          },
+          {
+            "row": 16,
+            "col": 18
+          },
+          {
+            "row": 23,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "HOWITZER",
+          "STANDARD",
+          "STANDARD",
+          "HOWITZER"
+        ]
+      },
+      {
+        "id": "side-block-engineer-corps",
+        "label": "SIDE-BLOCK FIELD ENGINEERS & ESCORT LINE",
+        "recoverySec": 8,
+        "entrances": [
+          "west-arcade-head",
+          "east-chancellery-head",
+          "bastion-west-ramp"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 6
+          },
+          {
+            "row": 17,
+            "col": 6
+          },
+          {
+            "row": 23,
+            "col": 14
+          }
+        ],
+        "enemies": [
+          "ENGINEER",
+          "STANDARD",
+          "HOWITZER",
+          "ENGINEER",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "boulevard-howitzer-battery",
+        "label": "GRAND BOULEVARD HOWITZER & ARMOR BATTERY",
+        "recoverySec": 9,
+        "entrances": [
+          "boulevard-north-gate",
+          "bastion-west-ramp",
+          "bastion-east-ramp"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 18
+          },
+          {
+            "row": 13,
+            "col": 18
+          },
+          {
+            "row": 20,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "chancellery-striker-wing",
+        "label": "CHANCELLERY STRIKER WING & RESERVE ENGINEERS",
+        "recoverySec": 9,
+        "entrances": [
+          "east-chancellery-head",
+          "west-arcade-head",
+          "bastion-east-ramp"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 26
+          },
+          {
+            "row": 17,
+            "col": 28
+          },
+          {
+            "row": 22,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "STRIKER",
+          "ENGINEER",
+          "STANDARD",
+          "STRIKER",
+          "ENGINEER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "ministry-bastion-guard",
+        "label": "MINISTRY BASTION FINAL HEAVY GUARD DEPLOYED",
+        "recoverySec": 10,
+        "entrances": [
+          "bastion-west-ramp",
+          "bastion-east-ramp",
+          "boulevard-north-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 18
+          },
+          {
+            "row": 13,
+            "col": 18
+          },
+          {
+            "row": 17,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "STANDARD",
+    "STANDARD",
+    "HOWITZER",
+    "ENGINEER",
+    "STANDARD",
+    "HOWITZER",
+    "ENGINEER",
+    "STANDARD",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "STRIKER",
+    "ENGINEER",
+    "STANDARD",
+    "STRIKER",
+    "ENGINEER",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.........CC...........CC.......FFF",
+    "F..........CC...........CC........FF",
+    "...................................F",
+    "F...................................",
+    "..CC.......FF....CCC....FF.....CCC..",
+    "..CC.......FF....CEC....FF......CC..",
+    "...........CC....CCC....CC.........W",
+    "...................................W",
+    "..FF........C..CC...CC..C..........W",
+    ".FFF........C..CC...CC..C......FF...",
+    "........CC..C...........C..CC..FFF..",
+    "........CC..C...........C..CC.......",
+    "............B...........B..........F",
+    "..CC........B...........B......CCC..",
+    "..CC........C..BB...BB..C.......CC.F",
+    ".......FF...C..BB...BB..C..FF......F",
+    ".......FF..................FF......F",
+    "..BB........C...........C.......BBB.",
+    "..BB........C...CC..CC..C.......BBB.",
+    "F....CCBBCC.C...CC..CC..C.CCBBCC....",
+    "..CC........C..Q........C..Q...CCC..",
+    "..CC........C..BB...BB..C.......CC.F",
+    "........CC..C..BB...BB..C..CC.......",
+    "...FF...CC.Q............C..CC..FF...",
+    "..FFF......C........Q...C.......FF..",
+    "F..........C...CC...CC..C...........",
+    "...............CC...CC...Q.........W",
+    "...........CC...........CC.........W",
+    "...........CCQ..BB.BB...CC......Q..W",
+    "..CC....FF......BB.BBQ.....FF..CCC..",
+    "..CC....FF...BB......BBB...FF...CC..",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "W.........FF....CCCC....FF..........",
+    "WW.................................F",
+    "WW...............HH...............FF"
+  ]
+}

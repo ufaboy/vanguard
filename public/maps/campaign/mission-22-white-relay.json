@@ -1,0 +1,638 @@
+{
+  "mapId": "campaign-22",
+  "id": 22,
+  "name": "White Relay",
+  "subtitle": "SECTOR 22 // ALPINE RELAY STRONGHOLD",
+  "objective": "Destroy the alpine relay",
+  "gameMode": "stronghold_assault",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 5,
+      "col": 18
+    },
+    "name": "White Relay Command Array",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 750
+  },
+  "environment": {
+    "theme": "alpine",
+    "tint": "#c5dcf2",
+    "fogColor": "#435366",
+    "groundColor": "#7d8891"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Advance across an exposed frozen plateau by leapfrogging between concrete weather shelters to evade artillery and striker fire, then breach the relay compound walls to destroy the White Relay Command Array.",
+    "breaches": [
+      {
+        "name": "South relay courtyard wall",
+        "cells": [
+          {
+            "row": 15,
+            "col": 17
+          },
+          {
+            "row": 15,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 18
+        },
+        "end": {
+          "row": 13,
+          "col": 18
+        },
+        "purpose": "Blast through the southern antenna compound wall for a direct firing line onto the White Relay Command Array."
+      },
+      {
+        "name": "West radome shelter bulkhead",
+        "cells": [
+          {
+            "row": 11,
+            "col": 14
+          },
+          {
+            "row": 12,
+            "col": 14
+          }
+        ],
+        "start": {
+          "row": 11,
+          "col": 12
+        },
+        "end": {
+          "row": 11,
+          "col": 16
+        },
+        "purpose": "Punch into the western side of the relay courtyard from the west radome shelter."
+      },
+      {
+        "name": "East transformer bunker wall",
+        "cells": [
+          {
+            "row": 11,
+            "col": 22
+          },
+          {
+            "row": 12,
+            "col": 22
+          }
+        ],
+        "start": {
+          "row": 11,
+          "col": 24
+        },
+        "end": {
+          "row": 11,
+          "col": 20
+        },
+        "purpose": "Breach the eastern transformer wall to strike the relay core from the east snowfield shelf."
+      },
+      {
+        "name": "Mid-plateau shelter cut",
+        "cells": [
+          {
+            "row": 22,
+            "col": 16
+          },
+          {
+            "row": 22,
+            "col": 17
+          }
+        ],
+        "start": {
+          "row": 24,
+          "col": 16
+        },
+        "end": {
+          "row": 20,
+          "col": 16
+        },
+        "purpose": "Open a central shortcut through the mid-plateau windbreak wall to rotate quickly between weather shelters."
+      }
+    ],
+    "densityRevision": "Open frozen drift fields surround staggered concrete weather shelters and the central communications relay compound, with open alpine edges and no outer concrete perimeter box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 22222026,
+    "theme": "alpine",
+    "zones": [
+      {
+        "id": "plateau-snow-drift",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "snow",
+        "density": 0.16,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "relay-compound-apron",
+        "bounds": [
+          8,
+          13,
+          16,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "west-radome-shelter-yard",
+        "bounds": [
+          10,
+          3,
+          25,
+          11
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "east-transformer-shelf",
+        "bounds": [
+          10,
+          25,
+          25,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-staging-road-apron",
+        "bounds": [
+          26,
+          10,
+          35,
+          25
+        ],
+        "surface": "asphalt",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-radome-service-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            9
+          ],
+          [
+            20,
+            6
+          ],
+          [
+            11,
+            8
+          ],
+          [
+            11,
+            13
+          ]
+        ],
+        "width": 2.6,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "central-relay-causeway",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            17,
+            18
+          ],
+          [
+            13,
+            18
+          ]
+        ],
+        "width": 2.8,
+        "surface": "concrete",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-transformer-service-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            19,
+            29
+          ],
+          [
+            11,
+            27
+          ],
+          [
+            11,
+            23
+          ]
+        ],
+        "width": 2.6,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "relay-compound-loading",
+        "kind": "loading",
+        "row": 13,
+        "col": 18,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "mid-shelter-crosswalk",
+        "kind": "crosswalk",
+        "row": 20,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-hq-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-radome-label",
+        "kind": "label",
+        "row": 16,
+        "col": 6,
+        "size": 3,
+        "text": "WEST RADOME SHELTER"
+      },
+      {
+        "id": "white-relay-label",
+        "kind": "label",
+        "row": 17,
+        "col": 18,
+        "size": 3,
+        "text": "WHITE RELAY ARRAY"
+      },
+      {
+        "id": "east-bunker-label",
+        "kind": "label",
+        "row": 16,
+        "col": 29,
+        "size": 3,
+        "text": "EAST BUNKER SHELF"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 27,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-drift",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-west-relay-gate",
+        "row": 2,
+        "col": 13
+      },
+      {
+        "id": "north-east-relay-gate",
+        "row": 2,
+        "col": 23
+      },
+      {
+        "id": "north-east-drift",
+        "row": 2,
+        "col": 31
+      },
+      {
+        "id": "upper-west-radome",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-shelf",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-relay-patrol",
+        "label": "RELAY PERIMETER GARRISON DEPLOYED",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-drift",
+          "north-west-relay-gate",
+          "north-east-relay-gate",
+          "north-east-drift"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 14
+          },
+          {
+            "row": 5,
+            "col": 22
+          },
+          {
+            "row": 4,
+            "col": 30
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 12
+          },
+          {
+            "row": 17,
+            "col": 15
+          },
+          {
+            "row": 24,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "first-artillery-battery",
+        "label": "ALPINE HOWITZER BATTERY EMPLACED",
+        "recoverySec": 8,
+        "entrances": [
+          "upper-west-radome",
+          "north-west-drift",
+          "north-west-relay-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 7
+          },
+          {
+            "row": 18,
+            "col": 9
+          },
+          {
+            "row": 25,
+            "col": 14
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "STANDARD",
+          "SCOUT",
+          "HOWITZER",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "west-jammer-striker-screen",
+        "label": "ECM JAMMER & STRIKER ESCORT INBOUND",
+        "recoverySec": 9,
+        "entrances": [
+          "north-west-relay-gate",
+          "north-east-relay-gate",
+          "upper-west-radome"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 18
+          },
+          {
+            "row": 17,
+            "col": 18
+          },
+          {
+            "row": 24,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "STRIKER",
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "east-radome-barrage",
+        "label": "EAST SHELF JAMMER & ARTILLERY WING",
+        "recoverySec": 9,
+        "entrances": [
+          "upper-east-shelf",
+          "north-east-drift",
+          "north-east-relay-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 29
+          },
+          {
+            "row": 18,
+            "col": 27
+          },
+          {
+            "row": 25,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "HOWITZER",
+          "STRIKER",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "relay-citadel-reserve",
+        "label": "WHITE RELAY COMMAND RESERVE DEPLOYED",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-drift",
+          "north-west-relay-gate",
+          "north-east-relay-gate",
+          "north-east-drift"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 17
+          },
+          {
+            "row": 17,
+            "col": 17
+          },
+          {
+            "row": 25,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "STRIKER",
+          "HOWITZER",
+          "STANDARD",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "SCOUT",
+    "HOWITZER",
+    "STANDARD",
+    "STANDARD",
+    "JAMMER",
+    "STRIKER",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "JAMMER",
+    "HOWITZER",
+    "STRIKER",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "JAMMER",
+    "STRIKER",
+    "HOWITZER",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.....III.......FF......III......FF",
+    "F......III.......F.......III......FF",
+    ".......III...............III.......F",
+    ".......III...............III........",
+    "..CC.........FF..CCCFF.........CC...",
+    "..CC.........FF..CECFF.........CC..I",
+    ".......III.......CCC.....III.......I",
+    ".......III...............III.......I",
+    ".........I....CC.....CC............I",
+    "..FF..........CC....QCC........FF...",
+    ".FFF.....CC...C.......C..QCC...FF...",
+    ".........CC...B.......B...CC........",
+    "....III...Q...B.......B......IIIQ..F",
+    "..CCIII.......C.......C......IIICC.F",
+    "..CC..........C......QC.........CC.F",
+    ".......FF.....CCCBBCCCC...FF........",
+    ".......FF.................FF....III.",
+    "..III......CC..........CC.......III.",
+    "..III......CC..........CC.......III.",
+    "F................II.................",
+    "..CC....FF......IIII......FF...CC...",
+    "..CC....FF......IIII......FF...CC..F",
+    ".............CCCBB..CC..........Q...",
+    "....III......C.......C....III.......",
+    "....III......C.......C....III...FF..",
+    "..FF.....Q.....................FFF..",
+    ".FFF.....CC.....IIII.....CCQ.......I",
+    ".........CC.....IIII.....CC........I",
+    "................IIII............III.",
+    "..CC....FF................FF...CCC..",
+    "..CC....FF...BB......BBB..FF....CC..",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "I.........FF....CCCC....FF..........",
+    "II.................................F",
+    "II...............HH...............FF"
+  ]
+}

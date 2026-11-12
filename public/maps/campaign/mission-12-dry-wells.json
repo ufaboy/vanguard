@@ -1,0 +1,659 @@
+{
+  "mapId": "campaign-12",
+  "id": 12,
+  "name": "Dry Wells",
+  "subtitle": "SECTOR 12 // OASIS DEFENSE",
+  "objective": "Defend the oasis HQ",
+  "gameMode": "base_defense",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 18
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 18
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 600
+  },
+  "environment": {
+    "theme": "desert",
+    "tint": "#d3c79a",
+    "fogColor": "#67634e",
+    "groundColor": "#b1a17a"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Rotate around the compact oasis HQ to intercept announced charges through three visible dry channels.",
+    "interceptionLanes": [
+      {
+        "col": 8,
+        "startRow": 11,
+        "endRow": 24
+      },
+      {
+        "col": 18,
+        "startRow": 11,
+        "endRow": 24
+      },
+      {
+        "col": 29,
+        "startRow": 11,
+        "endRow": 24
+      }
+    ],
+    "breaches": [
+      {
+        "name": "West shelter rotation",
+        "cells": [
+          {
+            "row": 24,
+            "col": 14
+          },
+          {
+            "row": 25,
+            "col": 14
+          },
+          {
+            "row": 26,
+            "col": 14
+          }
+        ],
+        "start": {
+          "row": 25,
+          "col": 12
+        },
+        "end": {
+          "row": 25,
+          "col": 16
+        },
+        "purpose": "Shorten defensive repositioning while preserving an intact route around the wall."
+      },
+      {
+        "name": "East shelter rotation",
+        "cells": [
+          {
+            "row": 26,
+            "col": 23
+          },
+          {
+            "row": 27,
+            "col": 23
+          },
+          {
+            "row": 28,
+            "col": 23
+          }
+        ],
+        "start": {
+          "row": 27,
+          "col": 21
+        },
+        "end": {
+          "row": 27,
+          "col": 25
+        },
+        "purpose": "Shorten defensive repositioning while preserving an intact route around the wall."
+      }
+    ],
+    "densityRevision": "Connected shelter clusters divide exposed ground into smaller combat spaces while preserving authored routes and deployment."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 12122026,
+    "theme": "desert",
+    "zones": [
+      {
+        "id": "sand-field",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "sand",
+        "density": 0.16,
+        "details": [
+          "patches"
+        ]
+      },
+      {
+        "id": "west-channel",
+        "bounds": [
+          8,
+          6,
+          24,
+          10
+        ],
+        "surface": "dirt",
+        "density": 0.16,
+        "details": [
+          "tracks"
+        ]
+      },
+      {
+        "id": "central-channel",
+        "bounds": [
+          8,
+          16,
+          25,
+          20
+        ],
+        "surface": "gravel",
+        "density": 0.16,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "east-channel",
+        "bounds": [
+          8,
+          27,
+          24,
+          31
+        ],
+        "surface": "dirt",
+        "density": 0.16,
+        "details": [
+          "tracks"
+        ]
+      },
+      {
+        "id": "oasis-court",
+        "bounds": [
+          25,
+          15,
+          32,
+          22
+        ],
+        "surface": "pavers",
+        "density": 0.16,
+        "details": [
+          "cracks"
+        ]
+      },
+      {
+        "id": "west-shelter",
+        "bounds": [
+          23,
+          11,
+          30,
+          16
+        ],
+        "surface": "gravel",
+        "density": 0.16,
+        "details": [
+          "rubble"
+        ]
+      },
+      {
+        "id": "western-bank-ruins",
+        "bounds": [
+          11,
+          2,
+          21,
+          6
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "eastern-bank-ruins",
+        "bounds": [
+          12,
+          20,
+          24,
+          26
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "rubble",
+          "cracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-approach",
+        "points": [
+          [
+            3,
+            8
+          ],
+          [
+            23,
+            8
+          ],
+          [
+            24,
+            12
+          ],
+          [
+            24,
+            13
+          ],
+          [
+            30,
+            13
+          ],
+          [
+            31,
+            18
+          ]
+        ],
+        "width": 3,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "central-approach",
+        "points": [
+          [
+            3,
+            18
+          ],
+          [
+            25,
+            18
+          ],
+          [
+            26,
+            18
+          ]
+        ],
+        "width": 3,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "east-approach",
+        "points": [
+          [
+            3,
+            29
+          ],
+          [
+            24,
+            29
+          ],
+          [
+            29,
+            30
+          ],
+          [
+            30,
+            29
+          ],
+          [
+            30,
+            24
+          ],
+          [
+            31,
+            24
+          ],
+          [
+            31,
+            18
+          ]
+        ],
+        "width": 3,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "south-rotation",
+        "points": [
+          [
+            31,
+            12
+          ],
+          [
+            31,
+            18
+          ],
+          [
+            31,
+            24
+          ]
+        ],
+        "width": 2.5,
+        "surface": "dirt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-label",
+        "kind": "label",
+        "row": 22,
+        "col": 8,
+        "size": 3,
+        "text": "WEST CHANNEL"
+      },
+      {
+        "id": "east-label",
+        "kind": "label",
+        "row": 22,
+        "col": 29,
+        "size": 3,
+        "text": "EAST CHANNEL"
+      },
+      {
+        "id": "court-label",
+        "kind": "label",
+        "row": 30,
+        "col": 18,
+        "size": 3,
+        "text": "OASIS COURT"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          9,
+          7,
+          11,
+          9
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          9,
+          17,
+          11,
+          19
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          9,
+          28,
+          11,
+          30
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          7,
+          15,
+          9,
+          17
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.8,
+    "entrances": [
+      {
+        "id": "west-channel",
+        "row": 3,
+        "col": 8
+      },
+      {
+        "id": "central-channel",
+        "row": 3,
+        "col": 18
+      },
+      {
+        "id": "east-channel",
+        "row": 3,
+        "col": 29
+      }
+    ],
+    "encounters": [
+      {
+        "id": "channel-screen",
+        "label": "DRY WELLS: West-channel patrol approaching. Defend the oasis HQ and learn the southern rotation routes.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-channel",
+          "central-channel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 22,
+            "col": 8
+          },
+          {
+            "row": 24,
+            "col": 12
+          },
+          {
+            "row": 29,
+            "col": 16
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 10,
+            "col": 8
+          },
+          {
+            "row": 10,
+            "col": 18
+          },
+          {
+            "row": 10,
+            "col": 29
+          },
+          {
+            "row": 8,
+            "col": 16
+          }
+        ]
+      },
+      {
+        "id": "east-miners",
+        "label": "EAST CHANNEL: Sappers approaching from the northeast. Keep the center route available for repositioning.",
+        "enemies": [
+          "STANDARD",
+          "SAPPER",
+          "SCOUT",
+          "STANDARD",
+          "SAPPER"
+        ],
+        "entrances": [
+          "east-channel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 22,
+            "col": 29
+          },
+          {
+            "row": 24,
+            "col": 26
+          },
+          {
+            "row": 29,
+            "col": 21
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "first-charge",
+        "label": "CENTRAL CHANNEL: First kamikaze approaching from the north. Intercept it in the open channel before it reaches the HQ.",
+        "enemies": [
+          "STANDARD",
+          "SCOUT",
+          "SAPPER",
+          "STANDARD",
+          "KAMIKAZE"
+        ],
+        "entrances": [
+          "central-channel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 23,
+            "col": 18
+          },
+          {
+            "row": 25,
+            "col": 18
+          },
+          {
+            "row": 26,
+            "col": 18
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "west-charge",
+        "label": "WEST CHANNEL: A kamikaze and sapper escort are approaching. Rotate west and keep an exit through the shelter wall.",
+        "enemies": [
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "KAMIKAZE"
+        ],
+        "entrances": [
+          "west-channel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 22,
+            "col": 8
+          },
+          {
+            "row": 24,
+            "col": 12
+          },
+          {
+            "row": 29,
+            "col": 16
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "last-charge",
+        "label": "EAST CHANNEL: Final five hostiles, including one kamikaze. Hold the HQ and intercept the charge.",
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "KAMIKAZE"
+        ],
+        "entrances": [
+          "east-channel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 22,
+            "col": 29
+          },
+          {
+            "row": 24,
+            "col": 26
+          },
+          {
+            "row": 29,
+            "col": 21
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SAPPER",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "SCOUT",
+    "SAPPER",
+    "STANDARD",
+    "KAMIKAZE",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "KAMIKAZE",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "KAMIKAZE"
+  ],
+  "layout": [
+    "...BBB.....BBBB.......BBBB......BB..",
+    "...BBB.....BBBB.......BBBB......BB..",
+    "...........BBBB.......BBBB......BB..",
+    "....BB.....BBBB.......BCCB......BB..",
+    "....BB.....BBBB.......BCCB......BB..",
+    "....BB......BBB.......BBBB......BB..",
+    "...BBB......BCC......BBBB...........",
+    "...BCB......BCC......BBBB.....BBB...",
+    "...BCB....BBBB.......BBBBBBB..BBB...",
+    "...BBB....BCCB........BBBBCB...BB...",
+    "..........BBBB........BCCBBB........",
+    "...BBB................BCC...........",
+    "...BBB.....CCBBB....BBBB.......BBB..",
+    "...BBB.....CCBCB....BCCB.......BBB..",
+    "...BBB.....CCBCB....BBBB.......BBB..",
+    "...BCC.....CCBCB.......BBB.....BBB..",
+    "...BCC.....CCBBB.......BCC..........",
+    "..BBBB.................BCC..........",
+    "..BCCB....BBBBB.......QBBB.....BBB..",
+    "..BCCB....BBBCC.....BBB........BCB..",
+    "..BBBB....BBBCC.....BBB.CC.....BBB..",
+    "..........BB.Q......BBB.CC..........",
+    "...Q........BB......BB..CCQ....BBB..",
+    "...BBB........C.....BB..CC.....BBB..",
+    "...BBB........B.....BB.C.......BBB..",
+    "...BBB........BQ.......C..WW...Q....",
+    "...BBBB..WWW..B........B..WW....BB..",
+    "...BCCBQ.WWWW.C........B...FF...CB..",
+    "...BBBB..WWWW.C........B...FF...BB..",
+    ".........FFBQ.C........C............",
+    "....BBB..FF............C............",
+    "....BBB..................BBB....BB..",
+    "....BBB..................BBB..BBBB..",
+    "...............B.CCCC.B..BBB..BBBB..",
+    "...BBB.........B......B.......BBBB..",
+    "...BBB............HH..B.......BBBB.."
+  ]
+}

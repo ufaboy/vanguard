@@ -1,0 +1,635 @@
+{
+  "mapId": "campaign-21",
+  "id": 21,
+  "name": "Cold Ascent",
+  "subtitle": "SECTOR 21 // FROZEN HIGHLANDS",
+  "objective": "Clear the mountain road",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 700
+  },
+  "environment": {
+    "theme": "alpine",
+    "tint": "#c5dcf2",
+    "fogColor": "#435366",
+    "groundColor": "#7d8891"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Ascend an alpine switchback pass where fast glaze-ice chutes are paired with generous dry gravel braking terraces, pine windbreaks, and destructible snow-shed shortcuts.",
+    "breaches": [
+      {
+        "name": "Lower snow-shed gate",
+        "cells": [
+          {
+            "row": 24,
+            "col": 15
+          },
+          {
+            "row": 24,
+            "col": 16
+          }
+        ],
+        "start": {
+          "row": 26,
+          "col": 15
+        },
+        "end": {
+          "row": 22,
+          "col": 15
+        },
+        "purpose": "Blast through the southern brick snow-shed wall to enter the central braking terrace directly from the base approach."
+      },
+      {
+        "name": "West switchback retaining wall",
+        "cells": [
+          {
+            "row": 17,
+            "col": 10
+          },
+          {
+            "row": 18,
+            "col": 10
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 8
+        },
+        "end": {
+          "row": 17,
+          "col": 12
+        },
+        "purpose": "Cut between the dry western switchback road and the central mid-slope terrace without looping north."
+      },
+      {
+        "name": "East overlook parapet",
+        "cells": [
+          {
+            "row": 15,
+            "col": 25
+          },
+          {
+            "row": 16,
+            "col": 25
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 23
+        },
+        "end": {
+          "row": 15,
+          "col": 27
+        },
+        "purpose": "Breach the eastern ridge parapet to flank howitzers and armor staging on the east shelf."
+      },
+      {
+        "name": "Upper pass tollgate",
+        "cells": [
+          {
+            "row": 10,
+            "col": 17
+          },
+          {
+            "row": 10,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 17
+        },
+        "end": {
+          "row": 8,
+          "col": 17
+        },
+        "purpose": "Shatter the northern tollgate barricade for a direct assault into the summit staging yard."
+      }
+    ],
+    "densityRevision": "Asymmetric alpine switchbacks pair readable glaze-ice sheets with dry gravel braking pockets, rock buttresses, and spruce groves, leaving the mountain edges open without a concrete border box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 21212026,
+    "theme": "alpine",
+    "zones": [
+      {
+        "id": "alpine-snow-pack",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "snow",
+        "density": 0.16,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "west-dry-switchback-gravel",
+        "bounds": [
+          3,
+          2,
+          31,
+          9
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "central-braking-terrace",
+        "bounds": [
+          9,
+          12,
+          26,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-ridge-shelf",
+        "bounds": [
+          4,
+          26,
+          29,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "rubble",
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-valley-base-apron",
+        "bounds": [
+          28,
+          10,
+          35,
+          25
+        ],
+        "surface": "asphalt",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-switchback-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            29,
+            9
+          ],
+          [
+            23,
+            5
+          ],
+          [
+            15,
+            5
+          ],
+          [
+            7,
+            6
+          ],
+          [
+            4,
+            13
+          ]
+        ],
+        "width": 2.6,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "central-pass-highway",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            25,
+            17
+          ],
+          [
+            18,
+            17
+          ],
+          [
+            11,
+            17
+          ],
+          [
+            4,
+            18
+          ]
+        ],
+        "width": 2.8,
+        "surface": "gravel",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-ridge-track",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            20,
+            30
+          ],
+          [
+            12,
+            29
+          ],
+          [
+            4,
+            24
+          ]
+        ],
+        "width": 2.5,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "summit-toll-crosswalk",
+        "kind": "crosswalk",
+        "row": 11,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "mid-slope-loading-bay",
+        "kind": "loading",
+        "row": 19,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-base-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-switchback-label",
+        "kind": "label",
+        "row": 19,
+        "col": 5,
+        "size": 3,
+        "text": "DRY SWITCHBACK"
+      },
+      {
+        "id": "central-ice-label",
+        "kind": "label",
+        "row": 15,
+        "col": 17,
+        "size": 3,
+        "text": "GLAZE PASS"
+      },
+      {
+        "id": "east-ridge-label",
+        "kind": "label",
+        "row": 16,
+        "col": 30,
+        "size": 3,
+        "text": "EAST OVERLOOK"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 26,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-pass",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-summit-road",
+        "row": 2,
+        "col": 15
+      },
+      {
+        "id": "north-glaze-chute",
+        "row": 2,
+        "col": 22
+      },
+      {
+        "id": "north-east-ridge",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-west-turnout",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-shelf",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-ice-vanguard",
+        "label": "ALPINE RECON VANGUARD ON THE PASS",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-pass",
+          "north-summit-road",
+          "north-glaze-chute",
+          "north-east-ridge"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 14
+          },
+          {
+            "row": 5,
+            "col": 21
+          },
+          {
+            "row": 4,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 15
+          },
+          {
+            "row": 16,
+            "col": 16
+          },
+          {
+            "row": 23,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "switchback-recon-sweep",
+        "label": "SWITCHBACK OUTRIDERS ADVANCING",
+        "recoverySec": 8,
+        "entrances": [
+          "upper-west-turnout",
+          "north-west-pass",
+          "north-summit-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 6
+          },
+          {
+            "row": 19,
+            "col": 7
+          },
+          {
+            "row": 26,
+            "col": 14
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "mid-slope-armor-column",
+        "label": "HEAVY ARMOR DESCENDING GLAZE PASS",
+        "recoverySec": 9,
+        "entrances": [
+          "north-summit-road",
+          "north-glaze-chute",
+          "upper-west-turnout"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 17
+          },
+          {
+            "row": 17,
+            "col": 18
+          },
+          {
+            "row": 25,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "SCOUT",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "ridge-howitzer-battery",
+        "label": "RIDGE ARTILLERY & SPOTTER SCREEN",
+        "recoverySec": 9,
+        "entrances": [
+          "upper-east-shelf",
+          "north-east-ridge",
+          "north-glaze-chute"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 29
+          },
+          {
+            "row": 18,
+            "col": 28
+          },
+          {
+            "row": 25,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "STANDARD",
+          "SCOUT",
+          "HOWITZER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "summit-guard-reserve",
+        "label": "FINAL SUMMIT ARMOR RESERVE",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-pass",
+          "north-summit-road",
+          "north-glaze-chute",
+          "north-east-ridge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 15
+          },
+          {
+            "row": 18,
+            "col": 16
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "SCOUT",
+          "ARMOR",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "SCOUT",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "SCOUT",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "SCOUT",
+    "ARMOR",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.......FF......IIII......FF.....FF",
+    "F........F.......IIII.......F.....FF",
+    ".................IIII..............F",
+    ".................IIII...............",
+    "..CC.....FF......IIII....FF....CC...",
+    "..CC.....FF..............FF....CC..F",
+    ".........CCC....II..II....CC........",
+    ".........C......II..II.....C.......I",
+    "................II..II.............I",
+    "..FF............II..II....Q...FF...I",
+    ".FFF.....CC..CCCCBBBBCCC..CC..FF....",
+    "........QCC..C....Q.....C.CC........",
+    ".............I..........I...IIII....",
+    "..CC....FF...III......III...IIII..CC",
+    "..CC....FF...III......III.........CC",
+    "........CC........FF.....B..IIII....",
+    "........CC........FF.....B..IIII..FF",
+    "...III....B..CC........CCC........FF",
+    "...III....B..CC........CC...........",
+    "..................II.......CC.......",
+    "..FF.....CC......IIII......CC....FF.",
+    ".FFF.....CC......IIII............FF.",
+    ".........Q.......IIII...FF..........",
+    "..CC....III....Q........FF.....CC...",
+    "..CC....III..CCBB...QBBCC......CC..I",
+    "........III..C..........C.......Q..I",
+    ".............C..........C...IIII...I",
+    "...FF.......................IIII....",
+    "..FFF....CCQ.....IIII.......CC...FF.",
+    ".........CC......IIII.......CC...FFF",
+    ".................IIII...............",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "I.........FF....CCCC....FF..........",
+    "II.................................F",
+    "II...............HH...............FF"
+  ]
+}

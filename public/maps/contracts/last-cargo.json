@@ -1,0 +1,524 @@
+{
+  "mapId": "contract-last-cargo",
+  "id": 101,
+  "code": "CONTRACT 01 // 36×36",
+  "name": "Last Cargo",
+  "subtitle": "RIVER TERMINAL LOGISTICS RAID",
+  "objective": "Recover at least 2 of 3 data containers and extract at the southern delivery pad",
+  "gameMode": "contract",
+  "contractId": "contract-last-cargo",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 32,
+    "col": 14
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "gameMode": "contract",
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false,
+    "victoryOnAllEnemiesDestroyed": false
+  },
+  "completionReward": {
+    "credits": 3000
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#38bdf8",
+    "fogColor": "#0d1522",
+    "groundColor": "#3c444c"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Logistics raid across a 36x36 river terminal with three connected route loops (West Rail Depot, Central Pump Island across a diagonal canal with two 3-cell bridges, and East Container Yard), finite event-triggered enemy groups (24 total, max 6 live), and an explicit southern delivery/extraction pad.",
+    "breaches": [
+      {
+        "name": "West north lateral breach",
+        "cells": [
+          {
+            "row": 11,
+            "col": 10
+          },
+          {
+            "row": 12,
+            "col": 10
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 8
+        },
+        "end": {
+          "row": 12,
+          "col": 12
+        },
+        "purpose": "Blast the shallow brick partition beside the rail depot to open a direct lateral escape from Cargo A into the central distribution road."
+      },
+      {
+        "name": "West south lateral breach",
+        "cells": [
+          {
+            "row": 19,
+            "col": 10
+          },
+          {
+            "row": 20,
+            "col": 10
+          }
+        ],
+        "start": {
+          "row": 19,
+          "col": 8
+        },
+        "end": {
+          "row": 19,
+          "col": 12
+        },
+        "purpose": "Breach the lower rail-yard brick wall to cut from the western rail spine into the southern cross-connector below the pump island."
+      }
+    ]
+  },
+  "powerups": [
+    {
+      "type": "REPAIR",
+      "row": 27,
+      "col": 14
+    },
+    {
+      "type": "APS",
+      "row": 7,
+      "col": 2
+    },
+    {
+      "type": "REPAIR",
+      "row": 15,
+      "col": 2
+    },
+    {
+      "type": "MISSILE",
+      "row": 23,
+      "col": 3
+    },
+    {
+      "type": "REPAIR",
+      "row": 12,
+      "col": 15
+    },
+    {
+      "type": "EMP",
+      "row": 15,
+      "col": 24
+    },
+    {
+      "type": "APS",
+      "row": 24,
+      "col": 14
+    },
+    {
+      "type": "MISSILE",
+      "row": 6,
+      "col": 33
+    },
+    {
+      "type": "REPAIR",
+      "row": 14,
+      "col": 33
+    },
+    {
+      "type": "APS",
+      "row": 22,
+      "col": 32
+    }
+  ],
+  "enemyPool": [
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "SCOUT",
+    "HOWITZER",
+    "ENGINEER",
+    "SCOUT",
+    "SCOUT",
+    "HOVER",
+    "STANDARD",
+    "ARMOR",
+    "ARMOR",
+    "STANDARD",
+    "STANDARD",
+    "JAMMER",
+    "STRIKER",
+    "HOWITZER",
+    "STANDARD",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "HOVER",
+    "SCOUT",
+    "SCOUT"
+  ],
+  "enemies": {
+    "vanguardCount": 24,
+    "initialSpawnCount": 3,
+    "maxConcurrent": 6,
+    "maxAttackers": 3,
+    "spawnIntervalSec": 4,
+    "entrances": [
+      {
+        "id": "west",
+        "row": 0,
+        "col": 5
+      },
+      {
+        "id": "center",
+        "row": 0,
+        "col": 18
+      },
+      {
+        "id": "east",
+        "row": 0,
+        "col": 30
+      }
+    ]
+  },
+  "layout": [
+    "....................................",
+    "....................................",
+    "....................................",
+    "....................................",
+    "....C.........CC.....CC.............",
+    "CC..C.........CC.....CC.............",
+    "CC..C.....C................CCC......",
+    "..........C.....BB..................",
+    "....B.....C.....BB..FF.........C....",
+    "....B.BB..C.........FF.........C....",
+    "FF..B.....C....................C....",
+    "FF........B...........WWW...BB....CC",
+    "FF..C.....B...........WWW.........CC",
+    "....C.....C..WWWWWWWWWWWW...C.....CC",
+    "....C....BC..WWWWWWWWWW.....C.......",
+    ".........BC..WWC.BB.CWWW....C.......",
+    "....B.....C..........WWW............",
+    "CC..B.C...C..........WWW......BB....",
+    "CC..B.....C..........WWW......BB..FF",
+    "CC........B..WWWW....WWW..........FF",
+    "....C.....B..WWCB...CWWW....CC....FF",
+    "....C.....C..WWWW....WWW....CC......",
+    "....C.....C..WWWW....WWW............",
+    "....................................",
+    "FF..................................",
+    "FF....CCC......BB..........CCC......",
+    "FF....CCC...........CC.....CCC......",
+    "....................................",
+    ".........FFF............FFF.........",
+    ".........FFF............FFF.........",
+    "....................................",
+    "....CCC......................CCC....",
+    "....CCC......................CCC....",
+    "................CCCC................",
+    "....................................",
+    ".................HH................."
+  ],
+  "decoration": {
+    "version": 1,
+    "seed": 40201,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "west-rail-yard",
+        "bounds": [
+          2,
+          5,
+          24,
+          9
+        ],
+        "surface": "gravel",
+        "density": 0.35,
+        "details": [
+          "tracks",
+          "rubble",
+          "oil"
+        ]
+      },
+      {
+        "id": "west-workshop",
+        "bounds": [
+          4,
+          1,
+          24,
+          3
+        ],
+        "surface": "concrete",
+        "density": 0.3,
+        "details": [
+          "oil",
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "pump-island-deck",
+        "bounds": [
+          15,
+          15,
+          20,
+          20
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "east-container-court",
+        "bounds": [
+          5,
+          25,
+          22,
+          33
+        ],
+        "surface": "concrete",
+        "density": 0.3,
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-delivery-apron",
+        "bounds": [
+          29,
+          14,
+          34,
+          21
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-rail-spine",
+        "points": [
+          [
+            1,
+            5
+          ],
+          [
+            14,
+            7
+          ],
+          [
+            28,
+            7
+          ],
+          [
+            32,
+            14
+          ]
+        ],
+        "width": 3,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "central-road",
+        "points": [
+          [
+            1,
+            18
+          ],
+          [
+            11,
+            17
+          ],
+          [
+            17,
+            11
+          ],
+          [
+            24,
+            12
+          ],
+          [
+            31,
+            17
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "island-bridge-loop",
+        "points": [
+          [
+            17,
+            11
+          ],
+          [
+            17,
+            18
+          ],
+          [
+            24,
+            18
+          ],
+          [
+            30,
+            18
+          ]
+        ],
+        "width": 3,
+        "surface": "concrete",
+        "marking": "edges"
+      },
+      {
+        "id": "east-quay-road",
+        "points": [
+          [
+            1,
+            30
+          ],
+          [
+            9,
+            28
+          ],
+          [
+            22,
+            26
+          ],
+          [
+            28,
+            22
+          ],
+          [
+            31,
+            19
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "north-cross-link",
+        "points": [
+          [
+            11,
+            12
+          ],
+          [
+            10,
+            26
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "cargo-a-bay",
+        "kind": "loading",
+        "row": 14,
+        "col": 7,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "cargo-b-bay",
+        "kind": "loading",
+        "row": 18,
+        "col": 18,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "cargo-c-bay",
+        "kind": "loading",
+        "row": 9,
+        "col": 28,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-delivery-bay",
+        "kind": "loading",
+        "row": 31,
+        "col": 17,
+        "size": 4,
+        "rotation": 0
+      },
+      {
+        "id": "west-bridge-mark",
+        "kind": "crosswalk",
+        "row": 17,
+        "col": 13,
+        "size": 3,
+        "rotation": 90
+      },
+      {
+        "id": "south-bridge-mark",
+        "kind": "crosswalk",
+        "row": 22,
+        "col": 18,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "label-rail-depot",
+        "kind": "label",
+        "row": 13,
+        "col": 7,
+        "size": 2,
+        "text": "CARGO A // RAIL DEPOT"
+      },
+      {
+        "id": "label-pump-island",
+        "kind": "label",
+        "row": 17,
+        "col": 18,
+        "size": 2,
+        "text": "CARGO B // PUMP ISLAND"
+      },
+      {
+        "id": "label-container-yard",
+        "kind": "label",
+        "row": 8,
+        "col": 28,
+        "size": 2,
+        "text": "CARGO C // CONTAINER YARD"
+      },
+      {
+        "id": "label-delivery-pad",
+        "kind": "label",
+        "row": 29,
+        "col": 17,
+        "size": 2,
+        "text": "DELIVERY & EXTRACT PAD"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "clear-delivery-pad",
+        "bounds": [
+          30,
+          16,
+          32,
+          19
+        ]
+      }
+    ]
+  }
+}

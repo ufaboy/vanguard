@@ -1,0 +1,637 @@
+{
+  "mapId": "campaign-26",
+  "id": 26,
+  "name": "Foundry Road",
+  "subtitle": "SECTOR 26 // INDUSTRIAL BELT",
+  "objective": "Clear the factory approaches",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 800
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#d89a76",
+    "fogColor": "#3b3532",
+    "groundColor": "#575552"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Use the long West Haul Road and East Slag Service Road to outrange flamethrower ambushers lurking in the central foundry alleys, or blast open brick loading-bay partitions to clear the factory blocks from the flanks.",
+    "breaches": [
+      {
+        "name": "South foundry loading gate",
+        "cells": [
+          {
+            "row": 23,
+            "col": 14
+          },
+          {
+            "row": 23,
+            "col": 15
+          }
+        ],
+        "start": {
+          "row": 25,
+          "col": 14
+        },
+        "end": {
+          "row": 21,
+          "col": 14
+        },
+        "purpose": "Blast open the southern brick loading bay to fire directly into the lower smelter alley from the marshaling yard."
+      },
+      {
+        "name": "West boiler-house partition",
+        "cells": [
+          {
+            "row": 17,
+            "col": 12
+          },
+          {
+            "row": 18,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 10
+        },
+        "end": {
+          "row": 17,
+          "col": 14
+        },
+        "purpose": "Open a lateral escape and firing cut between the West Haul Road and the central foundry alley."
+      },
+      {
+        "name": "East rolling-mill partition",
+        "cells": [
+          {
+            "row": 17,
+            "col": 24
+          },
+          {
+            "row": 18,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 26
+        },
+        "end": {
+          "row": 17,
+          "col": 22
+        },
+        "purpose": "Punch through the rolling-mill brick partition to flank factory-alley flamethrowers from the East Slag Service Road."
+      },
+      {
+        "name": "North blast-furnace bulkhead",
+        "cells": [
+          {
+            "row": 10,
+            "col": 17
+          },
+          {
+            "row": 10,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 17
+        },
+        "end": {
+          "row": 8,
+          "col": 17
+        },
+        "purpose": "Breach the northern furnace bulkhead for a direct push into the upper foundry staging plaza."
+      }
+    ],
+    "densityRevision": "Asymmetric smelter halls and brick loading bays form close-quarters central factory alleys flanked by two wide, long-sightline service roads—with open industrial yards at the map edge instead of a concrete border box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 26262026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "industrial-slag-gravel",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "gravel",
+        "density": 0.18,
+        "details": [
+          "patches",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "west-haul-service-road-zone",
+        "bounds": [
+          2,
+          2,
+          31,
+          9
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "central-smelter-complex",
+        "bounds": [
+          7,
+          10,
+          26,
+          25
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-slag-service-road-zone",
+        "bounds": [
+          2,
+          26,
+          31,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-foundry-marshaling-apron",
+        "bounds": [
+          27,
+          9,
+          35,
+          26
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-haul-service-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            8
+          ],
+          [
+            19,
+            6
+          ],
+          [
+            9,
+            6
+          ],
+          [
+            3,
+            9
+          ]
+        ],
+        "width": 2.8,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "central-foundry-alley-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            11,
+            17
+          ],
+          [
+            4,
+            17
+          ]
+        ],
+        "width": 2.6,
+        "surface": "concrete",
+        "marking": "edges"
+      },
+      {
+        "id": "east-slag-service-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            19,
+            29
+          ],
+          [
+            9,
+            29
+          ],
+          [
+            3,
+            26
+          ]
+        ],
+        "width": 2.8,
+        "surface": "asphalt",
+        "marking": "dashed"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "north-furnace-loading",
+        "kind": "loading",
+        "row": 6,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "smelter-alley-crosswalk",
+        "kind": "crosswalk",
+        "row": 17,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-yard-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-road-label",
+        "kind": "label",
+        "row": 16,
+        "col": 6,
+        "size": 3,
+        "text": "WEST HAUL ROAD"
+      },
+      {
+        "id": "central-foundry-label",
+        "kind": "label",
+        "row": 16,
+        "col": 17,
+        "size": 3,
+        "text": "SMELTER ALLEYS"
+      },
+      {
+        "id": "east-road-label",
+        "kind": "label",
+        "row": 16,
+        "col": 29,
+        "size": 3,
+        "text": "SLAG SERVICE ROAD"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 28,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-haul-gate",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-foundry-west",
+        "row": 2,
+        "col": 14
+      },
+      {
+        "id": "north-foundry-east",
+        "row": 2,
+        "col": 21
+      },
+      {
+        "id": "north-east-slag-gate",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-west-service",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-service",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-service-road-convoy",
+        "label": "PATROL CONVOY ON THE SERVICE ROADS",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-haul-gate",
+          "north-east-slag-gate",
+          "upper-west-service",
+          "upper-east-service"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 14
+          },
+          {
+            "row": 5,
+            "col": 21
+          },
+          {
+            "row": 4,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 6
+          },
+          {
+            "row": 20,
+            "col": 6
+          },
+          {
+            "row": 27,
+            "col": 13
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "west-foundry-alley-burners",
+        "label": "FLAMETHROWER SQUAD IN THE SMELTER ALLEYS",
+        "recoverySec": 8,
+        "entrances": [
+          "north-foundry-west",
+          "north-west-haul-gate",
+          "upper-west-service"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 15
+          },
+          {
+            "row": 19,
+            "col": 15
+          },
+          {
+            "row": 26,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "FLAMETHROWER",
+          "STANDARD",
+          "FLAMETHROWER",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "central-smelter-armor-push",
+        "label": "HEAVY ARMOR ADVANCING DOWN FOUNDRY ROAD",
+        "recoverySec": 9,
+        "entrances": [
+          "north-foundry-west",
+          "north-foundry-east",
+          "north-east-slag-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 29
+          },
+          {
+            "row": 20,
+            "col": 29
+          },
+          {
+            "row": 27,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "east-mill-alley-ambush",
+        "label": "ROLLING-MILL FLAME AMBUSH & SERVICE PATROL",
+        "recoverySec": 9,
+        "entrances": [
+          "north-foundry-east",
+          "upper-east-service",
+          "north-east-slag-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 21
+          },
+          {
+            "row": 19,
+            "col": 21
+          },
+          {
+            "row": 26,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "FLAMETHROWER",
+          "STANDARD",
+          "ARMOR",
+          "FLAMETHROWER",
+          "SCOUT",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "furnace-yard-final-shift",
+        "label": "FINAL FURNACE SHIFT DEPLOYED",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-haul-gate",
+          "north-foundry-west",
+          "north-foundry-east",
+          "north-east-slag-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 17
+          },
+          {
+            "row": 18,
+            "col": 17
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "FLAMETHROWER",
+          "ARMOR",
+          "STANDARD",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STANDARD",
+    "ARMOR",
+    "FLAMETHROWER",
+    "SCOUT",
+    "STANDARD",
+    "FLAMETHROWER",
+    "ARMOR",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.........CC...........CC........FF",
+    "F..........CC...........CC........FF",
+    "...................................F",
+    "F...................................",
+    "..CC.......FF...........FF.....CCC..",
+    "..CC.......FF...........FF......CC..",
+    "...........CC...........CC.........W",
+    "...........CC...........CC.........W",
+    "............C..........QC..........W",
+    "..FF........C...........C......FF...",
+    ".FFF....CC..CCCCCBBCCCCCC..CC..FF...",
+    "........CC..C...........C..CC.......",
+    "............C...CC.CC...C...........",
+    "..CC........C...CC.CC...C......CCC..",
+    "..CC........C...........C.......CC.F",
+    ".......FF...C...........C..FF......F",
+    ".......FF...C....FF.....C..FF.......",
+    "..BB........B....FF.....B.......BB..",
+    "..BB........B......Q....B.......BBB.",
+    "............C...CC.CC...C...........",
+    "..CC........C...CC.CC...C......CCC..",
+    "..CC........CQ..........C..Q....CC.F",
+    "........CC..C...........C..CC.......",
+    "...FF...CC..CCBB...QBBCCC..CC..FF...",
+    "..FFF.......C...........C......FF...",
+    "F...........C...........C...........",
+    "...........Q.......................W",
+    "...........CC...........CC.........W",
+    "...........CC...BB.BB...CCQ........W",
+    "..CC....FF......BB.BB......FF.QCCC..",
+    "..CC....FF...BB......BBB...FF...CC..",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "W.........FF....CCCC....FF..........",
+    "WW.................................F",
+    "WW...............HH...............FF"
+  ]
+}

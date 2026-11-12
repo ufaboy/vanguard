@@ -1,0 +1,673 @@
+{
+  "mapId": "campaign-29",
+  "id": 29,
+  "name": "Furnace District",
+  "subtitle": "SECTOR 29 // STEELWORKS FURNACE COMPLEX",
+  "objective": "Clear the steelworks",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 950
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#d89a76",
+    "fogColor": "#3b3532",
+    "groundColor": "#575552"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Alternate short furnace passages with three offset working yards; choose a covered lateral escape or an exposed push against artillery.",
+    "breaches": [
+      {
+        "name": "South casting-yard gate",
+        "cells": [
+          {
+            "row": 23,
+            "col": 17
+          },
+          {
+            "row": 23,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 25,
+          "col": 17
+        },
+        "end": {
+          "row": 21,
+          "col": 17
+        },
+        "purpose": "Blast open the southern brick gate to enter the Central Casting Plaza directly from the marshaling apron."
+      },
+      {
+        "name": "West furnace cross-duct",
+        "cells": [
+          {
+            "row": 16,
+            "col": 11
+          },
+          {
+            "row": 17,
+            "col": 11
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 9
+        },
+        "end": {
+          "row": 16,
+          "col": 13
+        },
+        "purpose": "Open a wide escape cut between the West Quenching Yard and the Central Casting Plaza."
+      },
+      {
+        "name": "East ingot cross-duct",
+        "cells": [
+          {
+            "row": 16,
+            "col": 24
+          },
+          {
+            "row": 17,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 26
+        },
+        "end": {
+          "row": 16,
+          "col": 22
+        },
+        "purpose": "Punch through the eastern furnace duct to connect the East Ingot Yard with the Central Casting Plaza."
+      },
+      {
+        "name": "North converter bay wall",
+        "cells": [
+          {
+            "row": 10,
+            "col": 17
+          },
+          {
+            "row": 10,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 17
+        },
+        "end": {
+          "row": 8,
+          "col": 17
+        },
+        "purpose": "Breach the northern converter bay wall to push directly into the upper steelworks artillery yard."
+      }
+    ],
+    "densityRevision": "Converter and casting-house cover divides the former 11-cell empty square into offset working spaces while retaining both side exits and all four brick shortcuts."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 29292026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "steelworks-slag-ground",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "gravel",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-quenching-yard",
+        "bounds": [
+          8,
+          2,
+          26,
+          10
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "central-casting-plaza",
+        "bounds": [
+          8,
+          12,
+          25,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-ingot-yard",
+        "bounds": [
+          8,
+          25,
+          26,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-steelworks-apron",
+        "bounds": [
+          27,
+          8,
+          35,
+          27
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "converter-apron",
+        "bounds": [
+          11,
+          12,
+          15,
+          17
+        ],
+        "surface": "concrete",
+        "density": 0.2,
+        "details": [
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "casting-house-apron",
+        "bounds": [
+          16,
+          19,
+          21,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.2,
+        "details": [
+          "rubble",
+          "oil"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-quenching-lane",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            8
+          ],
+          [
+            19,
+            6
+          ],
+          [
+            10,
+            6
+          ],
+          [
+            4,
+            11
+          ]
+        ],
+        "width": 2.6,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "central-casting-spine",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            11,
+            17
+          ],
+          [
+            4,
+            17
+          ]
+        ],
+        "width": 2.8,
+        "surface": "concrete",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-ingot-lane",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            19,
+            29
+          ],
+          [
+            10,
+            29
+          ],
+          [
+            4,
+            24
+          ]
+        ],
+        "width": 2.6,
+        "surface": "asphalt",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "converter-bay-loading",
+        "kind": "loading",
+        "row": 6,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "casting-plaza-crosswalk",
+        "kind": "crosswalk",
+        "row": 17,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-yard-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-yard-label",
+        "kind": "label",
+        "row": 15,
+        "col": 6,
+        "size": 3,
+        "text": "QUENCHING YARD"
+      },
+      {
+        "id": "central-plaza-label",
+        "kind": "label",
+        "row": 16,
+        "col": 17,
+        "size": 3,
+        "text": "CASTING PLAZA"
+      },
+      {
+        "id": "east-yard-label",
+        "kind": "label",
+        "row": 15,
+        "col": 29,
+        "size": 3,
+        "text": "INGOT YARD"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 31,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-quench",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-converter-west",
+        "row": 2,
+        "col": 14
+      },
+      {
+        "id": "north-converter-east",
+        "row": 2,
+        "col": 21
+      },
+      {
+        "id": "north-east-ingot",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-west-furnace",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-furnace",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-flame-patrol",
+        "label": "FURNACE FLAME PATROL IN THE CASTING YARDS",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-quench",
+          "north-converter-west",
+          "north-converter-east",
+          "north-east-ingot"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 14
+          },
+          {
+            "row": 5,
+            "col": 21
+          },
+          {
+            "row": 4,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 17
+          },
+          {
+            "row": 18,
+            "col": 16
+          },
+          {
+            "row": 26,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "FLAMETHROWER",
+          "STANDARD",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "west-yard-artillery-engineer",
+        "label": "HOWITZER BATTERY & WEST LANE ENGINEER",
+        "recoverySec": 8,
+        "entrances": [
+          "upper-west-furnace",
+          "north-west-quench",
+          "north-converter-west"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 6
+          },
+          {
+            "row": 19,
+            "col": 7
+          },
+          {
+            "row": 26,
+            "col": 13
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "STANDARD",
+          "ENGINEER",
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "casting-plaza-flame-surge",
+        "label": "FLAMETHROWER SURGE THROUGH THE FURNACE LANES",
+        "recoverySec": 9,
+        "entrances": [
+          "north-converter-west",
+          "north-converter-east",
+          "upper-west-furnace"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 18
+          },
+          {
+            "row": 18,
+            "col": 18
+          },
+          {
+            "row": 26,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "FLAMETHROWER",
+          "STANDARD",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD",
+          "FLAMETHROWER"
+        ]
+      },
+      {
+        "id": "east-ingot-artillery-engineer",
+        "label": "EAST INGOT HOWITZERS & REPAIR ENGINEER",
+        "recoverySec": 9,
+        "entrances": [
+          "upper-east-furnace",
+          "north-east-ingot",
+          "north-converter-east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 29
+          },
+          {
+            "row": 19,
+            "col": 28
+          },
+          {
+            "row": 26,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "STANDARD",
+          "ENGINEER",
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "steelworks-final-shift",
+        "label": "FINAL STEELWORKS SHIFT CONVERGING",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-quench",
+          "north-converter-west",
+          "north-converter-east",
+          "north-east-ingot"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 17
+          },
+          {
+            "row": 18,
+            "col": 17
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "FLAMETHROWER",
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "FLAMETHROWER",
+          "STANDARD",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "FLAMETHROWER",
+    "STANDARD",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "ENGINEER",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STANDARD",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD",
+    "FLAMETHROWER",
+    "HOWITZER",
+    "STANDARD",
+    "ENGINEER",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "FLAMETHROWER",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.........CC...........CC........FF",
+    "F..........CC...........CC........FF",
+    "...................................F",
+    "F...................................",
+    "..CC.......FF...........FF.....CCC..",
+    "..CC.......FF...........FF......CC..",
+    "...........CC...........CC.........W",
+    "...........CC...........CC.........W",
+    "............C...........C..........W",
+    "..FF........C...........C......FF...",
+    ".FFF....CC..CCCCCBBCCCCCC..CC..FF...",
+    "........CC..C...........C..CC.......",
+    "F............CBB....................",
+    "..CC.........CBB................CCC.",
+    "..CC.......CCBBB........CC.......CC.",
+    ".......FF..CC...........CC..FF.....F",
+    ".......FF..B............B...FF......",
+    "..BB.......B........BBB.B.......BBB.",
+    "..BB.......CC.......BCC.CC......BBB.",
+    "...........CC.......BCC.CC..........",
+    "..CC.......Q..BB........Q.......CCC.",
+    "..CC..........BB................CC.F",
+    "........CC..C....Q......C..CC.......",
+    "...FF...CC..CCCCCBBCCCCCC..CC..FF...",
+    "..FFF.......C...........C......FF...",
+    "F...........C...........CQ..........",
+    "...................................W",
+    "...........CC...........CC.........W",
+    "...Q.......CCQ..BB.BB...CC......Q..W",
+    "..CC....FF......BB.BBQ.....FF..CCC..",
+    "..CC....FF...BB......BBB...FF...CC..",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "W.........FF....CCCC....FF..........",
+    "WW.................................F",
+    "WW...............HH...............FF"
+  ]
+}

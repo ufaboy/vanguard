@@ -1,0 +1,653 @@
+{
+  "mapId": "campaign-10",
+  "id": 10,
+  "name": "Deepwood Bastion",
+  "subtitle": "SECTOR 10 // FOREST STRONGHOLD",
+  "objective": "Destroy the forest stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 6,
+      "col": 18
+    },
+    "name": "Deepwood Command Core",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 600
+  },
+  "environment": {
+    "theme": "forest",
+    "tint": "#a4b78a",
+    "fogColor": "#28362c",
+    "groundColor": "#72765c"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Scout a connected woodland ring, then choose a short destructible breach or the longer northern service entrance.",
+    "breaches": [
+      {
+        "name": "South gate",
+        "cells": [
+          {
+            "row": 22,
+            "col": 14
+          },
+          {
+            "row": 22,
+            "col": 15
+          },
+          {
+            "row": 22,
+            "col": 16
+          }
+        ],
+        "start": {
+          "row": 24,
+          "col": 15
+        },
+        "end": {
+          "row": 20,
+          "col": 15
+        },
+        "purpose": "Shorten the front assault, with an internal screen protecting the core."
+      },
+      {
+        "name": "East wall",
+        "cells": [
+          {
+            "row": 16,
+            "col": 24
+          },
+          {
+            "row": 17,
+            "col": 24
+          },
+          {
+            "row": 18,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 26
+        },
+        "end": {
+          "row": 17,
+          "col": 22
+        },
+        "purpose": "Attack the core from its flank without circling to the northern entrance."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 10102026,
+    "theme": "forest",
+    "zones": [
+      {
+        "id": "woodland-ring",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "dirt",
+        "density": 0.2,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "south-staging",
+        "bounds": [
+          23,
+          10,
+          29,
+          24
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "inner-court",
+        "bounds": [
+          11,
+          13,
+          21,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "west-clearing",
+        "bounds": [
+          18,
+          7,
+          24,
+          11
+        ],
+        "surface": "dirt",
+        "density": 0.2,
+        "details": [
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "east-clearing",
+        "bounds": [
+          12,
+          26,
+          23,
+          29
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "north-service",
+        "bounds": [
+          7,
+          16,
+          9,
+          24
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-ring",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            29,
+            11
+          ],
+          [
+            24,
+            9
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            3,
+            18
+          ],
+          [
+            8,
+            21
+          ],
+          [
+            12,
+            21
+          ]
+        ],
+        "width": 2.5,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "east-ring",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            31,
+            25
+          ],
+          [
+            24,
+            27
+          ],
+          [
+            12,
+            27
+          ],
+          [
+            8,
+            26
+          ],
+          [
+            8,
+            21
+          ]
+        ],
+        "width": 2.5,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "south-approach",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            29,
+            18
+          ],
+          [
+            24,
+            18
+          ],
+          [
+            24,
+            15
+          ],
+          [
+            20,
+            15
+          ]
+        ],
+        "width": 3,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-label",
+        "kind": "label",
+        "row": 20,
+        "col": 9,
+        "size": 3,
+        "text": "WEST RING"
+      },
+      {
+        "id": "east-label",
+        "kind": "label",
+        "row": 20,
+        "col": 28,
+        "size": 3,
+        "text": "EAST RING"
+      },
+      {
+        "id": "north-label",
+        "kind": "label",
+        "row": 8,
+        "col": 21,
+        "size": 3,
+        "text": "SERVICE ENTRY"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "core-clear",
+        "bounds": [
+          14,
+          17,
+          16,
+          19
+        ]
+      },
+      {
+        "id": "opening-0",
+        "bounds": [
+          8,
+          8,
+          10,
+          10
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          7,
+          16,
+          9,
+          18
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          9,
+          26,
+          11,
+          28
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          6,
+          4,
+          8,
+          6
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 7,
+    "spawnIntervalSec": 3.8,
+    "entrances": [
+      {
+        "id": "west-wood",
+        "row": 3,
+        "col": 4
+      },
+      {
+        "id": "north-service",
+        "row": 3,
+        "col": 18
+      },
+      {
+        "id": "east-wood",
+        "row": 4,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "ring-screen",
+        "label": "BASTION: Northern patrols are advancing. Scout the forest ring before committing to a breach.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-wood",
+          "east-wood"
+        ],
+        "patrolRoute": [
+          {
+            "row": 20,
+            "col": 9
+          },
+          {
+            "row": 26,
+            "col": 11
+          },
+          {
+            "row": 29,
+            "col": 17
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 9,
+            "col": 9
+          },
+          {
+            "row": 8,
+            "col": 17
+          },
+          {
+            "row": 10,
+            "col": 27
+          },
+          {
+            "row": 7,
+            "col": 5
+          }
+        ]
+      },
+      {
+        "id": "west-stealth",
+        "label": "WEST RING: Two stealth tanks are approaching through the western woods. Use the open clearing to spot them.",
+        "enemies": [
+          "SCOUT",
+          "STEALTH",
+          "STANDARD",
+          "STEALTH"
+        ],
+        "entrances": [
+          "west-wood"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 9
+          },
+          {
+            "row": 20,
+            "col": 9
+          },
+          {
+            "row": 26,
+            "col": 11
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "south-anchor",
+        "label": "SOUTH GATE: Armor and jammer support approaching from the north. Flank the support tank before breaching.",
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "ARMOR",
+          "JAMMER"
+        ],
+        "entrances": [
+          "north-service",
+          "east-wood"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 27
+          },
+          {
+            "row": 24,
+            "col": 26
+          },
+          {
+            "row": 24,
+            "col": 18
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "east-stealth",
+        "label": "EAST RING: Another stealth patrol is entering from the northeast. Leave room to retreat along the outer trail.",
+        "enemies": [
+          "SCOUT",
+          "STEALTH",
+          "STANDARD",
+          "STEALTH"
+        ],
+        "entrances": [
+          "east-wood"
+        ],
+        "patrolRoute": [
+          {
+            "row": 16,
+            "col": 28
+          },
+          {
+            "row": 24,
+            "col": 26
+          },
+          {
+            "row": 29,
+            "col": 24
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "inner-guard",
+        "label": "INNER GUARD: Standard escorts and jammer support approaching the service entrance.",
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "JAMMER"
+        ],
+        "entrances": [
+          "north-service"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 21
+          },
+          {
+            "row": 12,
+            "col": 21
+          },
+          {
+            "row": 16,
+            "col": 21
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "last-reserve",
+        "label": "FINAL RESERVE: Last armored defenders and jammer entering from the north. Destroy the command core.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "ARMOR",
+          "JAMMER"
+        ],
+        "entrances": [
+          "north-service",
+          "east-wood"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 27
+          },
+          {
+            "row": 24,
+            "col": 26
+          },
+          {
+            "row": 24,
+            "col": 18
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STEALTH",
+    "STANDARD",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "JAMMER",
+    "SCOUT",
+    "STEALTH",
+    "STANDARD",
+    "STEALTH",
+    "STANDARD",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "JAMMER",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "JAMMER"
+  ],
+  "layout": [
+    "FFFF.......BBB......FFFFFFFFF...FFFF",
+    "FFF........BBB.....FFFFFFFFFF....FFF",
+    ".......................F............",
+    "........F...........FFFFFFFFF.......",
+    "......FFFFFF........FFFFFFFFFF......",
+    "....FFFFFFFFF...FCCCFFFFFFFFFF......",
+    ".......FFFFFBBB..CECFFFFFFFFFF......",
+    "........F...BBB..CCCFFFFFFFFF.......",
+    "...B........Q..........F.....BBB....",
+    "...BBBFF.....................BBB....",
+    "...BBBFF....CCCCCCCC...CC....BBB....",
+    "....FFFFF...C...........C....FFF....",
+    "....FFFFF..QC...........C...FFFFF...",
+    "....FFFFF...C.BBQ....BB.C...FFFFF...",
+    "....FFFFF...C.BB.....BBQC...FFFFF...",
+    "...FFFFFFF..C...........C..FFFFFFF..",
+    "....FFFFF...C...........B...FFFFF...",
+    "....FFFFF...C...........B...FFFFF...",
+    "....FFFFF...C...BCCCB...B...FFFFF...",
+    "....FFFFF...C...........C....FFF....",
+    "....FFFFF...C...........C.....F.....",
+    "...BBBFF....C...........C...........",
+    "...BBBF.....CCBBBCCCCCCCC......Q....",
+    "...BBB..............Q.....F..BBB....",
+    "...Q.....F..............FFFFFBBB....",
+    "......FFFFFFFQBBB......FFFFFFBBB....",
+    ".....FFFFFFFFFBBB......FFFFFFF......",
+    "....FFFFFFFFFFBBB.....FFFFFFFFF.....",
+    ".....FFFFFFFFF.........FFFFFFF......",
+    "......FFFFFFF.......BBBFFFFFFF......",
+    ".........F..........BBB.FFFFF.......",
+    "..........................F.........",
+    "...FF.....................F.........",
+    "...FF...........CCCC................",
+    ".......................BB...........",
+    "FFFF.............HH....BB.....FFFFFF"
+  ]
+}

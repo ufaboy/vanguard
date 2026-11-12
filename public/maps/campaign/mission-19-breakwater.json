@@ -1,0 +1,621 @@
+{
+  "mapId": "campaign-19",
+  "id": 19,
+  "name": "Breakwater",
+  "subtitle": "SECTOR 19 // HARBOR STRONGHOLD",
+  "objective": "Destroy the harbor stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 6,
+      "col": 18
+    },
+    "name": "Breakwater Command Core",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 850
+  },
+  "environment": {
+    "theme": "coast",
+    "tint": "#95bfc4",
+    "fogColor": "#223840",
+    "groundColor": "#626860"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Advance up parallel warehouse quays around the central harbor basin, trading between close warehouse cover and exposed mole sightlines before breaching the Breakwater stronghold or flanking its eastern service gate.",
+    "breaches": [
+      {
+        "name": "South breakwater bastion gate",
+        "cells": [
+          {
+            "row": 15,
+            "col": 16
+          },
+          {
+            "row": 15,
+            "col": 17
+          },
+          {
+            "row": 15,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 17
+        },
+        "end": {
+          "row": 13,
+          "col": 17
+        },
+        "purpose": "Blast through the southern breakwater wall from the mid-basin causeway for a direct shot at the Breakwater Command Core."
+      },
+      {
+        "name": "West warehouse siding cut",
+        "cells": [
+          {
+            "row": 19,
+            "col": 10
+          },
+          {
+            "row": 20,
+            "col": 10
+          },
+          {
+            "row": 21,
+            "col": 10
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 8
+        },
+        "end": {
+          "row": 20,
+          "col": 12
+        },
+        "purpose": "Cut between the covered outer warehouse alley and the western basin quay wall."
+      },
+      {
+        "name": "East mole customs partition",
+        "cells": [
+          {
+            "row": 18,
+            "col": 25
+          },
+          {
+            "row": 19,
+            "col": 25
+          },
+          {
+            "row": 20,
+            "col": 25
+          }
+        ],
+        "start": {
+          "row": 19,
+          "col": 23
+        },
+        "end": {
+          "row": 19,
+          "col": 27
+        },
+        "purpose": "Open a lateral flank between the central basin quay and the outer eastern mole."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 19192026,
+    "theme": "coast",
+    "zones": [
+      {
+        "id": "breakwater-quay-deck",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "concrete",
+        "density": 0.16,
+        "details": [
+          "cracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-warehouse-row",
+        "bounds": [
+          9,
+          2,
+          27,
+          12
+        ],
+        "surface": "asphalt",
+        "density": 0.24,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "breakwater-citadel-apron",
+        "bounds": [
+          7,
+          13,
+          17,
+          23
+        ],
+        "surface": "pavers",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-breakwater-mole",
+        "bounds": [
+          9,
+          24,
+          27,
+          33
+        ],
+        "surface": "concrete",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "cracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-harbor-staging",
+        "bounds": [
+          26,
+          9,
+          33,
+          26
+        ],
+        "surface": "gravel",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-warehouse-quay-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            27,
+            7
+          ],
+          [
+            19,
+            7
+          ],
+          [
+            10,
+            7
+          ],
+          [
+            3,
+            6
+          ]
+        ],
+        "width": 2.8,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "central-basin-mole",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            25,
+            17
+          ],
+          [
+            21,
+            12
+          ],
+          [
+            16,
+            18
+          ],
+          [
+            13,
+            18
+          ]
+        ],
+        "width": 2.6,
+        "surface": "pavers",
+        "marking": "none"
+      },
+      {
+        "id": "east-quay-service-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            27,
+            28
+          ],
+          [
+            19,
+            28
+          ],
+          [
+            11,
+            28
+          ],
+          [
+            11,
+            21
+          ]
+        ],
+        "width": 2.8,
+        "surface": "concrete",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-warehouses-label",
+        "kind": "label",
+        "row": 20,
+        "col": 6,
+        "size": 3,
+        "text": "WEST WAREHOUSES"
+      },
+      {
+        "id": "breakwater-core-label",
+        "kind": "label",
+        "row": 16,
+        "col": 18,
+        "size": 3,
+        "text": "BREAKWATER CORE"
+      },
+      {
+        "id": "east-mole-label",
+        "kind": "label",
+        "row": 19,
+        "col": 29,
+        "size": 3,
+        "text": "EAST MOLE QUAY"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          7,
+          5,
+          9,
+          7
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          4,
+          16,
+          6,
+          18
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          8,
+          23,
+          10,
+          25
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          9,
+          29,
+          11,
+          31
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "entrances": [
+      {
+        "id": "west-warehouse-gate",
+        "row": 2,
+        "col": 6
+      },
+      {
+        "id": "north-breakwater-road",
+        "row": 2,
+        "col": 17
+      },
+      {
+        "id": "east-mole-gate",
+        "row": 2,
+        "col": 29
+      }
+    ],
+    "encounters": [
+      {
+        "id": "harbor-mole-screen",
+        "label": "HARBOR BASIN: Standard and hover vanguard screening the northern breakwater.",
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "ARMOR",
+          "STANDARD"
+        ],
+        "initialCells": [
+          {
+            "row": 8,
+            "col": 6
+          },
+          {
+            "row": 4,
+            "col": 17
+          },
+          {
+            "row": 9,
+            "col": 24
+          },
+          {
+            "row": 10,
+            "col": 29
+          }
+        ],
+        "entrances": [
+          "west-warehouse-gate",
+          "north-breakwater-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 17,
+            "col": 12
+          },
+          {
+            "row": 21,
+            "col": 23
+          },
+          {
+            "row": 19,
+            "col": 6
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "west-warehouse-quay-guard",
+        "label": "WEST WAREHOUSES: Armored anchor and striker teams covering the western quay.",
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "STRIKER",
+          "HOVER",
+          "STANDARD",
+          "STRIKER"
+        ],
+        "entrances": [
+          "west-warehouse-gate",
+          "north-breakwater-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 6
+          },
+          {
+            "row": 25,
+            "col": 12
+          },
+          {
+            "row": 14,
+            "col": 9
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "east-mole-armor-wall",
+        "label": "EAST MOLE: Heavy armor holding the eastern quay while strikers watch the basin.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOVER",
+          "STRIKER",
+          "ARMOR",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east-mole-gate",
+          "north-breakwater-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 28
+          },
+          {
+            "row": 25,
+            "col": 23
+          },
+          {
+            "row": 11,
+            "col": 25
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "basin-crossing-barrage",
+        "label": "CENTRAL BASIN: Hover raiders crossing the water basin with striker support.",
+        "enemies": [
+          "HOVER",
+          "STANDARD",
+          "STRIKER",
+          "ARMOR",
+          "HOVER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-breakwater-road",
+          "west-warehouse-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 16,
+            "col": 18
+          },
+          {
+            "row": 25,
+            "col": 17
+          },
+          {
+            "row": 20,
+            "col": 11
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "breakwater-citadel-reserve",
+        "label": "FINAL GROUP: Citadel armor and missile strikers defending the Breakwater Core.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOVER",
+          "STRIKER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-breakwater-road",
+          "east-mole-gate",
+          "west-warehouse-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 18
+          },
+          {
+            "row": 16,
+            "col": 23
+          },
+          {
+            "row": 16,
+            "col": 12
+          }
+        ],
+        "recoverySec": 10
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "HOVER",
+    "ARMOR",
+    "STANDARD",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "HOVER",
+    "STANDARD",
+    "STRIKER",
+    "ARMOR",
+    "STANDARD",
+    "HOVER",
+    "STRIKER",
+    "ARMOR",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "STRIKER",
+    "ARMOR",
+    "HOVER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "HOVER",
+    "STRIKER",
+    "STANDARD"
+  ],
+  "layout": [
+    "WWWW......BBB....FF....BB......WWWWW",
+    "WWW........BBB.........BB........WWW",
+    "...BB....CC...BB....CC...BB....BB...",
+    "...BC....CC...BB....CC...BC....BB...",
+    "F........BB...CC.........BC........F",
+    "F...CC...BB...CC.CCCBB...CC...BBB..F",
+    "....CC........CC.CECBB........CCB...",
+    "...BBB..CCC......CCCCCC..CCC........",
+    "........CCB..CCCCCCCCCBBBB....BBB...",
+    "W..CC........C.......C........CCB..W",
+    "W..CC..CCC...C.BB.BB.C........CC...W",
+    "W......CCB...C............BB..CCC..W",
+    "W..BB..CCB...C.......C....BB..CCB..W",
+    "...BC........C.......C........CCB...",
+    "....BBB......C.......C..CC..........",
+    "....BCC..CCC.CCCBBBCCC..CC....BBB...",
+    "....BCC.QCCC............CC...QBCC...",
+    "F...BBB..CC..............C....BBB..F",
+    "F.........C...WWWWWWW....B.........F",
+    "...BBB....B...WWWWWWW...QB...BBB....",
+    "...BCC....B...WWWWWWW....B...BCC....",
+    "...BBBQ...B...WWWWWWW....C...BBB....",
+    "W.........C...WWWWWWW....C.....Q...W",
+    "W.QBBBB...C...WWWWWWW....C....BBBB.W",
+    "W..BCCB.......WWWWWWW.......BCCB...W",
+    "W..BBBB..................Q..BBBB...W",
+    "......Q...BBB..CC..CC...BBB.........",
+    "...BBBB...BCC..CB..CB...BCC..BBBB...",
+    "...BCCB...BBB...........BBB..BCCB...",
+    "...BBBB.......CCC..CCC........BBBB..",
+    "..........BB..CCB..CCB...BB.........",
+    "F..BBBB...BB.............BB..BBBB..F",
+    "F..BBBB...BBB...........BBB...BBBB.F",
+    "...BBBB.........CCCC...BBB....BBBB..",
+    ".......................BBB..........",
+    "WWWW......FF.....HH....BBB......WWWW"
+  ]
+}

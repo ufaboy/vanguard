@@ -1,0 +1,288 @@
+{
+  "mapId": "survival-iron-crucible",
+  "id": 201,
+  "code": "SURVIVAL S-01 // 36×36",
+  "name": "Iron Crucible",
+  "subtitle": "ENDLESS ARMORED HOLDOUT",
+  "objective": "Survive endless enemy waves starting from a Tier I tank and set a new Survival Record",
+  "gameMode": "survival",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 32,
+    "col": 15
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "gameMode": "survival",
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false,
+    "victoryOnAllEnemiesDestroyed": false
+  },
+  "completionReward": {
+    "credits": 0
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#f97316",
+    "fogColor": "#0f1420",
+    "groundColor": "#333b46"
+  },
+  "powerups": [
+    {
+      "type": "REPAIR",
+      "row": 25,
+      "col": 11
+    },
+    {
+      "type": "APS",
+      "row": 25,
+      "col": 24
+    },
+    {
+      "type": "MISSILE",
+      "row": 18,
+      "col": 6
+    },
+    {
+      "type": "EMP",
+      "row": 18,
+      "col": 29
+    },
+    {
+      "type": "REPAIR",
+      "row": 11,
+      "col": 17
+    },
+    {
+      "type": "APS",
+      "row": 30,
+      "col": 17
+    }
+  ],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 6,
+    "spawnIntervalSec": 2.2,
+    "maxAttackers": 3,
+    "enemyPool": [
+      "SCOUT",
+      "STANDARD",
+      "SCOUT",
+      "STANDARD",
+      "SAPPER",
+      "SCOUT"
+    ],
+    "boss": {
+      "name": "MAMMOTH MK-V",
+      "title": "Super-Heavy Command Dreadnought",
+      "enemyClass": "BOSS_MAMMOTH",
+      "spawnCell": {
+        "row": 3,
+        "col": 17
+      }
+    }
+  },
+  "layout": [
+    "....................................",
+    "..BB....BB......BBBB......BB....BB..",
+    "..BB.G..BB...G..BBBB..G...BB..G.BB..",
+    "....................................",
+    "....BBBB..CC....BBBB....CC..BBBB....",
+    "....BBBB..CC..D......D..CC..BBBB....",
+    "..FF.....Q..............Q.......FF..",
+    "..FF..BBBB....CCCCCCCC....BBBB..FF..",
+    "......BBBB..D.......Q..D..BBBB......",
+    ".............Q......................",
+    "..WWWW....BBBB........BBBB....WWWW..",
+    "..WWWW....BBBB...FF...BBBB....WWWW..",
+    "..WWWW...........FF....Q......WWWW..",
+    "..........CC............CC..........",
+    "....FF...QCC....BBBB....CC....FF....",
+    "....FF..........BBBBQ.........FF....",
+    "........BBBB..D......D..BBBB........",
+    "........BBBB............BBBB........",
+    "..WWWW........CCCCCCCC........WWWW..",
+    "..WWWW........Q...............WWWW..",
+    "..WWWW....FF............FF....WWWW..",
+    "..........FF....BBBB....FF..........",
+    "....BBBB........BBBB........BBBB....",
+    "....BBBB..CC............CC..BBBB....",
+    "..........CC..D......D..CC..........",
+    "....................................",
+    "..FF....BBBB............BBBB....FF..",
+    "..FF....BBBB............BBBB....FF..",
+    "..............CC....CC..............",
+    "....BBBB......CC....CC......BBBB....",
+    "....BBBB..D..............D..BBBB....",
+    "....................................",
+    "..........BBBB........BBBB..........",
+    "..........BBBB.CCCCCC.BBBB..........",
+    "....................................",
+    ".................HH................."
+  ],
+  "decoration": {
+    "version": 1,
+    "seed": 50201,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "north-staging-apron",
+        "bounds": [
+          1,
+          2,
+          8,
+          33
+        ],
+        "surface": "concrete",
+        "density": 0.35,
+        "details": [
+          "tracks",
+          "oil",
+          "cracks"
+        ]
+      },
+      {
+        "id": "central-crucible-yard",
+        "bounds": [
+          12,
+          8,
+          24,
+          27
+        ],
+        "surface": "gravel",
+        "density": 0.3,
+        "details": [
+          "rubble",
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-bastion-apron",
+        "bounds": [
+          28,
+          10,
+          34,
+          25
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-assault-lane",
+        "points": [
+          [
+            3,
+            6
+          ],
+          [
+            16,
+            7
+          ],
+          [
+            31,
+            13
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "center-crucible-spine",
+        "points": [
+          [
+            3,
+            17
+          ],
+          [
+            18,
+            17
+          ],
+          [
+            32,
+            17
+          ]
+        ],
+        "width": 3,
+        "surface": "concrete",
+        "marking": "edges"
+      },
+      {
+        "id": "east-assault-lane",
+        "points": [
+          [
+            3,
+            29
+          ],
+          [
+            16,
+            28
+          ],
+          [
+            31,
+            22
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "center-crucible-pad",
+        "kind": "loading",
+        "row": 15,
+        "col": 17,
+        "size": 4,
+        "rotation": 0
+      },
+      {
+        "id": "south-repair-bay-mark",
+        "kind": "loading",
+        "row": 32,
+        "col": 17,
+        "size": 4,
+        "rotation": 0
+      },
+      {
+        "id": "label-crucible-center",
+        "kind": "label",
+        "row": 13,
+        "col": 17,
+        "size": 2,
+        "text": "IRON CRUCIBLE // KILL ZONE"
+      },
+      {
+        "id": "label-repair-bay",
+        "kind": "label",
+        "row": 31,
+        "col": 17,
+        "size": 2,
+        "text": "ALLIED REPAIR & HANGAR BAY"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "clear-repair-bay",
+        "bounds": [
+          31,
+          15,
+          34,
+          20
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,444 @@
+{
+  "mapId": "contract-blackout-protocol",
+  "id": 102,
+  "code": "CONTRACT 02 // 36×36",
+  "name": "Blackout Protocol",
+  "subtitle": "RADAR & ECM RELAY SABOTAGE",
+  "objective": "Demolish at least 2 of 3 armored radar/ECM relays using demolition charges [E] and extract at the southern pad",
+  "gameMode": "contract",
+  "contractId": "contract-blackout-protocol",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 32,
+    "col": 14
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "gameMode": "contract",
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false,
+    "victoryOnAllEnemiesDestroyed": false
+  },
+  "completionReward": {
+    "credits": 3000
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#a855f7",
+    "fogColor": "#0c1220",
+    "groundColor": "#353c46"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "High-risk sabotage raid against three armored radar and ECM relay nodes (West Listening Post, Central Comms Citadel, and East Uplink Bunker) protected by Jammer/Stealth patrols, with timed 8s demolition charges [E] and a southern extraction pad.",
+    "breaches": [
+      {
+        "name": "West listening post lateral breach",
+        "cells": [
+          {
+            "row": 9,
+            "col": 10
+          },
+          {
+            "row": 10,
+            "col": 10
+          }
+        ],
+        "start": {
+          "row": 9,
+          "col": 8
+        },
+        "end": {
+          "row": 9,
+          "col": 12
+        },
+        "purpose": "Blast the brick partition east of Relay Alpha to sprint clear of the 3-cell demolition blast radius."
+      },
+      {
+        "name": "West south lateral breach",
+        "cells": [
+          {
+            "row": 19,
+            "col": 10
+          },
+          {
+            "row": 20,
+            "col": 10
+          }
+        ],
+        "start": {
+          "row": 19,
+          "col": 8
+        },
+        "end": {
+          "row": 19,
+          "col": 12
+        },
+        "purpose": "Open a southern escape cut from the West Listening Post into the central extraction avenue."
+      }
+    ]
+  },
+  "powerups": [
+    {
+      "type": "REPAIR",
+      "row": 27,
+      "col": 14
+    },
+    {
+      "type": "APS",
+      "row": 6,
+      "col": 3
+    },
+    {
+      "type": "REPAIR",
+      "row": 18,
+      "col": 2
+    },
+    {
+      "type": "MISSILE",
+      "row": 9,
+      "col": 14
+    },
+    {
+      "type": "EMP",
+      "row": 16,
+      "col": 18
+    },
+    {
+      "type": "REPAIR",
+      "row": 22,
+      "col": 18
+    },
+    {
+      "type": "APS",
+      "row": 6,
+      "col": 32
+    },
+    {
+      "type": "MISSILE",
+      "row": 17,
+      "col": 31
+    },
+    {
+      "type": "REPAIR",
+      "row": 24,
+      "col": 27
+    },
+    {
+      "type": "APS",
+      "row": 12,
+      "col": 21
+    }
+  ],
+  "enemyPool": [
+    "STANDARD",
+    "SCOUT",
+    "SCOUT",
+    "JAMMER",
+    "HOWITZER",
+    "ENGINEER",
+    "SCOUT",
+    "STEALTH",
+    "STANDARD",
+    "HOVER",
+    "ARMOR",
+    "JAMMER",
+    "STANDARD",
+    "SAPPER",
+    "FLAMETHROWER",
+    "STRIKER",
+    "HOWITZER",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "ARMOR",
+    "STRIKER",
+    "KAMIKAZE",
+    "SCOUT"
+  ],
+  "enemies": {
+    "vanguardCount": 24,
+    "initialSpawnCount": 3,
+    "maxConcurrent": 6,
+    "maxAttackers": 3,
+    "spawnIntervalSec": 4,
+    "entrances": [
+      {
+        "id": "west",
+        "row": 0,
+        "col": 5
+      },
+      {
+        "id": "center",
+        "row": 0,
+        "col": 18
+      },
+      {
+        "id": "east",
+        "row": 0,
+        "col": 30
+      }
+    ]
+  },
+  "layout": [
+    "....................................",
+    "....................................",
+    "....................................",
+    "....................................",
+    "....CC........CC.....CC.........CC..",
+    "....CC........CC.....CC.........CC..",
+    "..........C................C........",
+    "....FF....C.....BB.........C..CC....",
+    "....FF....C.....BB..FF.....C..CC....",
+    "..........B.........FF..............",
+    "..CC......B.................CC....FF",
+    "..CC............CCC.........CC....FF",
+    "..........C.....B.B....WWW..........",
+    "....C.....C............WWW.BB.....CC",
+    "....C.....C............WWW........CC",
+    "....C....BC....C...C...WWW..C.......",
+    ".........BC.................C.......",
+    "....BB....C....C...C........C.......",
+    "....BB....C..........WWWW.........FF",
+    "CC........B..........WWWW...BB....FF",
+    "CC..C.....B..........WWWW...BB......",
+    "....C.....C..........WWWW...CC......",
+    "....C.....C.................CC......",
+    "....................................",
+    "FF..................................",
+    "FF....CCC......BB..........CCC......",
+    "FF....CCC...........CC.....CCC......",
+    "....................................",
+    ".........FFF............FFF.........",
+    ".........FFF............FFF.........",
+    "....................................",
+    "....CCC......................CCC....",
+    "....CCC......................CCC....",
+    "................CCCC................",
+    "....................................",
+    ".................HH................."
+  ],
+  "decoration": {
+    "version": 1,
+    "seed": 40202,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "west-listening-array",
+        "bounds": [
+          5,
+          2,
+          22,
+          9
+        ],
+        "surface": "concrete",
+        "density": 0.3,
+        "details": [
+          "cracks",
+          "patches",
+          "oil"
+        ]
+      },
+      {
+        "id": "central-citadel-court",
+        "bounds": [
+          11,
+          14,
+          19,
+          21
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "east-uplink-compound",
+        "bounds": [
+          5,
+          25,
+          22,
+          33
+        ],
+        "surface": "concrete",
+        "density": 0.35,
+        "details": [
+          "tracks",
+          "rubble",
+          "oil"
+        ]
+      },
+      {
+        "id": "south-extraction-apron",
+        "bounds": [
+          29,
+          14,
+          34,
+          21
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-sabotage-lane",
+        "points": [
+          [
+            1,
+            5
+          ],
+          [
+            13,
+            6
+          ],
+          [
+            28,
+            7
+          ],
+          [
+            32,
+            14
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "central-citadel-spine",
+        "points": [
+          [
+            1,
+            18
+          ],
+          [
+            14,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            31,
+            17
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-bunker-corridor",
+        "points": [
+          [
+            1,
+            30
+          ],
+          [
+            9,
+            29
+          ],
+          [
+            22,
+            26
+          ],
+          [
+            31,
+            19
+          ]
+        ],
+        "width": 3,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "relay-a-pad",
+        "kind": "loading",
+        "row": 13,
+        "col": 6,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "relay-b-pad",
+        "kind": "loading",
+        "row": 16,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "relay-c-pad",
+        "kind": "loading",
+        "row": 9,
+        "col": 29,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-extraction-bay",
+        "kind": "loading",
+        "row": 31,
+        "col": 17,
+        "size": 4,
+        "rotation": 0
+      },
+      {
+        "id": "label-relay-alpha",
+        "kind": "label",
+        "row": 12,
+        "col": 6,
+        "size": 2,
+        "text": "RELAY A // WEST ARRAY"
+      },
+      {
+        "id": "label-relay-bravo",
+        "kind": "label",
+        "row": 15,
+        "col": 17,
+        "size": 2,
+        "text": "RELAY B // ECM CITADEL"
+      },
+      {
+        "id": "label-relay-charlie",
+        "kind": "label",
+        "row": 8,
+        "col": 29,
+        "size": 2,
+        "text": "RELAY C // UPLINK BUNKER"
+      },
+      {
+        "id": "label-extract-pad",
+        "kind": "label",
+        "row": 29,
+        "col": 17,
+        "size": 2,
+        "text": "EXTRACTION PAD"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "clear-extraction-pad",
+        "bounds": [
+          30,
+          16,
+          32,
+          19
+        ]
+      }
+    ]
+  }
+}

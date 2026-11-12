@@ -1,0 +1,651 @@
+{
+  "mapId": "campaign-20",
+  "id": 20,
+  "name": "Tidal Lock",
+  "subtitle": "SECTOR 20 // ESTUARY LOCK FINALE",
+  "objective": "Clear the estuary defenses",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": true,
+    "defeatOnBaseLoss": false
+  },
+  "boss": {
+    "enemyClass": "BOSS_HYDRA",
+    "name": "HYDRA MLRS-9",
+    "title": "Amphibious Rocket-Artillery Cruiser",
+    "spawnCell": {
+      "row": 3,
+      "col": 17
+    }
+  },
+  "completionReward": {
+    "credits": 900
+  },
+  "environment": {
+    "theme": "coast",
+    "tint": "#8ec5d6",
+    "fogColor": "#27414e",
+    "groundColor": "#53676c"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Contest a twin-channel estuary lock complex where hover packs and the amphibious Hydra MLRS-9 cruiser strike across flood basins while dry lock bridges, concrete control houses, and brick floodgate bulkheads give tracked armor cover and flanking cuts.",
+    "breaches": [
+      {
+        "name": "West lock-house bulkhead",
+        "cells": [
+          {
+            "row": 20,
+            "col": 14
+          },
+          {
+            "row": 20,
+            "col": 15
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 14
+        },
+        "end": {
+          "row": 18,
+          "col": 14
+        },
+        "purpose": "Punch through the southern brick bulkhead of the western lock house to reach the mid-estuary deck without swinging around the central sluice lane."
+      },
+      {
+        "name": "East turbine yard wall",
+        "cells": [
+          {
+            "row": 20,
+            "col": 20
+          },
+          {
+            "row": 20,
+            "col": 21
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 21
+        },
+        "end": {
+          "row": 18,
+          "col": 21
+        },
+        "purpose": "Break through the eastern turbine yard wall to flank howitzer and jammer escorts staging on the east lock deck."
+      },
+      {
+        "name": "Central lock-chamber divider",
+        "cells": [
+          {
+            "row": 14,
+            "col": 17
+          },
+          {
+            "row": 15,
+            "col": 17
+          }
+        ],
+        "start": {
+          "row": 14,
+          "col": 15
+        },
+        "end": {
+          "row": 14,
+          "col": 19
+        },
+        "purpose": "Shatter the brick divider between the west and east lock chambers to dodge Hydra MLRS rocket triangles laterally."
+      },
+      {
+        "name": "North spillway gate",
+        "cells": [
+          {
+            "row": 9,
+            "col": 17
+          },
+          {
+            "row": 9,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 11,
+          "col": 17
+        },
+        "end": {
+          "row": 7,
+          "col": 17
+        },
+        "purpose": "Breach the northern spillway gate to close distance rapidly when Hydra enters its Phase 2 barrage."
+      }
+    ],
+    "densityRevision": "Two asymmetric navigable flood channels flank a central lock island with three dry bridge decks, concrete lock-control bastions, coastal pine windbreaks, and destructible brick bulkheads—with open shoreline edges and no artificial perimeter wall."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 20202026,
+    "theme": "coast",
+    "zones": [
+      {
+        "id": "estuary-shore-sand",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "sand",
+        "density": 0.16,
+        "details": [
+          "patches",
+          "weeds"
+        ]
+      },
+      {
+        "id": "west-seawall-causeway",
+        "bounds": [
+          2,
+          1,
+          32,
+          6
+        ],
+        "surface": "concrete",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "central-tidal-lock-island",
+        "bounds": [
+          3,
+          11,
+          29,
+          24
+        ],
+        "surface": "concrete",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-lockmaster-quay",
+        "bounds": [
+          2,
+          29,
+          32,
+          34
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "patches",
+          "oil"
+        ]
+      },
+      {
+        "id": "south-estuary-marshaling-apron",
+        "bounds": [
+          28,
+          8,
+          35,
+          27
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "rubble",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-seawall-approach",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            29,
+            10
+          ],
+          [
+            26,
+            4
+          ],
+          [
+            17,
+            4
+          ],
+          [
+            8,
+            4
+          ],
+          [
+            3,
+            12
+          ]
+        ],
+        "width": 2.6,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "central-lock-spine",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            11,
+            17
+          ],
+          [
+            4,
+            17
+          ]
+        ],
+        "width": 3,
+        "surface": "concrete",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-quay-approach",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            29,
+            25
+          ],
+          [
+            26,
+            31
+          ],
+          [
+            17,
+            31
+          ],
+          [
+            8,
+            31
+          ],
+          [
+            3,
+            23
+          ]
+        ],
+        "width": 2.6,
+        "surface": "asphalt",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "north-spillway-loading",
+        "kind": "loading",
+        "row": 5,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "mid-lock-deck-crosswalk",
+        "kind": "crosswalk",
+        "row": 17,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-hq-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "north-spillway-label",
+        "kind": "label",
+        "row": 4,
+        "col": 17,
+        "size": 3,
+        "text": "NORTH SPILLWAY"
+      },
+      {
+        "id": "central-lock-label",
+        "kind": "label",
+        "row": 16,
+        "col": 17,
+        "size": 3,
+        "text": "TIDAL LOCK DECK"
+      },
+      {
+        "id": "east-canal-label",
+        "kind": "label",
+        "row": 16,
+        "col": 31,
+        "size": 3,
+        "text": "EAST CANAL QUAY"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 27,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-sluice",
+        "row": 2,
+        "col": 4
+      },
+      {
+        "id": "north-lock-head",
+        "row": 2,
+        "col": 14
+      },
+      {
+        "id": "north-spillway-gate",
+        "row": 2,
+        "col": 22
+      },
+      {
+        "id": "north-east-quay",
+        "row": 2,
+        "col": 31
+      },
+      {
+        "id": "west-estuary-slip",
+        "row": 8,
+        "col": 4
+      },
+      {
+        "id": "east-canal-slip",
+        "row": 8,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-sluice-patrol",
+        "label": "TIDAL LOCK GARRISON DEPLOYED",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-sluice",
+          "north-lock-head",
+          "north-spillway-gate",
+          "north-east-quay"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 4
+          },
+          {
+            "row": 5,
+            "col": 15
+          },
+          {
+            "row": 5,
+            "col": 21
+          },
+          {
+            "row": 4,
+            "col": 31
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 14
+          },
+          {
+            "row": 16,
+            "col": 15
+          },
+          {
+            "row": 23,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "STANDARD",
+          "HOVER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "west-estuary-hover-barrage",
+        "label": "ESTUARY HOVER PACK & ARTILLERY BATTERY",
+        "recoverySec": 8,
+        "entrances": [
+          "west-estuary-slip",
+          "north-west-sluice",
+          "north-lock-head"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 4
+          },
+          {
+            "row": 17,
+            "col": 12
+          },
+          {
+            "row": 24,
+            "col": 15
+          }
+        ],
+        "enemies": [
+          "HOVER",
+          "HOWITZER",
+          "STANDARD",
+          "HOVER",
+          "HOWITZER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "lock-chamber-jammer-screen",
+        "label": "ECM JAMMER & AMPHIBIOUS FLANKERS",
+        "recoverySec": 9,
+        "entrances": [
+          "north-lock-head",
+          "north-spillway-gate",
+          "west-estuary-slip"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 17
+          },
+          {
+            "row": 17,
+            "col": 18
+          },
+          {
+            "row": 23,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "HOVER",
+          "STANDARD",
+          "HOVER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "east-canal-artillery-push",
+        "label": "EAST CANAL HOWITZER & JAMMER ESCORT",
+        "recoverySec": 10,
+        "entrances": [
+          "east-canal-slip",
+          "north-east-quay",
+          "north-spillway-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 31
+          },
+          {
+            "row": 17,
+            "col": 23
+          },
+          {
+            "row": 24,
+            "col": 20
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "HOWITZER",
+          "HOVER",
+          "STANDARD",
+          "HOWITZER",
+          "HOVER"
+        ]
+      },
+      {
+        "id": "final-lock-guard",
+        "label": "LOCKMASTER RESERVE WAVE — HYDRA INBOUND ON CLEAR",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-sluice",
+          "north-lock-head",
+          "north-spillway-gate",
+          "north-east-quay"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 15
+          },
+          {
+            "row": 17,
+            "col": 17
+          },
+          {
+            "row": 25,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "HOVER",
+          "STANDARD",
+          "HOVER",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "HOWITZER",
+    "STANDARD",
+    "HOVER",
+    "HOWITZER",
+    "STANDARD",
+    "JAMMER",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "JAMMER",
+    "HOWITZER",
+    "HOVER",
+    "STANDARD",
+    "HOWITZER",
+    "HOVER",
+    "JAMMER",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD"
+  ],
+  "layout": [
+    "WW....WWWW...FF......FF...WWWW....F.",
+    "W.....WWWW..FF........FF..WWWW....F.",
+    "W.....WWWW..F..........F..WWWW......",
+    "W.....WWWW................WWWW....F.",
+    "..CC..WWWW................WWWW...CC.",
+    "..CC..W..W................W..W...CC.",
+    "F.....W..W..CC........CC..W..W......",
+    "F...........CC........CC...........W",
+    "...........QB..........B...........W",
+    "......W..W..CCCCQBB.CCCC..W..W.....W",
+    "..FF..WWWW..C.........QC..WWWW...FF.",
+    ".FFF..WWWW................WWWW..FF..",
+    "......WWWW..CC........CC..WWWW....F.",
+    ".CCC..WWWW..CCC..Q....CC..WWWW..CC..",
+    "..CB..WWWW...CC..B....CC..WWWW..BC..",
+    "......W..W..FF...B....FF..W..W....F.",
+    "F...........FF........FF............",
+    "W........X...DD......DD...X........F",
+    "......W..W..FF........FF..W..W....FF",
+    "..CC..WWWW.QC..........CQ.WWWW...CC.",
+    "..CC..WWWW..CCBB....BBCC..WWWW...CC.",
+    "F.....WWWW..C..........C..WWWW......",
+    "..FF..WWWW..C.........CC..WWWW..FF..",
+    ".FFF..WWWW..CC........CC..WWWW..FF..",
+    "......W..W..CC........C...W..W......",
+    "W...........Q.......................",
+    "W...........FF........FF...........F",
+    "......W..W..FFF.......FF..W..W......",
+    "..CC..WWWW............Q...WWWW...CC.",
+    "..CC..WWWW..BB........BB..WWWW...CC.",
+    "F.....W..W..BB.......BBB..W..W......",
+    "...F..........X......X.........FF...",
+    "..FF......FF............FF.....FFF..",
+    "W.........FF....CCCC....FF..........",
+    "W..................................F",
+    "WW...............HH...............FF"
+  ]
+}

@@ -1,0 +1,648 @@
+{
+  "mapId": "campaign-25",
+  "id": 25,
+  "name": "Iron Avalanche",
+  "subtitle": "SECTOR 25 // SUMMIT FORTRESS FINALE",
+  "objective": "Clear the summit fortress",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": true,
+    "defeatOnBaseLoss": false
+  },
+  "boss": {
+    "enemyClass": "BOSS_INFERNO",
+    "name": "CERBERUS-T",
+    "title": "Thermobaric Siege Leviathan",
+    "spawnCell": {
+      "row": 3,
+      "col": 17
+    }
+  },
+  "completionReward": {
+    "credits": 1000
+  },
+  "environment": {
+    "theme": "alpine",
+    "tint": "#c5dcf2",
+    "fogColor": "#435366",
+    "groundColor": "#7d8891"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Clear 29 heavy defenders across a wide fortified summit plateau, then use the broad outer flanking avenues, concrete citadel pillars, and breached sally ports to dodge the Cerberus-T overdrive ram and 2.5-cell thermobaric blasts.",
+    "breaches": [
+      {
+        "name": "South citadel glacis gate",
+        "cells": [
+          {
+            "row": 22,
+            "col": 17
+          },
+          {
+            "row": 22,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 24,
+          "col": 17
+        },
+        "end": {
+          "row": 20,
+          "col": 17
+        },
+        "purpose": "Breach the southern brick glacis gate to enter the central summit parade ring directly."
+      },
+      {
+        "name": "West bastion sally port",
+        "cells": [
+          {
+            "row": 15,
+            "col": 12
+          },
+          {
+            "row": 16,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 10
+        },
+        "end": {
+          "row": 15,
+          "col": 14
+        },
+        "purpose": "Punch through the western bastion wall to open a wide flanking cut between the West Avenue and the central parade ring."
+      },
+      {
+        "name": "East bastion sally port",
+        "cells": [
+          {
+            "row": 15,
+            "col": 22
+          },
+          {
+            "row": 16,
+            "col": 22
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 24
+        },
+        "end": {
+          "row": 15,
+          "col": 20
+        },
+        "purpose": "Open the eastern sally port so tracked armor can circle behind heavy columns and kite the Mammoth dreadnought."
+      },
+      {
+        "name": "North command courtyard gate",
+        "cells": [
+          {
+            "row": 9,
+            "col": 17
+          },
+          {
+            "row": 9,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 11,
+          "col": 17
+        },
+        "end": {
+          "row": 7,
+          "col": 17
+        },
+        "purpose": "Shatter the northern courtyard gate to complete a full 360-degree kiting loop around the summit citadel."
+      }
+    ],
+    "densityRevision": "A wide fortified summit plateau pairs a central bastion ring with generous 4-to-6-cell flanking avenues, glaze-ice speed arcs, and dry braking pads—without an outer concrete border box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 25252026,
+    "theme": "alpine",
+    "zones": [
+      {
+        "id": "summit-plateau-snow",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "snow",
+        "density": 0.16,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "west-flanking-avenue",
+        "bounds": [
+          3,
+          2,
+          29,
+          10
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "central-citadel-parade-ground",
+        "bounds": [
+          3,
+          11,
+          25,
+          24
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-flanking-avenue",
+        "bounds": [
+          3,
+          25,
+          29,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-fortress-apron",
+        "bounds": [
+          26,
+          8,
+          35,
+          27
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "tracks",
+          "oil"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-summit-flank-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            9
+          ],
+          [
+            20,
+            6
+          ],
+          [
+            11,
+            6
+          ],
+          [
+            4,
+            12
+          ]
+        ],
+        "width": 2.8,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "central-citadel-axis",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            16,
+            17
+          ],
+          [
+            10,
+            17
+          ],
+          [
+            4,
+            17
+          ]
+        ],
+        "width": 3,
+        "surface": "concrete",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-summit-flank-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            26
+          ],
+          [
+            20,
+            29
+          ],
+          [
+            11,
+            29
+          ],
+          [
+            4,
+            23
+          ]
+        ],
+        "width": 2.8,
+        "surface": "asphalt",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "north-command-loading",
+        "kind": "loading",
+        "row": 5,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "parade-ground-crosswalk",
+        "kind": "crosswalk",
+        "row": 16,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-hq-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-flank-label",
+        "kind": "label",
+        "row": 15,
+        "col": 5,
+        "size": 3,
+        "text": "WEST FLANKING ROAD"
+      },
+      {
+        "id": "central-parade-label",
+        "kind": "label",
+        "row": 15,
+        "col": 17,
+        "size": 3,
+        "text": "SUMMIT PARADE RING"
+      },
+      {
+        "id": "east-flank-label",
+        "kind": "label",
+        "row": 15,
+        "col": 30,
+        "size": 3,
+        "text": "EAST FLANKING ROAD"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 29,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-bastion",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-citadel-west",
+        "row": 2,
+        "col": 14
+      },
+      {
+        "id": "north-citadel-east",
+        "row": 2,
+        "col": 21
+      },
+      {
+        "id": "north-east-bastion",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-west-flank",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-flank",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-summit-garrison",
+        "label": "SUMMIT FORTRESS GARRISON ENGAGED",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-bastion",
+          "north-citadel-west",
+          "north-citadel-east",
+          "north-east-bastion"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 14
+          },
+          {
+            "row": 5,
+            "col": 21
+          },
+          {
+            "row": 4,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 15
+          },
+          {
+            "row": 17,
+            "col": 16
+          },
+          {
+            "row": 25,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "STRIKER"
+        ]
+      },
+      {
+        "id": "west-plateau-armor-wedge",
+        "label": "HEAVY ARMOR WEDGE ON WEST FLANKING ROAD",
+        "recoverySec": 8,
+        "entrances": [
+          "upper-west-flank",
+          "north-west-bastion",
+          "north-citadel-west"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 6
+          },
+          {
+            "row": 19,
+            "col": 7
+          },
+          {
+            "row": 26,
+            "col": 13
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "STRIKER",
+          "ARMOR",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "east-bastion-artillery-battery",
+        "label": "SUMMIT HOWITZER BATTERY & STRIKER SCREEN",
+        "recoverySec": 9,
+        "entrances": [
+          "upper-east-flank",
+          "north-east-bastion",
+          "north-citadel-east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 29
+          },
+          {
+            "row": 19,
+            "col": 28
+          },
+          {
+            "row": 26,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "STRIKER",
+          "STANDARD",
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "parade-ring-heavy-push",
+        "label": "CITADEL ARMOR & STRIKER SPEARHEAD",
+        "recoverySec": 9,
+        "entrances": [
+          "north-citadel-west",
+          "north-citadel-east",
+          "upper-west-flank",
+          "upper-east-flank"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 18
+          },
+          {
+            "row": 18,
+            "col": 18
+          },
+          {
+            "row": 25,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "STANDARD",
+          "ARMOR",
+          "STRIKER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "citadel-honor-guard",
+        "label": "FORTRESS HONOR GUARD — MAMMOTH MK-V INBOUND ON CLEAR",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-bastion",
+          "north-citadel-west",
+          "north-citadel-east",
+          "north-east-bastion"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 17
+          },
+          {
+            "row": 17,
+            "col": 17
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "STRIKER",
+    "ARMOR",
+    "STANDARD",
+    "STRIKER",
+    "ARMOR",
+    "STANDARD",
+    "STANDARD",
+    "HOWITZER",
+    "STRIKER",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.....III.......FF......III......FF",
+    "F......III...............III......FF",
+    ".......III...............III.......F",
+    ".......III...............III........",
+    "..CC...........................CCC..",
+    "..CC............................CC.I",
+    ".......III..CC.......CC..III.......I",
+    ".......III.QCC.......CC..III.......I",
+    "............C......Q..C.............",
+    "..FF........CCCCCBBCCCC........FF...",
+    ".FFF........C.........C........FF...",
+    "............C.........C.............",
+    "..QIII.......................III....",
+    "..CCII.....QCC.......CC......IIICC..",
+    "..CC........C........QC.........CC.F",
+    ".......FF...B...III...B....FF......F",
+    ".......FF...B...III...B....FF.......",
+    "....III.....C...III...C.....III.....",
+    "....III.....C.........C.....III....I",
+    "............CC.......CC............I",
+    "..CC...........................CCC..",
+    "..CC........C.........C.........CC.F",
+    "........CC..CCCCCBBCCCC.QCC.........",
+    "...FF...CC..C.Q.......C..CC....FF...",
+    "..FFF............................FF.",
+    "F...............III.................",
+    "....III.........III.........III.....",
+    "....III....CC...III...CC....III....I",
+    "..........QCC.........CC...........I",
+    "..CC....FF................FF...CCC..",
+    "..CC....FF...BB......BBB..FF....CC..",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "I.........FF....CCCC....FF..........",
+    "II.................................F",
+    "II...............HH...............FF"
+  ]
+}

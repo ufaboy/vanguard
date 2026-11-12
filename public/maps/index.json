@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "description": "IRON VANGUARD Campaign Map Registry. Each JSON file defines the 36x36 battlefield grid, gameMode rules (see src/game/mapRules.js), and a flat enemyPool queue (typically 24 tank names, spawning 4 initially and up to 8 simultaneously).",
+  "availableGameModes": {
+    "extermination": "Default mode: Victory when all enemies (and sector boss) are destroyed. Player base is strictly a Field Repair Bay.",
+    "stronghold_assault": "Stronghold Siege mode: Victory when the fortified Enemy Stronghold Core (E / enemyBase) guarded by enemies is destroyed.",
+    "base_defense": "Defense mode: Victory when all attacking waves are destroyed; Defeat if either Player tank or Allied Command HQ is destroyed."
+  },
+  "spawnDefaults": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "defaultEnemyPoolSize": 24
+  },
+  "availableTileLegend": {
+    ".": "EMPTY (Passable ground)",
+    "B": "BRICK (Destructible 4-subblock masonry wall, 4 HP)",
+    "C": "CONCRETE (Hard-to-destroy reinforced concrete bunker wall, 16 HP)",
+    "F": "FOREST (Stealth canopy concealment)",
+    "W": "WATER (Impassable water channel unless Hover Chassis CH4/CH5 is active)",
+    "I": "ICE (Low-friction drift surface)",
+    "G": "SPAWNER (Enemy reinforcement teleporter pad)",
+    "H": "BASE (Allied Field Repair Base)",
+    "E": "ENEMY_BASE (Fortified Enemy Stronghold Core, 48 HP)",
+    "X": "HEDGEHOG (Anti-tank Czech hedgehog: impassable to tanks, projectiles fly over freely)",
+    "Q": "BOXES (Four wooden supply crates, two hits; may contain Credits or Power-Ups)",
+    "D": "BARREL (Explosive fuel drum / ammo depot: detonates on hit, deals massive area damage & chain reactions)"
+  },
+  "availableEnemyClasses": [
+    "SCOUT",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "SAPPER",
+    "HOVER",
+    "KAMIKAZE",
+    "FLAMETHROWER",
+    "JAMMER",
+    "ENGINEER",
+    "STRIKER",
+    "STEALTH",
+    "BOSS_MAMMOTH",
+    "BOSS_HYDRA",
+    "BOSS_TITAN"
+  ],
+  "maps": [
+    "./maps/sector-01-frontier.json",
+    "./maps/sector-02-nord.json",
+    "./maps/sector-03-titan-core.json"
+  ]
+}

@@ -1,0 +1,621 @@
+{
+  "mapId": "campaign-14",
+  "id": 14,
+  "name": "Mirage Array",
+  "subtitle": "SECTOR 14 // DESERT RELAY",
+  "objective": "Destroy the desert relay",
+  "gameMode": "stronghold_assault",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 4,
+      "col": 18
+    },
+    "name": "Mirage Relay Core",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 700
+  },
+  "environment": {
+    "theme": "desert",
+    "tint": "#e0c896",
+    "fogColor": "#69604d",
+    "groundColor": "#b4a178"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Advance through scattered desert ruins to silence serial jammers and rotating striker squads, then breach the relay compound or flank through its eastern service opening.",
+    "breaches": [
+      {
+        "name": "South relay compound gate",
+        "cells": [
+          {
+            "row": 15,
+            "col": 17
+          },
+          {
+            "row": 15,
+            "col": 18
+          },
+          {
+            "row": 15,
+            "col": 19
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 18
+        },
+        "end": {
+          "row": 14,
+          "col": 18
+        },
+        "purpose": "Breach the southern relay compound wall for a direct shot at the Mirage Relay Core instead of circling to the eastern service gate."
+      },
+      {
+        "name": "West dish ruin partition",
+        "cells": [
+          {
+            "row": 19,
+            "col": 11
+          },
+          {
+            "row": 20,
+            "col": 11
+          },
+          {
+            "row": 21,
+            "col": 11
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 9
+        },
+        "end": {
+          "row": 20,
+          "col": 13
+        },
+        "purpose": "Cut through the western antenna ruin to intercept the jammer and striker wing."
+      },
+      {
+        "name": "East colonnade shortcut",
+        "cells": [
+          {
+            "row": 17,
+            "col": 25
+          },
+          {
+            "row": 18,
+            "col": 25
+          },
+          {
+            "row": 19,
+            "col": 25
+          }
+        ],
+        "start": {
+          "row": 18,
+          "col": 23
+        },
+        "end": {
+          "row": 18,
+          "col": 27
+        },
+        "purpose": "Open a fast lateral cut between the relay apron and the eastern colonnade ruins."
+      }
+    ],
+    "densityRevision": "Scattered adobe and stone ruin clusters break up the antenna basin into short covered hops with intact flank routes."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 14142026,
+    "theme": "desert",
+    "zones": [
+      {
+        "id": "desert-basin-sand",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "sand",
+        "density": 0.18,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "west-dish-ruins",
+        "bounds": [
+          11,
+          2,
+          26,
+          12
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "rubble",
+          "cracks",
+          "tracks"
+        ]
+      },
+      {
+        "id": "relay-compound-apron",
+        "bounds": [
+          7,
+          13,
+          18,
+          23
+        ],
+        "surface": "dirt",
+        "density": 0.24,
+        "details": [
+          "rubble",
+          "tracks",
+          "cracks"
+        ]
+      },
+      {
+        "id": "east-colonnade-ruins",
+        "bounds": [
+          10,
+          24,
+          26,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "rubble",
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "south-caravanserai-staging",
+        "bounds": [
+          26,
+          9,
+          33,
+          26
+        ],
+        "surface": "dirt",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-ruin-trail",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            7
+          ],
+          [
+            19,
+            7
+          ],
+          [
+            10,
+            7
+          ],
+          [
+            3,
+            6
+          ]
+        ],
+        "width": 2.6,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "central-relay-approach",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            23,
+            17
+          ],
+          [
+            17,
+            18
+          ],
+          [
+            13,
+            18
+          ]
+        ],
+        "width": 2.8,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "east-service-flank",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            28
+          ],
+          [
+            18,
+            29
+          ],
+          [
+            11,
+            29
+          ],
+          [
+            11,
+            21
+          ]
+        ],
+        "width": 2.6,
+        "surface": "dirt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-ruins-label",
+        "kind": "label",
+        "row": 20,
+        "col": 6,
+        "size": 3,
+        "text": "DISH RUINS"
+      },
+      {
+        "id": "relay-core-label",
+        "kind": "label",
+        "row": 17,
+        "col": 18,
+        "size": 3,
+        "text": "MIRAGE ARRAY"
+      },
+      {
+        "id": "east-colonnade-label",
+        "kind": "label",
+        "row": 18,
+        "col": 29,
+        "size": 3,
+        "text": "EAST COLONNADE"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          8,
+          5,
+          10,
+          7
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          4,
+          17,
+          6,
+          19
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          8,
+          23,
+          10,
+          25
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          9,
+          29,
+          11,
+          31
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "entrances": [
+      {
+        "id": "northwest-ruins",
+        "row": 2,
+        "col": 6
+      },
+      {
+        "id": "north-relay-road",
+        "row": 2,
+        "col": 17
+      },
+      {
+        "id": "northeast-arches",
+        "row": 2,
+        "col": 30
+      }
+    ],
+    "encounters": [
+      {
+        "id": "outer-ruins-screen",
+        "label": "OUTER RUINS: Striker and recon screen moving between the desert shelters.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STRIKER",
+          "SCOUT"
+        ],
+        "initialCells": [
+          {
+            "row": 9,
+            "col": 6
+          },
+          {
+            "row": 6,
+            "col": 18
+          },
+          {
+            "row": 9,
+            "col": 24
+          },
+          {
+            "row": 10,
+            "col": 30
+          }
+        ],
+        "entrances": [
+          "northwest-ruins",
+          "north-relay-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 22,
+            "col": 13
+          },
+          {
+            "row": 24,
+            "col": 21
+          },
+          {
+            "row": 19,
+            "col": 7
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "west-array-jammer",
+        "label": "WEST DISH RUINS: First ECM jammer deployed with rotating striker support.",
+        "enemies": [
+          "STANDARD",
+          "STRIKER",
+          "STANDARD",
+          "JAMMER",
+          "SCOUT",
+          "STRIKER"
+        ],
+        "entrances": [
+          "northwest-ruins",
+          "north-relay-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 7
+          },
+          {
+            "row": 22,
+            "col": 13
+          },
+          {
+            "row": 14,
+            "col": 8
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "east-colonnade-jammer",
+        "label": "EAST COLONNADE: Second jammer unit screening striker rotations on the east flank.",
+        "enemies": [
+          "STANDARD",
+          "STRIKER",
+          "STANDARD",
+          "JAMMER",
+          "SCOUT",
+          "STRIKER"
+        ],
+        "entrances": [
+          "northeast-arches",
+          "north-relay-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 28
+          },
+          {
+            "row": 23,
+            "col": 22
+          },
+          {
+            "row": 11,
+            "col": 29
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "relay-apron-jammer",
+        "label": "RELAY APRON: Final jammer and striker escort defending the Mirage Relay compound.",
+        "enemies": [
+          "STANDARD",
+          "STRIKER",
+          "STANDARD",
+          "STANDARD",
+          "JAMMER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-relay-road",
+          "northwest-ruins"
+        ],
+        "patrolRoute": [
+          {
+            "row": 17,
+            "col": 18
+          },
+          {
+            "row": 11,
+            "col": 21
+          },
+          {
+            "row": 19,
+            "col": 13
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "citadel-reserve-sortie",
+        "label": "FINAL GROUP: Relay reserve strikers and line armor converging across the ruins.",
+        "enemies": [
+          "STANDARD",
+          "STRIKER",
+          "STANDARD",
+          "STRIKER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-relay-road",
+          "northeast-arches",
+          "northwest-ruins"
+        ],
+        "patrolRoute": [
+          {
+            "row": 17,
+            "col": 18
+          },
+          {
+            "row": 24,
+            "col": 16
+          },
+          {
+            "row": 26,
+            "col": 21
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "STRIKER",
+    "SCOUT",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "JAMMER",
+    "SCOUT",
+    "STRIKER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "JAMMER",
+    "SCOUT",
+    "STRIKER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "STANDARD",
+    "JAMMER",
+    "STANDARD",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD"
+  ],
+  "layout": [
+    "...BBB......BBB........BB......BBB..",
+    "............BBB........BB...........",
+    "...BBB....BBBB.....BBB...BBBB..BB...",
+    "...BBB....BCCB...CCCCB...BCCB..BB...",
+    "...BBB....BBBB...CEC.....BBBB.......",
+    "...............BBCCC...........BBB..",
+    "...BBBB........BB......BBBB....BBB..",
+    "...BCCB...BBB..........BCCB.........",
+    "...BBBB...BBB.CCCCCCCCCBBBB...BBB...",
+    "..............C.......C.......BBB...",
+    "...BBB........C.BB.BB.C.............",
+    "...BBB...BBB..C............BB.BBB...",
+    "...BBB...BCB..C.......C....BB.BBB...",
+    ".........BBB..C..BBB..C.......BBB...",
+    "....BBB.......C.......C..CC....Q....",
+    "....BCC..CCC..CCCBBBCCC..CC...BBB...",
+    "....BCC..CCC...Q.........CC...BCC...",
+    "....BBB..CCB...BBB.......BQ...BBB...",
+    ".....Q.....B...BCB...Q...B.....Q....",
+    "...BBB.....B...BBB..BB...B...BBB....",
+    "...BBB.....B.....Q..BB..CCC..BBB....",
+    "...BBB.....B....BBB.....CCC..BBB....",
+    "....Q.....CCC...BCB.....CCB.........",
+    "...BBBB...CCC...BBB..........BBBB...",
+    "...BCCB...CCB.........BBB....BCCB...",
+    "...BBBB..........BB...BCB....BBBB...",
+    "..........BBB....BB...BBB......BBB..",
+    "....BBB...BCC..........BBBB....BBB..",
+    "....BBB...BBB...BBBB...BCCB....BBB..",
+    "....BBB.........BCCB...BBBB.........",
+    "..........BB....BBBB.........BBBB...",
+    "...BBBB...BB.............BBB.BBBB...",
+    "...BBBB...BBB............BBB........",
+    "...BBBB.........CCCC...BBB....BBBB..",
+    ".......................BBB..........",
+    "...BBBB..........HH....BBB....BBBB.."
+  ]
+}

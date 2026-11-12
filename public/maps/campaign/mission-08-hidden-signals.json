@@ -1,0 +1,617 @@
+{
+  "mapId": "campaign-08",
+  "id": 8,
+  "name": "Hidden Signals",
+  "subtitle": "SECTOR 08 // RELAY CLEARINGS",
+  "objective": "Clear the relay clearing",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 500
+  },
+  "environment": {
+    "theme": "forest",
+    "tint": "#8eb7ac",
+    "fogColor": "#253936",
+    "groundColor": "#697662"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Continue the local fight under interference or change clearing to eliminate its support tank.",
+    "breaches": [
+      {
+        "name": "West relay wall",
+        "cells": [
+          {
+            "row": 15,
+            "col": 10
+          },
+          {
+            "row": 16,
+            "col": 10
+          },
+          {
+            "row": 17,
+            "col": 10
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 8
+        },
+        "end": {
+          "row": 16,
+          "col": 12
+        },
+        "purpose": "Open a shorter cross-link while retaining an intact outer retreat route."
+      },
+      {
+        "name": "East service wall",
+        "cells": [
+          {
+            "row": 19,
+            "col": 23
+          },
+          {
+            "row": 20,
+            "col": 23
+          },
+          {
+            "row": 21,
+            "col": 23
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 21
+        },
+        "end": {
+          "row": 20,
+          "col": 25
+        },
+        "purpose": "Open a shorter cross-link while retaining an intact outer retreat route."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 8082026,
+    "theme": "forest",
+    "zones": [
+      {
+        "id": "woodland",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "dirt",
+        "density": 0.2,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "west-clearing",
+        "bounds": [
+          18,
+          4,
+          24,
+          10
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "east-relay",
+        "bounds": [
+          10,
+          22,
+          13,
+          29
+        ],
+        "surface": "concrete",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "oil"
+        ]
+      },
+      {
+        "id": "north-relay",
+        "bounds": [
+          2,
+          13,
+          7,
+          21
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "repair-clearing",
+        "bounds": [
+          27,
+          14,
+          32,
+          20
+        ],
+        "surface": "dirt",
+        "density": 0.2,
+        "details": [
+          "leaves",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            17
+          ],
+          [
+            28,
+            10
+          ],
+          [
+            24,
+            8
+          ],
+          [
+            20,
+            8
+          ],
+          [
+            12,
+            7
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "width": 3,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "east-road",
+        "points": [
+          [
+            29,
+            17
+          ],
+          [
+            29,
+            25
+          ],
+          [
+            26,
+            29
+          ],
+          [
+            12,
+            29
+          ],
+          [
+            4,
+            31
+          ]
+        ],
+        "width": 3,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "north-link",
+        "points": [
+          [
+            12,
+            7
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            3,
+            16
+          ],
+          [
+            6,
+            20
+          ],
+          [
+            12,
+            20
+          ],
+          [
+            12,
+            25
+          ]
+        ],
+        "width": 2.5,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "cross-clearing",
+        "points": [
+          [
+            20,
+            8
+          ],
+          [
+            24,
+            16
+          ],
+          [
+            24,
+            21
+          ],
+          [
+            17,
+            21
+          ],
+          [
+            12,
+            20
+          ]
+        ],
+        "width": 2,
+        "surface": "dirt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-label",
+        "kind": "label",
+        "row": 20,
+        "col": 8,
+        "size": 3,
+        "text": "WEST CLEARING"
+      },
+      {
+        "id": "east-label",
+        "kind": "label",
+        "row": 12,
+        "col": 25,
+        "size": 3,
+        "text": "EAST RELAY"
+      },
+      {
+        "id": "north-label",
+        "kind": "label",
+        "row": 6,
+        "col": 16,
+        "size": 3,
+        "text": "NORTH RELAY"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          10,
+          6,
+          12,
+          8
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          9,
+          11,
+          11,
+          13
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          9,
+          24,
+          11,
+          26
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          8,
+          31,
+          10,
+          33
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 7,
+    "spawnIntervalSec": 3.8,
+    "entrances": [
+      {
+        "id": "west-approach",
+        "row": 3,
+        "col": 4
+      },
+      {
+        "id": "north-relay",
+        "row": 3,
+        "col": 16
+      },
+      {
+        "id": "east-approach",
+        "row": 4,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-screen",
+        "label": "Northern patrols approaching. Learn the clearing routes before pushing deeper.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-approach",
+          "east-approach"
+        ],
+        "patrolRoute": [
+          {
+            "row": 20,
+            "col": 8
+          },
+          {
+            "row": 28,
+            "col": 17
+          },
+          {
+            "row": 23,
+            "col": 25
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 11,
+            "col": 7
+          },
+          {
+            "row": 10,
+            "col": 12
+          },
+          {
+            "row": 10,
+            "col": 25
+          },
+          {
+            "row": 9,
+            "col": 32
+          }
+        ]
+      },
+      {
+        "id": "west-clearing",
+        "label": "WEST CLEARING: Sapper patrol approaching. Use the outer woodland route if the road is mined.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SAPPER",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-approach",
+          "north-relay"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 7
+          },
+          {
+            "row": 20,
+            "col": 8
+          },
+          {
+            "row": 24,
+            "col": 10
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "first-signal",
+        "label": "EAST RELAY: Jammer support approaching from the northeast. Flank through the outer trail.",
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "SAPPER",
+          "JAMMER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east-approach"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 25
+          },
+          {
+            "row": 12,
+            "col": 29
+          },
+          {
+            "row": 18,
+            "col": 29
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "crossing-patrol",
+        "label": "CROSSING PATROL: Sapper reinforcements entering from the northwest. Reposition between clearings.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-approach",
+          "north-relay"
+        ],
+        "patrolRoute": [
+          {
+            "row": 20,
+            "col": 8
+          },
+          {
+            "row": 12,
+            "col": 7
+          },
+          {
+            "row": 6,
+            "col": 16
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "last-signal",
+        "label": "NORTH RELAY: Final escort and jammer approaching. Eliminate the support tank.",
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "JAMMER"
+        ],
+        "entrances": [
+          "north-relay"
+        ],
+        "patrolRoute": [
+          {
+            "row": 6,
+            "col": 16
+          },
+          {
+            "row": 6,
+            "col": 20
+          },
+          {
+            "row": 12,
+            "col": 20
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "SAPPER",
+    "JAMMER",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "JAMMER"
+  ],
+  "layout": [
+    "FFFF......BBB........FFFFFFFFFF.....",
+    "FFF.......BBB.........FFFFFFFFF.....",
+    ".........................F..........",
+    ".........................F..........",
+    "........F...........FFFFFFFFFF......",
+    "......FFFFBBB........FFFFFFFFF......",
+    ".....FFFFFBBB.......FFFFFFFFFFF.....",
+    ".....FFFFFFFQ............F...BB.....",
+    ".....FFFFFFF....BBBQ..BBBB...BB.....",
+    "....FFFFFFF.....BBB...BB............",
+    ".....F...FF.....BBB.................",
+    ".....F...FF...................FFF...",
+    ".....F...FFF..BBQF............FFF...",
+    "......FFFFC...BBFFFF..........FFF...",
+    "........F.C...FFFFFFF..BBBQ..FFFFF..",
+    "..........B...FFFFFFF..BCB....FFF...",
+    "....BBB...B..FFFFFFFFF.BBB....FFF...",
+    "....BBB...B...FFFFFFF..C......FFF...",
+    "....BBB...CQ..FFFFFFF..C....F..F....",
+    "..........C....FFFFF...B..FFFFF.....",
+    "...........BBB...F....QB.FFFFFFF....",
+    "...........BCB...BB....B.FFFFFFF....",
+    "...........BBB...BB....C.FFFFFFF....",
+    ".......................CFFFFFFFFF...",
+    ".....FFFFFFFBBB......Q.C.FFFFFFF....",
+    "....FFFFFFFFBCBQ....BBB..FFFFFFF....",
+    "....FFFFFFFFBBB.....BBB..FFFFFFF....",
+    "...FFFFFFFFFFF......BBB...FFFFF.....",
+    "....FFFFFFFFF..............FF.......",
+    "...BBBFFFFFFF............FFFFF......",
+    "...BBBFFFFFF............FFFFFFF.....",
+    "...BBB..F................FFFFF......",
+    "...........................F........",
+    "................CCCC..FF............",
+    "......................FF............",
+    "FFFF.............HH...........FFFFFF"
+  ]
+}

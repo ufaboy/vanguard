@@ -1,0 +1,621 @@
+{
+  "mapId": "campaign-18",
+  "id": 18,
+  "name": "Harbor Refuge",
+  "subtitle": "SECTOR 18 // DEFEND THE DOCK HQ",
+  "objective": "Defend the dock HQ",
+  "gameMode": "base_defense",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 800
+  },
+  "environment": {
+    "theme": "coast",
+    "tint": "#98c2c6",
+    "fogColor": "#243a42",
+    "groundColor": "#636960"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Defend the dockside HQ across two dry quay approaches and a central amphibious slipway, rotating through breakable dockyard walls to silence staggered artillery and intercept hover flanks.",
+    "breaches": [
+      {
+        "name": "South dockyard rotation wall",
+        "cells": [
+          {
+            "row": 27,
+            "col": 12
+          },
+          {
+            "row": 28,
+            "col": 12
+          },
+          {
+            "row": 29,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 28,
+          "col": 10
+        },
+        "end": {
+          "row": 28,
+          "col": 14
+        },
+        "purpose": "Open a fast defensive rotation cut between the West Cargo Pier and the central Dock HQ forecourt."
+      },
+      {
+        "name": "East drydock customs wall",
+        "cells": [
+          {
+            "row": 26,
+            "col": 21
+          },
+          {
+            "row": 27,
+            "col": 21
+          },
+          {
+            "row": 28,
+            "col": 21
+          }
+        ],
+        "start": {
+          "row": 27,
+          "col": 19
+        },
+        "end": {
+          "row": 27,
+          "col": 23
+        },
+        "purpose": "Shorten defensive rotations between the Dock HQ and the East Drydock Quay."
+      },
+      {
+        "name": "Mid-harbor slipway bridge partition",
+        "cells": [
+          {
+            "row": 18,
+            "col": 16
+          },
+          {
+            "row": 18,
+            "col": 17
+          },
+          {
+            "row": 18,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 17
+        },
+        "end": {
+          "row": 16,
+          "col": 17
+        },
+        "purpose": "Break the brick barrier on the mid-harbor bridge to counterattack straight up the central slipway."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 18182026,
+    "theme": "coast",
+    "zones": [
+      {
+        "id": "harbor-quay-floor",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "concrete",
+        "density": 0.16,
+        "details": [
+          "cracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-cargo-pier-zone",
+        "bounds": [
+          8,
+          2,
+          30,
+          12
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "oil",
+          "cracks"
+        ]
+      },
+      {
+        "id": "central-slipway-bridges",
+        "bounds": [
+          9,
+          13,
+          26,
+          21
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "east-drydock-quay-zone",
+        "bounds": [
+          8,
+          23,
+          30,
+          33
+        ],
+        "surface": "concrete",
+        "density": 0.22,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "dock-hq-refuge-court",
+        "bounds": [
+          27,
+          13,
+          34,
+          22
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-pier-approach",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            8
+          ],
+          [
+            19,
+            6
+          ],
+          [
+            9,
+            6
+          ],
+          [
+            3,
+            6
+          ]
+        ],
+        "width": 2.8,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "central-bridge-causeway",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            26,
+            17
+          ],
+          [
+            20,
+            13
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            10,
+            17
+          ],
+          [
+            3,
+            17
+          ]
+        ],
+        "width": 2.6,
+        "surface": "pavers",
+        "marking": "none"
+      },
+      {
+        "id": "east-drydock-approach",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            27,
+            27
+          ],
+          [
+            19,
+            29
+          ],
+          [
+            10,
+            29
+          ],
+          [
+            3,
+            29
+          ]
+        ],
+        "width": 2.8,
+        "surface": "concrete",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-pier-label",
+        "kind": "label",
+        "row": 19,
+        "col": 6,
+        "size": 3,
+        "text": "WEST CARGO PIER"
+      },
+      {
+        "id": "central-slipway-label",
+        "kind": "label",
+        "row": 17,
+        "col": 17,
+        "size": 3,
+        "text": "HARBOR SLIPWAY"
+      },
+      {
+        "id": "east-drydock-label",
+        "kind": "label",
+        "row": 19,
+        "col": 29,
+        "size": 3,
+        "text": "EAST DRYDOCK"
+      },
+      {
+        "id": "dock-hq-label",
+        "kind": "label",
+        "row": 31,
+        "col": 17,
+        "size": 3,
+        "text": "DOCK REFUGE HQ"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          7,
+          5,
+          9,
+          7
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          4,
+          16,
+          6,
+          18
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          8,
+          22,
+          10,
+          24
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          9,
+          29,
+          11,
+          31
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "entrances": [
+      {
+        "id": "west-cargo-pier",
+        "row": 2,
+        "col": 6
+      },
+      {
+        "id": "central-slipway-head",
+        "row": 2,
+        "col": 17
+      },
+      {
+        "id": "east-drydock-gate",
+        "row": 2,
+        "col": 29
+      }
+    ],
+    "encounters": [
+      {
+        "id": "harbor-outer-probe",
+        "label": "OUTER QUAYS: Standard armor on the pier roads and hover scouts entering the central slipway.",
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "STANDARD",
+          "HOVER"
+        ],
+        "initialCells": [
+          {
+            "row": 8,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 17
+          },
+          {
+            "row": 9,
+            "col": 23
+          },
+          {
+            "row": 10,
+            "col": 30
+          }
+        ],
+        "entrances": [
+          "west-cargo-pier",
+          "central-slipway-head"
+        ],
+        "patrolRoute": [
+          {
+            "row": 20,
+            "col": 10
+          },
+          {
+            "row": 27,
+            "col": 17
+          },
+          {
+            "row": 31,
+            "col": 15
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "west-pier-dock-wave",
+        "label": "WEST CARGO PIER: Dock assault wave with sapper minelayer and first howitzer support.",
+        "enemies": [
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-cargo-pier",
+          "central-slipway-head"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 6
+          },
+          {
+            "row": 28,
+            "col": 9
+          },
+          {
+            "row": 31,
+            "col": 14
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "slipway-hover-flank",
+        "label": "CENTRAL SLIPWAY: Amphibious hover squadron skimming the harbor channel toward the HQ.",
+        "enemies": [
+          "HOVER",
+          "STANDARD",
+          "HOVER",
+          "HOWITZER",
+          "HOVER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "central-slipway-head",
+          "east-drydock-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 20,
+            "col": 21
+          },
+          {
+            "row": 27,
+            "col": 17
+          },
+          {
+            "row": 31,
+            "col": 19
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "east-drydock-wave",
+        "label": "EAST DRYDOCK: Second land push with sapper and artillery advancing down the eastern quay.",
+        "enemies": [
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east-drydock-gate",
+          "central-slipway-head"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 29
+          },
+          {
+            "row": 27,
+            "col": 26
+          },
+          {
+            "row": 31,
+            "col": 20
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "final-harbor-convergence",
+        "label": "FINAL WAVE: Combined slipway hover raid and dock armor converging on the Harbor Refuge HQ.",
+        "enemies": [
+          "HOVER",
+          "STANDARD",
+          "HOVER",
+          "HOWITZER",
+          "HOVER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "central-slipway-head",
+          "west-cargo-pier",
+          "east-drydock-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 21,
+            "col": 13
+          },
+          {
+            "row": 28,
+            "col": 17
+          },
+          {
+            "row": 31,
+            "col": 17
+          }
+        ],
+        "recoverySec": 9
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "HOWITZER",
+    "HOVER",
+    "STANDARD",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "HOWITZER",
+    "HOVER",
+    "STANDARD"
+  ],
+  "layout": [
+    "WWWW......BBB....FF....BB......WWWWW",
+    "WWW........BBB.........BB........WWW",
+    "...BB....CC...BB....CC...BB....BB...",
+    "...BC....CC...BB....CC...BC....BB...",
+    "F........BB...CC.........BC........F",
+    "F...CC...BB...CC....BB...CC...BBB..F",
+    "....CC....F...CC....BB...FF...CCB...",
+    "...BBB..CCC...FF....CCC..CCC........",
+    "........CCB..CCC....CCB..CCB..BBB...",
+    "W..CC.........B..........FF...CCB..W",
+    "W..CC..CCC....B.....CCC..CC........W",
+    "W......CCB..........CCB.......CCC..W",
+    "W..BB..CCC.....WWWWW....CCC...CCB..W",
+    "...BC..CCB.....WWWWW....CCB.F.CCB...",
+    ".......CCB.....WWWWW....CCB.FF......",
+    "...CC..........WWWWW........FF.BB...",
+    "...CC..CCC.............CCC.....BB...",
+    "F......CCB.............CCBQ........F",
+    "F..BB..CCB...CCCBBBCCC.CCB.....CC..F",
+    "...BC...Q..........Q..........CB....",
+    ".......CCC.............CCC..........",
+    "...CCC.CCB.....WWWWW....CCB....BB...",
+    "W..CCB.CCB.....WWWWW....CCB....BC..W",
+    "W....Q.CCC.....WWWWW....CCC....BB..W",
+    "W..BB..........WWWWW....C.Q....Q...W",
+    "W..BC..CCC..CQ.WWWWW.C..C...CC.BB..W",
+    ".......CCB..C........B..C...CB.BC...",
+    "..QCC..CCB..B..BB.BB.B......FF.BB...",
+    "...CB.......B........B......FF......",
+    ".......BB...B..BB.BB.C..CC.....BB...",
+    "...CC..BC...C........C..CC.....BB...",
+    "F..CC.......C...........CC...BB....F",
+    "F.......BB...................BB....F",
+    "....BB..BB......CCCC....BB..........",
+    ".......................BBB..........",
+    "WWWW......FF.....HH....BBB......WWWW"
+  ]
+}

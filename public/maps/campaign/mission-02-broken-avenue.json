@@ -1,0 +1,719 @@
+{
+  "id": 2,
+  "mapId": "campaign-02",
+  "code": "MISSION 02 // RESIDENTIAL DISTRICT",
+  "name": "Broken Avenue",
+  "subtitle": "Eliminate 21 hostiles. Break courtyard partitions for short flanks or take the garage loop.",
+  "gameMode": "extermination",
+  "rules": {
+    "spawnSectorBossOnClear": false
+  },
+  "gridSize": 36,
+  "tileSize": 2,
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "environment": {
+    "tint": "#d2bb94",
+    "fogColor": "#20232a",
+    "groundColor": "#697075",
+    "theme": "urban"
+  },
+  "defaultSurface": "asphalt",
+  "completionReward": {
+    "credits": 300
+  },
+  "layout": [
+    "..FF......BBB.........BBBB......FF..",
+    "..FF......BCB.........BCCB......FF..",
+    "...BBBBBBBCCB...BBBBBBCCBB...BBB....",
+    "..B.......BCC...B......BBBB..BBB....",
+    "..B.......BCC.....FF......BC........",
+    "..B.......BCC.....FF......BC....BB..",
+    "...BBBB...BCC.............BBBBBBBB..",
+    ".....BB...BBCCC.......B.........B...",
+    "...B.......BBBB...BBBBB.........B...",
+    "...B.BB...........BCCCB...BBB....B..",
+    "...B.BB...........BCCCB...BBC....B..",
+    "...B..............BCCCB..........B..",
+    "...B.......BBBBBBBBBBBB......BB..B..",
+    "..BB....BBB...B..............BB..B..",
+    ".B......BBB...B............BBB...B..",
+    ".B............B............BCB...B..",
+    ".B.......BBBBBCBBB...BBBBBBCCB...B..",
+    ".B...B...BCCCCCCCB...BCCCCCCCB...B..",
+    ".B...B...BBBBCBBBB...BBBBBCBBB...B..",
+    ".B...B.......B.......Q....B......B..",
+    ".B...B.......BQ...........B......B..",
+    ".B...B.......B............B......B..",
+    ".B...B.............BBBB...BBBB...B..",
+    ".B...B............QBCCB...BBBB...B..",
+    ".B.....Q...........BBBB......Q...B..",
+    ".B....BB.....BQ..................B..",
+    ".B....CCB....B...................B..",
+    ".BQ..........B...........BB...BBBB..",
+    "..BBB......QBCBB...BBBB..BB...BCC...",
+    ".....BBBBBBBCBBB...BBBCBBCB...BCC...",
+    "...FF.......B.........BBBBB...B.....",
+    "...FF.......B.................B..BB.",
+    "............B.................B..BB.",
+    "...BBB......B...CCCC..........B.....",
+    "...BBB......B.........BBBBBBBB......",
+    ".................HH.............FF.."
+  ],
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD"
+  ],
+  "enemies": {
+    "initialSpawnCount": 3,
+    "maxConcurrent": 6,
+    "spawnIntervalSec": 3.2,
+    "fixedSpawns": [],
+    "encounters": [
+      {
+        "id": "residential-entry",
+        "label": "RESIDENTIAL ENTRY: Hostiles beyond the garages. Check the street before crossing.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "initialCells": [
+          {
+            "row": 8,
+            "col": 8
+          },
+          {
+            "row": 6,
+            "col": 17
+          },
+          {
+            "row": 10,
+            "col": 24
+          }
+        ],
+        "entrances": [
+          "west"
+        ],
+        "recoverySec": 0,
+        "patrolRoute": [
+          {
+            "row": 26,
+            "col": 10
+          },
+          {
+            "row": 26,
+            "col": 17
+          },
+          {
+            "row": 31,
+            "col": 17
+          }
+        ]
+      },
+      {
+        "id": "courtyard-flank",
+        "label": "WEST COURTYARD: Scouts using the outer lane. A brick breach opens a shorter flank.",
+        "enemies": [
+          "SCOUT",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "west",
+          "northwest"
+        ],
+        "recoverySec": 5,
+        "patrolRoute": [
+          {
+            "row": 14,
+            "col": 6
+          },
+          {
+            "row": 20,
+            "col": 7
+          },
+          {
+            "row": 23,
+            "col": 16
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ]
+      },
+      {
+        "id": "avenue-line",
+        "label": "BROKEN AVENUE: Standard tanks advancing from the east. Breach the partition or cross through the court.",
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east",
+          "northeast"
+        ],
+        "recoverySec": 7,
+        "patrolRoute": [
+          {
+            "row": 20,
+            "col": 30
+          },
+          {
+            "row": 20,
+            "col": 24
+          },
+          {
+            "row": 20,
+            "col": 18
+          },
+          {
+            "row": 23,
+            "col": 16
+          }
+        ]
+      },
+      {
+        "id": "garden-loop",
+        "label": "GARDEN LOOP: Reinforcements in the north. Watch both courtyard exits.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "northwest",
+          "garden"
+        ],
+        "recoverySec": 5,
+        "patrolRoute": [
+          {
+            "row": 5,
+            "col": 16
+          },
+          {
+            "row": 10,
+            "col": 16
+          },
+          {
+            "row": 14,
+            "col": 19
+          },
+          {
+            "row": 20,
+            "col": 19
+          }
+        ]
+      },
+      {
+        "id": "east-residences",
+        "label": "FINAL GROUP: East residences and the avenue. Use the garage loop for a rear angle.",
+        "enemies": [
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east",
+          "northeast"
+        ],
+        "recoverySec": 6,
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 24
+          },
+          {
+            "row": 14,
+            "col": 24
+          },
+          {
+            "row": 20,
+            "col": 24
+          },
+          {
+            "row": 26,
+            "col": 24
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ]
+      }
+    ],
+    "entrances": [
+      {
+        "id": "west",
+        "label": "West lane",
+        "row": 11,
+        "col": 6
+      },
+      {
+        "id": "northwest",
+        "label": "Northwest residences",
+        "row": 4,
+        "col": 4
+      },
+      {
+        "id": "east",
+        "label": "East avenue",
+        "row": 11,
+        "col": 31
+      },
+      {
+        "id": "northeast",
+        "label": "East courtyard",
+        "row": 8,
+        "col": 31
+      },
+      {
+        "id": "garden",
+        "label": "Garden access",
+        "row": 4,
+        "col": 21
+      }
+    ]
+  },
+  "design": {
+    "breaches": [
+      {
+        "name": "West avenue partition",
+        "cells": [
+          {
+            "row": 19,
+            "col": 13
+          },
+          {
+            "row": 20,
+            "col": 13
+          },
+          {
+            "row": 21,
+            "col": 13
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 11
+        },
+        "end": {
+          "row": 20,
+          "col": 15
+        }
+      },
+      {
+        "name": "East avenue partition",
+        "cells": [
+          {
+            "row": 19,
+            "col": 26
+          },
+          {
+            "row": 20,
+            "col": 26
+          },
+          {
+            "row": 21,
+            "col": 26
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 24
+        },
+        "end": {
+          "row": 20,
+          "col": 28
+        }
+      },
+      {
+        "name": "Courtyard partition",
+        "cells": [
+          {
+            "row": 13,
+            "col": 14
+          },
+          {
+            "row": 14,
+            "col": 14
+          },
+          {
+            "row": 15,
+            "col": 14
+          }
+        ],
+        "start": {
+          "row": 14,
+          "col": 12
+        },
+        "end": {
+          "row": 14,
+          "col": 16
+        }
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 200006,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "west-housing",
+        "bounds": [
+          9,
+          3,
+          18,
+          12
+        ],
+        "surface": "pavers",
+        "density": 0.35,
+        "details": [
+          "weeds",
+          "cracks"
+        ]
+      },
+      {
+        "id": "avenue",
+        "bounds": [
+          18,
+          6,
+          22,
+          31
+        ],
+        "surface": "asphalt",
+        "density": 0.35,
+        "details": [
+          "patches",
+          "tracks"
+        ]
+      },
+      {
+        "id": "gardens",
+        "bounds": [
+          3,
+          13,
+          9,
+          22
+        ],
+        "surface": "dirt",
+        "density": 0.35,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "garages",
+        "bounds": [
+          23,
+          23,
+          30,
+          32
+        ],
+        "surface": "concrete",
+        "density": 0.35,
+        "details": [
+          "oil",
+          "cracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "street-0",
+        "points": [
+          [
+            32,
+            17
+          ],
+          [
+            26,
+            17
+          ],
+          [
+            26,
+            7
+          ],
+          [
+            20,
+            7
+          ],
+          [
+            20,
+            31
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "street-1",
+        "points": [
+          [
+            32,
+            17
+          ],
+          [
+            32,
+            28
+          ],
+          [
+            25,
+            28
+          ],
+          [
+            25,
+            31
+          ],
+          [
+            20,
+            31
+          ],
+          [
+            10,
+            31
+          ],
+          [
+            10,
+            24
+          ],
+          [
+            5,
+            24
+          ],
+          [
+            5,
+            16
+          ],
+          [
+            10,
+            16
+          ],
+          [
+            10,
+            7
+          ],
+          [
+            20,
+            7
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "street-2",
+        "points": [
+          [
+            26,
+            7
+          ],
+          [
+            26,
+            3
+          ],
+          [
+            15,
+            3
+          ],
+          [
+            15,
+            7
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "street-3",
+        "points": [
+          [
+            10,
+            7
+          ],
+          [
+            4,
+            7
+          ],
+          [
+            4,
+            3
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "street-4",
+        "points": [
+          [
+            20,
+            19
+          ],
+          [
+            14,
+            19
+          ],
+          [
+            14,
+            7
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "street-5",
+        "points": [
+          [
+            14,
+            19
+          ],
+          [
+            14,
+            25
+          ],
+          [
+            10,
+            25
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "street-6",
+        "points": [
+          [
+            26,
+            17
+          ],
+          [
+            26,
+            24
+          ],
+          [
+            20,
+            24
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "district-0",
+        "kind": "label",
+        "row": 32,
+        "col": 17,
+        "text": "REPAIR GARAGES",
+        "size": 3
+      },
+      {
+        "id": "district-1",
+        "kind": "label",
+        "row": 12,
+        "col": 7,
+        "text": "WEST RESIDENCES",
+        "size": 3
+      },
+      {
+        "id": "district-2",
+        "kind": "label",
+        "row": 20,
+        "col": 20,
+        "text": "BROKEN AVENUE",
+        "size": 3
+      },
+      {
+        "id": "district-3",
+        "kind": "label",
+        "row": 6,
+        "col": 18,
+        "text": "GARDEN COURT",
+        "size": 3
+      },
+      {
+        "id": "district-4",
+        "kind": "label",
+        "row": 11,
+        "col": 25,
+        "text": "EAST RESIDENCES",
+        "size": 3
+      },
+      {
+        "id": "district-5",
+        "kind": "label",
+        "row": 25,
+        "col": 27,
+        "text": "GARAGE LOOP",
+        "size": 3
+      },
+      {
+        "id": "avenue-crossing",
+        "kind": "crosswalk",
+        "row": 20,
+        "col": 24,
+        "size": 2.5
+      },
+      {
+        "id": "garage-parking",
+        "kind": "parking",
+        "row": 25,
+        "col": 28,
+        "size": 3
+      },
+      {
+        "id": "service-cover",
+        "kind": "manhole",
+        "row": 14,
+        "col": 19,
+        "size": 1
+      }
+    ],
+    "exclusions": []
+  }
+}

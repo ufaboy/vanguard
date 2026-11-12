@@ -1,0 +1,641 @@
+{
+  "mapId": "campaign-28",
+  "id": 28,
+  "name": "Power Reserve",
+  "subtitle": "SECTOR 28 // SUBSTATION HQ DEFENSE",
+  "objective": "Defend the substation HQ",
+  "gameMode": "base_defense",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 900
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#d89a76",
+    "fogColor": "#3b3532",
+    "groundColor": "#575552"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Operate from the central transformer repair yard to intercept alternating sapper-and-jammer pushes and striker barrages across three radial substation corridors before they breach the southern HQ.",
+    "breaches": [
+      {
+        "name": "West transformer firewall",
+        "cells": [
+          {
+            "row": 22,
+            "col": 11
+          },
+          {
+            "row": 23,
+            "col": 11
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 13
+        },
+        "end": {
+          "row": 22,
+          "col": 9
+        },
+        "purpose": "Open a rapid response cut from the Central Repair Yard into the West Turbine Feed to intercept sappers and howitzers."
+      },
+      {
+        "name": "East capacitor firewall",
+        "cells": [
+          {
+            "row": 22,
+            "col": 24
+          },
+          {
+            "row": 23,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 22
+        },
+        "end": {
+          "row": 22,
+          "col": 26
+        },
+        "purpose": "Punch through the eastern capacitor firewall to reach the East Cooling-Basin Feed without detouring south."
+      },
+      {
+        "name": "Mid-switchgear bus gate",
+        "cells": [
+          {
+            "row": 16,
+            "col": 17
+          },
+          {
+            "row": 16,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 18,
+          "col": 17
+        },
+        "end": {
+          "row": 14,
+          "col": 17
+        },
+        "purpose": "Breach the central switchgear wall to sally north against jammer and howitzer batteries."
+      },
+      {
+        "name": "North relay-bay partition",
+        "cells": [
+          {
+            "row": 10,
+            "col": 12
+          },
+          {
+            "row": 11,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 10,
+          "col": 10
+        },
+        "end": {
+          "row": 10,
+          "col": 14
+        },
+        "purpose": "Connect the upper West Turbine Feed and North Switchgear Corridor for counter-flanking striker waves."
+      }
+    ],
+    "densityRevision": "A central transformer repair yard acts as a fast-response hub linking three asymmetric substation corridors, with concrete blast walls shielding the southern HQ and open industrial edges without an artificial concrete box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 28282026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "substation-slag-gravel",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "gravel",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-turbine-feed-corridor",
+        "bounds": [
+          3,
+          2,
+          27,
+          10
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "central-repair-transformer-yard",
+        "bounds": [
+          14,
+          11,
+          28,
+          24
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-cooling-feed-corridor",
+        "bounds": [
+          3,
+          25,
+          27,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-substation-hq-apron",
+        "bounds": [
+          28,
+          8,
+          35,
+          27
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-turbine-feed-road",
+        "points": [
+          [
+            3,
+            5
+          ],
+          [
+            11,
+            6
+          ],
+          [
+            20,
+            6
+          ],
+          [
+            28,
+            10
+          ],
+          [
+            31,
+            17
+          ]
+        ],
+        "width": 2.6,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "central-switchgear-spine",
+        "points": [
+          [
+            3,
+            17
+          ],
+          [
+            11,
+            17
+          ],
+          [
+            19,
+            17
+          ],
+          [
+            27,
+            17
+          ],
+          [
+            31,
+            17
+          ]
+        ],
+        "width": 2.8,
+        "surface": "concrete",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-cooling-feed-road",
+        "points": [
+          [
+            3,
+            30
+          ],
+          [
+            11,
+            29
+          ],
+          [
+            20,
+            29
+          ],
+          [
+            28,
+            25
+          ],
+          [
+            31,
+            17
+          ]
+        ],
+        "width": 2.6,
+        "surface": "asphalt",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "central-repair-yard-loading",
+        "kind": "loading",
+        "row": 21,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "switchgear-crosswalk",
+        "kind": "crosswalk",
+        "row": 15,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-hq-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-turbine-label",
+        "kind": "label",
+        "row": 14,
+        "col": 6,
+        "size": 3,
+        "text": "TURBINE FEED"
+      },
+      {
+        "id": "central-yard-label",
+        "kind": "label",
+        "row": 20,
+        "col": 17,
+        "size": 3,
+        "text": "CENTRAL REPAIR YARD"
+      },
+      {
+        "id": "east-capacitor-label",
+        "kind": "label",
+        "row": 14,
+        "col": 29,
+        "size": 3,
+        "text": "CAPACITOR BANK"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 30,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-turbine",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-switchgear-west",
+        "row": 2,
+        "col": 14
+      },
+      {
+        "id": "north-switchgear-east",
+        "row": 2,
+        "col": 21
+      },
+      {
+        "id": "north-east-capacitor",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-west-bus",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-bus",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-west-sapper-jammer",
+        "label": "SAPPER & ECM JAMMER DETACHMENT ON WEST TURBINE FEED",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-turbine",
+          "north-switchgear-west",
+          "upper-west-bus"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 15
+          },
+          {
+            "row": 5,
+            "col": 20
+          },
+          {
+            "row": 4,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 7
+          },
+          {
+            "row": 20,
+            "col": 9
+          },
+          {
+            "row": 27,
+            "col": 14
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "SAPPER",
+          "JAMMER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "east-striker-howitzer-salvo",
+        "label": "STRIKER & HOWITZER BATTERY ON CAPACITOR BANK",
+        "recoverySec": 8,
+        "entrances": [
+          "north-east-capacitor",
+          "upper-east-bus",
+          "north-switchgear-east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 29
+          },
+          {
+            "row": 20,
+            "col": 27
+          },
+          {
+            "row": 27,
+            "col": 21
+          }
+        ],
+        "enemies": [
+          "STRIKER",
+          "HOWITZER",
+          "STANDARD",
+          "STRIKER",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "central-jammer-sapper-screen",
+        "label": "CENTRAL SWITCHGEAR JAMMER & MINELAYER PUSH",
+        "recoverySec": 9,
+        "entrances": [
+          "north-switchgear-west",
+          "north-switchgear-east",
+          "north-west-turbine"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 18
+          },
+          {
+            "row": 19,
+            "col": 18
+          },
+          {
+            "row": 27,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "SAPPER",
+          "STANDARD",
+          "SAPPER",
+          "HOWITZER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "main-striker-barrage-wave",
+        "label": "HEAVY STRIKER MISSILE SQUADRON CONVERGING",
+        "recoverySec": 9,
+        "entrances": [
+          "upper-west-bus",
+          "north-switchgear-west",
+          "north-switchgear-east",
+          "upper-east-bus"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 16
+          },
+          {
+            "row": 20,
+            "col": 15
+          },
+          {
+            "row": 27,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "STRIKER",
+          "STANDARD",
+          "STRIKER",
+          "HOWITZER",
+          "STRIKER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "final-substation-surge",
+        "label": "FINAL SUBSTATION OVERLOAD WAVE INBOUND",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-turbine",
+          "north-switchgear-west",
+          "north-switchgear-east",
+          "north-east-capacitor"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 20
+          },
+          {
+            "row": 21,
+            "col": 18
+          },
+          {
+            "row": 27,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "SAPPER",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "SAPPER",
+    "JAMMER",
+    "STANDARD",
+    "STRIKER",
+    "HOWITZER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "STANDARD",
+    "JAMMER",
+    "SAPPER",
+    "STANDARD",
+    "SAPPER",
+    "HOWITZER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "STRIKER",
+    "HOWITZER",
+    "STRIKER",
+    "STANDARD",
+    "JAMMER",
+    "SAPPER",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.........CC...........CC........FF",
+    "F..........CC...........CC........FF",
+    "...................................F",
+    "F...................................",
+    "..CC.......FF...........FF.....CCC..",
+    "..CC.......FF...........FF......CC..",
+    "...........CC...........CC.........W",
+    "...........CC..........QCC.........W",
+    "............C...........C..........W",
+    "..FF........C...........C......FF...",
+    ".FFF........B...CC.CC...C......FF...",
+    "............B...CC.CC...C...........",
+    "...BB.......C...........C.....BBB...",
+    "..CCBB......C...........C.....BBCC..",
+    "..CC........C...........C.......CC.F",
+    ".......FF...C...........C..FF......F",
+    ".......FF...CCCCCBBCCCCCC..FF.......",
+    "....BB....CC............QCC....BBB..",
+    "....BB....CC....Q........CC....BBB..",
+    "F....Q..........BB.BB...............",
+    "..CC.......C....BB.BB...C......CCC..",
+    "..CC.......CQ...........C.......CC.F",
+    "F..........B............B...........",
+    "...FF......B............BQ.....FFF..",
+    "..FFF......C............C......FF...",
+    "F..........CC..........CC......Q....",
+    "....BB.....CC..........CC.....BBB...",
+    "....BB........................BBB..W",
+    "...............CCCCCC..............W",
+    "..CC....FF.....CCCCCC.Q...FF...CCC..",
+    "..CC....FF...BB......BBB..FF....CC..",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "W.........FF....CCCC....FF..........",
+    "WW.................................F",
+    "WW...............HH...............FF"
+  ]
+}

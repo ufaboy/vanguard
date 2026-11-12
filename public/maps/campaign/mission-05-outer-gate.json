@@ -1,0 +1,650 @@
+{
+  "mapId": "campaign-05",
+  "id": 5,
+  "name": "Outer Gate",
+  "subtitle": "SECTOR 05 // BREACH THE CITY GATE",
+  "objective": "Destroy the gate stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 8,
+      "col": 21
+    },
+    "name": "Outer Gate Command Core",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "completionReward": {
+    "credits": 450
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "environment": {
+    "theme": "urban",
+    "tint": "#d6c5aa",
+    "fogColor": "#20252b",
+    "groundColor": "#68716b"
+  },
+  "design": {
+    "tacticalIdentity": "Breach the guarded toll gates quickly or take the longer customs service road to attack the screened core from behind.",
+    "enemySide": "north",
+    "breaches": [
+      {
+        "name": "West gate breach",
+        "cells": [
+          {
+            "row": 14,
+            "col": 16
+          },
+          {
+            "row": 14,
+            "col": 17
+          },
+          {
+            "row": 14,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 17
+        },
+        "end": {
+          "row": 12,
+          "col": 17
+        },
+        "purpose": "Short assault through the toll plaza, with central cover screening the core."
+      },
+      {
+        "name": "East gate breach",
+        "cells": [
+          {
+            "row": 14,
+            "col": 24
+          },
+          {
+            "row": 14,
+            "col": 25
+          },
+          {
+            "row": 14,
+            "col": 26
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 25
+        },
+        "end": {
+          "row": 12,
+          "col": 25
+        },
+        "purpose": "Enter beside the battery court and flank the central screen."
+      }
+    ],
+    "retreatOptions": "Toll plaza cross-links, west customs loop, and east battery yard connect back to the repair approach."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 5052026,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "toll-plaza",
+        "bounds": [
+          15,
+          11,
+          24,
+          22
+        ],
+        "surface": "asphalt",
+        "density": 0.32,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "customs-court",
+        "bounds": [
+          7,
+          2,
+          25,
+          11
+        ],
+        "surface": "pavers",
+        "density": 0.32,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "gate-interior",
+        "bounds": [
+          6,
+          14,
+          13,
+          26
+        ],
+        "surface": "concrete",
+        "density": 0.32,
+        "details": [
+          "oil",
+          "cracks"
+        ]
+      },
+      {
+        "id": "battery-yard",
+        "bounds": [
+          6,
+          28,
+          25,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.32,
+        "details": [
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "rear-service",
+        "bounds": [
+          1,
+          8,
+          4,
+          28
+        ],
+        "surface": "asphalt",
+        "density": 0.32,
+        "details": [
+          "patches",
+          "tracks"
+        ]
+      },
+      {
+        "id": "repair-approach",
+        "bounds": [
+          28,
+          9,
+          32,
+          27
+        ],
+        "surface": "pavers",
+        "density": 0.32,
+        "details": [
+          "cracks",
+          "leaves"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "toll-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            29,
+            17
+          ],
+          [
+            24,
+            16
+          ],
+          [
+            22,
+            17
+          ],
+          [
+            15,
+            17
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "west-service-road",
+        "points": [
+          [
+            29,
+            17
+          ],
+          [
+            29,
+            10
+          ],
+          [
+            26,
+            10
+          ],
+          [
+            26,
+            8
+          ],
+          [
+            20,
+            9
+          ],
+          [
+            13,
+            10
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            16
+          ],
+          [
+            7,
+            16
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "east-service-road",
+        "points": [
+          [
+            31,
+            24
+          ],
+          [
+            28,
+            29
+          ],
+          [
+            15,
+            29
+          ],
+          [
+            7,
+            29
+          ],
+          [
+            3,
+            28
+          ],
+          [
+            3,
+            18
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "battery-approach",
+        "points": [
+          [
+            23,
+            28
+          ],
+          [
+            22,
+            24
+          ],
+          [
+            16,
+            24
+          ],
+          [
+            12,
+            25
+          ]
+        ],
+        "width": 2.8,
+        "surface": "asphalt",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "toll-crosswalk",
+        "kind": "crosswalk",
+        "row": 22,
+        "col": 16,
+        "size": 3
+      },
+      {
+        "id": "east-loading",
+        "kind": "loading",
+        "row": 16,
+        "col": 29,
+        "size": 2.5
+      },
+      {
+        "id": "customs-parking",
+        "kind": "parking",
+        "row": 13,
+        "col": 5,
+        "size": 3
+      },
+      {
+        "id": "west-cover",
+        "kind": "manhole",
+        "row": 19,
+        "col": 9,
+        "size": 1
+      },
+      {
+        "id": "toll-label",
+        "kind": "label",
+        "row": 24,
+        "col": 16,
+        "size": 3,
+        "text": "TOLL PLAZA"
+      },
+      {
+        "id": "rear-label",
+        "kind": "label",
+        "row": 3,
+        "col": 20,
+        "size": 3,
+        "text": "SERVICE ROAD"
+      },
+      {
+        "id": "battery-label",
+        "kind": "label",
+        "row": 15,
+        "col": 30,
+        "size": 3,
+        "text": "BATTERY YARD"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "core-clear",
+        "bounds": [
+          7,
+          20,
+          9,
+          22
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 3,
+    "maxConcurrent": 6,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "west-service",
+        "row": 3,
+        "col": 10
+      },
+      {
+        "id": "rear-gate",
+        "row": 3,
+        "col": 16
+      },
+      {
+        "id": "east-yard",
+        "row": 7,
+        "col": 29
+      }
+    ],
+    "encounters": [
+      {
+        "id": "approach-screen",
+        "label": "OUTER GATE: Patrols advancing from the northern checkpoint.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "west-service",
+          "east-yard"
+        ],
+        "patrolRoute": [
+          {
+            "row": 22,
+            "col": 10
+          },
+          {
+            "row": 24,
+            "col": 16
+          },
+          {
+            "row": 21,
+            "col": 28
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 10,
+            "col": 10
+          },
+          {
+            "row": 9,
+            "col": 16
+          },
+          {
+            "row": 10,
+            "col": 29
+          }
+        ]
+      },
+      {
+        "id": "west-anchor",
+        "label": "WEST GATE: Armored guard advancing down the toll approach.",
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-service",
+          "rear-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 10
+          },
+          {
+            "row": 16,
+            "col": 12
+          },
+          {
+            "row": 22,
+            "col": 16
+          }
+        ],
+        "recoverySec": 7
+      },
+      {
+        "id": "battery-support",
+        "label": "BATTERY COURT: Artillery arriving behind the gate. Use the service-road flank.",
+        "enemies": [
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "east-yard",
+          "rear-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 25
+          },
+          {
+            "row": 12,
+            "col": 25
+          },
+          {
+            "row": 16,
+            "col": 29
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "gate-reserve",
+        "label": "GATE RESERVE: Armor reinforcing both breach approaches.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR"
+        ],
+        "entrances": [
+          "rear-gate",
+          "west-service"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 17
+          },
+          {
+            "row": 16,
+            "col": 20
+          },
+          {
+            "row": 12,
+            "col": 25
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "last-column",
+        "label": "LAST COLUMN: Final reserves entering from the north. Destroy the command core.",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east-yard",
+          "rear-gate",
+          "west-service"
+        ],
+        "patrolRoute": [
+          {
+            "row": 6,
+            "col": 23
+          },
+          {
+            "row": 12,
+            "col": 25
+          },
+          {
+            "row": 16,
+            "col": 29
+          },
+          {
+            "row": 22,
+            "col": 28
+          }
+        ],
+        "recoverySec": 7
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "SCOUT",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF...BBBB...............FFFF...BBB..",
+    ".....BBBB......................BBB..",
+    ".......................FFFF.........",
+    "...BBBBB...............FFFF...BBB...",
+    "...BCCCB......................BBB...",
+    "...BCCCB.....CC...CCCCCCCCCC..BBB...",
+    "...BBBBB.....C.............C........",
+    "...FFF.......C......CCC....C........",
+    "...FFF.......C......CEC....C........",
+    "...BBBB......C......CCC....C...BB...",
+    "...BBBB......C.....BCCCB...C...BB...",
+    "...BBBB......C.....BBBBB...C...BB...",
+    "...BBBB......C.............C...BB...",
+    ".............C.............C........",
+    ".............CCCBBBCCCCCBBBC........",
+    "...BBBBB............................",
+    "...BCCCB.FF......BB.................",
+    "...BCCCB.FF......BB...........BBB...",
+    "...BBBBB...BBBBB.....BBBBB....BCB...",
+    ".....Q.....BCCCB.....BBBBB...QBCB...",
+    "...........BCCCB....QBBBBB....BBB...",
+    "...BBBB....BBBBB..............BBB...",
+    "...BBBB.......Q...BBB.........FFFF..",
+    "...BBBB..C........BBB....Q....FFFF..",
+    "...BBBB..B.............BBBBB..FFFF..",
+    ".........C.QBBBBBBB....BCCCB........",
+    "......Q.....BBBBBBB....BCCCBQ.......",
+    "...BBBBBB...BBBBBBB....BBBBB........",
+    "...BBBBBB...........BBB.............",
+    "...BBBBBB...........BBB......BBBB...",
+    "...BBBBBB..BBB...............BBBB...",
+    "...........BBB...............BBBB...",
+    "...........BBB...............BBBB...",
+    "................CCCC..BB............",
+    "......................BB............",
+    "..FF.............HH.............FF.."
+  ]
+}

@@ -1,0 +1,662 @@
+{
+  "mapId": "campaign-34",
+  "id": 34,
+  "name": "Citadel Ring",
+  "subtitle": "SECTOR 34 // CAPITAL CITADEL RING",
+  "objective": "Destroy the inner stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 5,
+      "col": 18
+    },
+    "name": "Inner Citadel Redoubt",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 1250
+  },
+  "environment": {
+    "theme": "capital",
+    "tint": "#dda4a1",
+    "fogColor": "#3c3538",
+    "groundColor": "#646866"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "A circular grand ring road surrounds the inner capital redoubt, supporting wide flank attacks across successive fortified ramparts held by heavy armor, stealth snipers, and ECM jammers.",
+    "breaches": [
+      {
+        "name": "West ring arcade wall",
+        "cells": [
+          {
+            "row": 19,
+            "col": 6
+          },
+          {
+            "row": 19,
+            "col": 7
+          }
+        ],
+        "start": {
+          "row": 21,
+          "col": 7
+        },
+        "end": {
+          "row": 17,
+          "col": 7
+        },
+        "purpose": "Blast through the west ring block to bypass heavy outer crossfire."
+      },
+      {
+        "name": "East ring chancellery wall",
+        "cells": [
+          {
+            "row": 19,
+            "col": 31
+          },
+          {
+            "row": 19,
+            "col": 32
+          }
+        ],
+        "start": {
+          "row": 21,
+          "col": 31
+        },
+        "end": {
+          "row": 17,
+          "col": 31
+        },
+        "purpose": "Punch through the east ring block to flank the inner redoubt."
+      },
+      {
+        "name": "West redoubt colonnade breach",
+        "cells": [
+          {
+            "row": 12,
+            "col": 14
+          },
+          {
+            "row": 13,
+            "col": 14
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 12
+        },
+        "end": {
+          "row": 12,
+          "col": 16
+        },
+        "purpose": "Breach the western colonnade into the Inner Citadel Redoubt court."
+      },
+      {
+        "name": "East redoubt colonnade breach",
+        "cells": [
+          {
+            "row": 12,
+            "col": 23
+          },
+          {
+            "row": 13,
+            "col": 23
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 25
+        },
+        "end": {
+          "row": 12,
+          "col": 21
+        },
+        "purpose": "Break through the eastern colonnade into the Inner Citadel Redoubt court."
+      }
+    ],
+    "densityRevision": "Completely redesigned double-ring fortress city featuring concentric grand boulevards, dense ministry block pavilions, fortified bastions, and over 310 solid blocks with open perimeter streets and no outer concrete box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 34342026,
+    "theme": "capital",
+    "zones": [
+      {
+        "id": "capital-district-pavers",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "pavers",
+        "density": 0.16,
+        "details": [
+          "cracks",
+          "rubble",
+          "leaves"
+        ]
+      },
+      {
+        "id": "citadel-ring-road-asphalt",
+        "bounds": [
+          2,
+          2,
+          33,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "cracks",
+          "oil"
+        ]
+      },
+      {
+        "id": "inner-citadel-redoubt-plaza",
+        "bounds": [
+          7,
+          12,
+          17,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "south-approach-plaza",
+        "bounds": [
+          28,
+          12,
+          35,
+          23
+        ],
+        "surface": "pavers",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "cracks",
+          "rubble"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "citadel-outer-ring-highway",
+        "surface": "asphalt",
+        "width": 3,
+        "marking": "edges",
+        "points": [
+          [
+            31,
+            14
+          ],
+          [
+            26,
+            4
+          ],
+          [
+            16,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            18
+          ],
+          [
+            6,
+            31
+          ],
+          [
+            16,
+            31
+          ],
+          [
+            26,
+            31
+          ],
+          [
+            31,
+            20
+          ]
+        ]
+      },
+      {
+        "id": "central-axial-avenue",
+        "surface": "asphalt",
+        "width": 4,
+        "marking": "dashed",
+        "points": [
+          [
+            32,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            6,
+            17
+          ]
+        ]
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "south-ring-crosswalk",
+        "kind": "crosswalk",
+        "row": 27,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "north-redoubt-crosswalk",
+        "kind": "crosswalk",
+        "row": 6,
+        "col": 18,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "west-ring-parking",
+        "kind": "parking",
+        "row": 21,
+        "col": 4,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "east-ring-parking",
+        "kind": "parking",
+        "row": 21,
+        "col": 31,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "redoubt-central-loading",
+        "kind": "loading",
+        "row": 13,
+        "col": 18,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "citadel-ring-label",
+        "kind": "label",
+        "row": 20,
+        "col": 18,
+        "size": 3,
+        "text": "CITADEL RING"
+      },
+      {
+        "id": "west-sector-label",
+        "kind": "label",
+        "row": 15,
+        "col": 4,
+        "size": 3,
+        "text": "WEST RING"
+      },
+      {
+        "id": "east-sector-label",
+        "kind": "label",
+        "row": 15,
+        "col": 31,
+        "size": 3,
+        "text": "EAST RING"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 31,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-ring-gate",
+        "row": 2,
+        "col": 18
+      },
+      {
+        "id": "west-ring-head",
+        "row": 2,
+        "col": 4
+      },
+      {
+        "id": "east-ring-head",
+        "row": 2,
+        "col": 31
+      },
+      {
+        "id": "citadel-west-ramp",
+        "row": 5,
+        "col": 11
+      },
+      {
+        "id": "citadel-east-ramp",
+        "row": 5,
+        "col": 24
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-armor-screen",
+        "label": "CITADEL SCREENING ARMOR & STEALTH SNIPERS",
+        "recoverySec": 0,
+        "entrances": [
+          "north-ring-gate",
+          "west-ring-head",
+          "east-ring-head"
+        ],
+        "initialCells": [
+          {
+            "row": 6,
+            "col": 16
+          },
+          {
+            "row": 7,
+            "col": 19
+          },
+          {
+            "row": 5,
+            "col": 4
+          },
+          {
+            "row": 5,
+            "col": 31
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 7,
+            "col": 18
+          },
+          {
+            "row": 16,
+            "col": 18
+          },
+          {
+            "row": 22,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "STEALTH",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "west-ring-stealth-jammer",
+        "label": "WEST RING ARMOR, STEALTH & JAMMER DETACHMENT",
+        "recoverySec": 8,
+        "entrances": [
+          "west-ring-head",
+          "citadel-west-ramp",
+          "north-ring-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 4
+          },
+          {
+            "row": 18,
+            "col": 4
+          },
+          {
+            "row": 25,
+            "col": 13
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "JAMMER",
+          "STEALTH",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "central-howitzer-battery",
+        "label": "INNER REDOUBT HOWITZER BATTERY & HEAVY ARMOR",
+        "recoverySec": 9,
+        "entrances": [
+          "north-ring-gate",
+          "citadel-west-ramp",
+          "citadel-east-ramp"
+        ],
+        "patrolRoute": [
+          {
+            "row": 7,
+            "col": 18
+          },
+          {
+            "row": 13,
+            "col": 18
+          },
+          {
+            "row": 21,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER"
+        ]
+      },
+      {
+        "id": "east-ring-stealth-jammer",
+        "label": "EAST RING ARMOR, STEALTH & JAMMER DETACHMENT",
+        "recoverySec": 9,
+        "entrances": [
+          "east-ring-head",
+          "citadel-east-ramp",
+          "north-ring-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 31
+          },
+          {
+            "row": 18,
+            "col": 31
+          },
+          {
+            "row": 25,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "JAMMER",
+          "STEALTH",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "citadel-final-redoubt-guard",
+        "label": "INNER CITADEL FINAL HEAVY GUARD DEPLOYED",
+        "recoverySec": 10,
+        "entrances": [
+          "citadel-west-ramp",
+          "citadel-east-ramp",
+          "north-ring-gate",
+          "west-ring-head"
+        ],
+        "patrolRoute": [
+          {
+            "row": 7,
+            "col": 18
+          },
+          {
+            "row": 13,
+            "col": 18
+          },
+          {
+            "row": 18,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "STEALTH",
+          "JAMMER",
+          "STANDARD",
+          "STEALTH",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "ARMOR",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "JAMMER",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "JAMMER",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "STEALTH",
+    "JAMMER",
+    "STANDARD",
+    "STEALTH",
+    "STANDARD"
+  ],
+  "layout": [
+    "...FF.....CC............CC......FFF.",
+    "..FFF.....CC............CC.......FF.",
+    "...................................F",
+    "....BB.CC......FF..........CCC.BB...",
+    ".CC.BB.CC........CCC.......CC..BB.C.",
+    ".CC.......F...BB.CECBB...F.......CCC",
+    ".....BB.C.....CC.CCCCC......CBB.....",
+    ".....BB..CC..............CC..BB.....",
+    "..FF......CC..CC....CC..CC........FF",
+    ".FFF..BB......C..CC..C.C.....BB...F.",
+    ".....BB..CC...C........C.CC..BB.....",
+    "..CC.....CC...C........C.CC.....CC..",
+    "..CC.BB.......B........B.....BB.CC..",
+    ".....BB..CC...B........B.CC..BB....F",
+    "..CC.BB..CC...C..BB..BBC.CC..BB.CCC.",
+    ".CCC.....CC..QC..BB..BBC.CC.....CCC.",
+    "......QFF................Q..F.......",
+    "..CC.BB..CC...C........C.CC..BB.CC..",
+    "..CC.BB.......C.CC..CC.C.....BB.CC..",
+    "F...CCBBCC.CC.C.CC..CC.C.CCC.CCBBCC.",
+    "..CC.BB..CC...C.......QC.CC.QBB.CC..",
+    "..CC.BB...Q...C.BB..BB.C.....BB.CC..",
+    ".....BB..CC...C.BB..BB.C.CC..BB.....",
+    "...FF....CC..F...........CC....FF...",
+    "..FFF......C...CC...QC..C.......FF..",
+    "F.........QC...CC...CC..C...........",
+    "....BB.CC......CC...CC.....CC.BB....",
+    "....BB.CC..CC...........CC.CC.BB...F",
+    "...........CC...BB.BB...CC.........F",
+    "..CC.BB.FF......BB.BB......FF..BBB..",
+    "..CC.BB.FF...BB......BBB...FF..BBB..",
+    "...F............................FF..",
+    "..FF......FF..........C...F....FFF..",
+    "..........FF....CCCC.BC..FF.........",
+    "..............C......C..............",
+    "...F..........C..HH..C.............F"
+  ],
+  "powerups": [
+    {
+      "type": "EMP",
+      "row": 20,
+      "col": 17
+    },
+    {
+      "type": "REPAIR",
+      "row": 16,
+      "col": 4
+    },
+    {
+      "type": "MISSILE",
+      "row": 16,
+      "col": 31
+    },
+    {
+      "type": "MISSILE",
+      "row": 11,
+      "col": 11
+    },
+    {
+      "type": "APS",
+      "row": 11,
+      "col": 24
+    },
+    {
+      "type": "REPAIR",
+      "row": 26,
+      "col": 17
+    }
+  ]
+}

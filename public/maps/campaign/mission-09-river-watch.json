@@ -1,0 +1,582 @@
+{
+  "mapId": "campaign-09",
+  "id": 9,
+  "name": "River Watch",
+  "subtitle": "SECTOR 09 // HOLD THE RIVER HQ",
+  "objective": "Defend the forest HQ",
+  "gameMode": "base_defense",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 550
+  },
+  "environment": {
+    "theme": "forest",
+    "tint": "#92b8a3",
+    "fogColor": "#263c3c",
+    "groundColor": "#6c7c69"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Rotate between two dry crossings while intercepting hover tanks that bypass them through the river.",
+    "crossings": [
+      {
+        "id": "west",
+        "bounds": [
+          13,
+          8,
+          20,
+          10
+        ]
+      },
+      {
+        "id": "east",
+        "bounds": [
+          14,
+          25,
+          21,
+          27
+        ]
+      }
+    ],
+    "breaches": [
+      {
+        "name": "South bank service wall",
+        "cells": [
+          {
+            "row": 22,
+            "col": 17
+          },
+          {
+            "row": 23,
+            "col": 17
+          },
+          {
+            "row": 24,
+            "col": 17
+          }
+        ],
+        "start": {
+          "row": 23,
+          "col": 15
+        },
+        "end": {
+          "row": 23,
+          "col": 19
+        },
+        "purpose": "Shorten defensive rotations between the two bridgeheads while preserving the southern detour."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 9092026,
+    "theme": "forest",
+    "zones": [
+      {
+        "id": "woodland",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "dirt",
+        "density": 0.2,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "west-bridgehead",
+        "bounds": [
+          19,
+          6,
+          24,
+          11
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "east-bridgehead",
+        "bounds": [
+          21,
+          24,
+          25,
+          29
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "north-battery",
+        "bounds": [
+          8,
+          27,
+          13,
+          31
+        ],
+        "surface": "dirt",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "hq-court",
+        "bounds": [
+          28,
+          15,
+          32,
+          22
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-crossing-road",
+        "points": [
+          [
+            3,
+            9
+          ],
+          [
+            21,
+            9
+          ],
+          [
+            25,
+            9
+          ],
+          [
+            25,
+            15
+          ],
+          [
+            31,
+            15
+          ]
+        ],
+        "width": 3,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "east-crossing-road",
+        "points": [
+          [
+            4,
+            31
+          ],
+          [
+            13,
+            29
+          ],
+          [
+            13,
+            26
+          ],
+          [
+            22,
+            26
+          ],
+          [
+            25,
+            24
+          ],
+          [
+            31,
+            20
+          ]
+        ],
+        "width": 3,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "south-bank-link",
+        "points": [
+          [
+            25,
+            8
+          ],
+          [
+            25,
+            16
+          ],
+          [
+            28,
+            16
+          ],
+          [
+            28,
+            18
+          ],
+          [
+            25,
+            18
+          ],
+          [
+            25,
+            29
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-label",
+        "kind": "label",
+        "row": 21,
+        "col": 9,
+        "size": 3,
+        "text": "WEST CROSSING"
+      },
+      {
+        "id": "east-label",
+        "kind": "label",
+        "row": 22,
+        "col": 26,
+        "size": 3,
+        "text": "EAST CROSSING"
+      },
+      {
+        "id": "hq-label",
+        "kind": "label",
+        "row": 29,
+        "col": 18,
+        "size": 3,
+        "text": "RIVER HQ"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          9,
+          8,
+          11,
+          10
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          10,
+          12,
+          12,
+          14
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          9,
+          27,
+          11,
+          29
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          9,
+          17,
+          11,
+          19
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 7,
+    "spawnIntervalSec": 3.8,
+    "entrances": [
+      {
+        "id": "west-road",
+        "row": 3,
+        "col": 9
+      },
+      {
+        "id": "north-bank",
+        "row": 3,
+        "col": 18
+      },
+      {
+        "id": "east-road",
+        "row": 4,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "bridge-screen",
+        "label": "RIVER WATCH: Ground patrols approaching the west crossing. Keep the HQ intact.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-road",
+          "north-bank"
+        ],
+        "patrolRoute": [
+          {
+            "row": 21,
+            "col": 9
+          },
+          {
+            "row": 25,
+            "col": 11
+          },
+          {
+            "row": 31,
+            "col": 15
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 10,
+            "col": 9
+          },
+          {
+            "row": 11,
+            "col": 13
+          },
+          {
+            "row": 10,
+            "col": 28
+          },
+          {
+            "row": 10,
+            "col": 18
+          }
+        ]
+      },
+      {
+        "id": "water-probe",
+        "label": "WATER FLANK: Hover tanks entering from the north. Watch the open river between the crossings.",
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "SCOUT",
+          "STANDARD",
+          "HOVER"
+        ],
+        "entrances": [
+          "north-bank",
+          "east-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 22,
+            "col": 20
+          },
+          {
+            "row": 25,
+            "col": 24
+          },
+          {
+            "row": 31,
+            "col": 20
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "east-battery",
+        "label": "EAST CROSSING: Artillery and hover support approaching. Use the east crossing to reach the battery.",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "SCOUT",
+          "HOVER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east-road",
+          "north-bank"
+        ],
+        "patrolRoute": [
+          {
+            "row": 22,
+            "col": 28
+          },
+          {
+            "row": 25,
+            "col": 24
+          },
+          {
+            "row": 31,
+            "col": 20
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "west-counterattack",
+        "label": "WEST BANK: Another artillery patrol and hover flank are advancing. Rotate through the southern service road.",
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "HOVER"
+        ],
+        "entrances": [
+          "west-road",
+          "north-bank"
+        ],
+        "patrolRoute": [
+          {
+            "row": 21,
+            "col": 9
+          },
+          {
+            "row": 25,
+            "col": 11
+          },
+          {
+            "row": 31,
+            "col": 15
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "last-crossing",
+        "label": "FINAL ATTACK: Last five hostiles approaching from the north. Defend the HQ and finish the remaining force.",
+        "enemies": [
+          "HOWITZER",
+          "STANDARD",
+          "HOVER",
+          "STANDARD",
+          "HOWITZER"
+        ],
+        "entrances": [
+          "north-bank",
+          "east-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 22,
+            "col": 20
+          },
+          {
+            "row": 25,
+            "col": 24
+          },
+          {
+            "row": 31,
+            "col": 20
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOWITZER",
+    "SCOUT",
+    "HOVER",
+    "STANDARD",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "HOVER",
+    "HOWITZER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOWITZER"
+  ],
+  "layout": [
+    "FFFF........BBB........BB.......FFFF",
+    "FFF.........BBB........BB........FFF",
+    "......F................BBB...F......",
+    "......F................BBB...F......",
+    "....FFFF...............BBB.FFF......",
+    "...FFFFFFF..........F.....FFFF......",
+    "..FFFFFFFFF.BBB...FFFFF....FFFFF....",
+    "...FFFFFFF.QBBB...FFFFF......F......",
+    "....FFFFF...BBB..FFFFFFF............",
+    "....BBB.............FFF.........F...",
+    "....BCB.............FFFQBBB....FFF..",
+    "....BBB.............F...BBB...FFFF..",
+    "........................BBB....FFF..",
+    "................................F...",
+    "WWWWWWWW...WWWWWWW..................",
+    "WWWWWWWW...WWWWWWW..................",
+    "BWWWWWWW...WWWWWWWWWWWWWW...WWWWWWWW",
+    "CWWWWWWW...WWWWWWWWWWWWWW...WWWWWWWW",
+    "..................WWWWWWW...WWWWWWWW",
+    "..................WWWWWWW...WWWWWWWW",
+    "...BBBQ..........C............Q.....",
+    "....FFF..........CQ..BBB.....BBB....",
+    "...FFFFF....BBB..B...BBB.....BBB....",
+    "...FFFFF....BCB..B.........F.BBB....",
+    "..FFFFFFF...BBB..B.......FFFFF......",
+    "...FFFF.......Q..C............F.....",
+    "...FFFFF.........CQ.BBB.FFFFFFF.....",
+    "....FFF..........C..BCBFFFFFFFFF....",
+    ".....F..............BBB.FFFFFFF.....",
+    "...BBBQ.F...BBB.........FFFFFFF.....",
+    "...BBBFFFFF.BBB..........FFFFF......",
+    ".....FFFFFFF...............F........",
+    "......FFFFF....................FF...",
+    "........F.......CCCC...........FF...",
+    ".......................BB...........",
+    "FFFF.............HH....BB.....FFFFFF"
+  ]
+}

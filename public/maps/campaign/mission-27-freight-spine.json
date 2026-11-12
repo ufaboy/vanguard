@@ -1,0 +1,644 @@
+{
+  "mapId": "campaign-27",
+  "id": 27,
+  "name": "Freight Spine",
+  "subtitle": "SECTOR 27 // FREIGHT YARD STRONGHOLD",
+  "objective": "Destroy the freight stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 5,
+      "col": 18
+    },
+    "name": "Freight Dispatch Citadel",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 850
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#d89a76",
+    "fogColor": "#3b3532",
+    "groundColor": "#575552"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Advance up three interconnected rail-yard freight lanes, using long track sightlines to intercept single kamikaze charges early and blasting through destructible brick cargo barriers to flank engineers repairing heavy armor.",
+    "breaches": [
+      {
+        "name": "South container barrier",
+        "cells": [
+          {
+            "row": 23,
+            "col": 17
+          },
+          {
+            "row": 23,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 25,
+          "col": 17
+        },
+        "end": {
+          "row": 21,
+          "col": 17
+        },
+        "purpose": "Clear the southern brick cargo-container barrier to open the Central Freight Spine directly from the marshaling yard."
+      },
+      {
+        "name": "West switchyard cargo wall",
+        "cells": [
+          {
+            "row": 17,
+            "col": 11
+          },
+          {
+            "row": 18,
+            "col": 11
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 9
+        },
+        "end": {
+          "row": 17,
+          "col": 13
+        },
+        "purpose": "Break through the western container stack to switch between the West Siding Track and the Central Freight Spine."
+      },
+      {
+        "name": "East gantry cargo wall",
+        "cells": [
+          {
+            "row": 17,
+            "col": 24
+          },
+          {
+            "row": 18,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 26
+        },
+        "end": {
+          "row": 17,
+          "col": 22
+        },
+        "purpose": "Punch through the eastern gantry cargo wall to flank engineers and strikers from the East Container Yard."
+      },
+      {
+        "name": "Dispatch terminal south gate",
+        "cells": [
+          {
+            "row": 14,
+            "col": 17
+          },
+          {
+            "row": 14,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 18
+        },
+        "end": {
+          "row": 12,
+          "col": 18
+        },
+        "purpose": "Breach the southern freight terminal gate for a direct line of fire onto the Freight Dispatch Citadel."
+      }
+    ],
+    "densityRevision": "Three parallel rail-yard freight lanes are linked by switchyard cross-cuts and destructible brick cargo barriers around the northern dispatch citadel, with open industrial edges and no concrete border box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 27272026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "rail-ballast-gravel",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "gravel",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-siding-yard",
+        "bounds": [
+          2,
+          2,
+          30,
+          10
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "central-freight-spine-deck",
+        "bounds": [
+          3,
+          12,
+          26,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-container-gantry-yard",
+        "bounds": [
+          2,
+          25,
+          30,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-switchyard-apron",
+        "bounds": [
+          27,
+          8,
+          35,
+          27
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-siding-freight-line",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            8
+          ],
+          [
+            19,
+            6
+          ],
+          [
+            9,
+            6
+          ],
+          [
+            4,
+            12
+          ]
+        ],
+        "width": 2.8,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "central-freight-spine-line",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            13,
+            18
+          ]
+        ],
+        "width": 3,
+        "surface": "concrete",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-container-freight-line",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            19,
+            29
+          ],
+          [
+            9,
+            29
+          ],
+          [
+            4,
+            23
+          ]
+        ],
+        "width": 2.8,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "dispatch-terminal-loading",
+        "kind": "loading",
+        "row": 13,
+        "col": 18,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "mid-spine-crosswalk",
+        "kind": "crosswalk",
+        "row": 19,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-yard-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-siding-label",
+        "kind": "label",
+        "row": 15,
+        "col": 6,
+        "size": 3,
+        "text": "WEST SIDING LANE"
+      },
+      {
+        "id": "central-spine-label",
+        "kind": "label",
+        "row": 16,
+        "col": 18,
+        "size": 3,
+        "text": "FREIGHT SPINE"
+      },
+      {
+        "id": "east-gantry-label",
+        "kind": "label",
+        "row": 15,
+        "col": 29,
+        "size": 3,
+        "text": "CONTAINER YARD"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 29,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-siding",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-spine-west",
+        "row": 2,
+        "col": 13
+      },
+      {
+        "id": "north-spine-east",
+        "row": 2,
+        "col": 22
+      },
+      {
+        "id": "north-east-gantry",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-west-switch",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-switch",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-yard-garrison",
+        "label": "FREIGHT YARD GARRISON & REPAIR CREW DEPLOYED",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-siding",
+          "north-spine-west",
+          "north-spine-east",
+          "north-east-gantry"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 14
+          },
+          {
+            "row": 5,
+            "col": 21
+          },
+          {
+            "row": 4,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 11
+          },
+          {
+            "row": 16,
+            "col": 15
+          },
+          {
+            "row": 25,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "ENGINEER",
+          "STANDARD",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "west-siding-kamikaze-run",
+        "label": "KAMIKAZE INTERCEPTOR ON WEST SIDING LANE",
+        "recoverySec": 8,
+        "entrances": [
+          "upper-west-switch",
+          "north-west-siding",
+          "north-spine-west"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 6
+          },
+          {
+            "row": 20,
+            "col": 6
+          },
+          {
+            "row": 27,
+            "col": 13
+          }
+        ],
+        "enemies": [
+          "KAMIKAZE",
+          "STANDARD",
+          "ARMOR",
+          "STRIKER",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "central-spine-engineer-convoy",
+        "label": "ARMORED FREIGHT CONVOY & FIELD ENGINEER",
+        "recoverySec": 9,
+        "entrances": [
+          "north-spine-west",
+          "north-spine-east",
+          "upper-west-switch"
+        ],
+        "patrolRoute": [
+          {
+            "row": 16,
+            "col": 18
+          },
+          {
+            "row": 21,
+            "col": 18
+          },
+          {
+            "row": 27,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "ENGINEER",
+          "ARMOR",
+          "STANDARD",
+          "STRIKER",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "east-container-kamikaze-push",
+        "label": "CONTAINER YARD KAMIKAZE & ENGINEER ESCORT",
+        "recoverySec": 9,
+        "entrances": [
+          "upper-east-switch",
+          "north-east-gantry",
+          "north-spine-east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 29
+          },
+          {
+            "row": 20,
+            "col": 29
+          },
+          {
+            "row": 27,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "KAMIKAZE",
+          "ENGINEER",
+          "ARMOR",
+          "STANDARD",
+          "STANDARD",
+          "STRIKER"
+        ]
+      },
+      {
+        "id": "dispatch-citadel-reserve",
+        "label": "DISPATCH CITADEL FINAL RESERVE DEPLOYED",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-siding",
+          "north-spine-west",
+          "north-spine-east",
+          "north-east-gantry"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 23
+          },
+          {
+            "row": 19,
+            "col": 17
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "KAMIKAZE",
+          "ENGINEER",
+          "ARMOR",
+          "STANDARD",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "ENGINEER",
+    "STANDARD",
+    "ARMOR",
+    "KAMIKAZE",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "STANDARD",
+    "ENGINEER",
+    "ARMOR",
+    "STANDARD",
+    "STRIKER",
+    "ARMOR",
+    "STANDARD",
+    "KAMIKAZE",
+    "ENGINEER",
+    "ARMOR",
+    "STANDARD",
+    "STANDARD",
+    "STRIKER",
+    "KAMIKAZE",
+    "ENGINEER",
+    "ARMOR",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.........CC...........CC........FF",
+    "F..........CC...........CC........FF",
+    "...................................F",
+    "F...................................",
+    "..CC.......FF....CCC....FF.....CCC..",
+    "..CC.......FF....CEC....FF......CC..",
+    "...........CC....CCC....CC.........W",
+    "...........CC...........CC.........W",
+    "............C..CC...CC..C..........W",
+    "..FF........C..CC...CC..C......FF...",
+    ".FFF....CC..C...........C..CC..FF...",
+    "........CC..B...........B..CC.......",
+    "............B...........B...........",
+    "..CC........C...........C......CCC..",
+    "..CC........CCCCCBBCCCCCC.......CC.F",
+    ".......FF..................FF......F",
+    ".......FF..C............C..FF......F",
+    "..BB.......B...BB..BB...B.......BBB.",
+    "..BB.......B...BB..BB..QB.......BBB.",
+    "F..........C............C...........",
+    "..CC......QC............C......CCC..",
+    "..CC.......C............C.......CC.F",
+    "........CC.C........Q...C..CC...Q...",
+    "...FF...CC.CCCCCCBBCCCCCC..CC..FF...",
+    "..FFF......C............C......FF...",
+    "F.........QC............C...........",
+    "...................................W",
+    "...........CC...........CC.........W",
+    "..Q........CC...BB.BB...CC.......Q.W",
+    "..CC....FF......BB.BB.Q....FF..CCC..",
+    "..CC....FF...BB......BBB...FF...CC..",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "W.........FF....CCCC....FF..........",
+    "WW.................................F",
+    "WW...............HH...............FF"
+  ]
+}

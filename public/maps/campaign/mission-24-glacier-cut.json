@@ -1,0 +1,636 @@
+{
+  "mapId": "campaign-24",
+  "id": 24,
+  "name": "Glacier Cut",
+  "subtitle": "SECTOR 24 // GLACIER CREVASSE CROSSING",
+  "objective": "Clear the frozen crossing",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 850
+  },
+  "environment": {
+    "theme": "alpine",
+    "tint": "#c5dcf2",
+    "fogColor": "#435366",
+    "groundColor": "#7d8891"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Cross a fractured glacial gorge via three dry rock causeways and optional high-speed ice bypasses, rotating away from sapper-mined approaches and breaching lateral ice-wall cuts to silence northern howitzers.",
+    "breaches": [
+      {
+        "name": "South moraine snow-wall",
+        "cells": [
+          {
+            "row": 23,
+            "col": 14
+          },
+          {
+            "row": 23,
+            "col": 15
+          }
+        ],
+        "start": {
+          "row": 25,
+          "col": 14
+        },
+        "end": {
+          "row": 21,
+          "col": 14
+        },
+        "purpose": "Blast through the southern moraine snow-wall to reach the central glacier arch without detouring to the west or east ramps."
+      },
+      {
+        "name": "West crevasse abutment",
+        "cells": [
+          {
+            "row": 16,
+            "col": 11
+          },
+          {
+            "row": 17,
+            "col": 11
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 9
+        },
+        "end": {
+          "row": 16,
+          "col": 13
+        },
+        "purpose": "Open a mid-gorge lateral cut between the West Moraine Bridge and the Central Glacier Arch when sappers mine the western exit."
+      },
+      {
+        "name": "East ice-dam bulkhead",
+        "cells": [
+          {
+            "row": 16,
+            "col": 24
+          },
+          {
+            "row": 17,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 26
+        },
+        "end": {
+          "row": 16,
+          "col": 22
+        },
+        "purpose": "Punch through the eastern ice-dam bulkhead to switch from the East Causeway onto the central glacier island."
+      },
+      {
+        "name": "North glacier shelf gate",
+        "cells": [
+          {
+            "row": 10,
+            "col": 17
+          },
+          {
+            "row": 10,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 17
+        },
+        "end": {
+          "row": 8,
+          "col": 17
+        },
+        "purpose": "Breach the northern glacier shelf barricade to overrun howitzer emplacements behind the crevasse."
+      }
+    ],
+    "densityRevision": "A split glacial meltwater gorge is spanned by three dry land crossings connected by mid-gorge brick breaches and optional glaze-ice speed lanes, with open alpine edges and no concrete border box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 24242026,
+    "theme": "alpine",
+    "zones": [
+      {
+        "id": "glacier-snowfield",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "snow",
+        "density": 0.16,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "west-moraine-causeway",
+        "bounds": [
+          4,
+          2,
+          28,
+          9
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "central-glacier-arch-deck",
+        "bounds": [
+          8,
+          12,
+          25,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-ice-dam-causeway",
+        "bounds": [
+          4,
+          26,
+          28,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-valley-marshaling-yard",
+        "bounds": [
+          26,
+          9,
+          35,
+          26
+        ],
+        "surface": "asphalt",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-moraine-crossing",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            9
+          ],
+          [
+            21,
+            5
+          ],
+          [
+            13,
+            5
+          ],
+          [
+            5,
+            7
+          ]
+        ],
+        "width": 2.6,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "central-glacier-arch-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            11,
+            17
+          ],
+          [
+            4,
+            17
+          ]
+        ],
+        "width": 2.8,
+        "surface": "concrete",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-ice-dam-crossing",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            26
+          ],
+          [
+            21,
+            30
+          ],
+          [
+            13,
+            30
+          ],
+          [
+            5,
+            28
+          ]
+        ],
+        "width": 2.6,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "glacier-arch-crosswalk",
+        "kind": "crosswalk",
+        "row": 17,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "north-shelf-loading",
+        "kind": "loading",
+        "row": 7,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-hq-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-moraine-label",
+        "kind": "label",
+        "row": 16,
+        "col": 5,
+        "size": 3,
+        "text": "MORAINE BRIDGE"
+      },
+      {
+        "id": "central-arch-label",
+        "kind": "label",
+        "row": 16,
+        "col": 17,
+        "size": 3,
+        "text": "GLACIER ARCH"
+      },
+      {
+        "id": "east-dam-label",
+        "kind": "label",
+        "row": 16,
+        "col": 30,
+        "size": 3,
+        "text": "ICE-DAM CROSSING"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 29,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-moraine",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-glacier-west",
+        "row": 2,
+        "col": 14
+      },
+      {
+        "id": "north-glacier-east",
+        "row": 2,
+        "col": 21
+      },
+      {
+        "id": "north-east-dam",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-west-shelf",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-shelf",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-crevasse-recon",
+        "label": "RECON & SAPPER DETACHMENT ON WEST MORAINE",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-moraine",
+          "north-glacier-west",
+          "upper-west-shelf"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 14
+          },
+          {
+            "row": 5,
+            "col": 21
+          },
+          {
+            "row": 4,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 6
+          },
+          {
+            "row": 17,
+            "col": 6
+          },
+          {
+            "row": 25,
+            "col": 11
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "west-shelf-artillery-sapper",
+        "label": "HOWITZER BATTERY & CENTRAL ARCH MINELAYERS",
+        "recoverySec": 8,
+        "entrances": [
+          "north-glacier-west",
+          "north-west-moraine",
+          "upper-west-shelf"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 15
+          },
+          {
+            "row": 17,
+            "col": 16
+          },
+          {
+            "row": 25,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "SAPPER",
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "SCOUT"
+        ]
+      },
+      {
+        "id": "east-causeway-armor-mine-push",
+        "label": "EAST ICE-DAM ARMOR & SAPPER COLUMN",
+        "recoverySec": 9,
+        "entrances": [
+          "north-east-dam",
+          "upper-east-shelf",
+          "north-glacier-east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 29
+          },
+          {
+            "row": 17,
+            "col": 29
+          },
+          {
+            "row": 25,
+            "col": 24
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "SAPPER",
+          "STANDARD",
+          "ARMOR",
+          "SAPPER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "glacier-arch-barrage",
+        "label": "GLACIER SHELF ARTILLERY & ARMOR ESCORT",
+        "recoverySec": 9,
+        "entrances": [
+          "north-glacier-east",
+          "north-glacier-west",
+          "upper-east-shelf"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 19
+          },
+          {
+            "row": 17,
+            "col": 19
+          },
+          {
+            "row": 25,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "STANDARD",
+          "SAPPER",
+          "HOWITZER",
+          "ARMOR",
+          "SCOUT"
+        ]
+      },
+      {
+        "id": "north-headwall-final-stand",
+        "label": "HEADWALL RESERVE CONVERGING ON THE CROSSINGS",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-moraine",
+          "north-glacier-west",
+          "north-glacier-east",
+          "north-east-dam"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 17
+          },
+          {
+            "row": 17,
+            "col": 17
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "HOWITZER",
+          "SAPPER",
+          "STANDARD",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "HOWITZER",
+    "SAPPER",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "SCOUT",
+    "ARMOR",
+    "SAPPER",
+    "STANDARD",
+    "ARMOR",
+    "SAPPER",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "SAPPER",
+    "HOWITZER",
+    "ARMOR",
+    "SCOUT",
+    "ARMOR",
+    "HOWITZER",
+    "SAPPER",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.....III.......FF......III......FF",
+    "F......III.......F.......III......FF",
+    ".......III...............III.......F",
+    ".......III...............III........",
+    "..CC.........FF.....FF.........CC...",
+    "..CC.........FF.....FF.........CC..I",
+    ".......III...............III.......I",
+    ".......III..CC.......CC..III.......I",
+    "............CC......QCC.............",
+    "..FF........C.........C...Q....FF...",
+    ".FFF....CC..CCCCCBBCCCC..CC....FF...",
+    "........CC.QC.........C..CC.........",
+    "...III......I.........I.....III.Q...",
+    "..CCII......III.....III.....IIICC...",
+    "..CC........III.....III........CC..F",
+    "WW................FF....Q.........WW",
+    "WWWW.......B......FF....B.......WWWW",
+    "WWWW......QB............B......WWWWW",
+    "WW......WWWW..FF....FF..WWWW.....WWW",
+    "........WWWW..FF....FF..WWWW.......I",
+    "..CC....WWWW............WWWW...CC...",
+    "..CC..........III..III.........CC..F",
+    "........CC....III..III...CC.........",
+    "...FF...CC..CCBB....BBCC.CC....FF...",
+    "..FFF....Q..C..........C.......FF...",
+    "F...........C.........QC............",
+    "....III.....................III.....",
+    "....III....FF..........FF...III....I",
+    "...........FF..IIIIII..FF..........I",
+    "..CC...........IIIIII..........CCC..",
+    "..CC....FF...BB......BBB..FF....CC..",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "I.........FF....CCCC....FF..........",
+    "II.................................F",
+    "II...............HH...............FF"
+  ]
+}

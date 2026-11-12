@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IRON VANGUARD — 3D Tank Assault</title>
+    <meta name="description" content="Modern 3D isometric tactical tank assault game inspired by Battle City, built with Vanilla JS and Three.js featuring free mouse aiming, destructible 36x36 arenas, modular 3D tank upgrades, APS, homing missiles, and boss battles." />
+    <meta property="og:title" content="IRON VANGUARD — 3D Tank Assault" />
+    <meta property="og:description" content="Modern 3D isometric tactical tank assault game inspired by Battle City, built with Vanilla JS and Three.js featuring free mouse aiming, destructible 36x36 arenas, modular 3D tank upgrades, APS, homing missiles, and boss battles." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="./src/index.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/build/three.module.js",
+          "three/addons/": "./vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
+    <div id="root"></div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

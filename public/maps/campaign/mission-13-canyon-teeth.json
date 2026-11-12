@@ -1,0 +1,645 @@
+{
+  "mapId": "campaign-13",
+  "id": 13,
+  "name": "Canyon Teeth",
+  "subtitle": "SECTOR 13 // CANYON PASS",
+  "objective": "Clear the canyon pass",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 650
+  },
+  "environment": {
+    "theme": "desert",
+    "tint": "#d8bf8c",
+    "fogColor": "#665d4b",
+    "groundColor": "#ae9b73"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Use canyon cross-links and sandstone breaches to bypass ARMOR-held switchback bends and flank HOWITZER pockets without facing unavoidable crossfire.",
+    "breaches": [
+      {
+        "name": "Lower west tooth breach",
+        "cells": [
+          {
+            "row": 22,
+            "col": 10
+          },
+          {
+            "row": 23,
+            "col": 10
+          },
+          {
+            "row": 24,
+            "col": 10
+          }
+        ],
+        "start": {
+          "row": 23,
+          "col": 8
+        },
+        "end": {
+          "row": 23,
+          "col": 12
+        },
+        "purpose": "Bypass the lower switchback bend and cut directly into the western canyon lane."
+      },
+      {
+        "name": "Central switchback cross-link",
+        "cells": [
+          {
+            "row": 16,
+            "col": 18
+          },
+          {
+            "row": 17,
+            "col": 18
+          },
+          {
+            "row": 18,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 16
+        },
+        "end": {
+          "row": 17,
+          "col": 20
+        },
+        "purpose": "Open the central canyon cross-link between the western switchback and eastern pass."
+      },
+      {
+        "name": "East artillery pocket breach",
+        "cells": [
+          {
+            "row": 13,
+            "col": 26
+          },
+          {
+            "row": 14,
+            "col": 26
+          },
+          {
+            "row": 15,
+            "col": 26
+          }
+        ],
+        "start": {
+          "row": 14,
+          "col": 24
+        },
+        "end": {
+          "row": 14,
+          "col": 28
+        },
+        "purpose": "Breach the sandstone wall guarding the eastern howitzer ledge while preserving an intact side approach."
+      }
+    ],
+    "densityRevision": "Jagged canyon teeth and switchback rock spurs divide sightlines into short readable bends with multiple cross-links."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 13132026,
+    "theme": "desert",
+    "zones": [
+      {
+        "id": "canyon-sand-floor",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "sand",
+        "density": 0.18,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "west-switchback-floor",
+        "bounds": [
+          10,
+          2,
+          27,
+          13
+        ],
+        "surface": "dirt",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "central-teeth-gorge",
+        "bounds": [
+          6,
+          13,
+          26,
+          23
+        ],
+        "surface": "gravel",
+        "density": 0.24,
+        "details": [
+          "rubble",
+          "cracks",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-artillery-ledge",
+        "bounds": [
+          8,
+          24,
+          25,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "rubble",
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "summit-turnout",
+        "bounds": [
+          2,
+          5,
+          8,
+          31
+        ],
+        "surface": "dirt",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "south-canyon-mouth",
+        "bounds": [
+          27,
+          10,
+          33,
+          25
+        ],
+        "surface": "dirt",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "main-switchback-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            26,
+            15
+          ],
+          [
+            20,
+            15
+          ],
+          [
+            20,
+            7
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            16
+          ],
+          [
+            4,
+            16
+          ]
+        ],
+        "width": 3,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "east-ledge-bypass",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            22
+          ],
+          [
+            21,
+            22
+          ],
+          [
+            21,
+            30
+          ],
+          [
+            11,
+            30
+          ],
+          [
+            4,
+            29
+          ]
+        ],
+        "width": 2.6,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "central-crosslink-trail",
+        "points": [
+          [
+            18,
+            7
+          ],
+          [
+            17,
+            16
+          ],
+          [
+            17,
+            22
+          ],
+          [
+            14,
+            29
+          ]
+        ],
+        "width": 2.5,
+        "surface": "dirt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-switchback-label",
+        "kind": "label",
+        "row": 20,
+        "col": 6,
+        "size": 3,
+        "text": "WEST SWITCHBACK"
+      },
+      {
+        "id": "canyon-teeth-label",
+        "kind": "label",
+        "row": 15,
+        "col": 16,
+        "size": 3,
+        "text": "CANYON TEETH"
+      },
+      {
+        "id": "east-ledge-label",
+        "kind": "label",
+        "row": 16,
+        "col": 29,
+        "size": 3,
+        "text": "ARTILLERY LEDGE"
+      },
+      {
+        "id": "summit-pass-label",
+        "kind": "label",
+        "row": 5,
+        "col": 16,
+        "size": 3,
+        "text": "SUMMIT PASS"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          7,
+          7,
+          9,
+          9
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          8,
+          15,
+          10,
+          17
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          7,
+          21,
+          9,
+          23
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          9,
+          29,
+          11,
+          31
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "entrances": [
+      {
+        "id": "northwest-pass",
+        "row": 2,
+        "col": 6
+      },
+      {
+        "id": "north-gorge",
+        "row": 2,
+        "col": 17
+      },
+      {
+        "id": "northeast-ledge",
+        "row": 2,
+        "col": 30
+      }
+    ],
+    "encounters": [
+      {
+        "id": "lower-switchback-screen",
+        "label": "CANYON MOUTH: Armored vanguard holding the first switchback bend.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "ARMOR",
+          "SCOUT"
+        ],
+        "initialCells": [
+          {
+            "row": 8,
+            "col": 8
+          },
+          {
+            "row": 9,
+            "col": 16
+          },
+          {
+            "row": 8,
+            "col": 22
+          },
+          {
+            "row": 10,
+            "col": 30
+          }
+        ],
+        "entrances": [
+          "northwest-pass",
+          "north-gorge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 13
+          },
+          {
+            "row": 24,
+            "col": 15
+          },
+          {
+            "row": 26,
+            "col": 21
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "west-shelf-battery",
+        "label": "WEST SWITCHBACK: Heavy armor on the bend with howitzer fire from the western pocket.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "northwest-pass",
+          "north-gorge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 6
+          },
+          {
+            "row": 21,
+            "col": 13
+          },
+          {
+            "row": 25,
+            "col": 8
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "east-ledge-crosslink",
+        "label": "EAST LEDGE: Armor blocking the central spur while artillery shells from the east pocket.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "northeast-ledge",
+          "north-gorge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 14,
+            "col": 29
+          },
+          {
+            "row": 19,
+            "col": 22
+          },
+          {
+            "row": 25,
+            "col": 24
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "upper-teeth-bastion",
+        "label": "UPPER TEETH: Dual artillery pockets behind the northern rock spurs — use the cross-links to flank.",
+        "enemies": [
+          "ARMOR",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "HOWITZER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "northwest-pass",
+          "northeast-ledge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 8
+          },
+          {
+            "row": 11,
+            "col": 16
+          },
+          {
+            "row": 12,
+            "col": 29
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "summit-pass-counterattack",
+        "label": "FINAL GROUP: Summit armor and mobile artillery pushing down the canyon pass.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-gorge",
+          "northwest-pass",
+          "northeast-ledge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 16
+          },
+          {
+            "row": 20,
+            "col": 15
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "ARMOR",
+    "SCOUT",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "SCOUT",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "SCOUT",
+    "ARMOR",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "layout": [
+    "...BBB......BBB........BB......BBB..",
+    "............BBB........BB...........",
+    "...BBB....BBBB.....BBB...BBBB..BB...",
+    "...BBB....BCCB.....BCB...BCCB..BB...",
+    "...BBB....BCCB.....BCB...BBBB.......",
+    "..........BBBB.BB..BBB.........BBB..",
+    "...BBBB........BB......BBBB....BBB..",
+    "...BCCB...BBB......BB..BCCB.........",
+    "...BBBB...BBB......BB..BBBB...BBB...",
+    "..........BBB.................BBB...",
+    "...BBB......CC....BBB...BBCC........",
+    "...BBB.....CCC....BCB...BBCC..BBB...",
+    "...BBB.....CCB....BCB.....C...BBB...",
+    "...........C......CCC.....B...BBB...",
+    "....BBB....C..BB..CCC.....B.........",
+    "....BCC.......BB..CCC.....B...BBB...",
+    "....BCC..BBB......B.......C...BCC...",
+    "....BBB..BCB.....QB.......C...BBB...",
+    "...Q.....BBB..BB..B....BBCCQ........",
+    "...BBB.....Q..BB..CCC..CCCC..BBB....",
+    "...BBB...CCC......CCC..CCCB..BBB....",
+    "...BBB...CCC..BBB..CQ....C...BBB....",
+    "....Q.....B...BCB..........BBBB.....",
+    "...BBBB...B...BBB...BBB...QBCCB.....",
+    "...BCCB...B.........BCB....BBBB.Q...",
+    "...BBBB..CCC..BB....BBB........BBB..",
+    ".........CCC..BB.........BBB...BBB..",
+    "....BBB..CCC......BBBB...BBB...BBB..",
+    "....BBB...CCC.....BCCB..............",
+    "....BBB....CC.....BBBB...BBB..BBBB..",
+    "..................BBB....BBB..BBBB..",
+    "...BBBB...BBB............BBB........",
+    "...BBBB...BBB.................BBBB..",
+    "...BBBB.........CCCC...BBB....BBBB..",
+    ".......................BBB..........",
+    "...BBBB..........HH....BBB....BBBB.."
+  ]
+}

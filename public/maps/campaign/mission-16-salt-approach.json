@@ -1,0 +1,607 @@
+{
+  "mapId": "campaign-16",
+  "id": 16,
+  "name": "Salt Approach",
+  "subtitle": "SECTOR 16 // COASTAL CAUSEWAY",
+  "objective": "Clear the coastal causeway",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 750
+  },
+  "environment": {
+    "theme": "coast",
+    "tint": "#9fc4c8",
+    "fogColor": "#283e45",
+    "groundColor": "#666b62"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Hold dependable dry causeways linking islands of coastal cover while watching tidal water channels for amphibious hover flanks.",
+    "breaches": [
+      {
+        "name": "Central causeway toll wall",
+        "cells": [
+          {
+            "row": 18,
+            "col": 18
+          },
+          {
+            "row": 18,
+            "col": 19
+          },
+          {
+            "row": 18,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 19
+        },
+        "end": {
+          "row": 16,
+          "col": 19
+        },
+        "purpose": "Punch straight through the central causeway island barrier instead of looping around its concrete customs block."
+      },
+      {
+        "name": "West island warehouse cut",
+        "cells": [
+          {
+            "row": 18,
+            "col": 8
+          },
+          {
+            "row": 19,
+            "col": 8
+          },
+          {
+            "row": 20,
+            "col": 8
+          }
+        ],
+        "start": {
+          "row": 19,
+          "col": 6
+        },
+        "end": {
+          "row": 19,
+          "col": 10
+        },
+        "purpose": "Open a quick lateral cut across the western island to intercept hover tanks crossing the lagoon."
+      },
+      {
+        "name": "East salt-pan partition",
+        "cells": [
+          {
+            "row": 17,
+            "col": 28
+          },
+          {
+            "row": 18,
+            "col": 28
+          },
+          {
+            "row": 19,
+            "col": 28
+          }
+        ],
+        "start": {
+          "row": 18,
+          "col": 26
+        },
+        "end": {
+          "row": 18,
+          "col": 30
+        },
+        "purpose": "Connect the inner quay road with the outer salt-pan flank without detouring north or south."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 16162026,
+    "theme": "coast",
+    "zones": [
+      {
+        "id": "coastal-salt-flats",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "sand",
+        "density": 0.16,
+        "details": [
+          "patches",
+          "weeds",
+          "cracks"
+        ]
+      },
+      {
+        "id": "west-causeway-island",
+        "bounds": [
+          9,
+          2,
+          27,
+          10
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "weeds"
+        ]
+      },
+      {
+        "id": "central-causeway-plaza",
+        "bounds": [
+          8,
+          15,
+          28,
+          21
+        ],
+        "surface": "pavers",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "patches",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-quay-road",
+        "bounds": [
+          9,
+          25,
+          28,
+          33
+        ],
+        "surface": "concrete",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-causeway-staging",
+        "bounds": [
+          27,
+          9,
+          33,
+          26
+        ],
+        "surface": "gravel",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-dry-causeway",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            6
+          ],
+          [
+            19,
+            6
+          ],
+          [
+            9,
+            6
+          ],
+          [
+            3,
+            6
+          ]
+        ],
+        "width": 2.6,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "central-causeway-spine",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            21,
+            18
+          ],
+          [
+            15,
+            18
+          ],
+          [
+            9,
+            17
+          ],
+          [
+            3,
+            17
+          ]
+        ],
+        "width": 2.8,
+        "surface": "pavers",
+        "marking": "edges"
+      },
+      {
+        "id": "east-quay-causeway",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            18,
+            26
+          ],
+          [
+            10,
+            27
+          ],
+          [
+            3,
+            29
+          ]
+        ],
+        "width": 2.6,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-causeway-label",
+        "kind": "label",
+        "row": 19,
+        "col": 5,
+        "size": 3,
+        "text": "WEST CAUSEWAY"
+      },
+      {
+        "id": "central-spine-label",
+        "kind": "label",
+        "row": 16,
+        "col": 18,
+        "size": 3,
+        "text": "SALT CAUSEWAY"
+      },
+      {
+        "id": "east-quay-label",
+        "kind": "label",
+        "row": 18,
+        "col": 30,
+        "size": 3,
+        "text": "EAST QUAY"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          7,
+          5,
+          9,
+          7
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          4,
+          16,
+          6,
+          18
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          8,
+          22,
+          10,
+          24
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          9,
+          29,
+          11,
+          31
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "entrances": [
+      {
+        "id": "west-causeway-head",
+        "row": 2,
+        "col": 6
+      },
+      {
+        "id": "north-lagoon-channel",
+        "row": 2,
+        "col": 17
+      },
+      {
+        "id": "east-quay-gate",
+        "row": 2,
+        "col": 29
+      }
+    ],
+    "encounters": [
+      {
+        "id": "causeway-outpost-screen",
+        "label": "NORTH CAUSEWAY: Recon and standard screen advancing with an amphibious hover scout.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "HOVER",
+          "SCOUT"
+        ],
+        "initialCells": [
+          {
+            "row": 8,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 17
+          },
+          {
+            "row": 9,
+            "col": 23
+          },
+          {
+            "row": 10,
+            "col": 30
+          }
+        ],
+        "entrances": [
+          "west-causeway-head",
+          "north-lagoon-channel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 17,
+            "col": 14
+          },
+          {
+            "row": 20,
+            "col": 22
+          },
+          {
+            "row": 19,
+            "col": 6
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "west-lagoon-hover-wing",
+        "label": "WEST LAGOON: Hover tanks skimming the western tidal inlet while standard armor holds the road.",
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "STANDARD",
+          "HOVER",
+          "SCOUT"
+        ],
+        "entrances": [
+          "west-causeway-head",
+          "north-lagoon-channel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 6
+          },
+          {
+            "row": 20,
+            "col": 14
+          },
+          {
+            "row": 10,
+            "col": 6
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "east-quay-amphibious-push",
+        "label": "EAST QUAY: Standard column on the quay causeway paired with hover units crossing the salt lagoon.",
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "STANDARD",
+          "HOVER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east-quay-gate",
+          "north-lagoon-channel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 26
+          },
+          {
+            "row": 26,
+            "col": 22
+          },
+          {
+            "row": 16,
+            "col": 18
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "central-causeway-column",
+        "label": "CENTRAL SPINE: Combined road and lagoon push converging on the central island.",
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "SCOUT",
+          "STANDARD",
+          "HOVER"
+        ],
+        "entrances": [
+          "north-lagoon-channel",
+          "west-causeway-head"
+        ],
+        "patrolRoute": [
+          {
+            "row": 16,
+            "col": 18
+          },
+          {
+            "row": 26,
+            "col": 14
+          },
+          {
+            "row": 20,
+            "col": 20
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "tidal-basin-sweep",
+        "label": "FINAL GROUP: Remaining hover squadron and road armor sweeping the southern causeway.",
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "STANDARD",
+          "HOVER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-lagoon-channel",
+          "east-quay-gate",
+          "west-causeway-head"
+        ],
+        "patrolRoute": [
+          {
+            "row": 20,
+            "col": 18
+          },
+          {
+            "row": 27,
+            "col": 27
+          },
+          {
+            "row": 27,
+            "col": 7
+          }
+        ],
+        "recoverySec": 9
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD"
+  ],
+  "layout": [
+    "WWWW......BBB....FF....BB......WWWWW",
+    "WWW........BBB.........BB........WWW",
+    "...BB....CC...BB....CC...BB....BB...",
+    "...BC....CC...BB....CC...BC....BB...",
+    "F........BB...CC.........BC........F",
+    "F...CC...BB...CC....BB...CC...BBB..F",
+    "....CC....F...CC....BB...FF...CCB...",
+    "...BBB..CCC...FF....CCC..CCC........",
+    "........CCB..CCC....CCB..CCB..BBB...",
+    "W..CC.........B..........FF...CCB..W",
+    "W..CC..CCC....B.....CCC..CC........W",
+    "W......CCB..........CCB.......CCC..W",
+    "W..BB......WWWW.....WWWWWW....CCB..W",
+    "...BC..CC..WWWW..C..WWWWWW..F.CCB...",
+    ".......CC..WWWW..C..WWWWWW..FF......",
+    "...CC..CB..WWWW.....WWWWWW..FF.BB...",
+    "...CC..CC........C..........CC.BB...",
+    "F.......C..CCC..CC...CCC....B......F",
+    "F..BB...B..CCB..CCBBBCCB....B..CC..F",
+    "...BC...B.......CC...CCBQ...B..CB...",
+    "........B..CC...Q...........C.......",
+    "...CCC..CQ.CB...CC...CC.....C..BB...",
+    "W..CCB.....WWWW..B...WWWW...C..BC..W",
+    "W...Q..CC..WWWW..B...WWWW...Q..BB..W",
+    "W..BB..CC..WWWW......WWWW..CC......W",
+    "W..BC..FF..WWWW..CC..WWWW..CB..BB..W",
+    ".......FF...Q....CC........FF..BC...",
+    "...CC......CCC.......CCC...FF..Q....",
+    "...CB..BB..CCB..CC...CCB...CCC......",
+    "...Q...BB.......CC.........CCB..BB..",
+    "...CC..BC...CC......BB..CC......BB..",
+    "F..CC.......CC..........CC...BB....F",
+    "F.......BB...................BB....F",
+    "....BB..BB......CCCC....BB..........",
+    ".......................BBB..........",
+    "WWWW.......FF....HH....BBB......WWWW"
+  ]
+}

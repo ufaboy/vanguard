@@ -1,0 +1,858 @@
+{
+  "id": 3,
+  "mapId": "campaign-03",
+  "code": "MISSION 03 // CIVIC SHELTER",
+  "name": "Civic Shelter",
+  "subtitle": "Defend the district HQ against 22 hostiles. Rotate between three approach streets and clear sapper mines.",
+  "gameMode": "base_defense",
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "gridSize": 36,
+  "tileSize": 2,
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "environment": {
+    "tint": "#c7dcb0",
+    "fogColor": "#1a2328",
+    "groundColor": "#667173",
+    "theme": "urban",
+    "roads": [
+      {
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            30,
+            6
+          ],
+          [
+            11,
+            6
+          ],
+          [
+            4,
+            6
+          ]
+        ],
+        "width": 3
+      },
+      {
+        "points": [
+          [
+            26,
+            17
+          ],
+          [
+            4,
+            17
+          ]
+        ],
+        "width": 3
+      },
+      {
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            29,
+            29
+          ],
+          [
+            15,
+            29
+          ],
+          [
+            4,
+            29
+          ]
+        ],
+        "width": 3
+      },
+      {
+        "points": [
+          [
+            10,
+            6
+          ],
+          [
+            10,
+            29
+          ]
+        ],
+        "width": 3
+      },
+      {
+        "points": [
+          [
+            19,
+            6
+          ],
+          [
+            19,
+            20
+          ],
+          [
+            21,
+            29
+          ]
+        ],
+        "width": 3
+      },
+      {
+        "points": [
+          [
+            26,
+            13
+          ],
+          [
+            31,
+            13
+          ],
+          [
+            31,
+            21
+          ],
+          [
+            26,
+            21
+          ],
+          [
+            26,
+            13
+          ]
+        ],
+        "width": 3
+      }
+    ],
+    "districts": [
+      {
+        "name": "SHELTER SQUARE",
+        "row": 31,
+        "col": 17
+      },
+      {
+        "name": "WEST MUNICIPAL",
+        "row": 22,
+        "col": 6
+      },
+      {
+        "name": "CIVIC PROMENADE",
+        "row": 14,
+        "col": 17
+      },
+      {
+        "name": "TRAMWAY DEPOT",
+        "row": 17,
+        "col": 28
+      },
+      {
+        "name": "NORTH TRANSIT",
+        "row": 5,
+        "col": 17
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 3032026,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "shelter-square-zone",
+        "bounds": [
+          26,
+          12,
+          33,
+          22
+        ],
+        "surface": "pavers",
+        "density": 0.35,
+        "details": [
+          "cracks",
+          "patches",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "west-municipal-zone",
+        "bounds": [
+          12,
+          3,
+          30,
+          10
+        ],
+        "surface": "asphalt",
+        "density": 0.32,
+        "details": [
+          "cracks",
+          "leaves",
+          "weeds",
+          "rubble"
+        ]
+      },
+      {
+        "id": "central-promenade-zone",
+        "bounds": [
+          9,
+          13,
+          25,
+          21
+        ],
+        "surface": "pavers",
+        "density": 0.28,
+        "details": [
+          "cracks",
+          "patches",
+          "rubble"
+        ]
+      },
+      {
+        "id": "east-tramway-zone",
+        "bounds": [
+          11,
+          24,
+          30,
+          32
+        ],
+        "surface": "concrete",
+        "density": 0.34,
+        "details": [
+          "oil",
+          "tracks",
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "north-transit-zone",
+        "bounds": [
+          3,
+          3,
+          8,
+          32
+        ],
+        "surface": "asphalt",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "patches",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-approach-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            30,
+            6
+          ],
+          [
+            11,
+            6
+          ],
+          [
+            4,
+            6
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "central-promenade-road",
+        "points": [
+          [
+            26,
+            17
+          ],
+          [
+            4,
+            17
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-tramway-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            29,
+            29
+          ],
+          [
+            15,
+            29
+          ],
+          [
+            4,
+            29
+          ]
+        ],
+        "width": 3,
+        "surface": "concrete",
+        "marking": "edges"
+      },
+      {
+        "id": "north-cross-road",
+        "points": [
+          [
+            10,
+            6
+          ],
+          [
+            10,
+            29
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "mid-cross-road",
+        "points": [
+          [
+            19,
+            6
+          ],
+          [
+            19,
+            20
+          ],
+          [
+            21,
+            29
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "shelter-ring-road",
+        "points": [
+          [
+            26,
+            13
+          ],
+          [
+            31,
+            13
+          ],
+          [
+            31,
+            21
+          ],
+          [
+            26,
+            21
+          ],
+          [
+            26,
+            13
+          ]
+        ],
+        "width": 2.5,
+        "surface": "pavers",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "hq-repair-bay",
+        "kind": "loading",
+        "row": 31,
+        "col": 17,
+        "size": 2.4,
+        "rotation": 0
+      },
+      {
+        "id": "promenade-crosswalk-south",
+        "kind": "crosswalk",
+        "row": 25,
+        "col": 17,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "promenade-crosswalk-north",
+        "kind": "crosswalk",
+        "row": 10,
+        "col": 17,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "municipal-parking",
+        "kind": "parking",
+        "row": 25,
+        "col": 8,
+        "size": 2.2,
+        "rotation": 90
+      },
+      {
+        "id": "tramway-loading-bay",
+        "kind": "loading",
+        "row": 16,
+        "col": 27,
+        "size": 2.2,
+        "rotation": 0
+      },
+      {
+        "id": "west-manhole",
+        "kind": "manhole",
+        "row": 19,
+        "col": 6,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "east-manhole",
+        "kind": "manhole",
+        "row": 21,
+        "col": 29,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "label-shelter-square",
+        "kind": "label",
+        "row": 31,
+        "col": 17,
+        "size": 3,
+        "text": "SHELTER SQUARE"
+      },
+      {
+        "id": "label-west-municipal",
+        "kind": "label",
+        "row": 22,
+        "col": 6,
+        "size": 3,
+        "text": "WEST MUNICIPAL"
+      },
+      {
+        "id": "label-civic-promenade",
+        "kind": "label",
+        "row": 14,
+        "col": 17,
+        "size": 3,
+        "text": "CIVIC PROMENADE"
+      },
+      {
+        "id": "label-tramway-depot",
+        "kind": "label",
+        "row": 17,
+        "col": 28,
+        "size": 3,
+        "text": "TRAMWAY DEPOT"
+      },
+      {
+        "id": "label-north-transit",
+        "kind": "label",
+        "row": 5,
+        "col": 17,
+        "size": 3,
+        "text": "NORTH TRANSIT"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-shelter-approach",
+        "bounds": [
+          32,
+          15,
+          34,
+          19
+        ]
+      }
+    ]
+  },
+  "defaultSurface": "asphalt",
+  "completionReward": {
+    "credits": 350
+  },
+  "layout": [
+    "FF........BBB........BB....BBBBBB...",
+    "..........BBB........BB....BBBBBB...",
+    "..BBBBBBB..BBB..BBBBBBB....BBBBBB...",
+    "..B........BCB........BB...BBBBBB...",
+    "..B........BBB........BB......BBB...",
+    "..B........BBB...........BBBB.......",
+    ".....BB....BCB..BBBB.....BCB....BB..",
+    ".....BB....BCB..BCCB.....BBB....BB..",
+    "...BB......BCB......................",
+    "...BB...........................BB..",
+    "B..BBB..........................BB.B",
+    "B..BBB.............................B",
+    "........BBBBBC..BBB...BBBBBB....BB..",
+    "........BCCCCB........BCCCCB....BB..",
+    "..BB....BCCCCB..BB....B.............",
+    "..BB.FF.BBBBBB..BB....B.........BB..",
+    ".....FF.......B.......B...BB....BB..",
+    "..............B.......BBBBBB........",
+    ".BB.......................Q.........",
+    ".BB.................................",
+    "..........Q...........BBBBBB...BBB..",
+    "...BBB..BBBBBB...BBB..BCCCCB...BBB..",
+    "...BBB..BBBBBB...BCB..BBBBBB.FF.Q...",
+    "...Q.......B..........B.Q....FF.....",
+    "...BB......B..........B.........BB..",
+    "...BB......B..........B.........BB..",
+    "........BBBB..Q.......BBBBB.....Q...",
+    "..BBB...BCCB..BCCCCB..BCCCB...BBBB..",
+    "..BBB...BBBB..BCCCCB..BBBBB...BBBB..",
+    "..Q...........................BBBB..",
+    "...BBBB.............................",
+    "...BBBB...BB.............BB...BBBB..",
+    "..........BB.............BB.........",
+    "...BBB..........CCCC.........BBBB...",
+    "...BBB.......................BBBB...",
+    "..FF.............HH..........BBBB.FF"
+  ],
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD"
+  ],
+  "enemies": {
+    "initialSpawnCount": 3,
+    "maxConcurrent": 6,
+    "spawnIntervalSec": 3.3,
+    "fixedSpawns": [],
+    "encounters": [
+      {
+        "id": "central-probe",
+        "label": "CIVIC PROMENADE: Vanguard probe advancing down the central approach toward the HQ shelter.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "initialCells": [
+          {
+            "row": 8,
+            "col": 6
+          },
+          {
+            "row": 9,
+            "col": 17
+          },
+          {
+            "row": 10,
+            "col": 25
+          }
+        ],
+        "entrances": [
+          "north"
+        ],
+        "recoverySec": 0,
+        "patrolRoute": [
+          {
+            "row": 24,
+            "col": 15
+          },
+          {
+            "row": 29,
+            "col": 13
+          },
+          {
+            "row": 31,
+            "col": 17
+          }
+        ]
+      },
+      {
+        "id": "west-sapper-push",
+        "label": "WEST MUNICIPAL: Sapper minelayer and scouts approaching from the west. Clear mines or breach the partition.",
+        "enemies": [
+          "SCOUT",
+          "SCOUT",
+          "STANDARD",
+          "SAPPER"
+        ],
+        "entrances": [
+          "west",
+          "northwest"
+        ],
+        "recoverySec": 5,
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 6
+          },
+          {
+            "row": 25,
+            "col": 6
+          },
+          {
+            "row": 30,
+            "col": 10
+          },
+          {
+            "row": 31,
+            "col": 14
+          }
+        ]
+      },
+      {
+        "id": "east-tramway-wave",
+        "label": "TRAMWAY DEPOT: Standard armor rotating down the eastern avenue toward the HQ square.",
+        "enemies": [
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east",
+          "northeast"
+        ],
+        "recoverySec": 6,
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 29
+          },
+          {
+            "row": 25,
+            "col": 29
+          },
+          {
+            "row": 30,
+            "col": 25
+          },
+          {
+            "row": 31,
+            "col": 20
+          }
+        ]
+      },
+      {
+        "id": "boulevard-minelayer",
+        "label": "NORTH TRANSIT: Second sapper team pushing down the central promenade. Rotate around the shelter bastion.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north",
+          "northwest"
+        ],
+        "recoverySec": 6,
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 17
+          },
+          {
+            "row": 19,
+            "col": 17
+          },
+          {
+            "row": 25,
+            "col": 20
+          },
+          {
+            "row": 30,
+            "col": 20
+          }
+        ]
+      },
+      {
+        "id": "final-shelter-assault",
+        "label": "FINAL WAVE: Coordinated push from the northeast and tramway depot. Hold the district HQ!",
+        "enemies": [
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "northeast",
+          "east",
+          "north"
+        ],
+        "recoverySec": 6,
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 28
+          },
+          {
+            "row": 19,
+            "col": 21
+          },
+          {
+            "row": 26,
+            "col": 20
+          },
+          {
+            "row": 31,
+            "col": 19
+          }
+        ]
+      }
+    ],
+    "entrances": [
+      {
+        "id": "north",
+        "label": "North transit plaza",
+        "row": 4,
+        "col": 17
+      },
+      {
+        "id": "northwest",
+        "label": "Northwest municipal gate",
+        "row": 4,
+        "col": 6
+      },
+      {
+        "id": "northeast",
+        "label": "Northeast tramway depot",
+        "row": 6,
+        "col": 29
+      },
+      {
+        "id": "west",
+        "label": "West municipal lane",
+        "row": 9,
+        "col": 5
+      },
+      {
+        "id": "east",
+        "label": "East tramway court",
+        "row": 10,
+        "col": 29
+      }
+    ]
+  },
+  "design": {
+    "breaches": [
+      {
+        "name": "West shelter partition",
+        "cells": [
+          {
+            "row": 23,
+            "col": 11
+          },
+          {
+            "row": 24,
+            "col": 11
+          },
+          {
+            "row": 25,
+            "col": 11
+          }
+        ],
+        "start": {
+          "row": 24,
+          "col": 9
+        },
+        "end": {
+          "row": 24,
+          "col": 13
+        }
+      },
+      {
+        "name": "Tramway depot partition",
+        "cells": [
+          {
+            "row": 14,
+            "col": 22
+          },
+          {
+            "row": 15,
+            "col": 22
+          },
+          {
+            "row": 16,
+            "col": 22
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 20
+        },
+        "end": {
+          "row": 15,
+          "col": 24
+        }
+      },
+      {
+        "name": "East shelter partition",
+        "cells": [
+          {
+            "row": 23,
+            "col": 22
+          },
+          {
+            "row": 24,
+            "col": 22
+          },
+          {
+            "row": 25,
+            "col": 22
+          }
+        ],
+        "start": {
+          "row": 24,
+          "col": 20
+        },
+        "end": {
+          "row": 24,
+          "col": 24
+        }
+      }
+    ]
+  }
+}

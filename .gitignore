@@ -1,0 +1,14 @@
+.claude/
+.aistudio/
+.wrangler/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+assets/
+artifacts/
+node_modules/
+build/
+dist/
+coverage/

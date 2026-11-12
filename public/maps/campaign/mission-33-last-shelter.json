@@ -1,0 +1,679 @@
+{
+  "mapId": "campaign-33",
+  "id": 33,
+  "name": "Last Shelter",
+  "subtitle": "SECTOR 33 // CIVIC DISTRICT HQ DEFENSE",
+  "objective": "Defend the civic HQ",
+  "gameMode": "base_defense",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 1200
+  },
+  "environment": {
+    "theme": "capital",
+    "tint": "#dda4a1",
+    "fogColor": "#3c3538",
+    "groundColor": "#646866"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Defend the civic shelter complex nestled within a dense capital residential and municipal district, utilizing brick building clusters, defensive street chokepoints, and rear alley cuts to intercept aggressive sapper and kamikaze infiltration waves before they reach the HQ.",
+    "breaches": [
+      {
+        "name": "West municipal residential breach",
+        "cells": [
+          {
+            "row": 22,
+            "col": 6
+          },
+          {
+            "row": 23,
+            "col": 6
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 7
+        },
+        "end": {
+          "row": 22,
+          "col": 5
+        },
+        "purpose": "Punch through the west residential block partition to intercept flanking sappers and flamethrowers."
+      },
+      {
+        "name": "East clinic block breach",
+        "cells": [
+          {
+            "row": 22,
+            "col": 28
+          },
+          {
+            "row": 23,
+            "col": 28
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 27
+        },
+        "end": {
+          "row": 22,
+          "col": 29
+        },
+        "purpose": "Open a direct cut through the eastern clinic building to engage standoff strikers before they sight the shelter."
+      },
+      {
+        "name": "Central avenue mid-barricade",
+        "cells": [
+          {
+            "row": 16,
+            "col": 17
+          },
+          {
+            "row": 16,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 18,
+          "col": 17
+        },
+        "end": {
+          "row": 14,
+          "col": 17
+        },
+        "purpose": "Break the central street barricade to sally forth into the northern plaza against advancing columns."
+      },
+      {
+        "name": "Northwest galleria cross-cut",
+        "cells": [
+          {
+            "row": 10,
+            "col": 12
+          },
+          {
+            "row": 11,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 10,
+          "col": 11
+        },
+        "end": {
+          "row": 10,
+          "col": 13
+        },
+        "purpose": "Link the northwest arcade and central plaza to isolate enemy strike teams."
+      }
+    ],
+    "densityRevision": "Completely rebuilt dense urban residential district featuring 270+ solid building blocks, multiple defensive courtyards, narrow flanking alleys, and fortified shelter blast walls with open perimeter streets and no outer concrete box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 33332026,
+    "theme": "capital",
+    "zones": [
+      {
+        "id": "capital-district-pavers",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "pavers",
+        "density": 0.16,
+        "details": [
+          "cracks",
+          "rubble",
+          "leaves"
+        ]
+      },
+      {
+        "id": "west-residential-quarter",
+        "bounds": [
+          4,
+          2,
+          28,
+          12
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "central-civic-avenue",
+        "bounds": [
+          2,
+          13,
+          33,
+          22
+        ],
+        "surface": "asphalt",
+        "density": 0.24,
+        "details": [
+          "tracks",
+          "cracks",
+          "rubble",
+          "oil"
+        ]
+      },
+      {
+        "id": "east-clinic-quarter",
+        "bounds": [
+          4,
+          23,
+          28,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
+      },
+      {
+        "id": "civic-shelter-sanctuary",
+        "bounds": [
+          28,
+          11,
+          35,
+          24
+        ],
+        "surface": "concrete",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "rubble",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "central-civic-avenue-path",
+        "surface": "asphalt",
+        "width": 4,
+        "marking": "dashed",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            15,
+            17
+          ],
+          [
+            5,
+            17
+          ]
+        ]
+      },
+      {
+        "id": "west-residential-lane",
+        "surface": "asphalt",
+        "width": 3,
+        "marking": "edges",
+        "points": [
+          [
+            31,
+            13
+          ],
+          [
+            25,
+            4
+          ],
+          [
+            15,
+            4
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            3,
+            11
+          ]
+        ]
+      },
+      {
+        "id": "east-clinic-lane",
+        "surface": "asphalt",
+        "width": 3,
+        "marking": "edges",
+        "points": [
+          [
+            31,
+            21
+          ],
+          [
+            25,
+            31
+          ],
+          [
+            15,
+            31
+          ],
+          [
+            7,
+            31
+          ],
+          [
+            3,
+            23
+          ]
+        ]
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "shelter-front-crosswalk",
+        "kind": "crosswalk",
+        "row": 27,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "mid-avenue-crosswalk",
+        "kind": "crosswalk",
+        "row": 15,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "west-residential-parking",
+        "kind": "parking",
+        "row": 23,
+        "col": 4,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "east-clinic-parking",
+        "kind": "parking",
+        "row": 23,
+        "col": 31,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "shelter-hq-loading",
+        "kind": "loading",
+        "row": 32,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "west-block-label",
+        "kind": "label",
+        "row": 13,
+        "col": 4,
+        "size": 3,
+        "text": "CIVIC WEST"
+      },
+      {
+        "id": "east-block-label",
+        "kind": "label",
+        "row": 13,
+        "col": 31,
+        "size": 3,
+        "text": "CIVIC EAST"
+      },
+      {
+        "id": "civic-shelter-label",
+        "kind": "label",
+        "row": 30,
+        "col": 17,
+        "size": 3,
+        "text": "LAST SHELTER"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 30,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-avenue-gate",
+        "row": 2,
+        "col": 17
+      },
+      {
+        "id": "west-housing-entry",
+        "row": 2,
+        "col": 4
+      },
+      {
+        "id": "east-clinic-entry",
+        "row": 2,
+        "col": 31
+      },
+      {
+        "id": "mid-west-alley",
+        "row": 6,
+        "col": 3
+      },
+      {
+        "id": "mid-east-alley",
+        "row": 6,
+        "col": 32
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-kamikaze-probe",
+        "label": "CIVIC INFILTRATION PROBE & SAPPER ADVANCE",
+        "recoverySec": 0,
+        "entrances": [
+          "north-avenue-gate",
+          "west-housing-entry",
+          "east-clinic-entry"
+        ],
+        "initialCells": [
+          {
+            "row": 6,
+            "col": 16
+          },
+          {
+            "row": 6,
+            "col": 19
+          },
+          {
+            "row": 5,
+            "col": 4
+          },
+          {
+            "row": 5,
+            "col": 31
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 17
+          },
+          {
+            "row": 17,
+            "col": 17
+          },
+          {
+            "row": 26,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "KAMIKAZE",
+          "SAPPER",
+          "STANDARD",
+          "STRIKER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "west-flame-striker-push",
+        "label": "WEST ARCADE FLAMETHROWER & STRIKER PINSER",
+        "recoverySec": 8,
+        "entrances": [
+          "west-housing-entry",
+          "mid-west-alley",
+          "north-avenue-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 4
+          },
+          {
+            "row": 19,
+            "col": 4
+          },
+          {
+            "row": 26,
+            "col": 12
+          }
+        ],
+        "enemies": [
+          "FLAMETHROWER",
+          "STRIKER",
+          "STANDARD",
+          "SAPPER",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "central-kamikaze-spearhead",
+        "label": "CENTRAL KAMIKAZE CHARGE & STRIKER BARRAGE",
+        "recoverySec": 9,
+        "entrances": [
+          "north-avenue-gate",
+          "mid-west-alley",
+          "mid-east-alley"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 17
+          },
+          {
+            "row": 15,
+            "col": 17
+          },
+          {
+            "row": 23,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "KAMIKAZE",
+          "STRIKER",
+          "STANDARD",
+          "KAMIKAZE",
+          "SAPPER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "east-flame-striker-push",
+        "label": "EAST TERRACE FLAMETHROWER & STRIKER PINSER",
+        "recoverySec": 9,
+        "entrances": [
+          "east-clinic-entry",
+          "mid-east-alley",
+          "north-avenue-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 31
+          },
+          {
+            "row": 19,
+            "col": 31
+          },
+          {
+            "row": 26,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "FLAMETHROWER",
+          "STRIKER",
+          "STANDARD",
+          "SAPPER",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "final-civic-assault",
+        "label": "FINAL CIVIC ASSAULT SQUAD DEPLOYED",
+        "recoverySec": 10,
+        "entrances": [
+          "north-avenue-gate",
+          "west-housing-entry",
+          "east-clinic-entry",
+          "mid-west-alley"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 17
+          },
+          {
+            "row": 17,
+            "col": 17
+          },
+          {
+            "row": 27,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "STRIKER",
+          "SAPPER",
+          "STANDARD",
+          "STRIKER",
+          "STANDARD",
+          "STRIKER"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "KAMIKAZE",
+    "SAPPER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STRIKER",
+    "STANDARD",
+    "SAPPER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "KAMIKAZE",
+    "STRIKER",
+    "STANDARD",
+    "KAMIKAZE",
+    "SAPPER",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STRIKER",
+    "STANDARD",
+    "SAPPER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "STRIKER",
+    "SAPPER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "STRIKER"
+  ],
+  "layout": [
+    "...FF.....BB............BB.....F....",
+    "..FFF.....BB............BB.....FF...",
+    "....................................",
+    ".....BB.CC........FF........CCC.BB..",
+    ".CC..BB.CC..................CC..BB.C",
+    ".CC.......F...BB....BB...F.......CCC",
+    ".....BB.C.....CC....CC......CBB.....",
+    ".....BB..CC..............CC..BB.....",
+    "..F......CC...BB....BB...CC......FF.",
+    ".FF..BB.......CC....CC.......BB...F.",
+    ".....BB..CC.B............CC..BB.....",
+    "..CC..C..CC.B.C......C...CC..C..CC..",
+    "..CC.BB.......C......C.......BB.CC.F",
+    ".....BB..CC...C......C...CC..BB....F",
+    ".F.......CC...C.....QC...CC.......FF",
+    "...BB.CC.Q....C......C...Q..CCC.BB..",
+    "...BB.CC......BBBBBBBB......CC..BB..",
+    ".........CC....Q.........CC..FQ.....",
+    "..CC.BB..CC..C......C....CC..BB.CC..",
+    "..CC.BB..Q...C......C....Q...BB.CC..",
+    ".....BB..CC..C......C...CC...BB..Q..",
+    ".F.......CC..............CC..F....F.",
+    "...BB.B.CCC...BB....BB...CC.B.B.BB..",
+    "...BB.B.CC....CC....CC....C.B.B.BB..",
+    "F........CC..............CC.........",
+    "..CC.BB..CC..BB....BB....CC..BB.CC..",
+    "..CC.BB......CC....CC........BB.CC..",
+    ".....BB..CC..............CC..BB..F..",
+    ".F.......CC...CCCCCCCC...CC.....FFF.",
+    "...BB.CC......C......C......CCC.BB..",
+    "...BB.CC......C......C......CC..BB..",
+    ".........F................F...F.....",
+    "..CC.BB.......C......C.......BB.CC.F",
+    "..CC.BB..FF...C.CCCC.C...FF...B.CC..",
+    ".........FF...C......C...FF.........",
+    "....F.........C..HH..C.......F......"
+  ],
+  "powerups": [
+    {
+      "type": "MISSILE",
+      "row": 21,
+      "col": 17
+    },
+    {
+      "type": "APS",
+      "row": 14,
+      "col": 4
+    },
+    {
+      "type": "REPAIR",
+      "row": 15,
+      "col": 31
+    },
+    {
+      "type": "APS",
+      "row": 27,
+      "col": 17
+    },
+    {
+      "type": "EMP",
+      "row": 8,
+      "col": 17
+    },
+    {
+      "type": "REPAIR",
+      "row": 31,
+      "col": 22
+    }
+  ]
+}

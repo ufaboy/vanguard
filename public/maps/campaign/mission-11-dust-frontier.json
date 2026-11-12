@@ -1,0 +1,653 @@
+{
+  "mapId": "campaign-11",
+  "id": 11,
+  "name": "Dust Frontier",
+  "subtitle": "SECTOR 11 // CARAVAN ROAD",
+  "objective": "Clear the caravan road",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 550
+  },
+  "environment": {
+    "theme": "desert",
+    "tint": "#dec491",
+    "fogColor": "#6b6251",
+    "groundColor": "#b5a37b"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Cross the exposed caravan road between hard-cover islands or take longer ruined-shelter flanks to remove missile threats.",
+    "breaches": [
+      {
+        "name": "West shelter wall",
+        "cells": [
+          {
+            "row": 18,
+            "col": 8
+          },
+          {
+            "row": 19,
+            "col": 8
+          },
+          {
+            "row": 20,
+            "col": 8
+          }
+        ],
+        "start": {
+          "row": 19,
+          "col": 6
+        },
+        "end": {
+          "row": 19,
+          "col": 10
+        },
+        "purpose": "Shorten a lateral flank while preserving the intact route around the shelter."
+      },
+      {
+        "name": "East shelter wall",
+        "cells": [
+          {
+            "row": 15,
+            "col": 24
+          },
+          {
+            "row": 16,
+            "col": 24
+          },
+          {
+            "row": 17,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 22
+        },
+        "end": {
+          "row": 16,
+          "col": 26
+        },
+        "purpose": "Shorten a lateral flank while preserving the intact route around the shelter."
+      }
+    ],
+    "densityRevision": "Connected shelter clusters divide exposed ground into smaller combat spaces while preserving authored routes and deployment."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 11112026,
+    "theme": "desert",
+    "zones": [
+      {
+        "id": "sand-field",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "sand",
+        "density": 0.18,
+        "details": [
+          "patches"
+        ]
+      },
+      {
+        "id": "caravan-bed",
+        "bounds": [
+          11,
+          18,
+          29,
+          20
+        ],
+        "surface": "dirt",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-ruins",
+        "bounds": [
+          12,
+          3,
+          24,
+          10
+        ],
+        "surface": "gravel",
+        "density": 0.18,
+        "details": [
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "east-shelves",
+        "bounds": [
+          10,
+          25,
+          26,
+          32
+        ],
+        "surface": "sand",
+        "density": 0.18,
+        "details": [
+          "patches",
+          "rubble"
+        ]
+      },
+      {
+        "id": "north-turnout",
+        "bounds": [
+          2,
+          9,
+          8,
+          14
+        ],
+        "surface": "gravel",
+        "density": 0.18,
+        "details": [
+          "tracks"
+        ]
+      },
+      {
+        "id": "repair-turnout",
+        "bounds": [
+          28,
+          14,
+          32,
+          20
+        ],
+        "surface": "dirt",
+        "density": 0.18,
+        "details": [
+          "tracks"
+        ]
+      },
+      {
+        "id": "north-caravan-ruins",
+        "bounds": [
+          2,
+          6,
+          8,
+          16
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "west-court-rubble",
+        "bounds": [
+          11,
+          7,
+          15,
+          12
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "rubble",
+          "cracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "caravan-road",
+        "points": [
+          [
+            31,
+            18
+          ],
+          [
+            24,
+            18
+          ],
+          [
+            20,
+            20
+          ],
+          [
+            14,
+            20
+          ],
+          [
+            9,
+            20
+          ],
+          [
+            9,
+            12
+          ],
+          [
+            3,
+            12
+          ]
+        ],
+        "width": 3,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "west-track",
+        "points": [
+          [
+            31,
+            18
+          ],
+          [
+            31,
+            7
+          ],
+          [
+            24,
+            6
+          ],
+          [
+            15,
+            6
+          ],
+          [
+            15,
+            2
+          ],
+          [
+            10,
+            2
+          ],
+          [
+            3,
+            3
+          ]
+        ],
+        "width": 2.5,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "east-track",
+        "points": [
+          [
+            31,
+            18
+          ],
+          [
+            32,
+            18
+          ],
+          [
+            32,
+            25
+          ],
+          [
+            27,
+            25
+          ],
+          [
+            26,
+            27
+          ],
+          [
+            22,
+            27
+          ],
+          [
+            13,
+            28
+          ],
+          [
+            10,
+            33
+          ],
+          [
+            3,
+            33
+          ]
+        ],
+        "width": 2.5,
+        "surface": "dirt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-label",
+        "kind": "label",
+        "row": 24,
+        "col": 6,
+        "size": 3,
+        "text": "WEST RUINS"
+      },
+      {
+        "id": "east-label",
+        "kind": "label",
+        "row": 22,
+        "col": 27,
+        "size": 3,
+        "text": "STONE SHELVES"
+      },
+      {
+        "id": "road-label",
+        "kind": "label",
+        "row": 24,
+        "col": 18,
+        "size": 3,
+        "text": "CARAVAN ROAD"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          9,
+          8,
+          11,
+          10
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          9,
+          19,
+          11,
+          21
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          8,
+          26,
+          10,
+          28
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          10,
+          30,
+          12,
+          32
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.8,
+    "entrances": [
+      {
+        "id": "north-caravan",
+        "row": 3,
+        "col": 12
+      },
+      {
+        "id": "west-pass",
+        "row": 3,
+        "col": 3
+      },
+      {
+        "id": "east-pass",
+        "row": 3,
+        "col": 33
+      }
+    ],
+    "encounters": [
+      {
+        "id": "caravan-screen",
+        "label": "DUST FRONTIER: Northern patrols approaching. Move between hard-cover islands before crossing the open road.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-caravan",
+          "west-pass"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 10
+          },
+          {
+            "row": 24,
+            "col": 18
+          },
+          {
+            "row": 30,
+            "col": 18
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 10,
+            "col": 9
+          },
+          {
+            "row": 10,
+            "col": 20
+          },
+          {
+            "row": 9,
+            "col": 27
+          },
+          {
+            "row": 11,
+            "col": 31
+          }
+        ]
+      },
+      {
+        "id": "west-launcher",
+        "label": "WEST PASS: First striker approaching with a scout screen. Break its firing line behind the western ruins.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STRIKER",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-pass",
+          "north-caravan"
+        ],
+        "patrolRoute": [
+          {
+            "row": 16,
+            "col": 5
+          },
+          {
+            "row": 24,
+            "col": 6
+          },
+          {
+            "row": 24,
+            "col": 18
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "east-launchers",
+        "label": "EAST PASS: Two strikers approaching. Use the stone shelves or breach the shelter wall to change angle.",
+        "enemies": [
+          "STANDARD",
+          "STRIKER",
+          "SCOUT",
+          "STANDARD",
+          "STRIKER"
+        ],
+        "entrances": [
+          "east-pass"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 28
+          },
+          {
+            "row": 22,
+            "col": 27
+          },
+          {
+            "row": 26,
+            "col": 24
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "caravan-turn",
+        "label": "CARAVAN TURN: Mobile patrol shifting toward the central road. Keep a route back to the repair turnout.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STRIKER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-caravan",
+          "west-pass"
+        ],
+        "patrolRoute": [
+          {
+            "row": 14,
+            "col": 20
+          },
+          {
+            "row": 20,
+            "col": 20
+          },
+          {
+            "row": 24,
+            "col": 18
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "last-convoy",
+        "label": "FINAL CONVOY: Last five hostiles entering from the north. Clear the caravan road.",
+        "enemies": [
+          "STANDARD",
+          "STRIKER",
+          "SCOUT",
+          "STANDARD",
+          "STRIKER"
+        ],
+        "entrances": [
+          "north-caravan",
+          "east-pass"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 28
+          },
+          {
+            "row": 22,
+            "col": 27
+          },
+          {
+            "row": 24,
+            "col": 18
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STRIKER",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "STRIKER",
+    "SCOUT",
+    "STANDARD",
+    "STRIKER",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STRIKER",
+    "STANDARD",
+    "STANDARD",
+    "STRIKER",
+    "SCOUT",
+    "STANDARD",
+    "STRIKER"
+  ],
+  "layout": [
+    "......BBBB....BBB.....BBBB...BBB....",
+    "......BBBB....BBB.....BBBB...BBB....",
+    "......BBBB....BBB.....BBBB...BBB....",
+    "......BBBB....BCB.....BCCB...BBB....",
+    "......BBBB....BCB.CC..BCCB.BBBB.....",
+    "......BBBB....BCBCCCC.BBBB.BBBB.....",
+    "..........B...BBB.CCC......BBBB.....",
+    ".....BCCC.B..........BBBBB..........",
+    "....BB.CCC............BBBB...BBB....",
+    "....BB.......................BBB....",
+    "....BB.........BBB......CC..........",
+    ".......B...B...BBBB....CCC..........",
+    "...BBB.BBBBB...BBBB....CC...........",
+    "...BBB.BBBBB............C...........",
+    "...BBB..BBBB.....BB.....C...........",
+    "........C........BB.....B.....B.....",
+    "........C.BBB.CCC.......B...........",
+    "........C.BCBCCCC......QB....CC.....",
+    "........B...BCCCQ.B.....C....CCC....",
+    "...QCC..B...B.CC..B.....C.....CCQ...",
+    "...CCC..B...............C....BB.....",
+    "...CC...CQ.BBB..........C....BB.....",
+    "..BBB...C..BBB......CC.......BB.....",
+    "..BCC...CBBBB.......CCC......BB.....",
+    "..BCC....BCCB...Q....CCC............",
+    "..BBB....BCCB.BBB....QCC............",
+    ".....Q...BCCB.BBB..............BBB..",
+    "...BBB...CCCC.BBB..............BBB..",
+    "...BBB...CCC.................CC.....",
+    "...BBB....C..........BBB....CCC.....",
+    "...BBB...............BBB....CC......",
+    ".....................BBB.....BBBBB..",
+    "...BBB.......................BBBBB..",
+    "...BBB.BBBB.....CCCC.........BBBBB..",
+    ".......................BBB..........",
+    "...BBB...........HH....BBB....BBBB.."
+  ]
+}

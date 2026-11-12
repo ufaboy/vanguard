@@ -1,0 +1,562 @@
+{
+  "mapId": "campaign-31",
+  "id": 31,
+  "name": "Return to the Streets",
+  "subtitle": "SECTOR 31 // CAPITAL CITY OUTSKIRTS",
+  "objective": "Clear the capital outskirts",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 950
+  },
+  "environment": {
+    "theme": "capital",
+    "tint": "#dda4a1",
+    "fogColor": "#3c3538",
+    "groundColor": "#646866"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Choose the sheltered western arcade or the exposed eastern tramway, then use cross-streets and a destructible market partition to isolate support tanks.",
+    "breaches": [
+      {
+        "name": "Market partition",
+        "cells": [
+          {
+            "row": 20,
+            "col": 17
+          },
+          {
+            "row": 20,
+            "col": 18
+          },
+          {
+            "row": 20,
+            "col": 19
+          }
+        ],
+        "start": {
+          "row": 21,
+          "col": 18
+        },
+        "end": {
+          "row": 18,
+          "col": 18
+        },
+        "purpose": "Break the market partition to connect the south arcade with the northern cross-street."
+      }
+    ],
+    "densityRevision": "Unequal staggered city blocks replace the central factory enclosure; a lateral market partition creates a paid shortcut between two intact street loops."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 31312026,
+    "theme": "capital",
+    "zones": [
+      {
+        "id": "capital-outskirts-pavers",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "pavers",
+        "density": 0.16,
+        "details": [
+          "cracks",
+          "leaves",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-embassy-avenue-zone",
+        "bounds": [
+          2,
+          2,
+          30,
+          10
+        ],
+        "surface": "asphalt",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "leaves",
+          "tracks"
+        ]
+      },
+      {
+        "id": "central-civic-plaza-zone",
+        "bounds": [
+          8,
+          12,
+          25,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "rubble",
+          "leaves"
+        ]
+      },
+      {
+        "id": "east-tramway-district-zone",
+        "bounds": [
+          2,
+          25,
+          30,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "patches",
+          "tracks"
+        ]
+      },
+      {
+        "id": "south-outskirts-staging-square",
+        "bounds": [
+          27,
+          8,
+          35,
+          27
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "leaves",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-arcade",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            27,
+            11
+          ],
+          [
+            21,
+            5
+          ],
+          [
+            14,
+            6
+          ],
+          [
+            8,
+            9
+          ]
+        ],
+        "width": 3,
+        "surface": "pavers",
+        "marking": "none"
+      },
+      {
+        "id": "east-tramway",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            26
+          ],
+          [
+            20,
+            26
+          ],
+          [
+            14,
+            28
+          ],
+          [
+            8,
+            28
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "market-crossing",
+        "points": [
+          [
+            14,
+            6
+          ],
+          [
+            14,
+            14
+          ],
+          [
+            19,
+            14
+          ],
+          [
+            24,
+            14
+          ],
+          [
+            24,
+            24
+          ]
+        ],
+        "width": 3,
+        "surface": "pavers",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "market-name",
+        "kind": "label",
+        "row": 19,
+        "col": 17,
+        "size": 3,
+        "text": "MARKET"
+      },
+      {
+        "id": "tram-crossing",
+        "kind": "crosswalk",
+        "row": 21,
+        "col": 26,
+        "size": 3,
+        "rotation": 0
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 28,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-embassy",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-boulevard-west",
+        "row": 2,
+        "col": 14
+      },
+      {
+        "id": "north-boulevard-east",
+        "row": 2,
+        "col": 21
+      },
+      {
+        "id": "north-east-tramway",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-west-cross",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-cross",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-outskirts-patrol",
+        "label": "CAPITAL OUTSKIRTS STREET PATROL ENGAGED",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-embassy",
+          "north-boulevard-west",
+          "north-boulevard-east",
+          "north-east-tramway"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 14
+          },
+          {
+            "row": 5,
+            "col": 21
+          },
+          {
+            "row": 4,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 9
+          },
+          {
+            "row": 14,
+            "col": 14
+          },
+          {
+            "row": 19,
+            "col": 7
+          },
+          {
+            "row": 27,
+            "col": 11
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "west-embassy-stealth-watch",
+        "label": "STEALTH OVERWATCH ON EMBASSY AVENUE",
+        "recoverySec": 8,
+        "entrances": [
+          "upper-west-cross",
+          "north-west-embassy",
+          "north-boulevard-west"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 1
+          },
+          {
+            "row": 14,
+            "col": 6
+          },
+          {
+            "row": 21,
+            "col": 5
+          },
+          {
+            "row": 27,
+            "col": 7
+          }
+        ],
+        "enemies": [
+          "STEALTH",
+          "STANDARD",
+          "ARMOR",
+          "SCOUT",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "civic-square-jammer-column",
+        "label": "ARMORED COLUMN & ECM JAMMER IN OUTSKIRTS PLAZA",
+        "recoverySec": 9,
+        "entrances": [
+          "north-boulevard-west",
+          "north-boulevard-east",
+          "upper-west-cross"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 28
+          },
+          {
+            "row": 14,
+            "col": 24
+          },
+          {
+            "row": 21,
+            "col": 25
+          },
+          {
+            "row": 28,
+            "col": 26
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "ARMOR",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "east-tramway-stealth-jammer-shift",
+        "label": "TRAMWAY STEALTH SNIPER & JAMMER ESCORT",
+        "recoverySec": 9,
+        "entrances": [
+          "upper-east-cross",
+          "north-east-tramway",
+          "north-boulevard-east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 16
+          },
+          {
+            "row": 17,
+            "col": 15
+          },
+          {
+            "row": 19,
+            "col": 18
+          },
+          {
+            "row": 24,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "STEALTH",
+          "STANDARD",
+          "ARMOR",
+          "SCOUT",
+          "JAMMER"
+        ]
+      },
+      {
+        "id": "north-plaza-armor-reserve",
+        "label": "CAPITAL GARRISON RESERVE ADVANCING",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-embassy",
+          "north-boulevard-west",
+          "north-boulevard-east",
+          "north-east-tramway"
+        ],
+        "patrolRoute": [
+          {
+            "row": 14,
+            "col": 28
+          },
+          {
+            "row": 20,
+            "col": 28
+          },
+          {
+            "row": 26,
+            "col": 24
+          },
+          {
+            "row": 30,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "JAMMER",
+          "ARMOR",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "SCOUT",
+    "STANDARD",
+    "JAMMER",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "STANDARD",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "SCOUT",
+    "JAMMER",
+    "JAMMER",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.........CC...........CC........FF",
+    "F..........CC...........CC........FF",
+    "...................................F",
+    "F...................................",
+    "..CC.......FF...........FF.....CCC..",
+    "..CC.......FF...........FF......CC..",
+    "...........CC...........CC.........W",
+    "...........CC...........CC.........W",
+    ".............Q.........BBBB.........",
+    "..CCCCB....BBBB........BBBB....BBBB.",
+    "..BBBBB....BBBB........BBBB....BBBB.",
+    "..BBBBB....BBBB........BBBB...QBBBB.",
+    "..BBBBB...........FF...BBBB.........",
+    "..FF..............FF................",
+    ".................CCCC...............",
+    "........CBBB.....BBBB...............",
+    ".BBBB...CBBBQ....BBBB........BBBBB..",
+    ".BBBB...BBBB......Q.....FF...BBCCC..",
+    ".BBBB...BBBB............FF...BBCCC..",
+    ".BBBBQ.......................BBBBB..",
+    ".BBBB.......BCCCCBBBCCCB............",
+    "................B...................",
+    "......CBBBB.....BBBB..........FFF...",
+    "......CBBBB.....BBBB..........FFF...",
+    "......BBBBB...............QBCCCB....",
+    "......BBBBB................BBBBB....",
+    "....Q.........FFF..........BBBBB....",
+    "..BBB.........FFF..........BBBBBQ...",
+    "..BBB.......BBBB......CBB...........",
+    "..BBB.......BBBB......CBB...........",
+    "......................BBB...........",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "W.........FF....CCCC....FF..........",
+    "WW.................................F",
+    "WW...............HH...............FF"
+  ]
+}

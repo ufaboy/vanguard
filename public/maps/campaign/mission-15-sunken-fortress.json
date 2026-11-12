@@ -1,0 +1,625 @@
+{
+  "mapId": "campaign-15",
+  "id": 15,
+  "name": "Sunken Fortress",
+  "subtitle": "SECTOR 15 // DESERT STRONGHOLD",
+  "objective": "Destroy the desert stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 6,
+      "col": 18
+    },
+    "name": "Sunken Fortress Core",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": true,
+    "defeatOnBaseLoss": false
+  },
+  "boss": {
+    "enemyClass": "BOSS_MAMMOTH",
+    "name": "MAMMOTH MK-V",
+    "title": "Super-Heavy Command Dreadnought",
+    "spawnCell": {
+      "row": 3,
+      "col": 17
+    }
+  },
+  "completionReward": {
+    "credits": 750
+  },
+  "environment": {
+    "theme": "desert",
+    "tint": "#dec492",
+    "fogColor": "#665c49",
+    "groundColor": "#b09c74"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Circle the protected desert perimeter road to kite flamethrower sorties in open yards, or blast through the sunken basin gates to strike the armored stronghold core directly.",
+    "breaches": [
+      {
+        "name": "South basin gate",
+        "cells": [
+          {
+            "row": 16,
+            "col": 16
+          },
+          {
+            "row": 16,
+            "col": 17
+          },
+          {
+            "row": 16,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 18,
+          "col": 17
+        },
+        "end": {
+          "row": 14,
+          "col": 17
+        },
+        "purpose": "Breach the main southern bastion wall for a direct assault on the Sunken Fortress Core."
+      },
+      {
+        "name": "East battery wall",
+        "cells": [
+          {
+            "row": 13,
+            "col": 22
+          },
+          {
+            "row": 14,
+            "col": 22
+          },
+          {
+            "row": 15,
+            "col": 22
+          }
+        ],
+        "start": {
+          "row": 14,
+          "col": 24
+        },
+        "end": {
+          "row": 14,
+          "col": 20
+        },
+        "purpose": "Break into the eastern stronghold court from the artillery terrace instead of circling to the northwest ramp."
+      },
+      {
+        "name": "West terrace cut",
+        "cells": [
+          {
+            "row": 20,
+            "col": 11
+          },
+          {
+            "row": 21,
+            "col": 11
+          },
+          {
+            "row": 22,
+            "col": 11
+          }
+        ],
+        "start": {
+          "row": 21,
+          "col": 9
+        },
+        "end": {
+          "row": 21,
+          "col": 13
+        },
+        "purpose": "Open a lateral escape and flanking cut between the western perimeter road and the central basin apron."
+      }
+    ],
+    "densityRevision": "Terraced sandstone bastions and ruined desert compounds divide the sunken basin while preserving perimeter escape loops against flamethrowers."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 15152026,
+    "theme": "desert",
+    "zones": [
+      {
+        "id": "desert-stronghold-sand",
+        "bounds": [
+          1,
+          1,
+          34,
+          34
+        ],
+        "surface": "sand",
+        "density": 0.18,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "sunken-basin-citadel",
+        "bounds": [
+          9,
+          12,
+          17,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "rubble",
+          "cracks",
+          "tracks"
+        ]
+      },
+      {
+        "id": "west-perimeter-terrace",
+        "bounds": [
+          10,
+          2,
+          26,
+          11
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "rubble",
+          "tracks",
+          "cracks"
+        ]
+      },
+      {
+        "id": "east-battery-terrace",
+        "bounds": [
+          10,
+          24,
+          26,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "rubble",
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "south-escape-yard",
+        "bounds": [
+          18,
+          12,
+          33,
+          24
+        ],
+        "surface": "dirt",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches",
+          "rubble"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-perimeter-route",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            7
+          ],
+          [
+            19,
+            7
+          ],
+          [
+            11,
+            7
+          ],
+          [
+            11,
+            14
+          ]
+        ],
+        "width": 2.6,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "direct-basin-breach-road",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            23,
+            17
+          ],
+          [
+            17,
+            17
+          ],
+          [
+            13,
+            17
+          ]
+        ],
+        "width": 2.8,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "east-perimeter-route",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            28,
+            28
+          ],
+          [
+            19,
+            28
+          ],
+          [
+            14,
+            24
+          ]
+        ],
+        "width": 2.6,
+        "surface": "dirt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "west-rim-label",
+        "kind": "label",
+        "row": 19,
+        "col": 6,
+        "size": 3,
+        "text": "WEST RIM ROAD"
+      },
+      {
+        "id": "sunken-core-label",
+        "kind": "label",
+        "row": 18,
+        "col": 17,
+        "size": 3,
+        "text": "SUNKEN BASIN"
+      },
+      {
+        "id": "east-battery-label",
+        "kind": "label",
+        "row": 18,
+        "col": 28,
+        "size": 3,
+        "text": "BATTERY TERRACE"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "opening-0",
+        "bounds": [
+          8,
+          5,
+          10,
+          7
+        ]
+      },
+      {
+        "id": "opening-1",
+        "bounds": [
+          4,
+          15,
+          6,
+          17
+        ]
+      },
+      {
+        "id": "opening-2",
+        "bounds": [
+          8,
+          24,
+          10,
+          26
+        ]
+      },
+      {
+        "id": "opening-3",
+        "bounds": [
+          9,
+          29,
+          11,
+          31
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "entrances": [
+      {
+        "id": "west-rim-gate",
+        "row": 2,
+        "col": 6
+      },
+      {
+        "id": "north-basin-ramp",
+        "row": 2,
+        "col": 17
+      },
+      {
+        "id": "east-terrace-road",
+        "row": 2,
+        "col": 29
+      }
+    ],
+    "encounters": [
+      {
+        "id": "basin-rim-recon",
+        "label": "BASIN RIM: Recon screen and armored vanguard holding the outer stronghold approaches.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "ARMOR",
+          "SCOUT"
+        ],
+        "initialCells": [
+          {
+            "row": 9,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 16
+          },
+          {
+            "row": 9,
+            "col": 25
+          },
+          {
+            "row": 10,
+            "col": 30
+          }
+        ],
+        "entrances": [
+          "west-rim-gate",
+          "north-basin-ramp"
+        ],
+        "patrolRoute": [
+          {
+            "row": 20,
+            "col": 13
+          },
+          {
+            "row": 23,
+            "col": 21
+          },
+          {
+            "row": 19,
+            "col": 7
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "west-terrace-flamers",
+        "label": "WEST TERRACE: Flamethrower pair advancing with armored cover; use open yards to kite them.",
+        "enemies": [
+          "STANDARD",
+          "FLAMETHROWER",
+          "STANDARD",
+          "ARMOR",
+          "FLAMETHROWER",
+          "SCOUT"
+        ],
+        "entrances": [
+          "west-rim-gate",
+          "north-basin-ramp"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 7
+          },
+          {
+            "row": 23,
+            "col": 14
+          },
+          {
+            "row": 11,
+            "col": 13
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "east-battery-overwatch",
+        "label": "EAST BATTERY: Howitzer teams and heavy armor reinforcing the terrace flank.",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "ARMOR"
+        ],
+        "entrances": [
+          "east-terrace-road",
+          "north-basin-ramp"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 28
+          },
+          {
+            "row": 22,
+            "col": 21
+          },
+          {
+            "row": 14,
+            "col": 24
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "sunken-apron-flamers",
+        "label": "SUNKEN APRON: Second flamethrower sortie pushing out from the stronghold gates.",
+        "enemies": [
+          "STANDARD",
+          "FLAMETHROWER",
+          "ARMOR",
+          "STANDARD",
+          "FLAMETHROWER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-basin-ramp",
+          "west-rim-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 17,
+            "col": 17
+          },
+          {
+            "row": 23,
+            "col": 19
+          },
+          {
+            "row": 21,
+            "col": 13
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "stronghold-citadel-guard",
+        "label": "CITADEL GUARD: Final heavy armor and howitzer reserve defending the Sunken Fortress Core.",
+        "enemies": [
+          "ARMOR",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "HOWITZER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-basin-ramp",
+          "east-terrace-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 14,
+            "col": 17
+          },
+          {
+            "row": 19,
+            "col": 24
+          },
+          {
+            "row": 17,
+            "col": 14
+          }
+        ],
+        "recoverySec": 10
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "ARMOR",
+    "SCOUT",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STANDARD",
+    "ARMOR",
+    "FLAMETHROWER",
+    "SCOUT",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "FLAMETHROWER",
+    "ARMOR",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "STANDARD"
+  ],
+  "layout": [
+    "...BBB.....BBB.........BB......BBB..",
+    "...........BBB.........BB...........",
+    "...BB....CC...BB....CC...BB....BB...",
+    "...BC....CC...BB....CC...BC....BB...",
+    ".........BB...CC.........BC.........",
+    "....CC...BB...CC.CCCBB...CC...BBB...",
+    "....CC........CC.CECBB........CCB...",
+    "...BBB..CCC......CCCCCC..CCC........",
+    "........CCB..CCCCCCCCCB..CCB..BBB...",
+    "...CC....CB.CCCCCCCCCCC.......CCB...",
+    "...CC.......CCC.....CCC..CC.........",
+    ".......CCC.......CCC.CC..CC...CCC...",
+    "...BB..CCB...........CC.......CCB...",
+    "...BC..CCB..CC..BB....B..CC...CCB...",
+    ".......CCB..CC........B..CC.........",
+    "...CC.......CC..CC....B.......BBB...",
+    "...CC..CCC..CCCCBBBCCCC..CC...BBB...",
+    ".......CCB.CC...........CCB.....Q...",
+    "...BB......C..CC...CCC..CCB...CCC...",
+    "...BC...CCQC..CB...CCB........CCB...",
+    ".....Q..CC.B..........QCCC..........",
+    "...CCC..CB.B...CC..CC..CCB....BB....",
+    "...CCB.....B...CCQ.CC........QBC....",
+    "........CC.C...........CCC....BB....",
+    "...BB...CC.C..CCC..CC..CCB..........",
+    "...BCQ........CCB..CB......CC..BB...",
+    ".......CCC...Q.....CB..CC..CC..BC...",
+    "...CC..CCB..CC..BB.....CC...........",
+    "...CB.......CC..BB..CC.....CCC......",
+    ".......BB...........CC.....CCB..BB..",
+    "...CC..BC...CC......BB..CC......BB..",
+    "...CC.......CC..........CC...BB.....",
+    "........BB...................BB.....",
+    "....BB..BB......CCCC....BB..........",
+    ".......................BBB..........",
+    "...BBBB..........HH....BBB....BBBB.."
+  ]
+}

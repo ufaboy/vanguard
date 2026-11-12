@@ -1,0 +1,637 @@
+{
+  "mapId": "campaign-23",
+  "id": 23,
+  "name": "Summit Refuge",
+  "subtitle": "SECTOR 23 // MOUNTAIN PASS DEFENSE",
+  "objective": "Defend the mountain HQ",
+  "gameMode": "base_defense",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 800
+  },
+  "environment": {
+    "theme": "alpine",
+    "tint": "#c5dcf2",
+    "fogColor": "#435366",
+    "groundColor": "#7d8891"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Defend the southern mountain refuge HQ against alternating armor and striker waves descending three alpine passes, using short lateral rotation lanes and destructible snow-shed cuts to intercept sappers between major pushes.",
+    "breaches": [
+      {
+        "name": "West gorge snow-wall cut",
+        "cells": [
+          {
+            "row": 22,
+            "col": 11
+          },
+          {
+            "row": 23,
+            "col": 11
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 13
+        },
+        "end": {
+          "row": 22,
+          "col": 9
+        },
+        "purpose": "Open a fast lateral rotation cut from the central refuge apron into the West Gorge Pass."
+      },
+      {
+        "name": "East ridge snow-wall cut",
+        "cells": [
+          {
+            "row": 22,
+            "col": 23
+          },
+          {
+            "row": 23,
+            "col": 23
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 21
+        },
+        "end": {
+          "row": 22,
+          "col": 25
+        },
+        "purpose": "Punch through the eastern snow-shed wall to intercept East Ridge striker waves rapidly."
+      },
+      {
+        "name": "Mid-col bastion gate",
+        "cells": [
+          {
+            "row": 15,
+            "col": 17
+          },
+          {
+            "row": 15,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 17
+        },
+        "end": {
+          "row": 13,
+          "col": 17
+        },
+        "purpose": "Breach the central col gate to push north and intercept sapper minelayers before they reach the HQ perimeter."
+      },
+      {
+        "name": "Upper cross-pass gallery",
+        "cells": [
+          {
+            "row": 10,
+            "col": 12
+          },
+          {
+            "row": 11,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 10,
+          "col": 10
+        },
+        "end": {
+          "row": 10,
+          "col": 14
+        },
+        "purpose": "Connect the upper West Gorge and Central Col passes to flank northern striker formations."
+      }
+    ],
+    "densityRevision": "Three distinct mountain passes converge toward the southern refuge HQ with short dry rotation corridors, concrete avalanche bastions that block long-range sightlines onto the base, and open alpine edges without an artificial concrete border."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 23232026,
+    "theme": "alpine",
+    "zones": [
+      {
+        "id": "summit-snow-blanket",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "snow",
+        "density": 0.16,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "west-gorge-pass-gravel",
+        "bounds": [
+          3,
+          2,
+          27,
+          10
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "central-col-terrace",
+        "bounds": [
+          4,
+          13,
+          25,
+          22
+        ],
+        "surface": "concrete",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-ridge-pass-gravel",
+        "bounds": [
+          3,
+          25,
+          27,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-refuge-defense-apron",
+        "bounds": [
+          26,
+          7,
+          35,
+          28
+        ],
+        "surface": "asphalt",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "tracks",
+          "oil"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-gorge-descent",
+        "points": [
+          [
+            3,
+            5
+          ],
+          [
+            11,
+            6
+          ],
+          [
+            20,
+            6
+          ],
+          [
+            28,
+            10
+          ],
+          [
+            31,
+            17
+          ]
+        ],
+        "width": 2.6,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "central-col-descent",
+        "points": [
+          [
+            3,
+            17
+          ],
+          [
+            11,
+            17
+          ],
+          [
+            19,
+            17
+          ],
+          [
+            27,
+            17
+          ],
+          [
+            31,
+            17
+          ]
+        ],
+        "width": 2.8,
+        "surface": "concrete",
+        "marking": "dashed"
+      },
+      {
+        "id": "east-ridge-descent",
+        "points": [
+          [
+            3,
+            30
+          ],
+          [
+            11,
+            29
+          ],
+          [
+            20,
+            29
+          ],
+          [
+            28,
+            25
+          ],
+          [
+            31,
+            17
+          ]
+        ],
+        "width": 2.6,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "central-col-crosswalk",
+        "kind": "crosswalk",
+        "row": 18,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "refuge-apron-loading",
+        "kind": "loading",
+        "row": 28,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "south-hq-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 13,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "west-gorge-label",
+        "kind": "label",
+        "row": 14,
+        "col": 6,
+        "size": 3,
+        "text": "WEST GORGE PASS"
+      },
+      {
+        "id": "central-col-label",
+        "kind": "label",
+        "row": 18,
+        "col": 17,
+        "size": 3,
+        "text": "CENTRAL COL"
+      },
+      {
+        "id": "east-ridge-label",
+        "kind": "label",
+        "row": 14,
+        "col": 29,
+        "size": 3,
+        "text": "EAST RIDGE PASS"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 28,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-west-gorge",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-col-west",
+        "row": 2,
+        "col": 14
+      },
+      {
+        "id": "north-col-east",
+        "row": 2,
+        "col": 21
+      },
+      {
+        "id": "north-east-ridge",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-west-ledge",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-ledge",
+        "row": 7,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-west-armor-push",
+        "label": "ARMORED VANGUARD DESCENDING WEST & CENTRAL PASSES",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-gorge",
+          "north-col-west",
+          "north-col-east",
+          "upper-west-ledge"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 5,
+            "col": 15
+          },
+          {
+            "row": 5,
+            "col": 20
+          },
+          {
+            "row": 4,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 7
+          },
+          {
+            "row": 20,
+            "col": 9
+          },
+          {
+            "row": 28,
+            "col": 14
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "east-striker-salvo-wave",
+        "label": "STRIKER MISSILE BATTERY ON EAST RIDGE PASS",
+        "recoverySec": 8,
+        "entrances": [
+          "north-east-ridge",
+          "upper-east-ledge",
+          "north-col-east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 29
+          },
+          {
+            "row": 20,
+            "col": 27
+          },
+          {
+            "row": 28,
+            "col": 21
+          }
+        ],
+        "enemies": [
+          "STRIKER",
+          "STANDARD",
+          "STRIKER",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "interlude-sapper-infiltration",
+        "label": "SAPPER MINELAYERS ADVANCING THROUGH THE PASSES",
+        "recoverySec": 9,
+        "entrances": [
+          "north-col-west",
+          "north-col-east",
+          "north-west-gorge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 17
+          },
+          {
+            "row": 19,
+            "col": 17
+          },
+          {
+            "row": 27,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "SAPPER",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "SAPPER"
+        ]
+      },
+      {
+        "id": "central-armor-breakthrough",
+        "label": "HEAVY ARMOR SPEARHEAD IN CENTRAL COL",
+        "recoverySec": 9,
+        "entrances": [
+          "north-col-west",
+          "north-col-east",
+          "upper-west-ledge",
+          "north-west-gorge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 16
+          },
+          {
+            "row": 20,
+            "col": 16
+          },
+          {
+            "row": 27,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "ARMOR",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "final-striker-armor-converge",
+        "label": "FINAL SUMMIT ASSAULT CONVERGING ON REFUGE HQ",
+        "recoverySec": 10,
+        "entrances": [
+          "north-west-gorge",
+          "north-col-west",
+          "north-col-east",
+          "north-east-ridge",
+          "upper-east-ledge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 20
+          },
+          {
+            "row": 21,
+            "col": 18
+          },
+          {
+            "row": 27,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "STRIKER",
+          "STANDARD",
+          "STRIKER",
+          "ARMOR",
+          "STRIKER",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "SAPPER",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "STRIKER",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF.....III.......FF......III......FF",
+    "F......III.......F.......III......FF",
+    ".......III...............III.......F",
+    ".......III...............III........",
+    "..CC.........FF.....FF.........CC...",
+    "..CC.........FF.....FF.........CC..I",
+    ".......III..CC.......CC..III.......I",
+    ".......III..CC.......CCQ.III.......I",
+    "............C.........C.............",
+    "..FF........C.........C........FF...",
+    ".FFF........B...III...C........FF...",
+    "............BQ..III...C.............",
+    "...III......C...III...C.....III.....",
+    "..CCII......C.........C.....IIICC...",
+    "..CC........C........QC........CC..F",
+    ".......FF...CCCCCBBCCCC...FF.......F",
+    ".......FF......Q..........FF........",
+    "....III....CC.........CC....III.....",
+    "....III....CC.........CC....III....I",
+    ".................II................I",
+    "..CC.......C....IIII...C.......CC...",
+    "..CC.......C....IIII...C......QCC..F",
+    "...........B....IIII...BQ...........",
+    "...FF......B...........B.......FF...",
+    "..FFF.....QC...........C.......FF...",
+    "...........CC.........CC............",
+    "....III....CC.........CC....III.....",
+    "....III................Q....III....I",
+    "...............CCCCCC..............I",
+    "..CC....FF.....CCCCCC.....FF...CCC..",
+    "..CC....FF...BB......BBB..FF....CC..",
+    "...F............................FF..",
+    "..FF......FF............FF.....FFF..",
+    "I.........FF....CCCC....FF..........",
+    "II.................................F",
+    "II...............HH...............FF"
+  ]
+}

@@ -1,0 +1,784 @@
+{
+  "mapId": "campaign-35",
+  "id": 35,
+  "name": "Vanguard Dawn",
+  "subtitle": "SECTOR 35 // CAPITAL CITADEL SQUARE FINALE",
+  "objective": "Clear the capital citadel",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "rules": {
+    "spawnSectorBossOnClear": true,
+    "defeatOnBaseLoss": false
+  },
+  "boss": {
+    "enemyClass": "BOSS_TITAN",
+    "name": "SUPREME DREADNOUGHT",
+    "title": "Twin-Turret Heavy Battle Tank",
+    "spawnCell": {
+      "row": 3,
+      "col": 17
+    },
+    "breachCells": [
+      {
+        "row": 9,
+        "col": 14
+      },
+      {
+        "row": 9,
+        "col": 15
+      },
+      {
+        "row": 9,
+        "col": 16
+      },
+      {
+        "row": 9,
+        "col": 17
+      },
+      {
+        "row": 9,
+        "col": 18
+      },
+      {
+        "row": 9,
+        "col": 19
+      },
+      {
+        "row": 9,
+        "col": 20
+      },
+      {
+        "row": 8,
+        "col": 16
+      },
+      {
+        "row": 8,
+        "col": 17
+      },
+      {
+        "row": 8,
+        "col": 18
+      },
+      {
+        "row": 10,
+        "col": 16
+      },
+      {
+        "row": 10,
+        "col": 17
+      },
+      {
+        "row": 10,
+        "col": 18
+      }
+    ]
+  },
+  "completionReward": {
+    "credits": 1500
+  },
+  "bossSequence": [
+    [
+      {
+        "enemyClass": "BOSS_MAMMOTH",
+        "name": "MAMMOTH MK-V",
+        "title": "Sector 01 Siege Dreadnought",
+        "spawnCell": {
+          "row": 3,
+          "col": 17
+        }
+      }
+    ],
+    [
+      {
+        "enemyClass": "BOSS_HYDRA",
+        "name": "HYDRA MLRS-9",
+        "title": "Sector 02 Artillery Cruiser",
+        "spawnCell": {
+          "row": 3,
+          "col": 13
+        }
+      },
+      {
+        "enemyClass": "BOSS_INFERNO",
+        "name": "CERBERUS-T",
+        "title": "Sector 04 Thermobaric Leviathan",
+        "spawnCell": {
+          "row": 3,
+          "col": 22
+        }
+      }
+    ],
+    [
+      {
+        "enemyClass": "BOSS_TITAN",
+        "name": "SUPREME DREADNOUGHT",
+        "title": "Final Citadel Dreadnought",
+        "spawnCell": {
+          "row": 3,
+          "col": 17
+        }
+      }
+    ]
+  ],
+  "environment": {
+    "theme": "capital",
+    "tint": "#dda4a1",
+    "fogColor": "#3c3538",
+    "groundColor": "#646866"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Clear 29 elite capital defenders across the grand ruined civic square, then utilize the wide lateral colonnades, destructible ministry arcades, and breached perimeter bastions to outmaneuver and flank the Titan Rail-Fortress and its escort.",
+    "breaches": [
+      {
+        "name": "South civic square barricade",
+        "cells": [
+          {
+            "row": 22,
+            "col": 17
+          },
+          {
+            "row": 22,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 24,
+          "col": 17
+        },
+        "end": {
+          "row": 20,
+          "col": 17
+        },
+        "purpose": "Breach the southern barricade to enter the central civic plaza directly."
+      },
+      {
+        "name": "West colonnade sally port",
+        "cells": [
+          {
+            "row": 15,
+            "col": 12
+          },
+          {
+            "row": 16,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 10
+        },
+        "end": {
+          "row": 15,
+          "col": 14
+        },
+        "purpose": "Punch through the western colonnade wall to flank the Titan's weaker side and rear armor."
+      },
+      {
+        "name": "East colonnade sally port",
+        "cells": [
+          {
+            "row": 15,
+            "col": 22
+          },
+          {
+            "row": 16,
+            "col": 22
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 24
+        },
+        "end": {
+          "row": 15,
+          "col": 20
+        },
+        "purpose": "Open the eastern sally port to circle behind heavy columns and evade railgun targeting beams."
+      },
+      {
+        "name": "North ministry terrace gate",
+        "cells": [
+          {
+            "row": 9,
+            "col": 17
+          },
+          {
+            "row": 9,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 11,
+          "col": 17
+        },
+        "end": {
+          "row": 7,
+          "col": 17
+        },
+        "purpose": "Shatter the northern terrace gate to complete a full 360-degree combat loop around the square."
+      }
+    ],
+    "densityRevision": "The grand civic square features dense ministry complexes, reinforced colonnades, shattered monuments, and over 320 solid blocks offering tactical cover breaks against high-penetration railgun slugs, without an artificial concrete perimeter box."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 35352026,
+    "theme": "capital",
+    "zones": [
+      {
+        "id": "capital-grand-pavers",
+        "bounds": [
+          0,
+          0,
+          35,
+          35
+        ],
+        "surface": "pavers",
+        "density": 0.16,
+        "details": [
+          "cracks",
+          "rubble",
+          "leaves"
+        ]
+      },
+      {
+        "id": "west-ministry-avenue",
+        "bounds": [
+          2,
+          2,
+          33,
+          11
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "cracks",
+          "oil"
+        ]
+      },
+      {
+        "id": "central-civic-square-plaza",
+        "bounds": [
+          6,
+          12,
+          26,
+          23
+        ],
+        "surface": "concrete",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-ministry-avenue",
+        "bounds": [
+          2,
+          24,
+          33,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "cracks",
+          "oil"
+        ]
+      },
+      {
+        "id": "vanguard-entry-square",
+        "bounds": [
+          28,
+          12,
+          35,
+          23
+        ],
+        "surface": "pavers",
+        "density": 0.18,
+        "details": [
+          "tracks",
+          "cracks",
+          "leaves"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "grand-ceremonial-axis",
+        "surface": "asphalt",
+        "width": 4,
+        "marking": "dashed",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            24,
+            17
+          ],
+          [
+            16,
+            17
+          ],
+          [
+            5,
+            17
+          ]
+        ]
+      },
+      {
+        "id": "west-arcade-flank-road",
+        "surface": "asphalt",
+        "width": 3,
+        "marking": "edges",
+        "points": [
+          [
+            31,
+            14
+          ],
+          [
+            26,
+            4
+          ],
+          [
+            16,
+            4
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            4,
+            14
+          ]
+        ]
+      },
+      {
+        "id": "east-arcade-flank-road",
+        "surface": "asphalt",
+        "width": 3,
+        "marking": "edges",
+        "points": [
+          [
+            31,
+            20
+          ],
+          [
+            26,
+            31
+          ],
+          [
+            16,
+            31
+          ],
+          [
+            6,
+            31
+          ],
+          [
+            4,
+            20
+          ]
+        ]
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "south-square-crosswalk",
+        "kind": "crosswalk",
+        "row": 27,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "north-terrace-crosswalk",
+        "kind": "crosswalk",
+        "row": 6,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "west-square-parking",
+        "kind": "parking",
+        "row": 21,
+        "col": 4,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "east-square-parking",
+        "kind": "parking",
+        "row": 21,
+        "col": 31,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "civic-square-loading",
+        "kind": "loading",
+        "row": 13,
+        "col": 17,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "grand-dawn-label",
+        "kind": "label",
+        "row": 20,
+        "col": 17,
+        "size": 3,
+        "text": "VANGUARD DAWN"
+      },
+      {
+        "id": "west-sector-label",
+        "kind": "label",
+        "row": 14,
+        "col": 4,
+        "size": 3,
+        "text": "WEST FLANK"
+      },
+      {
+        "id": "east-sector-label",
+        "kind": "label",
+        "row": 14,
+        "col": 31,
+        "size": 3,
+        "text": "EAST FLANK"
+      }
+    ]
+  },
+  "enemies": {
+    "vanguardCount": 29,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "grand-north-gate",
+        "row": 2,
+        "col": 17
+      },
+      {
+        "id": "west-terrace-head",
+        "row": 2,
+        "col": 4
+      },
+      {
+        "id": "east-terrace-head",
+        "row": 2,
+        "col": 31
+      },
+      {
+        "id": "square-west-ramp",
+        "row": 6,
+        "col": 3
+      },
+      {
+        "id": "square-east-ramp",
+        "row": 6,
+        "col": 32
+      }
+    ],
+    "encounters": [
+      {
+        "id": "vanguard-elite-screen",
+        "label": "CAPITAL ELITE SCREEN & STRIKER BATTERY",
+        "recoverySec": 0,
+        "entrances": [
+          "grand-north-gate",
+          "west-terrace-head",
+          "east-terrace-head"
+        ],
+        "initialCells": [
+          {
+            "row": 6,
+            "col": 16
+          },
+          {
+            "row": 6,
+            "col": 19
+          },
+          {
+            "row": 5,
+            "col": 4
+          },
+          {
+            "row": 5,
+            "col": 31
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 17
+          },
+          {
+            "row": 16,
+            "col": 17
+          },
+          {
+            "row": 23,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "STRIKER",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "west-howitzer-jammer-wing",
+        "label": "WEST FLANK HEAVY ARMOR, HOWITZER & ECM JAMMER",
+        "recoverySec": 8,
+        "entrances": [
+          "west-terrace-head",
+          "square-west-ramp",
+          "grand-north-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 4
+          },
+          {
+            "row": 19,
+            "col": 4
+          },
+          {
+            "row": 25,
+            "col": 13
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "JAMMER",
+          "ARMOR",
+          "STANDARD",
+          "STRIKER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "central-heavy-armor-core",
+        "label": "GRAND SQUARE HEAVY ARMOR CORE & HOWITZERS",
+        "recoverySec": 9,
+        "entrances": [
+          "grand-north-gate",
+          "square-west-ramp",
+          "square-east-ramp"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 17
+          },
+          {
+            "row": 14,
+            "col": 17
+          },
+          {
+            "row": 21,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "STRIKER",
+          "STANDARD",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "east-howitzer-jammer-wing",
+        "label": "EAST FLANK HEAVY ARMOR, HOWITZER & ECM JAMMER",
+        "recoverySec": 9,
+        "entrances": [
+          "east-terrace-head",
+          "square-east-ramp",
+          "grand-north-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 31
+          },
+          {
+            "row": 19,
+            "col": 31
+          },
+          {
+            "row": 25,
+            "col": 23
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "JAMMER",
+          "ARMOR",
+          "STANDARD",
+          "STRIKER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "pre-titan-citadel-guard",
+        "label": "FINAL CITADEL ESCORT GUARD DEPLOYED",
+        "recoverySec": 10,
+        "entrances": [
+          "grand-north-gate",
+          "square-west-ramp",
+          "square-east-ramp",
+          "west-terrace-head"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 17
+          },
+          {
+            "row": 13,
+            "col": 17
+          },
+          {
+            "row": 19,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "JAMMER",
+          "STANDARD",
+          "ARMOR"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "JAMMER",
+    "ARMOR",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "JAMMER",
+    "ARMOR",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "STANDARD",
+    "JAMMER",
+    "STANDARD",
+    "ARMOR"
+  ],
+  "layout": [
+    "...FF.....CC............CC......FFF.",
+    "..FFF.....CC............CC.......FF.",
+    "....................................",
+    ".....BB.CC........FF........CCC.BB..",
+    ".CC..BB.CC..................CC..BB.C",
+    ".CC.......F...BB....BB...F.......CCC",
+    ".....BB.C.....CC....CC......CBB.....",
+    ".....BB..CC..............CC..BB.....",
+    "..F......CC...BD....DB...CC......FF.",
+    "..FF........CCCCCBBCCCC........FF...",
+    ".FFF..BB....C.........C......BB..FF.",
+    ".....BB.....C.........C.....BB......",
+    "..CC.BB.CC..C.........C..CC.BB..CC..",
+    "..CC.BB.CC..CC.......CC..CC.BB.CCC..",
+    "..CC.BB.CC..C.........C..CC.BB..CC.F",
+    ".......FF...B.........B....FF......F",
+    ".......FF..QB.........B....FF.......",
+    "....BBQ.CC..C.........C.QCC..BB.....",
+    "....BB..CC..C.........C..CC..BB....F",
+    "F........C..CC.......CC..C..........",
+    "..CC.BB.CC...X..........X...CC..BB.C",
+    "..CC.BB.CC..C......Q..C..CC.BB.QCC.F",
+    ".....Q..CC..CCCCCBBCCCC..CCQ........",
+    "...FF...CC.QC.........C..CC....FF...",
+    "..FFF............................FF.",
+    "F...BB.CC..D...CC...CC...D.CC.BB....",
+    "....BB.CC..CC..CC...CC..CC.CC.BB...F",
+    "....BB.CC..CC...........CC.CC.BB...F",
+    "...........CC...CCCCCC..CC.........W",
+    "..CC.BB.FF......CCCCCC.....FF..CCC..",
+    "..CC.BB.FF...BB......BBB...FF...CC..",
+    "...F..........X........X........FF..",
+    "..FF......FF..........C...F....FFF..",
+    "..........FF....CCCC.BC..FF.........",
+    "..............C......C..............",
+    "...F..........C..HH..C.............F"
+  ],
+  "powerups": [
+    {
+      "type": "EMP",
+      "row": 20,
+      "col": 17
+    },
+    {
+      "type": "REPAIR",
+      "row": 16,
+      "col": 4
+    },
+    {
+      "type": "MISSILE",
+      "row": 16,
+      "col": 31
+    },
+    {
+      "type": "MISSILE",
+      "row": 11,
+      "col": 10
+    },
+    {
+      "type": "APS",
+      "row": 11,
+      "col": 24
+    },
+    {
+      "type": "REPAIR",
+      "row": 26,
+      "col": 17
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "IRON VANGUARD — 3D Tank Assault",
+  "description": "Modern 3D isometric tactical tank assault game inspired by Battle City, built with Vanilla JS and Three.js featuring free mouse aiming, destructible 36x36 arenas, modular 3D tank upgrades, APS, homing missiles, and boss battles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

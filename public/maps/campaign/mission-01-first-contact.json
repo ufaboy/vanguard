@@ -1,0 +1,626 @@
+{
+  "id": 1,
+  "mapId": "campaign-01",
+  "code": "MISSION 01 // CITY OUTSKIRTS",
+  "name": "First Contact",
+  "subtitle": "Clear 20 hostiles across the market, civic square, and workshop court. Breach shortcuts or take the covered loop.",
+  "gameMode": "extermination",
+  "rules": {
+    "spawnSectorBossOnClear": false
+  },
+  "gridSize": 36,
+  "tileSize": 2,
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "environment": {
+    "tint": "#d6e7a0",
+    "fogColor": "#18212a",
+    "groundColor": "#687478",
+    "theme": "urban"
+  },
+  "defaultSurface": "asphalt",
+  "completionReward": {
+    "credits": 250
+  },
+  "layout": [
+    "FF.........BBBB........BB......FF...",
+    "FF....BBB..BCCB........BB..BBB.FF...",
+    "...........BCCB........CCB...B......",
+    "......BB...............CCB...B..BB..",
+    "..B...BB...BB..........CCB...B..BB..",
+    "..B.........BBBBBBB...BBBBB..B......",
+    "............BCCCCCB.................",
+    "............BCCCCCB....DD....BB.....",
+    "..FF........BBBBBBB..........BB.FF..",
+    "..FF..BBBB............BBBBBB........",
+    "........BB....................BB....",
+    ".........B.............BB.....BB....",
+    "...BB....B..BBBBBB.....CC...........",
+    "...BB....B..BCCCCB.....CC...........",
+    ".........B..BCCCCB...............F..",
+    "...BBBBBB...BBBBBB...............FF.",
+    "..B........................BB....FF.",
+    "..B.......X........X.......BB.......",
+    "..B...BB....BB.......BBB..QBCB..BB..",
+    "......BB........BB..QBCB...BCC..BB..",
+    "..........Q..........BCB...BCC......",
+    "..BQ.....BB..........BCB...BBBBBB...",
+    "..B......BB..........BBB........QB..",
+    "................B.D.B.....BB.....B..",
+    "..FF..BBBBB..QBBB...B.....BB.....B..",
+    "..FF.....BB...BBBBBBCBBB............",
+    ".........BB.......QBCCCB............",
+    "..B......BB........BCCCB.......BB...",
+    "..BFF....BB..Q..BBBCCCCB.......BB...",
+    "...FF....BBBBBBB...BBBCCBBBBB...B...",
+    ".....B................BBBBBBB...B...",
+    ".....B..........................B...",
+    "..BB.B.............................F",
+    "..BB..BBBBBBB...CCCC...............F",
+    "...........B..........BBBBBBBBBB....",
+    "...FF............HH..............FF."
+  ],
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "SCOUT",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT"
+  ],
+  "enemies": {
+    "initialSpawnCount": 3,
+    "maxConcurrent": 6,
+    "spawnIntervalSec": 3.5,
+    "fixedSpawns": [],
+    "encounters": [
+      {
+        "id": "opening",
+        "label": "FIRST CONTACT: Clear the broken entry street. Brick cover can be breached.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "initialCells": [
+          {
+            "row": 10,
+            "col": 12
+          },
+          {
+            "row": 8,
+            "col": 19
+          },
+          {
+            "row": 11,
+            "col": 27
+          }
+        ],
+        "entrances": [
+          "north"
+        ],
+        "recoverySec": 0,
+        "patrolRoute": [
+          {
+            "row": 26,
+            "col": 12
+          },
+          {
+            "row": 22,
+            "col": 12
+          },
+          {
+            "row": 20,
+            "col": 16
+          }
+        ]
+      },
+      {
+        "id": "west-flank",
+        "label": "OLD MARKET: Scouts entering from the west. Watch the stall alleys.",
+        "enemies": [
+          "SCOUT",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "west",
+          "northwest"
+        ],
+        "recoverySec": 5,
+        "patrolRoute": [
+          {
+            "row": 20,
+            "col": 5
+          },
+          {
+            "row": 22,
+            "col": 13
+          },
+          {
+            "row": 26,
+            "col": 12
+          },
+          {
+            "row": 31,
+            "col": 10
+          }
+        ]
+      },
+      {
+        "id": "east-blocks",
+        "label": "WORKSHOP COURT: East gate opening. Breach the partition or use the southern loop.",
+        "enemies": [
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "east",
+          "northeast"
+        ],
+        "recoverySec": 6,
+        "patrolRoute": [
+          {
+            "row": 26,
+            "col": 29
+          },
+          {
+            "row": 23,
+            "col": 24
+          },
+          {
+            "row": 22,
+            "col": 18
+          },
+          {
+            "row": 21,
+            "col": 16
+          }
+        ]
+      },
+      {
+        "id": "boulevard-push",
+        "label": "CIVIC SQUARE: Patrols approaching from the north. Use the central cover to flank.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "north",
+          "northeast"
+        ],
+        "recoverySec": 5,
+        "patrolRoute": [
+          {
+            "row": 15,
+            "col": 28
+          },
+          {
+            "row": 14,
+            "col": 20
+          },
+          {
+            "row": 10,
+            "col": 12
+          },
+          {
+            "row": 16,
+            "col": 10
+          }
+        ]
+      },
+      {
+        "id": "last-patrol",
+        "label": "NORTH DEPOT: Final patrol approaching through the civic avenue and market.",
+        "enemies": [
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "northwest",
+          "northeast"
+        ],
+        "recoverySec": 4,
+        "patrolRoute": [
+          {
+            "row": 7,
+            "col": 20
+          },
+          {
+            "row": 10,
+            "col": 19
+          },
+          {
+            "row": 16,
+            "col": 19
+          },
+          {
+            "row": 21,
+            "col": 12
+          }
+        ]
+      }
+    ],
+    "entrances": [
+      {
+        "id": "north",
+        "label": "North depot",
+        "row": 3,
+        "col": 17
+      },
+      {
+        "id": "northwest",
+        "label": "West depot gate",
+        "row": 3,
+        "col": 4
+      },
+      {
+        "id": "northeast",
+        "label": "Civic avenue",
+        "row": 3,
+        "col": 28
+      },
+      {
+        "id": "west",
+        "label": "Market service lane",
+        "row": 9,
+        "col": 4
+      },
+      {
+        "id": "east",
+        "label": "Workshop gate",
+        "row": 9,
+        "col": 31
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 100003,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "market",
+        "bounds": [
+          16,
+          3,
+          23,
+          13
+        ],
+        "surface": "pavers",
+        "density": 0.35,
+        "details": [
+          "leaves",
+          "cracks"
+        ]
+      },
+      {
+        "id": "civic",
+        "bounds": [
+          8,
+          20,
+          18,
+          30
+        ],
+        "surface": "pavers",
+        "density": 0.35,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "workshops",
+        "bounds": [
+          22,
+          24,
+          30,
+          33
+        ],
+        "surface": "concrete",
+        "density": 0.35,
+        "details": [
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "depot",
+        "bounds": [
+          3,
+          5,
+          8,
+          22
+        ],
+        "surface": "gravel",
+        "density": 0.35,
+        "details": [
+          "patches",
+          "rubble"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "street-0",
+        "points": [
+          [
+            32,
+            17
+          ],
+          [
+            27,
+            17
+          ],
+          [
+            27,
+            12
+          ],
+          [
+            21,
+            12
+          ],
+          [
+            21,
+            19
+          ],
+          [
+            15,
+            19
+          ],
+          [
+            15,
+            28
+          ],
+          [
+            7,
+            28
+          ],
+          [
+            7,
+            20
+          ],
+          [
+            3,
+            20
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "street-1",
+        "points": [
+          [
+            31,
+            17
+          ],
+          [
+            31,
+            7
+          ],
+          [
+            26,
+            7
+          ],
+          [
+            26,
+            4
+          ],
+          [
+            17,
+            4
+          ],
+          [
+            17,
+            10
+          ],
+          [
+            7,
+            10
+          ],
+          [
+            7,
+            4
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "street-2",
+        "points": [
+          [
+            32,
+            17
+          ],
+          [
+            32,
+            30
+          ],
+          [
+            23,
+            30
+          ],
+          [
+            23,
+            25
+          ],
+          [
+            15,
+            25
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "street-3",
+        "points": [
+          [
+            10,
+            10
+          ],
+          [
+            10,
+            19
+          ],
+          [
+            15,
+            19
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "street-4",
+        "points": [
+          [
+            17,
+            10
+          ],
+          [
+            17,
+            19
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "street-5",
+        "points": [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            20
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      },
+      {
+        "id": "street-6",
+        "points": [
+          [
+            7,
+            28
+          ],
+          [
+            3,
+            28
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "district-0",
+        "kind": "label",
+        "row": 32,
+        "col": 17,
+        "text": "REPAIR COURT",
+        "size": 3
+      },
+      {
+        "id": "district-1",
+        "kind": "label",
+        "row": 20,
+        "col": 10,
+        "text": "OLD MARKET",
+        "size": 3
+      },
+      {
+        "id": "district-2",
+        "kind": "label",
+        "row": 14,
+        "col": 24,
+        "text": "CIVIC SQUARE",
+        "size": 3
+      },
+      {
+        "id": "district-3",
+        "kind": "label",
+        "row": 26,
+        "col": 28,
+        "text": "WORKSHOP COURT",
+        "size": 3
+      },
+      {
+        "id": "district-4",
+        "kind": "label",
+        "row": 4,
+        "col": 10,
+        "text": "NORTH DEPOT",
+        "size": 3
+      },
+      {
+        "id": "crossing",
+        "kind": "crosswalk",
+        "row": 17,
+        "col": 19,
+        "size": 2.5
+      },
+      {
+        "id": "workshop-bay",
+        "kind": "loading",
+        "row": 26,
+        "col": 28,
+        "size": 2
+      },
+      {
+        "id": "service-cover",
+        "kind": "manhole",
+        "row": 23,
+        "col": 30,
+        "size": 1
+      }
+    ],
+    "exclusions": []
+  }
+}

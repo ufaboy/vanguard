@@ -1,0 +1,938 @@
+{
+  "mapId": "campaign-04",
+  "id": 4,
+  "name": "Railway Cut",
+  "subtitle": "SECTOR 04 // STATION APPROACHES & ARTILLERY CUT",
+  "objective": "Clear the station approaches",
+  "theme": "City outskirts",
+  "palette": "chapter-1-outskirts",
+  "gameMode": "extermination",
+  "gridSize": 36,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 31,
+    "col": 17
+  },
+  "baseCell": {
+    "row": 35,
+    "col": 17
+  },
+  "completionReward": {
+    "credits": 400
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "environment": {
+    "skyTop": "#728c9e",
+    "skyBottom": "#c9bca8",
+    "HorizonColor": "#c3b49e",
+    "fogColor": "#959ca0",
+    "fogDensity": 0.0028,
+    "ambientColor": "#dfe4e8",
+    "ambientIntensity": 0.88,
+    "sunColor": "#ffdcb0",
+    "sunIntensity": 1.62,
+    "hemiSkyColor": "#b8c7d4",
+    "hemiGroundColor": "#4c463e",
+    "hemiIntensity": 0.56,
+    "groundBase": "#3d4044",
+    "groundGrid": "#53585e",
+    "asphaltDark": "#292c30",
+    "DistrictTint": "#494d52",
+    "curbLight": "#8e887d",
+    "curbDark": "#3b3e42",
+    "sidewalk": "#7b7870",
+    "parkGrass": "#526646",
+    "plazaStone": "#7e786d",
+    "yardEarth": "#63584b",
+    "brickWall": "#8c4a38",
+    "concreteWall": "#73777c",
+    "waterDeep": "#18334a",
+    "waterGlow": "#2563eb",
+    "iceSurface": "#bae6fd",
+    "iceHighlight": "#f0f9ff",
+    "roads": [
+      {
+        "points": [
+          [
+            3,
+            6
+          ],
+          [
+            10,
+            6
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            26,
+            4
+          ],
+          [
+            26,
+            11
+          ]
+        ],
+        "width": 3
+      },
+      {
+        "points": [
+          [
+            3,
+            15
+          ],
+          [
+            15,
+            13
+          ],
+          [
+            29,
+            13
+          ]
+        ],
+        "width": 2.6
+      },
+      {
+        "points": [
+          [
+            8,
+            19
+          ],
+          [
+            28,
+            19
+          ]
+        ],
+        "width": 2.6
+      },
+      {
+        "points": [
+          [
+            8,
+            29
+          ],
+          [
+            23,
+            29
+          ],
+          [
+            23,
+            26
+          ],
+          [
+            31,
+            26
+          ]
+        ],
+        "width": 3
+      },
+      {
+        "points": [
+          [
+            8,
+            6
+          ],
+          [
+            8,
+            29
+          ]
+        ],
+        "width": 2.8
+      },
+      {
+        "points": [
+          [
+            30,
+            11
+          ],
+          [
+            30,
+            26
+          ]
+        ],
+        "width": 3
+      }
+    ],
+    "districts": [
+      {
+        "name": "NORTHWEST SIDING",
+        "row": 5,
+        "col": 7
+      },
+      {
+        "name": "WEST SERVICE TUNNEL",
+        "row": 18,
+        "col": 4
+      },
+      {
+        "name": "PASSENGER PLATFORM",
+        "row": 14,
+        "col": 10
+      },
+      {
+        "name": "RAILWAY CUT",
+        "row": 12,
+        "col": 18
+      },
+      {
+        "name": "EAST GOODS PLATFORM",
+        "row": 21,
+        "col": 23
+      },
+      {
+        "name": "COAL YARD TUNNEL",
+        "row": 14,
+        "col": 30
+      },
+      {
+        "name": "BUS FORECOURT",
+        "row": 30,
+        "col": 23
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 4042026,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "northwest-siding-zone",
+        "bounds": [
+          2,
+          3,
+          9,
+          19
+        ],
+        "surface": "concrete",
+        "density": 0.36,
+        "details": [
+          "tracks",
+          "cracks",
+          "oil",
+          "rubble"
+        ]
+      },
+      {
+        "id": "west-service-tunnel-zone",
+        "bounds": [
+          10,
+          2,
+          27,
+          6
+        ],
+        "surface": "asphalt",
+        "density": 0.38,
+        "details": [
+          "cracks",
+          "patches",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "west-passenger-platform-zone",
+        "bounds": [
+          10,
+          8,
+          21,
+          11
+        ],
+        "surface": "pavers",
+        "density": 0.3,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "central-railway-cut-zone",
+        "bounds": [
+          8,
+          12,
+          27,
+          20
+        ],
+        "surface": "concrete",
+        "density": 0.44,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks",
+          "oil",
+          "weeds"
+        ]
+      },
+      {
+        "id": "east-goods-platform-zone",
+        "bounds": [
+          15,
+          21,
+          26,
+          25
+        ],
+        "surface": "pavers",
+        "density": 0.34,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil"
+        ]
+      },
+      {
+        "id": "east-coal-yard-zone",
+        "bounds": [
+          7,
+          26,
+          25,
+          33
+        ],
+        "surface": "gravel",
+        "density": 0.4,
+        "details": [
+          "oil",
+          "patches",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "southeast-bus-forecourt-zone",
+        "bounds": [
+          26,
+          11,
+          33,
+          28
+        ],
+        "surface": "asphalt",
+        "density": 0.28,
+        "details": [
+          "patches",
+          "cracks",
+          "leaves"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-tunnel-lane",
+        "points": [
+          [
+            3,
+            6
+          ],
+          [
+            10,
+            6
+          ],
+          [
+            10,
+            4
+          ],
+          [
+            26,
+            4
+          ],
+          [
+            26,
+            11
+          ]
+        ],
+        "width": 2.8,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "west-trackbed",
+        "points": [
+          [
+            3,
+            15
+          ],
+          [
+            12,
+            13
+          ],
+          [
+            29,
+            13
+          ]
+        ],
+        "width": 2.5,
+        "surface": "concrete",
+        "marking": "edges"
+      },
+      {
+        "id": "east-trackbed",
+        "points": [
+          [
+            8,
+            19
+          ],
+          [
+            20,
+            19
+          ],
+          [
+            29,
+            19
+          ]
+        ],
+        "width": 2.5,
+        "surface": "concrete",
+        "marking": "edges"
+      },
+      {
+        "id": "east-coal-lane",
+        "points": [
+          [
+            8,
+            29
+          ],
+          [
+            23,
+            29
+          ],
+          [
+            23,
+            26
+          ],
+          [
+            31,
+            26
+          ]
+        ],
+        "width": 3,
+        "surface": "concrete",
+        "marking": "dashed"
+      },
+      {
+        "id": "north-overpass-crossing",
+        "points": [
+          [
+            8,
+            6
+          ],
+          [
+            8,
+            18
+          ],
+          [
+            8,
+            29
+          ]
+        ],
+        "width": 2.8,
+        "surface": "concrete",
+        "marking": "edges"
+      },
+      {
+        "id": "south-forecourt-loop",
+        "points": [
+          [
+            30,
+            11
+          ],
+          [
+            30,
+            19
+          ],
+          [
+            30,
+            26
+          ]
+        ],
+        "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "forecourt-crosswalk-west",
+        "kind": "crosswalk",
+        "row": 26,
+        "col": 11,
+        "size": 2.2,
+        "rotation": 0
+      },
+      {
+        "id": "forecourt-crosswalk-east",
+        "kind": "crosswalk",
+        "row": 29,
+        "col": 23,
+        "size": 2.2,
+        "rotation": 0
+      },
+      {
+        "id": "overpass-crosswalk-north",
+        "kind": "crosswalk",
+        "row": 8,
+        "col": 15,
+        "size": 2.4,
+        "rotation": 90
+      },
+      {
+        "id": "west-platform-loading",
+        "kind": "loading",
+        "row": 15,
+        "col": 9,
+        "size": 2.2,
+        "rotation": 0
+      },
+      {
+        "id": "east-goods-loading",
+        "kind": "loading",
+        "row": 21,
+        "col": 23,
+        "size": 2.2,
+        "rotation": 0
+      },
+      {
+        "id": "bus-forecourt-parking",
+        "kind": "parking",
+        "row": 31,
+        "col": 24,
+        "size": 2.4,
+        "rotation": 0
+      },
+      {
+        "id": "label-west-tunnel",
+        "kind": "label",
+        "row": 18,
+        "col": 4,
+        "size": 3,
+        "text": "WEST TUNNEL"
+      },
+      {
+        "id": "label-railway-cut",
+        "kind": "label",
+        "row": 11,
+        "col": 18,
+        "size": 3,
+        "text": "RAILWAY CUT"
+      },
+      {
+        "id": "label-coal-yard",
+        "kind": "label",
+        "row": 14,
+        "col": 30,
+        "size": 3,
+        "text": "COAL SIDING"
+      },
+      {
+        "id": "label-forecourt",
+        "kind": "label",
+        "row": 30,
+        "col": 22,
+        "size": 3,
+        "text": "BUS FORECOURT"
+      },
+      {
+        "id": "cut-manhole-south",
+        "kind": "manhole",
+        "row": 24,
+        "col": 13,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "tunnel-manhole-east",
+        "kind": "manhole",
+        "row": 16,
+        "col": 29,
+        "size": 1,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "base-alcove-clear",
+        "bounds": [
+          32,
+          15,
+          35,
+          19
+        ]
+      },
+      {
+        "id": "player-spawn-clear",
+        "bounds": [
+          30,
+          16,
+          32,
+          18
+        ]
+      }
+    ]
+  },
+  "design": {
+    "chapter": 1,
+    "TacticalIdentity": "An offset sunken railway cut bordered by an upper-west passenger platform, a lower-east goods shed, and crooked outer service tunnels that expose howitzer firing bays from the flank.",
+    "EngagementRange": "Long diagonal and north-south sightlines down the offset trackbed contrasted with close-quarters flanking through the narrow west service tunnel and wide east coal siding.",
+    "RetreatOptions": "Southeast bus forecourt loop, southwest station ramp, and staggered cross-platform underpasses at rows 8-9, 19-20, and 25-26.",
+    "breaches": [
+      {
+        "name": "West platform artillery breach",
+        "cells": [
+          {
+            "row": 14,
+            "col": 8
+          },
+          {
+            "row": 15,
+            "col": 8
+          },
+          {
+            "row": 16,
+            "col": 8
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 6
+        },
+        "end": {
+          "row": 15,
+          "col": 10
+        },
+        "purpose": "Blast through the brick retaining wall from the narrow west service tunnel directly into the West Passenger Platform howitzer bay."
+      },
+      {
+        "name": "Central signal box breach",
+        "cells": [
+          {
+            "row": 16,
+            "col": 18
+          },
+          {
+            "row": 17,
+            "col": 18
+          },
+          {
+            "row": 18,
+            "col": 18
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 16
+        },
+        "end": {
+          "row": 17,
+          "col": 20
+        },
+        "purpose": "Cut between the upper west trackbed and the lower east switchyard without detouring around the central signal gantry."
+      },
+      {
+        "name": "East goods shed breach",
+        "cells": [
+          {
+            "row": 20,
+            "col": 25
+          },
+          {
+            "row": 21,
+            "col": 25
+          },
+          {
+            "row": 22,
+            "col": 25
+          }
+        ],
+        "start": {
+          "row": 21,
+          "col": 23
+        },
+        "end": {
+          "row": 21,
+          "col": 27
+        },
+        "purpose": "Open the brick goods-shed wall between the lower-east artillery bay and the outer coal siding tunnel."
+      }
+    ]
+  },
+  "enemies": {
+    "totalCount": 23,
+    "initialSpawnCount": 3,
+    "maxConcurrent": 6,
+    "spawnInterval": 3.2,
+    "entrances": [
+      {
+        "id": "northwest-siding",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "north-rail-cut",
+        "row": 2,
+        "col": 16
+      },
+      {
+        "id": "northeast-coal-gate",
+        "row": 7,
+        "col": 31
+      },
+      {
+        "id": "west-service-tunnel",
+        "row": 9,
+        "col": 2
+      },
+      {
+        "id": "southeast-freight-spur",
+        "row": 9,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "station-forecourt-screen",
+        "name": "Station Forecourt Screen",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "initialCells": [
+          {
+            "row": 8,
+            "col": 5
+          },
+          {
+            "row": 9,
+            "col": 15
+          },
+          {
+            "row": 8,
+            "col": 26
+          }
+        ],
+        "entrances": [
+          "northwest-siding",
+          "north-rail-cut"
+        ],
+        "advanceWhenRemaining": 1,
+        "recoverySec": 0,
+        "fallbackSeconds": 25,
+        "patrolRoute": [
+          {
+            "row": 25,
+            "col": 13
+          },
+          {
+            "row": 27,
+            "col": 20
+          },
+          {
+            "row": 25,
+            "col": 9
+          }
+        ]
+      },
+      {
+        "id": "west-platform-battery",
+        "name": "West Platform Howitzer Bay",
+        "warning": "Artillery battery deployed behind the upper west passenger platform",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-service-tunnel",
+          "northwest-siding"
+        ],
+        "advanceWhenRemaining": 1,
+        "recoverySec": 6,
+        "fallbackSeconds": 30,
+        "patrolRoute": [
+          {
+            "row": 15,
+            "col": 9
+          },
+          {
+            "row": 15,
+            "col": 4
+          },
+          {
+            "row": 21,
+            "col": 13
+          }
+        ]
+      },
+      {
+        "id": "east-freight-battery",
+        "name": "East Goods Shed Battery",
+        "warning": "Howitzer and line armor taking position in the lower east goods shed",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "southeast-freight-spur",
+          "northeast-coal-gate"
+        ],
+        "advanceWhenRemaining": 1,
+        "recoverySec": 6,
+        "fallbackSeconds": 30,
+        "patrolRoute": [
+          {
+            "row": 21,
+            "col": 23
+          },
+          {
+            "row": 18,
+            "col": 27
+          },
+          {
+            "row": 26,
+            "col": 19
+          }
+        ]
+      },
+      {
+        "id": "north-overpass-barrage",
+        "name": "Turntable Siding Battery",
+        "warning": "Long-range artillery shelling from the northwest turntable siding",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-rail-cut",
+          "northwest-siding"
+        ],
+        "advanceWhenRemaining": 1,
+        "recoverySec": 6,
+        "fallbackSeconds": 30,
+        "patrolRoute": [
+          {
+            "row": 6,
+            "col": 8
+          },
+          {
+            "row": 9,
+            "col": 18
+          },
+          {
+            "row": 11,
+            "col": 5
+          }
+        ]
+      },
+      {
+        "id": "terminal-cut-counterattack",
+        "name": "Terminal Cut Counterattack",
+        "warning": "Final armored column and mobile howitzer advancing down the railway cut",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "north-rail-cut",
+          "northeast-coal-gate",
+          "west-service-tunnel"
+        ],
+        "advanceWhenRemaining": 0,
+        "recoverySec": 6,
+        "fallbackSeconds": 32,
+        "patrolRoute": [
+          {
+            "row": 17,
+            "col": 13
+          },
+          {
+            "row": 23,
+            "col": 19
+          },
+          {
+            "row": 28,
+            "col": 17
+          }
+        ]
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "layout": [
+    "FF........BBB........BB.BBBBBB....FF",
+    "..........BBB........BB.BBBBBB......",
+    "..FF......BBB........BB.BBBBBB..FF..",
+    "..FF..BB......FF........BBBBBB..FF..",
+    "......BB..BBB.FF............BB......",
+    "..........BBB..BB...........BB......",
+    "...BBBB........BB....BBBB...........",
+    "...BBBB..............BBBB...BBB.....",
+    "............................BBB.....",
+    "....BB..............................",
+    "B...BB.BCB...BB..........BB....BBB.B",
+    "B......BCB...BB..BCB.....BB.FF.BBB.B",
+    ".......BCB.......BCB........FF......",
+    "...BB..BCB.......BCB................",
+    "...BB...B....BB..BCB....BCB..BB.....",
+    "........B....BB..BCB....BCB..BB.....",
+    "........B.........B.....BCB.....BB..",
+    ".......BCB........B.....BCB..BB.BB..",
+    "..FF...BCB........B.....BCB..BB.....",
+    "..FF..QBCB.......BCB....BCB.........",
+    ".......BCB.......BCB.....B......FF..",
+    "................QBCB.....B..BB..FF..",
+    "...BBB.....BBB...BCB.....B..BB......",
+    "...BBB....QBCB..........BCB...BBBB..",
+    "...Q.......BBB..........BCB...BBBB..",
+    "...............Q........BCB....Q....",
+    "....BB.....BBBBBB...................",
+    "....BB.....BCCCCB....BB.......BBB...",
+    "........Q..BCCCCB....BB..FF...BBB...",
+    "...BBBBBB................FF...Q.....",
+    "...BBBBBB.................BB........",
+    "......BBB....BB...........BB..BBBB..",
+    "......BBB....BB...............BBBB..",
+    "................CCCC..........BBBB..",
+    ".......................BB...........",
+    "..FF.............HH....BB.......FF.."
+  ]
+}
