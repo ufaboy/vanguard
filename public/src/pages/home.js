@@ -16,7 +16,7 @@ if (!handleLegacyHash()) {
   document.body.classList.add('scrollable-page');
   const root = document.getElementById('root');
   if (root) {
-    root.innerHTML = renderHome();
+    if (!root.firstElementChild) root.innerHTML = renderHome();
     attachSettingsModal(root);
   }
 }

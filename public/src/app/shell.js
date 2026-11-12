@@ -21,7 +21,7 @@ export function renderPageNav(activePage = '') {
   return `<nav class="menu-nav" aria-label="Primary navigation">${links}<button type="button" class="menu-nav-link" data-action="open-settings">Settings</button></nav>`;
 }
 
-function renderPageShell({
+export function renderPageShell({
   activePage = '',
   title,
   backHref = PAGE_PATHS.index,

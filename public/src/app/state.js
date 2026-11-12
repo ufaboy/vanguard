@@ -1,6 +1,7 @@
-import { QUALITY_PRESETS } from '../game/engine.js';
 import { sound } from '../game/sound.js';
 import { SaveRepository } from '../sim/hangar.js';
+
+const VALID_QUALITY_PRESETS = Object.freeze(['low', 'medium', 'high']);
 
 export const CAMERA_LABELS = Object.freeze({
   ISOMETRIC: 'ISOMETRIC 45°',
@@ -46,7 +47,7 @@ export function loadPreferences() {
     const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
     if (typeof raw.soundEnabled === 'boolean') prefs.soundEnabled = raw.soundEnabled;
     if (Object.hasOwn(CAMERA_LABELS, raw.cameraPreset)) prefs.cameraPreset = raw.cameraPreset;
-    if (Object.hasOwn(QUALITY_PRESETS, raw.graphicsQuality)) prefs.graphicsQuality = raw.graphicsQuality;
+    if (VALID_QUALITY_PRESETS.includes(raw.graphicsQuality)) prefs.graphicsQuality = raw.graphicsQuality;
     if (FPS_CAP_OPTIONS.includes(raw.fpsCap)) prefs.fpsCap = raw.fpsCap;
   } catch {
     // ignore storage errors

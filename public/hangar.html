@@ -25,7 +25,25 @@
     </script>
   </head>
   <body data-page="hangar" class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
-    <div id="root"></div>
+    <div id="root"><!-- prerender:start -->
+<div id="status-modal" class="fixed inset-0 z-30 flex items-center justify-center bg-[#06090F]/95 p-4 menu-screen" data-page="hangar">
+    <main class="menu-page">
+      <header class="menu-header">
+        <a class="menu-brand" href="/">IV <span>IRON VANGUARD</span></a>
+        <nav class="menu-nav" aria-label="Primary navigation"><a class="menu-nav-link" href="/campaign">Campaign</a><a class="menu-nav-link" href="/survival">Survival</a><a class="menu-nav-link" href="/contract">Contract</a><a class="menu-nav-link is-active" aria-current="page" href="/hangar">Hangar</a><a class="menu-nav-link" href="/codex">Codex</a><a class="menu-nav-link" href="/faq">FAQ</a><a class="menu-nav-link" href="/about">About</a><button type="button" class="menu-nav-link" data-action="open-settings">Settings</button></nav>
+      </header>
+      <div class="menu-content ">
+        <a class="menu-back" href="/">← Main menu</a>
+        <h1 tabindex="-1">Hangar & Workshop</h1>
+        <p class="menu-lead">Initializing 3D Hangar bay and component workshop…</p>
+      </div>
+      <footer class="menu-footer">
+        <span>IRON VANGUARD / COMMAND CENTER</span>
+        <span>PLAN · EQUIP · DEPLOY</span>
+      </footer>
+    </main>
+  </div>
+    <!-- prerender:end --></div>
     <noscript>
       <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
         <h1>Hangar &amp; Workshop — IRON VANGUARD</h1>
