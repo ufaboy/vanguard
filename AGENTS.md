@@ -37,6 +37,9 @@
    - Before creating or rebuilding any tank model (Blender or procedural), **always confirm with the user**: which additional / optional modules the tank carries, its intended size relative to other tanks, and any distinctive features or elements it must (or must not) have.
 7. **Release Before Deploy**:
    - Before running a production deploy (`npm run deploy`), **always create a release first**: ensure all changes are committed, then create an annotated Git tag matching the current `package.json` version (e.g., `git tag -a v1.1.1 -m "Release v1.1.1"`), and create a remote/GitHub release if a remote is configured. Do not deploy uncommitted work directly to production without a release.
+8. **Version Bump Policy (Branches & PRs)**:
+   - The `.githooks/pre-commit` hook auto-bumps the patch version **only** on direct commits to `main` (it skips feature branches, merges/rebases, and commits where `package.json` version is already staged).
+   - When creating a Pull Request into `main`, **always bump the version** (`node scripts/bump-version.mjs` or manually in `package.json` / `package-lock.json`) on the PR branch if it has not already been bumped relative to `main`.
 
 ---
 

@@ -1,6 +1,17 @@
 #!/bin/sh
 set -e
 
+# Auto-bump only on direct commits to main (skip feature branches and merge/rebase commits)
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$branch" != "main" ]; then
+  exit 0
+fi
+
+git_dir=$(git rev-parse --git-dir)
+if [ -f "$git_dir/MERGE_HEAD" ] || [ -d "$git_dir/rebase-merge" ] || [ -d "$git_dir/rebase-apply" ]; then
+  exit 0
+fi
+
 # Skip auto-bump if package.json version is already changed in the staged diff
 if git diff --cached -- package.json | grep -q '^[+-][[:space:]]*"version":'; then
   exit 0
