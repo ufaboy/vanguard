@@ -13,7 +13,7 @@ const NAV_LINKS = Object.freeze([
   { id: 'about', label: 'About', href: PAGE_PATHS.about },
 ]);
 
-export function renderPageNav(activePage = '') {
+function renderPageNav(activePage = '') {
   const links = NAV_LINKS.map((item) => {
     const active = item.id === activePage ? ' is-active" aria-current="page' : '';
     return `<a class="menu-nav-link${active}" href="${item.href}">${item.label}</a>`;
@@ -120,12 +120,4 @@ export function attachSettingsModal(root, onSettingsChange = null) {
   });
 
   return { openModal, closeModal, prefs };
-}
-
-export function mountStaticPage(config) {
-  document.body.classList.add('scrollable-page');
-  const root = document.getElementById('root');
-  if (!root) return;
-  root.innerHTML = renderPageShell(config);
-  attachSettingsModal(root);
 }
