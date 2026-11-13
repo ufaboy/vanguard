@@ -421,7 +421,7 @@ export class TankGameEngine {
     this.inspectMode = Boolean(enabled);
     if (this.inspectMode) {
       this.frustumSize = 11.5;
-      this.handleResize();
+      this.handleResize?.();
     } else {
       this.cycleCameraPreset(this.cameraPreset);
     }
