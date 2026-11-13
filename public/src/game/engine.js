@@ -221,6 +221,7 @@ export class TankGameEngine {
     this.aimWorld = new THREE.Vector3(0, 0, 0);
     this.raycaster = new THREE.Raycaster();
     this.isMouseDown = false;
+    this._pendingTimeouts = new Set();
 
     this.status = GameStatus.MENU;
     this.currentSectorIndex = 0;
@@ -334,6 +335,7 @@ export class TankGameEngine {
     this.lasers = [];
     this.hazardZones = [];
     this.burningForests = [];
+    this.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
     this.particles = [];
     this.powerUps = [];
@@ -1272,7 +1274,7 @@ export class TankGameEngine {
   getCodexMuzzle(rig, fallbackX, fallbackY, fallbackZ) {
     if (!rig?.muzzleFlash) return { x: fallbackX, y: fallbackY, z: fallbackZ };
     rig.muzzleFlash.updateWorldMatrix(true, false);
-    const v = rig.muzzleFlash.getWorldPosition(new THREE.Vector3());
+    const v = rig.muzzleFlash.getWorldPosition(this._tmpMuzzle || (this._tmpMuzzle = new THREE.Vector3()));
     this.codexFx.root.updateWorldMatrix(true, false);
     this.codexFx.root.worldToLocal(v);
     return { x: v.x, y: v.y, z: v.z };
@@ -1739,6 +1741,7 @@ export class TankGameEngine {
     this.clearGroup(this.fxGroup);
     this.fx.clear();
 
+    this.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
     this.enemies = [];
     this.brickRubble = [];
@@ -2592,12 +2595,7 @@ export class TankGameEngine {
     sound.playBossAlarm();
     sound.playExplosion(1.6);
     this.screenShake = 1.35;
-    for (let k = 1; k <= 3; k++) {
-      setTimeout(() => {
-        this.screenShake = Math.max(this.screenShake, 0.7);
-        sound.playExplosion(1.15);
-      }, 140 * k);
-    }
+    this.scheduleBossAftershock();
 
     const stageTag = `BOSS WAVE ${stageIndex + 1}/${sequence.length}`;
     this.setStatusBanner(
@@ -2636,12 +2634,7 @@ export class TankGameEngine {
     sound.playExplosion(1.6);
     this.screenShake = 1.35;
 
-    for (let k = 1; k <= 3; k++) {
-      setTimeout(() => {
-        this.screenShake = Math.max(this.screenShake, 0.7);
-        sound.playExplosion(1.15);
-      }, 140 * k);
-    }
+    this.scheduleBossAftershock();
 
     const bossTitle = (bossName || 'SECTOR COMMANDER').toUpperCase();
     this.setStatusBanner(
@@ -2649,6 +2642,24 @@ export class TankGameEngine {
       4.8
     );
     this.emitHudUpdate();
+  }
+
+  scheduleBossAftershock() {
+    for (let k = 1; k <= 3; k++) {
+      const id = setTimeout(() => {
+        this._pendingTimeouts?.delete(id);
+        if (this.isDisposed) return;
+        this.screenShake = Math.max(this.screenShake, 0.7);
+        sound.playExplosion(1.15);
+      }, 140 * k);
+      this._pendingTimeouts?.add(id);
+    }
+  }
+
+  clearPendingTimeouts() {
+    if (!this._pendingTimeouts) return;
+    for (const id of this._pendingTimeouts) clearTimeout(id);
+    this._pendingTimeouts.clear();
   }
 
   getEnemyLoadoutStats(enemyClass) {
@@ -2684,11 +2695,16 @@ export class TankGameEngine {
         : TANK_CONFIGS[TANK_TYPES.STANDARD]);
     const stats = this.getEnemyLoadoutStats(enemyClass);
     const { sightRadius, radioAlertRadius } = stats;
+    const enemyId = this.nextEnemyId;
+    const behaviorRng = new SeededRng(
+      20261105 + this.currentSectorIndex * 7919 + enemyId * 104729
+    );
+    const rngNext = () => behaviorRng.next();
     const firstShotDelay =
       enemyClass === EnemyClass.HOWITZER
         ? ARTILLERY.FIRST_SHOT_MIN +
-          Math.random() * (ARTILLERY.FIRST_SHOT_MAX - ARTILLERY.FIRST_SHOT_MIN)
-        : 0.2 + Math.random() * 0.25;
+          rngNext() * (ARTILLERY.FIRST_SHOT_MAX - ARTILLERY.FIRST_SHOT_MIN)
+        : 0.2 + rngNext() * 0.25;
 
     const isHeavyUnit =
       isBoss ||
@@ -2698,16 +2714,11 @@ export class TankGameEngine {
     const hullDef = isHeavyUnit ? HULL_CATALOG.bastion_m2 : HULL_CATALOG.bars_m1;
     const turretDef = isHeavyUnit ? TURRET_CATALOG.t_02 : TURRET_CATALOG.t_01;
 
-    const enemyId = this.nextEnemyId;
-    const behaviorRng = new SeededRng(
-      20261105 + this.currentSectorIndex * 7919 + enemyId * 104729
-    );
-    const rngNext = () => behaviorRng.next();
     const actions = resolveBehaviorActions(cfg?.behavior);
 
     const patrolWaypoints = [
       { x, z },
-      { x: THREE.MathUtils.clamp(x + (Math.random() > 0.5 ? 10 : -10), -28, 28), z },
+      { x: THREE.MathUtils.clamp(x + (rngNext() > 0.5 ? 10 : -10), -28, 28), z },
       { x, z: THREE.MathUtils.clamp(z + 10, -28, 26) },
     ];
 
@@ -2726,7 +2737,7 @@ export class TankGameEngine {
           flashTimer: 0,
           gunElevation: 0,
           randomShotTarget: null,
-          randomShotTimer: 4.0 + idx * 2.5 + Math.random() * 5.0,
+          randomShotTimer: 4.0 + idx * 2.5 + rngNext() * 5.0,
         }))
       : null;
 
@@ -3450,7 +3461,8 @@ export class TankGameEngine {
     canvas.addEventListener('pointerdown', this.handlePointerDown);
     canvas.addEventListener('wheel', this.handleWheel, { passive: false });
     window.addEventListener('pointerup', this.handlePointerUp);
-    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    this.handleContextMenu = (e) => e.preventDefault();
+    canvas.addEventListener('contextmenu', this.handleContextMenu);
   }
 
   startMission(sectorIdx) {
@@ -3639,7 +3651,10 @@ export class TankGameEngine {
       const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
       gl.flush();
       const poll = () => {
-        if (this.isDisposed) return;
+        if (this.isDisposed) {
+          if (sync) gl.deleteSync(sync);
+          return;
+        }
         const state = sync && gl.getSyncParameter(sync, gl.SYNC_STATUS);
         if (state === gl.UNSIGNALED) {
           this.frameId = window.setTimeout(poll, 5);
@@ -3676,7 +3691,10 @@ export class TankGameEngine {
         this.update(dt);
         this.modelFactory?.updateAnimatedTextures(dt);
         if (this.isHangarOpen) {
-          this.hangarStage.render(this.renderer, document.querySelector('.hangar-stage-window')?.getBoundingClientRect());
+          if (!this._hangarWindowEl?.isConnected) {
+            this._hangarWindowEl = document.querySelector('.hangar-stage-window');
+          }
+          this.hangarStage.render(this.renderer, this._hangarWindowEl?.getBoundingClientRect());
         } else {
           this.tileBatcher.sync();
           this.renderer.render(this.scene, this.camera);
@@ -6971,7 +6989,7 @@ export class TankGameEngine {
   }
 
   /**
-   * BOSS_INFERNO Overdrive Ram ("форсаж-таран"): locks onto player heading for 0.85s
+   * BOSS_INFERNO Overdrive Ram: locks onto player heading for 0.85s
    * with a glowing hazard telegraph line, then surges forward at 3.4x speed, smashing
    * brick/crates/forests and ramming the player hull on impact.
    */
@@ -8766,6 +8784,7 @@ export class TankGameEngine {
   updateBarrelExplosions(dt) {
     if (this.isDisposed || this.isHangarPaused || this.isAdPaused || this.status !== GameStatus.PLAYING) return;
     const pending = this.pendingBarrelExplosions || [];
+    this.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
     for (const event of pending) {
       const { cell } = event;
@@ -9724,6 +9743,7 @@ export class TankGameEngine {
     this.isDisposed = true;
     this.hangarStage?.dispose();
     this.modelFactory.brickModels.dispose();
+    this.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
     this.clearAiDebugOverlay();
     this.clock?.dispose();
@@ -9741,6 +9761,17 @@ export class TankGameEngine {
     canvas.removeEventListener('pointermove', this.handlePointerMove);
     canvas.removeEventListener('pointerdown', this.handlePointerDown);
     canvas.removeEventListener('wheel', this.handleWheel);
+    if (this.handleContextMenu) {
+      canvas.removeEventListener('contextmenu', this.handleContextMenu);
+    }
+
+    this.clearGroup(this.mapGroup);
+    this.clearGroup(this.entityGroup);
+    this.clearGroup(this.fxGroup);
+    this.clearGroup(this.codexStageGroup);
+    this.clearGroup(this.codexFxGroup);
+    this.fx?.clear();
+    this._codexFx?.clear();
 
     this.urbanGroundTexture?.dispose();
     if (this.perimeterMesh) {

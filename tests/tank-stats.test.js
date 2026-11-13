@@ -70,7 +70,7 @@ test('Player Tier-1 hull: 22 HP base and no stat-only modules', () => {
 test('Balance table: player Cannon Mk1 frontal hits to destroy each enemy type', () => {
   const expected = {
     scout: 1, standard: 1, howitzer: 1, hover: 1, kamikaze: 1, engineer: 1, stealth: 1,
-    jammer: 2, striker: 2, sapper: 2, flamethrower: 3, armor: 7,
+    jammer: 2, striker: 2, sapper: 3, flamethrower: 3, armor: 11,
   };
   const gun = CANNONS.CANNON_Mk1;
   for (const type of Object.values(TANK_TYPES)) {

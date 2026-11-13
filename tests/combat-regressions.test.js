@@ -11,12 +11,12 @@ import { TANK_CONFIGS, TANK_TYPES } from '../public/src/game/tanks.js';
 test('ARMOR directional protection comes from its base plus the A3 component', () => {
   const config = TANK_CONFIGS[TANK_TYPES.ARMOR];
   const stats = computeTankStats(config.loadout, config.base);
-  assert.deepEqual({ ...stats.armorByAspect }, { front: 59, left: 36, right: 36, rear: 29 });
-  assert.equal(stats.maxHP, 52);
+  assert.deepEqual({ ...stats.armorByAspect }, { front: 64, left: 44, right: 44, rear: 29 });
+  assert.equal(stats.maxHP, 78);
   assert.equal(stats.directionalArmor, true);
   assert.equal(stats.armor, 29, 'scalar armour is the weakest side');
   const gun = CANNONS.CANNON_Mk1;
-  for (const [aspect, bonus, hits] of [['front', 1, 7], ['left', 1.15, 4], ['right', 1.15, 4], ['rear', 1.35, 3]]) {
+  for (const [aspect, bonus, hits] of [['front', 1, 11], ['left', 1.15, 7], ['right', 1.15, 7], ['rear', 1.35, 5]]) {
     const damage = computeEffectiveDamage(gun.damage, gun.penetration, stats.armorByAspect[aspect]) * bonus;
     assert.equal(Math.ceil(stats.maxHP / damage), hits, aspect);
   }

@@ -15,6 +15,12 @@ export const FPS_CAP_OPTIONS = Object.freeze([60, 30, 0]);
 const UPGRADES_KEY = 'iron_vanguard_upgrades_v3';
 const SETTINGS_KEY = 'iron_vanguard_settings_v1';
 
+function clampTier(val, fallback = 1) {
+  const num = Number(val);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.max(1, Math.min(5, Math.trunc(num)));
+}
+
 export function loadUpgrades() {
   const defaults = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 };
   try {
@@ -23,11 +29,11 @@ export function loadUpgrades() {
     const parsed = JSON.parse(saved);
     if (parsed && typeof parsed.cannon === 'number') {
       return {
-        cannon: parsed.cannon || 1,
-        chassis: parsed.chassis || parsed.vehicleFrame || 1,
-        frame: parsed.frame || parsed.vehicleFrame || 1,
-        engine: parsed.engine || 1,
-        armor: parsed.armor || 1,
+        cannon: clampTier(parsed.cannon, 1),
+        chassis: clampTier(parsed.chassis ?? parsed.vehicleFrame, 1),
+        frame: clampTier(parsed.frame ?? parsed.vehicleFrame, 1),
+        engine: clampTier(parsed.engine, 1),
+        armor: clampTier(parsed.armor, 1),
       };
     }
   } catch {

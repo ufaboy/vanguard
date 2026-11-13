@@ -373,8 +373,17 @@ export class SaveRepository {
         if (parsed && Array.isArray(parsed.parts)) {
           delete parsed.alloys;
           delete parsed.cannonAmmo;
-          if (typeof parsed.credits !== 'number') {
+          parsed.parts = parsed.parts.filter(
+            (part) => part && typeof part === 'object' && typeof part.instanceId === 'string' && typeof part.category === 'string'
+          );
+          if (!Number.isFinite(parsed.credits) || parsed.credits < 0) {
             parsed.credits = 500;
+          }
+          if (!Array.isArray(parsed.unlockedMissions)) {
+            parsed.unlockedMissions = ['mission_01', 'mission_02', 'mission_03'];
+          }
+          if (!parsed.completedMissions || typeof parsed.completedMissions !== 'object' || Array.isArray(parsed.completedMissions)) {
+            parsed.completedMissions = {};
           }
           this.savePlayerSave(parsed);
           return parsed;

@@ -28,6 +28,26 @@ function loadDotEnv(filePath) {
 const isPreview = process.argv.includes('--preview');
 const env = { ...process.env, ...loadDotEnv(path.resolve(process.cwd(), '.env')) };
 const publicDir = path.resolve(process.cwd(), 'public');
+
+function runCheck(cmd, args, label) {
+  const res = spawnSync(cmd, args, { stdio: 'inherit', shell: true, env });
+  if (res.status !== 0) {
+    console.error(`Deploy aborted: ${label} failed.`);
+    process.exit(res.status ?? 1);
+  }
+}
+
+if (!isPreview) {
+  const gitStatus = spawnSync('git', ['status', '--porcelain'], { encoding: 'utf8', env });
+  if (gitStatus.status !== 0 || gitStatus.stdout.trim().length > 0) {
+    console.error('Deploy aborted: working tree must be clean before deploying to production.');
+    process.exit(1);
+  }
+}
+
+runCheck('npm', ['run', 'lint'], 'lint');
+runCheck('npm', ['test'], 'tests');
+
 const stagingDir = fs.mkdtempSync(path.join(os.tmpdir(), 'battle-tank-deploy-'));
 
 let exitCode = 1;
@@ -46,8 +66,7 @@ try {
     'deploy',
     stagingDir,
     '--project-name=battle-tank',
-    ...(isPreview ? [] : ['--branch=main']),
-    '--commit-dirty=true',
+    ...(isPreview ? ['--commit-dirty=true'] : ['--branch=main']),
   ];
 
   const res = spawnSync('npx', args, { stdio: 'inherit', shell: true, env });
