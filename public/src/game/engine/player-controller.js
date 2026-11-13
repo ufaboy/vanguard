@@ -572,10 +572,6 @@ export class PlayerController {
     const speedRatio = maxSpeed > 0 ? Math.min(1.0, playerSpeed / maxSpeed) : 0;
     sound.updateEngineLoop(speedRatio, engine.hangarOpen || engine.status !== GameStatus.PLAYING);
 
-    if (engine.ramCooldown > 0) {
-      engine.ramCooldown = Math.max(0, engine.ramCooldown - dt);
-    }
-
     const radius = 0.72;
     const isMoving = Math.abs(engine.playerVx) > 0.05 || Math.abs(engine.playerVz) > 0.05;
     const nextX = engine.playerX + engine.playerVx * dt;
@@ -642,23 +638,8 @@ export class PlayerController {
           engine.playerZ = pushedZ;
         }
 
-        const impactSpeed = Math.hypot(engine.playerVx, engine.playerVz);
         engine.playerVx *= 0.25;
         engine.playerVz *= 0.25;
-
-        if ((engine.ramCooldown || 0) <= 0 && impactSpeed > 1.8) {
-          engine.ramCooldown = 0.65;
-          const frameTier = engine.effectiveUpgrades.frame || 1;
-          const ramDamage = Math.round(6 + frameTier * 4 + impactSpeed * 1.4);
-          const selfRamDamage = Math.max(1, Math.round(6 - frameTier));
-          const hitX = (engine.playerX + e.x) * 0.5;
-          const hitZ = (engine.playerZ + e.z) * 0.5;
-          sound.playSteelHit({ x: hitX, z: hitZ });
-          engine.spawnSparks(hitX, 0.75, hitZ, 0xf59e0b, 10);
-          engine.screenShake = Math.max(engine.screenShake, 0.32);
-          engine.damageEnemy(e, ramDamage);
-          engine.damagePlayer(selfRamDamage);
-        }
       }
     }
 
@@ -1044,10 +1025,11 @@ export class PlayerController {
     const triggerThreshold = engine.playerMaxHp * REPAIR_KIT.TRIGGER_RATIO;
     if (
       engine.repairKitCount > 0 &&
-      (engine.playerHp <= triggerThreshold || engine.playerHp <= DURABILITY.ZERO_HP)
+      engine.playerHp > DURABILITY.ZERO_HP &&
+      engine.playerHp <= triggerThreshold
     ) {
       engine.repairKitCount--;
-      engine.playerHp = Math.max(1, engine.playerHp) + REPAIR_KIT.RESTORE_AMOUNT;
+      engine.playerHp = Math.min(engine.playerMaxHp, engine.playerHp + REPAIR_KIT.RESTORE_AMOUNT);
       sound.playPowerUp();
       sound.playEngineerWeld({ x: engine.playerX, z: engine.playerZ });
       engine.spawnSparks(engine.playerX, 0.9, engine.playerZ, 0x10b981, 14);

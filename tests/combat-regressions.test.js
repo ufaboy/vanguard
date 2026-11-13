@@ -3,6 +3,7 @@ import { BoxPowerUpPool } from '../public/src/game/terrains/boxes-loot.js';
 import assert from 'node:assert/strict';
 import { determineHitAspect, resolveArmorHit } from '../public/src/sim/ballistics.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
+import { PlayerController } from '../public/src/game/engine/player-controller.js';
 import { findBorderIngressCell } from '../public/src/game/campaign-navigation.js';
 import { TileType, GameStatus } from '../public/src/game/types.js';
 import { computeTankStats, computeEffectiveDamage, CANNONS } from '../public/src/game/constants.js';
@@ -417,4 +418,44 @@ test('Border ingress does not clear entryTarget prematurely while tank footprint
   engine.updateEnemies(0.05, 0.09);
   assert.equal(enemy.entryTarget, null);
   assert.equal(engine.checkTankWallCollision(enemy.x, enemy.z, 0.72, true), false);
+});
+
+test('Emergency repair kit triggers below 33% HP only when surviving the hit, not on lethal overkill', () => {
+  const makeEngine = () => {
+    const engine = {
+      playerHp: 22,
+      playerMaxHp: 22,
+      playerX: 0,
+      playerZ: 0,
+      repairKitCount: 2,
+      screenShake: 0,
+      status: GameStatus.PLAYING,
+      wasDefeated: false,
+      kills: 0,
+      fx: { tankDestroyed() {} },
+      tryDamageComponent() {},
+      spawnSparks() {},
+      setStatusBanner() {},
+      emitHudUpdate() {},
+      restoreAllComponents() {},
+      syncCampaignCredits() {},
+      saveProgress() {},
+    };
+    engine.playerController = new PlayerController(engine);
+    return engine;
+  };
+
+  // Lethal barrel-level hit (41 dmg on 22 HP) destroys the tank instead of resurrecting via repair kit
+  const lethal = makeEngine();
+  lethal.playerController.damagePlayer(41, { zone: 'hull', aspect: 'left' });
+  assert.equal(lethal.playerHp, 0);
+  assert.equal(lethal.status, GameStatus.GAME_OVER);
+  assert.equal(lethal.repairKitCount, 2);
+
+  // Non-lethal hit dropping below 33% HP (22 - 16 = 6 HP) triggers repair kit
+  const nonLethal = makeEngine();
+  nonLethal.playerController.damagePlayer(16, { zone: 'hull', aspect: 'left' });
+  assert.equal(nonLethal.playerHp, 22);
+  assert.equal(nonLethal.status, GameStatus.PLAYING);
+  assert.equal(nonLethal.repairKitCount, 1);
 });
