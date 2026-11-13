@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UI Kit Demo: Buttons &amp; Links — IRON VANGUARD</title>
+    <meta name="description" content="Interactive showcase of all button and link components used across IRON VANGUARD / BATTLE TANK." />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0B1120" />
+    <link rel="icon" type="image/svg+xml" href="./public/favicon.svg" />
+    <link rel="stylesheet" href="./public/src/index.css" />
+    <style>
+      .demo-shell {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 28px 28px 72px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .demo-topbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 20px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 6px;
+      }
+
+      .demo-hero {
+        position: relative;
+        padding: 24px 28px;
+        background: linear-gradient(135deg, #111827 0%, #0b1120 100%);
+        border: 1px solid #334155;
+        border-left: 4px solid #f59e0b;
+        border-radius: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .demo-hero h1 {
+        margin: 6px 0 8px;
+        font-family: var(--font-display, sans-serif);
+        font-size: clamp(24px, 3vw, 34px);
+        font-weight: 900;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #f8fafc;
+      }
+
+      .demo-hero p {
+        margin: 0;
+        max-width: 680px;
+        color: #94a3b8;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .demo-log-box {
+        min-width: 280px;
+        padding: 12px 16px;
+        background: #020617;
+        border: 1px solid #1e293b;
+        border-radius: 4px;
+        font-family: var(--font-mono, monospace);
+        font-size: 12px;
+      }
+
+      .demo-log-label {
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #64748b;
+        margin-bottom: 4px;
+      }
+
+      .demo-log-value {
+        color: #fcd34d;
+        font-weight: 700;
+      }
+
+      .demo-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      @media (max-width: 980px) {
+        .demo-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .demo-section {
+        background: #0f172a;
+        border: 1px solid #1e293b;
+        border-radius: 6px;
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .demo-section.is-wide {
+        grid-column: 1 / -1;
+      }
+
+      .demo-section-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #1e293b;
+      }
+
+      .demo-section-head h2 {
+        margin: 0;
+        font-family: var(--font-display, sans-serif);
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #f8fafc;
+      }
+
+      .demo-section-head span {
+        font-family: var(--font-mono, monospace);
+        font-size: 11px;
+        color: #64748b;
+      }
+
+      .demo-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .demo-col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .demo-sublabel {
+        font-family: var(--font-mono, monospace);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 6px;
+      }
+
+      .demo-link-inline {
+        color: #fbbf24;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        font-weight: 600;
+        transition: color 0.15s ease;
+      }
+
+      .demo-link-inline:hover {
+        color: #fde68a;
+      }
+
+      .demo-link-tactical {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #38bdf8;
+        font-family: var(--font-mono, monospace);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 4px 8px;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        background: rgba(14, 116, 144, 0.14);
+        border-radius: 3px;
+        transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+      }
+
+      .demo-link-tactical:hover {
+        color: #e0f2fe;
+        border-color: #38bdf8;
+        background: rgba(14, 116, 144, 0.3);
+      }
+
+      .demo-link-muted {
+        color: #64748b;
+        text-decoration: none;
+        font-size: 13px;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      .demo-breadcrumb {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-mono, monospace);
+        font-size: 12px;
+        color: #64748b;
+      }
+
+      .demo-breadcrumb a {
+        color: #cbd5e1;
+        text-decoration: none;
+      }
+
+      .demo-breadcrumb a:hover {
+        color: #fbbf24;
+        text-decoration: underline;
+      }
+
+      .demo-handle-stage {
+        position: relative;
+        height: 46px;
+        margin-top: 12px;
+        background: #141c24;
+        border: 1px solid #334155;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono, monospace);
+        font-size: 11px;
+        color: #94a3b8;
+      }
+
+      .demo-checkpoint-stage {
+        position: relative;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .demo-checkpoint-stage .campaign-checkpoint {
+        position: static;
+        transform: none;
+      }
+
+      .demo-btn-disabled {
+        opacity: 0.45;
+        cursor: not-allowed !important;
+        filter: grayscale(0.4);
+      }
+    </style>
+  </head>
+  <body data-page="demo" class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 scrollable-page">
+    <main class="demo-shell">
+      <!-- Top Navigation Bar -->
+      <header class="demo-topbar">
+        <div class="demo-row">
+          <a class="menu-brand" href="./public/index.html" data-demo="Brand Home Link">IRON VANGUARD</a>
+          <nav class="menu-nav" aria-label="Primary Demo Navigation">
+            <a class="menu-nav-link is-active" href="#cta-buttons" data-demo="Nav Link (Active)">CTAs</a>
+            <a class="menu-nav-link" href="#modal-menu-buttons" data-demo="Nav Link">Menu &amp; Modals</a>
+            <a class="menu-nav-link" href="#tabs-pills" data-demo="Nav Link">Tabs &amp; Pills</a>
+            <a class="menu-nav-link" href="#hangar-hud" data-demo="Nav Link">Hangar &amp; HUD</a>
+            <a class="menu-nav-link" href="#links-footer" data-demo="Nav Link">Links &amp; Footer</a>
+          </nav>
+        </div>
+        <a class="menu-back" href="./public/index.html" data-demo="Back to Command Center">← Back to Command Center</a>
+      </header>
+
+      <!-- Hero Banner -->
+      <section class="demo-hero">
+        <div>
+          <div class="tactical-kicker">
+            <span class="kicker-beacon" aria-hidden="true"></span>
+            <span>UI COMPONENT INVENTORY // BUTTONS &amp; LINKS</span>
+          </div>
+          <h1>Tactical Buttons &amp; Links Demo</h1>
+          <p>
+            Complete reference of all interactive buttons, links, tabs, pills, HUD controls, hangar actions,
+            and armored navigation plates styled with the IRON VANGUARD design system.
+          </p>
+        </div>
+        <div class="demo-log-box" role="status" aria-live="polite">
+          <div class="demo-log-label">Last Interaction</div>
+          <div id="demo-interaction-log" class="demo-log-value">Click any button or link to inspect</div>
+        </div>
+      </section>
+
+      <div class="demo-grid">
+        <!-- 1. Primary & Hero CTAs -->
+        <section id="cta-buttons" class="demo-section">
+          <div class="demo-section-head">
+            <h2>1. Hero &amp; Mission Launch CTAs</h2>
+            <span>.armored-action-btn · .brief-start-btn · .survival-start-cta</span>
+          </div>
+
+          <div class="demo-col">
+            <div>
+              <div class="demo-sublabel">Armored Action Links / Buttons</div>
+              <div class="demo-row">
+                <a class="armored-action-btn primary" href="#cta-buttons" style="min-width: 260px;" data-demo="Armored Action Primary">
+                  <span class="btn-body">
+                    <small>PRIMARY CAMPAIGN</small>
+                    <strong>DEPLOY TO THE FRONT <span class="action-arrow" aria-hidden="true">»</span></strong>
+                  </span>
+                </a>
+
+                <button type="button" class="armored-action-btn secondary" style="min-width: 240px;" data-demo="Armored Action Secondary">
+                  <span class="btn-body">
+                    <small>SECONDARY INTEL</small>
+                    <strong>OPEN FIELD MANUAL <span class="action-arrow" aria-hidden="true">»</span></strong>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Campaign Brief Start (Enabled &amp; Locked)</div>
+              <div class="demo-row">
+                <button type="button" class="brief-start-btn" data-demo="Brief Start (Enabled)">
+                  <span class="start-content">
+                    <svg class="start-tank-icon" viewBox="0 0 48 22" fill="currentColor" aria-hidden="true">
+                      <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4z"/>
+                    </svg>
+                    <span class="start-text">START »</span>
+                  </span>
+                </button>
+
+                <button type="button" class="brief-start-btn is-locked" disabled data-demo="Brief Start (Locked)">
+                  <span class="start-content">
+                    <span class="start-text">LOCKED</span>
+                  </span>
+                  <span class="locked-sub">CLEAR SECTOR 01 FIRST</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Survival CTA &amp; Contract Quick Go</div>
+              <div class="demo-row">
+                <button type="button" class="survival-start-cta" data-demo="Survival Start CTA">
+                  <span>DEPLOY WAVE 01</span>
+                </button>
+
+                <a class="contract-quick-go" href="#cta-buttons" title="Quick Deploy Contract" aria-label="Quick Deploy Contract" data-demo="Contract Quick Go">»</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Battle Modal & Menu Buttons -->
+        <section id="modal-menu-buttons" class="demo-section">
+          <div class="demo-section-head">
+            <h2>2. Battle Modal &amp; Menu Buttons</h2>
+            <span>.battle-btn-* · .menu-* · .brief-handle-btn</span>
+          </div>
+
+          <div class="demo-col">
+            <div>
+              <div class="demo-sublabel">Riveted Battle Modal Actions</div>
+              <div class="battle-modal-actions">
+                <button type="button" class="battle-btn-primary" data-demo="Battle Primary">
+                  <span class="btn-rivet top-left" aria-hidden="true"></span>
+                  <span class="btn-rivet top-right" aria-hidden="true"></span>
+                  <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+                  <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+                  <span>NEXT SECTOR »</span>
+                </button>
+                <button type="button" class="battle-btn-secondary" data-demo="Battle Secondary">
+                  <span class="btn-rivet top-left" aria-hidden="true"></span>
+                  <span class="btn-rivet top-right" aria-hidden="true"></span>
+                  <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+                  <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+                  <span>⚙ HANGAR [U]</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Menu Action Variants (Primary, Secondary, Ghost, Danger, Disabled)</div>
+              <div class="menu-actions">
+                <button type="button" class="menu-primary" data-demo="Menu Primary">Confirm</button>
+                <button type="button" class="menu-secondary" data-demo="Menu Secondary">Options</button>
+                <button type="button" class="menu-ghost" data-demo="Menu Ghost">Cancel</button>
+                <button type="button" class="menu-danger" data-demo="Menu Danger">Abort Mission</button>
+                <button type="button" class="menu-secondary demo-btn-disabled" disabled data-demo="Menu Disabled">Disabled</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Armored Drawer Pull Handle</div>
+              <div class="demo-handle-stage">
+                <button type="button" class="brief-handle-btn" aria-label="Toggle briefing drawer" data-demo="Brief Handle">
+                  <span class="btn-rivet" aria-hidden="true"></span>
+                  <span class="handle-chevron">▲</span>
+                  <span class="btn-rivet" aria-hidden="true"></span>
+                </button>
+                <span>DRAWER CONTAINER</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Share, Social & Icon Buttons -->
+        <section class="demo-section">
+          <div class="demo-section-head">
+            <h2>3. Share, Social &amp; Icon Actions</h2>
+            <span>.battle-share-btn · .battle-share-icon-btn</span>
+          </div>
+
+          <div class="demo-col">
+            <div>
+              <div class="demo-sublabel">Share Buttons &amp; Social Icon Links</div>
+              <div class="battle-share-actions" style="flex-wrap: wrap;">
+                <button type="button" class="battle-share-btn is-primary" data-demo="Copy Share Link">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                  </svg>
+                  <span>Copy Link</span>
+                </button>
+
+                <button type="button" class="battle-share-btn" data-demo="Share Battle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                    <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/>
+                  </svg>
+                  <span>Share</span>
+                </button>
+
+                <button type="button" class="battle-share-btn is-ghost" data-demo="Download PNG Card">
+                  <span>PNG Card</span>
+                </button>
+
+                <a href="https://t.me/share/url?url=https://battletank.online/" target="_blank" rel="noopener noreferrer" class="battle-share-icon-btn" aria-label="Share on Telegram" title="Share on Telegram" data-demo="Telegram Share Link">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
+                  </svg>
+                </a>
+
+                <a href="https://x.com/intent/tweet?text=IRON+VANGUARD" target="_blank" rel="noopener noreferrer" class="battle-share-icon-btn" aria-label="Share on X" title="Share on X" data-demo="X Share Link">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Map Checkpoints (Campaign Nodes)</div>
+              <div class="demo-checkpoint-stage">
+                <button type="button" class="campaign-checkpoint" style="--chapter-color: #fbbf24;" data-demo="Checkpoint 01">01</button>
+                <button type="button" class="campaign-checkpoint" style="--chapter-color: #4ade80;" data-demo="Checkpoint 02">02</button>
+                <button type="button" class="campaign-checkpoint" style="--chapter-color: #ef4444;" data-demo="Checkpoint Boss">★</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Tabs, Pills & Codex Controls -->
+        <section id="tabs-pills" class="demo-section">
+          <div class="demo-section-head">
+            <h2>4. Tabs, Filter Buttons &amp; Segmented Controls</h2>
+            <span>.codex-tab · .codex-tier-btn · .hangar-view-controls</span>
+          </div>
+
+          <div class="demo-col">
+            <div>
+              <div class="demo-sublabel">Codex Category Tabs (Interactive)</div>
+              <div class="codex-tabs" data-toggle-group="codex-tab">
+                <button type="button" class="codex-tab active" data-demo="Codex Tab: Units">UNITS</button>
+                <button type="button" class="codex-tab" data-demo="Codex Tab: Cannons">CANNONS</button>
+                <button type="button" class="codex-tab" data-demo="Codex Tab: Armor">ARMOR</button>
+                <button type="button" class="codex-tab" data-demo="Codex Tab: Modules">MODULES</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Tier Selector &amp; List Item Buttons</div>
+              <div class="demo-row" style="margin-bottom: 10px;" data-toggle-group="tier-btn">
+                <button type="button" class="codex-tier-btn active" data-demo="Tier I">MK I</button>
+                <button type="button" class="codex-tier-btn" data-demo="Tier II">MK II</button>
+                <button type="button" class="codex-tier-btn" data-demo="Tier III">MK III</button>
+                <button type="button" class="codex-tier-btn" data-demo="Tier IV">MK IV</button>
+                <button type="button" class="codex-tier-btn" data-demo="Tier V">MK V</button>
+              </div>
+              <div class="demo-row" data-toggle-group="codex-item">
+                <button type="button" class="codex-item-btn active" style="max-width: 210px;" data-demo="Codex Item: Standard">
+                  <span class="text-xs font-mono font-bold text-slate-100">STANDARD TANK</span>
+                  <span class="text-[10px] font-mono text-amber-400">22 HP</span>
+                </button>
+                <button type="button" class="codex-item-btn" style="max-width: 210px;" data-demo="Codex Item: Hydra">
+                  <span class="text-xs font-mono font-bold text-slate-300">BOSS HYDRA</span>
+                  <span class="text-[10px] font-mono text-red-400">132 HP</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Hangar Camera Angle Segmented Toggle</div>
+              <div class="hangar-view-controls" style="position: static; width: fit-content;" data-toggle-group="view-ctrl">
+                <button type="button" class="is-selected" data-demo="View: 3/4">3/4 VIEW</button>
+                <button type="button" data-demo="View: Front">FRONT</button>
+                <button type="button" data-demo="View: Side">SIDE</button>
+                <button type="button" data-demo="View: Rear">REAR</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. Hangar & Engineering Buttons -->
+        <section id="hangar-hud" class="demo-section">
+          <div class="demo-section-head">
+            <h2>5. Hangar &amp; Supply Controls</h2>
+            <span>.hangar-buy · .hangar-supply-buy · .hangar-exit</span>
+          </div>
+
+          <div class="demo-col">
+            <div class="demo-row">
+              <div style="flex: 1; min-width: 220px;">
+                <div class="demo-sublabel">Upgrade Purchase (Active &amp; Disabled)</div>
+                <div class="demo-col">
+                  <button type="button" class="hangar-buy" data-demo="Hangar Upgrade Buy">
+                    <strong>INSTALL MK III</strong>
+                    <span>$2,400</span>
+                  </button>
+                  <button type="button" class="hangar-buy" disabled data-demo="Hangar Upgrade Maxed">
+                    <strong>MAX TIER REACHED</strong>
+                    <span>—</span>
+                  </button>
+                </div>
+              </div>
+
+              <div style="flex: 1; min-width: 220px;">
+                <div class="demo-sublabel">Supply Refill &amp; Emergency Repair</div>
+                <div class="demo-col">
+                  <button type="button" class="hangar-supply-buy" style="--supply-color: #7dd3fc;" data-demo="Buy APS Charge">
+                    <span class="hangar-supply-add">+1 APS</span>
+                    <span class="hangar-supply-price"><span class="hangar-credit-coin">$</span> 1000</span>
+                  </button>
+                  <div class="component-repair">
+                    <button type="button" data-demo="Repair Damaged Component">REPAIR CANNON ($900)</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Hangar Exit &amp; System Selector</div>
+              <div class="demo-row">
+                <button type="button" class="hangar-exit" data-demo="Exit Hangar">
+                  RETURN TO BATTLE <kbd>ESC</kbd>
+                </button>
+                <button type="button" class="hangar-system is-selected" style="max-width: 260px;" data-demo="Hangar System: Cannon">
+                  <span class="hangar-system-copy">
+                    <strong>CANNON</strong>
+                    <small>105mm Rifled Gun</small>
+                  </span>
+                  <b>III<small>/V</small></b>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. In-Battle HUD Utility Buttons -->
+        <section class="demo-section">
+          <div class="demo-section-head">
+            <h2>6. In-Battle HUD Utility Buttons</h2>
+            <span>Tailwind HUD Controls</span>
+          </div>
+
+          <div class="demo-col">
+            <div>
+              <div class="demo-sublabel">Top-Right Tactical HUD Controls</div>
+              <div class="demo-row">
+                <button
+                  type="button"
+                  class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border border-amber-500/60 text-amber-400 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                  data-demo="HUD Hangar [U]"
+                >
+                  <span>⚙</span>
+                  <span>HANGAR [U]</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border border-teal-400 text-teal-300 ring-2 ring-teal-400/50 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                  data-demo="HUD Hangar (In Repair Bay)"
+                >
+                  <span>⚙</span>
+                  <span>REPAIR BAY [U]</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="flex items-center gap-1 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
+                  data-demo="HUD Cycle Camera [C]"
+                >
+                  <span class="text-amber-400">⌖</span>
+                  <span>ISO CAM</span>
+                </button>
+
+                <button
+                  id="demo-sound-toggle"
+                  type="button"
+                  aria-pressed="true"
+                  class="bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 text-slate-200 hover:text-white px-2.5 py-1.5 rounded text-[11px] font-mono transition-colors cursor-pointer"
+                  data-demo="HUD Sound Toggle"
+                >
+                  🔊 AUDIO ON
+                </button>
+
+                <button
+                  type="button"
+                  class="bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
+                  data-demo="HUD Pause [ESC]"
+                >
+                  ⏸ PAUSE
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Badges &amp; Status Pills</div>
+              <div class="demo-row">
+                <span class="survival-record-pill">
+                  <span class="pill-dot" aria-hidden="true"></span>
+                  BEST: WAVE 14
+                </span>
+                <span class="battle-new-pill">NEW RECORD</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. Armored Mode Plates & Contract Banners -->
+        <section class="demo-section is-wide">
+          <div class="demo-section-head">
+            <h2>7. Armored Navigation Plates &amp; Contract Banners</h2>
+            <span>.armored-mode-plate · .contract-banner-select</span>
+          </div>
+
+          <div class="command-modes-deck" style="margin: 0;">
+            <a class="armored-mode-plate" href="./public/campaign.html" data-demo="Mode Plate: Campaign">
+              <span class="plate-rivet tl" aria-hidden="true"></span>
+              <span class="plate-rivet tr" aria-hidden="true"></span>
+              <div class="plate-index">01</div>
+              <div class="plate-content">
+                <small>CAMPAIGN ASSAULT</small>
+                <strong>Road to the Capital</strong>
+                <p>35 Sectors · 7 Tactical Regions · Break the Siege</p>
+              </div>
+              <span class="plate-arrow" aria-hidden="true">»</span>
+            </a>
+
+            <a class="armored-mode-plate" href="./public/survival.html" data-demo="Mode Plate: Survival">
+              <span class="plate-rivet tl" aria-hidden="true"></span>
+              <span class="plate-rivet tr" aria-hidden="true"></span>
+              <div class="plate-index">02</div>
+              <div class="plate-content">
+                <small>ENDLESS CRUCIBLE</small>
+                <strong>Survival Mode</strong>
+                <p>Withstand continuous waves · Defend Allied HQ</p>
+              </div>
+              <span class="plate-arrow" aria-hidden="true">»</span>
+            </a>
+
+            <a class="armored-mode-plate" href="./public/contracts.html" data-demo="Mode Plate: Contracts">
+              <span class="plate-rivet tl" aria-hidden="true"></span>
+              <span class="plate-rivet tr" aria-hidden="true"></span>
+              <div class="plate-index">03</div>
+              <div class="plate-content">
+                <small>HIGH-STAKES RAIDS</small>
+                <strong>Contracts</strong>
+                <p>Sabotage radar arrays · Extract prototype cargo</p>
+              </div>
+              <span class="plate-arrow" aria-hidden="true">»</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- 8. Links, Breadcrumbs & Footer Navigation -->
+        <section id="links-footer" class="demo-section is-wide">
+          <div class="demo-section-head">
+            <h2>8. All Link Variants &amp; Footer Navigation</h2>
+            <span>Inline · Tactical · Breadcrumb · External · Download · Disabled · Footer</span>
+          </div>
+
+          <div class="demo-col">
+            <div>
+              <div class="demo-sublabel">Text &amp; Functional Links</div>
+              <div class="demo-row" style="gap: 20px;">
+                <a class="demo-link-inline" href="./public/how-to-play.html" data-demo="Inline Standard Link">Standard Inline Link</a>
+
+                <a class="demo-link-tactical" href="./public/campaign.html" data-demo="Tactical Badge Link">
+                  <span>⌖</span>
+                  <span>Tactical Route Link</span>
+                </a>
+
+                <a class="demo-link-tactical" href="https://battletank.online/" target="_blank" rel="noopener noreferrer" data-demo="External Link">
+                  <span>External Link ↗</span>
+                </a>
+
+                <a class="demo-link-inline" href="./public/favicon.svg" download="iron-vanguard-badge.svg" data-demo="Download Link">
+                  Download Asset (.svg)
+                </a>
+
+                <a class="demo-link-muted" href="#links-footer" aria-disabled="true" tabindex="-1">
+                  Disabled / Locked Link
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Breadcrumb Trail</div>
+              <nav class="demo-breadcrumb" aria-label="Breadcrumb">
+                <a href="./public/index.html" data-demo="Breadcrumb: Home">Command Center</a>
+                <span aria-hidden="true">/</span>
+                <a href="./public/campaign.html" data-demo="Breadcrumb: Campaign">Campaign</a>
+                <span aria-hidden="true">/</span>
+                <span class="text-amber-400">Sector 01 — Iron Gate</span>
+              </nav>
+            </div>
+
+            <div>
+              <div class="demo-sublabel">Armored Footer Links &amp; Utility Buttons</div>
+              <nav class="footer-links" aria-label="Footer navigation demo" style="padding: 10px 14px; background: #080d14; border: 1px solid #1e293b; border-radius: 4px;">
+                <a class="is-active" aria-current="page" href="#links-footer" data-demo="Footer: Active">HOME</a>
+                <a href="./public/campaign.html" data-demo="Footer: Campaign">CAMPAIGN</a>
+                <a href="./public/survival.html" data-demo="Footer: Survival">SURVIVAL</a>
+                <a href="./public/contracts.html" data-demo="Footer: Contracts">CONTRACTS</a>
+                <span class="footer-sep" aria-hidden="true">|</span>
+                <a href="./public/how-to-play.html" data-demo="Footer: How to Play">HOW TO PLAY</a>
+                <a href="./public/about.html" data-demo="Footer: About">ABOUT</a>
+                <a href="./public/privacy-policy.html" data-demo="Footer: Privacy">PRIVACY POLICY</a>
+                <a href="./public/contact.html" data-demo="Footer: Contact">CONTACT</a>
+                <span class="footer-sep" aria-hidden="true">|</span>
+                <button type="button" class="footer-settings-btn" data-demo="Footer Button: Medals"><span aria-hidden="true">🏅</span> MEDALS</button>
+                <button type="button" class="footer-settings-btn" data-demo="Footer Button: Settings"><span aria-hidden="true">⚙</span> SETTINGS</button>
+              </nav>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script type="module">
+      const logEl = document.getElementById('demo-interaction-log');
+      const soundBtn = document.getElementById('demo-sound-toggle');
+
+      // Log clicks on demo elements; keep in-page anchor navigation smooth and prevent leaving on demo-only previews
+      document.addEventListener('click', (event) => {
+        const target = event.target.closest('[data-demo]');
+        if (!target) return;
+
+        const label = target.getAttribute('data-demo');
+        const tag = target.tagName.toLowerCase();
+        if (logEl) {
+          logEl.textContent = `[${tag.toUpperCase()}] ${label}`;
+        }
+
+        // Toggle groups for tabs, tier buttons, codex items, and view controls
+        const group = target.closest('[data-toggle-group]');
+        if (group) {
+          const activeClass = group.getAttribute('data-toggle-group') === 'view-ctrl' ? 'is-selected' : 'active';
+          group.querySelectorAll('button').forEach((btn) => btn.classList.remove(activeClass));
+          target.classList.add(activeClass);
+        }
+
+        // Interactive audio toggle demo
+        if (target === soundBtn) {
+          const pressed = soundBtn.getAttribute('aria-pressed') === 'true';
+          const next = !pressed;
+          soundBtn.setAttribute('aria-pressed', String(next));
+          soundBtn.textContent = next ? '🔊 AUDIO ON' : '🔇 MUTED';
+          soundBtn.classList.toggle('border-red-500/70', !next);
+          soundBtn.classList.toggle('text-red-300', !next);
+          soundBtn.classList.toggle('border-slate-700/70', next);
+          soundBtn.classList.toggle('text-slate-200', next);
+        }
+      });
+    </script>
+  </body>
+</html>
+
