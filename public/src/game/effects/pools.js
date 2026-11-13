@@ -55,7 +55,7 @@ export const POINT_FS = `
   }
 `;
 
-export const STREAK_VS = `
+const STREAK_VS = `
   attribute vec3 aColor;
   attribute float aAlpha;
   attribute vec2 aUv;
@@ -70,7 +70,7 @@ export const STREAK_VS = `
   }
 `;
 
-export const STREAK_FS = `
+const STREAK_FS = `
   varying vec3 vColor;
   varying float vAlpha;
   varying vec2 vUv;

@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import {
   FxTex,
-  RAMP_COOL,
   RAMP_FIRE,
   RAMP_HOT_SMOKE,
   RAMP_NONE,
@@ -14,8 +13,6 @@ import {
   POINT_FS,
   POINT_VS,
   PointLayer,
-  STREAK_FS,
-  STREAK_VS,
   StreakLayer,
 } from './pools.js';
 
