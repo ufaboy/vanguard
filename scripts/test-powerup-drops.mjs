@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { PowerUpPool, isUsefulPowerUp, nearestReachableDropCell } from '../public/src/game/powerup-drops.js';
 import { POWERUP, POWERUP_DROP_TYPES, POWERUP_MAX_ON_MAP } from '../public/src/game/powerups.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { settleMission, createInitialPlayerSave, SaveRepository } from '../public/src/sim/hangar.js';
 import { SeededRng } from '../public/src/sim/rng.js';
 

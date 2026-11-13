@@ -4,8 +4,6 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const EXCLUDED_FROM_DEPLOY = new Set(['codex.html']);
-
 function loadDotEnv(filePath) {
   if (!fs.existsSync(filePath)) return {};
   const vars = {};
@@ -52,13 +50,7 @@ const stagingDir = fs.mkdtempSync(path.join(os.tmpdir(), 'battle-tank-deploy-'))
 
 let exitCode = 1;
 try {
-  fs.cpSync(publicDir, stagingDir, {
-    recursive: true,
-    filter: (src) => {
-      const rel = path.relative(publicDir, src).replace(/\\/g, '/');
-      return !EXCLUDED_FROM_DEPLOY.has(rel);
-    },
-  });
+  fs.cpSync(publicDir, stagingDir, { recursive: true });
 
   const args = [
     'wrangler',

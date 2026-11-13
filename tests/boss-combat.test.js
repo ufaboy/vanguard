@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { BOSS_APS, FLAME_STREAM, HYDRA, INFERNO, MAMMOTH, TITAN, TILE_SIZE, computeTankStats } from '../public/src/game/constants.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { SECTORS } from '../public/src/game/levels.js';
 import { EnemyClass, TileType } from '../public/src/game/types.js';
 import { MAP_MODES, MAP_MODE_CONFIGS } from '../public/src/game/mapRules.js';

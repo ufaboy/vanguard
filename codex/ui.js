@@ -1,11 +1,11 @@
 /** Codex screen: catalog tabs, item list, configurator and specs for the 3D Codex studio. */
-import { CODEX_CATEGORIES, CODEX_ITEMS } from '../game/codex.js';
-import { computeTankStats } from '../game/constants.js';
-import { CANNONS, CHASSIS, FRAMES, ENGINES, ARMORS, OPTIONAL_EQUIPMENT, PLAYER_UPGRADES } from '../game/components/index.js';
-import { renderPowerUpBadgeSvg, renderTrackBadgeSvg } from '../game/icons.js';
-import { SECTORS } from '../game/levels.js';
-import { PLAYER_TANK_CONFIG } from '../game/tanks.js';
-import { GameStatus } from '../game/types.js';
+import { CODEX_CATEGORIES, CODEX_ITEMS } from './catalog.js';
+import { computeTankStats } from '../public/src/game/constants.js';
+import { CANNONS, CHASSIS, FRAMES, ENGINES, ARMORS, OPTIONAL_EQUIPMENT, PLAYER_UPGRADES } from '../public/src/game/components/index.js';
+import { renderPowerUpBadgeSvg, renderTrackBadgeSvg } from '../public/src/game/icons.js';
+import { SECTORS } from '../public/src/game/levels.js';
+import { PLAYER_TANK_CONFIG } from '../public/src/game/tanks.js';
+import { GameStatus } from '../public/src/game/types.js';
 
 export function renderCodex(state, selectedItem) {
   const categoryItems = CODEX_ITEMS.filter(
@@ -307,12 +307,9 @@ export function renderCodex(state, selectedItem) {
         ${tabsHtml}
       </div>
 
-      <button
-        data-action="toggle-codex"
-        class="px-3.5 py-2 bg-slate-900 hover:bg-red-500 hover:text-white text-slate-200 border border-slate-700 rounded font-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer"
-      >
-        ✕ EXIT CODEX [I / ESC]
-      </button>
+      <span class="px-3 py-1.5 bg-slate-900/90 text-teal-400 border border-teal-500/40 rounded font-mono text-[11px] uppercase tracking-wider font-bold">
+        STANDALONE 3D CODEX
+      </span>
     </div>
 
     <div class="codex-body">

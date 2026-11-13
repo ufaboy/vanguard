@@ -264,13 +264,6 @@ export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
   };
 }
 
-/** Armour for UI: "24%" when every side is equal, else "59 / 36 / 36 / 29% (F / L / R / Rear)". */
-export function formatArmor(stats) {
-  if (!stats?.directionalArmor) return `${stats?.armor ?? 0}%`;
-  const a = stats.armorByAspect;
-  return `${a.front} / ${a.left} / ${a.right} / ${a.rear}% (F / L / R / Rear)`;
-}
-
 export function computeEffectiveDamage(
   baseDamage,
   penetration,

@@ -13,7 +13,7 @@ import { MINE_LAYER } from '../public/src/game/abilities/mine-layer.js';
 import { JAMMER_PULSE } from '../public/src/game/abilities/jammer-pulse.js';
 import { ENGINEER_SUPPORT } from '../public/src/game/abilities/engineer-support.js';
 import { FLAME_STREAM, KAMIKAZE_BLAST, LAND_MINE, OPTIONAL_EQUIPMENT, TILE_SIZE } from '../public/src/game/constants.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { SECTOR_BOSS_CONFIGS, TANK_CONFIGS, TANK_TYPES } from '../public/src/game/tanks.js';
 
 /** Minimal stand-in for the engine services abilities use. */

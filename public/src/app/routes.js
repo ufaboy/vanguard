@@ -4,7 +4,6 @@
 export const PAGE_PATHS = Object.freeze({
   index: '/',
   battlefield: '/battlefield',
-  codex: '/codex',
   campaign: '/campaign',
   survival: '/survival',
   contracts: '/contracts',
@@ -66,8 +65,6 @@ export function resolveLegacyHashRedirect(hash) {
       return PAGE_PATHS.survival;
     case 'hangar':
       return PAGE_PATHS.index;
-    case 'codex':
-      return pageUrl('codex', param ? { item: param } : null);
     case 'guide':
     case 'faq':
     case 'how-to-play':

@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import { inspectMap } from '../skills/vanguard-map-creator/scripts/inspect-map.mjs';
 import { SECTORS, normalizeMapDefinition } from '../public/src/game/levels.js';
 import { checkMapVictory } from '../public/src/game/mapRules.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { EnemyClass } from '../public/src/game/tanks.js';
 import { POWERUP } from '../public/src/game/powerups.js';
 import { TileType } from '../public/src/game/types.js';

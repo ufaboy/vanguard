@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { TankGameEngine } from '/src/game/engine.js';
+import { TankGameEngine } from '/src/game/engine/engineCore.js';
 import { ModelFactory } from '/src/game/models.js';
 import { createWaterSurface } from '/src/game/terrains/water.js';
 import { createIceSurface } from '/src/game/terrains/ice.js';

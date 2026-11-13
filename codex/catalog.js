@@ -9,16 +9,22 @@ import {
   MISSILE,
   WEAPON,
   computeTankStats,
-  formatArmor,
-} from './constants.js';
+} from '../public/src/game/constants.js';
+
+/** Armour for UI: "24%" when every side is equal, else "59 / 36 / 36 / 29% (F / L / R / Rear)". */
+function formatArmor(stats) {
+  if (!stats?.directionalArmor) return `${stats?.armor ?? 0}%`;
+  const a = stats.armorByAspect;
+  return `${a.front} / ${a.left} / ${a.right} / ${a.rear}% (F / L / R / Rear)`;
+}
 import {
   PLAYER_TANK_CONFIG,
   SECTOR_BOSS_CONFIGS,
   TANK_CONFIGS,
   TANK_TYPES,
-} from './tanks.js';
-import { SURFACE_CATALOG } from './terrains/surfaces.js';
-import { POWERUP_TYPES } from './powerups.js';
+} from '../public/src/game/tanks.js';
+import { SURFACE_CATALOG } from '../public/src/game/terrains/surfaces.js';
+import { POWERUP_TYPES } from '../public/src/game/powerups.js';
 
 /** Codex firepower line, described by weapon type (flame stream and contact warhead have no shell stats). */
 function firepowerSpec(st) {

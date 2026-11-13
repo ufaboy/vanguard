@@ -1,4 +1,4 @@
-import { TankGameEngine } from '/src/game/engine.js';
+import { TankGameEngine } from '/src/game/engine/engineCore.js';
 import { ModelFactory } from '/src/game/models.js';
 import { TileType, GameStatus } from '/src/game/types.js';
 

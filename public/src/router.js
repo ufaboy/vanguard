@@ -19,13 +19,11 @@ const PAGE_TITLES = Object.freeze({
   contact: `Contact — ${APP_TITLE}`,
   settings: `Settings — ${APP_TITLE}`,
   battlefield: `Battlefield — ${APP_TITLE}`,
-  codex: `Codex — ${APP_TITLE}`,
 });
 
 /** Pages that require the 3D engine immediately on load. */
 export const ENGINE_PAGES = Object.freeze([
   'battlefield',
-  'codex',
 ]);
 
 /** Reads the active page from `body[data-page]` and selection from query parameters. */
@@ -50,8 +48,6 @@ export function syncRoute(route, { push = false } = {}) {
   let targetUrl = null;
   if (route.page === 'campaign' && route.param) {
     targetUrl = pageUrl('campaign', { mission: route.param });
-  } else if (route.page === 'codex' && route.param) {
-    targetUrl = pageUrl('codex', { item: route.param });
   }
 
   if (targetUrl && `${location.pathname}${location.search}` !== targetUrl) {

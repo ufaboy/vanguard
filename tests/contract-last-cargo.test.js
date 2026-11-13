@@ -10,7 +10,7 @@ import {
 } from '../public/src/game/mapRules.js';
 import { SECTORS } from '../public/src/game/levels.js';
 import { EnemyClass } from '../public/src/game/types.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { SaveRepository } from '../public/src/sim/hangar.js';
 import {
   CARGO_STATUS,

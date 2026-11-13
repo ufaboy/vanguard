@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Codex — BATTLE TANK</title>
+    <link rel="icon" type="image/svg+xml" href="../public/favicon.svg" />
+    <link rel="stylesheet" href="../public/src/index.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../public/vendor/three/build/three.module.js",
+          "three/addons/": "../public/vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
+    <div class="relative w-screen h-screen overflow-hidden bg-[#0B0F17] text-[#F8FAFC] select-none font-sans">
+      <div id="canvas-mount" class="fixed inset-0 w-full h-full"></div>
+      <div id="codex-modal" class="codex-overlay"></div>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
+
