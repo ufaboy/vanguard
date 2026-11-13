@@ -1,4 +1,4 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CANNON_AMMO, getMaxCannonAmmo } from '../public/src/game/constants.js';
 import { POWERUP } from '../public/src/game/powerups.js';

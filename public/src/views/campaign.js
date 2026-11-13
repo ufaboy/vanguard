@@ -242,21 +242,34 @@ export function renderCampaignBrief(selectedOrId, completedMissions = {}, drawer
   `;
 }
 
+const HEX_POINTS = '28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3';
+const HEX_INNER_POINTS = '30.5,9.5 69.5,9.5 89,43.3 69.5,77.1 30.5,77.1 11,43.3';
+
+const NODE_ICONS = Object.freeze({
+  completed:
+    '<svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>',
+  available:
+    '<svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/><path d="M9.5 17.5L21 6V3h-3L6.5 14.5"/><path d="M11 19l-6-6"/><path d="M8 16l-4 4"/><path d="M5 21l-2-2"/></svg>',
+  locked:
+    '<svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>',
+});
+
 function getMissionNodeView(mission, completedMissions = {}) {
   const isDone = Boolean(completedMissions[mission.id]);
   const isAvail = mission.status === 'available';
   const isUnlock = isCampaignMissionUnlocked(mission.id, completedMissions);
   const nodeStatus = isDone ? 'completed' : !isAvail ? 'planned' : isUnlock ? 'available' : 'locked';
   const nodeNum = String(mission.number).padStart(2, '0');
+  const iconHtml = NODE_ICONS[nodeStatus] || NODE_ICONS.locked;
 
-  let badgeContent = '';
-  if (nodeStatus === 'completed') {
-    badgeContent = `<span class="node-num">${nodeNum}</span><span class="node-stars" aria-label="3 stars">★★★</span>`;
-  } else if (nodeStatus === 'available') {
-    badgeContent = `<span class="node-num">${nodeNum}</span>`;
-  } else {
-    badgeContent = `<span class="node-num">${nodeNum}</span><span class="node-lock" aria-label="Locked">🔒</span>`;
-  }
+  const badgeContent = `
+    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
+      <polygon class="node-hex-fill" points="${HEX_POINTS}" />
+      ${nodeStatus === 'available' ? `<polygon class="node-hex-inner" points="${HEX_INNER_POINTS}" />` : ''}
+    </svg>
+    ${iconHtml}
+    <span class="node-num">${nodeNum}</span>
+  `;
   return { nodeStatus, badgeContent };
 }
 
@@ -285,6 +298,7 @@ export function syncCampaignMapState(completedMissions = {}, selectedId = null, 
       const pulse = document.createElement('div');
       pulse.className = 'node-pulse';
       pulse.setAttribute('aria-hidden', 'true');
+      pulse.innerHTML = `<svg viewBox="0 0 100 86.6" aria-hidden="true"><polygon points="${HEX_POINTS}"/></svg>`;
       nodeEl.prepend(pulse);
     } else if (nodeStatus !== 'available' && existingPulse) {
       existingPulse.remove();
@@ -346,7 +360,7 @@ export function renderCampaign(selectedId, completedMissions = {}, drawerOpen = 
         aria-label="Mission ${mission.number}: ${mission.name}. ${nodeStatus}."
         title="${mission.number}. ${mission.name}"
       >
-        ${nodeStatus === 'available' ? '<div class="node-pulse" aria-hidden="true"></div>' : ''}
+        ${nodeStatus === 'available' ? `<div class="node-pulse" aria-hidden="true"><svg viewBox="0 0 100 86.6" aria-hidden="true"><polygon points="${HEX_POINTS}"/></svg></div>` : ''}
         <div class="node-badge">
           ${badgeContent}
         </div>
