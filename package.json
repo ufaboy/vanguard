@@ -1,7 +1,7 @@
 {
   "name": "iron-vanguard",
   "private": true,
-  "version": "1.8.2",
+  "version": "1.8.3",
   "type": "module",
   "scripts": {
     "dev": "npx --yes serve public -l 3000",
