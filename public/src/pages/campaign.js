@@ -1,42 +1,32 @@
-import { battlefieldUrl, pageUrl } from '../app/routes.js';
+import { battlefieldUrl } from '../app/routes.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { loadPlayerSave } from '../app/state.js';
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from '../game/campaign.js';
-import { renderCampaignBrief, syncCampaignMapState } from '../views/campaign.js';
+import { syncCampaignMapState } from '../views/campaign.js';
+
+function getNextPlayableMissionId(completed) {
+  const nextUncompleted = CAMPAIGN_MISSIONS.find(
+    (m) =>
+      m.status === 'available' &&
+      isCampaignMissionUnlocked(m.id, completed) &&
+      !completed[m.id]
+  );
+  if (nextUncompleted) return nextUncompleted.id;
+
+  const lastUnlocked = [...CAMPAIGN_MISSIONS]
+    .reverse()
+    .find((m) => m.status === 'available' && isCampaignMissionUnlocked(m.id, completed));
+  return lastUnlocked?.id || CAMPAIGN_MISSIONS[0].id;
+}
 
 const root = document.getElementById('root');
 const playerSave = loadPlayerSave();
 const completedMissions = playerSave?.completedMissions || {};
-
-const initialMissionParam = new URLSearchParams(location.search).get('mission') || '';
-let selectedMissionId = CAMPAIGN_MISSIONS.some((m) => m.id === initialMissionParam)
-  ? initialMissionParam
-  : CAMPAIGN_MISSIONS[0].id;
-
-function syncSelectedMission(missionId, { push = false } = {}) {
-  const mission = CAMPAIGN_MISSIONS.find((m) => m.id === missionId);
-  if (!mission) return;
-  selectedMissionId = missionId;
-  syncCampaignMapState(completedMissions, selectedMissionId);
-
-  const drawer = document.querySelector('.cinematic-brief-drawer');
-  if (drawer) {
-    drawer.outerHTML = renderCampaignBrief(mission, completedMissions, true);
-  }
-
-  const targetUrl = pageUrl('campaign', { mission: missionId });
-  if (`${location.pathname}${location.search}` !== targetUrl) {
-    if (push) history.pushState(null, '', targetUrl);
-    else history.replaceState(null, '', targetUrl);
-  }
-}
+let selectedMissionId = getNextPlayableMissionId(completedMissions);
 
 if (root) {
   attachSettingsModal(root);
   syncCampaignMapState(completedMissions, selectedMissionId);
-  if (initialMissionParam && selectedMissionId === initialMissionParam) {
-    syncSelectedMission(selectedMissionId);
-  }
 
   root.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-action]');
@@ -46,28 +36,10 @@ if (root) {
     switch (action) {
       case 'select-campaign-mission': {
         const missionId = btn.dataset.mission;
-        if (missionId) syncSelectedMission(missionId, { push: true });
-        break;
-      }
-      case 'toggle-campaign-brief': {
-        const drawer = document.querySelector('.cinematic-brief-drawer');
-        if (!drawer) break;
-        const willOpen = !drawer.classList.contains('is-open');
-        drawer.classList.toggle('is-open', willOpen);
-        drawer.classList.toggle('is-closed', !willOpen);
-        const chevron = drawer.querySelector('.handle-chevron');
-        if (chevron) chevron.textContent = willOpen ? '︾' : '︽';
-        const toggleBtn = drawer.querySelector('.drawer-toggle-btn');
-        if (toggleBtn) toggleBtn.textContent = willOpen ? '✕' : '▲';
-        break;
-      }
-      case 'close-campaign-brief': {
-        const drawer = document.querySelector('.cinematic-brief-drawer');
-        if (!drawer) break;
-        drawer.classList.remove('is-open');
-        drawer.classList.add('is-closed');
-        const toggleBtn = drawer.querySelector('.drawer-toggle-btn');
-        if (toggleBtn) toggleBtn.textContent = '▲';
+        if (missionId && CAMPAIGN_MISSIONS.some((m) => m.id === missionId)) {
+          selectedMissionId = missionId;
+          syncCampaignMapState(completedMissions, selectedMissionId);
+        }
         break;
       }
       case 'start-campaign-mission': {
@@ -82,12 +54,4 @@ if (root) {
       }
     }
   });
-
-  window.addEventListener('popstate', () => {
-    const param = new URLSearchParams(location.search).get('mission') || '';
-    if (CAMPAIGN_MISSIONS.some((m) => m.id === param)) {
-      syncSelectedMission(param);
-    }
-  });
 }
-

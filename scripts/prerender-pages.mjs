@@ -5,8 +5,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { renderPageShell } from '../public/src/app/shell.js';
-import { CAMPAIGN_MISSIONS } from '../public/src/game/campaign.js';
-import { renderCampaign } from '../public/src/views/campaign.js';
 import { renderContracts } from '../public/src/views/contracts.js';
 
 function wrapGameShell(pageId, innerHtml) {
@@ -64,18 +62,6 @@ function wrapGameShell(pageId, innerHtml) {
 }
 
 const PAGES = [
-  {
-    file: 'public/campaign.html',
-    render: () =>
-      renderPageShell({
-        activePage: 'campaign',
-        title: 'Road to the capital',
-        subtitle: 'Seven Regions Tactical Campaign',
-        showBack: true,
-        className: 'campaign-content',
-        bodyHtml: renderCampaign(CAMPAIGN_MISSIONS[0].id, []),
-      }),
-  },
   {
     file: 'public/contracts.html',
     render: () =>

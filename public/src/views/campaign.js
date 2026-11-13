@@ -125,7 +125,38 @@ function buildSvgPath(maxIdx, width = 1376, height = 768) {
   return d;
 }
 
-export function renderCampaignBrief(selectedOrId, completedMissions = {}, drawerOpen = true) {
+function renderBriefActionHtml(selected, playable) {
+  if (playable) {
+    return `
+            <button
+              type="button"
+              class="brief-start-btn"
+              data-action="start-campaign-mission"
+              data-mission="${selected.id}"
+            >
+              <span class="start-content">
+                <svg class="start-tank-icon" viewBox="0 0 48 22" fill="currentColor" aria-hidden="true">
+                  <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                </svg>
+                <span class="start-text">START MISSION »</span>
+              </span>
+              <span class="start-glow" aria-hidden="true"></span>
+            </button>
+          `;
+  }
+  return `
+            <button
+              type="button"
+              class="brief-start-btn is-locked"
+              disabled
+            >
+              <span class="start-text">LOCKED</span>
+              <small class="locked-sub">Pass Sector ${selected.number - 1}</small>
+            </button>
+          `;
+}
+
+export function renderCampaignBrief(selectedOrId, completedMissions = {}) {
   const selected = typeof selectedOrId === 'string'
     ? CAMPAIGN_MISSIONS.find((m) => m.id === selectedOrId) || CAMPAIGN_MISSIONS[0]
     : selectedOrId || CAMPAIGN_MISSIONS[0];
@@ -134,33 +165,13 @@ export function renderCampaignBrief(selectedOrId, completedMissions = {}, drawer
   const region = CAMPAIGN_REGIONS.find((r) => r.id === chapter.id) || CAMPAIGN_REGIONS[0];
   const available = selected.status === 'available' && Boolean(sector);
   const playable = available && isCampaignMissionUnlocked(selected.id, completedMissions);
-  const completed = Boolean(completedMissions[selected.id]);
-
-  const starCount = completed ? 3 : playable ? 2 : 0;
-  const starsHtml = `
-    <span class="star-item ${starCount >= 1 ? 'is-filled' : ''}">★</span>
-    <span class="star-item ${starCount >= 2 ? 'is-filled' : ''}">★</span>
-    <span class="star-item ${starCount >= 3 ? 'is-filled' : ''}">★</span>
-  `;
 
   return `
     <aside
-      class="cinematic-brief-drawer ${drawerOpen ? 'is-open' : 'is-closed'}"
+      class="cinematic-brief-drawer is-open"
       aria-label="Selected mission briefing"
       style="--chapter-color:${selected.color};--region-color:${region.color};"
     >
-      <!-- Top Center Armored Pull Handle -->
-      <button
-        type="button"
-        class="brief-handle-btn"
-        data-action="toggle-campaign-brief"
-        aria-label="${drawerOpen ? 'Collapse briefing drawer' : 'Expand briefing drawer'}"
-      >
-        <span class="btn-rivet left" aria-hidden="true"></span>
-        <span class="handle-chevron" aria-hidden="true">${drawerOpen ? '︾' : '︽'}</span>
-        <span class="btn-rivet right" aria-hidden="true"></span>
-      </button>
-
       <div class="brief-card-chassis">
         <!-- Corner Rivets -->
         <span class="btn-rivet top-left" aria-hidden="true"></span>
@@ -212,35 +223,7 @@ export function renderCampaignBrief(selectedOrId, completedMissions = {}, drawer
 
         <!-- Right Block: Massive Start Button -->
         <div class="brief-action-block">
-          ${
-            playable
-              ? `
-            <button
-              type="button"
-              class="brief-start-btn"
-              data-action="start-campaign-mission"
-              data-mission="${selected.id}"
-            >
-              <span class="start-content">
-                <svg class="start-tank-icon" viewBox="0 0 48 22" fill="currentColor" aria-hidden="true">
-                  <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
-                </svg>
-                <span class="start-text">START MISSION »</span>
-              </span>
-              <span class="start-glow" aria-hidden="true"></span>
-            </button>
-          `
-              : `
-            <button
-              type="button"
-              class="brief-start-btn is-locked"
-              disabled
-            >
-              <span class="start-text">LOCKED</span>
-              <small class="locked-sub">Pass Sector ${selected.number - 1}</small>
-            </button>
-          `
-          }
+          ${renderBriefActionHtml(selected, playable)}
         </div>
       </div>
     </aside>
@@ -322,8 +305,36 @@ export function syncCampaignMapState(completedMissions = {}, selectedId = null, 
 
   const drawer = document.querySelector('.cinematic-brief-drawer');
   if (drawer) {
-    const isOpen = drawer.classList.contains('is-open');
-    drawer.outerHTML = renderCampaignBrief(selected, completedMissions, isOpen ?? drawerOpen);
+    const sector = SECTORS.find((item) => item.mapId === selected.id);
+    const chapter = CAMPAIGN_CHAPTERS.find((c) => c.missions.some((m) => m.id === selected.id)) || CAMPAIGN_CHAPTERS[0];
+    const region = CAMPAIGN_REGIONS.find((r) => r.id === chapter.id) || CAMPAIGN_REGIONS[0];
+    const playable =
+      selected.status === 'available' &&
+      Boolean(sector) &&
+      isCampaignMissionUnlocked(selected.id, completedMissions);
+
+    drawer.classList.add('is-open');
+    drawer.classList.remove('is-closed');
+    drawer.style.setProperty('--chapter-color', selected.color);
+    drawer.style.setProperty('--region-color', region.color);
+
+    const thumbImg = drawer.querySelector('.brief-thumb-img');
+    if (thumbImg) {
+      thumbImg.src = `/images/region-thumb-${chapter.id}.jpg`;
+      thumbImg.alt = `${chapter.name} terrain preview`;
+    }
+    const regionIcon = drawer.querySelector('.region-svg-icon');
+    if (regionIcon) regionIcon.innerHTML = region.iconSvg;
+    const regionName = drawer.querySelector('.region-badge-name');
+    if (regionName) regionName.textContent = chapter.name.toUpperCase();
+    const sectorCode = drawer.querySelector('.brief-sector-code');
+    if (sectorCode) sectorCode.textContent = `SECTOR ${String(selected.number).padStart(2, '0')} // 35`;
+    const titleEl = drawer.querySelector('.brief-mission-title');
+    if (titleEl) titleEl.textContent = selected.name;
+    const descEl = drawer.querySelector('.brief-mission-desc');
+    if (descEl) descEl.textContent = `${selected.objective} · ${selected.enemyTotal} hostiles`;
+    const actionBlock = drawer.querySelector('.brief-action-block');
+    if (actionBlock) actionBlock.innerHTML = renderBriefActionHtml(selected, playable);
   }
 }
 
