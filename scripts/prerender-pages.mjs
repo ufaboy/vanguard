@@ -10,7 +10,6 @@ import { renderAbout } from '../public/src/views/about.js';
 import { renderCampaign } from '../public/src/views/campaign.js';
 import { renderContact } from '../public/src/views/contact.js';
 import { renderContracts } from '../public/src/views/contracts.js';
-import { renderHome } from '../public/src/views/home.js';
 import { renderHowToPlay } from '../public/src/views/how-to-play.js';
 import { renderPrivacyPolicy } from '../public/src/views/privacy-policy.js';
 import { renderSurvival } from '../public/src/views/survival.js';
@@ -71,10 +70,6 @@ function wrapGameShell(pageId, innerHtml) {
 
 const PAGES = [
   {
-    file: 'public/index.html',
-    render: () => renderHome(),
-  },
-  {
     file: 'public/how-to-play.html',
     render: () =>
       renderPageShell({
@@ -121,73 +116,50 @@ const PAGES = [
   {
     file: 'public/campaign.html',
     render: () =>
-      wrapGameShell(
-        'campaign',
-        renderPageShell({
-          activePage: 'campaign',
-          title: 'Road to the capital',
-          subtitle: 'Seven Regions Tactical Campaign',
-          showBack: true,
-          className: 'campaign-content',
-          bodyHtml: renderCampaign(CAMPAIGN_MISSIONS[0].id, []),
-        })
-      ),
+      renderPageShell({
+        activePage: 'campaign',
+        title: 'Road to the capital',
+        subtitle: 'Seven Regions Tactical Campaign',
+        showBack: true,
+        className: 'campaign-content',
+        bodyHtml: renderCampaign(CAMPAIGN_MISSIONS[0].id, []),
+      }),
   },
   {
     file: 'public/survival.html',
     render: () =>
-      wrapGameShell(
-        'survival',
-        renderPageShell({
-          activePage: 'survival',
-          title: 'Endless survival',
-          subtitle: 'The Iron Crucible',
-          showBack: true,
-          className: 'campaign-content',
-          bodyHtml: renderSurvival(null),
-        })
-      ),
+      renderPageShell({
+        activePage: 'survival',
+        title: 'Endless survival',
+        subtitle: 'The Iron Crucible',
+        showBack: true,
+        className: 'campaign-content',
+        bodyHtml: renderSurvival(null),
+      }),
   },
   {
     file: 'public/contracts.html',
     render: () =>
-      wrapGameShell(
-        'contracts',
-        renderPageShell({
-          activePage: 'contracts',
-          title: 'Tactical contracts',
-          subtitle: 'High-Stakes Extraction & Sabotage',
-          showBack: true,
-          className: 'campaign-content',
-          bodyHtml: renderContracts('', []),
-        })
-      ),
+      renderPageShell({
+        activePage: 'contracts',
+        title: 'Tactical contracts',
+        subtitle: 'High-Stakes Extraction & Sabotage',
+        showBack: true,
+        className: 'campaign-content',
+        bodyHtml: renderContracts('', []),
+      }),
   },
   {
-    file: 'public/contract-last-cargo.html',
+    file: 'public/battlefield.html',
     render: () =>
       wrapGameShell(
-        'contract-last-cargo',
+        'battlefield',
         renderPageShell({
-          activePage: 'contracts',
-          title: 'Last Cargo',
-          subtitle: 'Deploying Tactical Contract…',
+          activePage: 'battlefield',
+          title: 'Battlefield',
+          subtitle: 'Deploying Tactical Arena…',
           showBack: true,
-          bodyHtml: '<p class="menu-lead">Deploying Last Cargo contract mission…</p>',
-        })
-      ),
-  },
-  {
-    file: 'public/contract-blackout-protocol.html',
-    render: () =>
-      wrapGameShell(
-        'contract-blackout-protocol',
-        renderPageShell({
-          activePage: 'contracts',
-          title: 'Blackout Protocol',
-          subtitle: 'Deploying Tactical Contract…',
-          showBack: true,
-          bodyHtml: '<p class="menu-lead">Deploying Blackout Protocol contract mission…</p>',
+          bodyHtml: '<p class="menu-lead">Initializing 3D tactical arena…</p>',
         })
       ),
   },

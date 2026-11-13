@@ -221,7 +221,12 @@ export function renderCampaignBrief(selectedOrId, completedMissions = {}, drawer
               data-action="start-campaign-mission"
               data-mission="${selected.id}"
             >
-              <span class="start-text">START »</span>
+              <span class="start-content">
+                <svg class="start-tank-icon" viewBox="0 0 48 22" fill="currentColor" aria-hidden="true">
+                  <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                </svg>
+                <span class="start-text">START MISSION »</span>
+              </span>
               <span class="start-glow" aria-hidden="true"></span>
             </button>
           `

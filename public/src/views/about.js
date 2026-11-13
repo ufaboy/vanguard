@@ -26,8 +26,8 @@ export function renderAbout() {
     </div>
     <div class="menu-actions" style="margin-top:28px;">
       <a class="menu-primary" href="/campaign">Launch Campaign →</a>
-      <a class="menu-secondary" href="/hangar">Open Hangar &amp; Workshop</a>
-      <a class="menu-secondary" href="/codex">Browse 3D Codex</a>
+      <a class="menu-secondary" href="/contracts">View Contracts</a>
+      <a class="menu-secondary" href="/survival">Endless Survival</a>
     </div>
   `;
 }

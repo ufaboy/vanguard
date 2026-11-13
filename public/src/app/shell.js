@@ -7,7 +7,6 @@ const NAV_LINKS = Object.freeze([
   { id: 'campaign', label: 'Campaign', href: PAGE_PATHS.campaign },
   { id: 'survival', label: 'Survival', href: PAGE_PATHS.survival },
   { id: 'contracts', label: 'Contracts', href: PAGE_PATHS.contracts },
-  { id: 'codex', label: 'Codex', href: PAGE_PATHS.codex },
   { id: 'how-to-play', label: 'How to Play', href: PAGE_PATHS.howToPlay },
   { id: 'about', label: 'About', href: PAGE_PATHS.about },
 ]);

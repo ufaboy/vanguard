@@ -1,5 +1,5 @@
 /** Contracts screen: armored operations board and horizontal contract banners. */
-import { CONTRACT_PAGE_PATHS, PAGE_PATHS } from '../app/routes.js';
+import { battlefieldUrl } from '../app/routes.js';
 import { CONTRACTS_CATALOG, CONTRACT_TYPES } from '../sim/contract.js';
 
 function getContractThumb(contractId) {
@@ -37,7 +37,7 @@ export function renderContracts(selectedContractId, completedMissions = {}) {
     const modeClass = itemSabotage ? 'is-sabotage' : 'is-recovery';
     const maxPayout =
       item.payouts.PER_CARGO * 3 + item.payouts.EXTRACTION_BASE + item.payouts.THIRD_CARGO_BONUS;
-    const contractHref = CONTRACT_PAGE_PATHS[item.id] || PAGE_PATHS.contracts;
+    const contractHref = battlefieldUrl({ mode: 'contract', id: item.id });
 
     return `
       <div

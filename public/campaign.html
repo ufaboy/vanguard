@@ -17,65 +17,10 @@
     <meta property="og:url" content="https://battletank.online/campaign" />
     <meta property="og:image" content="https://battletank.online/images/og-battle.jpg" />
     <link rel="stylesheet" href="./src/index.css" />
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "./vendor/three/build/three.module.js",
-          "three/addons/": "./vendor/three/examples/jsm/"
-        }
-      }
-    </script>
   </head>
   <body data-page="campaign" class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 overflow-hidden">
     <div id="root"><!-- prerender:start -->
-<div id="game-shell" class="relative w-screen h-screen overflow-hidden bg-[#0B0F17] text-[#F8FAFC] select-none font-sans">
-      <!-- 100% Full-bleed 3D WebGL Canvas Mount -->
-      <div id="canvas-mount" class="fixed inset-0 w-full h-full cursor-crosshair"></div>
-
-      <!-- Top-Left Compact Telemetry Bar -->
-      <!-- Top-Left Hull HP, Turret & Sector Telemetry -->
-      <header id="top-telemetry" class="hidden fixed top-3 left-4 z-20 flex flex-col gap-1.5 pointer-events-none"></header>
-
-      <!-- Top-Center Live Azimuth Compass -->
-      <div id="top-compass" class="hidden fixed top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none"></div>
-
-      <!-- Top-Right APS Status & Utility Controls -->
-      <div id="top-controls" class="hidden fixed top-3 right-4 z-20 flex flex-col items-end gap-1.5"></div>
-
-      <!-- Bottom-Right Circular Tactical Radar -->
-      <div id="sensor-minimap" class="hidden fixed bottom-3 right-4 z-20 pointer-events-none"></div>
-
-      <!-- Contract Cargo & Gate Warning HUD -->
-      <div id="contract-hud" class="hidden fixed top-40 left-4 z-20 flex flex-col gap-2 max-w-[min(560px,92vw)]"></div>
-
-      <!-- Contextual Contract Interaction / Extraction Control Bar -->
-      <div id="contract-action-bar" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"></div>
-
-      <!-- Boss Condition Banner -->
-      <div id="boss-banner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-20 w-[min(560px,90vw)] bg-[#0B0F17]/95 border border-red-500/70 px-5 py-3 rounded shadow-2xl"></div>
-
-      <!-- Observed Target Condition Badge -->
-      <div id="target-badge" class="hidden fixed top-36 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-teal-500/70 px-4 py-1.5 rounded text-xs font-mono uppercase tracking-wider shadow-lg"></div>
-
-      <!-- Tactical Status Toast -->
-      <div id="status-toast" class="hidden fixed top-48 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-amber-500/70 px-5 py-2 rounded text-xs font-mono uppercase tracking-[0.12em] text-amber-300 shadow-lg"></div>
-
-      <!-- Active Combat Modifiers Strip -->
-      <div id="modifiers-strip" class="hidden fixed top-24 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
-
-      <!-- Interactive 3D Codex & Proving Grounds Studio Overlay [I] -->
-      <div id="codex-modal" class="hidden codex-overlay"></div>
-
-      <!-- Modular Tank Hangar, Workshop & 5x5 Engineering Drawer [U] -->
-      <div id="upgrade-drawer" class="hidden hangar-shell" role="dialog" aria-modal="true" aria-label="Vehicle maintenance hangar"></div>
-
-      <!-- Bottom Docked Tactical HUD (Speed/Gear + Weapons/Reload/Modules) -->
-      <footer id="bottom-hud" class="hidden fixed bottom-3 left-4 right-48 z-20 flex items-end justify-between gap-3 pointer-events-none"></footer>
-
-      <!-- Modal Overlays: Menu, Pause, Victory, Game Over -->
-      <div id="status-modal" class="fixed inset-0 z-30 menu-screen" data-page="campaign">
-        
-    <main class="menu-page">
+<main class="menu-page">
       <header class="armored-header">
         <div class="armored-header-primary">
           <div class="armored-header-left">
@@ -107,11 +52,6 @@
       <a class="armored-tab"  href="/contracts">
         <span class="tab-indicator" aria-hidden="true"></span>
         <span class="tab-label">CONTRACTS</span>
-      </a>
-    
-      <a class="armored-tab"  href="/codex">
-        <span class="tab-indicator" aria-hidden="true"></span>
-        <span class="tab-label">CODEX</span>
       </a>
     
       <a class="armored-tab"  href="/how-to-play">
@@ -1087,7 +1027,12 @@
               data-action="start-campaign-mission"
               data-mission="campaign-01"
             >
-              <span class="start-text">START »</span>
+              <span class="start-content">
+                <svg class="start-tank-icon" viewBox="0 0 48 22" fill="currentColor" aria-hidden="true">
+                  <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                </svg>
+                <span class="start-text">START MISSION »</span>
+              </span>
               <span class="start-glow" aria-hidden="true"></span>
             </button>
           
@@ -1143,9 +1088,6 @@
         </div>
       </footer>
     </main>
-  
-      </div>
-    </div>
     <!-- prerender:end --></div>
     <noscript>
       <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
@@ -1153,7 +1095,7 @@
         <p>Select a mission on the Road to the Capital and deploy into 3D tactical tank combat. JavaScript and WebGL are required.</p>
       </main>
     </noscript>
-    <script type="module" src="./src/main.js"></script>
+    <script type="module" src="./src/pages/campaign.js"></script>
   </body>
 </html>
 

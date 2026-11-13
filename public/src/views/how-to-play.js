@@ -60,17 +60,15 @@ export function renderHowToPlay() {
         <h2>2. Fight Smart &amp; Flank</h2>
         <p>Read the 36×36 arena: smash brick walls to open firing lanes, watch out for 16 HP reinforced concrete, and use forest canopies for concealment. Enemy armor is directional—flank heavy tanks and bosses like Titan from the sides or rear instead of trading shots into their glacis.</p>
         <h2>3. Upgrade in the Hangar</h2>
-        <p>Spend earned credits in the <a href="${PAGE_PATHS.hangar}" style="color:#d6e7a0;text-decoration:underline;">Hangar &amp; Workshop</a> (or press <strong>U</strong> near your base) to upgrade Cannon, Chassis, Frame, Engine, and Armor from Tier I to Tier V, and equip standalone modules like 4-Corner APS, Homing ATGM pods, and Auto-Repair Kits.</p>
-        <h2>4. Study the 3D Codex</h2>
-        <p>Inspect all 12 enemy tank classes, 3 Sector Bosses, weapons, and terrain surfaces in the <a href="${PAGE_PATHS.codex}" style="color:#d6e7a0;text-decoration:underline;">3D Codex</a> before deploying into harder sectors.</p>
+        <p>Spend earned credits in the Hangar &amp; Workshop (press <strong>U</strong> near your base during a mission) to upgrade Cannon, Chassis, Frame, Engine, and Armor from Tier I to Tier V, and equip standalone modules like 4-Corner APS, Homing ATGM pods, and Auto-Repair Kits.</p>
       </section>
     </div>
     <h2 style="margin-top:40px;font-size:24px;font-weight:800;">Tactical Mechanics &amp; Q&amp;A</h2>
     <div class="menu-grid" style="margin-top:16px;">${answersHtml}</div>
     <div class="menu-actions" style="margin-top:28px;">
       <a class="menu-primary" href="${PAGE_PATHS.campaign}">Launch Campaign →</a>
-      <a class="menu-secondary" href="${PAGE_PATHS.hangar}">Open Hangar &amp; Workshop</a>
-      <a class="menu-secondary" href="${PAGE_PATHS.codex}">Browse 3D Codex</a>
+      <a class="menu-secondary" href="${PAGE_PATHS.contracts}">View Contracts</a>
+      <a class="menu-secondary" href="${PAGE_PATHS.survival}">Endless Survival</a>
     </div>
   `;
 }

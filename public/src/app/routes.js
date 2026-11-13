@@ -3,6 +3,7 @@
  */
 export const PAGE_PATHS = Object.freeze({
   index: '/',
+  battlefield: '/battlefield',
   codex: '/codex',
   campaign: '/campaign',
   survival: '/survival',
@@ -19,6 +20,10 @@ export const CONTRACT_PAGE_PATHS = Object.freeze({
   'contract-last-cargo': PAGE_PATHS.contractLastCargo,
   'contract-blackout-protocol': PAGE_PATHS.contractBlackoutProtocol,
 });
+
+export function battlefieldUrl({ mode, mission, id, sector } = {}) {
+  return pageUrl('battlefield', { mode, mission, id, sector });
+}
 
 export function pageUrl(page, params = null) {
   const base = PAGE_PATHS[page] || PAGE_PATHS.index;

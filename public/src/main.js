@@ -1,11 +1,12 @@
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
 import { MENU_PAGES, renderMenu } from './menu.js';
 import { syncCampaignMapState } from './views/campaign.js';
-import { CONTRACT_PAGE_PATHS, PAGE_PATHS } from './app/routes.js';
+import { CONTRACT_PAGE_PATHS, PAGE_PATHS, battlefieldUrl } from './app/routes.js';
 import { attachSettingsModal } from './app/shell.js';
 import {
   CAMERA_LABELS,
   FPS_CAP_OPTIONS,
+  loadPlayerSave,
   loadPreferences,
   loadUpgrades,
   savePreferences as persistPreferences,
@@ -349,7 +350,7 @@ function initApp() {
       }
     }
     if (!engine) return;
-    if (e.code === 'KeyI') {
+    if (e.code === 'KeyI' && document.body?.dataset?.page === 'codex') {
       toggleCodexStudio();
       return;
     }
@@ -434,6 +435,65 @@ function routeFromState() {
   return { page: state.menuPage, param };
 }
 
+function battlefieldUrlForSector(sector) {
+  if (!sector) return PAGE_PATHS.campaign;
+  if (sector.gameMode === 'survival') return battlefieldUrl({ mode: 'survival' });
+  if (sector.gameMode === 'contract') {
+    return battlefieldUrl({ mode: 'contract', id: sector.contractId || sector.mapId });
+  }
+  return battlefieldUrl({ mode: 'campaign', mission: sector.mapId });
+}
+
+function resolveBattlefieldTarget() {
+  const params = new URLSearchParams(location.search);
+  const mode = params.get('mode') || '';
+  const mission = params.get('mission') || '';
+  const id = params.get('id') || '';
+  const sectorParam = params.get('sector');
+  const completedMissions =
+    state.hud?.playerSave?.completedMissions || loadPlayerSave()?.completedMissions || {};
+
+  if (mode === 'survival') {
+    const idx = SECTORS.findIndex(
+      (sector) => sector.gameMode === 'survival' || sector.mapId === 'survival-iron-crucible'
+    );
+    return idx >= 0 ? { index: idx } : { redirect: PAGE_PATHS.survival };
+  }
+
+  if (mode === 'contract' || (!mode && id)) {
+    const idx = SECTORS.findIndex(
+      (sector) => sector.gameMode === 'contract' && (sector.contractId === id || sector.mapId === id)
+    );
+    return idx >= 0 ? { index: idx } : { redirect: PAGE_PATHS.contracts };
+  }
+
+  if (mode === 'campaign' || (!mode && mission)) {
+    const idx = SECTORS.findIndex(
+      (sector) =>
+        sector.mapId === mission && sector.gameMode !== 'contract' && sector.gameMode !== 'survival'
+    );
+    if (idx < 0 || !isCampaignMissionUnlocked(mission, completedMissions)) {
+      return { redirect: PAGE_PATHS.campaign };
+    }
+    return { index: idx };
+  }
+
+  if (sectorParam !== null && sectorParam !== '') {
+    const idx = Number.parseInt(sectorParam, 10);
+    const targetSector = Number.isInteger(idx) ? SECTORS[idx] : null;
+    if (
+      targetSector &&
+      (targetSector.gameMode === 'contract' ||
+        targetSector.gameMode === 'survival' ||
+        isCampaignMissionUnlocked(targetSector.mapId, completedMissions))
+    ) {
+      return { index: idx };
+    }
+  }
+
+  return { redirect: PAGE_PATHS.campaign };
+}
+
 /** Opens the screen a URL hash names (Back / Forward, reload, deep link). Ignored during a mission. */
 function applyRoute(route) {
   if (state.hud.status !== GameStatus.MENU) return;
@@ -446,6 +506,16 @@ function applyRoute(route) {
     return;
   }
   setCurrentRoutePage(route.page);
+
+  if (route.page === 'battlefield') {
+    const target = resolveBattlefieldTarget();
+    if (target.redirect) {
+      location.replace(target.redirect);
+      return;
+    }
+    startSector(target.index);
+    return;
+  }
 
   if (route.page === 'codex') {
     const item = CODEX_ITEMS.find((entry) => entry.id === route.param);
@@ -573,6 +643,12 @@ async function startSector(sectorIndex) {
     }
     engine?.setInspectMode(false);
     engine?.startSector(sectorIndex);
+    if (document.body?.dataset?.page === 'battlefield') {
+      const targetUrl = battlefieldUrlForSector(targetSector);
+      if (`${location.pathname}${location.search}` !== targetUrl) {
+        history.replaceState(null, '', targetUrl);
+      }
+    }
     renderUI(true);
   } finally {
     startingSector = false;
@@ -687,6 +763,10 @@ function setupDelegatedEvents(root) {
         break;
       }
       case 'return-survival':
+        if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
+          location.href = PAGE_PATHS.survival;
+          break;
+        }
         state.menuPage = 'survival';
         engine?.abortMissionToHangar();
         renderUI(true);
@@ -696,7 +776,7 @@ function setupDelegatedEvents(root) {
         renderUI(false);
         break;
       case 'return-contracts':
-        if (CONTRACT_PAGE_PATHS[document.body?.dataset?.page]) {
+        if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.contracts;
           break;
         }
@@ -713,6 +793,10 @@ function setupDelegatedEvents(root) {
         renderUI(false);
         break;
       case 'return-campaign':
+        if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
+          location.href = PAGE_PATHS.campaign;
+          break;
+        }
         state.menuPage = 'campaign';
         engine?.abortMissionToHangar();
         renderUI(true);
@@ -1561,7 +1645,17 @@ function renderUI(forceModals = false) {
     renderCodexStudio();
     setHidden(statusModal, false);
     if (statusModal.dataset.page !== state.menuPage) {
-      setHtml(statusModal, renderMenu(state, CAMERA_LABELS));
+      if (state.menuPage === 'battlefield') {
+        setHtml(
+          statusModal,
+          `<div class="w-full max-w-md bg-[#0B0F17] border border-slate-700/80 rounded p-6 text-center font-mono">
+            <div class="text-amber-400 text-xs uppercase tracking-[0.2em] mb-2">BATTLEFIELD DEPLOYMENT</div>
+            <p class="text-slate-300 text-sm">Initializing 3D tactical arena…</p>
+          </div>`
+        );
+      } else {
+        setHtml(statusModal, renderMenu(state, CAMERA_LABELS));
+      }
       statusModal.dataset.page = state.menuPage;
     } else if (state.menuPage === 'campaign') {
       syncCampaignMapState(state.hud?.playerSave?.completedMissions || {}, state.selectedCampaignMission);
