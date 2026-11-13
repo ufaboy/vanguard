@@ -1566,6 +1566,34 @@ function renderContractHud(hud) {
   }
 }
 
+function renderBattlefieldLoaderHtml() {
+  return `
+    <div class="battlefield-loader" role="status" aria-live="polite">
+      <span class="btn-rivet top-left" aria-hidden="true"></span>
+      <span class="btn-rivet top-right" aria-hidden="true"></span>
+      <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+      <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+      <div class="battlefield-loader-radar" aria-hidden="true">
+        <div class="battlefield-loader-sweep"></div>
+        <svg class="battlefield-loader-tank" viewBox="0 0 48 22" fill="currentColor">
+          <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+        </svg>
+      </div>
+      <div class="battlefield-loader-kicker">BATTLEFIELD DEPLOYMENT</div>
+      <h1 class="battlefield-loader-title">DEPLOYING UNIT</h1>
+      <p class="battlefield-loader-sub">Initializing 3D tactical arena…</p>
+      <div class="battlefield-loader-track" aria-hidden="true">
+        <div class="battlefield-loader-bar"></div>
+      </div>
+      <div class="battlefield-loader-steps" aria-hidden="true">
+        <span>TEXTURES</span>
+        <span>TERRAIN</span>
+        <span>SYSTEMS</span>
+      </div>
+    </div>
+  `;
+}
+
 function renderUI(forceModals = false) {
   if (forceModals && !routePendingEngine) {
     const route = routeFromState();
@@ -1595,7 +1623,7 @@ function renderUI(forceModals = false) {
   const statusModal = document.getElementById('status-modal');
 
   const menuVisible = hud.status === GameStatus.MENU && !state.showCodexModal && !state.showUpgradeDrawer;
-  statusModal?.classList.toggle('menu-screen', menuVisible);
+  statusModal?.classList.toggle('menu-screen', menuVisible && state.menuPage !== 'battlefield');
   // The menu screen is opaque: let the engine skip simulating and drawing the hidden scene
   engine?.setSceneOccluded(menuVisible);
   if (menuVisible) {
@@ -1605,13 +1633,7 @@ function renderUI(forceModals = false) {
     renderCodexStudio();
     setHidden(statusModal, false);
     if (statusModal.dataset.page !== state.menuPage) {
-      setHtml(
-        statusModal,
-        `<div class="w-full max-w-md bg-[#0B0F17] border border-slate-700/80 rounded p-6 text-center font-mono">
-          <div class="text-amber-400 text-xs uppercase tracking-[0.2em] mb-2">BATTLEFIELD DEPLOYMENT</div>
-          <p class="text-slate-300 text-sm">Initializing 3D tactical arena…</p>
-        </div>`
-      );
+      setHtml(statusModal, renderBattlefieldLoaderHtml());
       statusModal.dataset.page = state.menuPage;
     }
     return;
@@ -2148,17 +2170,11 @@ function renderUI(forceModals = false) {
       setHidden(statusModal, false);
 
       if (hud.status === GameStatus.MENU) {
-        setHtml(
-          statusModal,
-          `<div class="w-full max-w-md bg-[#0B0F17] border border-slate-700/80 rounded p-6 text-center font-mono">
-            <div class="text-amber-400 text-xs uppercase tracking-[0.2em] mb-2">BATTLEFIELD DEPLOYMENT</div>
-            <p class="text-slate-300 text-sm">Initializing 3D tactical arena…</p>
-          </div>`
-        );
+        setHtml(statusModal, renderBattlefieldLoaderHtml());
       } else if (hud.status === GameStatus.PAUSED) {
         const isSurvival = hud.gameMode === 'survival' || currentSector.gameMode === 'survival';
         setHtml(statusModal, `
-          <div class="w-full max-w-md bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl text-center">
+          <div style="width:fit-content;max-width:92vw;" class="bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl text-center">
             <div class="text-xs font-mono uppercase tracking-[0.2em] text-amber-400 mb-1">
               OPERATION SUSPENDED
             </div>

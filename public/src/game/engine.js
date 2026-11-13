@@ -4177,11 +4177,12 @@ export class TankGameEngine {
       }
 
       const maxCannon = this.getPlayerMaxCannonAmmo();
-      if (this.cannonAmmo < maxCannon) {
+      const baseRearmCap = Math.min(maxCannon, CANNON_AMMO.BASE_REARM_CAP);
+      if (this.cannonAmmo < baseRearmCap) {
         this.cannonBaseRearmTimer += dt;
         if (this.cannonBaseRearmTimer >= CANNON_AMMO.BASE_REARM_INTERVAL_SEC) {
           this.cannonBaseRearmTimer = 0;
-          this.cannonAmmo = Math.min(maxCannon, this.cannonAmmo + 1);
+          this.cannonAmmo = Math.min(baseRearmCap, this.cannonAmmo + 1);
           this.spawnSparks(this.playerX, 0.7, this.playerZ, 0xf59e0b, 2);
           repairedAny = true;
           this.emitHudUpdate();
