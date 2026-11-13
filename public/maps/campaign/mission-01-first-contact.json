@@ -31,41 +31,41 @@
   "layout": [
     "FFFF.........BBBB........BB......FF.....",
     "FFFF....BBB..BCCB........BB..BBB.FF.....",
-    ".............BCCB........CCB...B........",
+    "B............BCCB........CCB...B.......X",
     "B.......BB...............CCB...B..BB....",
-    "B...B...BB...BB..........CCB...B..BB....",
+    "BB..B...BB...BB..........CCB...B..BB....",
     "....B.........BBBBBBB...BBBBB..B........",
-    "..............BCCCCCB...................",
-    "..............BCCCCCB....DD....BB.......",
+    ".F............BCCCCCB.................BB",
+    ".B............BCCCCCB....DD....BB.....BB",
     "FF..FF........BBBBBBB..........BB.FF..FF",
     "FF..FF..BBBB............BBBBBB........FF",
     "..........BB....................BB......",
-    "...........B.............BB.....BB......",
-    ".....BB....B..BBBBBB.....CC.............",
-    ".....BB....B..BCCCCB.....CC.............",
-    "...........B..BCCCCB...............F....",
+    "FF.........B.............BB.....BB......",
+    "FF...BB....B..BBBBBB.....CC.............",
+    "FF...BB....B..BCCCCB.....CC...........B.",
+    "...........B..BCCCCB...............F..B.",
     "BB...BBBBBB...BBBBBB...............FF...",
     "....B........................BB....FF.BB",
-    "....B.......X........X.......BB.........",
-    "....B.......X........X.......BB.........",
+    "B...B.......X........X.......BB.......FF",
+    "BB..B.......X........X.......BB.......F.",
     "....B.......X........X.......BB........F",
     "....B...BB....BB.......BBB...BCB..BB..BB",
-    "....B...BB....BB.......BBB...BCB..BB...C",
+    ".F..B...BB....BB.......BBB...BCB..BB...C",
     "XX..B...BB....BB.......BBB..QBCB..BB....",
-    "........BB........BB..QBCB...BCC..BB....",
+    ".F......BB........BB..QBCB...BCC..BB....",
     "............Q..........BCB...BCC........",
     "....BQ.....BB..........BCB...BBBBBB...B.",
     "FF..B......BB..........BBB........QB...B",
-    "C.................B.D.B.....BB.....B...X",
-    "....FF..BBBBB..QBBB...B.....BB.....B....",
-    "....FF.....BB...BBBBBBCBBB..............",
+    "CB................B.D.B.....BB.....B...X",
+    "FF..FF..BBBBB..QBBB...B.....BB.....B..B.",
+    "BB..FF.....BB...BBBBBBCBBB............B.",
     "...........BB.......QBCCCB..............",
-    "....B......BB........BCCCB.......BB.....",
-    "....BFF....BB..Q..BBBCCCCB.......BB.....",
-    "X....FF....BBBBBBB...BBBCCBBBBB...B.....",
+    "CC..B......BB........BCCCB.......BB....F",
+    "CC..BFF....BB..Q..BBBCCCCB.......BB....X",
+    "X....FF....BBBBBBB...BBBCCBBBBB...B...CC",
     "X......B................BBBBBBB...B.....",
     ".......B..........................B.....",
-    "....BB.B.............................FFF",
+    "FF..BB.B.............................FFF",
     "....BB..BBBBBBB...CCCC...............FFF",
     ".............B..........BBBBBBBBBB......",
     ".....FF............HH..............FF..."
@@ -370,6 +370,70 @@
           "patches",
           "rubble"
         ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "rubble",
+          "weeds"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "rubble",
+          "weeds"
+        ]
       }
     ],
     "paths": [
@@ -560,6 +624,46 @@
         "width": 3,
         "surface": "asphalt",
         "marking": "none"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "dashed"
       }
     ],
     "landmarks": [
@@ -623,6 +727,38 @@
         "row": 27,
         "col": 32,
         "size": 1
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "parking",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "crosswalk",
+        "row": 25,
+        "col": 3,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "manhole",
+        "row": 12,
+        "col": 36,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "crosswalk",
+        "row": 28,
+        "col": 36,
+        "size": 2,
+        "rotation": 90
       }
     ],
     "exclusions": []

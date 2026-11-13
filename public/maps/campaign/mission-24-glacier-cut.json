@@ -206,6 +206,70 @@
           "tracks",
           "patches"
         ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "snow",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "patches",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "patches",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "patches",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "snow",
+        "density": 0.45,
+        "details": [
+          "patches",
+          "rubble",
+          "cracks"
+        ]
       }
     ],
     "paths": [
@@ -292,6 +356,46 @@
         "width": 2.6,
         "surface": "gravel",
         "marking": "edges"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
       }
     ],
     "landmarks": [
@@ -342,6 +446,38 @@
         "col": 32,
         "size": 3,
         "text": "ICE-DAM CROSSING"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "crosswalk",
+        "row": 10,
+        "col": 3,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "manhole",
+        "row": 25,
+        "col": 3,
+        "size": 1,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "loading",
+        "row": 12,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "loading",
+        "row": 28,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 90
       }
     ]
   },
@@ -598,19 +734,19 @@
   "layout": [
     "FFFF.....III.......FF......III......FFFF",
     "FFF......III.......F.......III......FFFF",
-    ".........III...............III.......FFF",
-    ".........III...............III..........",
-    "CC..CC.........FF.....FF.........CC.....",
+    "II.......III...............III.......FFF",
+    "II.......III...............III........BB",
+    "CC..CC.........FF.....FF.........CC...I.",
     "....CC.........FF.....FF.........CC..III",
-    ".........III...............III.......III",
+    "FF.......III...............III.......III",
     "CC.......III..CC.......CC..III.......III",
-    "..............CC......QCC...............",
-    "....FF........C.........C...Q....FF.....",
+    "..............CC......QCC.............BB",
+    "....FF........C.........C...Q....FF...B.",
     "...FFF....CC..CCCCCBBCCCC..CC....FF...II",
-    "..........CC.QC.........C..CC...........",
-    ".....III......I.........I.....III.Q.....",
-    "....CCII......III.....III.....IIICC.....",
-    "....CC........III.....III........CC..FFF",
+    ".I........CC.QC.........C..CC...........",
+    ".I...III......I.........I.....III.Q...II",
+    "....CCII......III.....III.....IIICC...II",
+    "CC..CC........III.....III........CC..FFF",
     "WWWW................FF....Q.........WWWW",
     "WWWWWW.......B......FF....B.......WWWWWW",
     "WWWWWW......QB............B......WWWWWWW",
@@ -622,18 +758,18 @@
     "C.........WWWW..FF....FF..WWWW.......III",
     "....CC....WWWW............WWWW...CC.....",
     "CC..CC..........III..III.........CC..FFF",
-    "..........CC....III..III...CC...........",
+    "F.........CC....III..III...CC...........",
     "BB...FF...CC..CCBB....BBCC.CC....FF...II",
     "BB..FFF....Q..C..........C.......FF...II",
-    "FFF...........C.........QC..............",
+    "FFF...........C.........QC............II",
     "......III.....................III.......",
     "BB....III....FF..........FF...III....III",
     "II...........FF..IIIIII..FF..........III",
-    "II..CC...........IIIIII..........CCC...I",
-    "....CC....FF...BB......BBB..FF....CC...I",
+    "II..CC...........IIIIII..........CCC..FI",
+    "....CC....FF...BB......BBB..FF....CC..FI",
     ".....F............................FF....",
-    "....FF......FF............FF.....FFF....",
-    "III.........FF....CCCC....FF............",
+    ".B..FF......FF............FF.....FFF..II",
+    "III.........FF....CCCC....FF..........II",
     "IIII.................................FFF",
     "IIII...............HH...............FFFF"
   ]

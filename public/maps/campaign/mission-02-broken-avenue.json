@@ -31,42 +31,42 @@
   "layout": [
     "....FF......BBB.........BBBB......FF....",
     "....FF......BCB.........BCCB......FF....",
-    "XX...BBBBBBBCCB...BBBBBBCCBB...BBB......",
-    "....B.......BCC...B......BBBB..BBB......",
-    "....B.......BCC.....FF......BC........X.",
+    "XX...BBBBBBBCCB...BBBBBBCCBB...BBB....BB",
+    "BB..B.......BCC...B......BBBB..BBB......",
+    "....B.......BCC.....FF......BC........XC",
     "....B.......BCC.....FF......BC....BB..X.",
     ".....BBBB...BCC.............BBBBBBBB....",
-    "BB.....BB...BBCCC.......B.........B.....",
-    ".....B.......BBBB...BBBBB.........B.....",
-    ".....B.BB...........BCCCB...BBB....B....",
+    "BB.....BB...BBCCC.......B.........B...XX",
+    "FF...B.......BBBB...BBBBB.........B....B",
+    "FF...B.BB...........BCCCB...BBB....B..BB",
     ".....B.BB...........BCCCB...BBC....B....",
     "BB...B..............BCCCB..........B..CC",
-    ".....B.......BBBBBBBBBBBB......BB..B....",
-    "....BB....BBB...B..............BB..B....",
-    "...B......BBB...B............BBB...B....",
+    ".....B.......BBBBBBBBBBBB......BB..B...C",
+    "B...BB....BBB...B..............BB..B..BF",
+    "...B......BBB...B............BBB...B..B.",
     "...B............B............BCB...B....",
-    "CC.B.......BBBBBCBBB...BBBBBBCCB...B....",
-    "XX.B...B...BCCCCCCCB...BCCCCCCCB...B....",
-    "...B...B...BCCCCCCCB...BCCCCCCCB...B....",
-    "...B...B...BCCCCCCCB...BCCCCCCCB...B..X.",
+    "CC.B.......BBBBBCBBB...BBBBBBCCB...B..C.",
+    "XX.B...B...BCCCCCCCB...BCCCCCCCB...B..CB",
+    "BB.B...B...BCCCCCCCB...BCCCCCCCB...B..BB",
+    "...B...B...BCCCCCCCB...BCCCCCCCB...B..XB",
     "FF.B...B...BBBBCBBBB...BBBBBCBBB...B....",
-    "FF.B...B...BBBBCBBBB...BBBBBCBBB...B....",
-    "X..B...B...BBBBCBBBB...BBBBBCBBB...B....",
-    "FF.B...B.......B.......Q....B......B....",
-    "...B...B.......BQ...........B......B....",
+    "FF.B...B...BBBBCBBBB...BBBBBCBBB...B...B",
+    "XB.B...B...BBBBCBBBB...BBBBBCBBB...B...B",
+    "FF.B...B.......B.......Q....B......B..BB",
+    ".B.B...B.......BQ...........B......B..BB",
     "...B...B.......B............B......B....",
     "...B...B.............BBBB...BBBB...B..X.",
-    "C..B...B............QBCCB...BBBB...B..X.",
-    "...B.....Q...........BBBB......Q...B..BB",
-    "B..B....BB.....BQ..................B..BB",
+    "C..B...B............QBCCB...BBBB...B..XC",
+    ".F.B.....Q...........BBBB......Q...B..BB",
+    "BF.B....BB.....BQ..................B..BB",
     "...B....CCB....B...................B....",
-    "...BQ..........B...........BB...BBBB..C.",
-    "....BBB......QBCBB...BBBB..BB...BCC...C.",
-    ".......BBBBBBBCBBB...BBBCBBCB...BCC...C.",
-    "XX...FF.......B.........BBBBB...B.......",
+    ".B.BQ..........B...........BB...BBBB..C.",
+    "....BBB......QBCBB...BBBB..BB...BCC...CB",
+    ".......BBBBBBBCBBB...BBBCBBCB...BCC...CB",
+    "XX...FF.......B.........BBBBB...B.....BB",
     ".....FF.......B.................B..BB...",
-    "..............B.................B..BB...",
-    ".....BBB......B...CCCC..........B.....X.",
+    "CC............B.................B..BB...",
+    "BB...BBB......B...CCCC..........B.....X.",
     ".....BBB......B.........BBBBBBBB........",
     "...................HH.............FF...."
   ],
@@ -455,6 +455,70 @@
           "oil",
           "cracks"
         ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "rubble",
+          "weeds"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "rubble",
+          "weeds"
+        ]
       }
     ],
     "paths": [
@@ -645,6 +709,46 @@
         "width": 3,
         "surface": "asphalt",
         "marking": "none"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "dashed"
       }
     ],
     "landmarks": [
@@ -716,6 +820,38 @@
         "row": 14,
         "col": 21,
         "size": 1
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "manhole",
+        "row": 10,
+        "col": 3,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "parking",
+        "row": 25,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "manhole",
+        "row": 12,
+        "col": 36,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "crosswalk",
+        "row": 28,
+        "col": 36,
+        "size": 2,
+        "rotation": 90
       }
     ],
     "exclusions": []

@@ -31,7 +31,7 @@ export function normalizeDecoration(rawMap) {
   if (raw.version !== 1) fail('version must be 1');
   if (!Number.isInteger(raw.seed) || raw.seed < 0 || raw.seed > 0xffffffff) fail('seed must be an unsigned 32-bit integer');
   if (!has(DECORATION_THEMES, raw.theme)) fail('unknown theme');
-  const size = rawMap.gridSize || 36;
+  const size = rawMap.gridSize || 40;
   const list = key => {
     const items = raw[key] ?? [];
     if (!Array.isArray(items) || items.length > 64) fail(`${key} must be an array with at most 64 entries`);

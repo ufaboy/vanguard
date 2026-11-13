@@ -206,6 +206,70 @@
           "tracks",
           "oil"
         ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "snow",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "patches",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "patches",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "patches",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "snow",
+        "density": 0.45,
+        "details": [
+          "patches",
+          "rubble",
+          "cracks"
+        ]
       }
     ],
     "paths": [
@@ -292,6 +356,46 @@
         "width": 2.6,
         "surface": "gravel",
         "marking": "edges"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
       }
     ],
     "landmarks": [
@@ -342,6 +446,38 @@
         "col": 31,
         "size": 3,
         "text": "EAST RIDGE PASS"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "parking",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "manhole",
+        "row": 25,
+        "col": 3,
+        "size": 1,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "crosswalk",
+        "row": 12,
+        "col": 36,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "crosswalk",
+        "row": 28,
+        "col": 36,
+        "size": 2,
+        "rotation": 90
       }
     ]
   },
@@ -599,41 +735,41 @@
   "layout": [
     "FFFF.....III.......FF......III......FFFF",
     "FFF......III.......F.......III......FFFF",
-    "F........III...............III.......FFF",
-    "F........III...............III..........",
-    ".I..CC.........FF.....FF.........CC.....",
+    "FF.......III...............III.......FFF",
+    "FF.......III...............III........II",
+    ".I..CC.........FF.....FF.........CC...II",
     ".I..CC.........FF.....FF.........CC..III",
-    ".........III..CC.......CC..III.......III",
-    ".........III..CC.......CCQ.III.......III",
-    "F.............C.........C...............",
-    "....FF........C.........C........FF.....",
+    "II.......III..CC.......CC..III.......III",
+    "II.......III..CC.......CCQ.III.......III",
+    "F.............C.........C.............F.",
+    "CC..FF........C.........C........FF.....",
     "...FFF........B...III...C........FF.....",
-    "F.............BQ..III...C...............",
-    ".....III......C...III...C.....III.......",
-    "....CCII......C.........C.....IIICC.....",
-    "....CC........C........QC........CC..FFF",
+    "FI............BQ..III...C..............B",
+    "BB...III......C...III...C.....III......B",
+    "I...CCII......C.........C.....IIICC.....",
+    "IB..CC........C........QC........CC..FFF",
     "CC.......FF...CCCCCBBCCCC...FF.......FFF",
-    "CC.......FF......Q..........FF..........",
-    "II....III....CC.........CC....III.......",
-    "......III....CC.........CC....III.......",
-    "......III....CC.........CC....III.....BB",
+    "CC.......FF......Q..........FF.........F",
+    "II....III....CC.........CC....III.....BB",
+    ".B....III....CC.........CC....III.....CC",
+    "I.....III....CC.........CC....III.....BB",
     ".I....III....CC.........CC....III....III",
     ".I....III....CC.........CC....III....III",
     "II....III....CC.........CC....III....III",
     "II.................II................III",
-    "....CC.......C....IIII...C.......CC.....",
+    "II..CC.......C....IIII...C.......CC...B.",
     "II..CC.......C....IIII...C......QCC..FFF",
-    "II...........B....IIII...BQ.............",
-    ".....FF......B...........B.......FF.....",
-    "CC..FFF.....QC...........C.......FF.....",
+    "II...........B....IIII...BQ...........II",
+    ".....FF......B...........B.......FF...II",
+    "CC..FFF.....QC...........C.......FF...II",
     ".............CC.........CC..............",
     "......III....CC.........CC....III.......",
     "......III................Q....III....III",
-    ".................CCCCCC..............III",
-    "....CC....FF.....CCCCCC.....FF...CCC..FF",
-    "....CC....FF...BB......BBB..FF....CC..FF",
+    "FF...............CCCCCC..............III",
+    "FF..CC....FF.....CCCCCC.....FF...CCC..FF",
+    ".F..CC....FF...BB......BBB..FF....CC..FF",
     ".....F............................FF....",
-    "....FF......FF............FF.....FFF....",
+    "C...FF......FF............FF.....FFF....",
     "III.........FF....CCCC....FF..........C.",
     "IIII.................................FFF",
     "IIII...............HH...............FFFF"

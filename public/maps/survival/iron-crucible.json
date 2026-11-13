@@ -89,42 +89,42 @@
   "layout": [
     "........................................",
     "....BB....BB......BBBB......BB....BB....",
-    "....BB.G..BB...G..BBBB..G...BB..G.BB....",
-    "........................................",
-    "......BBBB..CC....BBBB....CC..BBBB......",
+    "....BB.G..BB...G..BBBB..G...BB..G.BB..C.",
+    "C.......................................",
+    "BB....BBBB..CC....BBBB....CC..BBBB......",
     ".C....BBBB..CC..D......D..CC..BBBB....CC",
-    "....FF.....Q..............Q.......FF....",
-    "....FF..BBBB....CCCCCCCC....BBBB..FF....",
+    "....FF.....Q..............Q.......FF..C.",
+    "....FF..BBBB....CCCCCCCC....BBBB..FF..C.",
     "........BBBB..D.......Q..D..BBBB........",
-    "...............Q........................",
+    "CC.............Q........................",
     "....WWWW....BBBB........BBBB....WWWW..BB",
-    "....WWWW....BBBB...FF...BBBB....WWWW..CC",
-    "....WWWW...........FF....Q......WWWW....",
-    "............CC............CC............",
-    "......FF...QCC....BBBB....CC....FF......",
+    ".F..WWWW....BBBB...FF...BBBB....WWWW..CC",
+    "CF..WWWW...........FF....Q......WWWW....",
+    "............CC............CC..........B.",
+    "......FF...QCC....BBBB....CC....FF....B.",
     ".B....FF..........BBBBQ.........FF......",
-    "BB........BBBB..D......D..BBBB..........",
-    "..........BBBB............BBBB..........",
-    "..........BBBB............BBBB..........",
-    "..........BBBB............BBBB..........",
+    "BB........BBBB..D......D..BBBB.........F",
+    "C.........BBBB............BBBB........CC",
+    "CX........BBBB............BBBB........CC",
+    "..........BBBB............BBBB.........X",
     ".F..WWWW........CCCCCCCC........WWWW....",
-    "....WWWW........CCCCCCCC........WWWW...X",
+    "X...WWWW........CCCCCCCC........WWWW...X",
     "C...WWWW........CCCCCCCC........WWWW..XX",
-    "....WWWW........Q...............WWWW....",
+    "C...WWWW........Q...............WWWW..BB",
     "....WWWW....FF............FF....WWWW....",
     "............FF....BBBB....FF............",
-    "......BBBB........BBBB........BBBB......",
-    "......BBBB..CC............CC..BBBB....F.",
-    "............CC..D......D..CC..........B.",
-    "B.....................................B.",
+    "CC....BBBB........BBBB........BBBB....BB",
+    "X.....BBBB..CC............CC..BBBB....F.",
+    "............CC..D......D..CC..........BB",
+    "BB....................................B.",
     "....FF....BBBB............BBBB....FF....",
-    "....FF....BBBB............BBBB....FF....",
-    "................CC....CC...............X",
-    "......BBBB......CC....CC......BBBB.....X",
-    "C.....BBBB..D..............D..BBBB......",
+    "X...FF....BBBB............BBBB....FF....",
+    "X...............CC....CC..............XX",
+    "XX....BBBB......CC....CC......BBBB....XX",
+    "CX....BBBB..D..............D..BBBB....X.",
     "CB......................................",
-    "............BBBB........BBBB............",
-    "............BBBB.CCCCCC.BBBB............",
+    "............BBBB........BBBB...........C",
+    "............BBBB.CCCCCC.BBBB...........C",
     "........................................",
     "...................HH..................."
   ],
@@ -177,6 +177,70 @@
         "density": 0.25,
         "details": [
           "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "rubble",
           "cracks"
         ]
       }
@@ -241,6 +305,46 @@
         "width": 3,
         "surface": "asphalt",
         "marking": "dashed"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
       }
     ],
     "landmarks": [
@@ -275,6 +379,38 @@
         "col": 19,
         "size": 2,
         "text": "ALLIED REPAIR & HANGAR BAY"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "loading",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "manhole",
+        "row": 25,
+        "col": 3,
+        "size": 1,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "crosswalk",
+        "row": 12,
+        "col": 36,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "loading",
+        "row": 28,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 90
       }
     ],
     "exclusions": [

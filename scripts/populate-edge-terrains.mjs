@@ -5,13 +5,65 @@ import { getBaseLayout } from '../public/src/game/levels.js';
 import { inspectMap } from '../skills/vanguard-map-creator/scripts/inspect-map.mjs';
 
 const THEME_PALETTES = {
-  urban: ['F', 'F', 'B', 'B', 'C', 'X'],
-  capital: ['F', 'F', 'B', 'B', 'C', 'X'],
+  urban: ['F', 'F', 'B', 'B', 'B', 'C', 'X'],
+  capital: ['F', 'F', 'B', 'B', 'C', 'C', 'X'],
   forest: ['F', 'F', 'F', 'B', 'W', 'C'],
   desert: ['B', 'B', 'C', 'C', 'F', 'X'],
   coast: ['W', 'W', 'F', 'F', 'B', 'C'],
   alpine: ['I', 'I', 'F', 'C', 'B'],
-  industrial: ['B', 'B', 'C', 'X', 'F'],
+  industrial: ['B', 'B', 'C', 'C', 'X', 'F'],
+};
+
+const THEME_DECOR = {
+  urban: {
+    edgeSurface: 'pavers',
+    altSurface: 'gravel',
+    roadSurface: 'asphalt',
+    marking: 'dashed',
+    details: ['cracks', 'leaves', 'rubble', 'weeds'],
+  },
+  capital: {
+    edgeSurface: 'pavers',
+    altSurface: 'concrete',
+    roadSurface: 'asphalt',
+    marking: 'edges',
+    details: ['cracks', 'rubble', 'patches', 'oil'],
+  },
+  forest: {
+    edgeSurface: 'dirt',
+    altSurface: 'gravel',
+    roadSurface: 'dirt',
+    marking: 'none',
+    details: ['leaves', 'weeds', 'tracks', 'patches'],
+  },
+  desert: {
+    edgeSurface: 'sand',
+    altSurface: 'gravel',
+    roadSurface: 'dirt',
+    marking: 'none',
+    details: ['tracks', 'rubble', 'patches', 'cracks'],
+  },
+  coast: {
+    edgeSurface: 'sand',
+    altSurface: 'concrete',
+    roadSurface: 'asphalt',
+    marking: 'edges',
+    details: ['weeds', 'patches', 'cracks', 'rubble'],
+  },
+  alpine: {
+    edgeSurface: 'snow',
+    altSurface: 'gravel',
+    roadSurface: 'gravel',
+    marking: 'none',
+    details: ['tracks', 'patches', 'rubble', 'cracks'],
+  },
+  industrial: {
+    edgeSurface: 'concrete',
+    altSurface: 'gravel',
+    roadSurface: 'asphalt',
+    marking: 'edges',
+    details: ['oil', 'tracks', 'rubble', 'cracks'],
+  },
 };
 
 const PASSABLE_CHARS = new Set(['.', 'F', 'I', 'G', '_', ' ']);
@@ -116,9 +168,9 @@ function populateMapEdges(map) {
   const size = map.layout.length;
   const grid = map.layout.map((row) => [...row]);
   const protectedSet = collectProtectedCells(map);
-  const theme = map.environment?.theme || 'urban';
+  const theme = map.environment?.theme || map.decoration?.theme || 'urban';
   const palette = THEME_PALETTES[theme] || THEME_PALETTES.urban;
-  const rng = createRng(map.mapId || map.id || map.name || 'default');
+  const rng = createRng(`${map.mapId || map.id || map.name || 'default'}-v2`);
 
   const baseReachable = countReachable(grid, map.playerSpawnCell);
   const baseIsolated = countIsolated(grid, baseReachable);
@@ -129,23 +181,23 @@ function populateMapEdges(map) {
   ];
 
   // Keep periodic horizontal breathing lanes open so border ingress & flanking stay fluid
-  const isLaneRow = (r) => r < 2 || r > size - 3 || r % 6 === 0;
+  const isLaneRow = (r) => r < 2 || r > size - 3 || r % 5 === 0;
 
   let added = 0;
   for (const [cA, cB] of edgeCols) {
     for (let r = 2; r < size - 2; r++) {
       if (isLaneRow(r)) continue;
-      if (rng() > 0.34) continue;
+      if (rng() > 0.62) continue;
 
       const tile = palette[Math.floor(rng() * palette.length)];
       const shapeRoll = rng();
       const cells = [];
 
-      if (shapeRoll < 0.35) {
+      if (shapeRoll < 0.25) {
         cells.push([r, rng() < 0.5 ? cA : cB]);
-      } else if (shapeRoll < 0.65) {
+      } else if (shapeRoll < 0.55) {
         cells.push([r, cA], [r, cB]);
-      } else if (shapeRoll < 0.85 && r + 1 < size - 2 && !isLaneRow(r + 1)) {
+      } else if (shapeRoll < 0.8 && r + 1 < size - 2 && !isLaneRow(r + 1)) {
         const c = rng() < 0.5 ? cA : cB;
         cells.push([r, c], [r + 1, c]);
       } else if (r + 1 < size - 2 && !isLaneRow(r + 1)) {
@@ -157,7 +209,6 @@ function populateMapEdges(map) {
 
       for (const [cr, cc] of valid) grid[cr][cc] = tile;
 
-      // If solid terrain created new isolated cells, revert this cluster
       if (SOLID_CHARS.has(tile) && map.playerSpawnCell) {
         const nextReachable = countReachable(grid, map.playerSpawnCell);
         const nextIsolated = countIsolated(grid, nextReachable);
@@ -173,6 +224,99 @@ function populateMapEdges(map) {
 
   map.layout = grid.map((row) => row.join(''));
   return added;
+}
+
+function enrichEdgeDecoration(map) {
+  const size = map.layout.length;
+  const theme = map.decoration?.theme || map.environment?.theme || 'urban';
+  const style = THEME_DECOR[theme] || THEME_DECOR.urban;
+  const rng = createRng(`${map.mapId || map.id || map.name || 'default'}-deco`);
+
+  if (!map.decoration) {
+    map.decoration = {
+      version: 1,
+      seed: hashSeed(map.mapId || map.id || 'map') & 0x7fffffff,
+      theme: THEME_DECOR[theme] ? theme : 'urban',
+      zones: [],
+      paths: [],
+      landmarks: [],
+      exclusions: [],
+    };
+  }
+
+  const deco = map.decoration;
+  deco.zones = Array.isArray(deco.zones) ? deco.zones : [];
+  deco.paths = Array.isArray(deco.paths) ? deco.paths : [];
+  deco.landmarks = Array.isArray(deco.landmarks) ? deco.landmarks : [];
+
+  const usedIds = new Set([
+    ...deco.zones.map((z) => z.id),
+    ...deco.paths.map((p) => p.id),
+    ...deco.landmarks.map((l) => l.id),
+  ]);
+
+  const addZone = (id, bounds, surface, density, details) => {
+    if (deco.zones.length >= 64 || usedIds.has(id)) return;
+    usedIds.add(id);
+    deco.zones.push({ id, bounds, surface, density, details });
+  };
+
+  const addPath = (id, points, width, surface, marking) => {
+    if (deco.paths.length >= 64 || usedIds.has(id)) return;
+    usedIds.add(id);
+    deco.paths.push({ id, points, width, surface, marking });
+  };
+
+  const addLandmark = (id, kind, row, col, sizeVal = 1, rotation = 0) => {
+    if (deco.landmarks.length >= 64 || usedIds.has(id)) return;
+    usedIds.add(id);
+    deco.landmarks.push({ id, kind, row, col, size: sizeVal, rotation });
+  };
+
+  // Cover outer flank strips with varied ground surfaces & details
+  addZone('edge-west-north', [1, 0, 18, 3], style.edgeSurface, 0.45, style.details.slice(0, 3));
+  addZone('edge-west-south', [20, 0, size - 2, 3], style.altSurface, 0.45, style.details.slice(1, 4));
+  addZone('edge-east-north', [1, size - 4, 18, size - 1], style.altSurface, 0.45, style.details.slice(0, 3));
+  addZone('edge-east-south', [20, size - 4, size - 2, size - 1], style.edgeSurface, 0.45, style.details.slice(1, 4));
+
+  // Add perimeter flank roads/tracks along col 3 and col size - 4
+  const midRow = Math.floor(size / 2);
+  addPath(
+    'edge-west-road',
+    [
+      [4, 3],
+      [midRow, 3],
+      [size - 5, 3],
+    ],
+    2,
+    style.roadSurface,
+    style.marking
+  );
+  addPath(
+    'edge-east-road',
+    [
+      [4, size - 4],
+      [midRow, size - 4],
+      [size - 5, size - 4],
+    ],
+    2,
+    style.roadSurface,
+    style.marking
+  );
+
+  // Add subtle tactical/urban landmarks along the flank roads
+  const landmarkKinds = ['manhole', 'parking', 'loading', 'crosswalk'];
+  const spots = [
+    [10, 3],
+    [25, 3],
+    [12, size - 4],
+    [28, size - 4],
+  ];
+  spots.forEach(([r, c], idx) => {
+    const kind = landmarkKinds[(idx + Math.floor(rng() * 4)) % landmarkKinds.length];
+    const sz = kind === 'manhole' ? 1 : kind === 'crosswalk' ? 2 : 1.8;
+    addLandmark(`edge-mark-${idx}`, kind, r, c, sz, idx % 2 === 0 ? 0 : 90);
+  });
 }
 
 async function collectJsonFiles(dir) {
@@ -199,6 +343,7 @@ for (const file of files) {
   if (!Array.isArray(json.layout) || json.layout.length !== 40) continue;
 
   const added = populateMapEdges(json);
+  enrichEdgeDecoration(json);
   await fs.writeFile(file, `${JSON.stringify(json, null, 2)}\n`, 'utf8');
 
   const relPath = path.relative(root, file);
@@ -212,4 +357,4 @@ for (const file of files) {
   totalCellsAdded += added;
 }
 
-console.log(`Populated edge terrains on ${updatedMaps} maps (+${totalCellsAdded} terrain cells total).`);
+console.log(`Populated edge terrains & decorations on ${updatedMaps} maps (+${totalCellsAdded} terrain cells total).`);

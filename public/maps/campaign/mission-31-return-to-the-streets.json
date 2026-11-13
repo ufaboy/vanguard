@@ -145,6 +145,70 @@
           "leaves",
           "tracks"
         ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "rubble",
+          "patches",
+          "oil"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "rubble",
+          "patches",
+          "oil"
+        ]
       }
     ],
     "paths": [
@@ -231,6 +295,46 @@
         "width": 3,
         "surface": "pavers",
         "marking": "edges"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
       }
     ],
     "landmarks": [
@@ -249,6 +353,38 @@
         "col": 28,
         "size": 3,
         "rotation": 0
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "loading",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "parking",
+        "row": 25,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "manhole",
+        "row": 12,
+        "col": 36,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "loading",
+        "row": 28,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 90
       }
     ]
   },
@@ -524,41 +660,41 @@
   "layout": [
     "FFFF.........CC...........CC........FFFF",
     "FFF..........CC...........CC........FFFF",
-    ".....................................FFF",
-    "FFF.....................................",
+    "C....................................FFF",
+    "FFF....................................F",
     "....CC.......FF...........FF.....CCC..BB",
     "....CC.......FF...........FF......CC..BB",
-    ".............CC...........CC.........WWW",
-    ".............CC...........CC.........WWW",
+    "B............CC...........CC.........WWW",
+    "B............CC...........CC.........WWW",
     "...............Q.........BBBB...........",
     "....CCCCB....BBBB........BBBB....BBBB...",
     "F...BBBBB....BBBB........BBBB....BBBB.F.",
-    "....BBBBB....BBBB........BBBB...QBBBB...",
-    "....BBBBB...........FF...BBBB...........",
-    "....FF..............FF..................",
-    "...................CCCC.................",
+    ".X..BBBBB....BBBB........BBBB...QBBBB...",
+    ".X..BBBBB...........FF...BBBB..........F",
+    ".C..FF..............FF.................F",
+    "...................CCCC................C",
     "..........CBBB.....BBBB.................",
     "BB.BBBB...CBBBQ....BBBB........BBBBB....",
-    "...BBBB...BBBB......Q.....FF...BBCCC....",
-    "...BBBB...BBBB............FF...BBCCC....",
+    "F..BBBB...BBBB......Q.....FF...BBCCC....",
+    "F..BBBB...BBBB............FF...BBCCC....",
     ".C.BBBB...BBBB............FF...BBCCC..FF",
     "B..BBBB...BBBB............FF...BBCCC....",
-    ".F.BBBB...BBBB............FF...BBCCC....",
+    ".F.BBBB...BBBB............FF...BBCCC..F.",
     "...BBBB...BBBB............FF...BBCCC....",
-    ".X.BBBBQ.......................BBBBB....",
-    "...BBBB.......BCCCCBBBCCCB..............",
+    ".X.BBBBQ.......................BBBBB..C.",
+    "FF.BBBB.......BCCCCBBBCCCB............CX",
     "..................B.....................",
-    "........CBBBB.....BBBB..........FFF...BB",
-    "........CBBBB.....BBBB..........FFF.....",
-    "........BBBBB...............QBCCCB......",
-    "B.......BBBBB................BBBBB......",
+    ".B......CBBBB.....BBBB..........FFF...BB",
+    "BB......CBBBB.....BBBB..........FFF....F",
+    "XX......BBBBB...............QBCCCB....XF",
+    "B.......BBBBB................BBBBB....X.",
     "......Q.........FFF..........BBBBB......",
-    "BB..BBB.........FFF..........BBBBBQ.....",
-    "BB..BBB.......BBBB......CBB............C",
-    "FF..BBB.......BBBB......CBB.............",
+    "BB..BBB.........FFF..........BBBBBQ...F.",
+    "BB..BBB.......BBBB......CBB...........BC",
+    "FF..BBB.......BBBB......CBB............F",
     "BB......................BBB...........FF",
     "BB...F............................FF..BB",
-    "....FF......FF............FF.....FFF....",
+    "BB..FF......FF............FF.....FFF...F",
     "WWW.........FF....CCCC....FF...........F",
     "WWWW.................................FFF",
     "WWWW...............HH...............FFFF"

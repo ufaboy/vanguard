@@ -216,6 +216,70 @@
           "rubble",
           "patches"
         ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "sand",
+        "density": 0.45,
+        "details": [
+          "weeds",
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "patches",
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "weeds",
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "sand",
+        "density": 0.45,
+        "details": [
+          "patches",
+          "cracks",
+          "rubble"
+        ]
       }
     ],
     "paths": [
@@ -310,6 +374,46 @@
         "width": 2.6,
         "surface": "asphalt",
         "marking": "edges"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
       }
     ],
     "landmarks": [
@@ -360,6 +464,38 @@
         "col": 33,
         "size": 3,
         "text": "EAST CANAL QUAY"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "manhole",
+        "row": 10,
+        "col": 3,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "crosswalk",
+        "row": 25,
+        "col": 3,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "manhole",
+        "row": 12,
+        "col": 36,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "manhole",
+        "row": 28,
+        "col": 36,
+        "size": 1,
+        "rotation": 90
       }
     ]
   },
@@ -613,41 +749,41 @@
   "layout": [
     "WWWW....WWWW...FF......FF...WWWW....F...",
     "WWW.....WWWW..FF........FF..WWWW....F...",
-    "WWW.....WWWW..F..........F..WWWW.......W",
+    "WWW.....WWWW..F..........F..WWWW......FW",
     "WWW.....WWWW................WWWW....F..W",
-    "....CC..WWWW................WWWW...CC...",
+    "....CC..WWWW................WWWW...CC.CC",
     "W...CC..W..W................W..W...CC...",
-    "FFF.....W..W..CC........CC..W..W........",
+    "FFF.....W..W..CC........CC..W..W......WW",
     "FFF...........CC........CC...........WWW",
-    ".............QB..........B...........WWW",
-    "F.......W..W..CCCCQBB.CCCC..W..W.....WWW",
+    "WW...........QB..........B...........WWW",
+    "FW......W..W..CCCCQBB.CCCC..W..W.....WWW",
     "F...FF..WWWW..C.........QC..WWWW...FF.WW",
     "W..FFF..WWWW................WWWW..FF..WW",
-    "........WWWW..CC........CC..WWWW....F...",
-    "...CCC..WWWW..CCC..Q....CC..WWWW..CC....",
-    "....CB..WWWW...CC..B....CC..WWWW..BC..W.",
+    "F.......WWWW..CC........CC..WWWW....F...",
+    "WW.CCC..WWWW..CCC..Q....CC..WWWW..CC..CC",
+    "WW..CB..WWWW...CC..B....CC..WWWW..BC..W.",
     "........W..W..FF...B....FF..W..W....F.W.",
     "FFF...........FF........FF............FF",
     "WWW........X...DD......DD...X........FFF",
     "WWW........X................X........FFF",
     "WWW........X................X........FFF",
     "........W..W..FF........FF..W..W....FFFF",
-    "........W..W..FF........FF..W..W....FFFF",
-    "........W..W..FF........FF..W..W....FFFF",
+    "BB......W..W..FF........FF..W..W....FFFF",
+    "BB......W..W..FF........FF..W..W....FFFF",
     "....CC..WWWW.QC..........CQ.WWWW...CC.FF",
     "....CC..WWWW..CCBB....BBCC..WWWW...CC...",
     "FFF.....WWWW..C..........C..WWWW........",
-    ".F..FF..WWWW..C.........CC..WWWW..FF....",
-    ".W.FFF..WWWW..CC........CC..WWWW..FF...B",
-    "........W..W..CC........C...W..W.......B",
-    "WWW...........Q.........................",
+    ".F..FF..WWWW..C.........CC..WWWW..FF..FF",
+    ".W.FFF..WWWW..CC........CC..WWWW..FF..FB",
+    ".W......W..W..CC........C...W..W......FB",
+    "WWW...........Q.......................W.",
     "WWW...........FF........FF...........FFF",
-    "........W..W..FFF.......FF..W..W.......B",
-    "....CC..WWWW............Q...WWWW...CC.BB",
+    "W.......W..W..FFF.......FF..W..W......WB",
+    "W...CC..WWWW............Q...WWWW...CC.BB",
     ".W..CC..WWWW..BB........BB..WWWW...CC.BB",
-    "FFF.....W..W..BB.......BBB..W..W........",
+    "FFF.....W..W..BB.......BBB..W..W.......W",
     ".....F..........X......X.........FF.....",
-    "....FF......FF............FF.....FFF....",
+    "....FF......FF............FF.....FFF...W",
     "WWW.........FF....CCCC....FF............",
     "WWW..................................FFF",
     "WWWW...............HH...............FFFF"
