@@ -518,10 +518,6 @@ body[data-page="contract"] .menu-page {
   overflow: hidden;
 }
 
-.menu-page > .armored-header {
-  flex: 0 0 auto;
-}
-
 .menu-page > .menu-content {
   flex: 1 1 auto;
   width: 100%;
@@ -535,7 +531,7 @@ body[data-page="contract"] .menu-page {
 .menu-brand { color: #d6e7a0; font-size: 25px; font-weight: 900; background: none; border: 0; cursor: pointer; }
 .menu-brand span { color: #e8edf2; font-size: 12px; letter-spacing: .15em; margin-left: 16px; }
 .menu-kicker, .menu-footer { font: 11px monospace; letter-spacing: .15em; color: #a9b7ad; }
-.menu-content { max-width: 1160px; margin: auto; padding: 48px 32px 64px; }
+.menu-content { max-width: 1160px; margin: auto; }
 .menu-content h1 { font-size: clamp(36px, 6vw, 76px); line-height: 1; letter-spacing: -.045em; font-weight: 900; margin: 22px 0; }
 .menu-content h1 span { color: #d6e7a0; }
 .menu-lead { color: #aebdbd; font-size: 16px; line-height: 1.7; max-width: 760px; margin: 22px 0 30px; }
@@ -648,7 +644,6 @@ body[data-page="contract"] .menu-page {
   height: 100%;
   flex: 1 1 auto;
   min-height: 0;
-  padding: 8px 14px 10px;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -724,7 +719,6 @@ body[data-page="contract"] .menu-page {
   height: 100%;
   flex: 1 1 auto;
   min-height: 0;
-  padding: 8px 14px 10px;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -732,13 +726,13 @@ body[data-page="contract"] .menu-page {
 }
 
 .command-home-view {
+  position: relative;
   width: 100%;
   height: 100%;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 /* Central Armored Hero Chassis Board */
@@ -840,7 +834,7 @@ body[data-page="contract"] .menu-page {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 24px 32px 32px 36px;
+  padding: 24px 32px 116px 36px;
   box-sizing: border-box;
 }
 
@@ -1140,11 +1134,14 @@ body[data-page="contract"] .menu-page {
 
 /* Operational Mode Cards Strip (Bottom Deck) */
 .command-modes-deck {
-  flex: 0 0 auto;
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 6;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  width: 100%;
 }
 
 .armored-mode-plate {
@@ -1244,7 +1241,7 @@ body[data-page="contract"] .menu-page {
   .hero-tactical-title { font-size: 34px; margin-bottom: 8px; }
   .hero-tactical-tagline { font-size: 13px; margin-bottom: 8px; }
   .armored-hero-board { min-height: 380px; }
-  .hero-command-flank { padding: 18px 24px; }
+  .hero-command-flank { padding: 18px 24px 108px; }
 }
 
 /* Persistent core-component condition, distinct from temporary subsystem faults. */
@@ -1943,84 +1940,6 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
    Authentic Heavy Metal Military Aesthetic inspired by Iron Vanguard
    ========================================================================== */
 
-.armored-header {
-  position: relative;
-  z-index: 25;
-  width: 100%;
-  background: linear-gradient(180deg, #1b201e 0%, #111514 55%, var(--color-armor-black) 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 2px solid var(--color-steel-gray);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.armored-header-primary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 10px 24px;
-  min-height: 66px;
-}
-
-.armored-header-left,
-.armored-header-right {
-  display: flex;
-  align-items: center;
-  min-width: 150px;
-}
-
-.armored-header-right {
-  justify-content: flex-end;
-}
-
-/* Authentic Chamfered Back & Brand Buttons */
-.armored-back-btn,
-.armored-brand-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 8px 20px;
-  background: linear-gradient(180deg, #334155 0%, #1e293b 55%, #0f172a 100%);
-  border: 1px solid #475569;
-  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-  color: #f8fafc;
-  font-family: var(--font-mono, monospace);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(0, 0, 0, 0.6);
-  transition: all 0.15s ease;
-}
-
-.armored-back-btn:hover,
-.armored-brand-btn:hover {
-  background: linear-gradient(180deg, #475569 0%, #334155 55%, #1e293b 100%);
-  border-color: #f59e0b;
-  color: #fcd34d;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 12px rgba(245, 158, 11, 0.3);
-}
-
-.armored-back-btn .back-arrow {
-  color: #f59e0b;
-  font-size: 11px;
-}
-
-.armored-brand-btn .brand-insignia {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 5px;
-  background: #f59e0b;
-  color: #0b1120;
-  font-weight: 900;
-  font-size: 11px;
-  border-radius: 2px;
-}
-
 /* Corner Industrial Rivets */
 .btn-rivet {
   position: absolute;
@@ -2036,100 +1955,6 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 .btn-rivet.bottom-left { bottom: 3px; left: 5px; }
 .btn-rivet.top-right { top: 3px; right: 5px; }
 .btn-rivet.bottom-right { bottom: 3px; right: 5px; }
-
-/* Octagonal Settings Button */
-.armored-settings-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 38px;
-  background: linear-gradient(180deg, #334155 0%, #1e293b 55%, #0f172a 100%);
-  border: 1px solid #475569;
-  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
-  color: #f8fafc;
-  cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 6px rgba(0, 0, 0, 0.6);
-  transition: all 0.15s ease;
-}
-
-.armored-settings-btn:hover {
-  background: linear-gradient(180deg, #475569 0%, #334155 55%, #1e293b 100%);
-  border-color: #f59e0b;
-  color: #fcd34d;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 12px rgba(245, 158, 11, 0.3);
-}
-
-.armored-settings-btn .settings-gear {
-  font-size: 18px;
-  line-height: 1;
-  transition: transform 0.25s ease;
-}
-
-.armored-settings-btn:hover .settings-gear {
-  transform: rotate(45deg);
-}
-
-/* Military Tactical Navigation Tabs (Central Header Bar) */
-.armored-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.armored-nav::-webkit-scrollbar {
-  display: none;
-}
-
-.armored-nav-track {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 6px;
-  background: rgba(11, 14, 13, 0.85);
-  border: 1px solid var(--color-steel-gray);
-  border-radius: 3px;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
-}
-
-.armored-tab {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 36px;
-  padding: 0 18px;
-  color: #9aa5a0;
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  text-decoration: none;
-  background: linear-gradient(180deg, #272c2e 0%, #171a1c 100%);
-  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%, 0 8px);
-  border-bottom: 2px solid #3E4447;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-}
-
-.armored-tab:hover {
-  color: #f8fafc;
-  background: linear-gradient(180deg, #353b3e 0%, #202527 100%);
-  border-bottom-color: var(--color-tactical-sand);
-}
-
-.armored-tab.is-active {
-  color: #ffffff;
-  font-weight: 800;
-  background: linear-gradient(180deg, #637c51 0%, var(--color-olive-drab) 55%, #2f3c26 100%);
-  border-bottom-color: #a3c489;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 10px rgba(85, 107, 69, 0.45);
-}
 
 .menu-page-title {
   font-family: var(--font-mono, monospace);
@@ -2184,7 +2009,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 .armored-footer-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 16px;
   padding: 10px 24px;
@@ -2193,116 +2018,55 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   min-height: 46px;
 }
 
-.footer-left-zone,
 .footer-right-zone {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 14px;
-}
-
-/* Side Steel Reinforcement Bracket Plates */
-.footer-bracket-plate {
-  position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 14px;
-  height: 26px;
-  background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
-  border: 1px solid #4b5563;
-  clip-path: polygon(3px 0, 100% 0, 100% 100%, 0 100%, 0 3px);
-  padding: 2px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.footer-bracket-plate.right {
-  clip-path: polygon(0 0, calc(100% - 3px) 0, 100% 3px, 100% 100%, 0 100%);
-}
-
-.footer-bracket-plate .btn-rivet {
-  position: static;
-  width: 3.5px;
-  height: 3.5px;
-  margin: 0 auto;
-}
-
-.footer-telemetry {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--font-mono, monospace);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-}
-
-.telemetry-beacon {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 8px #22c55e, 0 0 16px #16a34a;
-  animation: telemetry-pulse 2s infinite ease-in-out;
-}
-
-@keyframes telemetry-pulse {
-  0%, 100% {
-    opacity: 1;
-    box-shadow: 0 0 6px #22c55e, 0 0 12px #16a34a;
-  }
-  50% {
-    opacity: 0.35;
-    box-shadow: 0 0 2px #22c55e;
-  }
-}
-
-.telemetry-callsign {
-  color: #f1f5f9;
-  font-weight: 800;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.telemetry-sep {
-  color: #475569;
-}
-
-.telemetry-node {
-  color: #94a3b8;
-}
-
-.telemetry-ver {
-  display: inline-block;
-  padding: 2px 7px;
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid #3b4958;
-  border-radius: 3px;
-  color: #f59e0b;
-  font-size: 10px;
-  font-weight: 800;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .footer-links {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 8px;
   font-family: var(--font-mono, monospace);
   font-size: 11px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
 }
 
-.footer-links a {
+.footer-links a,
+.footer-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   color: #94a3b8;
+  background: transparent;
+  border: 1px solid transparent;
   text-decoration: none;
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
   font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
   transition: all 0.15s ease;
-  padding: 4px 6px;
+  padding: 4px 8px;
   border-radius: 2px;
 }
 
-.footer-links a:hover {
+.footer-links a:hover,
+.footer-settings-btn:hover {
   color: #fcd34d;
   background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.footer-links a.is-active {
+  color: #f8fafc;
+  background: rgba(99, 124, 81, 0.28);
+  border-color: rgba(163, 196, 137, 0.45);
 }
 
 .footer-sep {
@@ -2311,29 +2075,6 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 /* Responsive adjustments */
 @media (max-width: 860px) {
-  .armored-header-primary {
-    padding: 8px 12px;
-    min-height: 52px;
-    gap: 8px;
-  }
-  .armored-header-left,
-  .armored-header-right {
-    min-width: auto;
-  }
-  .armored-back-btn,
-  .armored-brand-btn {
-    padding: 6px 12px;
-    font-size: 11px;
-  }
-  .armored-nav-track {
-    gap: 2px;
-    padding: 2px 4px;
-  }
-  .armored-tab {
-    padding: 0 10px;
-    font-size: 11px;
-    height: 32px;
-  }
   .armored-footer-inner {
     flex-direction: column;
     align-items: flex-start;
