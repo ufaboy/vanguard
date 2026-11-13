@@ -254,7 +254,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
             ${RIVETS_HTML}${ICON_TANK}<span>REPLAY CONTRACT</span>${ICON_CHEVRONS}
           </button>
           <button class="battle-btn-secondary" data-action="return-contracts">${RIVETS_HTML}<span>Contracts</span></button>
-          <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ HANGAR [U]</span></button>
+          <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ GARAGE [U]</span></button>
         </div>
       </div>
     `;
@@ -311,7 +311,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
           ${RIVETS_HTML}${ICON_TANK}<span>${nextBtnLabel}</span>${ICON_CHEVRONS}
         </button>
         <button class="battle-btn-secondary" data-action="return-campaign">${RIVETS_HTML}<span>Campaign map</span></button>
-        <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ HANGAR [U]</span></button>
+        <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ GARAGE [U]</span></button>
       </div>
     </div>
   `;
@@ -427,7 +427,7 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
           ${RIVETS_HTML}${ICON_TANK}<span>${isContract ? 'RETRY CONTRACT' : 'RETRY SECTOR'}</span>${ICON_CHEVRONS}
         </button>
         <button class="battle-btn-secondary" data-action="${isContract ? 'return-contracts' : 'return-campaign'}">${RIVETS_HTML}<span>${isContract ? 'Contracts' : 'Campaign map'}</span></button>
-        <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ HANGAR [U]</span></button>
+        <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ GARAGE [U]</span></button>
       </div>
     </div>
   `;

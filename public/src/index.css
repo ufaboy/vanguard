@@ -684,29 +684,79 @@ body[data-page="contract"] .menu-page {
 .campaign-deployment-note { color: #acbcbd; font-size: 12px; margin: 10px 0 0; line-height: 1.6; }
 
 .campaign-checkpoint.is-locked:not(.is-selected) { opacity: .6; border-style: dashed; }
-/* Full-screen maintenance workshop. Solid panels keep WebGL compositing cheap. */
-.hangar-shell{position:fixed;inset:0;z-index:45;display:grid;grid-template-columns:224px minmax(0,1fr) 348px;grid-template-rows:96px minmax(0,1fr) 112px;color:#e5e9e2;font-family: var(--font-sans);pointer-events:none}
+/* Full-screen Garage workshop. Solid panels keep WebGL compositing cheap. */
+.hangar-shell{position:fixed;inset:0;z-index:45;display:grid;grid-template-columns:430px minmax(0,1fr);grid-template-rows:minmax(0,1fr);color:#e5e9e2;font-family:var(--font-sans);pointer-events:none}
 .hangar-shell.hidden{display:none}
-.hangar-shell button{font:inherit;cursor:pointer;transition:background-color .15s,color .15s,border-color .15s}
-.hangar-shell button:focus-visible{outline:2px solid #e8b65c;outline-offset:-3px}
-.hangar-header{grid-column:1/-1;display:flex;align-items:center;gap:30px;padding:18px 28px;background:#111a1e;border-bottom:1px solid #35413f;pointer-events:auto}
-.hangar-eyebrow,.hangar-section-label,.hangar-wallet>span,.hangar-installed>span,.hangar-next>span,.hangar-overview>div>span{font-family: var(--font-mono);font-size:10px;letter-spacing:1.3px;color:#93a39e;font-weight:500}
-.hangar-heading{flex:1}.hangar-heading h1{font-family: var(--font-display);font-size:34px;font-weight:600;line-height:1.1;margin:5px 0 0;letter-spacing:.3px}.hangar-heading h1 span{color:#a3b0a7;font-size:24px;margin-left:8px}
-.hangar-wallet{display:flex;flex-direction:column;gap:3px;text-align:right}.hangar-wallet strong{font-family: var(--font-display);font-size:26px;color:#e9bc68;white-space:nowrap}
-.hangar-exit{padding:12px 15px;border:1px solid #475550;background:#202c2d;font-size:13px!important;color:#e4e9e3;border-radius:3px}.hangar-exit:hover{background:#34413d}.hangar-exit kbd{margin-left:13px;font-size:10px;color:#a5b4ac;border:1px solid #4c5a54;padding:3px 4px}
-.hangar-systems{padding:26px 14px 20px;background:#142024;border-right:1px solid #35413f;pointer-events:auto;overflow-y:auto}
-.hangar-section-label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px}.hangar-section-label>span{color:#d5ad68}.hangar-systems>.hangar-section-label{margin:0 8px 20px}
-.hangar-system{display:flex;align-items:center;gap:11px;text-align:left;width:100%;padding:18px 12px;border:1px solid transparent;border-left:3px solid transparent;border-radius:3px;background:transparent;margin-bottom:5px;color:#bdc9c0}.hangar-system:hover{background:#203034}.hangar-system.is-selected{border-color:#4f5b48;border-left-color:#e5ad51;background:#2b352d;color:#f5eddb}.hangar-system svg{width:34px;height:34px;flex-shrink:0}.hangar-system-copy{flex:1;min-width:0}.hangar-system-copy>strong{display:block;font-size:16px;font-weight:600}.hangar-system-copy>small{display:block;font-size:11px;color:#a1b0a7;margin-top:3px}.hangar-system>b{font-family: var(--font-display);font-size:23px;font-weight:500}.hangar-system>b>small{font-size:11px;color:#8b9b92}.hangar-tier-bars{display:flex;gap:4px;margin-top:10px}.hangar-tier-bars i{display:block;width:15px;height:3px;background:#42504b}.hangar-tier-bars i.filled{background:#c8a968}
-.hangar-service-note{display:flex;gap:9px;align-items:flex-start;border-top:1px solid #35413f;margin:24px 8px 0;padding-top:18px;font-family: var(--font-mono);font-size:9px;color:#a6b4aa;line-height:1.6}.hangar-service-note i,.hangar-bay-stamp i{display:inline-block;width:5px;height:5px;border-radius:50%;background:#9bbd85;margin-top:5px;flex-shrink:0}.hangar-service-note small{display:block;font-family: var(--font-sans);font-size:11px;color:#879a92;margin-top:3px}
-.hangar-visual{position:relative;min-width:0;min-height:0;overflow:hidden;border-bottom:1px solid #35413f;background:transparent}.hangar-stage-window{position:absolute;inset:0;pointer-events:none}.hangar-vehicle-label{position:absolute;top:25px;left:26px;text-shadow:0 2px 10px #10181c}.hangar-vehicle-label h2{font-family: var(--font-display);font-size:31px;letter-spacing:1px;font-weight:600;margin:5px 0 0}.hangar-vehicle-label h2 span{font-size:13px;vertical-align:middle;border:1px solid #7b8980;padding:3px 6px;color:#bdc7b7;margin-left:5px}.hangar-vehicle-label p{font-size:12px;color:#b0bcb3;margin-top:5px}.hangar-view-controls{position:absolute;bottom:24px;left:24px;display:flex;background:#172226;border:1px solid #516058;padding:4px;gap:3px;pointer-events:auto;border-radius:4px}.hangar-view-controls button{font-size:11px;padding:9px 11px;background:transparent;border:0;color:#a8b6ad;border-radius:2px}.hangar-view-controls button.is-selected{background:#c7aa71;color:#15201e}.hangar-bay-stamp{position:absolute;bottom:78px;left:28px;font: 9px var(--font-mono);letter-spacing:1px;color:#b1bcb2}.hangar-bay-stamp i{margin:0 7px 1px}
-.hangar-upgrade-panel{display:flex;flex-direction:column;gap:0;padding:26px 25px 18px;background:#172326;border-left:1px solid #35413f;pointer-events:auto;overflow-y:auto}.hangar-upgrade-content>h2{font: 600 27px var(--font-display);margin:16px 0 5px}.hangar-summary{font-size:13px;line-height:1.6;color:#a6b5ac;margin:0 0 22px}.hangar-installed{border-bottom:1px solid #3a4742;padding:0 0 16px}.hangar-installed>span{font-size:9px;color:#8a9e93}.hangar-installed strong{display:block;font-size:13px;color:#c2ccc3;margin-top:7px;font-weight:500}.hangar-next{padding:20px 0 14px}.hangar-next>span{color:#dfb56e;font-size:9px}.hangar-next h3{font: 600 21px var(--font-display);color:#f0e7d2;margin:8px 0}.hangar-next p{font-size:12px;line-height:1.7;color:#a7b7ac;margin:0}.hangar-comparison{border-top:1px solid #3a4742}.hangar-stat-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;padding:11px 0;border-bottom:1px solid #2f3e39;font-size:12px;align-items:center}.hangar-stat-row>span:first-child{color:#b7c4bb}.hangar-stat-row>span:nth-child(2){min-width:36px;text-align:right;color:#8fa298}.hangar-stat-row>b{min-width:48px;text-align:right;font-weight:500;color:#d9e1d4}.hangar-stat-row>b.positive{color:#b7d79b}.hangar-stat-row>b.tradeoff{color:#dfad75}.hangar-stat-heading{font: 9px var(--font-mono);color:#8fa298;padding-top:15px}.hangar-capability{font-size:11px;color:#b8caaa;padding:11px 0}
-.hangar-purchase{margin-top:auto;padding-top:20px}.hangar-cost{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;font-size:12px;color:#afbeb3}.hangar-cost strong{font: 600 23px var(--font-display);color:#edc17a}.hangar-buy{display:flex;align-items:center;justify-content:space-between;gap:5px;width:100%;padding:16px 15px;border:1px solid #e1b35f;border-radius:3px;background:#d7ad63;color:#18211d;font-size:14px!important;font-weight:700!important}.hangar-buy:hover:not(:disabled){background:#edc480}.hangar-buy:disabled{background:#283430;border-color:#47544b;color:#98a799;cursor:not-allowed}.hangar-buy span{font-size:21px;font-weight:400}.hangar-purchase-note{font-size:10px;text-align:center;color:#8fa196;margin:10px 0 0}.hangar-feedback{min-height:17px;margin-top:9px;color:#c0d9a9;font-size:11px;line-height:1.5}
-.hangar-overview{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:20px 28px;background:#111c20;border-top:1px solid #35413f;pointer-events:auto}.hangar-overview>.hangar-section-label{display:block;line-height:1.6}.hangar-overview>.hangar-section-label small{display:block;color:#789084;font: 12px var(--font-sans);letter-spacing:0;margin-top:5px}.hangar-overview>div>span{display:block;font-size:9px}.hangar-overview>div>strong{display:block;font: 500 28px var(--font-display);margin-top:7px;white-space:nowrap}.hangar-overview>div>strong small{font-size:12px;color:#9aafa0}.hangar-equipment{border-left:1px solid #3a4742;padding-left:24px}.hangar-equipment>strong{font-size:17px!important}.hangar-equipment>p{margin:4px 0 0;font-size:11px;color:#a4b5a7}
-@media(max-height:880px) and (min-width:1001px){.hangar-shell{grid-template-rows:82px minmax(0,1fr) 92px}.hangar-header{padding:12px 24px}.hangar-upgrade-panel{padding:18px 22px 12px}.hangar-upgrade-content>h2{font-size:24px;margin-top:12px}.hangar-summary{margin-bottom:15px}.hangar-next{padding:14px 0 10px}.hangar-next p{font-size:11px}.hangar-installed{padding-bottom:12px}.hangar-stat-row{padding:9px 0}.hangar-system{padding:14px 10px}.hangar-purchase{padding-top:13px}.hangar-buy{padding:12px}.hangar-overview{padding:14px 24px}}
-@media(max-width:1100px) and (min-width:761px){.hangar-shell{grid-template-columns:180px minmax(0,1fr) 300px}.hangar-systems{padding-left:8px;padding-right:8px}.hangar-system{gap:7px;padding-left:8px;padding-right:8px}.hangar-system svg{width:28px;height:28px}.hangar-system-copy>strong{font-size:14px}.hangar-upgrade-panel{padding-left:18px;padding-right:18px}.hangar-overview{gap:14px}.hangar-overview>.hangar-section-label{display:none}.hangar-vehicle-label{left:18px}.hangar-view-controls{left:16px}.hangar-view-controls button{padding:8px}.hangar-header{gap:18px}}
-@media(max-width:760px){.hangar-shell{grid-template-columns:1fr;grid-template-rows:78px 74px minmax(220px,38vh) minmax(0,1fr);overflow-y:auto;pointer-events:auto}.hangar-header{padding:12px 16px;gap:14px;grid-column:1}.hangar-heading .hangar-eyebrow{font-size:8px;letter-spacing:.3px}.hangar-heading h1{font-size:26px}.hangar-heading h1 span{font-size:18px}.hangar-wallet>span{font-size:8px;letter-spacing:0}.hangar-wallet strong{font-size:20px}.hangar-exit{font-size:0!important;padding:8px}.hangar-exit kbd{margin:0;font-size:10px}.hangar-systems{display:flex;padding:6px 8px;gap:3px;border-right:0;border-bottom:1px solid #35413f;overflow:visible}.hangar-systems>.hangar-section-label,.hangar-service-note{display:none}.hangar-system{flex:1;min-width:0;display:flex;flex-direction:column;padding:7px 2px;margin:0;gap:0;border-left-width:1px;border-bottom-width:3px;text-align:center}.hangar-system svg,.hangar-system-copy>small,.hangar-system>b{display:none}.hangar-system-copy>strong{font-size:12px}.hangar-tier-bars{gap:3px;margin-top:8px}.hangar-tier-bars i{width:9px}.hangar-visual{grid-row:3}.hangar-vehicle-label{top:13px;left:17px}.hangar-vehicle-label h2{font-size:22px}.hangar-vehicle-label p{display:none}.hangar-view-controls{bottom:12px;left:13px;padding:2px}.hangar-view-controls button{font-size:10px;padding:6px 8px}.hangar-bay-stamp{display:none}.hangar-upgrade-panel{grid-row:4;padding:20px 20px 30px;overflow-y:auto;border-left:0;min-height:0}.hangar-upgrade-content>h2{font-size:25px;margin-top:10px}.hangar-summary{margin-bottom:16px}.hangar-overview{display:none}.hangar-next h3{font-size:22px}.hangar-next p{font-size:13px}.hangar-stat-row{font-size:13px}.hangar-purchase{margin-top:0;padding-top:18px}.hangar-shell .hangar-buy{font-size:15px!important}.hangar-installed strong{font-size:14px}}
+.hangar-shell button{font:inherit;cursor:pointer;transition:background-color .15s,color .15s,border-color .15s,filter .15s}
+.hangar-shell button:focus-visible{outline:2px solid #e8b65c;outline-offset:-2px}
 
-.hangar-upgrade-panel{overflow:hidden}.hangar-upgrade-content{min-height:0;overflow-y:auto;flex:1}.hangar-purchase{flex-shrink:0}.hangar-technical summary{font-size:12px;color:#b2c0b5;cursor:pointer;margin:10px 0}.hangar-technical p{padding-bottom:5px}.hangar-upgrade-content,.hangar-systems{scrollbar-width:thin;scrollbar-color:#4b5e51 #172326}.hangar-upgrade-content>h2{font: 600 27px var(--font-display);margin:16px 0 5px}
+.garage-sidebar{display:flex;flex-direction:column;gap:10px;padding:14px 16px;background:#111a1e;border-right:1px solid #35413f;pointer-events:auto;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#4b5e51 #111a1e}
+.garage-sidebar-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:1px solid #2b3837}
+.garage-brand{display:flex;align-items:center;gap:10px}
+.garage-brand h1{font-family:var(--font-display);font-size:24px;font-weight:700;letter-spacing:.06em;margin:0;line-height:1;color:#f8fafc}
+.garage-status-pill{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;padding:3px 7px;border-radius:3px;background:#1c292b;border:1px solid #3b4f4a;color:#9bbd85}
+.garage-wallet{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.garage-wallet span{font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;color:#93a39e}
+.garage-wallet strong{font-family:var(--font-display);font-size:22px;line-height:1.1;color:#e9bc68;white-space:nowrap}
+
+.garage-tabs{display:flex;flex-direction:column;gap:5px}
+.hangar-system{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px;border:1px solid #2a3736;border-left:3px solid #2a3736;border-radius:4px;background:#162226;color:#aebbb2;text-align:left}
+.hangar-system:hover{background:#1e2e32;color:#e5e9e2}
+.hangar-system.is-selected{border-color:#5b6951;border-left-color:#e5ad51;background:#243028;color:#f5eddb}
+.hangar-system.is-faulted{border-color:#7f1d1d;border-left-color:#f87171;color:#fecaca}
+.hangar-system svg{width:22px;height:22px;flex-shrink:0}
+.garage-tab-name{flex:1;font-size:13px;font-weight:600;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.garage-tab-tier{order:4;font-family:var(--font-mono);font-size:11px;font-weight:700;color:#93a39e;line-height:1;min-width:26px;text-align:right}
+.hangar-system.is-selected .garage-tab-tier{color:#e9bc68}
+.hangar-tier-bars{order:3;display:flex;gap:3px;margin-top:0}
+.hangar-tier-bars i{display:block;width:12px;height:3px;background:#3a4844;border-radius:1px}
+.hangar-tier-bars i.filled{background:#c8a968}
+
+.garage-component-panel{display:flex;flex-direction:column;gap:8px;padding:12px;background:#152125;border:1px solid #2d3b39;border-radius:5px}
+.garage-component-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.garage-eyebrow,.hangar-eyebrow{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;color:#93a39e;font-weight:500;text-transform:uppercase}
+.garage-component-head h2{font-family:var(--font-display);font-size:21px;font-weight:700;margin:2px 0 0;line-height:1.1;color:#f8fafc}
+.garage-current-badge{font-family:var(--font-mono);font-size:9.5px;color:#b2c0b5;background:#1c2a2e;border:1px solid #354542;padding:3px 7px;border-radius:3px;white-space:nowrap;max-width:190px;overflow:hidden;text-overflow:ellipsis}
+
+.garage-next-card{padding:8px 10px;background:#101a1d;border-left:2px solid #dfb56e;border-radius:3px}
+.garage-next-title{font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:.05em;color:#f0e7d2}
+.garage-next-desc{margin:3px 0 0;font-size:11.5px;line-height:1.4;color:#9eb0a6}
+
+.hangar-comparison{border-top:1px solid #2a3734;margin-top:2px}
+.hangar-stat-row{display:grid;grid-template-columns:minmax(0,1fr) 54px 58px;gap:8px;padding:5px 0;border-bottom:1px solid #23302c;font-size:12px;align-items:center}
+.hangar-stat-row>span:first-child{color:#b7c4bb}
+.hangar-stat-row>span:nth-child(2){text-align:right;color:#8fa298;font-variant-numeric:tabular-nums}
+.hangar-stat-row>b{text-align:right;font-weight:600;color:#d9e1d4;font-variant-numeric:tabular-nums}
+.hangar-stat-row>b.positive{color:#b7d79b}
+.hangar-stat-row>b.tradeoff{color:#dfad75}
+.hangar-stat-heading{font-family:var(--font-mono);font-size:9px;color:#7f9389;padding:6px 0 4px}
+.hangar-capability{font-size:11px;color:#b8caaa;padding:6px 0 2px}
+
+.hangar-purchase{margin-top:2px}
+.hangar-buy{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:11px 14px;border:1px solid #e1b35f;border-radius:4px;background:#d7ad63;color:#18211d;font-size:13.5px!important;font-weight:700!important}
+.hangar-buy:hover:not(:disabled){background:#edc480}
+.hangar-buy:disabled{background:#25312d;border-color:#3d4a43;color:#93a398;cursor:not-allowed}
+.hangar-buy-arrow{font-size:16px;font-weight:600}
+.hangar-feedback{min-height:15px;margin-top:6px;color:#c0d9a9;font-size:11px;line-height:1.35}
+
+.hangar-visual{position:relative;min-width:0;min-height:0;overflow:hidden;background:transparent}
+.hangar-stage-window{position:absolute;inset:0;pointer-events:none}
+.garage-stage-top{position:absolute;top:16px;left:20px;right:20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;pointer-events:none}
+.hangar-vehicle-label{text-shadow:0 2px 10px #10181c}
+.hangar-vehicle-label h2{font-family:var(--font-display);font-size:24px;letter-spacing:1px;font-weight:600;margin:3px 0 0}
+.hangar-vehicle-label h2 span{font-size:11px;vertical-align:middle;border:1px solid #7b8980;padding:2px 6px;color:#bdc7b7;margin-left:5px}
+.hangar-exit{pointer-events:auto;padding:9px 14px;border:1px solid #475550;background:#162023;font-size:12.5px!important;color:#e4e9e3;border-radius:4px}
+.hangar-exit:hover{background:#283634;border-color:#687b74}
+.hangar-exit kbd{margin-left:10px;font-size:10px;color:#a5b4ac;border:1px solid #4c5a54;padding:2px 5px;border-radius:2px}
+.garage-stage-bottom{position:absolute;bottom:16px;left:20px;right:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:none}
+.hangar-view-controls{display:flex;background:#152024;border:1px solid #45544d;padding:3px;gap:3px;pointer-events:auto;border-radius:4px}
+.hangar-view-controls button{font-size:11px;padding:7px 11px;background:transparent;border:0;color:#a8b6ad;border-radius:2px}
+.hangar-view-controls button.is-selected{background:#c7aa71;color:#15201e;font-weight:600}
+.garage-loadout-pill{display:flex;align-items:center;gap:14px;padding:7px 12px;background:#152024;border:1px solid #384642;border-radius:4px;font-family:var(--font-mono);font-size:11px;color:#9eb0a6}
+.garage-loadout-pill b{color:#f1f5f9;font-weight:700;margin-left:3px}
+
+@media(max-width:960px){.hangar-shell{grid-template-columns:360px minmax(0,1fr)}.garage-loadout-pill{display:none}}
+@media(max-width:760px){.hangar-shell{grid-template-columns:1fr;grid-template-rows:minmax(220px,38vh) minmax(0,1fr)}.hangar-visual{grid-row:1}.garage-sidebar{grid-row:2;border-right:0;border-top:1px solid #35413f}}
 
 /* Static battlefield key art keeps the command screen idle on every GPU tier. */
 /* ==========================================================================
@@ -1252,45 +1302,33 @@ body[data-page="contract"] .menu-page {
 .condition-legend { display:grid; gap:1px; min-width:69px; }
 .condition-legend span { display:flex; gap:3px; justify-content:space-between; }
 .condition-legend .is-damaged { color:#f87171; font-weight:700; }
-.component-repair { background:#29171c; border:1px solid #a94450; padding:12px; margin:12px 0; color:#fecaca; }
-.component-repair p { font-size:12px; line-height:1.45; margin:8px 0; }
-.component-repair button { width:100%; background:#7f1d1d; border:1px solid #f87171; color:#fff; padding:10px; cursor:pointer; }
+.component-repair { background:#29171c; border:1px solid #a94450; border-radius:4px; padding:8px 10px; color:#fecaca; }
+.garage-repair-row { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:11.5px; }
+.component-repair button { flex-shrink:0; background:#7f1d1d; border:1px solid #f87171; border-radius:3px; color:#fff; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer; }
 .component-repair button:disabled { opacity:.5; cursor:not-allowed; }
 @media(max-width:600px) { .component-condition { gap:3px; } .component-condition svg { width:45px; height:62px; } .condition-legend { font-size:8px; min-width:59px; } }
 
-/* Matching pictorial ammunition cards: quantity, available slots, and one-click price. */
-.hangar-supplies{flex-shrink:0;margin:0 0 18px;border-bottom:1px solid #42534c;padding:0 0 14px}
-.hangar-supplies>h2{font:600 18px var(--font-display);margin:0 0 8px;color:#eef4e9}
-.hangar-supply-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.hangar-supply-card{--supply-color:#7dd3fc;background:#101d24;border:1px solid #425968;border-radius:12px;padding:10px;min-width:0}
-.hangar-supply-card.supply-missile{--supply-color:#fbbf75;background:#251f19;border-color:#6b5540}
-.hangar-supply-card.supply-cannon{--supply-color:#38bdf8;background:#10222e;border-color:#3b6982}
-.hangar-supply-heading{display:flex;align-items:center;gap:8px}
-.hangar-supply-icon{color:var(--supply-color);display:flex;flex-shrink:0}
-.hangar-supply-icon svg{width:38px;height:38px}
-.hangar-supply-heading h3{font:600 15px var(--font-sans);margin:0 0 2px;color:#f5f7f3}
-.hangar-supply-heading strong{font:700 22px var(--font-display);color:var(--supply-color)}
-.hangar-supply-heading small{font:500 13px var(--font-sans);color:#b4c0be}
-.hangar-supply-slots{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;height:39px;margin:8px 0}
-.supply-missile .hangar-supply-slots{grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);align-content:center}
-.hangar-supply-slots>span{display:flex;align-items:center;justify-content:center;min-height:17px;border:1px dashed #687774;border-radius:3px;color:var(--supply-color);font:700 14px var(--font-sans)}
-.hangar-supply-slots .is-loaded{background:var(--supply-color);border:1px solid var(--supply-color);color:#132229}
-.hangar-supply-slots .is-next{border-style:solid;border-color:var(--supply-color)}
-.hangar-supply-slots svg{width:12px;height:14px}
-.supply-missile .hangar-supply-slots>span{height:33px}
-.supply-missile .hangar-supply-slots svg{width:20px;height:27px}
-.hangar-supply-buy{display:flex;align-items:center;justify-content:space-between;gap:3px;width:100%;min-height:48px;padding:7px;border:2px solid var(--supply-color);border-radius:8px;background:var(--supply-color);color:#142127;font:700 14px var(--font-sans);cursor:pointer}
-.hangar-supply-add,.hangar-supply-price{display:flex;align-items:center;gap:3px;white-space:nowrap}
-.hangar-supply-add{font-size:21px}.hangar-supply-add svg{width:18px;height:22px}
-.hangar-credit-coin{display:inline-flex;align-items:center;justify-content:center;border:1.5px solid currentColor;border-radius:50%;width:17px;height:17px;font-size:12px}
-.hangar-supply-buy:hover:not(:disabled){filter:brightness(1.12)}
-.hangar-supply-buy:focus-visible{outline:3px solid white;outline-offset:3px}
-.hangar-supply-buy:disabled{background:#273233;color:#b4c0be;border-color:#52615e;cursor:not-allowed}
-.hangar-supply-card.is-full .hangar-supply-buy{color:#b6efb9;border-color:#6f9876}
-.hangar-supply-hint{display:block;text-align:center;min-height:15px;margin-top:5px;font-size:11px;color:#c0ccc5}
-.hangar-upgrade-panel{overflow-y:auto}.hangar-upgrade-content{flex:none;overflow:visible}
-@media(max-width:1100px) and (min-width:761px){.hangar-supply-grid{gap:6px}.hangar-supply-card{padding:7px}.hangar-supply-add svg{display:none}.hangar-credit-coin{display:none}}
-@media(max-width:360px){.hangar-supply-grid{grid-template-columns:1fr}}
+/* Simplified horizontal ammunition & charge rows inside the Garage sidebar. */
+.garage-supplies{flex-shrink:0;margin-top:auto;padding-top:10px;border-top:1px solid #2b3837}
+.garage-supplies-head{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;color:#93a39e;margin-bottom:7px}
+.garage-supply-list{display:flex;flex-direction:column;gap:6px}
+.garage-supply-row{--supply-color:#7dd3fc;display:grid;grid-template-columns:24px minmax(0,1fr) 114px;align-items:center;gap:10px;padding:7px 9px;background:#152125;border:1px solid #2b3a3e;border-radius:5px}
+.garage-supply-row.supply-cannon{--supply-color:#38bdf8}
+.garage-supply-row.supply-aps{--supply-color:#7dd3fc}
+.garage-supply-row.supply-missile{--supply-color:#fbbf75}
+.garage-supply-icon{color:var(--supply-color);display:flex;align-items:center;justify-content:center}
+.garage-supply-icon svg{width:20px;height:20px}
+.garage-supply-info{display:flex;flex-direction:column;gap:4px;min-width:0}
+.garage-supply-meta{display:flex;align-items:baseline;justify-content:space-between;gap:6px}
+.garage-supply-meta strong{font-size:12.5px;font-weight:600;color:#f1f5f9}
+.garage-supply-meta span{font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--supply-color);font-variant-numeric:tabular-nums}
+.garage-supply-meta small{font-size:10px;color:#8ea19d;font-weight:500}
+.garage-supply-bar{height:4px;background:#0c1417;border-radius:2px;overflow:hidden}
+.garage-supply-bar i{display:block;height:100%;background:var(--supply-color);border-radius:2px;transition:width .18s ease}
+.garage-supply-btn{height:30px;padding:0 10px;border:1px solid var(--supply-color);border-radius:4px;background:var(--supply-color);color:#0f191d;font-family:var(--font-mono);font-size:11px;font-weight:800;white-space:nowrap;text-align:center}
+.garage-supply-btn:hover:not(:disabled){filter:brightness(1.12)}
+.garage-supply-btn:disabled{background:#1f2a2d;border-color:#3a484b;color:#7f918d;cursor:not-allowed}
+.garage-supply-row.is-full .garage-supply-btn{background:#172b22;border-color:#4b7d62;color:#9ee2b5}
 
 /* Multi-page navigation & standalone scrollable pages */
 html:has(body.scrollable-page), body.scrollable-page { overflow-y: auto; height: auto; min-height: 100%; }
