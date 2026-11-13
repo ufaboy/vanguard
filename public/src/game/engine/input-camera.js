@@ -139,6 +139,7 @@ export class InputCameraController {
       const delta = Math.sign(e.deltaY) * 2.2;
       engine.frustumSize = THREE.MathUtils.clamp(engine.frustumSize + delta, 14, 46);
       engine.handleResize();
+      engine.onCameraZoomChange?.(engine.frustumSize);
     };
 
     engine.handleResize = () => {
@@ -185,7 +186,7 @@ export class InputCameraController {
       engine.cameraPreset = order[nextIdx];
     }
 
-    if (engine.cameraPreset === 'ISOMETRIC') engine.frustumSize = 28;
+    if (engine.cameraPreset === 'ISOMETRIC') engine.frustumSize = 36;
     else if (engine.cameraPreset === 'TACTICAL_HIGH') engine.frustumSize = 44;
     else if (engine.cameraPreset === 'CLOSE_COMBAT') engine.frustumSize = 20;
 

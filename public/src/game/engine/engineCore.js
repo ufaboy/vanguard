@@ -73,7 +73,7 @@ export class TankGameEngine {
     this.aiDebugMode = false;
     this.inspectMode = false;
 
-    this.frustumSize = 25;
+    this.frustumSize = 36;
     this.camCurrentLook = new THREE.Vector3(0, 0, 0);
     this.screenShake = 0;
 
@@ -339,6 +339,12 @@ export class TankGameEngine {
     this.cycleCameraPreset(preset);
   }
 
+  setCameraZoom(zoom) {
+    if (typeof zoom !== 'number' || !Number.isFinite(zoom)) return;
+    this.frustumSize = THREE.MathUtils.clamp(zoom, 14, 46);
+    this.handleResize?.();
+  }
+
   /** Switches the graphics quality preset (see QUALITY_PRESETS). */
   setQuality(quality) {
     if (!QUALITY_PRESETS[quality] || quality === this.quality) return;
@@ -418,12 +424,17 @@ export class TankGameEngine {
   }
 
   setInspectMode(enabled) {
-    this.inspectMode = Boolean(enabled);
+    const next = Boolean(enabled);
+    if (next === this.inspectMode) return;
+    this.inspectMode = next;
     if (this.inspectMode) {
+      this._preInspectFrustumSize = this.frustumSize;
       this.frustumSize = 11.5;
       this.handleResize?.();
     } else {
-      this.cycleCameraPreset(this.cameraPreset);
+      this.frustumSize = this._preInspectFrustumSize || this.frustumSize;
+      this._preInspectFrustumSize = null;
+      this.handleResize?.();
     }
   }
 

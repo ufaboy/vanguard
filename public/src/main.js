@@ -160,6 +160,7 @@ state.upgrades = loadUpgrades();
 const initialPrefs = loadPreferences();
 state.soundEnabled = initialPrefs.soundEnabled;
 state.cameraPreset = initialPrefs.cameraPreset;
+state.cameraZoom = initialPrefs.cameraZoom;
 state.graphicsQuality = initialPrefs.graphicsQuality;
 state.fpsCap = initialPrefs.fpsCap;
 
@@ -167,6 +168,7 @@ function savePreferences() {
   persistPreferences({
     soundEnabled: state.soundEnabled,
     cameraPreset: state.cameraPreset,
+    cameraZoom: state.cameraZoom,
     graphicsQuality: state.graphicsQuality,
     fpsCap: state.fpsCap,
   });
@@ -286,6 +288,13 @@ function initApp() {
     }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated });
     engine.applyUpgrades(state.upgrades);
     engine.setCameraPreset(state.cameraPreset);
+    if (typeof state.cameraZoom === 'number') {
+      engine.setCameraZoom(state.cameraZoom);
+    }
+    engine.onCameraZoomChange = (zoom) => {
+      state.cameraZoom = zoom;
+      savePreferences();
+    };
     renderUI(true);
     resolveEngineReady();
   };
@@ -487,6 +496,7 @@ function cycleCameraPreset() {
   const order = ['ISOMETRIC', 'TACTICAL_HIGH', 'CLOSE_COMBAT'];
   const next = order[(order.indexOf(state.cameraPreset) + 1) % order.length];
   state.cameraPreset = next;
+  state.cameraZoom = null;
   savePreferences();
   engine?.setCameraPreset(next);
   renderUI(true);

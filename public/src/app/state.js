@@ -46,6 +46,7 @@ export function loadPreferences() {
   const prefs = {
     soundEnabled: true,
     cameraPreset: 'ISOMETRIC',
+    cameraZoom: null,
     graphicsQuality: 'high',
     fpsCap: 60,
   };
@@ -53,6 +54,9 @@ export function loadPreferences() {
     const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
     if (typeof raw.soundEnabled === 'boolean') prefs.soundEnabled = raw.soundEnabled;
     if (Object.hasOwn(CAMERA_LABELS, raw.cameraPreset)) prefs.cameraPreset = raw.cameraPreset;
+    if (typeof raw.cameraZoom === 'number' && Number.isFinite(raw.cameraZoom) && raw.cameraZoom >= 14 && raw.cameraZoom <= 46) {
+      prefs.cameraZoom = raw.cameraZoom;
+    }
     if (VALID_QUALITY_PRESETS.includes(raw.graphicsQuality)) prefs.graphicsQuality = raw.graphicsQuality;
     if (FPS_CAP_OPTIONS.includes(raw.fpsCap)) prefs.fpsCap = raw.fpsCap;
   } catch {
@@ -67,6 +71,9 @@ export function savePreferences(prefs) {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({
       soundEnabled: Boolean(prefs.soundEnabled),
       cameraPreset: prefs.cameraPreset,
+      cameraZoom: typeof prefs.cameraZoom === 'number' && Number.isFinite(prefs.cameraZoom)
+        ? Math.max(14, Math.min(46, prefs.cameraZoom))
+        : null,
       graphicsQuality: prefs.graphicsQuality,
       fpsCap: prefs.fpsCap,
     }));
