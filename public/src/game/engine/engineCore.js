@@ -73,7 +73,7 @@ export class TankGameEngine {
     this.aiDebugMode = false;
     this.inspectMode = false;
 
-    this.frustumSize = 36;
+    this.frustumSize = 32;
     this.camCurrentLook = new THREE.Vector3(0, 0, 0);
     this.screenShake = 0;
 

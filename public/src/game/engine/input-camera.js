@@ -186,7 +186,7 @@ export class InputCameraController {
       engine.cameraPreset = order[nextIdx];
     }
 
-    if (engine.cameraPreset === 'ISOMETRIC') engine.frustumSize = 36;
+    if (engine.cameraPreset === 'ISOMETRIC') engine.frustumSize = 32;
     else if (engine.cameraPreset === 'TACTICAL_HIGH') engine.frustumSize = 44;
     else if (engine.cameraPreset === 'CLOSE_COMBAT') engine.frustumSize = 20;
 
