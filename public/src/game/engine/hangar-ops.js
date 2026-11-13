@@ -6,22 +6,22 @@ import {
   MISSILE,
   TRACK_UPGRADE_COSTS,
   UPGRADE_MAX_LEVEL,
-} from './constants.js';
-import { GameStatus, TileType } from './types.js';
-import { HangarStage } from './hangar-stage.js';
-import { sound } from './sound.js';
+} from '../constants.js';
+import { GameStatus, TileType } from '../types.js';
+import { HangarStage } from '../render/hangar-stage.js';
+import { sound } from '../sound.js';
 import {
   COMPONENT_TRACKS,
   COMPONENT_DAMAGE_COOLDOWN,
   componentRepairCost,
   rollComponentDamage,
-} from '../sim/component-damage.js';
+} from '../../sim/component-damage.js';
 import {
   mountPartInHangar,
   resolveAssembledTank,
   settleMission,
-} from '../sim/hangar.js';
-import { recordSurvivalRun } from '../sim/survival.js';
+} from '../../sim/hangar.js';
+import { recordSurvivalRun } from '../../sim/survival.js';
 
 export class HangarOps {
   constructor(engine) {

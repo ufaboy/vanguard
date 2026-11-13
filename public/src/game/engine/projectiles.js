@@ -10,7 +10,7 @@ import {
   TANK_HIT_RADIUS,
   computeEffectiveDamage,
 } from '../constants.js';
-import { animateMissileVisual, createProjectileVisual } from '../fx.js';
+import { animateMissileVisual, createProjectileVisual } from '../effects/index.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { EnemyClass, TileType } from '../types.js';

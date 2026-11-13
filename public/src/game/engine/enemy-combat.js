@@ -28,7 +28,7 @@ import {
   TANK_HIT_RADIUS,
   TITAN,
 } from '../constants.js';
-import { createMissileVisual } from '../fx.js';
+import { createMissileVisual } from '../effects/index.js';
 import { GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { SECTOR_BOSS_CONFIGS } from '../tanks.js';

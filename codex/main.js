@@ -2,9 +2,9 @@
 
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { ModelFactory } from '../public/src/game/models.js';
-import { FxSystem } from '../public/src/game/fx.js';
-import { autoDisposeOwned, disposeOwned } from '../public/src/game/dispose.js';
+import { ModelFactory } from '../public/src/game/render/models.js';
+import { FxSystem } from '../public/src/game/effects/index.js';
+import { autoDisposeOwned, disposeOwned } from '../public/src/game/render/dispose.js';
 import { CODEX_ITEMS } from './catalog.js';
 import { CodexStage } from './stage.js';
 import { renderCodex } from './ui.js';

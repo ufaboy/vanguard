@@ -1,7 +1,7 @@
 /** F3 AI telemetry overlay: world-space labels and A* path lines for enemies. */
 
 import * as THREE from 'three';
-import { GRID_SIZE, TILE_SIZE } from './levels.js';
+import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 
 export class AiDebugOverlay {
   constructor(engine) {

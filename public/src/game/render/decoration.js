@@ -1,6 +1,6 @@
 /** Arena landmark and decorative element placement rules. */
 
-import { TileType } from './terrains/surfaces.js';
+import { TileType } from '../terrains/surfaces.js';
 
 export const DECORATION_THEMES = Object.freeze({
   urban: { ground: '#555b58', accent: '#c1baa0' },

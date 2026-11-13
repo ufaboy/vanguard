@@ -1,6 +1,6 @@
 /** Procedural canvas textures (bricks, concrete, ground, ice, water, forest, spawner and base. */
-import * as THREE from '../../vendor/three/build/three.module.js';
-import { GRID_SIZE } from './constants.js';
+import * as THREE from '../../../vendor/three/build/three.module.js';
+import { GRID_SIZE } from '../constants.js';
 
 export function mulberry32(seed) {
   let a = seed >>> 0;

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { settleMission } from '../../sim/hangar.js';
 import { DURABILITY, ENEMY_VISIBILITY } from '../constants.js';
-import { disposeOwned } from '../dispose.js';
+import { disposeOwned } from '../render/dispose.js';
 import { TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';

@@ -142,15 +142,6 @@ export function renderBattlefieldHud({
         </button>
 
         <button
-          data-action="toggle-codex"
-          class="flex items-center gap-1 bg-[#0B0F17]/95 hover:bg-slate-800 border border-teal-400/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-teal-300 transition-colors cursor-pointer"
-          title="Open 3D Tactical Codex & Showcase [I]"
-        >
-          <span>◈</span>
-          <span class="hidden md:inline">[I]</span>
-        </button>
-
-        <button
           data-action="cycle-camera"
           class="flex items-center gap-1 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
           title="Cycle Camera Angle [C]"

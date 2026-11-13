@@ -4,12 +4,12 @@ import {
   PLAYER_UPGRADES,
   TRACK_UPGRADE_COSTS,
   UPGRADE,
-} from './constants.js';
-import { SECTORS, TILE_SIZE } from './levels.js';
-import { SECTOR_BOSS_CONFIGS } from './tanks.js';
-import { getObservedEnemyCondition } from '../sim/ai.js';
-import { buildContractHudSnapshot } from '../sim/contract.js';
-import { buildSurvivalHudSnapshot } from '../sim/survival.js';
+} from '../constants.js';
+import { SECTORS, TILE_SIZE } from '../levels.js';
+import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
+import { getObservedEnemyCondition } from '../../sim/ai.js';
+import { buildContractHudSnapshot } from '../../sim/contract.js';
+import { buildSurvivalHudSnapshot } from '../../sim/survival.js';
 
 export function buildHudSnapshot(engine) {
   const sector = SECTORS[engine.currentSectorIndex];

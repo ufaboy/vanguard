@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { EnemyClass } from '../public/src/game/types.js';
-import { createProjectileVisual, createMissileVisual, animateMissileVisual } from '../public/src/game/fx.js';
+import { createProjectileVisual, createMissileVisual, animateMissileVisual } from '../public/src/game/effects/index.js';
 import { sound } from '../public/src/game/sound.js';
 
 export class CodexStage {

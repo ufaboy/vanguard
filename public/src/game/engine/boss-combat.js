@@ -1,7 +1,7 @@
 /** Boss phase transitions, Titan directional Aegis, Inferno Overdrive Ram, and onboard boss APS. */
 
 import * as THREE from 'three';
-import { bossApsCanIntercept } from '../sim/aps.js';
+import { bossApsCanIntercept } from '../../sim/aps.js';
 import {
   BOSS_APS,
   DURABILITY,
@@ -11,11 +11,11 @@ import {
   TANK_HIT_RADIUS,
   TITAN,
   computeEffectiveDamage,
-} from './constants.js';
-import { EnemyClass, TileType } from './types.js';
-import { GRID_SIZE, TILE_SIZE } from './levels.js';
-import { disposeOwned, markOwned } from './dispose.js';
-import { sound } from './sound.js';
+} from '../constants.js';
+import { EnemyClass, TileType } from '../types.js';
+import { GRID_SIZE, TILE_SIZE } from '../levels.js';
+import { disposeOwned, markOwned } from '../render/dispose.js';
+import { sound } from '../sound.js';
 
 export class BossCombat {
   constructor(engine) {
