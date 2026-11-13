@@ -327,36 +327,6 @@ export function renderBattlefieldHud({
       const cannonAmmo = hud.cannonAmmo ?? 15;
       const cannonMax = hud.cannonMaxAmmo ?? 15;
 
-      const damagedFaults = Object.entries(hud.componentDamage || {})
-        .filter(([, isDamaged]) => isDamaged)
-        .map(([track]) => `<span class="px-1.5 py-0.5 border border-red-500/80 bg-red-950/80 text-red-300 rounded text-[9px] font-mono font-bold animate-pulse">⚠ ${track.toUpperCase()} FAULT</span>`);
-
-      const sub = hud.subsystems;
-      const damagedSubBadges = sub
-        ? [
-            { id: 'leftTrack', code: 'L-TRK' },
-            { id: 'rightTrack', code: 'R-TRK' },
-            { id: 'engine', code: 'ENG' },
-            { id: 'turretDrive', code: 'TUR' },
-            { id: 'cannon', code: 'GUN' },
-            { id: 'stabilizer', code: 'STAB' },
-          ]
-            .map((sItem) => {
-              const st = sub[sItem.id];
-              if (!st) return '';
-              const ratio = st.hp / Math.max(1, st.maxHp);
-              if (ratio >= 0.99) return '';
-              const cls =
-                ratio <= 0
-                  ? 'bg-red-950 border-red-500 text-red-300 animate-pulse'
-                  : 'bg-amber-950 border-amber-500 text-amber-300';
-              return `<span class="px-1.5 py-0.5 border rounded text-[9px] font-mono font-bold ${cls}">⚠ ${sItem.code} ${Math.round(ratio * 100)}%</span>`;
-            })
-            .filter(Boolean)
-        : [];
-
-      const subBadgesHtml = [...damagedFaults, ...damagedSubBadges].join('');
-
       const rk = hud.repairKitState;
       const rkLabel = rk?.channeling
         ? `REPAIRING ${(rk.channelDuration - rk.channelProgress).toFixed(1)}s`
@@ -381,7 +351,6 @@ export function renderBattlefieldHud({
 
       setHtml(centerSection, `
         <div class="flex flex-col items-center gap-1.5">
-          ${subBadgesHtml ? `<div class="flex flex-wrap justify-center gap-1">${subBadgesHtml}</div>` : ''}
           <div class="flex flex-wrap items-center justify-center gap-2">
             <div class="hud-card hud-weapon-card">
               <div class="hud-ammo-block">
