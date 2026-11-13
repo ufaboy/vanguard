@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npx --yes serve public -l 3000",
+    "codex": "npx --yes serve . -l 3001",
     "start": "npx --yes serve public -l 3000",
     "build": "npm run lint",
     "vendor": "node scripts/sync-vendor.mjs",

@@ -1,7 +1,7 @@
-import { apsInterceptCost, bossApsCanIntercept } from '../sim/aps.js';
+import { apsInterceptCost } from '../sim/aps.js';
 import { emitFlamePuff } from './abilities/flame-stream.js';
 import { BoxPowerUpPool, rollBoxLoot } from './terrains/boxes-loot.js';
-import { COMPONENT_TRACKS, normalizeComponentDamage, effectiveUpgradeTiers, rollComponentDamage, componentRepairCost, COMPONENT_DAMAGE_COOLDOWN } from '../sim/component-damage.js';
+import { COMPONENT_TRACKS, normalizeComponentDamage, effectiveUpgradeTiers } from '../sim/component-damage.js';
 /** Core Three.js WebGL game loop, combat physics, and simulation. */
 
 import { isUsefulPowerUp } from './powerup-drops.js';
@@ -10,7 +10,13 @@ import { findBorderIngressCell } from './campaign-navigation.js';
 import { createUrbanGroundTexture } from './terrains/urban-ground.js';
 import { createEncounterState, remainingEncounterEnemies, updateEncounters } from './encounters.js';
 import * as THREE from 'three';
-import { HangarStage } from './hangar-stage.js';
+import { SurvivalDirector, ContractDirector } from './mode-directors.js';
+import { AiDebugOverlay } from './ai-debug-overlay.js';
+import { HangarOps } from './hangar-ops.js';
+import { BossCombat } from './boss-combat.js';
+import { DefenseTurretsController } from './defense-turrets.js';
+import { buildHudSnapshot } from './hud-snapshot.js';
+import { ForestFireController } from './forest-fire.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import {
   APS,
@@ -31,8 +37,6 @@ import {
   getMaxApsAmmo,
   getMaxMissileAmmo,
   getMaxCannonAmmo,
-  DEFENSE_TURRET_CONFIGS,
-  DEFENSE_TURRET_TYPES,
   DURABILITY,
   ENEMY_KILL_CREDITS,
   ENEMY_VISIBILITY,
@@ -43,7 +47,6 @@ import {
   POWERUP_MAX_ON_MAP,
   POWERUP_TYPES,
   REPAIR_KIT,
-  TRACK_UPGRADE_COSTS,
   UPGRADE,
   UPGRADE_MAX_LEVEL,
 } from './constants.js';
@@ -123,30 +126,19 @@ import {
   zoneOf,
 } from '../sim/behavior/index.js';
 import {
-  mountPartInHangar,
   resolveAssembledTank,
   SaveRepository,
   settleMission,
 } from '../sim/hangar.js';
 import {
-  CARGO_STATUS,
-  CONTRACT_TIMING,
   CONTRACT_TYPES,
   CONTRACTS_CATALOG,
   LAST_CARGO_CONTRACT,
-  LAST_CARGO_GATES,
-  buildContractHudSnapshot,
-  commitContractCargoDelivery,
   createContractState,
-  startCargoLoading,
-  startContractExtraction,
-  stepContractCargo,
   stepContractScheduler,
 } from '../sim/contract.js';
 import {
   SURVIVAL_CONFIG,
-  buildSurvivalHudSnapshot,
-  buildSurvivalWaveSpec,
   createSurvivalState,
   recordSurvivalRun,
 } from '../sim/survival.js';
@@ -181,36 +173,6 @@ export class TankGameEngine {
     this.cameraDragPrevX = 0;
     this.aiDebugMode = false;
     this.inspectMode = false;
-    this.codexOpen = false;
-    this.codexItem = null;
-    this.codexTurntableAngle = 0.55;
-    this.codexAutoRotate = true;
-    this.codexDragging = false;
-    this.codexDragPrevX = 0;
-    this.codexDemoTimer = 0;
-    this.codexRecoil = 0;
-    this.codexNextBarrel = 0;
-    this.codexBarrelRecoils = [0, 0];
-    this.codexFlashTimer = 0;
-    this.codexPreviewUpgrades = {
-      cannon: 1,
-      chassis: 1,
-      frame: 1,
-      engine: 1,
-      armor: 1,
-      aps: true,
-      missile: true,
-    };
-    this.codexGroup = new THREE.Group();
-    this.codexStageGroup = new THREE.Group();
-    this.codexFxGroup = new THREE.Group();
-    autoDisposeOwned(this.codexStageGroup);
-    autoDisposeOwned(this.codexFxGroup);
-    this.codexTankRig = null;
-    this.codexSecondaryRig = null;
-    this.codexHazardRing = null;
-    this.codexHazardFill = null;
-    this.codexArcShell = null;
 
     this.frustumSize = 25;
     this.camCurrentLook = new THREE.Vector3(0, 0, 0);
@@ -415,29 +377,24 @@ export class TankGameEngine {
     this.modelFactory = new ModelFactory(this.renderer, this.isSoftwareGl, options.pregenerated);
     this.modelFactory.onBrickModelsReady = () => {
       if (this.isDisposed) return;
-      for (const group of [this.mapGroup, this.codexStageGroup]) {
-        group.traverse(node => {
-          if (node.userData.brickHp !== undefined) {
-            this.modelFactory.updateBrickBlockDamage(node, node.userData.brickHp);
-            this.tileBatcher.markDirty(node);
-          }
-        });
-      }
+      this.mapGroup.traverse(node => {
+        if (node.userData.brickHp !== undefined) {
+          this.modelFactory.updateBrickBlockDamage(node, node.userData.brickHp);
+          this.tileBatcher.markDirty(node);
+        }
+      });
     };
     this.setupLighting();
     this.fx = new FxSystem({ lowQuality: this.isSoftwareGl, light: this.explosionLight });
-    this._codexFx = null;
     this.applyQuality();
     this.setupStaticEnvironment();
     this.setupAimReticle();
-    this.setupCodexStage();
 
     this.scene.add(this.mapGroup);
     this.scene.add(this.tileBatcher.root);
     this.scene.add(this.entityGroup);
     this.scene.add(this.fxGroup);
     this.scene.add(this.fx.root);
-    this.scene.add(this.codexGroup);
 
     this.loadSector(0, false);
 
@@ -591,15 +548,6 @@ export class TankGameEngine {
     this.cycleCameraPreset(preset);
   }
 
-  get codexFx() {
-    if (!this._codexFx) {
-      this._codexFx = new FxSystem({ lowQuality: this.isSoftwareGl, light: this.explosionLight });
-      this._codexFx.q = this.fx.q;
-      this.codexGroup.add(this._codexFx.root);
-    }
-    return this._codexFx;
-  }
-
   /** Switches the graphics quality preset (see QUALITY_PRESETS). */
   setQuality(quality) {
     if (!QUALITY_PRESETS[quality] || quality === this.quality) return;
@@ -626,7 +574,6 @@ export class TankGameEngine {
 
     const fxScale = this.isSoftwareGl ? Math.min(0.55, preset.fx) : preset.fx;
     if (this.fx) this.fx.q = fxScale;
-    if (this._codexFx) this._codexFx.q = fxScale;
     this.modelFactory?.setQuality({ physicalWater: preset.physicalWater });
   }
 
@@ -668,7 +615,7 @@ export class TankGameEngine {
       this.status === GameStatus.PAUSED ||
       this.status === GameStatus.VICTORY ||
       this.status === GameStatus.GAME_OVER;
-    if (resultScreen && !this.codexOpen && !this.isHangarOpen && !this.inspectMode && !this.cameraRotating) {
+    if (resultScreen && !this.isHangarOpen && !this.inspectMode && !this.cameraRotating) {
       return 1000 / IDLE_SCREEN_FPS;
     }
     return this.fpsCap > 0 ? 1000 / this.fpsCap : 0;
@@ -849,832 +796,13 @@ export class TankGameEngine {
     this.scene.add(this.perimeterMesh);
   }
 
-  setupCodexStage() {
-    this.codexGroup.visible = false;
-
-    const floorMat = new THREE.MeshStandardMaterial({
-      map: this.modelFactory.groundTex,
-      color: 0x0f172a,
-      roughness: 0.8,
-      metalness: 0.18,
-    });
-    const floorMesh = new THREE.Mesh(new THREE.CircleGeometry(18, 48), floorMat);
-    floorMesh.rotation.x = -Math.PI / 2;
-    floorMesh.position.y = -0.26;
-    floorMesh.receiveShadow = true;
-    this.codexGroup.add(floorMesh);
-
-    const baseMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.42,
-      metalness: 0.72,
-    });
-    const rimMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
-      roughness: 0.3,
-      metalness: 0.85,
-    });
-    const pedestalOuter = new THREE.Mesh(
-      new THREE.CylinderGeometry(3.45, 3.85, 0.24, 24),
-      rimMat
-    );
-    pedestalOuter.position.y = -0.13;
-    pedestalOuter.receiveShadow = true;
-    this.codexGroup.add(pedestalOuter);
-
-    const pedestalTop = new THREE.Mesh(
-      new THREE.CylinderGeometry(3.2, 3.35, 0.06, 24),
-      baseMat
-    );
-    pedestalTop.position.y = -0.03;
-    pedestalTop.receiveShadow = true;
-    this.codexGroup.add(pedestalTop);
-
-    const ringGeo = new THREE.RingGeometry(2.95, 3.08, 48);
-    ringGeo.rotateX(-Math.PI / 2);
-    this.codexRingMat = new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.85,
-    });
-    const ringMesh = new THREE.Mesh(ringGeo, this.codexRingMat);
-    ringMesh.position.y = 0.01;
-    this.codexGroup.add(ringMesh);
-
-    const innerRingGeo = new THREE.RingGeometry(1.85, 1.9, 36);
-    innerRingGeo.rotateX(-Math.PI / 2);
-    const innerRingMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.4,
-    });
-    const innerRing = new THREE.Mesh(innerRingGeo, innerRingMat);
-    innerRing.position.y = 0.01;
-    this.codexGroup.add(innerRing);
-
-    this.codexGroup.add(this.codexStageGroup);
-    this.codexGroup.add(this.codexFxGroup);
-  }
-
-  setCodexMode(enabled, item = null, previewUpgrades = null) {
-    this.codexOpen = Boolean(enabled);
-    if (previewUpgrades) {
-      this.codexPreviewUpgrades = {
-        ...this.codexPreviewUpgrades,
-        ...previewUpgrades,
-      };
-    } else if (this.codexOpen && !item) {
-      this.codexPreviewUpgrades = {
-        ...this.upgrades,
-        aps: true,
-        missile: true,
-      };
-    }
-
-    this.mapGroup.visible = !this.codexOpen;
-    this.entityGroup.visible = !this.codexOpen;
-    this.fxGroup.visible = !this.codexOpen;
-    this.fx.root.visible = !this.codexOpen;
-    if (this.groundMesh) this.groundMesh.visible = !this.codexOpen;
-    if (this.perimeterMesh) this.perimeterMesh.visible = !this.codexOpen;
-    if (this.aimReticle) this.aimReticle.visible = !this.codexOpen;
-    this.codexGroup.visible = this.codexOpen;
-
-    if (this.codexOpen) {
-      this.frustumSize = 10.2;
-      this.handleResize();
-      if (item) {
-        this.loadCodexShowcaseItem(item);
-      }
-    } else {
-      this.clearGroup(this.codexStageGroup);
-      this.clearGroup(this.codexFxGroup);
-      this._codexFx?.clear();
-      if (this.inspectMode) {
-        this.frustumSize = 11.5;
-        this.handleResize();
-      } else {
-        this.cycleCameraPreset(this.cameraPreset);
-      }
-    }
-    this.syncAudioPauseState();
-  }
-
-  updateCodexPreviewUpgrades(previewUpgrades) {
-    this.codexPreviewUpgrades = {
-      ...this.codexPreviewUpgrades,
-      ...previewUpgrades,
-    };
-    if (this.codexOpen && this.codexItem?.isPlayerMbt && this.codexTankRig) {
-      const hoverActive =
-        (this.codexPreviewUpgrades.chassis || 1) >= 5;
-      const apsArr = this.codexPreviewUpgrades.aps ? [3, 3, 3, 3] : [0, 0, 0, 0];
-      const missileCount = this.codexPreviewUpgrades.missile ? 4 : 0;
-      this.modelFactory.updatePlayerTankVisuals(
-        this.codexTankRig,
-        this.codexPreviewUpgrades,
-        hoverActive,
-        missileCount,
-        apsArr,
-        0,
-        this.clock ? this.clock.getElapsed() : 0
-      );
-    }
-  }
-
-  loadCodexShowcaseItem(item) {
-    if (!item) return;
-    this.codexItem = item;
-    this.clearGroup(this.codexStageGroup);
-    this.clearGroup(this.codexFxGroup);
-    this._codexFx?.clear();
-    this.codexMines = null;
-    this.codexMissile = null;
-    this.codexArcPrev = 0;
-    this.codexTankRig = null;
-    this.codexSecondaryRig = null;
-    this.codexHazardRing = null;
-    this.codexHazardFill = null;
-    this.codexArcShell = null;
-    this.codexDemoTimer = 0.6;
-    this.codexRecoil = 0;
-    this.codexBarrelRecoils = [0, 0];
-    this.codexNextBarrel = 0;
-    this.codexFlashTimer = 0;
-
-    if (this.codexRingMat && item.accentHex) {
-      this.codexRingMat.color.set(item.accentHex);
-    }
-
-    if (item.category === 'TANKS') {
-      if (item.isPlayerMbt) {
-        this.codexTankRig = this.modelFactory.createPlayerTank();
-        this.codexStageGroup.add(this.codexTankRig.root);
-        this.updateCodexPreviewUpgrades(this.codexPreviewUpgrades);
-      } else if (item.enemyClass) {
-        this.codexTankRig = this.modelFactory.createEnemyTank(item.enemyClass);
-        this.codexStageGroup.add(this.codexTankRig.root);
-      }
-    } else if (item.category === 'SURFACES') {
-      if (item.turretType) {
-        const rig = this.modelFactory.createDefenseTurretRig(item.turretType);
-        rig.root.position.set(0, 0, 0);
-        rig.root.scale.setScalar(1.25);
-        if (rig.hpBarBg) rig.hpBarBg.visible = false;
-        if (rig.hpBarFill) rig.hpBarFill.visible = false;
-        this.codexStageGroup.add(rig.root);
-        this.codexTankRig = rig;
-        return;
-      }
-      const offsets = [
-        { x: -1.05, z: -1.05 },
-        { x: 1.05, z: -1.05 },
-        { x: -1.05, z: 1.05 },
-        { x: 1.05, z: 1.05 },
-      ];
-      offsets.forEach((pos, idx) => {
-        let block = null;
-        if (item.surfaceType === 'BRICK') {
-          const brick = this.modelFactory.createBrickBlock();
-          if (idx === 1) this.modelFactory.updateBrickBlockDamage(brick.group, 2);
-          block = brick.group;
-        } else if (
-          item.surfaceType === 'CONCRETE' ||
-          item.surfaceType === 'STEEL'
-        ) {
-          block = this.modelFactory.createConcreteBlock();
-          if (idx === 1) {
-            this.modelFactory.updateConcreteBlockDamage(block, 12, 16);
-          } else if (idx === 3) {
-            this.modelFactory.updateConcreteBlockDamage(block, 6, 16);
-          }
-        } else if (item.surfaceType === 'FOREST') {
-          block = this.modelFactory.createForestBlock();
-        } else if (item.surfaceType === 'WATER') {
-          if (idx === 0) this.codexStageGroup.add(this.modelFactory.createWaterBlock([[1, 1], [1, 1]]));
-          return;
-        } else if (item.surfaceType === 'ICE') {
-          if (idx === 0) this.codexStageGroup.add(this.modelFactory.createIceBlock([[1, 1], [1, 1]]));
-          return;
-        } else if (item.surfaceType === 'BASE') {
-          if (idx === 0) {
-            const hq = this.modelFactory.createCommandBaseBlock();
-            hq.position.set(0, 0, 0.7);
-            hq.scale.setScalar(0.9);
-            this.codexStageGroup.add(hq);
-
-            // The concrete line that covers the HQ from the enemy side, one free lane away.
-            for (const x of [-0.9, 0.9]) {
-              const concrete = this.modelFactory.createConcreteBlock();
-              concrete.position.set(x, 0, -1.6);
-              concrete.scale.setScalar(0.8);
-              this.codexStageGroup.add(concrete);
-            }
-          }
-          return;
-        } else if (item.surfaceType === 'HEDGEHOG') {
-          block = this.modelFactory.createHedgehogBlock();
-        } else if (item.surfaceType === 'BOXES') {
-          block = this.modelFactory.createBoxesBlock();
-          if (idx > 0) this.modelFactory.updateBoxesDamage(block, 1);
-        } else if (item.surfaceType === 'BARREL') {
-          block = this.modelFactory.createBarrelBlock();
-        } else if (item.surfaceType === 'ENEMY_BASE') {
-          if (idx === 0) {
-            const citadel = this.modelFactory.createEnemyBaseBlock();
-            citadel.position.set(0, -0.2, 0.4);
-            citadel.scale.setScalar(0.95);
-            this.codexStageGroup.add(citadel);
-
-            const leftConcrete = this.modelFactory.createConcreteBlock();
-            leftConcrete.position.set(-1.6, 0, -1.1);
-            leftConcrete.scale.setScalar(0.8);
-            this.codexStageGroup.add(leftConcrete);
-
-            const rightConcrete = this.modelFactory.createConcreteBlock();
-            rightConcrete.position.set(1.6, 0, -1.1);
-            rightConcrete.scale.setScalar(0.8);
-            this.codexStageGroup.add(rightConcrete);
-          }
-          return;
-        }
-        if (block) {
-          block.position.set(pos.x, 0, pos.z);
-          this.codexStageGroup.add(block);
-        }
-      });
-    } else if (item.category === 'POWERUPS') {
-      const crate = this.modelFactory.createPowerUpMesh(item.powerupType);
-      crate.scale.setScalar(1.5);
-      crate.position.set(0, 0.35, 0);
-      this.codexStageGroup.add(crate);
-      this.codexTankRig = { root: crate, isCrate: true };
-    } else if (item.category === 'EFFECTS') {
-      this.setupCodexEffectScene(item.effectType);
-    }
-  }
-
-  setupCodexEffectScene(effectType) {
-    if (effectType === 'CANNON') {
-      this.codexTankRig = this.modelFactory.createPlayerTank();
-      this.codexTankRig.root.position.set(-1.35, 0, 0);
-      this.codexTankRig.hull.rotation.y = Math.PI / 2;
-      this.codexTankRig.turret.rotation.y = Math.PI / 2;
-      this.modelFactory.updatePlayerTankVisuals(
-        this.codexTankRig,
-        { cannon: 4, vehicleFrame: 3, engine: 3, armor: 3 },
-        false,
-        2,
-        [1, 1, 1, 1],
-        0,
-        0
-      );
-      this.codexStageGroup.add(this.codexTankRig.root);
-
-      const targetConcrete = this.modelFactory.createConcreteBlock();
-      this.modelFactory.updateConcreteBlockDamage(targetConcrete, 7, 16);
-      targetConcrete.position.set(1.65, 0, 0);
-      this.codexStageGroup.add(targetConcrete);
-    } else if (effectType === 'MISSILE') {
-      this.codexTankRig = this.modelFactory.createPlayerTank();
-      this.codexTankRig.root.position.set(-1.35, 0, 0);
-      this.codexTankRig.hull.rotation.y = Math.PI / 2;
-      this.codexTankRig.turret.rotation.y = Math.PI / 2;
-      this.modelFactory.updatePlayerTankVisuals(
-        this.codexTankRig,
-        { cannon: 3, vehicleFrame: 2, engine: 3, armor: 3 },
-        false,
-        4,
-        [1, 1, 1, 1],
-        0,
-        0
-      );
-      this.codexStageGroup.add(this.codexTankRig.root);
-
-      this.codexSecondaryRig = this.modelFactory.createEnemyTank(EnemyClass.HEAVY);
-      this.codexSecondaryRig.root.position.set(1.55, 0, 0);
-      this.codexSecondaryRig.hull.rotation.y = -Math.PI / 2;
-      this.codexSecondaryRig.turret.rotation.y = -Math.PI / 2;
-      this.codexStageGroup.add(this.codexSecondaryRig.root);
-    } else if (effectType === 'ARTILLERY') {
-      this.codexTankRig = this.modelFactory.createEnemyTank(EnemyClass.ARTILLERY);
-      this.codexTankRig.root.position.set(-1.45, 0, 0);
-      this.codexTankRig.hull.rotation.y = Math.PI / 2;
-      this.codexTankRig.turret.rotation.y = Math.PI / 2;
-      this.codexStageGroup.add(this.codexTankRig.root);
-
-      const ringGeo = new THREE.RingGeometry(1.05, 1.2, 28);
-      ringGeo.rotateX(-Math.PI / 2);
-      const ringMat = new THREE.MeshBasicMaterial({
-        color: 0xef4444,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.9,
-      });
-      this.codexHazardRing = new THREE.Mesh(ringGeo, ringMat);
-      this.codexHazardRing.position.set(1.25, 0.05, 0);
-      this.codexStageGroup.add(this.codexHazardRing);
-
-      const fillGeo = new THREE.CircleGeometry(1.2, 28);
-      fillGeo.rotateX(-Math.PI / 2);
-      const fillMat = new THREE.MeshBasicMaterial({
-        color: 0xef4444,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.28,
-      });
-      this.codexHazardFill = new THREE.Mesh(fillGeo, fillMat);
-      this.codexHazardFill.position.set(1.25, 0.04, 0);
-      this.codexStageGroup.add(this.codexHazardFill);
-
-      this.codexArcShell = createProjectileVisual(0xff5a2a, {
-        radius: 0.2,
-        length: 0.3,
-        glow: 1.2,
-      });
-      this.codexStageGroup.add(this.codexArcShell);
-    } else if (effectType === 'APS') {
-      this.codexTankRig = this.modelFactory.createPlayerTank();
-      this.modelFactory.updatePlayerTankVisuals(
-        this.codexTankRig,
-        { cannon: 3, vehicleFrame: 3, engine: 3, armor: 3 },
-        false,
-        2,
-        [3, 3, 3, 3],
-        0,
-        0
-      );
-      this.codexStageGroup.add(this.codexTankRig.root);
-    } else if (effectType === 'FLAME') {
-      this.codexTankRig = this.modelFactory.createEnemyTank(EnemyClass.FLAMETHROWER);
-      this.codexTankRig.root.position.set(-1.1, 0, 0);
-      this.codexTankRig.hull.rotation.y = Math.PI / 2;
-      this.codexTankRig.turret.rotation.y = Math.PI / 2;
-      this.codexStageGroup.add(this.codexTankRig.root);
-
-      const forest = this.modelFactory.createForestBlock();
-      forest.position.set(1.4, 0, 0);
-      this.codexStageGroup.add(forest);
-    } else if (effectType === 'MINE') {
-      this.codexTankRig = this.modelFactory.createEnemyTank(EnemyClass.MINE_LAYER);
-      this.codexTankRig.root.position.set(-1.15, 0, 0);
-      this.codexTankRig.hull.rotation.y = -Math.PI / 2;
-      this.codexTankRig.turret.rotation.y = -Math.PI / 2;
-      this.codexStageGroup.add(this.codexTankRig.root);
-
-      const positions = [
-        [0.8, 0],
-        [1.55, 0.75],
-        [1.55, -0.75],
-      ];
-      this.codexMines = positions.map(([mx, mz]) => {
-        const group = this.modelFactory.createLandMineMesh();
-        group.position.set(mx, 0, mz);
-        group.scale.setScalar(1.3);
-        this.codexStageGroup.add(group);
-        return { group, lightMesh: group.children[1] };
-      });
-    } else if (effectType === 'JAMMER') {
-      this.codexTankRig = this.modelFactory.createEnemyTank(EnemyClass.JAMMER);
-      this.codexStageGroup.add(this.codexTankRig.root);
-    } else if (effectType === 'REPAIR') {
-      const hq = this.modelFactory.createCommandBaseBlock();
-      hq.position.set(-1.7, 0, -0.4);
-      hq.scale.setScalar(0.8);
-      this.codexStageGroup.add(hq);
-
-      this.codexTankRig = this.modelFactory.createPlayerTank();
-      this.codexTankRig.root.position.set(1.05, 0, 0);
-      this.modelFactory.updatePlayerTankVisuals(
-        this.codexTankRig,
-        this.upgrades,
-        false,
-        2,
-        [1, 1, 1, 1],
-        0,
-        0
-      );
-      this.codexStageGroup.add(this.codexTankRig.root);
-    }
-  }
-
-  triggerCodexDemo() {
-    if (!this.codexOpen || !this.codexItem) return;
-    this.codexDemoTimer = 0.01;
-    if (this.codexItem.turretType === 'MLRS') {
-      sound.playMissileLaunch();
-    } else {
-      sound.playCannonShot(true);
-    }
-  }
-
-  /** Muzzle position of a Codex rig in Codex-FX local space (stage and FX rotate together). */
-  getCodexMuzzle(rig, fallbackX, fallbackY, fallbackZ) {
-    if (!rig?.muzzleFlash) return { x: fallbackX, y: fallbackY, z: fallbackZ };
-    rig.muzzleFlash.updateWorldMatrix(true, false);
-    const v = rig.muzzleFlash.getWorldPosition(this._tmpMuzzle || (this._tmpMuzzle = new THREE.Vector3()));
-    this.codexFx.root.updateWorldMatrix(true, false);
-    this.codexFx.root.worldToLocal(v);
-    return { x: v.x, y: v.y, z: v.z };
-  }
-
-  updateCodexShowcase(dt, elapsed) {
-    if (this.codexAutoRotate && !this.codexDragging) {
-      this.codexTurntableAngle += dt * 0.42;
-    }
-    this.codexStageGroup.rotation.y = this.codexTurntableAngle;
-    this.codexFxGroup.rotation.y = this.codexTurntableAngle;
-    this.codexFx.root.rotation.y = this.codexTurntableAngle;
-
-    const item = this.codexItem;
-    if (!item) return;
-
-    if (item.category === 'TANKS' && this.codexTankRig) {
-      this.codexRecoil = THREE.MathUtils.damp(this.codexRecoil, 0, 14, dt);
-      this.codexBarrelRecoils[0] = THREE.MathUtils.damp(
-        this.codexBarrelRecoils[0],
-        0,
-        16,
-        dt
-      );
-      this.codexBarrelRecoils[1] = THREE.MathUtils.damp(
-        this.codexBarrelRecoils[1],
-        0,
-        16,
-        dt
-      );
-      if (this.codexTankRig.turrets?.length > 1) {
-        const [t0, t1] = this.codexTankRig.turrets;
-        t0.turret.rotation.y = Math.sin(elapsed * 0.85) * 0.52;
-        t1.turret.rotation.y = Math.PI + Math.cos(elapsed * 0.72) * 0.58;
-        t0.barrelPivot.position.z = (t0.baseBarrelZ ?? 0.38) - this.codexBarrelRecoils[0];
-        t1.barrelPivot.position.z = (t1.baseBarrelZ ?? 0.38) - this.codexBarrelRecoils[1];
-        if (this.codexFlashTimer > 0) {
-          this.codexFlashTimer -= dt;
-          t0.muzzleFlash.material.opacity = 0;
-          t1.muzzleFlash.material.opacity = 0;
-        }
-      } else {
-        if (this.codexTankRig.barrelPivot) {
-          const baseZ = item.id?.startsWith('boss_') ? 0.68 : 0.46;
-          this.codexTankRig.barrelPivot.position.z = baseZ - this.codexRecoil;
-        }
-        if (this.codexTankRig.c5Barrels) {
-          this.codexTankRig.c5Barrels[0].position.z = -this.codexBarrelRecoils[0];
-          this.codexTankRig.c5Barrels[1].position.z = -this.codexBarrelRecoils[1];
-        }
-        if (this.codexFlashTimer > 0) {
-          this.codexFlashTimer -= dt;
-          if (this.codexTankRig.muzzleFlash) {
-            this.codexTankRig.muzzleFlash.material.opacity = 0;
-          }
-        }
-        if (this.codexTankRig.turret) {
-          this.codexTankRig.turret.rotation.y = Math.sin(elapsed * 0.9) * 0.45;
-        }
-      }
-      if (this.codexTankRig.gear) {
-        const gear = this.codexTankRig.gear;
-        gear.left.value += (dt * 0.9) / gear.scale;
-        gear.right.value += (dt * 0.9) / gear.scale;
-      }
-      if (this.codexTankRig.radarDish) {
-        this.codexTankRig.radarDish.rotation.y = elapsed * 3.5;
-      }
-      if (item.isPlayerMbt) {
-        const hoverActive = (this.codexPreviewUpgrades.chassis || 1) >= 5;
-        const hoverY = hoverActive ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
-        this.codexTankRig.root.position.y = hoverY;
-        const apsArr = this.codexPreviewUpgrades.aps ? [3, 3, 3, 3] : [0, 0, 0, 0];
-        const missileCount = this.codexPreviewUpgrades.missile ? 4 : 0;
-        this.modelFactory.updatePlayerTankVisuals(
-          this.codexTankRig,
-          this.codexPreviewUpgrades,
-          hoverActive,
-          missileCount,
-          apsArr,
-          dt * 2.2,
-          elapsed
-        );
-      }
-
-      this.codexDemoTimer -= dt;
-      if (this.codexDemoTimer <= 0) {
-        if (this.codexTankRig.turrets?.length > 1) {
-          const tIdx = this.codexNextBarrel % this.codexTankRig.turrets.length;
-          this.codexNextBarrel = (tIdx + 1) % this.codexTankRig.turrets.length;
-          const slot = this.codexTankRig.turrets[tIdx];
-          this.codexDemoTimer = 1.05;
-          this.codexFlashTimer = 0.08;
-          this.codexBarrelRecoils[tIdx] = 0.22;
-          const tAngle = slot.turret.rotation.y || 0;
-          const dirX = Math.sin(tAngle);
-          const dirZ = Math.cos(tAngle);
-          const perpX = Math.cos(tAngle);
-          const perpZ = -Math.sin(tAngle);
-          const m = this.getCodexMuzzle(slot, dirX * 1.45, 0.95, slot.pivotZ + dirZ * 1.45);
-          for (const lat of [-0.14, 0.14]) {
-            this.codexFx.muzzleFlash(
-              m.x + perpX * lat,
-              m.y,
-              m.z + perpZ * lat,
-              dirX,
-              dirZ,
-              { scale: 1.15 }
-            );
-          }
-        } else {
-          const isC5 =
-            item.isPlayerMbt && (this.codexPreviewUpgrades.cannon || 1) === 5;
-          this.codexDemoTimer = isC5 ? 0.55 : 2.2;
-          this.codexFlashTimer = 0.08;
-          const turretAngle = this.codexTankRig.turret?.rotation.y || 0;
-          const dirX = Math.sin(turretAngle);
-          const dirZ = Math.cos(turretAngle);
-          const perpX = Math.cos(turretAngle);
-          const perpZ = -Math.sin(turretAngle);
-
-          if (isC5) {
-            const bIdx = this.codexNextBarrel % 2;
-            this.codexNextBarrel = (bIdx + 1) % 2;
-            this.codexRecoil = 0.06;
-            this.codexBarrelRecoils[bIdx] = 0.24;
-            const lat = bIdx === 0 ? -0.14 : 0.14;
-            if (this.codexTankRig.muzzleFlash) {
-              this.codexTankRig.muzzleFlash.position.x = lat;
-            }
-            const m = this.getCodexMuzzle(
-              this.codexTankRig,
-              dirX * 1.65 + perpX * lat,
-              0.9,
-              dirZ * 1.65 + perpZ * lat
-            );
-            this.codexFx.muzzleFlash(m.x, m.y, m.z, dirX, dirZ, { scale: 0.85 });
-          } else {
-            this.codexRecoil = 0.22;
-            if (this.codexTankRig.muzzleFlash) {
-              this.codexTankRig.muzzleFlash.position.x = 0;
-            }
-            const m = this.getCodexMuzzle(this.codexTankRig, dirX * 1.45, 0.9, dirZ * 1.45);
-            this.codexFx.muzzleFlash(m.x, m.y, m.z, dirX, dirZ, {
-              scale: item.isBoss || item.id?.startsWith('boss_') ? 1.2 : 0.95,
-            });
-          }
-        }
-      }
-    }
-
-    if (item.turretType && this.codexTankRig) {
-      this.codexRecoil = THREE.MathUtils.damp(this.codexRecoil, 0, 12, dt);
-      if (this.codexTankRig.barrelPivot) {
-        this.codexTankRig.barrelPivot.position.z = -this.codexRecoil;
-      }
-      if (this.codexTankRig.turret) {
-        this.codexTankRig.turret.rotation.y = Math.sin(elapsed * 0.95) * 0.45;
-      }
-      this.codexDemoTimer -= dt;
-      if (this.codexDemoTimer <= 0) {
-        const tType = item.turretType;
-        const reloadTime = tType === 'HOWITZER' ? 3.8 : tType === 'MLRS' ? 3.2 : 2.0;
-        this.codexDemoTimer = reloadTime;
-        const turretAngle = this.codexTankRig.turret?.rotation.y || 0;
-        const dirX = Math.sin(turretAngle);
-        const dirZ = Math.cos(turretAngle);
-        this.codexRecoil = tType === 'HOWITZER' ? 0.28 : tType === 'MLRS' ? 0.16 : 0.24;
-        const muzzleDist = this.codexTankRig.muzzleDist || 1.4;
-        const mX = dirX * muzzleDist;
-        const mY = 0.85;
-        const mZ = dirZ * muzzleDist;
-
-        if (tType === 'HOWITZER') {
-          sound.playCannonShot(true);
-          this.codexFx.muzzleFlash(mX, mY, mZ, dirX, dirZ, { scale: 1.45, tint: 0x2dd4bf });
-          this.codexFx.shockwave(mX, 0.05, mZ, 0.2, 2.2, 0x2dd4bf, 0.35, 0.85);
-        } else if (tType === 'MLRS') {
-          sound.playMissileLaunch();
-          this.codexFx.muzzleFlash(mX, mY, mZ, dirX, dirZ, { scale: 1.15, tint: 0xf87171, smoke: true });
-          this.codexFx.sparks(mX, mY, mZ, 0xf87171, 6);
-        } else {
-          sound.playCannonShot(false);
-          this.codexFx.muzzleFlash(mX, mY, mZ, dirX, dirZ, { scale: 1.25, tint: 0x38bdf8 });
-        }
-      }
-    }
-
-    if (item.category === 'POWERUPS' && this.codexTankRig?.isCrate) {
-      const crate = this.codexTankRig.root;
-      crate.position.y = 0.35 + Math.sin(elapsed * 3) * 0.1;
-      crate.rotation.y = elapsed * 1.2;
-      const grounded = crate.userData.grounded;
-      if (grounded) {
-        grounded.position.y = -crate.position.y / crate.scale.y;
-        grounded.rotation.y = -crate.rotation.y;
-      }
-    }
-
-    if (item.category === 'EFFECTS') {
-      const fx = item.effectType;
-      this.codexDemoTimer -= dt;
-
-      if (fx === 'CANNON' && this.codexTankRig) {
-        this.codexRecoil = THREE.MathUtils.damp(this.codexRecoil, 0, 14, dt);
-        this.codexTankRig.barrelPivot.position.z = 0.46 - this.codexRecoil;
-        if (this.codexDemoTimer <= 0) {
-          this.codexDemoTimer = 1.6;
-          this.codexRecoil = 0.22;
-          const m = this.getCodexMuzzle(this.codexTankRig, 0.3, 0.85, 0);
-          this.codexFx.muzzleFlash(m.x, m.y, m.z, 1, 0, { scale: 1.1 });
-          const impactX = 0.68;
-          this.codexFx.schedule(0.04, () => {
-            this.codexFx.shellTrail(m.x + 0.2, m.y, m.z, impactX, m.y, m.z, 0xffb030, 0.2, 0.16);
-          });
-          this.codexFx.schedule(0.07, () => {
-            this.codexFx.masonryHit(impactX, m.y, m.z, { concrete: true, heavy: true });
-            this.codexFx.point('glow', {
-              x: impactX, y: m.y, z: m.z,
-              life: 0.1, size: 1.4, tex: 3, color: [1, 0.95, 0.8],
-            });
-          });
-        }
-      } else if (fx === 'MISSILE') {
-        this.updateCodexMissile(dt);
-        if (this.codexDemoTimer <= 0) {
-          this.codexDemoTimer = 2.6;
-          this.launchCodexMissile();
-        }
-      } else if (fx === 'ARTILLERY') {
-        const cycle = (elapsed * 0.6) % 1;
-        if (this.codexHazardFill) {
-          this.codexHazardFill.scale.setScalar(Math.max(0.08, cycle));
-        }
-        if (this.codexHazardRing) {
-          this.codexHazardRing.visible = Math.floor(elapsed * 10) % 2 === 0;
-        }
-        const wrapped = cycle < (this.codexArcPrev ?? 0);
-        this.codexArcPrev = cycle;
-        const m = this.getCodexMuzzle(this.codexTankRig, -0.6, 1.2, 0);
-        if (wrapped) {
-          this.codexFx.explosion(1.25, 0.3, 0, { scale: 0.75, scorchLife: 2.5 });
-          this.codexFx.muzzleFlash(m.x, m.y, m.z, 1, 0, { scale: 1.0, light: false });
-        }
-        if (this.codexArcShell) {
-          const sx = THREE.MathUtils.lerp(m.x, 1.25, cycle);
-          const sz = THREE.MathUtils.lerp(m.z, 0, cycle);
-          const sy = THREE.MathUtils.lerp(m.y, 0.3, cycle) + Math.sin(cycle * Math.PI) * 3.2;
-          this.codexArcShell.position.set(sx, sy, sz);
-          this.codexArcShell.visible = true;
-          this.codexFx.shellSmokeTrail(sx, sy, sz, true);
-        }
-      } else if (fx === 'APS' && this.codexTankRig) {
-        this.modelFactory.updatePlayerTankVisuals(
-          this.codexTankRig,
-          { cannon: 3, vehicleFrame: 3, engine: 3, armor: 3 },
-          false,
-          2,
-          [3, 3, 3, 3],
-          0,
-          elapsed
-        );
-        if (this.codexDemoTimer <= 0) {
-          this.codexDemoTimer = 1.3;
-          const angle = Math.random() * Math.PI * 2;
-          const cx = Math.cos(angle);
-          const cz = Math.sin(angle);
-          const startR = 3.4;
-          const killR = 1.85;
-          const speed = 16;
-          this.codexFx.streak({
-            x: cx * startR, y: 0.95, z: cz * startR,
-            vx: -cx * speed, vy: 0, vz: -cz * speed,
-            life: (startR - killR) / speed,
-            len: 0.03,
-            width: 0.16,
-            color: [1, 0.4, 0.15],
-            cool: false,
-            shrink: false,
-          });
-          this.codexFx.schedule((startR - killR) / speed, () => {
-            this.codexFx.apsIntercept(
-              Math.sign(cx || 1) * 0.55,
-              1.0,
-              Math.sign(cz || 1) * 0.7,
-              cx * killR,
-              0.95,
-              cz * killR
-            );
-          });
-        }
-      } else if (fx === 'FLAME') {
-        const m = this.getCodexMuzzle(this.codexTankRig, -0.25, 0.72, 0);
-        this.codexFlameAcc = (this.codexFlameAcc || 0) + dt;
-        const step = 1 / 45 / this.codexFx.q;
-        while (this.codexFlameAcc >= step) {
-          this.codexFlameAcc -= step;
-          for (let k = 0; k < 2; k++) {
-            const reach = Math.random();
-            const spread = (Math.random() - 0.5) * 0.35 * reach;
-            this.codexFx.flameJet(m.x + reach * 1.7, m.y + reach * 0.05, m.z + spread, 6, 0, reach);
-          }
-        }
-        if (this.codexDemoTimer <= 0) {
-          this.codexDemoTimer = 2.5;
-          this.codexFx.addEmitter('burn', 1.4, 0.55, 0, 3.0, 0.9);
-        }
-      } else if (fx === 'MINE' && this.codexMines) {
-        const blink = Math.floor(elapsed * 6) % 2 === 0;
-        this.codexMines.forEach((m) => {
-          m.lightMesh.visible = blink;
-        });
-        if (this.codexDemoTimer <= 0) {
-          this.codexDemoTimer = 2.0;
-          this.codexMineIdx = ((this.codexMineIdx ?? -1) + 1) % this.codexMines.length;
-          const mine = this.codexMines[this.codexMineIdx];
-          if (mine.group.visible) {
-            const { x, z } = mine.group.position;
-            mine.group.visible = false;
-            this.codexFx.explosion(x, 0.15, z, { scale: 0.6, scorchLife: 3 });
-            sound.playEnvironmentalExplosion({ x, z });
-            this.codexFx.schedule(1.5, () => {
-              mine.group.visible = true;
-            });
-          }
-        }
-      } else if (fx === 'JAMMER' && this.codexTankRig) {
-        if (this.codexTankRig.radarDish) {
-          this.codexTankRig.radarDish.rotation.y = elapsed * 4.0;
-        }
-        this.codexArcTimer = (this.codexArcTimer || 0) - dt;
-        if (this.codexArcTimer <= 0) {
-          this.codexArcTimer = 0.22;
-          this.codexFx.electric(0, 1.4, 0, 0xc084fc, 1, 0.6);
-        }
-        if (this.codexDemoTimer <= 0) {
-          this.codexDemoTimer = 1.5;
-          this.codexFx.jammerPulse(0, 1.2, 0, 3.0);
-        }
-      } else if (fx === 'REPAIR') {
-        this.codexRepairTimer = (this.codexRepairTimer || 0) - dt;
-        if (this.codexRepairTimer <= 0) {
-          this.codexRepairTimer = 0.14;
-          this.codexFx.repair(1.05, 0.75, 0, 2);
-        }
-        if (this.codexDemoTimer <= 0) {
-          this.codexDemoTimer = 1.6;
-          this.codexFx.segment(-1.2, 1.45, 0, 1.05, 1.0, 0, [0.3, 1, 0.6], 0.1, 0.45, 0.9);
-          this.codexFx.shockwave(-1.2, 0.05, 0, 0.4, 2.8, 0x34d399, 0.8, 0.6);
-          this.codexFx.repair(1.05, 0.9, 0, 6);
-        }
-      }
-    }
-  }
-
-  launchCodexMissile() {
-    if (this.codexMissile) {
-      this.codexFxGroup.remove(this.codexMissile.mesh);
-      this.codexMissile = null;
-    }
-    const mesh = createMissileVisual('player', 0.8);
-    this.codexFxGroup.add(mesh);
-    const start = { x: -0.95, y: 1.35, z: 0.25 };
-    const end = { x: 1.3, y: 0.85, z: 0 };
-    this.codexMissile = { mesh, t: 0, dur: 0.85, start, end, prevX: start.x, prevZ: start.z };
-    this.codexFx.missileLaunch(start.x - 0.2, start.y, start.z, 1, 0, { scale: 0.6, light: false });
-    sound.playMissileLaunch();
-  }
-
-  updateCodexMissile(dt) {
-    const ms = this.codexMissile;
-    if (!ms) return;
-    ms.t += dt;
-    const k = Math.min(1, ms.t / ms.dur);
-    const x = THREE.MathUtils.lerp(ms.start.x, ms.end.x, k);
-    const z = THREE.MathUtils.lerp(ms.start.z, ms.end.z, k) + Math.sin(k * Math.PI * 2) * 0.18;
-    const y = THREE.MathUtils.lerp(ms.start.y, ms.end.y, k) + Math.sin(k * Math.PI) * 0.7;
-    const dx = x - ms.prevX;
-    const dz = z - ms.prevZ;
-    const len = Math.hypot(dx, dz) || 1;
-    ms.mesh.position.set(x, y, z);
-    const heading = Math.atan2(dx, dz);
-    let turn = heading - ms.mesh.rotation.y;
-    turn = Math.atan2(Math.sin(turn), Math.cos(turn));
-    ms.mesh.rotation.y = heading;
-    animateMissileVisual(ms.mesh, dt, dt > 0 ? turn / dt : 0);
-    this.codexFx.missileExhaust(x, y, z, dx / len, dz / len, {
-      smokeEvery: true,
-      prevX: ms.prevX,
-      prevZ: ms.prevZ,
-    });
-    ms.prevX = x;
-    ms.prevZ = z;
-    if (k >= 1) {
-      this.codexFxGroup.remove(ms.mesh);
-      this.codexMissile = null;
-      this.codexFx.missileImpact(ms.end.x, ms.end.y, ms.end.z, dx / len, dz / len, { scale: 0.7 });
-      sound.playExplosion(0.9);
-    }
-  }
+  get survivalDirector() { return (this._survivalDirector ||= new SurvivalDirector(this)); }
+  get contractDirector() { return (this._contractDirector ||= new ContractDirector(this)); }
+  get aiDebugOverlay() { return (this._aiDebugOverlay ||= new AiDebugOverlay(this)); }
+  get hangarOps() { return (this._hangarOps ||= new HangarOps(this)); }
+  get bossCombat() { return (this._bossCombat ||= new BossCombat(this)); }
+  get defenseTurretsCtrl() { return (this._defenseTurretsCtrl ||= new DefenseTurretsController(this)); }
+  get forestFire() { return (this._forestFire ||= new ForestFireController(this)); }
 
   setupAimReticle() {
     this.aimReticle = new THREE.Group();
@@ -2354,140 +1482,12 @@ export class TankGameEngine {
   }
 
   startSurvivalWave(waveNumber = 1, isEarlyCall = false) {
-    if (!this.survivalState) return;
-    const spec = buildSurvivalWaveSpec(waveNumber);
-    this.survivalState.wave = spec.wave;
-    this.survivalState.phase = 'combat';
-    this.survivalState.intermissionTimer = 0;
-    this.survivalState.waveSpec = spec;
-    this.survivalState.nextWaveSpec = buildSurvivalWaveSpec(spec.wave + 1);
-
-    this.enemySpawnQueue = [...spec.roster];
-    this.vanguardRemainingToSpawn = this.enemySpawnQueue.length;
-    this.bossSpawned = false;
-    this.spawnTimer = 0.7;
-    this.squadDirector = createSquadDirector({ maxAttackers: spec.maxAttackers });
-
-    if (spec.wave >= 2) {
-      this.spawnSurvivalWaveSupplies(
-        SURVIVAL_CONFIG.SUPPLY_CRATES_PER_WAVE,
-        SURVIVAL_CONFIG.BARRELS_PER_WAVE
-      );
-    }
-
-    const openingBatch = Math.min(3, spec.maxConcurrentEnemies, this.vanguardRemainingToSpawn);
-    for (let i = 0; i < openingBatch; i++) {
-      this.spawnVanguardEnemy();
-    }
-
-    if (isEarlyCall) {
-      this.setStatusBanner(
-        `WAVE ${spec.wave}: ${spec.title} (+$${SURVIVAL_CONFIG.EARLY_CALL_BONUS} EARLY CALL BONUS)`,
-        3.6
-      );
-    } else if (spec.isBossWave) {
-      sound.playBossAlarm();
-      this.setStatusBanner(
-        `⚠ BOSS WAVE ${spec.wave}: ${spec.bossName} & ESCORT INBOUND!`,
-        4.2
-      );
-    } else {
-      this.setStatusBanner(
-        `WAVE ${spec.wave}: ${spec.title} (${spec.totalHostiles} HOSTILES)`,
-        3.4
-      );
-    }
-    this.emitHudUpdate();
+    this.survivalDirector.startWave(waveNumber, isEarlyCall);
   }
 
-  spawnSurvivalWaveSupplies(crateCount = 3, barrelCount = 2) {
-    let cratesPlaced = 0;
-    for (let attempt = 0; attempt < 60 && cratesPlaced < crateCount; attempt++) {
-      const r = 6 + Math.floor(Math.random() * (GRID_SIZE - 12));
-      const c = 3 + Math.floor(Math.random() * (GRID_SIZE - 6));
-      const cell = this.grid[r]?.[c];
-      if (!cell || cell.type !== TileType.EMPTY) continue;
-      const { x, z } = this.gridToWorld(r, c);
-      if (Math.hypot(this.playerX - x, this.playerZ - z) < 3.5) continue;
-      if (this.enemies.some((e) => Math.hypot(e.x - x, e.z - z) < 3.0)) continue;
-      const mesh = this.modelFactory.createBoxesBlock();
-      mesh.position.set(x, 0, z);
-      this.mapGroup.add(mesh);
-      cell.type = TileType.BOXES;
-      cell.hp = 2;
-      cell.maxHp = 2;
-      cell.mesh = mesh;
-      cell.subMeshes = undefined;
-      cratesPlaced++;
-    }
+  onSurvivalWaveCleared() { this.survivalDirector.onWaveCleared(); }
 
-    let barrelsPlaced = 0;
-    for (let attempt = 0; attempt < 40 && barrelsPlaced < barrelCount; attempt++) {
-      const r = 5 + Math.floor(Math.random() * (GRID_SIZE - 12));
-      const c = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
-      const cell = this.grid[r]?.[c];
-      if (!cell || cell.type !== TileType.EMPTY) continue;
-      const { x, z } = this.gridToWorld(r, c);
-      if (Math.hypot(this.playerX - x, this.playerZ - z) < 4.5) continue;
-      if (this.enemies.some((e) => Math.hypot(e.x - x, e.z - z) < 3.0)) continue;
-      const barrel = this.modelFactory.createBarrelBlock();
-      barrel.position.set(x, 0, z);
-      this.mapGroup.add(barrel);
-      cell.type = TileType.BARREL;
-      cell.hp = 1;
-      cell.maxHp = 1;
-      cell.mesh = barrel;
-      cell.subMeshes = undefined;
-      cell._exploding = false;
-      barrelsPlaced++;
-    }
-    this.tileBatcher?.sync();
-  }
-
-  onSurvivalWaveCleared() {
-    if (!this.survivalState || this.survivalState.phase === 'intermission') return;
-    const spec = this.survivalState.waveSpec;
-    this.survivalState.wavesCleared = this.survivalState.wave;
-    const reward = spec?.waveRewardCredits || 300;
-    if (this.playerSave) {
-      this.playerSave.credits = (this.playerSave.credits || 0) + reward;
-    }
-    this.creditsEarnedThisMission = (this.creditsEarnedThisMission || 0) + reward;
-    this.survivalState.lastWaveReward = reward;
-
-    if (spec?.isBossWave && this.baseAlive) {
-      this.setBasePerimeterMaterial(TileType.CONCRETE);
-    }
-
-    this.survivalState.phase = 'intermission';
-    this.survivalState.intermissionTimer = SURVIVAL_CONFIG.INTERMISSION_SEC;
-    this.survivalState.intermissionDuration = SURVIVAL_CONFIG.INTERMISSION_SEC;
-    sound.playPowerUp();
-    this.setStatusBanner(
-      `WAVE ${this.survivalState.wave} CLEARED! +$${reward} CREDITS · 15s REARM INTERMISSION ([N] CALL NEXT WAVE +$${SURVIVAL_CONFIG.EARLY_CALL_BONUS})`,
-      4.5
-    );
-    this.emitHudUpdate();
-  }
-
-  callNextSurvivalWave() {
-    if (
-      !this.survivalState ||
-      this.survivalState.phase !== 'intermission' ||
-      this.status !== GameStatus.PLAYING
-    ) {
-      return false;
-    }
-    const bonus = SURVIVAL_CONFIG.EARLY_CALL_BONUS;
-    if (this.playerSave) {
-      this.playerSave.credits = (this.playerSave.credits || 0) + bonus;
-    }
-    this.creditsEarnedThisMission = (this.creditsEarnedThisMission || 0) + bonus;
-    this.survivalState.earlyWaveCalls = (this.survivalState.earlyWaveCalls || 0) + 1;
-    sound.playPowerUp();
-    this.startSurvivalWave(this.survivalState.wave + 1, true);
-    return true;
-  }
+  callNextSurvivalWave() { return this.survivalDirector.callNextWave(); }
 
   spawnSpecificEnemy(enemyClass) {
     if (this.status !== GameStatus.PLAYING) {
@@ -3027,268 +2027,29 @@ export class TankGameEngine {
     }
   }
 
-  mountHangarPart(instanceId, socketId = null) {
-    const res = mountPartInHangar(this.playerSave, instanceId, socketId);
-    if (res.success) {
-      this.saveRepo.savePlayerSave(this.playerSave);
-      this.assembledTank = resolveAssembledTank(this.playerSave);
-      this.upgrades = {
-        ...this.upgrades,
-        cannon: this.assembledTank.gun?.visualTier || this.upgrades.cannon,
-        chassis: this.assembledTank.hull?.visualTiers?.chassis || this.upgrades.chassis,
-        frame: this.assembledTank.hull?.visualTiers?.frame || this.upgrades.frame,
-        engine: this.assembledTank.hull?.visualTiers?.engine || this.upgrades.engine,
-        armor: this.assembledTank.hull?.visualTiers?.armor || this.upgrades.armor,
-      };
-      this.recomputePlayerStats(true);
-      sound.playPowerUp();
-    }
-    this.emitHudUpdate();
-    return res;
-  }
+  mountHangarPart(instanceId, socketId = null) { return this.hangarOps.mountPart(instanceId, socketId); }
 
-  setHangarOpen(open) {
-    if (open) {
-      if (this.status === GameStatus.PLAYING || this.status === GameStatus.BOSS_INTRO) {
-        if (!this.inBaseRepairZone) {
-          this.setStatusBanner(
-            'HANGAR UNAVAILABLE: RETURN TO ALLIED BASE REPAIR ZONE TO UPGRADE',
-            2.5
-          );
-          return false;
-        }
-        this.isHangarPaused = true;
-      }
-      this.isHangarOpen = true;
-      this.isHangarPaused = this.status !== GameStatus.MENU;
-      this.keys = {};
-      this.isMouseDown = false;
-      this.hangarStage ||= new HangarStage(this.modelFactory, this.scene.environment, this.isSoftwareGl);
-      this.syncAudioPauseState();
-      this.emitHudUpdate();
-      return true;
-    } else {
-      this.isHangarOpen = false;
-      this.isHangarPaused = false;
-      this.setInspectMode(false);
-      this.syncAudioPauseState();
-      this.emitHudUpdate();
-      return true;
-    }
-  }
+  setHangarOpen(open) { return this.hangarOps.setOpen(open); }
 
-  persistComponentDamage() {
-    if (!this.playerSave) return;
-    this.playerSave.componentDamage = { ...this.componentDamage };
-    this.playerSave.componentDamageCooldown = this.componentDamageCooldown;
-    this.saveRepo.savePlayerSave(this.playerSave);
-  }
+  persistComponentDamage() { this.hangarOps.persistComponentDamage(); }
 
-  tryDamageComponent(damage, hit) {
-    const track = rollComponentDamage(this.upgrades, this.componentDamage,
-      this.componentDamageCooldown, { ...hit, damage });
-    if (!track) return;
-    const couldCrossWater = this.playerStats?.canCrossWater;
-    this.componentDamage[track] = true;
-    this.componentDamageCooldown = COMPONENT_DAMAGE_COOLDOWN;
-    const hp = this.playerHp;
-    this.recomputePlayerStats(true);
-    this.playerHp = Math.min(hp, this.playerHp);
-    if (couldCrossWater && !this.playerStats.canCrossWater) {
-      const { row, col } = this.worldToGrid(this.playerX, this.playerZ);
-      this.componentWaterEgress = this.grid[row]?.[col]?.type === TileType.WATER;
-    }
-    this.persistComponentDamage();
-    this.setStatusBanner(`${track.toUpperCase()} DAMAGED: TIER ${this.upgrades[track]} -> ${this.effectiveUpgrades[track]}. HANGAR REPAIR $${componentRepairCost(this.upgrades[track])}`, 4);
-    this.emitHudUpdate();
-  }
+  tryDamageComponent(damage, hit) { this.hangarOps.tryDamageComponent(damage, hit); }
 
-  repairComponentInHangar(track) {
-    if (!this.isHangarOpen) return { success: false, reason: 'Open the hangar to repair components.' };
-    if (!Object.hasOwn(this.componentDamage, track) || !this.componentDamage[track]) {
-      return { success: false, reason: 'This component does not need repair.' };
-    }
-    const repairCost = componentRepairCost(this.upgrades[track]);
-    if ((this.playerSave.credits || 0) < repairCost) {
-      return { success: false, reason: `Insufficient credits. Repair costs $${repairCost}.` };
-    }
-    this.playerSave.credits -= repairCost;
-    this.componentDamage[track] = false;
-    this.recomputePlayerStats(true);
-    this.persistComponentDamage();
-    this.emitHudUpdate();
-    return { success: true, reason: `${track.toUpperCase()} restored to Tier ${this.upgrades[track]}. Paid $${repairCost}.` };
-  }
+  repairComponentInHangar(track) { return this.hangarOps.repairComponent(track); }
 
-  restoreAllComponents() {
-    this.componentDamage = Object.fromEntries(COMPONENT_TRACKS.map((t) => [t, false]));
-    this.componentDamageCooldown = 0;
-    this.componentWaterEgress = false;
-    this.persistComponentDamage();
-    this.recomputePlayerStats(true);
-    this.emitHudUpdate();
-  }
+  restoreAllComponents() { this.hangarOps.restoreAllComponents(); }
 
-  upgradeTrackInHangar(track) {
-    if (!this.isHangarOpen || !Object.hasOwn(UPGRADE_MAX_LEVEL, track)) {
-      return { success: false, reason: 'Select a system in the hangar first.' };
-    }
-    const curLvl = this.upgrades[track] || 1;
-    const maxLvl = UPGRADE_MAX_LEVEL[track] || 5;
-    if (curLvl >= maxLvl) {
-      return { success: false, reason: 'Already at maximum tier (Tier 5).' };
-    }
-    const nextTier = curLvl + 1;
-    const cost = TRACK_UPGRADE_COSTS[nextTier] || 500;
-    const credits = this.playerSave?.credits || 0;
-    if (credits < cost) {
-      return {
-        success: false,
-        reason: `Insufficient Credits (Need $${cost}).`,
-      };
-    }
+  upgradeTrackInHangar(track) { return this.hangarOps.upgradeTrack(track); }
 
-    this.playerSave.credits -= cost;
-    this.upgrades[track] = nextTier;
-    this.syncCampaignCredits();
-    this.saveRepo?.savePlayerSave?.(this.playerSave);
-    this.saveProgress();
-    this.recomputePlayerStats(true);
-    sound.playPowerUp();
-    this.setStatusBanner(
-      `${track.toUpperCase()} UPGRADED TO TIER ${nextTier}! (-$${cost})`,
-      2.5
-    );
-    this.emitHudUpdate();
-    return { success: true, reason: `Upgraded to Tier ${nextTier}` };
-  }
+  buyCannonAmmoInHangar() { return this.hangarOps.buyCannonAmmo(); }
 
-  buyCannonAmmoInHangar() {
-    if (!this.isHangarOpen) return { success: false, reason: 'Open the hangar to purchase ammunition.' };
-    const maxAmmo = this.getPlayerMaxCannonAmmo();
-    if (this.cannonAmmo >= maxAmmo) {
-      return { success: false, reason: `Ammunition magazine is full (${maxAmmo} shells).` };
-    }
-    const cost = CANNON_AMMO.CREDIT_PRICE_PER_PACK;
-    if ((this.playerSave.credits || 0) < cost) {
-      return { success: false, reason: `Insufficient Credits (Need ${cost}).` };
-    }
-    this.playerSave.credits -= cost;
-    this.cannonAmmo = Math.min(maxAmmo, this.cannonAmmo + CANNON_AMMO.SHELLS_PER_PACK);
-    this.syncCampaignCredits();
-    this.saveRepo.savePlayerSave(this.playerSave);
-    sound.playPowerUp();
-    this.setStatusBanner(`+${CANNON_AMMO.SHELLS_PER_PACK} SHELLS PURCHASED! (${this.cannonAmmo}/${maxAmmo}) (-${cost})`, 2.5);
-    this.emitHudUpdate();
-    return { success: true, reason: `+${CANNON_AMMO.SHELLS_PER_PACK} shells purchased (${this.cannonAmmo}/${maxAmmo}).` };
-  }
+  buyMissileInHangar() { return this.hangarOps.buyMissile(); }
 
-  buyMissileInHangar() {
-    if (!this.isHangarOpen) return { success: false, reason: 'Open the hangar to purchase missiles.' };
-    const maxMissiles = this.getPlayerMaxMissileAmmo();
-    if (this.missileAmmo >= maxMissiles) {
-      return { success: false, reason: `Missile magazine is full (${maxMissiles}).` };
-    }
-    const cost = MISSILE.CREDIT_PRICE;
-    if ((this.playerSave.credits || 0) < cost) {
-      return { success: false, reason: `Insufficient Credits (Need $${cost}).` };
-    }
-    this.playerSave.credits -= cost;
-    this.missileAmmo++;
-    this.syncCampaignCredits();
-    this.playerSave.missileAmmo = this.missileAmmo;
-    this.saveRepo.savePlayerSave(this.playerSave);
-    this.recomputePlayerStats(true);
-    sound.playPowerUp();
-    this.setStatusBanner(`+1 MISSILE PURCHASED! (${this.missileAmmo}/${maxMissiles}) (-$${cost})`, 2.5);
-    this.emitHudUpdate();
-    return { success: true, reason: `+1 missile purchased (${this.missileAmmo}/${maxMissiles}).` };
-  }
+  buyApsChargeInHangar() { return this.hangarOps.buyApsCharge(); }
 
-  buyApsChargeInHangar() {
-    if (!this.isHangarOpen) {
-      return { success: false, reason: 'Open the hangar to purchase APS charges.' };
-    }
-    const maxAps = this.getPlayerMaxApsAmmo();
-    const currentTotal = this.apsAmmo.reduce((a, b) => a + b, 0);
-    if (currentTotal >= maxAps) {
-      return { success: false, reason: `APS magazine is already at maximum capacity (${maxAps} charges).` };
-    }
-    const cost = APS.CHARGE_CREDIT_PRICE || 1000;
-    const credits = this.playerSave?.credits || 0;
-    if (credits < cost) {
-      return {
-        success: false,
-        reason: `Insufficient Credits (Need $${cost}).`,
-      };
-    }
+  toggleFavoritePart(instanceId) { this.hangarOps.toggleFavoritePart(instanceId); }
 
-    this.playerSave.credits -= cost;
-    this.addApsRounds(1);
-    this.syncCampaignCredits();
-    this.playerSave.apsAmmo = [...this.apsAmmo];
-    this.playerSave.repairKitCharges = this.repairKitState?.charges ?? 0;
-    this.saveRepo.savePlayerSave(this.playerSave);
-    sound.playPowerUp();
-    const newTotal = this.apsAmmo.reduce((a, b) => a + b, 0);
-    this.setStatusBanner(
-      `+1 APS CHARGE PURCHASED! (${newTotal}/${maxAps}) (-$${cost})`,
-      2.5
-    );
-    this.emitHudUpdate();
-    return { success: true, total: newTotal, reason: `+1 APS charge purchased (${newTotal}/${maxAps}).` };
-  }
-
-  toggleFavoritePart(instanceId) {
-    const part = (this.playerSave.parts || []).find((p) => p.instanceId === instanceId);
-    if (part) {
-      part.isFavorite = !part.isFavorite;
-      this.saveRepo.savePlayerSave(this.playerSave);
-      this.emitHudUpdate();
-    }
-  }
-
-  abortMissionToHangar() {
-    if (this.survivalState) {
-      const campaignSave = this.campaignSaveRepo?.loadPlayerSave();
-      if (campaignSave && !this.survivalState.recordSummary) {
-        this.survivalState.recordSummary = recordSurvivalRun(
-          campaignSave,
-          this.survivalState,
-          this.kills
-        );
-        this.campaignSaveRepo.savePlayerSave(campaignSave);
-      }
-      this.survivalState = null;
-      this.setProfileMode('campaign');
-      this.status = GameStatus.MENU;
-      sound.stopEngineLoop();
-      this.syncAudioPauseState();
-      this.emitHudUpdate();
-      return;
-    }
-    if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
-      const summary = settleMission({
-        playerSave: this.playerSave,
-        missionRun: this.activeMissionRun,
-        outcome: 'defeat',
-      });
-      this.lastSettlementSummary = summary;
-      this.playerSave.apsAmmo = [...this.apsAmmo];
-      this.playerSave.repairKitCharges = this.repairKitState?.charges ?? 0;
-      this.saveRepo.savePlayerSave(this.playerSave);
-      this.saveRepo.recordMissionRun(this.activeMissionRun);
-      this.syncCampaignCredits();
-      this.saveProgress();
-    }
-    if (this.profileMode !== 'campaign') {
-      this.setProfileMode('campaign');
-    }
-    this.status = GameStatus.MENU;
-    sound.stopEngineLoop();
-    this.syncAudioPauseState();
-    this.emitHudUpdate();
-  }
+  abortMissionToHangar() { this.hangarOps.abortMissionToHangar(); }
 
   bindEvents() {
     this.handleKeyDown = (e) => {
@@ -3336,12 +2097,6 @@ export class TankGameEngine {
 
     this.handlePointerMove = (e) => {
       if (this.isHangarOpen) return;
-      if (this.codexOpen && this.codexDragging) {
-        const dx = e.clientX - this.codexDragPrevX;
-        this.codexDragPrevX = e.clientX;
-        this.codexTurntableAngle += dx * 0.012;
-        return;
-      }
 
       if (this.cameraRotating) {
         const dx = e.clientX - this.cameraDragPrevX;
@@ -3364,13 +2119,6 @@ export class TankGameEngine {
 
     this.handlePointerDown = (e) => {
       if (this.isHangarOpen) return;
-      if (this.codexOpen) {
-        if (e.button === 0) {
-          this.codexDragging = true;
-          this.codexDragPrevX = e.clientX;
-        }
-        return;
-      }
 
       if (e.button === 1 || (e.button === 0 && e.altKey)) {
         e.preventDefault();
@@ -3416,7 +2164,6 @@ export class TankGameEngine {
     this.handlePointerUp = (e) => {
       if (e.button === 0) {
         this.isMouseDown = false;
-        this.codexDragging = false;
         this.cameraRotating = false;
       } else if (e.button === 1) {
         this.cameraRotating = false;
@@ -3425,7 +2172,6 @@ export class TankGameEngine {
 
     this.handleWheel = (e) => {
       if (this.isHangarOpen) return;
-      if (this.codexOpen) return;
       e.preventDefault();
       const delta = Math.sign(e.deltaY) * 2.2;
       this.frustumSize = THREE.MathUtils.clamp(this.frustumSize + delta, 14, 46);
@@ -3495,8 +2241,7 @@ export class TankGameEngine {
     const audioPaused =
       this.status === GameStatus.PAUSED ||
       Boolean(this.isHangarPaused) ||
-      Boolean(this.isAdPaused) ||
-      Boolean(this.codexOpen);
+      Boolean(this.isAdPaused);
     sound.setPaused(audioPaused);
   }
 
@@ -3687,7 +2432,7 @@ export class TankGameEngine {
       const rawDelta = this.clock.getDelta();
       const dt = Math.min(rawDelta, 0.05);
 
-      if (!this.sceneOccluded || this.codexOpen) {
+      if (!this.sceneOccluded) {
         this.update(dt);
         this.modelFactory?.updateAnimatedTextures(dt);
         if (this.isHangarOpen) {
@@ -3738,15 +2483,6 @@ export class TankGameEngine {
         this.statusMessage = null;
         this.emitHudUpdate();
       }
-    }
-
-    if (this.codexOpen) {
-      sound.setListener(0, 0, 28.0);
-      this.updateCodexShowcase(dt, elapsed);
-      this.updateParticles(dt);
-      this.updateCamera(dt, elapsed);
-      this.codexFx.update(dt, this.camera, this.renderer);
-      return;
     }
 
     if (this.isHangarPaused || this.isAdPaused) {
@@ -4514,357 +3250,18 @@ export class TankGameEngine {
   }
 
   spawnContractEnemy(enemyClass, assignment, groupEntry) {
-    const gateIds = [
-      assignment?.gateId,
-      groupEntry?.primaryGateId,
-      groupEntry?.secondaryGateId,
-    ].filter(Boolean);
-    const uniqueGateIds = [...new Set(gateIds)];
-
-    for (const gateId of uniqueGateIds) {
-      const gate = LAST_CARGO_GATES[gateId];
-      if (!gate) continue;
-      for (const dc of [0, -1, 1]) {
-        const col = gate.col + dc;
-        const entryRow = gate.entryTarget?.row ?? 3;
-        const cell = this.grid[0]?.[col];
-        if (!cell || cell.type !== TileType.EMPTY) continue;
-        const borderPos = this.gridToWorld(0, col);
-        // Never spawn near the player or on top of an existing enemy
-        if (Math.hypot(this.playerX - borderPos.x, this.playerZ - borderPos.z) < 10.0) continue;
-        if (this.enemies.some((e) => Math.hypot(e.x - borderPos.x, e.z - borderPos.z) < 2.3)) continue;
-
-        const targetPos = this.gridToWorld(entryRow, col);
-        const spawnZ = -((GRID_SIZE * TILE_SIZE) / 2) - 2.8;
-        this.createEnemyAt(enemyClass, borderPos.x, spawnZ, false, targetPos);
-        const spawned = this.enemies.at(-1);
-        if (spawned) {
-          spawned.campaignPatrolRoute = assignment?.patrolRoute || [{ row: entryRow, col }];
-          spawned.contractHomeZone = assignment?.homeZone || null;
-          spawned.contractAssignment = assignment || null;
-        }
-        return true;
-      }
-    }
-    return false;
+    return this.contractDirector.spawnEnemy(enemyClass, assignment, groupEntry);
   }
 
-  isPlayerCurrentlyMoving() {
-    const moveKeysPressed = Boolean(
-      this.keys.KeyW ||
-        this.keys.ArrowUp ||
-        this.keys.KeyS ||
-        this.keys.ArrowDown ||
-        this.keys.KeyA ||
-        this.keys.ArrowLeft ||
-        this.keys.KeyD ||
-        this.keys.ArrowRight
-    );
-    return moveKeysPressed || Math.abs(this.playerForwardSpeed || 0) > 0.15;
-  }
+  startContractCargoLoad() { return this.contractDirector.startCargoLoad(); }
 
-  startContractCargoLoad() {
-    if (!this.contractState || this.status !== GameStatus.PLAYING) return false;
-    const isSabotage = this.contractState.contractType === CONTRACT_TYPES.SABOTAGE_PROTOCOL;
-    const res = startCargoLoading(
-      this.contractState,
-      this.playerX,
-      this.playerZ,
-      this.isPlayerCurrentlyMoving(),
-      TILE_SIZE
-    );
-    if (res.started && !res.alreadyLoading) {
-      sound.playCargoLoad();
-      this.setStatusBanner(
-        isSabotage
-          ? 'ARMING DEMOLITION CHARGE — HOLD POSITION FOR 2.5s!'
-          : 'LOADING DATA CONTAINER — HOLD POSITION FOR 2.0s',
-        2.2
-      );
-      this.emitHudUpdate();
-      return true;
-    }
-    if (!res.started && res.reason) {
-      this.setStatusBanner(res.reason.toUpperCase(), 2.0);
-    }
-    return false;
-  }
+  startContractExtract() { return this.contractDirector.startExtract(); }
 
-  startContractExtract() {
-    if (!this.contractState || this.status !== GameStatus.PLAYING) return false;
-    const res = startContractExtraction(this.contractState, this.playerX, this.playerZ);
-    if (res.started && !res.alreadyActive) {
-      sound.playContractExtract();
-      this.setStatusBanner('EXTRACTION INITIATED — STAY ON PAD FOR 3.0s!', 3.0);
-      this.emitHudUpdate();
-      return true;
-    }
-    if (!res.started && res.reason) {
-      this.setStatusBanner(res.reason.toUpperCase(), 2.0);
-    }
-    return false;
-  }
+  interactContractObjective() { return this.contractDirector.interactObjective(); }
 
-  interactContractObjective() {
-    if (!this.contractState || this.status !== GameStatus.PLAYING) return false;
-    const isSabotage = this.contractState.contractType === CONTRACT_TYPES.SABOTAGE_PROTOCOL;
-    const snap = buildContractHudSnapshot(this.contractState, this.playerX, this.playerZ, TILE_SIZE);
-    if (snap?.canLoadCargo) {
-      return this.startContractCargoLoad();
-    }
-    if (snap?.canExtract) {
-      return this.startContractExtract();
-    }
-    if (snap?.armedCargo) {
-      this.setStatusBanner('CHARGE ARMED — CLEAR THE 3-CELL BLAST ZONE BEFORE DETONATION!', 2.4);
-    } else if (snap?.carriedCargo) {
-      this.setStatusBanner('DRIVE ONTO THE SOUTHERN DELIVERY PAD AND HOLD FOR 2.0s TO UNLOAD', 2.4);
-    } else {
-      this.setStatusBanner(
-        isSabotage
-          ? 'STOP WITHIN 1.5 CELLS OF A RADAR RELAY AND PRESS [E] TO PLANT CHARGE'
-          : 'STOP WITHIN 1.5 CELLS OF A DATA CONTAINER AND PRESS [E] TO LOAD',
-        2.4
-      );
-    }
-    return false;
-  }
+  detonateSabotageRelay(relay) { this.contractDirector.detonateSabotageRelay(relay); }
 
-  detonateSabotageRelay(relay) {
-    if (!relay) return;
-    const { x, z, row, col } = relay;
-    sound.playEnvironmentalExplosion({ x, z });
-    this.screenShake = Math.max(this.screenShake, 0.9);
-    this.fx.explosion(x, 0.7, z, { scale: 2.25, boss: true, tint: 0xa855f7 });
-    this.fx.shockwave(x, 0.12, z, 0.5, 6.2, 0xc084fc, 0.55);
-    this.fx.scorch(x, z, 3.2);
-    this.fx.sparks(x, 0.7, z, 0xe879f9, 32, { speed: 2.8, up: 1.8 });
-
-    const blastRadius = CONTRACT_TIMING.BLAST_RADIUS_CELLS * TILE_SIZE;
-    const maxDamage = 42;
-
-    for (let i = this.enemies.length - 1; i >= 0; i--) {
-      const enemy = this.enemies[i];
-      if (!enemy || enemy.hp <= 0) continue;
-      const dist = Math.hypot(enemy.x - x, enemy.z - z);
-      if (dist <= blastRadius) {
-        const falloff = 1 - (dist / blastRadius) * 0.45;
-        const dmg = Math.round(maxDamage * Math.max(0.45, falloff));
-        this.damageEnemy(enemy, dmg, x, z);
-        this.fx.armorHit(enemy.x, 0.6, enemy.z, { scale: 1.35, colorHex: 0xc084fc });
-      }
-    }
-
-    if (this.playerHp > DURABILITY.ZERO_HP) {
-      const pDist = Math.hypot(this.playerX - x, this.playerZ - z);
-      if (pDist <= blastRadius) {
-        const falloff = 1 - (pDist / blastRadius) * 0.5;
-        const dmg = Math.round(32 * Math.max(0.35, falloff));
-        this.damagePlayer(dmg);
-        this.fx.armorHit(this.playerX, 0.6, this.playerZ, { scale: 1.35, colorHex: 0xef4444 });
-      }
-    }
-
-    for (let dr = -2; dr <= 2; dr++) {
-      for (let dc = -2; dc <= 2; dc++) {
-        if (Math.hypot(dr, dc) > 2.3) continue;
-        const neighbor = this.grid[row + dr]?.[col + dc];
-        if (!neighbor || neighbor.type === TileType.EMPTY) continue;
-        const nPos = this.gridToWorld(neighbor.row, neighbor.col);
-        if (neighbor.type === TileType.BRICK || neighbor.type === TileType.FOREST) {
-          this.destroyTileCell(neighbor);
-        } else if (neighbor.type === TileType.CONCRETE) {
-          this.damageTileCell(neighbor, 6, nPos.x, nPos.z);
-        } else if (neighbor.type === TileType.BARREL && !neighbor._exploding) {
-          this.explodeBarrel(neighbor, true);
-        }
-      }
-    }
-  }
-
-  updateContractLogic(dt, elapsed) {
-    if (!this.contractState) return;
-    const isSabotage = this.contractState.contractType === CONTRACT_TYPES.SABOTAGE_PROTOCOL;
-    const isMoving = this.isPlayerCurrentlyMoving();
-    const events = stepContractCargo(this.contractState, dt, {
-      playerX: this.playerX,
-      playerZ: this.playerZ,
-      isMoving,
-      tileSize: TILE_SIZE,
-    });
-
-    if (events.loadCancelled) {
-      this.setStatusBanner(
-        isSabotage
-          ? 'CHARGE ARMING CANCELLED — REMAIN STATIONARY WITHIN 1.5 CELLS'
-          : 'CARGO LOADING CANCELLED — REMAIN STATIONARY WITHIN 1.5 CELLS',
-        2.2
-      );
-      this.emitHudUpdate();
-    }
-
-    if (events.armedCargo) {
-      sound.playBossAlarm();
-      const extra =
-        events.triggeredGroup === 'G1'
-          ? ' · STEALTH HUNTERS alerted!'
-          : events.triggeredGroup
-          ? ` · ${events.triggeredGroup} QRF INBOUND!`
-          : '';
-      this.setStatusBanner(
-        `CHARGE ARMED ON ${events.armedCargo.name.toUpperCase()} — DETONATION IN 8.0s! CLEAR 3-CELL RADIUS!${extra}`,
-        4.2
-      );
-      this.emitHudUpdate();
-    }
-
-    if (events.loadedCargo) {
-      sound.playCargoLoad();
-      const extra =
-        events.triggeredGroup === 'G1'
-          ? ' · TERMINAL ALARM TRIGGERED!'
-          : events.triggeredGroup
-          ? ` · ${events.triggeredGroup} REINFORCEMENTS QUEUED!`
-          : '';
-      this.setStatusBanner(
-        `${events.loadedCargo.name.toUpperCase()} LOADED — RETURN TO SOUTH DELIVERY PAD${extra}`,
-        3.6
-      );
-      this.emitHudUpdate();
-    }
-
-    if (events.unloadReset) {
-      this.setStatusBanner('UNLOADING RESET — REMAIN ON DELIVERY PAD FOR 2.0s', 2.2);
-      this.emitHudUpdate();
-    }
-
-    if (events.detonatedCargo) {
-      this.detonateSabotageRelay(events.detonatedCargo);
-    }
-
-    if (events.deliveredCargo) {
-      if (!events.detonatedCargo) {
-        sound.playCargoDeliver();
-      }
-      const payout = commitContractCargoDelivery(
-        this.playerSave,
-        this.activeMissionRun,
-        events.deliveredCargo.id
-      );
-      if (payout.paid) {
-        events.deliveredCargo.rewardPaid = true;
-        this.creditsEarnedThisMission = (this.creditsEarnedThisMission || 0) + payout.amount;
-        this.saveRepo.savePlayerSave(this.playerSave);
-        this.syncCampaignCredits();
-      }
-      const delivered = this.contractState.deliveredCount;
-      const objLabel = isSabotage ? 'RELAY' : 'CARGO';
-      const actionVerb = isSabotage ? 'DEMOLISHED' : 'DELIVERED';
-      if (delivered === 1) {
-        this.setStatusBanner(
-          `${objLabel} ${events.deliveredCargo.code} ${actionVerb} (+$${payout.amount} SECURED) — 1/2 ${actionVerb}!`,
-          3.6
-        );
-      } else if (delivered === 2) {
-        this.setStatusBanner(
-          `${objLabel} ${events.deliveredCargo.code} ${actionVerb} (+$${payout.amount} SECURED) — EXTRACTION READY [E] OR RISK 3RD ${objLabel} (+$4,000)!`,
-          4.5
-        );
-      } else {
-        this.setStatusBanner(
-          `ALL 3 ${objLabel}S ${actionVerb} (+$${payout.amount} SECURED) — HEAD SOUTH TO EXTRACTION PAD [E]!`,
-          4.5
-        );
-      }
-      this.emitHudUpdate();
-    }
-
-    if (events.extractCancelled) {
-      this.setStatusBanner('EXTRACTION CANCELLED — REMAIN ON THE EXTRACTION PAD!', 2.4);
-      this.emitHudUpdate();
-    }
-
-    if (events.extracted) {
-      sound.playContractExtract();
-      this.triggerMissionVictory(
-        this.contractState.deliveredCount >= 3
-          ? isSabotage
-            ? 'BLACKOUT PROTOCOL COMPLETE — ALL 3 RELAYS DEMOLISHED & BONUS SECURED!'
-            : 'FULL CONTRACT EXTRACTION COMPLETE — ALL 3 CONTAINERS & BONUS SECURED!'
-          : isSabotage
-          ? 'BLACKOUT PROTOCOL COMPLETE — RADAR RELAYS DEMOLISHED!'
-          : 'CONTRACT EXTRACTION COMPLETE — DATA CONTAINERS SECURED!'
-      );
-      return;
-    }
-
-    stepContractScheduler(
-      this.contractState,
-      dt,
-      this.enemies.length,
-      (unitType, assignment, groupEntry) => this.spawnContractEnemy(unitType, assignment, groupEntry),
-      (group) => {
-        sound.playBossAlarm();
-        const gateLabel = LAST_CARGO_GATES[group.primaryGateId]?.label || 'NORTH GATE';
-        this.setStatusBanner(`${group.label} · ${gateLabel} IN 6s`, 3.6);
-      }
-    );
-    this.vanguardRemainingToSpawn =
-      this.contractState.scheduler.totalBudget - this.contractState.scheduler.totalSpawned;
-
-    // Update 3D visuals for containers / relays, carried indicator, and delivery pad
-    if (this.contractCargoMeshes) {
-      for (const c of this.contractState.containers) {
-        const mesh = this.contractCargoMeshes.get(c.id);
-        if (!mesh) continue;
-        const isArmed = c.status === CARGO_STATUS.ARMED;
-        const visible =
-          c.status === CARGO_STATUS.AVAILABLE ||
-          c.status === CARGO_STATUS.LOADING ||
-          isArmed;
-        mesh.visible = visible;
-        if (visible && mesh.userData) {
-          if (mesh.userData.dataCrest) {
-            mesh.userData.dataCrest.rotation.y = elapsed * (isArmed ? 9.5 : 2.2);
-          }
-          if (mesh.userData.ringMat) {
-            mesh.userData.ringMat.opacity =
-              c.status === CARGO_STATUS.LOADING || isArmed
-                ? 0.55 + Math.sin(elapsed * 16) * 0.4
-                : 0.85;
-          }
-          if (mesh.userData.blastRing && mesh.userData.blastRingMat) {
-            mesh.userData.blastRing.visible = isArmed;
-            if (isArmed) {
-              mesh.userData.blastRingMat.opacity = 0.45 + Math.sin(elapsed * 18) * 0.35;
-            }
-          }
-        }
-      }
-    }
-
-    if (this.carriedCargoIndicator) {
-      const isCarrying = Boolean(this.contractState.carriedCargoId);
-      this.carriedCargoIndicator.visible = isCarrying;
-      if (isCarrying && this.carriedCargoIndicator.userData?.diamond) {
-        this.carriedCargoIndicator.userData.diamond.rotation.y = elapsed * 2.6;
-      }
-    }
-
-    if (this.contractPadMesh?.userData?.borderMat) {
-      const mat = this.contractPadMesh.userData.borderMat;
-      if (this.contractState.extraction.available) {
-        mat.color.setHex(0x10b981);
-        mat.emissive.setHex(0x059669);
-      } else if (this.contractState.carriedCargoId) {
-        mat.color.setHex(0xf59e0b);
-        mat.emissive.setHex(0xd97706);
-      } else {
-        mat.color.setHex(0x38bdf8);
-        mat.emissive.setHex(0x0284c7);
-      }
-    }
-  }
+  updateContractLogic(dt, elapsed) { this.contractDirector.update(dt, elapsed); }
 
   updateSpawnerLogic(dt) {
     if (this.contractState) {
@@ -5557,126 +3954,9 @@ export class TankGameEngine {
   }
 
   /** F3 AI telemetry overlay: a floating label per enemy (role, tactic, Luck, attack. */
-  updateAiDebugOverlay() {
-    if (!this.aiDebugMode) {
-      if (this.aiDebugEntries) this.clearAiDebugOverlay();
-      return;
-    }
-    if (!this.aiDebugGroup) {
-      this.aiDebugGroup = new THREE.Group();
-      this.scene.add(this.aiDebugGroup);
-      this.aiDebugEntries = new Map();
-    }
-    const alive = new Set();
-    const half = (GRID_SIZE * TILE_SIZE) / 2;
-    for (const e of this.enemies) {
-      alive.add(e.id);
-      let entry = this.aiDebugEntries.get(e.id);
-      if (!entry) entry = this.createAiDebugEntry(e);
+  updateAiDebugOverlay() { this.aiDebugOverlay.update(); }
 
-      const brain = e.brain;
-      const token = this.attackTokens?.has(e.id) ? ' FIRE' : '';
-      const actions = this.enemyActionSummary(e);
-      const text = `${(brain?.role ?? '-').toUpperCase()} · ${(e.ai?.state ?? '-').toUpperCase()}${token}|${actions.move} · ${actions.shot}`;
-      if (text !== entry.text) this.drawAiDebugLabel(entry, text, Boolean(token));
-      entry.sprite.position.set(e.x, e.isBoss ? 3.6 : 2.6, e.z);
-
-      const pos = entry.line.geometry.attributes.position;
-      let n = 0;
-      pos.setXYZ(n++, e.x, 0.25, e.z);
-      const brainDriving = brain && brain.tactic !== 'idle';
-      const route = brainDriving ? brain : e.movePlan;
-      if (route && !route.direct) {
-        for (let k = route.pathIdx; k < route.path.length && n < pos.count; k++) {
-          const wp = route.path[k];
-          pos.setXYZ(n++, wp.col * TILE_SIZE - half + TILE_SIZE / 2, 0.25, wp.row * TILE_SIZE - half + TILE_SIZE / 2);
-        }
-      } else if (brain?.direct) {
-        pos.setXYZ(n++, this.playerX, 0.25, this.playerZ);
-      }
-      pos.needsUpdate = true;
-      entry.line.geometry.setDrawRange(0, n);
-      entry.line.visible = n > 1;
-    }
-    for (const [id, entry] of this.aiDebugEntries) {
-      if (!alive.has(id)) {
-        this.disposeAiDebugEntry(entry);
-        this.aiDebugEntries.delete(id);
-      }
-    }
-  }
-
-  createAiDebugEntry(e) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 96;
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    const sprite = new THREE.Sprite(
-      new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true })
-    );
-    sprite.scale.set(5.2, 0.975, 1);
-    sprite.renderOrder = 999;
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(48 * 3), 3));
-    const line = new THREE.Line(
-      geometry,
-      new THREE.LineBasicMaterial({ color: 0xa855f7, depthTest: false, transparent: true, opacity: 0.85 })
-    );
-    line.renderOrder = 998;
-    line.frustumCulled = false;
-    this.aiDebugGroup.add(sprite, line);
-    const entry = { canvas, texture, sprite, line, text: '' };
-    this.aiDebugEntries.set(e.id, entry);
-    return entry;
-  }
-
-  /** Current movement order and shot with their dice results, for the F3 overlay and HUD. */
-  enemyActionSummary(e) {
-    const plan = e.movePlan;
-    const shot = e.gunner?.shot;
-    return {
-      move: plan ? `${plan.id.toUpperCase()} ${plan.success ? 'OK' : 'FAIL'}` : 'HOLD',
-      shot: shot ? `${shot.actionId.toUpperCase()} ${shot.hit ? 'HIT' : 'MISS'}` : 'NO SHOT',
-    };
-  }
-
-  drawAiDebugLabel(entry, text, hasToken) {
-    entry.text = text;
-    const [top, bottom] = text.split('|');
-    const ctx = entry.canvas.getContext('2d');
-    ctx.clearRect(0, 0, entry.canvas.width, entry.canvas.height);
-    ctx.fillStyle = 'rgba(11, 15, 23, 0.92)';
-    ctx.fillRect(0, 0, entry.canvas.width, entry.canvas.height);
-    ctx.strokeStyle = hasToken ? '#f97316' : '#a855f7';
-    ctx.lineWidth = 4;
-    ctx.strokeRect(2, 2, entry.canvas.width - 4, entry.canvas.height - 4);
-    ctx.font = 'bold 34px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#e9d5ff';
-    ctx.fillText(top, entry.canvas.width / 2, 40, entry.canvas.width - 16);
-    ctx.font = '26px monospace';
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillText(bottom, entry.canvas.width / 2, 78, entry.canvas.width - 16);
-    entry.texture.needsUpdate = true;
-  }
-
-  disposeAiDebugEntry(entry) {
-    this.aiDebugGroup?.remove(entry.sprite, entry.line);
-    entry.texture.dispose();
-    entry.sprite.material.dispose();
-    entry.line.geometry.dispose();
-    entry.line.material.dispose();
-  }
-
-  clearAiDebugOverlay() {
-    if (this.aiDebugEntries) {
-      for (const entry of this.aiDebugEntries.values()) this.disposeAiDebugEntry(entry);
-    }
-    if (this.aiDebugGroup) this.scene?.remove(this.aiDebugGroup);
-    this.aiDebugGroup = null;
-    this.aiDebugEntries = null;
-  }
+  enemyActionSummary(e) { return this.aiDebugOverlay.actionSummary(e); }
 
   /** SAPPER on patrol: only mine cells the player has actually driven through. */
   isOnPlayerTrail(e) {
@@ -6974,564 +5254,27 @@ export class TankGameEngine {
     return crushed;
   }
 
-  /** Aegis plating: armour % by hit aspect (rear drops to 0 during overload). */
-  titanAspectArmor(e, aspect) {
-    if (aspect === 'rear' && e.titanOverload) return TITAN.ARMOR_REAR_OVERLOAD;
-    return e.stats.armorByAspect[aspect] ?? e.stats.armor;
-  }
+  titanAspectArmor(e, aspect) { return this.bossCombat.titanAspectArmor(e, aspect); }
 
-  clearInfernoDashBeam(e) {
-    if (e?.infernoDashBeam) {
-      this.fxGroup?.remove(e.infernoDashBeam);
-      disposeOwned(e.infernoDashBeam);
-      e.infernoDashBeam = null;
-    }
-  }
+  clearInfernoDashBeam(e) { this.bossCombat.clearInfernoDashBeam(e); }
 
-  /**
-   * BOSS_INFERNO Overdrive Ram: locks onto player heading for 0.85s
-   * with a glowing hazard telegraph line, then surges forward at 3.4x speed, smashing
-   * brick/crates/forests and ramming the player hull on impact.
-   */
-  updateInfernoDash(e, dt, { canSeePlayer, toPlayerX, toPlayerZ, distToPlayer }) {
-    if (e.infernoDashWindup > 0) {
-      e.infernoDashWindup -= dt;
-      e.targetDirX = 0;
-      e.targetDirZ = 0;
-      const lockAngle = Math.atan2(e.infernoDashDirX, e.infernoDashDirZ);
-      e.hullAngle = this.lerpAngle(e.hullAngle, lockAngle, 12 * dt);
-      if (Math.random() < 0.7) {
-        const bx = e.x - Math.sin(e.hullAngle) * 1.8;
-        const bz = e.z - Math.cos(e.hullAngle) * 1.8;
-        this.fx.flameJet(bx, 0.75, bz, -e.infernoDashDirX * 5, -e.infernoDashDirZ * 5, 0.25);
-      }
-      if (e.infernoDashWindup <= 0) {
-        this.clearInfernoDashBeam(e);
-        e.infernoDashTimer = INFERNO.DASH_DURATION_SEC;
-        e.infernoDashCooldown = e.infernoEnraged ? INFERNO.PHASE2_DASH_COOLDOWN : INFERNO.DASH_COOLDOWN;
-        sound.playExplosion(1.15, { x: e.x, z: e.z });
-        this.screenShake = Math.max(this.screenShake || 0, 0.4);
-      }
-      return 1.0;
-    }
+  updateInfernoDash(e, dt, info) { return this.bossCombat.updateInfernoDash(e, dt, info); }
 
-    if (e.infernoDashTimer > 0) {
-      e.infernoDashTimer -= dt;
-      e.targetDirX = e.infernoDashDirX;
-      e.targetDirZ = e.infernoDashDirZ;
+  nextBossPhaseGate(e) { return this.bossCombat.nextPhaseGate(e); }
 
-      const bx = e.x - e.infernoDashDirX * 1.9;
-      const bz = e.z - e.infernoDashDirZ * 1.9;
-      this.fx.flameJet(bx, 0.72, bz, -e.infernoDashDirX * 8, -e.infernoDashDirZ * 8, 0.15);
+  syncBossPhaseShieldVisual(e, elapsed) { this.bossCombat.syncPhaseShieldVisual(e, elapsed); }
 
-      const radius = 1.45;
-      this.crushBossObstacles(e.x + e.infernoDashDirX * 0.9, e.z + e.infernoDashDirZ * 0.9, radius);
+  triggerBossPhaseTransition(e, phaseId) { this.bossCombat.triggerPhaseTransition(e, phaseId); }
 
-      // Vaporize trees in front of the heated dozer blade into sand.
-      const half = (GRID_SIZE * TILE_SIZE) / 2;
-      const frontX = e.x + e.infernoDashDirX * 1.4;
-      const frontZ = e.z + e.infernoDashDirZ * 1.4;
-      const minCol = Math.max(0, Math.floor((frontX - radius + half) / TILE_SIZE));
-      const maxCol = Math.min(GRID_SIZE - 1, Math.floor((frontX + radius + half) / TILE_SIZE));
-      const minRow = Math.max(0, Math.floor((frontZ - radius + half) / TILE_SIZE));
-      const maxRow = Math.min(GRID_SIZE - 1, Math.floor((frontZ + radius + half) / TILE_SIZE));
-      let forestConverted = false;
-      for (let r = minRow; r <= maxRow; r++) {
-        for (let c = minCol; c <= maxCol; c++) {
-          const cell = this.grid[r]?.[c];
-          if (cell?.type === TileType.FOREST) {
-            this.convertCellToSand(cell);
-            forestConverted = true;
-          }
-        }
-      }
-      if (forestConverted) this.tileBatcher?.sync();
+  callBossEscort(e, escortClasses = TITAN.ESCORT_CLASSES) { this.bossCombat.callEscort(e, escortClasses); }
 
-      // Drop a proximity mine behind midway through the overdrive sprint.
-      if (
-        e.infernoDashTimer <= INFERNO.DASH_DURATION_SEC * 0.5 &&
-        e.minesRemaining > 0 &&
-        this.mines &&
-        this.mines.length < 10 &&
-        !e._dashMineDropped
-      ) {
-        e._dashMineDropped = true;
-        e.minesRemaining--;
-        this.plantMineAt(bx, bz);
-      }
+  tryBossApsIntercept(projectile) { return this.bossCombat.tryApsIntercept(projectile); }
 
-      // Ram collision check against the player tank.
-      if (!e.infernoDashHitPlayer && distToPlayer <= radius + TANK_HIT_RADIUS.PLAYER + 0.35) {
-        e.infernoDashHitPlayer = true;
-        e.infernoDashTimer = 0;
-        const aspect = this.blastSideArmor(
-          this.playerStats,
-          this.playerX,
-          this.playerZ,
-          this.playerHullAngle,
-          e.x,
-          e.z
-        );
-        const dmg = computeEffectiveDamage(INFERNO.DASH_RAM_DAMAGE, 35, aspect);
-        this.damagePlayer(dmg, { zone: 'hull', aspect: 'front' });
-        this.fx.explosion(this.playerX, 0.7, this.playerZ, { scale: 1.35, tint: 0xff4500 });
-        sound.playExplosion(1.3, { x: this.playerX, z: this.playerZ });
-        this.screenShake = Math.max(this.screenShake || 0, 0.85);
-        this.setStatusBanner('CRITICAL RAM IMPACT FROM CERBERUS-T!', 2.2);
-      }
+  setupDefenseTurrets() { this.defenseTurretsCtrl.setup(); }
 
-      if (e.infernoDashTimer <= 0) {
-        e._dashMineDropped = false;
-      }
-      return INFERNO.DASH_SPEED_MULT;
-    }
+  updateDefenseTurrets(dt, elapsed) { this.defenseTurretsCtrl.update(dt, elapsed); }
 
-    const cells = distToPlayer / TILE_SIZE;
-    if (
-      canSeePlayer &&
-      e.infernoDashCooldown <= 0 &&
-      cells >= INFERNO.DASH_MIN_CELLS &&
-      cells <= INFERNO.DASH_MAX_CELLS &&
-      distToPlayer > 0.1
-    ) {
-      e.infernoDashDirX = toPlayerX / distToPlayer;
-      e.infernoDashDirZ = toPlayerZ / distToPlayer;
-      e.infernoDashWindup = INFERNO.DASH_WINDUP_SEC;
-      e.infernoDashHitPlayer = false;
-      e._dashMineDropped = false;
-
-      const beamLen = Math.min(22, distToPlayer + 4);
-      const geo = new THREE.PlaneGeometry(2.4, beamLen);
-      geo.rotateX(-Math.PI / 2);
-      geo.translate(0, 0, beamLen / 2);
-      const mat = new THREE.MeshBasicMaterial({
-        color: 0xff4500,
-        transparent: true,
-        opacity: 0.35,
-        side: THREE.DoubleSide,
-        depthWrite: false,
-      });
-      const beam = new THREE.Mesh(geo, mat);
-      beam.position.set(e.x, 0.09, e.z);
-      beam.rotation.y = Math.atan2(e.infernoDashDirX, e.infernoDashDirZ);
-      markOwned(beam);
-      this.fxGroup.add(beam);
-      e.infernoDashBeam = beam;
-
-      sound.playBossAlarm();
-      this.setStatusBanner(`${e.name.toUpperCase()}: OVERDRIVE RAM ENGAGED!`, 1.8);
-      return 1.0;
-    }
-
-    return 1.0;
-  }
-
-  /** Next un-triggered HP-gate for a boss, ordered from highest HP ratio to lowest. */
-  nextBossPhaseGate(e) {
-    if (!e?.isBoss) return null;
-    if (e.enemyClass === EnemyClass.BOSS_MAMMOTH && !e.mammothEnraged) {
-      return { ratio: MAMMOTH.PHASE2_HP_RATIO, id: 'mammoth_phase2' };
-    }
-    if (e.enemyClass === EnemyClass.BOSS_HYDRA && !e.hydraEnraged) {
-      return { ratio: HYDRA.PHASE2_HP_RATIO, id: 'hydra_phase2' };
-    }
-    if (e.enemyClass === EnemyClass.BOSS_INFERNO && !e.infernoEnraged) {
-      return { ratio: INFERNO.PHASE2_HP_RATIO, id: 'inferno_phase2' };
-    }
-    if (e.enemyClass === EnemyClass.BOSS_TITAN) {
-      if (!e.titanEscortCalled) return { ratio: TITAN.ESCORT_HP_RATIO, id: 'titan_escort' };
-      if (!e.titanOverload) return { ratio: TITAN.OVERLOAD_HP_RATIO, id: 'titan_overload' };
-    }
-    return null;
-  }
-
-  ensureBossPhaseShieldMesh(e) {
-    if (!e?.rig?.root) return null;
-    if (!e.phaseShieldMesh) {
-      const radius = (e.hitRadius ?? TANK_HIT_RADIUS.DEFAULT_BOSS) * 1.45;
-      const geo = new THREE.SphereGeometry(radius, 20, 14);
-      const mat = new THREE.MeshBasicMaterial({
-        color: 0x38bdf8,
-        transparent: true,
-        opacity: 0.28,
-        wireframe: true,
-        depthWrite: false,
-      });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(0, 0.85, 0);
-      markOwned(mesh);
-      e.rig.root.add(mesh);
-      e.phaseShieldMesh = mesh;
-    }
-    e.phaseShieldMesh.visible = true;
-    return e.phaseShieldMesh;
-  }
-
-  syncBossPhaseShieldVisual(e, elapsed) {
-    const mesh = e.phaseShieldMesh;
-    if (!mesh) return;
-    mesh.visible = e.phaseShieldTimer > 0;
-    if (!mesh.visible) return;
-    mesh.rotation.y = elapsed * 1.8;
-    const fade = Math.min(1, e.phaseShieldTimer / 0.45);
-    mesh.material.opacity = (0.22 + Math.sin(elapsed * 14) * 0.08) * fade;
-  }
-
-  triggerBossPhaseTransition(e, phaseId) {
-    e.phaseShieldTimer = BOSS_APS.PHASE_SHIELD_SEC;
-    this.ensureBossPhaseShieldMesh(e);
-    sound.playBossAlarm();
-    this.fx?.shockwave?.(e.x, 0.2, e.z, 0.6, 5.5, 0x38bdf8, 0.5);
-
-    if (phaseId === 'mammoth_phase2') {
-      e.mammothEnraged = true;
-      this.screenShake = Math.max(this.screenShake || 0, 0.55);
-      this.callBossEscort(e, MAMMOTH.ESCORT_CLASSES);
-      this.setStatusBanner?.(
-        `${e.name.toUpperCase()}: CITADEL OVERDRIVE & PHASE SHIELD - ESCORT INBOUND`,
-        3.2
-      );
-    } else if (phaseId === 'hydra_phase2') {
-      e.hydraEnraged = true;
-      this.screenShake = Math.max(this.screenShake || 0, 0.55);
-      this.callBossEscort(e, HYDRA.ESCORT_CLASSES);
-      this.setStatusBanner?.(
-        `${e.name.toUpperCase()}: LAUNCHER HEADS OVERCLOCKED & SHIELD UP - ESCORT INBOUND`,
-        3.2
-      );
-    } else if (phaseId === 'inferno_phase2') {
-      e.infernoEnraged = true;
-      e.minesRemaining = Math.max(e.minesRemaining || 0, 3);
-      this.screenShake = Math.max(this.screenShake || 0, 0.65);
-      this.callBossEscort(e, INFERNO.ESCORT_CLASSES);
-      this.setStatusBanner?.(
-        `${e.name.toUpperCase()}: THERMOBARIC OVERDRIVE & PHASE SHIELD - INCENDIARY ESCORT INBOUND`,
-        3.4
-      );
-    } else if (phaseId === 'titan_escort') {
-      e.titanEscortCalled = true;
-      this.screenShake = Math.max(this.screenShake || 0, 0.5);
-      this.callBossEscort(e, TITAN.ESCORT_CLASSES);
-      this.setStatusBanner?.(
-        `${e.name.toUpperCase()}: PHASE SHIELD ACTIVE - ESCORT REINFORCEMENTS INBOUND`,
-        3.2
-      );
-    } else if (phaseId === 'titan_overload') {
-      e.titanOverload = true;
-      this.screenShake = Math.max(this.screenShake || 0, 0.65);
-      this.setStatusBanner?.(
-        `${e.name.toUpperCase()}: REACTOR OVERLOAD & PHASE SHIELD - REAR RADIATORS EXPOSED`,
-        3.4
-      );
-    }
-  }
-
-  /** Spawns a boss escort group from the northern border. */
-  callBossEscort(e, escortClasses = TITAN.ESCORT_CLASSES) {
-    if (!this.grid?.length) return;
-    escortClasses.forEach((escortClass) => {
-      const targetPos = this.getSpawnPosition();
-      const cell = this.worldToGrid(targetPos.x, targetPos.z);
-      const spawn = this.resolveBorderSpawn(cell, { enemyClass: escortClass });
-      if (spawn) {
-        this.createEnemyAt(escortClass, spawn.spawnPos.x, spawn.spawnPos.z, false, spawn.entryTarget);
-      }
-    });
-    this.emitHudUpdate?.();
-  }
-
-  /** Onboard boss APS intercepts incoming player ATGMs when charges and LOS allow. */
-  tryBossApsIntercept(projectile) {
-    if (!bossApsCanIntercept(projectile)) return false;
-    const detectRadius = BOSS_APS.DETECT_RADIUS * TILE_SIZE;
-    for (const e of this.enemies) {
-      if (!e.isBoss || e.hp <= DURABILITY.ZERO_HP) continue;
-      if ((e.apsCharges || 0) <= 0 || (e.apsRearmTimer || 0) > 0 || (e.phaseShieldTimer || 0) > 0) continue;
-      const toBossX = e.x - projectile.x;
-      const toBossZ = e.z - projectile.z;
-      const dist = Math.hypot(toBossX, toBossZ);
-      if (dist > detectRadius) continue;
-      if (toBossX * projectile.vx + toBossZ * projectile.vz <= 0) continue;
-      if (this.hasLineOfSight && !this.hasLineOfSight(projectile.x, projectile.z, e.x, e.z)) continue;
-
-      e.apsCharges -= 1;
-      e.apsRearmTimer = BOSS_APS.REARM_SEC;
-      if ((e.apsRechargeTimer || 0) <= 0) e.apsRechargeTimer = BOSS_APS.RECHARGE_SEC;
-      sound.playApsIntercept({ x: projectile.x, z: projectile.z });
-      const len = dist || 1;
-      this.fx?.apsIntercept?.(
-        e.x - (toBossX / len) * 0.95,
-        1.15,
-        e.z - (toBossZ / len) * 0.95,
-        projectile.x,
-        1.35,
-        projectile.z
-      );
-      this.setStatusBanner?.(
-        `${e.name.toUpperCase()}: APS INTERCEPTED ATGM (${e.apsCharges}/${e.apsMaxCharges})`,
-        1.4
-      );
-      return true;
-    }
-    return false;
-  }
-
-  setupDefenseTurrets() {
-    if (this.defenseTurrets) {
-      for (const t of this.defenseTurrets) {
-        t.alive = false;
-        if (t.rig?.root) this.mapGroup.remove(t.rig.root);
-      }
-    }
-    this.defenseTurrets = [];
-    if (!this.activeMapRules.hasEnemyFortifiedBase) return;
-    const ebCell = this.activeMapRules.enemyBaseCell;
-    if (!ebCell) return;
-
-    // 4 corner turrets always:
-    // South corners face player: CANNON
-    // North corners: HOWITZER (mortar barrage)
-    const slots = [
-      { row: ebCell.row + 1, col: ebCell.col - 1, type: DEFENSE_TURRET_TYPES.CANNON },
-      { row: ebCell.row + 1, col: ebCell.col + 1, type: DEFENSE_TURRET_TYPES.CANNON },
-      { row: ebCell.row - 1, col: ebCell.col - 1, type: DEFENSE_TURRET_TYPES.HOWITZER },
-      { row: ebCell.row - 1, col: ebCell.col + 1, type: DEFENSE_TURRET_TYPES.HOWITZER },
-    ];
-
-    // On complex maps, add 2 flanking HYDRA_MLRS batteries:
-    const sectorId = this.currentSectorIndex;
-    const isComplexAssault = [9, 14, 18, 21, 26, 29, 31, 33].includes(sectorId);
-    if (isComplexAssault) {
-      const wCol = ebCell.col - 2;
-      const eCol = ebCell.col + 2;
-      if (wCol >= 0 && wCol < GRID_SIZE) {
-        slots.push({ row: ebCell.row, col: wCol, type: DEFENSE_TURRET_TYPES.MLRS });
-      }
-      if (eCol >= 0 && eCol < GRID_SIZE) {
-        slots.push({ row: ebCell.row, col: eCol, type: DEFENSE_TURRET_TYPES.MLRS });
-      }
-    }
-
-    for (const slot of slots) {
-      const cfg = DEFENSE_TURRET_CONFIGS[slot.type];
-      const { x, z } = this.gridToWorld(slot.row, slot.col);
-      const rig = this.modelFactory.createDefenseTurretRig(slot.type);
-      rig.root.position.set(x, 0, z);
-      this.mapGroup.add(rig.root);
-
-      // Remove generic concrete box mesh at that tile if present
-      const cell = this.grid[slot.row]?.[slot.col];
-      if (cell && cell.mesh) {
-        this.mapGroup.remove(cell.mesh);
-        cell.mesh = null;
-      }
-
-      // Turret starts facing south (towards player spawn)
-      rig.turret.rotation.y = Math.PI;
-
-      const turretEntity = {
-        id: `turret_${slot.row}_${slot.col}`,
-        type: slot.type,
-        name: cfg.name,
-        cfg,
-        row: slot.row,
-        col: slot.col,
-        x,
-        z,
-        radius: 0.88,
-        hp: cfg.maxHp || 100,
-        maxHp: cfg.maxHp || 100,
-        armor: cfg.armor,
-        turretAngle: Math.PI,
-        recoil: 0,
-        fireCooldown: 1.5 + Math.random() * 2.0,
-        salvoRemaining: 0,
-        salvoTimer: 0,
-        rig,
-        alive: true,
-      };
-      this.defenseTurrets.push(turretEntity);
-      if (cell) cell.defenseTurret = turretEntity;
-    }
-  }
-
-  updateDefenseTurrets(dt, elapsed) {
-    if (!this.defenseTurrets || this.defenseTurrets.length === 0) return;
-    const empStunned = this.empTimer > 0;
-
-    for (const t of this.defenseTurrets) {
-      if (!t.alive) continue;
-
-      if (empStunned) {
-        if (Math.random() < 0.12) this.spawnSparks(t.x, 0.9, t.z, 0x06b6d4, 2);
-        continue;
-      }
-
-      t.fireCooldown -= dt;
-      t.recoil = THREE.MathUtils.damp(t.recoil, 0, 10, dt);
-      if (t.rig?.barrelPivot) {
-        t.rig.barrelPivot.position.z = -t.recoil;
-      }
-
-      if (t.salvoRemaining > 0) {
-        t.salvoTimer -= dt;
-        if (t.salvoTimer <= 0) {
-          t.salvoRemaining--;
-          t.salvoTimer = t.cfg.salvoInterval || 0.22;
-          this.fireTurretMlrsRocket(t);
-        }
-      }
-
-      const toPlayerX = this.playerX - t.x;
-      const toPlayerZ = this.playerZ - t.z;
-      const dist = Math.hypot(toPlayerX, toPlayerZ);
-
-      const maskedBySmoke = this.inSmoke || this.isSegmentInSmoke(t.x, t.z, this.playerX, this.playerZ);
-      const canEngage =
-        dist <= t.cfg.range &&
-        !maskedBySmoke &&
-        (t.type === 'HOWITZER' || this.hasLineOfSight(t.x, t.z, this.playerX, this.playerZ));
-
-      if (canEngage) {
-        const desiredAngle = Math.atan2(toPlayerX, toPlayerZ);
-        t.turretAngle = this.lerpAngle(t.turretAngle, desiredAngle, 3.8 * dt);
-        t.rig.turret.rotation.y = t.turretAngle;
-
-        const angleDiff = Math.abs(normalizeAngleSigned(t.turretAngle - desiredAngle));
-        if (angleDiff < 0.24 && t.fireCooldown <= 0) {
-          this.fireDefenseTurret(t, dist);
-        }
-      }
-    }
-  }
-
-  fireDefenseTurret(t, dist) {
-    if (t.type === DEFENSE_TURRET_TYPES.CANNON) {
-      this.fireTurretCannon(t);
-    } else if (t.type === DEFENSE_TURRET_TYPES.HOWITZER) {
-      if (dist >= (t.cfg.minRange || 4.0)) {
-        this.fireTurretHowitzer(t);
-      }
-    } else if (t.type === DEFENSE_TURRET_TYPES.MLRS) {
-      t.fireCooldown = t.cfg.fireCooldown + Math.random() * 0.8;
-      t.salvoRemaining = t.cfg.salvoCount || 3;
-      t.salvoTimer = 0.05;
-    }
-  }
-
-  fireTurretCannon(t) {
-    t.fireCooldown = t.cfg.fireCooldown + Math.random() * 0.4;
-    t.recoil = 0.35;
-    const muzzleDist = t.cfg.muzzleDist || 1.6;
-    const dirX = Math.sin(t.turretAngle);
-    const dirZ = Math.cos(t.turretAngle);
-    const spawnX = t.x + dirX * muzzleDist;
-    const spawnZ = t.z + dirZ * muzzleDist;
-
-    this.spawnProjectile(
-      spawnX,
-      spawnZ,
-      dirX,
-      dirZ,
-      false,
-      t.cfg.damage || 24,
-      t.cfg.penetration || 0,
-      BULLET_POWER.HEAVY,
-      t.cfg.bulletSpeed || 22,
-      true
-    );
-
-    this.fx.muzzleFlash(spawnX, 0.75, spawnZ, dirX, dirZ, {
-      scale: 1.1,
-      tint: 0xf97316,
-    });
-    this.spawnSparks(spawnX, 0.75, spawnZ, 0xfde047, 4);
-    sound.playCannonShot(false, 3, { x: spawnX, z: spawnZ });
-  }
-
-  fireTurretHowitzer(t) {
-    t.fireCooldown = t.cfg.fireCooldown + Math.random() * 0.8;
-    t.recoil = 0.45;
-    const targetX = this.playerX + (Math.random() - 0.5) * 1.4;
-    const targetZ = this.playerZ + (Math.random() - 0.5) * 1.4;
-    const muzzleDist = t.cfg.muzzleDist || 1.4;
-    const spawnX = t.x + Math.sin(t.turretAngle) * muzzleDist;
-    const spawnZ = t.z + Math.cos(t.turretAngle) * muzzleDist;
-
-    sound.playCannonShot(true, 4, { x: spawnX, z: spawnZ });
-    this.createArtilleryStrike(
-      spawnX,
-      spawnZ,
-      targetX,
-      targetZ,
-      (t.cfg.blastRadius || 2.2) * TILE_SIZE,
-      ARTILLERY.FLIGHT_TIME,
-      t.cfg.damage || 40,
-      false,
-      1.1
-    );
-  }
-
-  fireTurretMlrsRocket(t) {
-    const spread = (Math.random() - 0.5) * 0.18;
-    const dirX = Math.sin(t.turretAngle + spread);
-    const dirZ = Math.cos(t.turretAngle + spread);
-    const spawnX = t.x + dirX * 1.2;
-    const spawnZ = t.z + dirZ * 1.2;
-
-    sound.playMissileLaunch({ x: spawnX, z: spawnZ });
-    this.spawnEnemyHomingMissile(spawnX, spawnZ, dirX, dirZ);
-  }
-
-  damageDefenseTurret(turret, p) {
-    if (!turret.alive) return;
-    const pen = p.isMissile ? 60 : (this.playerStats?.armorPenetration ?? 20);
-    const effectiveArmor = turret.armor * (1 - pen / 100);
-    const finalDmg = Math.max(1, (p.damage || 0) * (1 - effectiveArmor / 100));
-    turret.hp = Math.max(0, turret.hp - finalDmg);
-    if (turret.rig?.hpBarFill) {
-      const ratio = turret.hp / turret.maxHp;
-      turret.rig.hpBarFill.scale.x = Math.max(0.01, ratio);
-      if (ratio < 0.33) turret.rig.hpBarFill.material.color.setHex(0xef4444);
-      else if (ratio < 0.66) turret.rig.hpBarFill.material.color.setHex(0xeab308);
-    }
-    this.spawnSparks(p.x, 0.9, p.z, 0xf97316, 6);
-    sound.playArmorHit({ x: p.x, z: p.z });
-    if (turret.hp <= 0) this.destroyDefenseTurret(turret);
-  }
-
-  destroyDefenseTurret(turret) {
-    if (!turret.alive) return;
-    turret.alive = false;
-    this.mapGroup.remove(turret.rig.root);
-    this.convertTurretCellToSand(turret);
-    this.detonateExplosionAt(turret.x, turret.z, 2.2, 25, false);
-    this.screenShake = Math.max(this.screenShake, 0.45);
-    const bounty = 300;
-    this.playerSave.credits = (this.playerSave.credits || 0) + bounty;
-    this.creditsEarnedThisMission = (this.creditsEarnedThisMission || 0) + bounty;
-    this.saveRepo.savePlayerSave(this.playerSave);
-    this.emitHudUpdate();
-    sound.playExplosionLarge();
-    this.setStatusBanner(`${turret.name.toUpperCase()} DESTROYED! +300 CREDITS`, 2.5);
-  }
-
-  /** A destroyed turret leaves passable sand where its concrete barbette stood. */
-  convertTurretCellToSand(turret) {
-    const cell = this.grid[turret.row]?.[turret.col];
-    if (!cell) return;
-    cell.defenseTurret = null;
-    if (cell.mesh) {
-      this.mapGroup.remove(cell.mesh);
-      cell.mesh = null;
-    }
-    cell.type = TileType.SAND;
-    cell.hp = 0;
-    const sandMesh = this.modelFactory.createSandBlock(turret.x, turret.z);
-    this.mapGroup.add(sandMesh);
-    cell.mesh = sandMesh;
-    this.tileBatcher?.sync();
-  }
+  damageDefenseTurret(turret, p) { this.defenseTurretsCtrl.damage(turret, p); }
 
   /** Advances a rig's track and wheel animation (rig.gear uniforms, model metres) from how far the. */
   driveGear(rig, state, x, z, hullAngle) {
@@ -9122,11 +6865,7 @@ export class TankGameEngine {
       const pt = this.particles[i];
       pt.life -= dt;
       if (pt.life <= 0) {
-        if (pt.inCodex) {
-          this.codexFxGroup.remove(pt.mesh);
-        } else {
-          this.fxGroup.remove(pt.mesh);
-        }
+        this.fxGroup.remove(pt.mesh);
         this.particles.splice(i, 1);
         continue;
       }
@@ -9144,12 +6883,6 @@ export class TankGameEngine {
   }
 
   updateCamera(dt, elapsed) {
-    if (this.codexOpen) {
-      this.camera.position.set(11.5, 9.2, 11.5);
-      this.camera.lookAt(0, 0.65, 0);
-      return;
-    }
-
     if (this.inspectMode) {
       const orbitAngle = elapsed * 0.45;
       const radius = 14;
@@ -9387,357 +7120,12 @@ export class TankGameEngine {
   }
 
   emitHudUpdate() {
-    const sector = SECTORS[this.currentSectorIndex];
-    const boss = this.enemies.find((e) => e.isBoss);
-    const spawnersRemaining = this.getSpawnerCells().length;
-
-    const cannonSpec =
-      PLAYER_UPGRADES[UPGRADE.CANNON][(this.effectiveUpgrades.cannon || 1) - 1];
-    const baseChassisSpec =
-      PLAYER_UPGRADES[UPGRADE.CHASSIS][(this.effectiveUpgrades.chassis || 1) - 1];
-    const chassisSpec = baseChassisSpec;
-    const frameSpec =
-      PLAYER_UPGRADES[UPGRADE.FRAME][(this.effectiveUpgrades.frame || 1) - 1];
-    const engineSpec =
-      PLAYER_UPGRADES[UPGRADE.ENGINE][(this.effectiveUpgrades.engine || 1) - 1];
-    const armorSpec =
-      PLAYER_UPGRADES[UPGRADE.ARMOR][(this.effectiveUpgrades.armor || 1) - 1];
-
-    const apsTotal = this.apsAmmo.reduce((a, b) => a + b, 0);
-
-    let observedTarget = null;
-    const priorityUnit = this.enemies.find((e) => e.id === this.priorityTargetId);
-    const aimedUnit =
-      priorityUnit ||
-      this.enemies.find((e) => Math.hypot(e.x - this.aimWorld.x, e.z - this.aimWorld.z) <= 2.4);
-    if (aimedUnit) {
-      observedTarget = {
-        id: aimedUnit.id,
-        name: aimedUnit.name,
-        condition: getObservedEnemyCondition(aimedUnit),
-        isPriority: aimedUnit.id === this.priorityTargetId,
-        aiState: this.aiDebugMode ? aimedUnit.ai?.state : null,
-        aiActions: this.aiDebugMode ? this.enemyActionSummary(aimedUnit) : null,
-      };
-    }
-
-    const sensorContactsList = Array.from(this.sensorContacts.values()).map((c) => ({
-      enemyId: c.enemyId,
-      x: c.x,
-      z: c.z,
-      active: c.active,
-      age: c.age,
-      source: c.source,
-    }));
-
-    const snapshot = {
-      status: this.status,
-      sectorId: this.currentSectorIndex,
-      credits: this.playerSave?.credits ?? 0,
-      creditsEarnedThisMission: this.creditsEarnedThisMission || 0,
-      isHangarOpen: this.isHangarOpen,
-      isHangarPaused: this.isHangarPaused,
-      trackUpgradeCosts: TRACK_UPGRADE_COSTS,
-      componentDamage: { ...this.componentDamage },
-      effectiveUpgrades: this.effectiveUpgrades,
-      playerHp: Math.round(this.playerHp * 10) / 10,
-      playerMaxHp: this.playerMaxHp,
-      playerStats: this.playerStats,
-      cannonName: cannonSpec.name,
-      chassisName: chassisSpec.name,
-      frameName: frameSpec.name,
-      engineName: engineSpec.name,
-      armorName: armorSpec.name,
-      playerFireCooldown: Math.max(0, this.playerFireCooldown),
-      playerMaxFireCooldown: Math.max(0.1, this.playerMaxFireCooldown || this.playerStats?.fireCooldown || 1.25),
-      speedKmh: Math.round(Math.abs(this.playerForwardSpeed || 0) * 9.5),
-      playerForwardSpeed: this.playerForwardSpeed || 0,
-      currentSurface:
-        typeof this.currentSurface === 'string'
-          ? this.currentSurface
-          : this.currentSurface?.label || this.currentSurface?.id || 'asphalt',
-      subsystems: this.subsystems,
-      playerArmorPanels: this.playerArmorPanels,
-      repairKitState: this.repairKitState,
-      smokeCharges: this.smokeCharges,
-      smokeCooldown: this.smokeCooldown,
-      priorityTargetId: this.priorityTargetId,
-      observedTarget,
-      sensorContacts: sensorContactsList,
-      lootContainers: this.lootContainers.map((c) => ({
-        id: c.id,
-        x: c.x,
-        z: c.z,
-        status: c.status,
-        reward: c.reward,
-      })),
-      contract: buildContractHudSnapshot(this.contractState, this.playerX, this.playerZ, TILE_SIZE),
-      survival: buildSurvivalHudSnapshot(
-        this.survivalState,
-        this.enemies.length,
-        this.vanguardRemainingToSpawn
-      ),
-      playerSave: this.playerSave,
-      assembledTank: this.assembledTank,
-      lastSettlementSummary: this.lastSettlementSummary,
-      aiDebugMode: this.aiDebugMode,
-      playerX: this.playerX,
-      playerZ: this.playerZ,
-      playerHullAngle: this.playerHullAngle,
-      playerTurretAngle: this.playerTurretAngle,
-      cameraAzimuth: this.cameraAzimuth,
-      apsAmmo: [...this.apsAmmo],
-      apsTotal,
-      apsMaxAmmo: this.getPlayerMaxApsAmmo(),
-      missileAmmo: this.missileAmmo,
-      missileMaxAmmo: this.getPlayerMaxMissileAmmo(),
-      cannonAmmo: this.cannonAmmo,
-      cannonMaxAmmo: this.getPlayerMaxCannonAmmo(),
-      missileCooldown: this.missileCooldown,
-      repairKitCount: this.repairKitCount,
-      empTimer: this.empTimer,
-      jammedTimer: this.jammedTimer,
-      inBaseRepairZone: this.inBaseRepairZone,
-      baseAlive: this.baseAlive,
-      gameMode: this.activeMapRules?.gameMode || sector.gameMode || 'extermination',
-      mapModeName: this.activeMapRules?.name || 'Total Extermination',
-      mapObjectiveLabel:
-        this.activeMapRules?.shortLabel || 'DESTROY ALL HOSTILES',
-      defeatOnBaseLoss: Boolean(this.activeMapRules?.defeatOnBaseLoss),
-      enemyBaseAlive: Boolean(this.enemyBaseAlive),
-      enemyBaseHp: Math.ceil(this.enemyBaseHp || 0),
-      enemyBaseMaxHp: this.enemyBaseMaxHp || 48,
-      enemyBaseName: this.enemyBaseName || 'Enemy Fortified Citadel',
-      enemiesRemaining: this.survivalState
-        ? this.enemies.length +
-          this.vanguardRemainingToSpawn +
-          (this.survivalState.waveSpec?.isBossWave && !this.bossSpawned ? 1 : 0)
-        : this.enemies.length +
-          this.vanguardRemainingToSpawn +
-          (sector.rules.spawnSectorBossOnClear
-            ? sector.bossSequence?.length
-              ? this.bossSequenceStarted
-                ? sector.bossSequence.slice(this.bossStageIndex + 1).reduce((s, st) => s + st.length, 0)
-                : sector.bossSequence.reduce((s, st) => s + st.length, 0)
-              : !this.bossSpawned
-              ? 1
-              : 0
-            : 0),
-      totalEnemiesInSector: this.survivalState
-        ? this.survivalState.waveSpec?.totalHostiles || 1
-        : sector.vanguardCount +
-          (sector.rules.spawnSectorBossOnClear
-            ? sector.bossSequence?.length
-              ? sector.bossSequence.reduce((s, st) => s + st.length, 0)
-              : 1
-            : 0),
-      spawnersRemaining,
-      minesActive: this.mines.length,
-      bossActive: Boolean(boss),
-      bossName:
-        this.enemies.filter((u) => u.isBoss).length > 1
-          ? this.enemies
-              .filter((u) => u.isBoss)
-              .map((u) => u.name)
-              .join(' & ')
-          : boss?.name ||
-            this.survivalState?.waveSpec?.bossName ||
-            sector.bossName,
-      bossTitle:
-        SECTOR_BOSS_CONFIGS[boss?.enemyClass]?.role ||
-        this.survivalState?.waveSpec?.bossTitle ||
-        sector.bossTitle,
-      bossCondition: boss ? getObservedEnemyCondition(boss) : 'INTACT',
-      bossHp: boss ? Math.ceil(boss.hp) : 0,
-      bossMaxHp: boss ? boss.maxHp : 1,
-      bossPhaseLabel: boss
-        ? boss.titanOverload
-          ? 'OVERLOAD'
-          : boss.mammothEnraged || boss.hydraEnraged || boss.infernoEnraged || boss.titanEscortCalled
-          ? 'PHASE 2'
-          : 'PHASE 1'
-        : 'PHASE 1',
-      bossPhaseShield: boss ? Math.max(0, Math.round((boss.phaseShieldTimer || 0) * 10) / 10) : 0,
-      bossApsCharges: boss ? boss.apsCharges ?? 0 : 0,
-      bossApsMaxCharges: boss ? boss.apsMaxCharges ?? 0 : 0,
-      inForest: this.inForest,
-      inSmoke: this.inSmoke,
-      onIce: this.onIce,
-      onSand: this.onSand,
-      kills: this.kills,
-      blocksDestroyed: this.blocksDestroyed,
-      shotsFired: this.shotsFired,
-      shotsHit: this.shotsHit,
-      statusMessage: this.statusMessage,
-    };
-
-    if (typeof this.onHudUpdate === 'function') {
-      this.onHudUpdate(snapshot, { ...this.upgrades });
-    }
+    this.onHudUpdate?.(buildHudSnapshot(this), { ...this.upgrades });
   }
 
-  checkAndIgniteForestOnEnemyKill(enemy) {
-    const { row, col } = this.worldToGrid(enemy.x, enemy.z);
-    const centerCell = this.grid[row]?.[col];
-    const isInsideOrNearForest =
-      centerCell?.type === TileType.FOREST || this.hasForestNearby(enemy.x, enemy.z, 1.1);
+  checkAndIgniteForestOnEnemyKill(enemy) { this.forestFire.checkAndIgniteOnEnemyKill(enemy); }
 
-    if (isInsideOrNearForest) {
-      const radius = enemy.isBoss ? 2.2 : 1.35;
-      this.igniteForestAt(enemy.x, enemy.z, radius);
-    }
-  }
-
-  hasForestNearby(x, z, radius) {
-    const half = (GRID_SIZE * TILE_SIZE) / 2;
-    const minCol = Math.max(0, Math.floor((x - radius + half) / TILE_SIZE));
-    const maxCol = Math.min(GRID_SIZE - 1, Math.floor((x + radius + half) / TILE_SIZE));
-    const minRow = Math.max(0, Math.floor((z - radius + half) / TILE_SIZE));
-    const maxRow = Math.min(GRID_SIZE - 1, Math.floor((z + radius + half) / TILE_SIZE));
-
-    for (let r = minRow; r <= maxRow; r++) {
-      for (let c = minCol; c <= maxCol; c++) {
-        if (this.grid[r]?.[c]?.type === TileType.FOREST) {
-          const pos = this.gridToWorld(r, c);
-          if (Math.hypot(pos.x - x, pos.z - z) <= radius + 0.6) return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  igniteForestAt(x, z, radius = 1.35) {
-    const half = (GRID_SIZE * TILE_SIZE) / 2;
-    const minCol = Math.max(0, Math.floor((x - radius + half) / TILE_SIZE));
-    const maxCol = Math.min(GRID_SIZE - 1, Math.floor((x + radius + half) / TILE_SIZE));
-    const minRow = Math.max(0, Math.floor((z - radius + half) / TILE_SIZE));
-    const maxRow = Math.min(GRID_SIZE - 1, Math.floor((z + radius + half) / TILE_SIZE));
-
-    let ignitedAny = false;
-    for (let r = minRow; r <= maxRow; r++) {
-      for (let c = minCol; c <= maxCol; c++) {
-        const cell = this.grid[r]?.[c];
-        if (!cell || cell.type !== TileType.FOREST || cell.isBurning) continue;
-
-        const cellPos = this.gridToWorld(r, c);
-        if (Math.hypot(cellPos.x - x, cellPos.z - z) <= radius + 0.6) {
-          this.startBurningForest(cell, cellPos.x, cellPos.z);
-          ignitedAny = true;
-        }
-      }
-    }
-    if (ignitedAny) {
-      sound.playFlamethrower();
-      this.screenShake = Math.max(this.screenShake, 0.45);
-    }
-  }
-
-  startBurningForest(cell, x, z) {
-    cell.isBurning = true;
-    if (cell.mesh) {
-      cell.mesh.userData.batchTile = false;
-    }
-    if (this.tileBatcher) {
-      this.tileBatcher.sync();
-    }
-
-    this.burningForests.push({
-      cell,
-      x,
-      z,
-      timer: 10.0,
-      maxTimer: 10.0,
-    });
-  }
-
-  updateBurningForests(dt, elapsed) {
-    for (let i = this.burningForests.length - 1; i >= 0; i--) {
-      const bf = this.burningForests[i];
-      bf.timer -= dt;
-
-      const progress = THREE.MathUtils.clamp(1 - bf.timer / bf.maxTimer, 0, 1);
-
-      this.fx.flameJet(
-        bf.x + (Math.random() - 0.5) * 1.2,
-        0.35 + Math.random() * 0.4,
-        bf.z + (Math.random() - 0.5) * 1.2,
-        (Math.random() - 0.5) * 0.3,
-        (Math.random() - 0.5) * 0.3,
-        Math.random() * 0.6
-      );
-
-      if (Math.random() < 0.4) {
-        this.fx.point('smoke', {
-          x: bf.x + (Math.random() - 0.5) * 0.9,
-          y: 0.7 + Math.random() * 0.6,
-          z: bf.z + (Math.random() - 0.5) * 0.9,
-          vx: (Math.random() - 0.5) * 0.25,
-          vy: 0.9 + Math.random() * 0.9,
-          vz: (Math.random() - 0.5) * 0.25,
-          life: 1.2,
-          size: 0.45,
-          size1: 1.5,
-          color: [0.15, 0.14, 0.13],
-          alpha: 0.55,
-          tex: 2,
-          ramp: 3,
-          fadeIn: 0.1,
-          rotV: (Math.random() - 0.5) * 2,
-        });
-      }
-
-      if (Math.random() < 0.08) {
-        this.fx.flash(bf.x, 0.5, bf.z, 0xff5500, 1.8);
-      }
-
-      if (bf.cell.mesh) {
-        const hScale = Math.max(0.12, 1 - progress * 0.75);
-        const wScale = Math.max(0.3, 1 - progress * 0.45);
-        bf.cell.mesh.scale.set(wScale, hScale, wScale);
-      }
-
-      const distPlayer = Math.hypot(this.playerX - bf.x, this.playerZ - bf.z);
-      if (distPlayer < 1.15) {
-        this.damagePlayer(2.5 * dt);
-        if (Math.random() < 0.2) {
-          this.spawnSparks(this.playerX, 0.8, this.playerZ, 0xff7700, 3);
-        }
-      }
-      for (const e of this.enemies) {
-        const distE = Math.hypot(e.x - bf.x, e.z - bf.z);
-        if (distE < 1.15) {
-          e.hp -= 2.5 * dt;
-          if (e.hp <= 0.0001) {
-            this.damageEnemy(e, 1);
-          }
-        }
-      }
-
-      if (bf.timer <= 0) {
-        bf.cell.isBurning = false;
-
-        if (bf.cell.mesh) {
-          this.mapGroup.remove(bf.cell.mesh);
-          bf.cell.mesh = null;
-        }
-
-        bf.cell.type = TileType.SAND;
-
-        const sandMesh = this.modelFactory.createSandBlock(bf.x, bf.z);
-        this.mapGroup.add(sandMesh);
-        bf.cell.mesh = sandMesh;
-
-        this.fx.blockDestroyed(bf.x, bf.z, 'forest');
-        this.fx.flash(bf.x, 0.4, bf.z, 0xffaa44, 2.0);
-
-        if (this.tileBatcher) {
-          this.tileBatcher.sync();
-        }
-
-        this.burningForests.splice(i, 1);
-      }
-    }
-  }
+  updateBurningForests(dt, elapsed) { this.forestFire.update(dt, elapsed); }
 
   dispose() {
     this.isDisposed = true;
@@ -9745,7 +7133,7 @@ export class TankGameEngine {
     this.modelFactory.brickModels.dispose();
     this.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
-    this.clearAiDebugOverlay();
+    this._aiDebugOverlay?.clear();
     this.clock?.dispose();
     cancelAnimationFrame(this.frameId);
     clearTimeout(this.frameId);
@@ -9768,10 +7156,7 @@ export class TankGameEngine {
     this.clearGroup(this.mapGroup);
     this.clearGroup(this.entityGroup);
     this.clearGroup(this.fxGroup);
-    this.clearGroup(this.codexStageGroup);
-    this.clearGroup(this.codexFxGroup);
     this.fx?.clear();
-    this._codexFx?.clear();
 
     this.urbanGroundTexture?.dispose();
     if (this.perimeterMesh) {
