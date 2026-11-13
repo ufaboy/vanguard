@@ -56,7 +56,7 @@ function barrelEngine() {
 test('Barrels damage a living nearby player but do not damage a dead player', () => {
   const engine = barrelEngine();
   engine.explodeBarrel({ type: TileType.BARREL, row: 0, col: 0 });
-  assert.equal(engine.playerHp, 17);
+  assert.equal(engine.playerHp, 11);
   engine.playerHp = 0;
   engine.explodeBarrel({ type: TileType.BARREL, row: 0, col: 0 });
   assert.equal(engine.playerHp, 0);

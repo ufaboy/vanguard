@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { settleMission } from '../../sim/hangar.js';
-import { DURABILITY, ENEMY_VISIBILITY } from '../constants.js';
+import { applySubsystemDamage } from '../../sim/subsystems.js';
+import { DURABILITY, ENEMY_VISIBILITY, computeEffectiveDamage } from '../constants.js';
 import { disposeOwned } from '../render/dispose.js';
 import { TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
@@ -305,21 +306,23 @@ export class TerrainDestructionController {
     sound.playEnvironmentalExplosion({ x, z });
     engine.screenShake = Math.max(engine.screenShake, 0.75);
 
-    engine.fx.explosion(x, 0.45, z, { scale: 1.85, boss: false, tint: 0xff3b14 });
-    engine.fx.shockwave(x, 0.1, z, 0.4, 4.8, 0xff5500, 0.45);
-    engine.fx.scorch(x, z, 2.4);
-    engine.fx.sparks(x, 0.5, z, 0xffa040, 24, { speed: 2.4, up: 1.5 });
+    engine.fx.explosion(x, 0.45, z, { scale: 2.15, boss: false, tint: 0xff3b14 });
+    engine.fx.shockwave(x, 0.1, z, 0.4, 6.4, 0xff5500, 0.5);
+    engine.fx.scorch(x, z, 3.2);
+    engine.fx.sparks(x, 0.5, z, 0xffa040, 28, { speed: 2.8, up: 1.6 });
 
-    const blastRadius = 2.8 * TILE_SIZE;
-    const maxDamage = 35;
+    const blastRadius = 3.8 * TILE_SIZE;
+    const pointBlankRadius = 1.2 * TILE_SIZE;
+    const maxDamage = 41;
 
     for (let i = engine.enemies.length - 1; i >= 0; i--) {
       const enemy = engine.enemies[i];
       if (!enemy || enemy.hp <= 0) continue;
       const dist = Math.hypot(enemy.x - x, enemy.z - z);
       if (dist <= blastRadius) {
-        const falloff = 1 - (dist / blastRadius) * 0.5;
-        const dmg = Math.round(maxDamage * Math.max(0.4, falloff));
+        const t = Math.max(0, (dist - pointBlankRadius) / Math.max(0.1, blastRadius - pointBlankRadius));
+        const falloff = 1 - t * 0.6;
+        const dmg = Math.round(maxDamage * falloff);
         engine.damageEnemy(enemy, dmg, x, z);
         engine.fx.armorHit(enemy.x, 0.5, enemy.z, { scale: 1.3, colorHex: 0xff4500 });
       }
@@ -328,9 +331,23 @@ export class TerrainDestructionController {
     if (engine.playerHp > DURABILITY.ZERO_HP) {
       const pDist = Math.hypot(engine.playerX - x, engine.playerZ - z);
       if (pDist <= blastRadius) {
-        const falloff = 1 - (pDist / blastRadius) * 0.5;
-        const dmg = Math.round(maxDamage * Math.max(0.4, falloff));
-        engine.damagePlayer(dmg);
+        const t = Math.max(0, (pDist - pointBlankRadius) / Math.max(0.1, blastRadius - pointBlankRadius));
+        const falloff = 1 - t * 0.6;
+        const sideArmor = engine.explosions?.blastSideArmor?.(
+          engine.playerStats || {},
+          engine.playerX,
+          engine.playerZ,
+          engine.playerHullAngle || 0,
+          x,
+          z
+        ) ?? engine.playerStats?.armor ?? 0;
+        const dmg = computeEffectiveDamage(maxDamage * falloff, 0, sideArmor);
+        const trackDmg = Math.round(75 * falloff);
+        applySubsystemDamage(engine.subsystems, 'leftTrack', trackDmg);
+        applySubsystemDamage(engine.subsystems, 'rightTrack', trackDmg);
+        // Barrel blasts bypass APS directly and strike the hull/chassis.
+        engine.damagePlayer(dmg, { zone: 'hull', aspect: 'left' });
+        engine.emitHudUpdate?.();
         engine.fx.armorHit(engine.playerX, 0.5, engine.playerZ, { scale: 1.4, colorHex: 0xff2200 });
       }
     }

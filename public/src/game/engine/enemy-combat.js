@@ -739,7 +739,7 @@ export class EnemyCombatController {
     engine.setStatusBanner(`${e.name.toUpperCase()}: HOMING ATGM SALVO INBOUND`, 1.6);
   }
 
-  /** Crushes BOXES supply crates under any moving tank; only player-crushed crates drop loot. */
+  /** Crushes BOXES supply crates and detonates BARREL hazards under any moving tank; only player-crushed crates drop loot. */
   crushBoxObstacles(x, z, radius, fromPlayer = false) {
     const { engine } = this;
     if (!engine.grid?.length) return false;
@@ -752,7 +752,13 @@ export class EnemyCombatController {
     for (let r = minRow; r <= maxRow; r++) {
       for (let c = minCol; c <= maxCol; c++) {
         const cell = engine.grid[r]?.[c];
-        if (!cell || cell.type !== TileType.BOXES) continue;
+        if (!cell) continue;
+        if (cell.type === TileType.BARREL) {
+          engine.explodeBarrel(cell, fromPlayer);
+          crushed = true;
+          continue;
+        }
+        if (cell.type !== TileType.BOXES) continue;
         const pos = engine.gridToWorld(cell.row, cell.col);
         engine.destroyTileCell(cell);
         sound.playBrickHit({ x: pos.x, z: pos.z });
