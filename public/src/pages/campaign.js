@@ -1,5 +1,6 @@
 import { battlefieldUrl } from '../app/routes.js';
 import { attachSettingsModal } from '../app/shell.js';
+import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
 import { loadPlayerSave } from '../app/state.js';
 import { CAMPAIGN_CHAPTERS, CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from '../game/campaign.js';
 import { SECTORS } from '../game/levels.js';
@@ -289,6 +290,16 @@ let selectedMissionId = getNextPlayableMissionId(completedMissions);
 
 if (root) {
   attachSettingsModal(root);
+  renderChallengeBannerIfPresent({
+    container: root.querySelector('main') || root,
+    pageHint: 'campaign',
+    onAccept: (challenge) => {
+      const targetId = isCampaignMissionUnlocked(challenge.missionId, completedMissions)
+        ? challenge.missionId
+        : selectedMissionId;
+      location.href = battlefieldUrl({ mode: 'campaign', mission: targetId });
+    },
+  });
   syncCampaignMapState(completedMissions, selectedMissionId);
 
   root.addEventListener('click', (e) => {

@@ -2,6 +2,7 @@ import { battlefieldUrl } from '../app/routes.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { loadPlayerSave } from '../app/state.js';
 import { createDefaultSurvivalRecords } from '../sim/survival.js';
+import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
 
 function formatSurvivalTime(totalSec = 0) {
   const sec = Math.max(0, Math.floor(totalSec));
@@ -19,6 +20,13 @@ const rec = {
 
 if (root) {
   attachSettingsModal(root);
+  renderChallengeBannerIfPresent({
+    container: root.querySelector('main') || root,
+    pageHint: 'survival',
+    onAccept: () => {
+      location.href = battlefieldUrl({ mode: 'survival' });
+    },
+  });
 
   if (rec.totalRuns > 0) {
     const pill = document.querySelector('.survival-record-pill span:last-child');
