@@ -2,6 +2,7 @@ import { POWERUP, getMaxMissileAmmo } from '../game/constants.js';
 import { renderPowerUpBadgeSvg } from '../game/icons.js';
 import { GameStatus } from '../game/types.js';
 import { setHidden, setHtml } from './dom-helpers.js';
+import { renderTankSilhouette } from './tank-silhouette.js';
 
 export function renderBattlefieldHud({
   state,
@@ -323,20 +324,6 @@ export function renderBattlefieldHud({
         (_, idx) => `<span class="${idx < filledReloadSegs ? 'is-filled' : ''}"></span>`
       ).join('');
 
-      const speedKmh = hud.speedKmh || 0;
-      const fwd = hud.playerForwardSpeed || 0;
-      const gearLabel = speedKmh < 1
-        ? 'N'
-        : fwd < -0.15
-        ? 'R'
-        : speedKmh < 14
-        ? 'D1'
-        : speedKmh < 26
-        ? 'D2'
-        : speedKmh < 38
-        ? 'D3'
-        : 'D4';
-
       const cannonAmmo = hud.cannonAmmo ?? 15;
       const cannonMax = hud.cannonMaxAmmo ?? 15;
 
@@ -389,19 +376,8 @@ export function renderBattlefieldHud({
           '<div style="display: contents"></div><div class="hud-bottom-center"></div>';
         bottomHud.__sections = Array.from(bottomHud.children);
       }
-      const [speedSection, centerSection] = bottomHud.__sections;
-      setHtml(speedSection, `
-        <div class="hud-card hud-speed-card">
-          <div>
-            <span class="hud-label">SPEED</span>
-            <div class="hud-speed-val">${speedKmh} <small>km/h</small></div>
-          </div>
-          <div class="hud-gear-box">
-            <span class="hud-label">GEAR</span>
-            <div class="hud-gear-val">${gearLabel}</div>
-          </div>
-        </div>
-      `);
+      const [silhouetteSection, centerSection] = bottomHud.__sections;
+      setHtml(silhouetteSection, renderTankSilhouette(hud));
 
       setHtml(centerSection, `
         <div class="flex flex-col items-center gap-1.5">
