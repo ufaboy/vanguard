@@ -535,6 +535,7 @@ async function startSector(sectorIndex) {
     if (state.showUpgradeDrawer) engine?.setHangarOpen(false);
     state.showUpgradeDrawer = false;
     engine?.setInspectMode(false);
+    await engine?.waitForSectorModels?.(sectorIndex);
     engine?.startSector(sectorIndex);
     if (document.body?.dataset?.page === 'battlefield') {
       const targetUrl = battlefieldUrlForSector(targetSector);

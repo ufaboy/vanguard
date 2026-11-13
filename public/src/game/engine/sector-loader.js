@@ -21,6 +21,36 @@ import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
 import { EnemyClass, GameStatus, TANK_TYPES, TileType, resolveMapRules } from '../types.js';
 
 /** Loads sector maps, initializes grid/player/mode state, and handles grid-world coordinate helpers. */
+/** Collects all enemy and boss classes that may appear in a sector. */
+export function getSectorEnemyClasses(sector) {
+  if (!sector) return [];
+  if (sector.gameMode === 'survival') {
+    return [
+      ...Object.values(TANK_TYPES),
+      EnemyClass.BOSS_MAMMOTH,
+      EnemyClass.BOSS_HYDRA,
+      EnemyClass.BOSS_INFERNO,
+      EnemyClass.BOSS_TITAN,
+    ];
+  }
+  return [
+    ...(sector.enemyPool || []),
+    ...(sector.fixedSpawns || []).map((sp) => sp.enemyClass),
+    ...(sector.rules?.spawnSectorBossOnClear
+      ? [
+          sector.bossClass,
+          ...(sector.bossSequence
+            ? sector.bossSequence.flat().map((b) => b.enemyClass)
+            : []),
+          ...MAMMOTH.ESCORT_CLASSES,
+          ...HYDRA.ESCORT_CLASSES,
+          ...INFERNO.ESCORT_CLASSES,
+          ...TITAN.ESCORT_CLASSES,
+        ]
+      : []),
+  ];
+}
+
 export class SectorLoaderController {
   constructor(engine) {
     this.engine = engine;
@@ -418,32 +448,7 @@ export class SectorLoaderController {
       engine.saveRepo.savePlayerSave(engine.playerSave);
     }
 
-    engine.modelFactory.ensureEnemyModels(
-      isSurvivalSector
-        ? [
-            ...Object.values(TANK_TYPES),
-            EnemyClass.BOSS_MAMMOTH,
-            EnemyClass.BOSS_HYDRA,
-            EnemyClass.BOSS_INFERNO,
-            EnemyClass.BOSS_TITAN,
-          ]
-        : [
-            ...(sector.enemyPool || []),
-            ...(sector.fixedSpawns || []).map((sp) => sp.enemyClass),
-            ...(sector.rules?.spawnSectorBossOnClear
-              ? [
-                  sector.bossClass,
-                  ...(sector.bossSequence
-                    ? sector.bossSequence.flat().map((b) => b.enemyClass)
-                    : []),
-                  ...MAMMOTH.ESCORT_CLASSES,
-                  ...HYDRA.ESCORT_CLASSES,
-                  ...INFERNO.ESCORT_CLASSES,
-                  ...TITAN.ESCORT_CLASSES,
-                ]
-              : []),
-          ]
-    );
+    engine.modelFactory.ensureEnemyModels(getSectorEnemyClasses(sector));
 
     engine.enemySpawnQueue = Array.isArray(sector.enemyPool)
       ? [...sector.enemyPool]

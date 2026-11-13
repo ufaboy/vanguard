@@ -358,11 +358,17 @@ export class ModelFactory extends TextureGenerator {
     }
     this.brickModels = new BrickModels();
     this.useBlenderBricks = !isSoftwareGl;
-    if (this.useBlenderBricks) {
-      this.brickModels.load()
-        .then(ready => { if (ready) this.onBrickModelsReady?.(); })
-        .catch(error => { console.warn('BRICK models unavailable; using procedural fallback.', error); });
-    }
+    this.brickModelsPromise = this.useBlenderBricks
+      ? this.brickModels.load()
+          .then(ready => {
+            if (ready) this.onBrickModelsReady?.();
+            return Boolean(ready);
+          })
+          .catch(error => {
+            console.warn('BRICK models unavailable; using procedural fallback.', error);
+            return false;
+          })
+      : Promise.resolve(false);
     this.concreteTex = this.generated('createConcreteTextures');
     this.groundTex = this.generated('createGroundTexture');
     this.iceTex = this.generated('createIceTextures');
@@ -382,12 +388,11 @@ export class ModelFactory extends TextureGenerator {
       this.glbClassesByUrl.set(cfg.url, [...(this.glbClassesByUrl.get(cfg.url) || []), enemyClass]);
     });
     this.glbRequestedUrls = new Set();
+    this.glbLoadPromises = new Map();
     this.glbTurretParts = new Map();
     this.pendingTurretRigs = new Map();
     this.glbTurretRequestedUrls = new Set();
-    if (!isSoftwareGl) {
-      this.loadPlayerGlbModel();
-    }
+    this.playerGlbPromise = isSoftwareGl ? Promise.resolve() : this.loadPlayerGlbModel();
   }
 
   /** Result of a texture generator: precomputed by the worker when available, else built now. */
@@ -410,51 +415,74 @@ export class ModelFactory extends TextureGenerator {
 
   /** Starts loading the GLBs of the given enemy classes (no-op for loaded or loading ones). */
   ensureEnemyModels(enemyClasses) {
-    if (this.isSoftwareGl) return;
+    if (this.isSoftwareGl) return Promise.resolve([]);
+    const promises = [];
     for (const enemyClass of enemyClasses) {
       const url = GLB_TANK_MODELS[enemyClass]?.url;
-      if (!url || this.glbRequestedUrls.has(url)) continue;
-      this.glbRequestedUrls.add(url);
-      this.loadGlbTankModel(this.glbClassesByUrl.get(url), url);
+      if (!url) continue;
+      if (!this.glbRequestedUrls.has(url)) {
+        this.glbRequestedUrls.add(url);
+        this.glbLoadPromises.set(
+          url,
+          this.loadGlbTankModel(this.glbClassesByUrl.get(url), url)
+        );
+      }
+      const pending = this.glbLoadPromises.get(url);
+      if (pending) promises.push(pending);
     }
+    return Promise.all(promises);
+  }
+
+  /** Resolves once the player GLB, brick models, and requested enemy GLBs have settled. */
+  waitForModels(enemyClasses = []) {
+    if (this.isSoftwareGl) return Promise.resolve();
+    return Promise.all([
+      this.playerGlbPromise,
+      this.brickModelsPromise,
+      this.ensureEnemyModels(enemyClasses),
+    ]);
   }
 
   loadPlayerGlbModel() {
-    getTankGltfLoader(this.renderer).load(
-      PLAYER_GLB_MODEL.url,
-      (gltf) => {
-        gltf.scene.updateMatrixWorld(true);
-        const parts = new Map();
-        gltf.scene.traverse((node) => {
-          if (!node.isMesh) return;
-          const mesh = node.clone();
-          node.matrixWorld.decompose(mesh.position, mesh.quaternion, mesh.scale);
-          mesh.castShadow = true;
-          mesh.receiveShadow = true;
-          addBakedGlow(mesh.material, PLAYER_GLB_MODEL.glow);
-          completeGearAttributes(mesh.geometry);
-          parts.set(node.name, mesh);
-        });
-        this.playerGlbParts = parts;
-        const cfg = PLAYER_GLB_MODEL;
-        const pivotX = PLAYER_BARREL_BASE_Z / cfg.scale;
-        const muzzleX = Math.max(...cfg.muzzleX);
-        this.playerClearance = new Map();
-        parts.forEach((mesh, name) => {
-          if (!/^(Hull_Base|CH\d|F\d|E\d|A\d_Hull)/.test(name)) return;
-          const profile = buildClearanceProfile([mesh], cfg.gunY, muzzleX, pivotX);
-          if (profile) this.playerClearance.set(name, profile);
-        });
-        this.pendingPlayerRigs.forEach((rig) => this.applyPlayerGlb(rig));
-        this.pendingPlayerRigs = [];
-        this.onModelReady?.('player');
-      },
-      undefined,
-      (err) => {
-        this.pendingPlayerRigs = [];
-        console.warn('Player tank GLB unavailable, using procedural rig.', err);
-      }
-    );
+    return new Promise((resolve) => {
+      getTankGltfLoader(this.renderer).load(
+        PLAYER_GLB_MODEL.url,
+        (gltf) => {
+          gltf.scene.updateMatrixWorld(true);
+          const parts = new Map();
+          gltf.scene.traverse((node) => {
+            if (!node.isMesh) return;
+            const mesh = node.clone();
+            node.matrixWorld.decompose(mesh.position, mesh.quaternion, mesh.scale);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            addBakedGlow(mesh.material, PLAYER_GLB_MODEL.glow);
+            completeGearAttributes(mesh.geometry);
+            parts.set(node.name, mesh);
+          });
+          this.playerGlbParts = parts;
+          const cfg = PLAYER_GLB_MODEL;
+          const pivotX = PLAYER_BARREL_BASE_Z / cfg.scale;
+          const muzzleX = Math.max(...cfg.muzzleX);
+          this.playerClearance = new Map();
+          parts.forEach((mesh, name) => {
+            if (!/^(Hull_Base|CH\d|F\d|E\d|A\d_Hull)/.test(name)) return;
+            const profile = buildClearanceProfile([mesh], cfg.gunY, muzzleX, pivotX);
+            if (profile) this.playerClearance.set(name, profile);
+          });
+          this.pendingPlayerRigs.forEach((rig) => this.applyPlayerGlb(rig));
+          this.pendingPlayerRigs = [];
+          this.onModelReady?.('player');
+          resolve();
+        },
+        undefined,
+        (err) => {
+          this.pendingPlayerRigs = [];
+          console.warn('Player tank GLB unavailable, using procedural rig.', err);
+          resolve();
+        }
+      );
+    });
   }
 
   applyPlayerGlb(rig) {
@@ -551,9 +579,10 @@ export class ModelFactory extends TextureGenerator {
   }
 
   loadGlbTankModel(enemyClasses, url) {
-    getTankGltfLoader(this.renderer).load(
-      url,
-      (gltf) => {
+    return new Promise((resolve) => {
+      getTankGltfLoader(this.renderer).load(
+        url,
+        (gltf) => {
         gltf.scene.updateMatrixWorld(true);
         const rawMeshes = [];
         gltf.scene.traverse((node) => {
@@ -622,13 +651,16 @@ export class ModelFactory extends TextureGenerator {
           this.pendingEnemyRigs.delete(enemyClass);
           this.onModelReady?.(enemyClass);
         });
+        resolve();
       },
       undefined,
       (err) => {
         enemyClasses.forEach((enemyClass) => this.pendingEnemyRigs.delete(enemyClass));
         console.warn(`${enemyClasses.join(', ')} tank GLB unavailable, using procedural rig.`, err);
+        resolve();
       }
     );
+    });
   }
 
   applyGlbTankModel(enemyClass, rig) {

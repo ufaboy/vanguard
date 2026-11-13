@@ -17,7 +17,7 @@ import { InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
 import { TerrainDestructionController } from './terrain-destruction.js';
-import { SectorLoaderController } from './sector-loader.js';
+import { SectorLoaderController, getSectorEnemyClasses } from './sector-loader.js';
 import { ProjectilesController } from './projectiles.js';
 import { EnemySpawnerController } from './enemy-spawner.js';
 import { EnemyCombatController } from './enemy-combat.js';
@@ -328,6 +328,10 @@ export class TankGameEngine {
 
   applyUpgrades(newUpgrades) {
     this.profileSave.applyUpgrades(newUpgrades);
+  }
+
+  waitForSectorModels(sectorIdx) {
+    return this.modelFactory.waitForModels(getSectorEnemyClasses(SECTORS[sectorIdx]));
   }
 
   startSector(sectorIdx) {
