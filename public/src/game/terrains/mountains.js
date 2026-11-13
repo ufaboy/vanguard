@@ -1,6 +1,6 @@
 /** Deterministic, non-colliding rocky terrain outside the playable square. */
 import * as THREE from 'three';
-import { markOwned } from '../dispose.js';
+import { markOwned } from '../render/dispose.js';
 
 function hash(x, z) {
   let n = Math.imul(x, 374761393) ^ Math.imul(z, 668265263) ^ 70317;

@@ -40,7 +40,7 @@ import blackoutProtocol from '../../maps/contracts/blackout-protocol.json' with 
 import ironCrucible from '../../maps/survival/iron-crucible.json' with { type: 'json' };
 import { EnemyClass, TileType } from './types.js';
 import { resolveMapRules } from './mapRules.js';
-import { normalizeDecoration } from './decoration.js';
+import { normalizeDecoration } from './render/decoration.js';
 import { POWERUP, POWERUP_TYPES, POWERUP_MAX_ON_MAP } from './powerups.js';
 
 export const GRID_SIZE = 36;

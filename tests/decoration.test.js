@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeDecoration, buildDecorationPlan, decorationCellAllowed } from '../public/src/game/decoration.js';
+import { normalizeDecoration, buildDecorationPlan, decorationCellAllowed } from '../public/src/game/render/decoration.js';
 import { normalizeMapDefinition, SECTORS } from '../public/src/game/levels.js';
 import { paintDecoration, createUrbanGroundTexture } from '../public/src/game/terrains/urban-ground.js';
 import map from '../public/maps/campaign/mission-01-first-contact.json' with { type: 'json' };

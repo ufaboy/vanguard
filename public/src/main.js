@@ -11,7 +11,7 @@ import {
 import { ENGINE_PAGES, parseRoute, setCurrentRoutePage, syncRoute } from './router.js';
 import { renderHangar } from './hangar-ui.js';
 import { TankGameEngine } from './game/engine/engineCore.js';
-import { pregenerateTextures } from './game/texture-gen.js';
+import { pregenerateTextures } from './game/render/texture-gen.js';
 import { SECTORS } from './game/levels.js';
 import { GameStatus } from './game/types.js';
 import { PLAYER_TANK_CONFIG } from './game/tanks.js';

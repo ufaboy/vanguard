@@ -6,11 +6,11 @@ import {
   BULLET_POWER,
   DEFENSE_TURRET_CONFIGS,
   DEFENSE_TURRET_TYPES,
-} from './constants.js';
-import { TileType } from './types.js';
-import { GRID_SIZE, TILE_SIZE } from './levels.js';
-import { sound } from './sound.js';
-import { normalizeAngleSigned } from '../sim/ai.js';
+} from '../constants.js';
+import { TileType } from '../types.js';
+import { GRID_SIZE, TILE_SIZE } from '../levels.js';
+import { sound } from '../sound.js';
+import { normalizeAngleSigned } from '../../sim/ai.js';
 
 export class DefenseTurretsController {
   constructor(engine) {

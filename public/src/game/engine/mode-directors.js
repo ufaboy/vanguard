@@ -1,10 +1,10 @@
 /** Survival wave director and Contract mission director (cargo, sabotage, extraction). */
 
-import { DURABILITY } from './constants.js';
-import { GameStatus, TileType } from './types.js';
-import { GRID_SIZE, TILE_SIZE } from './levels.js';
-import { sound } from './sound.js';
-import { createSquadDirector } from '../sim/behavior/index.js';
+import { DURABILITY } from '../constants.js';
+import { GameStatus, TileType } from '../types.js';
+import { GRID_SIZE, TILE_SIZE } from '../levels.js';
+import { sound } from '../sound.js';
+import { createSquadDirector } from '../../sim/behavior/index.js';
 import {
   CARGO_STATUS,
   CONTRACT_TIMING,
@@ -16,8 +16,8 @@ import {
   startContractExtraction,
   stepContractCargo,
   stepContractScheduler,
-} from '../sim/contract.js';
-import { SURVIVAL_CONFIG, buildSurvivalWaveSpec } from '../sim/survival.js';
+} from '../../sim/contract.js';
+import { SURVIVAL_CONFIG, buildSurvivalWaveSpec } from '../../sim/survival.js';
 
 export class SurvivalDirector {
   constructor(engine) {

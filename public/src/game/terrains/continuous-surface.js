@@ -1,6 +1,6 @@
 /** Continuous terrain patches with a distance-colored surface and a narrow edge. */
 import * as THREE from 'three';
-import { markOwned } from '../dispose.js';
+import { markOwned } from '../render/dispose.js';
 
 export function createContinuousSurface(grid, surfaceType, tileSize, material, { lowQuality = false, frozen = false } = {}) {
   const rows = grid.length, cols = grid[0]?.length || 0;

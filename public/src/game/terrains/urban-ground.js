@@ -8,7 +8,7 @@ import {
   DECORATION_THEMES,
   buildDecorationPlan,
   decorationCellAllowed,
-} from '../decoration.js';
+} from '../render/decoration.js';
 
 function drawDetail(ctx, item, unit) {
   const x = (item.col + 0.5) * unit;

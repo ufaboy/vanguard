@@ -122,7 +122,7 @@ export async function inspectMap(projectRoot, mapPath) {
     }
   }
   if (map.decoration) {
-    const { normalizeDecoration } = await import(pathToFileURL(path.join(projectRoot, 'public/src/game/decoration.js')));
+    const { normalizeDecoration } = await import(pathToFileURL(path.join(projectRoot, 'public/src/game/render/decoration.js')));
     try { normalizeDecoration(map); } catch (error) { errors.push(error.message); }
   }
   if (Array.isArray(map.design?.breaches)) {

@@ -9,7 +9,7 @@ import {
 import { EnemyClass, TileType } from '../types.js';
 import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
-import { deckClearance } from '../models.js';
+import { deckClearance } from '../render/models.js';
 import { inContactRange, updateAbilities } from '../abilities/index.js';
 import { normalizeAngleSigned } from '../../sim/ai.js';
 import {
