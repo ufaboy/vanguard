@@ -6,7 +6,6 @@ import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems
 import { createSurvivalState } from '../../sim/survival.js';
 import {
   APS,
-  DURABILITY,
   HYDRA,
   INFERNO,
   MAMMOTH,
@@ -407,14 +406,7 @@ export class SectorLoaderController {
       lootContainers: engine.lootContainers,
     };
 
-    if (startPlaying && !isSurvivalSector && sectorIdx > prevSectorIdx && engine.playerHp > 0) {
-      engine.playerHp = Math.min(
-        engine.playerMaxHp,
-        engine.playerHp + DURABILITY.STAGE_CLEAR_REPAIR
-      );
-    } else {
-      engine.playerHp = engine.playerMaxHp;
-    }
+    engine.playerHp = engine.playerMaxHp;
 
     if (isIsolatedSector) {
       engine.playerController.initApsLaunchers(APS.START_ROUNDS);

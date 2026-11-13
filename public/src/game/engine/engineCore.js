@@ -1136,7 +1136,13 @@ export class TankGameEngine {
       });
       this.playerSave.completedMissions ||= {};
       this.playerSave.completedMissions[this.activeMissionRun.missionId] = { completedAt: Date.now() };
+      this.cannonAmmo = this.getPlayerMaxCannonAmmo();
+      this.missileAmmo = this.getPlayerMaxMissileAmmo();
+      this.playerController.initApsLaunchers(this.getPlayerMaxApsAmmo());
+      this.hangarOps.restoreAllComponents();
+      this.playerHp = this.playerMaxHp;
       this.playerSave.apsAmmo = [...this.apsAmmo];
+      this.playerSave.missileAmmo = this.missileAmmo;
       this.playerSave.repairKitCharges = this.repairKitState?.charges ?? 0;
       this.saveRepo.savePlayerSave(this.playerSave);
       this.saveRepo.recordMissionRun(this.activeMissionRun);
