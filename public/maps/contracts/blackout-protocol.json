@@ -1,21 +1,21 @@
 {
   "mapId": "contract-blackout-protocol",
   "id": 102,
-  "code": "CONTRACT 02 // 36×36",
+  "code": "CONTRACT 02 // 40×40",
   "name": "Blackout Protocol",
   "subtitle": "RADAR & ECM RELAY SABOTAGE",
   "objective": "Demolish at least 2 of 3 armored radar/ECM relays using demolition charges [E] and extract at the southern pad",
   "gameMode": "contract",
   "contractId": "contract-blackout-protocol",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 32,
-    "col": 14
+    "row": 36,
+    "col": 16
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "gameMode": "contract",
@@ -41,20 +41,20 @@
         "cells": [
           {
             "row": 9,
-            "col": 10
+            "col": 12
           },
           {
             "row": 10,
-            "col": 10
+            "col": 12
           }
         ],
         "start": {
           "row": 9,
-          "col": 8
+          "col": 10
         },
         "end": {
           "row": 9,
-          "col": 12
+          "col": 14
         },
         "purpose": "Blast the brick partition east of Relay Alpha to sprint clear of the 3-cell demolition blast radius."
       },
@@ -62,21 +62,21 @@
         "name": "West south lateral breach",
         "cells": [
           {
-            "row": 19,
-            "col": 10
+            "row": 23,
+            "col": 12
           },
           {
-            "row": 20,
-            "col": 10
+            "row": 24,
+            "col": 12
           }
         ],
         "start": {
-          "row": 19,
-          "col": 8
+          "row": 23,
+          "col": 10
         },
         "end": {
-          "row": 19,
-          "col": 12
+          "row": 23,
+          "col": 14
         },
         "purpose": "Open a southern escape cut from the West Listening Post into the central extraction avenue."
       }
@@ -85,53 +85,53 @@
   "powerups": [
     {
       "type": "REPAIR",
-      "row": 27,
-      "col": 14
+      "row": 31,
+      "col": 16
     },
     {
       "type": "APS",
       "row": 6,
-      "col": 3
-    },
-    {
-      "type": "REPAIR",
-      "row": 18,
-      "col": 2
-    },
-    {
-      "type": "MISSILE",
-      "row": 9,
-      "col": 14
-    },
-    {
-      "type": "EMP",
-      "row": 16,
-      "col": 18
+      "col": 5
     },
     {
       "type": "REPAIR",
       "row": 22,
-      "col": 18
+      "col": 4
+    },
+    {
+      "type": "MISSILE",
+      "row": 9,
+      "col": 16
+    },
+    {
+      "type": "EMP",
+      "row": 16,
+      "col": 20
+    },
+    {
+      "type": "REPAIR",
+      "row": 26,
+      "col": 20
     },
     {
       "type": "APS",
       "row": 6,
-      "col": 32
+      "col": 34
     },
     {
       "type": "MISSILE",
       "row": 17,
-      "col": 31
+      "col": 33
     },
     {
       "type": "REPAIR",
-      "row": 24,
-      "col": 27
+      "row": 28,
+      "col": 29
     },
     {
       "type": "APS",
       "row": 12,
-      "col": 21
+      "col": 23
     }
   ],
   "enemyPool": [
@@ -170,57 +170,61 @@
       {
         "id": "west",
         "row": 0,
-        "col": 5
+        "col": 7
       },
       {
         "id": "center",
         "row": 0,
-        "col": 18
+        "col": 20
       },
       {
         "id": "east",
         "row": 0,
-        "col": 30
+        "col": 32
       }
     ]
   },
   "layout": [
-    "....................................",
-    "....................................",
-    "....................................",
-    "....................................",
-    "....CC........CC.....CC.........CC..",
-    "....CC........CC.....CC.........CC..",
-    "..........C................C........",
-    "....FF....C.....BB.........C..CC....",
-    "....FF....C.....BB..FF.....C..CC....",
-    "..........B.........FF..............",
-    "..CC......B.................CC....FF",
-    "..CC............CCC.........CC....FF",
-    "..........C.....B.B....WWW..........",
-    "....C.....C............WWW.BB.....CC",
-    "....C.....C............WWW........CC",
-    "....C....BC....C...C...WWW..C.......",
-    ".........BC.................C.......",
-    "....BB....C....C...C........C.......",
-    "....BB....C..........WWWW.........FF",
-    "CC........B..........WWWW...BB....FF",
-    "CC..C.....B..........WWWW...BB......",
-    "....C.....C..........WWWW...CC......",
-    "....C.....C.................CC......",
-    "....................................",
-    "FF..................................",
-    "FF....CCC......BB..........CCC......",
-    "FF....CCC...........CC.....CCC......",
-    "....................................",
-    ".........FFF............FFF.........",
-    ".........FFF............FFF.........",
-    "....................................",
-    "....CCC......................CCC....",
-    "....CCC......................CCC....",
-    "................CCCC................",
-    "....................................",
-    ".................HH................."
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "......CC........CC.....CC.........CC....",
+    "......CC........CC.....CC.........CC....",
+    "............C................C..........",
+    "......FF....C.....BB.........C..CC......",
+    "......FF....C.....BB..FF.....C..CC......",
+    "............B.........FF................",
+    "....CC......B.................CC....FFFF",
+    "....CC............CCC.........CC....FFFF",
+    "............C.....B.B....WWW............",
+    "......C.....C............WWW.BB.....CCCC",
+    "......C.....C............WWW........CCCC",
+    "......C....BC....C...C...WWW..C.........",
+    "...........BC.................C.........",
+    "......BB....C....C...C........C.........",
+    "......BB....C....C...C........C.........",
+    "......BB....C....C...C........C.........",
+    "......BB....C..........WWWW.........FFFF",
+    "......BB....C..........WWWW.........FFFF",
+    "......BB....C..........WWWW.........FFFF",
+    "CCCC........B..........WWWW...BB....FFFF",
+    "CCCC..C.....B..........WWWW...BB........",
+    "......C.....C..........WWWW...CC........",
+    "......C.....C.................CC........",
+    "........................................",
+    "FFFF....................................",
+    "FFFF....CCC......BB..........CCC........",
+    "FFFF....CCC...........CC.....CCC........",
+    "........................................",
+    "...........FFF............FFF...........",
+    "...........FFF............FFF...........",
+    "........................................",
+    "......CCC......................CCC......",
+    "......CCC......................CCC......",
+    "..................CCCC..................",
+    "........................................",
+    "...................HH..................."
   ],
   "decoration": {
     "version": 1,
@@ -231,9 +235,9 @@
         "id": "west-listening-array",
         "bounds": [
           5,
-          2,
-          22,
-          9
+          4,
+          26,
+          11
         ],
         "surface": "concrete",
         "density": 0.3,
@@ -247,9 +251,9 @@
         "id": "central-citadel-court",
         "bounds": [
           11,
-          14,
-          19,
-          21
+          16,
+          23,
+          23
         ],
         "surface": "pavers",
         "density": 0.25,
@@ -262,9 +266,9 @@
         "id": "east-uplink-compound",
         "bounds": [
           5,
-          25,
-          22,
-          33
+          27,
+          26,
+          35
         ],
         "surface": "concrete",
         "density": 0.35,
@@ -277,10 +281,10 @@
       {
         "id": "south-extraction-apron",
         "bounds": [
-          29,
-          14,
-          34,
-          21
+          33,
+          16,
+          38,
+          23
         ],
         "surface": "pavers",
         "density": 0.2,
@@ -295,19 +299,19 @@
         "points": [
           [
             1,
-            5
-          ],
-          [
-            13,
-            6
-          ],
-          [
-            28,
             7
           ],
           [
+            13,
+            8
+          ],
+          [
             32,
-            14
+            9
+          ],
+          [
+            36,
+            16
           ]
         ],
         "width": 3,
@@ -319,19 +323,19 @@
         "points": [
           [
             1,
-            18
+            20
           ],
           [
             14,
-            17
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
-            31,
-            17
+            35,
+            19
           ]
         ],
         "width": 3,
@@ -343,19 +347,19 @@
         "points": [
           [
             1,
-            30
+            32
           ],
           [
             9,
-            29
+            31
           ],
           [
-            22,
-            26
+            26,
+            28
           ],
           [
-            31,
-            19
+            35,
+            21
           ]
         ],
         "width": 3,
@@ -368,7 +372,7 @@
         "id": "relay-a-pad",
         "kind": "loading",
         "row": 13,
-        "col": 6,
+        "col": 8,
         "size": 3,
         "rotation": 0
       },
@@ -376,7 +380,7 @@
         "id": "relay-b-pad",
         "kind": "loading",
         "row": 16,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
@@ -384,15 +388,15 @@
         "id": "relay-c-pad",
         "kind": "loading",
         "row": 9,
-        "col": 29,
+        "col": 31,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "south-extraction-bay",
         "kind": "loading",
-        "row": 31,
-        "col": 17,
+        "row": 35,
+        "col": 19,
         "size": 4,
         "rotation": 0
       },
@@ -400,7 +404,7 @@
         "id": "label-relay-alpha",
         "kind": "label",
         "row": 12,
-        "col": 6,
+        "col": 8,
         "size": 2,
         "text": "RELAY A // WEST ARRAY"
       },
@@ -408,7 +412,7 @@
         "id": "label-relay-bravo",
         "kind": "label",
         "row": 15,
-        "col": 17,
+        "col": 19,
         "size": 2,
         "text": "RELAY B // ECM CITADEL"
       },
@@ -416,15 +420,15 @@
         "id": "label-relay-charlie",
         "kind": "label",
         "row": 8,
-        "col": 29,
+        "col": 31,
         "size": 2,
         "text": "RELAY C // UPLINK BUNKER"
       },
       {
         "id": "label-extract-pad",
         "kind": "label",
-        "row": 29,
-        "col": 17,
+        "row": 33,
+        "col": 19,
         "size": 2,
         "text": "EXTRACTION PAD"
       }
@@ -433,10 +437,10 @@
       {
         "id": "clear-extraction-pad",
         "bounds": [
-          30,
-          16,
-          32,
-          19
+          34,
+          18,
+          36,
+          21
         ]
       }
     ]

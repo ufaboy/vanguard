@@ -5,20 +5,20 @@
   "subtitle": "SECTOR 30 // PERIMETER WALL BREACH",
   "objective": "Destroy the perimeter stronghold",
   "gameMode": "stronghold_assault",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "enemyBase": {
     "cell": {
       "row": 5,
-      "col": 18
+      "col": 20
     },
     "name": "Capital Perimeter Citadel",
     "maxHp": 48,
@@ -34,7 +34,7 @@
     "title": "Super-Heavy Command Dreadnought",
     "spawnCell": {
       "row": 3,
-      "col": 17
+      "col": 19
     }
   },
   "completionReward": {
@@ -54,25 +54,25 @@
         "name": "Outer offset gate",
         "cells": [
           {
-            "row": 25,
-            "col": 21
-          },
-          {
-            "row": 25,
-            "col": 22
-          },
-          {
-            "row": 25,
+            "row": 29,
             "col": 23
+          },
+          {
+            "row": 29,
+            "col": 24
+          },
+          {
+            "row": 29,
+            "col": 25
           }
         ],
         "start": {
-          "row": 27,
-          "col": 22
+          "row": 31,
+          "col": 24
         },
         "end": {
-          "row": 23,
-          "col": 22
+          "row": 27,
+          "col": 24
         },
         "purpose": "Open a direct crossing instead of driving around the end of the defensive line."
       },
@@ -80,25 +80,25 @@
         "name": "Middle transfer gate",
         "cells": [
           {
-            "row": 18,
-            "col": 13
-          },
-          {
-            "row": 18,
-            "col": 14
-          },
-          {
-            "row": 18,
+            "row": 22,
             "col": 15
+          },
+          {
+            "row": 22,
+            "col": 16
+          },
+          {
+            "row": 22,
+            "col": 17
           }
         ],
         "start": {
-          "row": 20,
-          "col": 14
+          "row": 24,
+          "col": 16
         },
         "end": {
           "row": 16,
-          "col": 14
+          "col": 16
         },
         "purpose": "Open a direct crossing instead of driving around the end of the defensive line."
       },
@@ -107,24 +107,24 @@
         "cells": [
           {
             "row": 12,
-            "col": 17
-          },
-          {
-            "row": 12,
-            "col": 18
-          },
-          {
-            "row": 12,
             "col": 19
+          },
+          {
+            "row": 12,
+            "col": 20
+          },
+          {
+            "row": 12,
+            "col": 21
           }
         ],
         "start": {
           "row": 14,
-          "col": 18
+          "col": 20
         },
         "end": {
           "row": 10,
-          "col": 18
+          "col": 20
         },
         "purpose": "Open a direct crossing instead of driving around the end of the defensive line."
       }
@@ -140,9 +140,9 @@
         "id": "perimeter-slag-ground",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "gravel",
         "density": 0.18,
@@ -156,9 +156,9 @@
         "id": "west-viaduct-flank-road",
         "bounds": [
           2,
-          2,
-          30,
-          10
+          4,
+          34,
+          12
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -172,9 +172,9 @@
         "id": "central-layered-fortress",
         "bounds": [
           3,
-          11,
-          26,
-          24
+          13,
+          30,
+          26
         ],
         "surface": "concrete",
         "density": 0.25,
@@ -189,9 +189,9 @@
         "id": "east-ring-flank-road",
         "bounds": [
           2,
-          25,
-          30,
-          33
+          27,
+          34,
+          35
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -204,10 +204,10 @@
       {
         "id": "south-breach-marshaling-apron",
         "bounds": [
-          27,
-          8,
-          35,
-          27
+          31,
+          10,
+          39,
+          29
         ],
         "surface": "pavers",
         "density": 0.22,
@@ -223,24 +223,24 @@
         "id": "west-bypass",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
+            32,
+            11
+          ],
+          [
+            24,
             9
           ],
           [
-            20,
-            7
-          ],
-          [
             14,
-            6
+            8
           ],
           [
             8,
-            7
+            9
           ]
         ],
         "width": 3,
@@ -251,24 +251,24 @@
         "id": "east-bypass",
         "points": [
           [
+            35,
+            19
+          ],
+          [
             31,
-            17
+            30
           ],
           [
             27,
-            28
-          ],
-          [
-            23,
-            33
+            35
           ],
           [
             17,
-            28
+            30
           ],
           [
             8,
-            28
+            30
           ]
         ],
         "width": 3,
@@ -279,28 +279,28 @@
         "id": "offset-gates",
         "points": [
           [
-            29,
-            22
+            33,
+            24
           ],
           [
-            23,
-            22
+            27,
+            24
           ],
           [
-            21,
-            14
+            25,
+            16
           ],
           [
             16,
-            14
+            16
           ],
           [
             14,
-            18
+            20
           ],
           [
             10,
-            18
+            20
           ]
         ],
         "width": 3,
@@ -312,8 +312,8 @@
       {
         "id": "south-hq-parking",
         "kind": "parking",
-        "row": 31,
-        "col": 13,
+        "row": 35,
+        "col": 15,
         "size": 2.5,
         "rotation": 0
       }
@@ -329,32 +329,32 @@
       {
         "id": "north-west-viaduct",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-citadel-west",
         "row": 2,
-        "col": 13
+        "col": 15
       },
       {
         "id": "north-citadel-east",
         "row": 2,
-        "col": 22
+        "col": 24
       },
       {
         "id": "north-east-ring",
         "row": 2,
-        "col": 30
+        "col": 32
       },
       {
         "id": "upper-west-ramp",
         "row": 7,
-        "col": 4
+        "col": 6
       },
       {
         "id": "upper-east-ramp",
         "row": 7,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -371,37 +371,37 @@
         "initialCells": [
           {
             "row": 4,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 14
+            "col": 16
           },
           {
             "row": 5,
-            "col": 21
+            "col": 23
           },
           {
             "row": 4,
-            "col": 29
+            "col": 31
           }
         ],
         "patrolRoute": [
           {
             "row": 9,
-            "col": 7
+            "col": 9
           },
           {
             "row": 16,
-            "col": 6
+            "col": 8
           },
           {
-            "row": 20,
-            "col": 7
-          },
-          {
-            "row": 27,
+            "row": 24,
             "col": 9
+          },
+          {
+            "row": 31,
+            "col": 11
           }
         ],
         "enemies": [
@@ -425,19 +425,19 @@
         "patrolRoute": [
           {
             "row": 9,
-            "col": 28
+            "col": 30
           },
           {
             "row": 16,
-            "col": 28
+            "col": 30
           },
           {
-            "row": 24,
-            "col": 33
+            "row": 28,
+            "col": 35
           },
           {
-            "row": 27,
-            "col": 28
+            "row": 31,
+            "col": 30
           }
         ],
         "enemies": [
@@ -461,19 +461,19 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 17
+            "col": 19
           },
           {
             "row": 14,
-            "col": 14
+            "col": 16
           },
           {
             "row": 16,
-            "col": 14
+            "col": 16
           },
           {
-            "row": 20,
-            "col": 14
+            "row": 24,
+            "col": 16
           }
         ],
         "enemies": [
@@ -498,19 +498,19 @@
         "patrolRoute": [
           {
             "row": 9,
-            "col": 28
+            "col": 30
           },
           {
             "row": 17,
-            "col": 27
-          },
-          {
-            "row": 23,
-            "col": 25
+            "col": 29
           },
           {
             "row": 27,
-            "col": 19
+            "col": 27
+          },
+          {
+            "row": 31,
+            "col": 21
           }
         ],
         "enemies": [
@@ -535,19 +535,19 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 7
+            "col": 9
           },
           {
             "row": 17,
-            "col": 3
+            "col": 5
           },
           {
-            "row": 24,
-            "col": 7
+            "row": 28,
+            "col": 9
           },
           {
-            "row": 29,
-            "col": 19
+            "row": 33,
+            "col": 21
           }
         ],
         "enemies": [
@@ -595,41 +595,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.........CC...........CC........FF",
-    "F..........CC...........CC........FF",
-    "...................................F",
-    "F...................................",
-    "..CC.......FF....CCC....FF.....CCC..",
-    "..CC.......FF....CEC....FF......CC..",
-    "...........CC....CCC....CC.........W",
-    "...........CC...........CC.........W",
-    "............C..CC...CC..C..........W",
-    "..............BB......BB............",
-    "..BBB.................BB......BBBB..",
-    "..BBB.........................BBBB..",
-    "..BBB....CCCCCCCCBBBCCCCCCC...BBBB..",
-    "FF..................................",
-    "FF.....................BBB......BBB.",
-    ".......BBBB.......CCC..BBB......BBB.",
-    ".CC....BBBB.......CCC...........BBB.",
-    ".................Q......Q...........",
-    "....CCCCCCCCCBBBCCCCCCCCC...........",
-    "..........Q..................Q...FFF",
-    "..BBB......................BBB...FFF",
-    "..BBB.....BBB.....CCC......BBB......",
-    "..BBB.....BBB.....CCC......BBB......",
-    "BBB................Q................",
-    "BBBQ...................Q............",
-    "BBB......QCCCCCCCCCCCBBBCCCCCCCC....",
-    ".....FF.............................",
-    "....BFFB.........................CC.",
-    "....BBBB.....CCC.......BBBB......CC.",
-    "....BBBB.....CCC.......BBBB.........",
-    "..CC....FF...BB......BBB...FF...CC..",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "W.........FF....CCCC....FF..........",
-    "WW.................................F",
-    "WW...............HH...............FF"
+    "FFFF.........CC...........CC........FFFF",
+    "FFF..........CC...........CC........FFFF",
+    ".....................................FFF",
+    "FFF.....................................",
+    "....CC.......FF....CCC....FF.....CCC....",
+    "....CC.......FF....CEC....FF......CC....",
+    ".............CC....CCC....CC.........WWW",
+    ".............CC...........CC.........WWW",
+    "..............C..CC...CC..C..........WWW",
+    "................BB......BB..............",
+    "....BBB.................BB......BBBB....",
+    "....BBB.........................BBBB....",
+    "....BBB....CCCCCCCCBBBCCCCCCC...BBBB....",
+    "FFFF....................................",
+    "FFFF.....................BBB......BBB...",
+    ".........BBBB.......CCC..BBB......BBB...",
+    "...CC....BBBB.......CCC...........BBB...",
+    "...................Q......Q.............",
+    "........................................",
+    "........................................",
+    "......CCCCCCCCC...CCCCCCCCC.............",
+    "......CCCCCCCCC...CCCCCCCCC.............",
+    "......CCCCCCCCCBBBCCCCCCCCC.............",
+    "............Q..................Q...FFFFF",
+    "....BBB......................BBB...FFFFF",
+    "....BBB.....BBB.....CCC......BBB........",
+    "....BBB.....BBB.....CCC......BBB........",
+    "BBBBB................Q..................",
+    "BBBBBQ...................Q..............",
+    "BBBBB......QCCCCCCCCCCCBBBCCCCCCCC......",
+    ".......FF...............................",
+    "......BFFB.........................CC...",
+    "......BBBB.....CCC.......BBBB......CC...",
+    "......BBBB.....CCC.......BBBB...........",
+    "....CC....FF...BB......BBB...FF...CC....",
+    ".....F............................FF....",
+    "....FF......FF............FF.....FFF....",
+    "WWW.........FF....CCCC....FF............",
+    "WWWW.................................FFF",
+    "WWWW...............HH...............FFFF"
   ]
 }

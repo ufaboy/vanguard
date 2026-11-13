@@ -11,7 +11,7 @@ test('Reconstruction restores both HQ cells and services without shielding or ch
   const mesh = { position: { set() {} } };
   const cell = { row: base.row, col: base.col, type: TileType.EMPTY, hp: 0, mesh: null };
   const twin = { row: base.row, col: base.col + 1, type: TileType.EMPTY, hp: 0, mesh: null };
-  const grid = Array.from({ length: 36 }, () => Array(36));
+  const grid = Array.from({ length: 40 }, () => Array(40));
   grid[base.row][base.col] = cell;
   grid[base.row][base.col + 1] = twin;
   let added = 0;
@@ -44,7 +44,7 @@ test('HQ is two cells on the outer row behind a 4-cell concrete line with an ope
   const { getBaseLayout } = await import('../public/src/game/levels.js');
   for (const sector of SECTORS) {
     const { row, col } = sector.baseCell;
-    assert.equal(row, 35, `${sector.name}: HQ must sit on the outermost row`);
+    assert.equal(row, 39, `${sector.name}: HQ must sit on the outermost row`);
     const layout = getBaseLayout(sector.baseCell);
     for (const c of layout.cells) assert.equal(sector.grid[c.row][c.col], TileType.BASE);
     assert.equal(layout.wall.length, 4);

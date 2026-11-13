@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 24 // GLACIER CREVASSE CROSSING",
   "objective": "Clear the frozen crossing",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,21 +36,21 @@
         "name": "South moraine snow-wall",
         "cells": [
           {
-            "row": 23,
-            "col": 14
+            "row": 27,
+            "col": 16
           },
           {
-            "row": 23,
-            "col": 15
+            "row": 27,
+            "col": 17
           }
         ],
         "start": {
-          "row": 25,
-          "col": 14
+          "row": 29,
+          "col": 16
         },
         "end": {
-          "row": 21,
-          "col": 14
+          "row": 25,
+          "col": 16
         },
         "purpose": "Blast through the southern moraine snow-wall to reach the central glacier arch without detouring to the west or east ramps."
       },
@@ -59,20 +59,20 @@
         "cells": [
           {
             "row": 16,
-            "col": 11
+            "col": 13
           },
           {
             "row": 17,
-            "col": 11
+            "col": 13
           }
         ],
         "start": {
           "row": 16,
-          "col": 9
+          "col": 11
         },
         "end": {
           "row": 16,
-          "col": 13
+          "col": 15
         },
         "purpose": "Open a mid-gorge lateral cut between the West Moraine Bridge and the Central Glacier Arch when sappers mine the western exit."
       },
@@ -81,20 +81,20 @@
         "cells": [
           {
             "row": 16,
-            "col": 24
+            "col": 26
           },
           {
             "row": 17,
-            "col": 24
+            "col": 26
           }
         ],
         "start": {
           "row": 16,
-          "col": 26
+          "col": 28
         },
         "end": {
           "row": 16,
-          "col": 22
+          "col": 24
         },
         "purpose": "Punch through the eastern ice-dam bulkhead to switch from the East Causeway onto the central glacier island."
       },
@@ -103,20 +103,20 @@
         "cells": [
           {
             "row": 10,
-            "col": 17
+            "col": 19
           },
           {
             "row": 10,
-            "col": 18
+            "col": 20
           }
         ],
         "start": {
           "row": 12,
-          "col": 17
+          "col": 19
         },
         "end": {
           "row": 8,
-          "col": 17
+          "col": 19
         },
         "purpose": "Breach the northern glacier shelf barricade to overrun howitzer emplacements behind the crevasse."
       }
@@ -132,9 +132,9 @@
         "id": "glacier-snowfield",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "snow",
         "density": 0.16,
@@ -147,9 +147,9 @@
         "id": "west-moraine-causeway",
         "bounds": [
           4,
-          2,
-          28,
-          9
+          4,
+          32,
+          11
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -163,9 +163,9 @@
         "id": "central-glacier-arch-deck",
         "bounds": [
           8,
-          12,
-          25,
-          23
+          14,
+          29,
+          25
         ],
         "surface": "concrete",
         "density": 0.24,
@@ -179,9 +179,9 @@
         "id": "east-ice-dam-causeway",
         "bounds": [
           4,
-          26,
           28,
-          33
+          32,
+          35
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -194,10 +194,10 @@
       {
         "id": "south-valley-marshaling-yard",
         "bounds": [
-          26,
-          9,
-          35,
-          26
+          30,
+          11,
+          39,
+          28
         ],
         "surface": "asphalt",
         "density": 0.2,
@@ -213,24 +213,24 @@
         "id": "west-moraine-crossing",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            9
+            32,
+            11
           ],
           [
-            21,
-            5
+            25,
+            7
           ],
           [
             13,
-            5
+            7
           ],
           [
             5,
-            7
+            9
           ]
         ],
         "width": 2.6,
@@ -241,24 +241,24 @@
         "id": "central-glacier-arch-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
             17,
-            17
+            19
           ],
           [
             11,
-            17
+            19
           ],
           [
             4,
-            17
+            19
           ]
         ],
         "width": 2.8,
@@ -269,24 +269,24 @@
         "id": "east-ice-dam-crossing",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            26
+            32,
+            28
           ],
           [
-            21,
-            30
+            25,
+            32
           ],
           [
             13,
-            30
+            32
           ],
           [
             5,
-            28
+            30
           ]
         ],
         "width": 2.6,
@@ -299,7 +299,7 @@
         "id": "glacier-arch-crosswalk",
         "kind": "crosswalk",
         "row": 17,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
@@ -307,15 +307,15 @@
         "id": "north-shelf-loading",
         "kind": "loading",
         "row": 7,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "south-hq-parking",
         "kind": "parking",
-        "row": 31,
-        "col": 13,
+        "row": 35,
+        "col": 15,
         "size": 2.5,
         "rotation": 0
       },
@@ -323,7 +323,7 @@
         "id": "west-moraine-label",
         "kind": "label",
         "row": 16,
-        "col": 5,
+        "col": 7,
         "size": 3,
         "text": "MORAINE BRIDGE"
       },
@@ -331,7 +331,7 @@
         "id": "central-arch-label",
         "kind": "label",
         "row": 16,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "text": "GLACIER ARCH"
       },
@@ -339,7 +339,7 @@
         "id": "east-dam-label",
         "kind": "label",
         "row": 16,
-        "col": 30,
+        "col": 32,
         "size": 3,
         "text": "ICE-DAM CROSSING"
       }
@@ -355,32 +355,32 @@
       {
         "id": "north-west-moraine",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-glacier-west",
         "row": 2,
-        "col": 14
+        "col": 16
       },
       {
         "id": "north-glacier-east",
         "row": 2,
-        "col": 21
+        "col": 23
       },
       {
         "id": "north-east-dam",
         "row": 2,
-        "col": 30
+        "col": 32
       },
       {
         "id": "upper-west-shelf",
         "row": 7,
-        "col": 4
+        "col": 6
       },
       {
         "id": "upper-east-shelf",
         "row": 7,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -396,33 +396,33 @@
         "initialCells": [
           {
             "row": 4,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 14
+            "col": 16
           },
           {
             "row": 5,
-            "col": 21
+            "col": 23
           },
           {
             "row": 4,
-            "col": 29
+            "col": 31
           }
         ],
         "patrolRoute": [
           {
             "row": 11,
-            "col": 6
+            "col": 8
           },
           {
             "row": 17,
-            "col": 6
+            "col": 8
           },
           {
-            "row": 25,
-            "col": 11
+            "row": 29,
+            "col": 13
           }
         ],
         "enemies": [
@@ -446,15 +446,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 15
+            "col": 17
           },
           {
             "row": 17,
-            "col": 16
+            "col": 18
           },
           {
-            "row": 25,
-            "col": 16
+            "row": 29,
+            "col": 18
           }
         ],
         "enemies": [
@@ -478,15 +478,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 29
+            "col": 31
           },
           {
             "row": 17,
-            "col": 29
+            "col": 31
           },
           {
-            "row": 25,
-            "col": 24
+            "row": 29,
+            "col": 26
           }
         ],
         "enemies": [
@@ -510,15 +510,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 19
+            "col": 21
           },
           {
             "row": 17,
-            "col": 19
+            "col": 21
           },
           {
-            "row": 25,
-            "col": 19
+            "row": 29,
+            "col": 21
           }
         ],
         "enemies": [
@@ -543,15 +543,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 17
+            "col": 19
           },
           {
             "row": 17,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 26,
-            "col": 17
+            "row": 30,
+            "col": 19
           }
         ],
         "enemies": [
@@ -596,41 +596,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.....III.......FF......III......FF",
-    "F......III.......F.......III......FF",
-    ".......III...............III.......F",
-    ".......III...............III........",
-    "..CC.........FF.....FF.........CC...",
-    "..CC.........FF.....FF.........CC..I",
-    ".......III...............III.......I",
-    ".......III..CC.......CC..III.......I",
-    "............CC......QCC.............",
-    "..FF........C.........C...Q....FF...",
-    ".FFF....CC..CCCCCBBCCCC..CC....FF...",
-    "........CC.QC.........C..CC.........",
-    "...III......I.........I.....III.Q...",
-    "..CCII......III.....III.....IIICC...",
-    "..CC........III.....III........CC..F",
-    "WW................FF....Q.........WW",
-    "WWWW.......B......FF....B.......WWWW",
-    "WWWW......QB............B......WWWWW",
-    "WW......WWWW..FF....FF..WWWW.....WWW",
-    "........WWWW..FF....FF..WWWW.......I",
-    "..CC....WWWW............WWWW...CC...",
-    "..CC..........III..III.........CC..F",
-    "........CC....III..III...CC.........",
-    "...FF...CC..CCBB....BBCC.CC....FF...",
-    "..FFF....Q..C..........C.......FF...",
-    "F...........C.........QC............",
-    "....III.....................III.....",
-    "....III....FF..........FF...III....I",
-    "...........FF..IIIIII..FF..........I",
-    "..CC...........IIIIII..........CCC..",
-    "..CC....FF...BB......BBB..FF....CC..",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "I.........FF....CCCC....FF..........",
-    "II.................................F",
-    "II...............HH...............FF"
+    "FFFF.....III.......FF......III......FFFF",
+    "FFF......III.......F.......III......FFFF",
+    ".........III...............III.......FFF",
+    ".........III...............III..........",
+    "....CC.........FF.....FF.........CC.....",
+    "....CC.........FF.....FF.........CC..III",
+    ".........III...............III.......III",
+    ".........III..CC.......CC..III.......III",
+    "..............CC......QCC...............",
+    "....FF........C.........C...Q....FF.....",
+    "...FFF....CC..CCCCCBBCCCC..CC....FF.....",
+    "..........CC.QC.........C..CC...........",
+    ".....III......I.........I.....III.Q.....",
+    "....CCII......III.....III.....IIICC.....",
+    "....CC........III.....III........CC..FFF",
+    "WWWW................FF....Q.........WWWW",
+    "WWWWWW.......B......FF....B.......WWWWWW",
+    "WWWWWW......QB............B......WWWWWWW",
+    "WWWWWW.......B............B......WWWWWWW",
+    "WWWWWW.......B............B......WWWWWWW",
+    "WWWW......WWWW..FF....FF..WWWW.....WWWWW",
+    "WWWW......WWWW..FF....FF..WWWW.....WWWWW",
+    "WWWW......WWWW..FF....FF..WWWW.....WWWWW",
+    "..........WWWW..FF....FF..WWWW.......III",
+    "....CC....WWWW............WWWW...CC.....",
+    "....CC..........III..III.........CC..FFF",
+    "..........CC....III..III...CC...........",
+    ".....FF...CC..CCBB....BBCC.CC....FF.....",
+    "....FFF....Q..C..........C.......FF.....",
+    "FFF...........C.........QC..............",
+    "......III.....................III.......",
+    "......III....FF..........FF...III....III",
+    ".............FF..IIIIII..FF..........III",
+    "....CC...........IIIIII..........CCC....",
+    "....CC....FF...BB......BBB..FF....CC....",
+    ".....F............................FF....",
+    "....FF......FF............FF.....FFF....",
+    "III.........FF....CCCC....FF............",
+    "IIII.................................FFF",
+    "IIII...............HH...............FFFF"
   ]
 }

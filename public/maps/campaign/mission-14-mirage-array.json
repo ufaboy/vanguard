@@ -5,20 +5,20 @@
   "subtitle": "SECTOR 14 // DESERT RELAY",
   "objective": "Destroy the desert relay",
   "gameMode": "stronghold_assault",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "enemyBase": {
     "cell": {
       "row": 4,
-      "col": 18
+      "col": 20
     },
     "name": "Mirage Relay Core",
     "maxHp": 48,
@@ -46,24 +46,24 @@
         "cells": [
           {
             "row": 15,
-            "col": 17
-          },
-          {
-            "row": 15,
-            "col": 18
-          },
-          {
-            "row": 15,
             "col": 19
+          },
+          {
+            "row": 15,
+            "col": 20
+          },
+          {
+            "row": 15,
+            "col": 21
           }
         ],
         "start": {
           "row": 17,
-          "col": 18
+          "col": 20
         },
         "end": {
           "row": 14,
-          "col": 18
+          "col": 20
         },
         "purpose": "Breach the southern relay compound wall for a direct shot at the Mirage Relay Core instead of circling to the eastern service gate."
       },
@@ -71,25 +71,25 @@
         "name": "West dish ruin partition",
         "cells": [
           {
-            "row": 19,
-            "col": 11
+            "row": 23,
+            "col": 13
           },
           {
-            "row": 20,
-            "col": 11
+            "row": 24,
+            "col": 13
           },
           {
-            "row": 21,
-            "col": 11
+            "row": 25,
+            "col": 13
           }
         ],
         "start": {
-          "row": 20,
-          "col": 9
+          "row": 24,
+          "col": 11
         },
         "end": {
-          "row": 20,
-          "col": 13
+          "row": 24,
+          "col": 15
         },
         "purpose": "Cut through the western antenna ruin to intercept the jammer and striker wing."
       },
@@ -98,24 +98,24 @@
         "cells": [
           {
             "row": 17,
-            "col": 25
+            "col": 27
           },
           {
-            "row": 18,
-            "col": 25
+            "row": 22,
+            "col": 27
           },
           {
-            "row": 19,
-            "col": 25
+            "row": 23,
+            "col": 27
           }
         ],
         "start": {
-          "row": 18,
-          "col": 23
+          "row": 22,
+          "col": 25
         },
         "end": {
-          "row": 18,
-          "col": 27
+          "row": 22,
+          "col": 29
         },
         "purpose": "Open a fast lateral cut between the relay apron and the eastern colonnade ruins."
       }
@@ -131,9 +131,9 @@
         "id": "desert-basin-sand",
         "bounds": [
           1,
-          1,
-          34,
-          34
+          3,
+          38,
+          36
         ],
         "surface": "sand",
         "density": 0.18,
@@ -146,9 +146,9 @@
         "id": "west-dish-ruins",
         "bounds": [
           11,
-          2,
-          26,
-          12
+          4,
+          30,
+          14
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -162,9 +162,9 @@
         "id": "relay-compound-apron",
         "bounds": [
           7,
-          13,
-          18,
-          23
+          15,
+          22,
+          25
         ],
         "surface": "dirt",
         "density": 0.24,
@@ -178,9 +178,9 @@
         "id": "east-colonnade-ruins",
         "bounds": [
           10,
-          24,
           26,
-          33
+          30,
+          35
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -193,10 +193,10 @@
       {
         "id": "south-caravanserai-staging",
         "bounds": [
-          26,
-          9,
-          33,
-          26
+          30,
+          11,
+          37,
+          28
         ],
         "surface": "dirt",
         "density": 0.18,
@@ -211,24 +211,24 @@
         "id": "west-ruin-trail",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            7
+            32,
+            9
           ],
           [
-            19,
-            7
+            23,
+            9
           ],
           [
             10,
-            7
+            9
           ],
           [
             3,
-            6
+            8
           ]
         ],
         "width": 2.6,
@@ -239,20 +239,20 @@
         "id": "central-relay-approach",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            23,
-            17
+            27,
+            19
           ],
           [
             17,
-            18
+            20
           ],
           [
             13,
-            18
+            20
           ]
         ],
         "width": 2.8,
@@ -263,24 +263,24 @@
         "id": "east-service-flank",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            28
+            32,
+            30
           ],
           [
-            18,
-            29
-          ],
-          [
-            11,
-            29
+            22,
+            31
           ],
           [
             11,
-            21
+            31
+          ],
+          [
+            11,
+            23
           ]
         ],
         "width": 2.6,
@@ -292,8 +292,8 @@
       {
         "id": "west-ruins-label",
         "kind": "label",
-        "row": 20,
-        "col": 6,
+        "row": 24,
+        "col": 8,
         "size": 3,
         "text": "DISH RUINS"
       },
@@ -301,15 +301,15 @@
         "id": "relay-core-label",
         "kind": "label",
         "row": 17,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "text": "MIRAGE ARRAY"
       },
       {
         "id": "east-colonnade-label",
         "kind": "label",
-        "row": 18,
-        "col": 29,
+        "row": 22,
+        "col": 31,
         "size": 3,
         "text": "EAST COLONNADE"
       }
@@ -319,36 +319,36 @@
         "id": "opening-0",
         "bounds": [
           8,
-          5,
+          7,
           10,
-          7
+          9
         ]
       },
       {
         "id": "opening-1",
         "bounds": [
           4,
-          17,
+          19,
           6,
-          19
+          21
         ]
       },
       {
         "id": "opening-2",
         "bounds": [
           8,
-          23,
+          25,
           10,
-          25
+          27
         ]
       },
       {
         "id": "opening-3",
         "bounds": [
           9,
-          29,
+          31,
           11,
-          31
+          33
         ]
       }
     ]
@@ -361,17 +361,17 @@
       {
         "id": "northwest-ruins",
         "row": 2,
-        "col": 6
+        "col": 8
       },
       {
         "id": "north-relay-road",
         "row": 2,
-        "col": 17
+        "col": 19
       },
       {
         "id": "northeast-arches",
         "row": 2,
-        "col": 30
+        "col": 32
       }
     ],
     "encounters": [
@@ -387,19 +387,19 @@
         "initialCells": [
           {
             "row": 9,
-            "col": 6
+            "col": 8
           },
           {
             "row": 6,
-            "col": 18
+            "col": 20
           },
           {
             "row": 9,
-            "col": 24
+            "col": 26
           },
           {
             "row": 10,
-            "col": 30
+            "col": 32
           }
         ],
         "entrances": [
@@ -408,16 +408,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 22,
-            "col": 13
+            "row": 26,
+            "col": 15
           },
           {
-            "row": 24,
-            "col": 21
+            "row": 28,
+            "col": 23
           },
           {
-            "row": 19,
-            "col": 7
+            "row": 23,
+            "col": 9
           }
         ],
         "recoverySec": 0
@@ -439,16 +439,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 19,
-            "col": 7
+            "row": 23,
+            "col": 9
           },
           {
-            "row": 22,
-            "col": 13
+            "row": 26,
+            "col": 15
           },
           {
             "row": 14,
-            "col": 8
+            "col": 10
           }
         ],
         "recoverySec": 8
@@ -470,16 +470,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 18,
-            "col": 28
+            "row": 22,
+            "col": 30
           },
           {
-            "row": 23,
-            "col": 22
+            "row": 27,
+            "col": 24
           },
           {
             "row": 11,
-            "col": 29
+            "col": 31
           }
         ],
         "recoverySec": 9
@@ -502,15 +502,15 @@
         "patrolRoute": [
           {
             "row": 17,
-            "col": 18
+            "col": 20
           },
           {
             "row": 11,
-            "col": 21
+            "col": 23
           },
           {
-            "row": 19,
-            "col": 13
+            "row": 23,
+            "col": 15
           }
         ],
         "recoverySec": 10
@@ -533,15 +533,15 @@
         "patrolRoute": [
           {
             "row": 17,
+            "col": 20
+          },
+          {
+            "row": 28,
             "col": 18
           },
           {
-            "row": 24,
-            "col": 16
-          },
-          {
-            "row": 26,
-            "col": 21
+            "row": 30,
+            "col": 23
           }
         ],
         "recoverySec": 10
@@ -581,41 +581,45 @@
     "STANDARD"
   ],
   "layout": [
-    "...BBB......BBB........BB......BBB..",
-    "............BBB........BB...........",
-    "...BBB....BBBB.....BBB...BBBB..BB...",
-    "...BBB....BCCB...CCCCB...BCCB..BB...",
-    "...BBB....BBBB...CEC.....BBBB.......",
-    "...............BBCCC...........BBB..",
-    "...BBBB........BB......BBBB....BBB..",
-    "...BCCB...BBB..........BCCB.........",
-    "...BBBB...BBB.CCCCCCCCCBBBB...BBB...",
-    "..............C.......C.......BBB...",
-    "...BBB........C.BB.BB.C.............",
-    "...BBB...BBB..C............BB.BBB...",
-    "...BBB...BCB..C.......C....BB.BBB...",
-    ".........BBB..C..BBB..C.......BBB...",
-    "....BBB.......C.......C..CC....Q....",
-    "....BCC..CCC..CCCBBBCCC..CC...BBB...",
-    "....BCC..CCC...Q.........CC...BCC...",
-    "....BBB..CCB...BBB.......BQ...BBB...",
-    ".....Q.....B...BCB...Q...B.....Q....",
-    "...BBB.....B...BBB..BB...B...BBB....",
-    "...BBB.....B.....Q..BB..CCC..BBB....",
-    "...BBB.....B....BBB.....CCC..BBB....",
-    "....Q.....CCC...BCB.....CCB.........",
-    "...BBBB...CCC...BBB..........BBBB...",
-    "...BCCB...CCB.........BBB....BCCB...",
-    "...BBBB..........BB...BCB....BBBB...",
-    "..........BBB....BB...BBB......BBB..",
-    "....BBB...BCC..........BBBB....BBB..",
-    "....BBB...BBB...BBBB...BCCB....BBB..",
-    "....BBB.........BCCB...BBBB.........",
-    "..........BB....BBBB.........BBBB...",
-    "...BBBB...BB.............BBB.BBBB...",
-    "...BBBB...BBB............BBB........",
-    "...BBBB.........CCCC...BBB....BBBB..",
-    ".......................BBB..........",
-    "...BBBB..........HH....BBB....BBBB.."
+    ".....BBB......BBB........BB......BBB....",
+    "..............BBB........BB.............",
+    ".....BBB....BBBB.....BBB...BBBB..BB.....",
+    ".....BBB....BCCB...CCCCB...BCCB..BB.....",
+    ".....BBB....BBBB...CEC.....BBBB.........",
+    ".................BBCCC...........BBB....",
+    ".....BBBB........BB......BBBB....BBB....",
+    ".....BCCB...BBB..........BCCB...........",
+    ".....BBBB...BBB.CCCCCCCCCBBBB...BBB.....",
+    "................C.......C.......BBB.....",
+    ".....BBB........C.BB.BB.C...............",
+    ".....BBB...BBB..C............BB.BBB.....",
+    ".....BBB...BCB..C.......C....BB.BBB.....",
+    "...........BBB..C..BBB..C.......BBB.....",
+    "......BBB.......C.......C..CC....Q......",
+    "......BCC..CCC..CCCBBBCCC..CC...BBB.....",
+    "......BCC..CCC...Q.........CC...BCC.....",
+    "......BBB..CCB...BBB.......BQ...BBB.....",
+    "......BBB..CCB...BBB.......B....BBB.....",
+    "......BBB..CCB...BBB.......B....BBB.....",
+    ".............B...BCB.......B............",
+    ".............B...BCB.......B............",
+    ".......Q.....B...BCB...Q...B.....Q......",
+    ".....BBB.....B...BBB..BB...B...BBB......",
+    ".....BBB.....B.....Q..BB..CCC..BBB......",
+    ".....BBB.....B....BBB.....CCC..BBB......",
+    "......Q.....CCC...BCB.....CCB...........",
+    ".....BBBB...CCC...BBB..........BBBB.....",
+    ".....BCCB...CCB.........BBB....BCCB.....",
+    ".....BBBB..........BB...BCB....BBBB.....",
+    "............BBB....BB...BBB......BBB....",
+    "......BBB...BCC..........BBBB....BBB....",
+    "......BBB...BBB...BBBB...BCCB....BBB....",
+    "......BBB.........BCCB...BBBB...........",
+    "............BB....BBBB.........BBBB.....",
+    ".....BBBB...BB.............BBB.BBBB.....",
+    ".....BBBB...BBB............BBB..........",
+    ".....BBBB.........CCCC...BBB....BBBB....",
+    ".........................BBB............",
+    ".....BBBB..........HH....BBB....BBBB...."
   ]
 }

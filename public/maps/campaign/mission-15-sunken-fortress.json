@@ -5,20 +5,20 @@
   "subtitle": "SECTOR 15 // DESERT STRONGHOLD",
   "objective": "Destroy the desert stronghold",
   "gameMode": "stronghold_assault",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "enemyBase": {
     "cell": {
       "row": 6,
-      "col": 18
+      "col": 20
     },
     "name": "Sunken Fortress Core",
     "maxHp": 48,
@@ -34,7 +34,7 @@
     "title": "Super-Heavy Command Dreadnought",
     "spawnCell": {
       "row": 3,
-      "col": 17
+      "col": 19
     }
   },
   "completionReward": {
@@ -55,24 +55,24 @@
         "cells": [
           {
             "row": 16,
-            "col": 16
-          },
-          {
-            "row": 16,
-            "col": 17
-          },
-          {
-            "row": 16,
             "col": 18
+          },
+          {
+            "row": 16,
+            "col": 19
+          },
+          {
+            "row": 16,
+            "col": 20
           }
         ],
         "start": {
-          "row": 18,
-          "col": 17
+          "row": 22,
+          "col": 19
         },
         "end": {
           "row": 14,
-          "col": 17
+          "col": 19
         },
         "purpose": "Breach the main southern bastion wall for a direct assault on the Sunken Fortress Core."
       },
@@ -81,24 +81,24 @@
         "cells": [
           {
             "row": 13,
-            "col": 22
+            "col": 24
           },
           {
             "row": 14,
-            "col": 22
+            "col": 24
           },
           {
             "row": 15,
-            "col": 22
+            "col": 24
           }
         ],
         "start": {
           "row": 14,
-          "col": 24
+          "col": 26
         },
         "end": {
           "row": 14,
-          "col": 20
+          "col": 22
         },
         "purpose": "Break into the eastern stronghold court from the artillery terrace instead of circling to the northwest ramp."
       },
@@ -106,25 +106,25 @@
         "name": "West terrace cut",
         "cells": [
           {
-            "row": 20,
-            "col": 11
+            "row": 24,
+            "col": 13
           },
           {
-            "row": 21,
-            "col": 11
+            "row": 25,
+            "col": 13
           },
           {
-            "row": 22,
-            "col": 11
+            "row": 26,
+            "col": 13
           }
         ],
         "start": {
-          "row": 21,
-          "col": 9
+          "row": 25,
+          "col": 11
         },
         "end": {
-          "row": 21,
-          "col": 13
+          "row": 25,
+          "col": 15
         },
         "purpose": "Open a lateral escape and flanking cut between the western perimeter road and the central basin apron."
       }
@@ -140,9 +140,9 @@
         "id": "desert-stronghold-sand",
         "bounds": [
           1,
-          1,
-          34,
-          34
+          3,
+          38,
+          36
         ],
         "surface": "sand",
         "density": 0.18,
@@ -155,9 +155,9 @@
         "id": "sunken-basin-citadel",
         "bounds": [
           9,
-          12,
+          14,
           17,
-          23
+          25
         ],
         "surface": "concrete",
         "density": 0.25,
@@ -171,9 +171,9 @@
         "id": "west-perimeter-terrace",
         "bounds": [
           10,
-          2,
-          26,
-          11
+          4,
+          30,
+          13
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -187,9 +187,9 @@
         "id": "east-battery-terrace",
         "bounds": [
           10,
-          24,
           26,
-          33
+          30,
+          35
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -202,10 +202,10 @@
       {
         "id": "south-escape-yard",
         "bounds": [
-          18,
-          12,
-          33,
-          24
+          22,
+          14,
+          37,
+          26
         ],
         "surface": "dirt",
         "density": 0.2,
@@ -221,24 +221,24 @@
         "id": "west-perimeter-route",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            7
+            32,
+            9
           ],
           [
-            19,
-            7
-          ],
-          [
-            11,
-            7
+            23,
+            9
           ],
           [
             11,
-            14
+            9
+          ],
+          [
+            11,
+            16
           ]
         ],
         "width": 2.6,
@@ -249,20 +249,20 @@
         "id": "direct-basin-breach-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            23,
-            17
+            27,
+            19
           ],
           [
             17,
-            17
+            19
           ],
           [
             13,
-            17
+            19
           ]
         ],
         "width": 2.8,
@@ -273,20 +273,20 @@
         "id": "east-perimeter-route",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            28
+            32,
+            30
           ],
           [
-            19,
-            28
+            23,
+            30
           ],
           [
             14,
-            24
+            26
           ]
         ],
         "width": 2.6,
@@ -298,24 +298,24 @@
       {
         "id": "west-rim-label",
         "kind": "label",
-        "row": 19,
-        "col": 6,
+        "row": 23,
+        "col": 8,
         "size": 3,
         "text": "WEST RIM ROAD"
       },
       {
         "id": "sunken-core-label",
         "kind": "label",
-        "row": 18,
-        "col": 17,
+        "row": 22,
+        "col": 19,
         "size": 3,
         "text": "SUNKEN BASIN"
       },
       {
         "id": "east-battery-label",
         "kind": "label",
-        "row": 18,
-        "col": 28,
+        "row": 22,
+        "col": 30,
         "size": 3,
         "text": "BATTERY TERRACE"
       }
@@ -325,36 +325,36 @@
         "id": "opening-0",
         "bounds": [
           8,
-          5,
+          7,
           10,
-          7
+          9
         ]
       },
       {
         "id": "opening-1",
         "bounds": [
           4,
-          15,
+          17,
           6,
-          17
+          19
         ]
       },
       {
         "id": "opening-2",
         "bounds": [
           8,
-          24,
+          26,
           10,
-          26
+          28
         ]
       },
       {
         "id": "opening-3",
         "bounds": [
           9,
-          29,
+          31,
           11,
-          31
+          33
         ]
       }
     ]
@@ -367,17 +367,17 @@
       {
         "id": "west-rim-gate",
         "row": 2,
-        "col": 6
+        "col": 8
       },
       {
         "id": "north-basin-ramp",
         "row": 2,
-        "col": 17
+        "col": 19
       },
       {
         "id": "east-terrace-road",
         "row": 2,
-        "col": 29
+        "col": 31
       }
     ],
     "encounters": [
@@ -393,19 +393,19 @@
         "initialCells": [
           {
             "row": 9,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 16
+            "col": 18
           },
           {
             "row": 9,
-            "col": 25
+            "col": 27
           },
           {
             "row": 10,
-            "col": 30
+            "col": 32
           }
         ],
         "entrances": [
@@ -414,16 +414,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 20,
-            "col": 13
+            "row": 24,
+            "col": 15
+          },
+          {
+            "row": 27,
+            "col": 23
           },
           {
             "row": 23,
-            "col": 21
-          },
-          {
-            "row": 19,
-            "col": 7
+            "col": 9
           }
         ],
         "recoverySec": 0
@@ -445,16 +445,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 19,
-            "col": 7
+            "row": 23,
+            "col": 9
           },
           {
-            "row": 23,
-            "col": 14
+            "row": 27,
+            "col": 16
           },
           {
             "row": 11,
-            "col": 13
+            "col": 15
           }
         ],
         "recoverySec": 8
@@ -476,16 +476,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 18,
-            "col": 28
+            "row": 22,
+            "col": 30
           },
           {
-            "row": 22,
-            "col": 21
+            "row": 26,
+            "col": 23
           },
           {
             "row": 14,
-            "col": 24
+            "col": 26
           }
         ],
         "recoverySec": 9
@@ -508,15 +508,15 @@
         "patrolRoute": [
           {
             "row": 17,
-            "col": 17
-          },
-          {
-            "row": 23,
             "col": 19
           },
           {
-            "row": 21,
-            "col": 13
+            "row": 27,
+            "col": 21
+          },
+          {
+            "row": 25,
+            "col": 15
           }
         ],
         "recoverySec": 9
@@ -539,15 +539,15 @@
         "patrolRoute": [
           {
             "row": 14,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 19,
-            "col": 24
+            "row": 23,
+            "col": 26
           },
           {
             "row": 17,
-            "col": 14
+            "col": 16
           }
         ],
         "recoverySec": 10
@@ -585,41 +585,45 @@
     "STANDARD"
   ],
   "layout": [
-    "...BBB.....BBB.........BB......BBB..",
-    "...........BBB.........BB...........",
-    "...BB....CC...BB....CC...BB....BB...",
-    "...BC....CC...BB....CC...BC....BB...",
-    ".........BB...CC.........BC.........",
-    "....CC...BB...CC.CCCBB...CC...BBB...",
-    "....CC........CC.CECBB........CCB...",
-    "...BBB..CCC......CCCCCC..CCC........",
-    "........CCB..CCCCCCCCCB..CCB..BBB...",
-    "...CC....CB.CCCCCCCCCCC.......CCB...",
-    "...CC.......CCC.....CCC..CC.........",
-    ".......CCC.......CCC.CC..CC...CCC...",
-    "...BB..CCB...........CC.......CCB...",
-    "...BC..CCB..CC..BB....B..CC...CCB...",
-    ".......CCB..CC........B..CC.........",
-    "...CC.......CC..CC....B.......BBB...",
-    "...CC..CCC..CCCCBBBCCCC..CC...BBB...",
-    ".......CCB.CC...........CCB.....Q...",
-    "...BB......C..CC...CCC..CCB...CCC...",
-    "...BC...CCQC..CB...CCB........CCB...",
-    ".....Q..CC.B..........QCCC..........",
-    "...CCC..CB.B...CC..CC..CCB....BB....",
-    "...CCB.....B...CCQ.CC........QBC....",
-    "........CC.C...........CCC....BB....",
-    "...BB...CC.C..CCC..CC..CCB..........",
-    "...BCQ........CCB..CB......CC..BB...",
-    ".......CCC...Q.....CB..CC..CC..BC...",
-    "...CC..CCB..CC..BB.....CC...........",
-    "...CB.......CC..BB..CC.....CCC......",
-    ".......BB...........CC.....CCB..BB..",
-    "...CC..BC...CC......BB..CC......BB..",
-    "...CC.......CC..........CC...BB.....",
-    "........BB...................BB.....",
-    "....BB..BB......CCCC....BB..........",
-    ".......................BBB..........",
-    "...BBBB..........HH....BBB....BBBB.."
+    ".....BBB.....BBB.........BB......BBB....",
+    ".............BBB.........BB.............",
+    ".....BB....CC...BB....CC...BB....BB.....",
+    ".....BC....CC...BB....CC...BC....BB.....",
+    "...........BB...CC.........BC...........",
+    "......CC...BB...CC.CCCBB...CC...BBB.....",
+    "......CC........CC.CECBB........CCB.....",
+    ".....BBB..CCC......CCCCCC..CCC..........",
+    "..........CCB..CCCCCCCCCB..CCB..BBB.....",
+    ".....CC....CB.CCCCCCCCCCC.......CCB.....",
+    ".....CC.......CCC.....CCC..CC...........",
+    ".........CCC.......CCC.CC..CC...CCC.....",
+    ".....BB..CCB...........CC.......CCB.....",
+    ".....BC..CCB..CC..BB....B..CC...CCB.....",
+    ".........CCB..CC........B..CC...........",
+    ".....CC.......CC..CC....B.......BBB.....",
+    ".....CC..CCC..CCCCBBBCCCC..CC...BBB.....",
+    ".........CCB.CC...........CCB.....Q.....",
+    ".........CCB.CC...........CCB...........",
+    ".........CCB.CC...........CCB...........",
+    ".....BB......C..CC...CCC..CCB...CCC.....",
+    ".....BB......C..CC...CCC..CCB...CCC.....",
+    ".....BB......C..CC...CCC..CCB...CCC.....",
+    ".....BC...CCQC..CB...CCB........CCB.....",
+    ".......Q..CC.B..........QCCC............",
+    ".....CCC..CB.B...CC..CC..CCB....BB......",
+    ".....CCB.....B...CCQ.CC........QBC......",
+    "..........CC.C...........CCC....BB......",
+    ".....BB...CC.C..CCC..CC..CCB............",
+    ".....BCQ........CCB..CB......CC..BB.....",
+    ".........CCC...Q.....CB..CC..CC..BC.....",
+    ".....CC..CCB..CC..BB.....CC.............",
+    ".....CB.......CC..BB..CC.....CCC........",
+    ".........BB...........CC.....CCB..BB....",
+    ".....CC..BC...CC......BB..CC......BB....",
+    ".....CC.......CC..........CC...BB.......",
+    "..........BB...................BB.......",
+    "......BB..BB......CCCC....BB............",
+    ".........................BBB............",
+    ".....BBBB..........HH....BBB....BBBB...."
   ]
 }

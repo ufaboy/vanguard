@@ -44,7 +44,7 @@ test('Renderer clips paths and landmarks to separate safe cell masks and balance
   assert.equal(record.depth(),0);assert.equal(record.clips.length,2);
   for(const [i,mask] of record.clips.entries()){
     const expected=[];
-    for(let r=0;r<36;r++)for(let c=0;c<36;c++)if(decorationCellAllowed(sector,r,c,i===1))expected.push([c*10,r*10,10,10]);
+    for(let r=0;r<40;r++)for(let c=0;c<40;c++)if(decorationCellAllowed(sector,r,c,i===1))expected.push([c*9,r*9,9,9]);
     assert.deepEqual(mask,expected);
   }
 });

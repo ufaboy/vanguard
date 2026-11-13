@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 13 // CANYON PASS",
   "objective": "Clear the canyon pass",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,25 +36,25 @@
         "name": "Lower west tooth breach",
         "cells": [
           {
-            "row": 22,
-            "col": 10
+            "row": 26,
+            "col": 12
           },
           {
-            "row": 23,
-            "col": 10
+            "row": 27,
+            "col": 12
           },
           {
-            "row": 24,
-            "col": 10
+            "row": 28,
+            "col": 12
           }
         ],
         "start": {
-          "row": 23,
-          "col": 8
+          "row": 27,
+          "col": 10
         },
         "end": {
-          "row": 23,
-          "col": 12
+          "row": 27,
+          "col": 14
         },
         "purpose": "Bypass the lower switchback bend and cut directly into the western canyon lane."
       },
@@ -63,24 +63,24 @@
         "cells": [
           {
             "row": 16,
-            "col": 18
+            "col": 20
           },
           {
             "row": 17,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 18,
-            "col": 18
+            "row": 22,
+            "col": 20
           }
         ],
         "start": {
           "row": 17,
-          "col": 16
+          "col": 18
         },
         "end": {
           "row": 17,
-          "col": 20
+          "col": 22
         },
         "purpose": "Open the central canyon cross-link between the western switchback and eastern pass."
       },
@@ -89,24 +89,24 @@
         "cells": [
           {
             "row": 13,
-            "col": 26
+            "col": 28
           },
           {
             "row": 14,
-            "col": 26
+            "col": 28
           },
           {
             "row": 15,
-            "col": 26
+            "col": 28
           }
         ],
         "start": {
           "row": 14,
-          "col": 24
+          "col": 26
         },
         "end": {
           "row": 14,
-          "col": 28
+          "col": 30
         },
         "purpose": "Breach the sandstone wall guarding the eastern howitzer ledge while preserving an intact side approach."
       }
@@ -122,9 +122,9 @@
         "id": "canyon-sand-floor",
         "bounds": [
           1,
-          1,
-          34,
-          34
+          3,
+          38,
+          36
         ],
         "surface": "sand",
         "density": 0.18,
@@ -137,9 +137,9 @@
         "id": "west-switchback-floor",
         "bounds": [
           10,
-          2,
-          27,
-          13
+          4,
+          31,
+          15
         ],
         "surface": "dirt",
         "density": 0.22,
@@ -153,9 +153,9 @@
         "id": "central-teeth-gorge",
         "bounds": [
           6,
-          13,
-          26,
-          23
+          15,
+          30,
+          25
         ],
         "surface": "gravel",
         "density": 0.24,
@@ -169,9 +169,9 @@
         "id": "east-artillery-ledge",
         "bounds": [
           8,
-          24,
-          25,
-          33
+          26,
+          29,
+          35
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -185,9 +185,9 @@
         "id": "summit-turnout",
         "bounds": [
           2,
-          5,
+          7,
           8,
-          31
+          33
         ],
         "surface": "dirt",
         "density": 0.2,
@@ -199,10 +199,10 @@
       {
         "id": "south-canyon-mouth",
         "bounds": [
-          27,
-          10,
-          33,
-          25
+          31,
+          12,
+          37,
+          27
         ],
         "surface": "dirt",
         "density": 0.18,
@@ -217,32 +217,32 @@
         "id": "main-switchback-road",
         "points": [
           [
-            31,
+            35,
+            19
+          ],
+          [
+            30,
             17
           ],
           [
-            26,
-            15
+            24,
+            17
           ],
           [
-            20,
-            15
-          ],
-          [
-            20,
-            7
+            24,
+            9
           ],
           [
             11,
-            7
+            9
           ],
           [
             11,
-            16
+            18
           ],
           [
             4,
-            16
+            18
           ]
         ],
         "width": 3,
@@ -253,28 +253,28 @@
         "id": "east-ledge-bypass",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            22
+            32,
+            24
           ],
           [
-            21,
-            22
+            25,
+            24
           ],
           [
-            21,
-            30
+            25,
+            32
           ],
           [
             11,
-            30
+            32
           ],
           [
             4,
-            29
+            31
           ]
         ],
         "width": 2.6,
@@ -285,20 +285,20 @@
         "id": "central-crosslink-trail",
         "points": [
           [
-            18,
-            7
+            22,
+            9
           ],
           [
             17,
-            16
+            18
           ],
           [
             17,
-            22
+            24
           ],
           [
             14,
-            29
+            31
           ]
         ],
         "width": 2.5,
@@ -310,8 +310,8 @@
       {
         "id": "west-switchback-label",
         "kind": "label",
-        "row": 20,
-        "col": 6,
+        "row": 24,
+        "col": 8,
         "size": 3,
         "text": "WEST SWITCHBACK"
       },
@@ -319,7 +319,7 @@
         "id": "canyon-teeth-label",
         "kind": "label",
         "row": 15,
-        "col": 16,
+        "col": 18,
         "size": 3,
         "text": "CANYON TEETH"
       },
@@ -327,7 +327,7 @@
         "id": "east-ledge-label",
         "kind": "label",
         "row": 16,
-        "col": 29,
+        "col": 31,
         "size": 3,
         "text": "ARTILLERY LEDGE"
       },
@@ -335,7 +335,7 @@
         "id": "summit-pass-label",
         "kind": "label",
         "row": 5,
-        "col": 16,
+        "col": 18,
         "size": 3,
         "text": "SUMMIT PASS"
       }
@@ -345,36 +345,36 @@
         "id": "opening-0",
         "bounds": [
           7,
-          7,
           9,
-          9
+          9,
+          11
         ]
       },
       {
         "id": "opening-1",
         "bounds": [
           8,
-          15,
+          17,
           10,
-          17
+          19
         ]
       },
       {
         "id": "opening-2",
         "bounds": [
           7,
-          21,
+          23,
           9,
-          23
+          25
         ]
       },
       {
         "id": "opening-3",
         "bounds": [
           9,
-          29,
+          31,
           11,
-          31
+          33
         ]
       }
     ]
@@ -387,17 +387,17 @@
       {
         "id": "northwest-pass",
         "row": 2,
-        "col": 6
+        "col": 8
       },
       {
         "id": "north-gorge",
         "row": 2,
-        "col": 17
+        "col": 19
       },
       {
         "id": "northeast-ledge",
         "row": 2,
-        "col": 30
+        "col": 32
       }
     ],
     "encounters": [
@@ -413,19 +413,19 @@
         "initialCells": [
           {
             "row": 8,
-            "col": 8
+            "col": 10
           },
           {
             "row": 9,
-            "col": 16
+            "col": 18
           },
           {
             "row": 8,
-            "col": 22
+            "col": 24
           },
           {
             "row": 10,
-            "col": 30
+            "col": 32
           }
         ],
         "entrances": [
@@ -434,16 +434,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 18,
-            "col": 13
-          },
-          {
-            "row": 24,
+            "row": 22,
             "col": 15
           },
           {
-            "row": 26,
-            "col": 21
+            "row": 28,
+            "col": 17
+          },
+          {
+            "row": 30,
+            "col": 23
           }
         ],
         "recoverySec": 0
@@ -464,16 +464,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 19,
-            "col": 6
-          },
-          {
-            "row": 21,
-            "col": 13
+            "row": 23,
+            "col": 8
           },
           {
             "row": 25,
-            "col": 8
+            "col": 15
+          },
+          {
+            "row": 29,
+            "col": 10
           }
         ],
         "recoverySec": 8
@@ -496,15 +496,15 @@
         "patrolRoute": [
           {
             "row": 14,
-            "col": 29
+            "col": 31
           },
           {
-            "row": 19,
-            "col": 22
-          },
-          {
-            "row": 25,
+            "row": 23,
             "col": 24
+          },
+          {
+            "row": 29,
+            "col": 26
           }
         ],
         "recoverySec": 9
@@ -527,15 +527,15 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 8
+            "col": 10
           },
           {
             "row": 11,
-            "col": 16
+            "col": 18
           },
           {
             "row": 12,
-            "col": 29
+            "col": 31
           }
         ],
         "recoverySec": 10
@@ -558,15 +558,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 16
+            "col": 18
           },
           {
-            "row": 20,
-            "col": 15
-          },
-          {
-            "row": 26,
+            "row": 24,
             "col": 17
+          },
+          {
+            "row": 30,
+            "col": 19
           }
         ],
         "recoverySec": 10
@@ -605,41 +605,45 @@
     "STANDARD"
   ],
   "layout": [
-    "...BBB......BBB........BB......BBB..",
-    "............BBB........BB...........",
-    "...BBB....BBBB.....BBB...BBBB..BB...",
-    "...BBB....BCCB.....BCB...BCCB..BB...",
-    "...BBB....BCCB.....BCB...BBBB.......",
-    "..........BBBB.BB..BBB.........BBB..",
-    "...BBBB........BB......BBBB....BBB..",
-    "...BCCB...BBB......BB..BCCB.........",
-    "...BBBB...BBB......BB..BBBB...BBB...",
-    "..........BBB.................BBB...",
-    "...BBB......CC....BBB...BBCC........",
-    "...BBB.....CCC....BCB...BBCC..BBB...",
-    "...BBB.....CCB....BCB.....C...BBB...",
-    "...........C......CCC.....B...BBB...",
-    "....BBB....C..BB..CCC.....B.........",
-    "....BCC.......BB..CCC.....B...BBB...",
-    "....BCC..BBB......B.......C...BCC...",
-    "....BBB..BCB.....QB.......C...BBB...",
-    "...Q.....BBB..BB..B....BBCCQ........",
-    "...BBB.....Q..BB..CCC..CCCC..BBB....",
-    "...BBB...CCC......CCC..CCCB..BBB....",
-    "...BBB...CCC..BBB..CQ....C...BBB....",
-    "....Q.....B...BCB..........BBBB.....",
-    "...BBBB...B...BBB...BBB...QBCCB.....",
-    "...BCCB...B.........BCB....BBBB.Q...",
-    "...BBBB..CCC..BB....BBB........BBB..",
-    ".........CCC..BB.........BBB...BBB..",
-    "....BBB..CCC......BBBB...BBB...BBB..",
-    "....BBB...CCC.....BCCB..............",
-    "....BBB....CC.....BBBB...BBB..BBBB..",
-    "..................BBB....BBB..BBBB..",
-    "...BBBB...BBB............BBB........",
-    "...BBBB...BBB.................BBBB..",
-    "...BBBB.........CCCC...BBB....BBBB..",
-    ".......................BBB..........",
-    "...BBBB..........HH....BBB....BBBB.."
+    ".....BBB......BBB........BB......BBB....",
+    "..............BBB........BB.............",
+    ".....BBB....BBBB.....BBB...BBBB..BB.....",
+    ".....BBB....BCCB.....BCB...BCCB..BB.....",
+    ".....BBB....BCCB.....BCB...BBBB.........",
+    "............BBBB.BB..BBB.........BBB....",
+    ".....BBBB........BB......BBBB....BBB....",
+    ".....BCCB...BBB......BB..BCCB...........",
+    ".....BBBB...BBB......BB..BBBB...BBB.....",
+    "............BBB.................BBB.....",
+    ".....BBB......CC....BBB...BBCC..........",
+    ".....BBB.....CCC....BCB...BBCC..BBB.....",
+    ".....BBB.....CCB....BCB.....C...BBB.....",
+    ".............C......CCC.....B...BBB.....",
+    "......BBB....C..BB..CCC.....B...........",
+    "......BCC.......BB..CCC.....B...BBB.....",
+    "......BCC..BBB......B.......C...BCC.....",
+    "......BBB..BCB.....QB.......C...BBB.....",
+    "......BBB..BCB......B.......C...BBB.....",
+    "......BBB..BCB......B.......C...BBB.....",
+    "...........BBB..BB..B....BBCC...........",
+    "...........BBB..BB..B....BBCC...........",
+    ".....Q.....BBB..BB..B....BBCCQ..........",
+    ".....BBB.....Q..BB..CCC..CCCC..BBB......",
+    ".....BBB...CCC......CCC..CCCB..BBB......",
+    ".....BBB...CCC..BBB..CQ....C...BBB......",
+    "......Q.....B...BCB..........BBBB.......",
+    ".....BBBB...B...BBB...BBB...QBCCB.......",
+    ".....BCCB...B.........BCB....BBBB.Q.....",
+    ".....BBBB..CCC..BB....BBB........BBB....",
+    "...........CCC..BB.........BBB...BBB....",
+    "......BBB..CCC......BBBB...BBB...BBB....",
+    "......BBB...CCC.....BCCB................",
+    "......BBB....CC.....BBBB...BBB..BBBB....",
+    "....................BBB....BBB..BBBB....",
+    ".....BBBB...BBB............BBB..........",
+    ".....BBBB...BBB.................BBBB....",
+    ".....BBBB.........CCCC...BBB....BBBB....",
+    ".........................BBB............",
+    ".....BBBB..........HH....BBB....BBBB...."
   ]
 }

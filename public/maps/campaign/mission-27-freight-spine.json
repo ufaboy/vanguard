@@ -5,20 +5,20 @@
   "subtitle": "SECTOR 27 // FREIGHT YARD STRONGHOLD",
   "objective": "Destroy the freight stronghold",
   "gameMode": "stronghold_assault",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "enemyBase": {
     "cell": {
       "row": 5,
-      "col": 18
+      "col": 20
     },
     "name": "Freight Dispatch Citadel",
     "maxHp": 48,
@@ -45,21 +45,21 @@
         "name": "South container barrier",
         "cells": [
           {
-            "row": 23,
-            "col": 17
+            "row": 27,
+            "col": 19
           },
           {
-            "row": 23,
-            "col": 18
+            "row": 27,
+            "col": 20
           }
         ],
         "start": {
-          "row": 25,
-          "col": 17
+          "row": 29,
+          "col": 19
         },
         "end": {
-          "row": 21,
-          "col": 17
+          "row": 25,
+          "col": 19
         },
         "purpose": "Clear the southern brick cargo-container barrier to open the Central Freight Spine directly from the marshaling yard."
       },
@@ -68,20 +68,20 @@
         "cells": [
           {
             "row": 17,
-            "col": 11
+            "col": 13
           },
           {
-            "row": 18,
-            "col": 11
+            "row": 22,
+            "col": 13
           }
         ],
         "start": {
           "row": 17,
-          "col": 9
+          "col": 11
         },
         "end": {
           "row": 17,
-          "col": 13
+          "col": 15
         },
         "purpose": "Break through the western container stack to switch between the West Siding Track and the Central Freight Spine."
       },
@@ -90,20 +90,20 @@
         "cells": [
           {
             "row": 17,
-            "col": 24
+            "col": 26
           },
           {
-            "row": 18,
-            "col": 24
+            "row": 22,
+            "col": 26
           }
         ],
         "start": {
           "row": 17,
-          "col": 26
+          "col": 28
         },
         "end": {
           "row": 17,
-          "col": 22
+          "col": 24
         },
         "purpose": "Punch through the eastern gantry cargo wall to flank engineers and strikers from the East Container Yard."
       },
@@ -112,20 +112,20 @@
         "cells": [
           {
             "row": 14,
-            "col": 17
+            "col": 19
           },
           {
             "row": 14,
-            "col": 18
+            "col": 20
           }
         ],
         "start": {
           "row": 16,
-          "col": 18
+          "col": 20
         },
         "end": {
           "row": 12,
-          "col": 18
+          "col": 20
         },
         "purpose": "Breach the southern freight terminal gate for a direct line of fire onto the Freight Dispatch Citadel."
       }
@@ -141,9 +141,9 @@
         "id": "rail-ballast-gravel",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "gravel",
         "density": 0.18,
@@ -157,9 +157,9 @@
         "id": "west-siding-yard",
         "bounds": [
           2,
-          2,
-          30,
-          10
+          4,
+          34,
+          12
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -173,9 +173,9 @@
         "id": "central-freight-spine-deck",
         "bounds": [
           3,
-          12,
-          26,
-          23
+          14,
+          30,
+          25
         ],
         "surface": "concrete",
         "density": 0.25,
@@ -190,9 +190,9 @@
         "id": "east-container-gantry-yard",
         "bounds": [
           2,
-          25,
-          30,
-          33
+          27,
+          34,
+          35
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -205,10 +205,10 @@
       {
         "id": "south-switchyard-apron",
         "bounds": [
-          27,
-          8,
-          35,
-          27
+          31,
+          10,
+          39,
+          29
         ],
         "surface": "pavers",
         "density": 0.22,
@@ -224,24 +224,24 @@
         "id": "west-siding-freight-line",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
+            32,
+            10
+          ],
+          [
+            23,
             8
           ],
           [
-            19,
-            6
-          ],
-          [
             9,
-            6
+            8
           ],
           [
             4,
-            12
+            14
           ]
         ],
         "width": 2.8,
@@ -252,20 +252,20 @@
         "id": "central-freight-spine-line",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
             17,
-            17
+            19
           ],
           [
             13,
-            18
+            20
           ]
         ],
         "width": 3,
@@ -276,24 +276,24 @@
         "id": "east-container-freight-line",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            27
-          ],
-          [
-            19,
+            32,
             29
+          ],
+          [
+            23,
+            31
           ],
           [
             9,
-            29
+            31
           ],
           [
             4,
-            23
+            25
           ]
         ],
         "width": 2.8,
@@ -306,23 +306,23 @@
         "id": "dispatch-terminal-loading",
         "kind": "loading",
         "row": 13,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "mid-spine-crosswalk",
         "kind": "crosswalk",
-        "row": 19,
-        "col": 17,
+        "row": 23,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "south-yard-parking",
         "kind": "parking",
-        "row": 31,
-        "col": 13,
+        "row": 35,
+        "col": 15,
         "size": 2.5,
         "rotation": 0
       },
@@ -330,7 +330,7 @@
         "id": "west-siding-label",
         "kind": "label",
         "row": 15,
-        "col": 6,
+        "col": 8,
         "size": 3,
         "text": "WEST SIDING LANE"
       },
@@ -338,7 +338,7 @@
         "id": "central-spine-label",
         "kind": "label",
         "row": 16,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "text": "FREIGHT SPINE"
       },
@@ -346,7 +346,7 @@
         "id": "east-gantry-label",
         "kind": "label",
         "row": 15,
-        "col": 29,
+        "col": 31,
         "size": 3,
         "text": "CONTAINER YARD"
       }
@@ -362,32 +362,32 @@
       {
         "id": "north-west-siding",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-spine-west",
         "row": 2,
-        "col": 13
+        "col": 15
       },
       {
         "id": "north-spine-east",
         "row": 2,
-        "col": 22
+        "col": 24
       },
       {
         "id": "north-east-gantry",
         "row": 2,
-        "col": 30
+        "col": 32
       },
       {
         "id": "upper-west-switch",
         "row": 7,
-        "col": 4
+        "col": 6
       },
       {
         "id": "upper-east-switch",
         "row": 7,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -404,33 +404,33 @@
         "initialCells": [
           {
             "row": 4,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 14
+            "col": 16
           },
           {
             "row": 5,
-            "col": 21
+            "col": 23
           },
           {
             "row": 4,
-            "col": 29
+            "col": 31
           }
         ],
         "patrolRoute": [
           {
             "row": 9,
-            "col": 11
+            "col": 13
           },
           {
             "row": 16,
-            "col": 15
+            "col": 17
           },
           {
-            "row": 25,
-            "col": 16
+            "row": 29,
+            "col": 18
           }
         ],
         "enemies": [
@@ -454,15 +454,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 6
+            "col": 8
           },
           {
-            "row": 20,
-            "col": 6
+            "row": 24,
+            "col": 8
           },
           {
-            "row": 27,
-            "col": 13
+            "row": 31,
+            "col": 15
           }
         ],
         "enemies": [
@@ -486,15 +486,15 @@
         "patrolRoute": [
           {
             "row": 16,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 21,
-            "col": 18
+            "row": 25,
+            "col": 20
           },
           {
-            "row": 27,
-            "col": 17
+            "row": 31,
+            "col": 19
           }
         ],
         "enemies": [
@@ -518,15 +518,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 29
+            "col": 31
           },
           {
-            "row": 20,
-            "col": 29
+            "row": 24,
+            "col": 31
           },
           {
-            "row": 27,
-            "col": 22
+            "row": 31,
+            "col": 24
           }
         ],
         "enemies": [
@@ -551,15 +551,15 @@
         "patrolRoute": [
           {
             "row": 9,
-            "col": 23
+            "col": 25
           },
           {
-            "row": 19,
-            "col": 17
+            "row": 23,
+            "col": 19
           },
           {
-            "row": 26,
-            "col": 17
+            "row": 30,
+            "col": 19
           }
         ],
         "enemies": [
@@ -604,41 +604,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.........CC...........CC........FF",
-    "F..........CC...........CC........FF",
-    "...................................F",
-    "F...................................",
-    "..CC.......FF....CCC....FF.....CCC..",
-    "..CC.......FF....CEC....FF......CC..",
-    "...........CC....CCC....CC.........W",
-    "...........CC...........CC.........W",
-    "............C..CC...CC..C..........W",
-    "..FF........C..CC...CC..C......FF...",
-    ".FFF....CC..C...........C..CC..FF...",
-    "........CC..B...........B..CC.......",
-    "............B...........B...........",
-    "..CC........C...........C......CCC..",
-    "..CC........CCCCCBBCCCCCC.......CC.F",
-    ".......FF..................FF......F",
-    ".......FF..C............C..FF......F",
-    "..BB.......B...BB..BB...B.......BBB.",
-    "..BB.......B...BB..BB..QB.......BBB.",
-    "F..........C............C...........",
-    "..CC......QC............C......CCC..",
-    "..CC.......C............C.......CC.F",
-    "........CC.C........Q...C..CC...Q...",
-    "...FF...CC.CCCCCCBBCCCCCC..CC..FF...",
-    "..FFF......C............C......FF...",
-    "F.........QC............C...........",
-    "...................................W",
-    "...........CC...........CC.........W",
-    "..Q........CC...BB.BB...CC.......Q.W",
-    "..CC....FF......BB.BB.Q....FF..CCC..",
-    "..CC....FF...BB......BBB...FF...CC..",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "W.........FF....CCCC....FF..........",
-    "WW.................................F",
-    "WW...............HH...............FF"
+    "FFFF.........CC...........CC........FFFF",
+    "FFF..........CC...........CC........FFFF",
+    ".....................................FFF",
+    "FFF.....................................",
+    "....CC.......FF....CCC....FF.....CCC....",
+    "....CC.......FF....CEC....FF......CC....",
+    ".............CC....CCC....CC.........WWW",
+    ".............CC...........CC.........WWW",
+    "..............C..CC...CC..C..........WWW",
+    "....FF........C..CC...CC..C......FF.....",
+    "...FFF....CC..C...........C..CC..FF.....",
+    "..........CC..B...........B..CC.........",
+    "..............B...........B.............",
+    "....CC........C...........C......CCC....",
+    "....CC........CCCCCBBCCCCCC.......CC.FFF",
+    ".........FF..................FF......FFF",
+    ".........FF..C............C..FF......FFF",
+    "....BB.......B...BB..BB...B.......BBB...",
+    "....BB.......B...BB..BB...B.......BBB...",
+    "....BB.......B...BB..BB...B.......BBB...",
+    "....BB.......B...BB..BB...B.......BBB...",
+    "....BB.......B...BB..BB...B.......BBB...",
+    "....BB.......B...BB..BB..QB.......BBB...",
+    "FFF..........C............C.............",
+    "....CC......QC............C......CCC....",
+    "....CC.......C............C.......CC.FFF",
+    "..........CC.C........Q...C..CC...Q.....",
+    ".....FF...CC.CCCCCCBBCCCCCC..CC..FF.....",
+    "....FFF......C............C......FF.....",
+    "FFF.........QC............C.............",
+    ".....................................WWW",
+    ".............CC...........CC.........WWW",
+    "....Q........CC...BB.BB...CC.......Q.WWW",
+    "....CC....FF......BB.BB.Q....FF..CCC....",
+    "....CC....FF...BB......BBB...FF...CC....",
+    ".....F............................FF....",
+    "....FF......FF............FF.....FFF....",
+    "WWW.........FF....CCCC....FF............",
+    "WWWW.................................FFF",
+    "WWWW...............HH...............FFFF"
   ]
 }

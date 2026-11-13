@@ -458,7 +458,7 @@ export const ARTILLERY = Object.freeze({
   TRAIL_POINTS: 10, // Number of history segments retained for artillery smoke trails
 });
 
-export const GRID_SIZE = 36; // Battlefield grid dimension (36x36 tiles per sector)
+export const GRID_SIZE = 40; // Battlefield grid dimension (40x40 tiles per sector)
 export const TILE_SIZE = 2.0; // World size of one terrain tile in Three.js units (meters)
 
 export const DEFENSE_TURRET_TYPES = Object.freeze({

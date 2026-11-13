@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 08 // RELAY CLEARINGS",
   "objective": "Clear the relay clearing",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -37,24 +37,24 @@
         "cells": [
           {
             "row": 15,
-            "col": 10
+            "col": 12
           },
           {
             "row": 16,
-            "col": 10
+            "col": 12
           },
           {
             "row": 17,
-            "col": 10
+            "col": 12
           }
         ],
         "start": {
           "row": 16,
-          "col": 8
+          "col": 10
         },
         "end": {
           "row": 16,
-          "col": 12
+          "col": 14
         },
         "purpose": "Open a shorter cross-link while retaining an intact outer retreat route."
       },
@@ -62,25 +62,25 @@
         "name": "East service wall",
         "cells": [
           {
-            "row": 19,
-            "col": 23
+            "row": 23,
+            "col": 25
           },
           {
-            "row": 20,
-            "col": 23
+            "row": 24,
+            "col": 25
           },
           {
-            "row": 21,
-            "col": 23
+            "row": 25,
+            "col": 25
           }
         ],
         "start": {
-          "row": 20,
-          "col": 21
+          "row": 24,
+          "col": 23
         },
         "end": {
-          "row": 20,
-          "col": 25
+          "row": 24,
+          "col": 27
         },
         "purpose": "Open a shorter cross-link while retaining an intact outer retreat route."
       }
@@ -95,9 +95,9 @@
         "id": "woodland",
         "bounds": [
           1,
-          1,
-          34,
-          34
+          3,
+          38,
+          36
         ],
         "surface": "dirt",
         "density": 0.2,
@@ -109,10 +109,10 @@
       {
         "id": "west-clearing",
         "bounds": [
-          18,
-          4,
-          24,
-          10
+          22,
+          6,
+          28,
+          12
         ],
         "surface": "gravel",
         "density": 0.2,
@@ -125,9 +125,9 @@
         "id": "east-relay",
         "bounds": [
           10,
-          22,
+          24,
           13,
-          29
+          31
         ],
         "surface": "concrete",
         "density": 0.2,
@@ -140,9 +140,9 @@
         "id": "north-relay",
         "bounds": [
           2,
-          13,
+          15,
           7,
-          21
+          23
         ],
         "surface": "gravel",
         "density": 0.2,
@@ -154,10 +154,10 @@
       {
         "id": "repair-clearing",
         "bounds": [
-          27,
-          14,
-          32,
-          20
+          31,
+          16,
+          36,
+          22
         ],
         "surface": "dirt",
         "density": 0.2,
@@ -172,12 +172,16 @@
         "id": "west-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            17
+            32,
+            19
+          ],
+          [
+            32,
+            12
           ],
           [
             28,
@@ -185,19 +189,15 @@
           ],
           [
             24,
-            8
-          ],
-          [
-            20,
-            8
+            10
           ],
           [
             12,
-            7
+            9
           ],
           [
             3,
-            4
+            6
           ]
         ],
         "width": 3,
@@ -208,24 +208,24 @@
         "id": "east-road",
         "points": [
           [
-            29,
-            17
+            33,
+            19
           ],
           [
-            29,
-            25
+            33,
+            27
           ],
           [
-            26,
-            29
+            30,
+            31
           ],
           [
             12,
-            29
+            31
           ],
           [
             4,
-            31
+            33
           ]
         ],
         "width": 3,
@@ -237,27 +237,27 @@
         "points": [
           [
             12,
-            7
+            9
           ],
           [
             3,
-            7
+            9
           ],
           [
             3,
-            16
+            18
           ],
           [
             6,
-            20
+            22
           ],
           [
             12,
-            20
+            22
           ],
           [
             12,
-            25
+            27
           ]
         ],
         "width": 2.5,
@@ -268,24 +268,24 @@
         "id": "cross-clearing",
         "points": [
           [
-            20,
-            8
+            24,
+            10
           ],
           [
-            24,
-            16
+            28,
+            18
           ],
           [
-            24,
-            21
+            28,
+            23
           ],
           [
             17,
-            21
+            23
           ],
           [
             12,
-            20
+            22
           ]
         ],
         "width": 2,
@@ -297,8 +297,8 @@
       {
         "id": "west-label",
         "kind": "label",
-        "row": 20,
-        "col": 8,
+        "row": 24,
+        "col": 10,
         "size": 3,
         "text": "WEST CLEARING"
       },
@@ -306,7 +306,7 @@
         "id": "east-label",
         "kind": "label",
         "row": 12,
-        "col": 25,
+        "col": 27,
         "size": 3,
         "text": "EAST RELAY"
       },
@@ -314,7 +314,7 @@
         "id": "north-label",
         "kind": "label",
         "row": 6,
-        "col": 16,
+        "col": 18,
         "size": 3,
         "text": "NORTH RELAY"
       }
@@ -324,36 +324,36 @@
         "id": "opening-0",
         "bounds": [
           10,
-          6,
+          8,
           12,
-          8
+          10
         ]
       },
       {
         "id": "opening-1",
         "bounds": [
           9,
+          13,
           11,
-          11,
-          13
+          15
         ]
       },
       {
         "id": "opening-2",
         "bounds": [
           9,
-          24,
+          26,
           11,
-          26
+          28
         ]
       },
       {
         "id": "opening-3",
         "bounds": [
           8,
-          31,
+          33,
           10,
-          33
+          35
         ]
       }
     ]
@@ -366,17 +366,17 @@
       {
         "id": "west-approach",
         "row": 3,
-        "col": 4
+        "col": 6
       },
       {
         "id": "north-relay",
         "row": 3,
-        "col": 16
+        "col": 18
       },
       {
         "id": "east-approach",
         "row": 4,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -395,35 +395,35 @@
         ],
         "patrolRoute": [
           {
-            "row": 20,
-            "col": 8
+            "row": 24,
+            "col": 10
           },
           {
-            "row": 28,
-            "col": 17
+            "row": 32,
+            "col": 19
           },
           {
-            "row": 23,
-            "col": 25
+            "row": 27,
+            "col": 27
           }
         ],
         "recoverySec": 0,
         "initialCells": [
           {
             "row": 11,
-            "col": 7
+            "col": 9
           },
           {
             "row": 10,
-            "col": 12
+            "col": 14
           },
           {
             "row": 10,
-            "col": 25
+            "col": 27
           },
           {
             "row": 9,
-            "col": 32
+            "col": 34
           }
         ]
       },
@@ -444,15 +444,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 7
-          },
-          {
-            "row": 20,
-            "col": 8
+            "col": 9
           },
           {
             "row": 24,
             "col": 10
+          },
+          {
+            "row": 28,
+            "col": 12
           }
         ],
         "recoverySec": 8
@@ -473,15 +473,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 25
+            "col": 27
           },
           {
             "row": 12,
-            "col": 29
+            "col": 31
           },
           {
-            "row": 18,
-            "col": 29
+            "row": 22,
+            "col": 31
           }
         ],
         "recoverySec": 10
@@ -503,16 +503,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 20,
-            "col": 8
+            "row": 24,
+            "col": 10
           },
           {
             "row": 12,
-            "col": 7
+            "col": 9
           },
           {
             "row": 6,
-            "col": 16
+            "col": 18
           }
         ],
         "recoverySec": 9
@@ -532,15 +532,15 @@
         "patrolRoute": [
           {
             "row": 6,
-            "col": 16
+            "col": 18
           },
           {
             "row": 6,
-            "col": 20
+            "col": 22
           },
           {
             "row": 12,
-            "col": 20
+            "col": 22
           }
         ],
         "recoverySec": 10
@@ -577,41 +577,45 @@
     "JAMMER"
   ],
   "layout": [
-    "FFFF......BBB........FFFFFFFFFF.....",
-    "FFF.......BBB.........FFFFFFFFF.....",
-    ".........................F..........",
-    ".........................F..........",
-    "........F...........FFFFFFFFFF......",
-    "......FFFFBBB........FFFFFFFFF......",
-    ".....FFFFFBBB.......FFFFFFFFFFF.....",
-    ".....FFFFFFFQ............F...BB.....",
-    ".....FFFFFFF....BBBQ..BBBB...BB.....",
-    "....FFFFFFF.....BBB...BB............",
-    ".....F...FF.....BBB.................",
-    ".....F...FF...................FFF...",
-    ".....F...FFF..BBQF............FFF...",
-    "......FFFFC...BBFFFF..........FFF...",
-    "........F.C...FFFFFFF..BBBQ..FFFFF..",
-    "..........B...FFFFFFF..BCB....FFF...",
-    "....BBB...B..FFFFFFFFF.BBB....FFF...",
-    "....BBB...B...FFFFFFF..C......FFF...",
-    "....BBB...CQ..FFFFFFF..C....F..F....",
-    "..........C....FFFFF...B..FFFFF.....",
-    "...........BBB...F....QB.FFFFFFF....",
-    "...........BCB...BB....B.FFFFFFF....",
-    "...........BBB...BB....C.FFFFFFF....",
-    ".......................CFFFFFFFFF...",
-    ".....FFFFFFFBBB......Q.C.FFFFFFF....",
-    "....FFFFFFFFBCBQ....BBB..FFFFFFF....",
-    "....FFFFFFFFBBB.....BBB..FFFFFFF....",
-    "...FFFFFFFFFFF......BBB...FFFFF.....",
-    "....FFFFFFFFF..............FF.......",
-    "...BBBFFFFFFF............FFFFF......",
-    "...BBBFFFFFF............FFFFFFF.....",
-    "...BBB..F................FFFFF......",
-    "...........................F........",
-    "................CCCC..FF............",
-    "......................FF............",
-    "FFFF.............HH...........FFFFFF"
+    "FFFFFF......BBB........FFFFFFFFFF.......",
+    "FFFFF.......BBB.........FFFFFFFFF.......",
+    "...........................F............",
+    "...........................F............",
+    "..........F...........FFFFFFFFFF........",
+    "........FFFFBBB........FFFFFFFFF........",
+    ".......FFFFFBBB.......FFFFFFFFFFF.......",
+    ".......FFFFFFFQ............F...BB.......",
+    ".......FFFFFFF....BBBQ..BBBB...BB.......",
+    "......FFFFFFF.....BBB...BB..............",
+    ".......F...FF.....BBB...................",
+    ".......F...FF...................FFF.....",
+    ".......F...FFF..BBQF............FFF.....",
+    "........FFFFC...BBFFFF..........FFF.....",
+    "..........F.C...FFFFFFF..BBBQ..FFFFF....",
+    "............B...FFFFFFF..BCB....FFF.....",
+    "......BBB...B..FFFFFFFFF.BBB....FFF.....",
+    "......BBB...B...FFFFFFF..C......FFF.....",
+    "......BBB...B...FFFFFFF..C......FFF.....",
+    "......BBB...B...FFFFFFF..C......FFF.....",
+    "......BBB...C...FFFFFFF..C....F..F......",
+    "......BBB...C...FFFFFFF..C....F..F......",
+    "......BBB...CQ..FFFFFFF..C....F..F......",
+    "............C....FFFFF...B..FFFFF.......",
+    ".............BBB...F....QB.FFFFFFF......",
+    ".............BCB...BB....B.FFFFFFF......",
+    ".............BBB...BB....C.FFFFFFF......",
+    ".........................CFFFFFFFFF.....",
+    ".......FFFFFFFBBB......Q.C.FFFFFFF......",
+    "......FFFFFFFFBCBQ....BBB..FFFFFFF......",
+    "......FFFFFFFFBBB.....BBB..FFFFFFF......",
+    ".....FFFFFFFFFFF......BBB...FFFFF.......",
+    "......FFFFFFFFF..............FF.........",
+    ".....BBBFFFFFFF............FFFFF........",
+    ".....BBBFFFFFF............FFFFFFF.......",
+    ".....BBB..F................FFFFF........",
+    ".............................F..........",
+    "..................CCCC..FF..............",
+    "........................FF..............",
+    "FFFFFF.............HH...........FFFFFFFF"
   ]
 }

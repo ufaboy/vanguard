@@ -5,20 +5,20 @@
   "subtitle": "SECTOR 32 // GRAND MINISTRY AVENUE",
   "objective": "Destroy the boulevard stronghold",
   "gameMode": "stronghold_assault",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "enemyBase": {
     "cell": {
       "row": 5,
-      "col": 18
+      "col": 20
     },
     "name": "Boulevard Ministry Bastion",
     "maxHp": 48,
@@ -45,21 +45,21 @@
         "name": "West Arcade courtyard wall",
         "cells": [
           {
-            "row": 19,
-            "col": 7
+            "row": 23,
+            "col": 9
           },
           {
-            "row": 19,
-            "col": 8
+            "row": 23,
+            "col": 10
           }
         ],
         "start": {
-          "row": 21,
-          "col": 7
+          "row": 25,
+          "col": 9
         },
         "end": {
           "row": 17,
-          "col": 7
+          "col": 9
         },
         "purpose": "Blast directly through the West Arcade block divider instead of detouring around the outer terrace."
       },
@@ -67,21 +67,21 @@
         "name": "East Chancellery gallery wall",
         "cells": [
           {
-            "row": 19,
-            "col": 28
+            "row": 23,
+            "col": 30
           },
           {
-            "row": 19,
-            "col": 29
+            "row": 23,
+            "col": 31
           }
         ],
         "start": {
-          "row": 21,
-          "col": 28
+          "row": 25,
+          "col": 30
         },
         "end": {
           "row": 17,
-          "col": 28
+          "col": 30
         },
         "purpose": "Punch through the East Chancellery side block to bypass the central boulevard crossfire."
       },
@@ -90,20 +90,20 @@
         "cells": [
           {
             "row": 12,
-            "col": 12
+            "col": 14
           },
           {
             "row": 13,
-            "col": 12
+            "col": 14
           }
         ],
         "start": {
           "row": 12,
-          "col": 10
+          "col": 12
         },
         "end": {
           "row": 12,
-          "col": 14
+          "col": 16
         },
         "purpose": "Breach the western colonnade wall from the West Arcade route into the Boulevard Ministry Bastion court."
       },
@@ -112,20 +112,20 @@
         "cells": [
           {
             "row": 12,
-            "col": 24
+            "col": 26
           },
           {
             "row": 13,
-            "col": 24
+            "col": 26
           }
         ],
         "start": {
           "row": 12,
-          "col": 26
+          "col": 28
         },
         "end": {
           "row": 12,
-          "col": 22
+          "col": 24
         },
         "purpose": "Break through the eastern colonnade wall from the East Chancellery flank to strike the bastion from the side."
       }
@@ -141,9 +141,9 @@
         "id": "capital-district-pavers",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "pavers",
         "density": 0.16,
@@ -157,9 +157,9 @@
         "id": "west-arcade-side-block",
         "bounds": [
           4,
-          3,
-          28,
-          11
+          5,
+          32,
+          13
         ],
         "surface": "concrete",
         "density": 0.22,
@@ -173,9 +173,9 @@
         "id": "central-boulevard-of-steel",
         "bounds": [
           2,
-          12,
-          33,
-          23
+          14,
+          37,
+          25
         ],
         "surface": "asphalt",
         "density": 0.24,
@@ -190,9 +190,9 @@
         "id": "east-chancellery-side-block",
         "bounds": [
           4,
-          24,
-          28,
-          32
+          26,
+          32,
+          34
         ],
         "surface": "concrete",
         "density": 0.22,
@@ -206,9 +206,9 @@
         "id": "ministry-bastion-plaza",
         "bounds": [
           7,
-          13,
           15,
-          22
+          15,
+          24
         ],
         "surface": "pavers",
         "density": 0.2,
@@ -221,10 +221,10 @@
       {
         "id": "vanguard-entry-square",
         "bounds": [
-          29,
-          11,
-          35,
-          24
+          33,
+          13,
+          39,
+          26
         ],
         "surface": "pavers",
         "density": 0.18,
@@ -243,20 +243,20 @@
         "marking": "dashed",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
             16,
-            18
+            20
           ],
           [
             6,
-            18
+            20
           ]
         ]
       },
@@ -267,24 +267,24 @@
         "marking": "edges",
         "points": [
           [
-            31,
-            14
+            35,
+            16
           ],
           [
-            26,
-            6
-          ],
-          [
-            16,
-            6
-          ],
-          [
-            9,
+            30,
             8
           ],
           [
+            16,
+            8
+          ],
+          [
+            9,
+            10
+          ],
+          [
             8,
-            15
+            17
           ]
         ]
       },
@@ -295,24 +295,24 @@
         "marking": "edges",
         "points": [
           [
-            31,
-            20
+            35,
+            22
           ],
           [
-            26,
-            28
+            30,
+            30
           ],
           [
             16,
-            28
+            30
           ],
           [
             9,
-            27
+            29
           ],
           [
             8,
-            21
+            23
           ]
         ]
       }
@@ -321,8 +321,8 @@
       {
         "id": "south-boulevard-crosswalk",
         "kind": "crosswalk",
-        "row": 27,
-        "col": 17,
+        "row": 31,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
@@ -330,7 +330,7 @@
         "id": "mid-boulevard-crosswalk",
         "kind": "crosswalk",
         "row": 16,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "rotation": 0
       },
@@ -338,23 +338,23 @@
         "id": "bastion-forecourt-loading",
         "kind": "loading",
         "row": 13,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "west-arcade-parking",
         "kind": "parking",
-        "row": 22,
-        "col": 6,
+        "row": 26,
+        "col": 8,
         "size": 2.5,
         "rotation": 0
       },
       {
         "id": "east-chancellery-parking",
         "kind": "parking",
-        "row": 22,
-        "col": 28,
+        "row": 26,
+        "col": 30,
         "size": 2.5,
         "rotation": 0
       },
@@ -362,15 +362,15 @@
         "id": "west-arcade-label",
         "kind": "label",
         "row": 15,
-        "col": 6,
+        "col": 8,
         "size": 3,
         "text": "WEST ARCADE"
       },
       {
         "id": "grand-boulevard-label",
         "kind": "label",
-        "row": 20,
-        "col": 18,
+        "row": 24,
+        "col": 20,
         "size": 3,
         "text": "STEEL BLVD"
       },
@@ -378,7 +378,7 @@
         "id": "east-chancellery-label",
         "kind": "label",
         "row": 15,
-        "col": 28,
+        "col": 30,
         "size": 3,
         "text": "CHANCELLERY"
       }
@@ -394,27 +394,27 @@
       {
         "id": "boulevard-north-gate",
         "row": 2,
-        "col": 18
+        "col": 20
       },
       {
         "id": "west-arcade-head",
         "row": 2,
-        "col": 6
+        "col": 8
       },
       {
         "id": "east-chancellery-head",
         "row": 2,
-        "col": 29
+        "col": 31
       },
       {
         "id": "bastion-west-ramp",
         "row": 7,
-        "col": 11
+        "col": 13
       },
       {
         "id": "bastion-east-ramp",
         "row": 7,
-        "col": 24
+        "col": 26
       }
     ],
     "encounters": [
@@ -430,33 +430,33 @@
         "initialCells": [
           {
             "row": 7,
-            "col": 15
+            "col": 17
           },
           {
             "row": 7,
-            "col": 21
+            "col": 23
           },
           {
             "row": 6,
-            "col": 6
+            "col": 8
           },
           {
             "row": 6,
-            "col": 29
+            "col": 31
           }
         ],
         "patrolRoute": [
           {
             "row": 9,
-            "col": 18
+            "col": 20
           },
           {
             "row": 16,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 23,
-            "col": 18
+            "row": 27,
+            "col": 20
           }
         ],
         "enemies": [
@@ -480,15 +480,15 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 6
+            "col": 8
           },
           {
             "row": 17,
-            "col": 6
+            "col": 8
           },
           {
-            "row": 23,
-            "col": 14
+            "row": 27,
+            "col": 16
           }
         ],
         "enemies": [
@@ -512,15 +512,15 @@
         "patrolRoute": [
           {
             "row": 9,
-            "col": 18
+            "col": 20
           },
           {
             "row": 13,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 20,
-            "col": 18
+            "row": 24,
+            "col": 20
           }
         ],
         "enemies": [
@@ -544,15 +544,15 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 26
-          },
-          {
-            "row": 17,
             "col": 28
           },
           {
-            "row": 22,
-            "col": 18
+            "row": 17,
+            "col": 30
+          },
+          {
+            "row": 26,
+            "col": 20
           }
         ],
         "enemies": [
@@ -576,15 +576,15 @@
         "patrolRoute": [
           {
             "row": 9,
-            "col": 18
+            "col": 20
           },
           {
             "row": 13,
-            "col": 18
+            "col": 20
           },
           {
             "row": 17,
-            "col": 18
+            "col": 20
           }
         ],
         "enemies": [
@@ -629,41 +629,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.........CC...........CC.......FFF",
-    "F..........CC...........CC........FF",
-    "...................................F",
-    "F...................................",
-    "..CC.......FF....CCC....FF.....CCC..",
-    "..CC.......FF....CEC....FF......CC..",
-    "...........CC....CCC....CC.........W",
-    "...................................W",
-    "..FF........C..CC...CC..C..........W",
-    ".FFF........C..CC...CC..C......FF...",
-    "........CC..C...........C..CC..FFF..",
-    "........CC..C...........C..CC.......",
-    "............B...........B..........F",
-    "..CC........B...........B......CCC..",
-    "..CC........C..BB...BB..C.......CC.F",
-    ".......FF...C..BB...BB..C..FF......F",
-    ".......FF..................FF......F",
-    "..BB........C...........C.......BBB.",
-    "..BB........C...CC..CC..C.......BBB.",
-    "F....CCBBCC.C...CC..CC..C.CCBBCC....",
-    "..CC........C..Q........C..Q...CCC..",
-    "..CC........C..BB...BB..C.......CC.F",
-    "........CC..C..BB...BB..C..CC.......",
-    "...FF...CC.Q............C..CC..FF...",
-    "..FFF......C........Q...C.......FF..",
-    "F..........C...CC...CC..C...........",
-    "...............CC...CC...Q.........W",
-    "...........CC...........CC.........W",
-    "...........CCQ..BB.BB...CC......Q..W",
-    "..CC....FF......BB.BBQ.....FF..CCC..",
-    "..CC....FF...BB......BBB...FF...CC..",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "W.........FF....CCCC....FF..........",
-    "WW.................................F",
-    "WW...............HH...............FF"
+    "FFFF.........CC...........CC.......FFFFF",
+    "FFF..........CC...........CC........FFFF",
+    ".....................................FFF",
+    "FFF.....................................",
+    "....CC.......FF....CCC....FF.....CCC....",
+    "....CC.......FF....CEC....FF......CC....",
+    ".............CC....CCC....CC.........WWW",
+    ".....................................WWW",
+    "....FF........C..CC...CC..C..........WWW",
+    "...FFF........C..CC...CC..C......FF.....",
+    "..........CC..C...........C..CC..FFF....",
+    "..........CC..C...........C..CC.........",
+    "..............B...........B..........FFF",
+    "....CC........B...........B......CCC....",
+    "....CC........C..BB...BB..C.......CC.FFF",
+    ".........FF...C..BB...BB..C..FF......FFF",
+    ".........FF..................FF......FFF",
+    "....BB........C...........C.......BBB...",
+    "....BB........C...........C.......BBB...",
+    "....BB........C...........C.......BBB...",
+    "....BB........C...CC..CC..C.......BBB...",
+    "....BB........C...CC..CC..C.......BBB...",
+    "....BB........C...CC..CC..C.......BBB...",
+    "FFF....CCBBCC.C...CC..CC..C.CCBBCC......",
+    "....CC........C..Q........C..Q...CCC....",
+    "....CC........C..BB...BB..C.......CC.FFF",
+    "..........CC..C..BB...BB..C..CC.........",
+    ".....FF...CC.Q............C..CC..FF.....",
+    "....FFF......C........Q...C.......FF....",
+    "FFF..........C...CC...CC..C.............",
+    ".................CC...CC...Q.........WWW",
+    ".............CC...........CC.........WWW",
+    ".............CCQ..BB.BB...CC......Q..WWW",
+    "....CC....FF......BB.BBQ.....FF..CCC....",
+    "....CC....FF...BB......BBB...FF...CC....",
+    ".....F............................FF....",
+    "....FF......FF............FF.....FFF....",
+    "WWW.........FF....CCCC....FF............",
+    "WWWW.................................FFF",
+    "WWWW...............HH...............FFFF"
   ]
 }

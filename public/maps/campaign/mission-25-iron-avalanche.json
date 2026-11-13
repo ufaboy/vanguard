@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 25 // SUMMIT FORTRESS FINALE",
   "objective": "Clear the summit fortress",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": true,
@@ -25,7 +25,7 @@
     "title": "Thermobaric Siege Leviathan",
     "spawnCell": {
       "row": 3,
-      "col": 17
+      "col": 19
     }
   },
   "completionReward": {
@@ -45,21 +45,21 @@
         "name": "South citadel glacis gate",
         "cells": [
           {
-            "row": 22,
-            "col": 17
+            "row": 26,
+            "col": 19
           },
           {
-            "row": 22,
-            "col": 18
+            "row": 26,
+            "col": 20
           }
         ],
         "start": {
-          "row": 24,
-          "col": 17
+          "row": 28,
+          "col": 19
         },
         "end": {
-          "row": 20,
-          "col": 17
+          "row": 24,
+          "col": 19
         },
         "purpose": "Breach the southern brick glacis gate to enter the central summit parade ring directly."
       },
@@ -68,20 +68,20 @@
         "cells": [
           {
             "row": 15,
-            "col": 12
+            "col": 14
           },
           {
             "row": 16,
-            "col": 12
+            "col": 14
           }
         ],
         "start": {
           "row": 15,
-          "col": 10
+          "col": 12
         },
         "end": {
           "row": 15,
-          "col": 14
+          "col": 16
         },
         "purpose": "Punch through the western bastion wall to open a wide flanking cut between the West Avenue and the central parade ring."
       },
@@ -90,20 +90,20 @@
         "cells": [
           {
             "row": 15,
-            "col": 22
+            "col": 24
           },
           {
             "row": 16,
-            "col": 22
+            "col": 24
           }
         ],
         "start": {
           "row": 15,
-          "col": 24
+          "col": 26
         },
         "end": {
           "row": 15,
-          "col": 20
+          "col": 22
         },
         "purpose": "Open the eastern sally port so tracked armor can circle behind heavy columns and kite the Mammoth dreadnought."
       },
@@ -112,20 +112,20 @@
         "cells": [
           {
             "row": 9,
-            "col": 17
+            "col": 19
           },
           {
             "row": 9,
-            "col": 18
+            "col": 20
           }
         ],
         "start": {
           "row": 11,
-          "col": 17
+          "col": 19
         },
         "end": {
           "row": 7,
-          "col": 17
+          "col": 19
         },
         "purpose": "Shatter the northern courtyard gate to complete a full 360-degree kiting loop around the summit citadel."
       }
@@ -141,9 +141,9 @@
         "id": "summit-plateau-snow",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "snow",
         "density": 0.16,
@@ -156,9 +156,9 @@
         "id": "west-flanking-avenue",
         "bounds": [
           3,
-          2,
-          29,
-          10
+          4,
+          33,
+          12
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -172,9 +172,9 @@
         "id": "central-citadel-parade-ground",
         "bounds": [
           3,
-          11,
-          25,
-          24
+          13,
+          29,
+          26
         ],
         "surface": "concrete",
         "density": 0.25,
@@ -189,9 +189,9 @@
         "id": "east-flanking-avenue",
         "bounds": [
           3,
-          25,
-          29,
-          33
+          27,
+          33,
+          35
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -204,10 +204,10 @@
       {
         "id": "south-fortress-apron",
         "bounds": [
-          26,
-          8,
-          35,
-          27
+          30,
+          10,
+          39,
+          29
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -223,24 +223,24 @@
         "id": "west-summit-flank-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            9
+            32,
+            11
           ],
           [
-            20,
-            6
+            24,
+            8
           ],
           [
             11,
-            6
+            8
           ],
           [
             4,
-            12
+            14
           ]
         ],
         "width": 2.8,
@@ -251,24 +251,24 @@
         "id": "central-citadel-axis",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
             16,
-            17
+            19
           ],
           [
             10,
-            17
+            19
           ],
           [
             4,
-            17
+            19
           ]
         ],
         "width": 3,
@@ -279,24 +279,24 @@
         "id": "east-summit-flank-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            26
+            32,
+            28
           ],
           [
-            20,
-            29
+            24,
+            31
           ],
           [
             11,
-            29
+            31
           ],
           [
             4,
-            23
+            25
           ]
         ],
         "width": 2.8,
@@ -309,7 +309,7 @@
         "id": "north-command-loading",
         "kind": "loading",
         "row": 5,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
@@ -317,15 +317,15 @@
         "id": "parade-ground-crosswalk",
         "kind": "crosswalk",
         "row": 16,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "south-hq-parking",
         "kind": "parking",
-        "row": 31,
-        "col": 13,
+        "row": 35,
+        "col": 15,
         "size": 2.5,
         "rotation": 0
       },
@@ -333,7 +333,7 @@
         "id": "west-flank-label",
         "kind": "label",
         "row": 15,
-        "col": 5,
+        "col": 7,
         "size": 3,
         "text": "WEST FLANKING ROAD"
       },
@@ -341,7 +341,7 @@
         "id": "central-parade-label",
         "kind": "label",
         "row": 15,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "text": "SUMMIT PARADE RING"
       },
@@ -349,7 +349,7 @@
         "id": "east-flank-label",
         "kind": "label",
         "row": 15,
-        "col": 30,
+        "col": 32,
         "size": 3,
         "text": "EAST FLANKING ROAD"
       }
@@ -365,32 +365,32 @@
       {
         "id": "north-west-bastion",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-citadel-west",
         "row": 2,
-        "col": 14
+        "col": 16
       },
       {
         "id": "north-citadel-east",
         "row": 2,
-        "col": 21
+        "col": 23
       },
       {
         "id": "north-east-bastion",
         "row": 2,
-        "col": 30
+        "col": 32
       },
       {
         "id": "upper-west-flank",
         "row": 7,
-        "col": 4
+        "col": 6
       },
       {
         "id": "upper-east-flank",
         "row": 7,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -407,33 +407,33 @@
         "initialCells": [
           {
             "row": 4,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 14
+            "col": 16
           },
           {
             "row": 5,
-            "col": 21
+            "col": 23
           },
           {
             "row": 4,
-            "col": 29
+            "col": 31
           }
         ],
         "patrolRoute": [
           {
             "row": 11,
-            "col": 15
+            "col": 17
           },
           {
             "row": 17,
-            "col": 16
+            "col": 18
           },
           {
-            "row": 25,
-            "col": 16
+            "row": 29,
+            "col": 18
           }
         ],
         "enemies": [
@@ -457,15 +457,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 6
+            "col": 8
           },
           {
-            "row": 19,
-            "col": 7
+            "row": 23,
+            "col": 9
           },
           {
-            "row": 26,
-            "col": 13
+            "row": 30,
+            "col": 15
           }
         ],
         "enemies": [
@@ -489,15 +489,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 29
+            "col": 31
           },
           {
-            "row": 19,
-            "col": 28
+            "row": 23,
+            "col": 30
           },
           {
-            "row": 26,
-            "col": 22
+            "row": 30,
+            "col": 24
           }
         ],
         "enemies": [
@@ -522,15 +522,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 18,
-            "col": 18
+            "row": 22,
+            "col": 20
           },
           {
-            "row": 25,
-            "col": 18
+            "row": 29,
+            "col": 20
           }
         ],
         "enemies": [
@@ -555,15 +555,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 17
+            "col": 19
           },
           {
             "row": 17,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 26,
-            "col": 17
+            "row": 30,
+            "col": 19
           }
         ],
         "enemies": [
@@ -608,41 +608,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.....III.......FF......III......FF",
-    "F......III...............III......FF",
-    ".......III...............III.......F",
-    ".......III...............III........",
-    "..CC...........................CCC..",
-    "..CC............................CC.I",
-    ".......III..CC.......CC..III.......I",
-    ".......III.QCC.......CC..III.......I",
-    "............C......Q..C.............",
-    "..FF........CCCCCBBCCCC........FF...",
-    ".FFF........C.........C........FF...",
-    "............C.........C.............",
-    "..QIII.......................III....",
-    "..CCII.....QCC.......CC......IIICC..",
-    "..CC........C........QC.........CC.F",
-    ".......FF...B...III...B....FF......F",
-    ".......FF...B...III...B....FF.......",
-    "....III.....C...III...C.....III.....",
-    "....III.....C.........C.....III....I",
-    "............CC.......CC............I",
-    "..CC...........................CCC..",
-    "..CC........C.........C.........CC.F",
-    "........CC..CCCCCBBCCCC.QCC.........",
-    "...FF...CC..C.Q.......C..CC....FF...",
-    "..FFF............................FF.",
-    "F...............III.................",
-    "....III.........III.........III.....",
-    "....III....CC...III...CC....III....I",
-    "..........QCC.........CC...........I",
-    "..CC....FF................FF...CCC..",
-    "..CC....FF...BB......BBB..FF....CC..",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "I.........FF....CCCC....FF..........",
-    "II.................................F",
-    "II...............HH...............FF"
+    "FFFF.....III.......FF......III......FFFF",
+    "FFF......III...............III......FFFF",
+    ".........III...............III.......FFF",
+    ".........III...............III..........",
+    "....CC...........................CCC....",
+    "....CC............................CC.III",
+    ".........III..CC.......CC..III.......III",
+    ".........III.QCC.......CC..III.......III",
+    "..............C......Q..C...............",
+    "....FF........CCCCCBBCCCC........FF.....",
+    "...FFF........C.........C........FF.....",
+    "..............C.........C...............",
+    "....QIII.......................III......",
+    "....CCII.....QCC.......CC......IIICC....",
+    "....CC........C........QC.........CC.FFF",
+    ".........FF...B...III...B....FF......FFF",
+    ".........FF...B...III...B....FF.........",
+    "......III.....C...III...C.....III.......",
+    "......III.....C...III...C.....III.......",
+    "......III.....C...III...C.....III.......",
+    "......III.....C.........C.....III....III",
+    "......III.....C.........C.....III....III",
+    "......III.....C.........C.....III....III",
+    "..............CC.......CC............III",
+    "....CC...........................CCC....",
+    "....CC........C.........C.........CC.FFF",
+    "..........CC..CCCCCBBCCCC.QCC...........",
+    ".....FF...CC..C.Q.......C..CC....FF.....",
+    "....FFF............................FF...",
+    "FFF...............III...................",
+    "......III.........III.........III.......",
+    "......III....CC...III...CC....III....III",
+    "............QCC.........CC...........III",
+    "....CC....FF................FF...CCC....",
+    "....CC....FF...BB......BBB..FF....CC....",
+    ".....F............................FF....",
+    "....FF......FF............FF.....FFF....",
+    "III.........FF....CCCC....FF............",
+    "IIII.................................FFF",
+    "IIII...............HH...............FFFF"
   ]
 }

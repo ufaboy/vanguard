@@ -279,7 +279,7 @@ function planInvestigate(brain, ctx) {
   if (isPassableCell(ctx.grid, ctx.target.row, ctx.target.col, ctx.self.canCrossWater)) {
     if (setPath(brain, ctx, ctx.target)) return true;
   }
-  if (planQuery(brain, ctx, { minCells: 0, maxCells: 3, los: null, travelWeight: 0.05, maxTravel: 36 })) return true;
+  if (planQuery(brain, ctx, { minCells: 0, maxCells: 3, los: null, travelWeight: 0.05, maxTravel: 40 })) return true;
   return setPath(brain, ctx, ctx.target, true);
 }
 

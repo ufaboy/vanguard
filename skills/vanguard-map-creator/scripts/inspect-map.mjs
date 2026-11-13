@@ -9,11 +9,11 @@ export async function inspectMap(projectRoot, mapPath) {
   const errors = [];
   const warnings = [];
   const check = (ok, message) => { if (!ok) errors.push(message); };
-  const size = map.gridSize ?? 36;
-  check(size === 36, 'Expected the current 36x36 map contract; review the helper for other formats.');
+  const size = map.gridSize ?? 40;
+  check(size === 40, 'Expected the current 40x40 map contract; review the helper for other formats.');
   check((map.tileSize ?? 2) === 2, 'Expected two world units per tile.');
   const validGrid = Array.isArray(map.layout) && map.layout.length === size && map.layout.every(row => typeof row === 'string' && row.length === size && /^[.BCFWIGHESXZDOQ_ ]+$/.test(row));
-  check(validGrid, 'Layout must contain 36 equal-width rows using known tile tokens.');
+  check(validGrid, 'Layout must contain 40 equal-width rows using known tile tokens.');
   if (!validGrid) return { mapId: map.mapId, errors, warnings };
   const inside = c => c && Number.isInteger(c.row) && Number.isInteger(c.col) && c.row >= 0 && c.col >= 0 && c.row < size && c.col < size;
   const key = c => `${c.row},${c.col}`;
@@ -54,7 +54,7 @@ export async function inspectMap(projectRoot, mapPath) {
     }
   }
   const spawnPoints = [...entrances, ...groups.flatMap(g => g.initialCells || [])];
-  for (const cell of spawnPoints) check(inside(cell) && cell.row <= 11, `Spawn/opening cell outside northern third (row 0..11): ${JSON.stringify(cell)}`);
+  for (const cell of spawnPoints) check(inside(cell) && cell.row <= 13, `Spawn/opening cell outside northern third (row 0..13): ${JSON.stringify(cell)}`);
   const initial = cfg.initialSpawnCount ?? 4;
   const cap = cfg.maxConcurrent ?? 8;
   check(Number.isInteger(initial) && initial > 0 && Number.isInteger(cap) && cap >= initial, 'Initial/live enemy limits must be positive integers and initial <= live cap.');
@@ -96,7 +96,7 @@ export async function inspectMap(projectRoot, mapPath) {
       const bossType = canonical(runtime.bossClass);
       check(bossType === canonical(bossPhases[0].type), `Map boss (${bossType}) differs from campaign plan (${bossPhases[0].type}).`);
       const bossCell = runtime.bossSpawnCell;
-      check(passable(bossCell) && reached.has(key(bossCell)) && bossCell.row <= 11, `Boss spawn cell must be reachable and in the northern third (row 0..11): ${JSON.stringify(bossCell)}`);
+      check(passable(bossCell) && reached.has(key(bossCell)) && bossCell.row <= 13, `Boss spawn cell must be reachable and in the northern third (row 0..13): ${JSON.stringify(bossCell)}`);
     } else {
       check(map.rules?.spawnSectorBossOnClear === false || map.spawnSectorBossOnClear === false, 'Explicitly disable the legacy boss for a no-boss mission.');
     }

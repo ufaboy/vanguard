@@ -1,20 +1,20 @@
 {
   "mapId": "survival-iron-crucible",
   "id": 201,
-  "code": "SURVIVAL S-01 // 36×36",
+  "code": "SURVIVAL S-01 // 40×40",
   "name": "Iron Crucible",
   "subtitle": "ENDLESS ARMORED HOLDOUT",
   "objective": "Survive endless enemy waves starting from a Tier I tank and set a new Survival Record",
   "gameMode": "survival",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 32,
-    "col": 15
+    "row": 36,
+    "col": 17
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "gameMode": "survival",
@@ -34,33 +34,33 @@
   "powerups": [
     {
       "type": "REPAIR",
-      "row": 25,
-      "col": 11
+      "row": 29,
+      "col": 13
     },
     {
       "type": "APS",
-      "row": 25,
-      "col": 24
+      "row": 29,
+      "col": 26
     },
     {
       "type": "MISSILE",
-      "row": 18,
-      "col": 6
+      "row": 22,
+      "col": 8
     },
     {
       "type": "EMP",
-      "row": 18,
-      "col": 29
+      "row": 22,
+      "col": 31
     },
     {
       "type": "REPAIR",
       "row": 11,
-      "col": 17
+      "col": 19
     },
     {
       "type": "APS",
-      "row": 30,
-      "col": 17
+      "row": 34,
+      "col": 19
     }
   ],
   "enemies": {
@@ -82,47 +82,51 @@
       "enemyClass": "BOSS_MAMMOTH",
       "spawnCell": {
         "row": 3,
-        "col": 17
+        "col": 19
       }
     }
   },
   "layout": [
-    "....................................",
-    "..BB....BB......BBBB......BB....BB..",
-    "..BB.G..BB...G..BBBB..G...BB..G.BB..",
-    "....................................",
-    "....BBBB..CC....BBBB....CC..BBBB....",
-    "....BBBB..CC..D......D..CC..BBBB....",
-    "..FF.....Q..............Q.......FF..",
-    "..FF..BBBB....CCCCCCCC....BBBB..FF..",
-    "......BBBB..D.......Q..D..BBBB......",
-    ".............Q......................",
-    "..WWWW....BBBB........BBBB....WWWW..",
-    "..WWWW....BBBB...FF...BBBB....WWWW..",
-    "..WWWW...........FF....Q......WWWW..",
-    "..........CC............CC..........",
-    "....FF...QCC....BBBB....CC....FF....",
-    "....FF..........BBBBQ.........FF....",
-    "........BBBB..D......D..BBBB........",
-    "........BBBB............BBBB........",
-    "..WWWW........CCCCCCCC........WWWW..",
-    "..WWWW........Q...............WWWW..",
-    "..WWWW....FF............FF....WWWW..",
-    "..........FF....BBBB....FF..........",
-    "....BBBB........BBBB........BBBB....",
-    "....BBBB..CC............CC..BBBB....",
-    "..........CC..D......D..CC..........",
-    "....................................",
-    "..FF....BBBB............BBBB....FF..",
-    "..FF....BBBB............BBBB....FF..",
-    "..............CC....CC..............",
-    "....BBBB......CC....CC......BBBB....",
-    "....BBBB..D..............D..BBBB....",
-    "....................................",
-    "..........BBBB........BBBB..........",
-    "..........BBBB.CCCCCC.BBBB..........",
-    "....................................",
-    ".................HH................."
+    "........................................",
+    "....BB....BB......BBBB......BB....BB....",
+    "....BB.G..BB...G..BBBB..G...BB..G.BB....",
+    "........................................",
+    "......BBBB..CC....BBBB....CC..BBBB......",
+    "......BBBB..CC..D......D..CC..BBBB......",
+    "....FF.....Q..............Q.......FF....",
+    "....FF..BBBB....CCCCCCCC....BBBB..FF....",
+    "........BBBB..D.......Q..D..BBBB........",
+    "...............Q........................",
+    "....WWWW....BBBB........BBBB....WWWW....",
+    "....WWWW....BBBB...FF...BBBB....WWWW....",
+    "....WWWW...........FF....Q......WWWW....",
+    "............CC............CC............",
+    "......FF...QCC....BBBB....CC....FF......",
+    "......FF..........BBBBQ.........FF......",
+    "..........BBBB..D......D..BBBB..........",
+    "..........BBBB............BBBB..........",
+    "..........BBBB............BBBB..........",
+    "..........BBBB............BBBB..........",
+    "....WWWW........CCCCCCCC........WWWW....",
+    "....WWWW........CCCCCCCC........WWWW....",
+    "....WWWW........CCCCCCCC........WWWW....",
+    "....WWWW........Q...............WWWW....",
+    "....WWWW....FF............FF....WWWW....",
+    "............FF....BBBB....FF............",
+    "......BBBB........BBBB........BBBB......",
+    "......BBBB..CC............CC..BBBB......",
+    "............CC..D......D..CC............",
+    "........................................",
+    "....FF....BBBB............BBBB....FF....",
+    "....FF....BBBB............BBBB....FF....",
+    "................CC....CC................",
+    "......BBBB......CC....CC......BBBB......",
+    "......BBBB..D..............D..BBBB......",
+    "........................................",
+    "............BBBB........BBBB............",
+    "............BBBB.CCCCCC.BBBB............",
+    "........................................",
+    "...................HH..................."
   ],
   "decoration": {
     "version": 1,
@@ -133,9 +137,9 @@
         "id": "north-staging-apron",
         "bounds": [
           1,
-          2,
+          4,
           8,
-          33
+          35
         ],
         "surface": "concrete",
         "density": 0.35,
@@ -149,9 +153,9 @@
         "id": "central-crucible-yard",
         "bounds": [
           12,
-          8,
-          24,
-          27
+          10,
+          28,
+          29
         ],
         "surface": "gravel",
         "density": 0.3,
@@ -164,10 +168,10 @@
       {
         "id": "south-bastion-apron",
         "bounds": [
-          28,
-          10,
-          34,
-          25
+          32,
+          12,
+          38,
+          27
         ],
         "surface": "pavers",
         "density": 0.25,
@@ -183,15 +187,15 @@
         "points": [
           [
             3,
-            6
+            8
           ],
           [
             16,
-            7
+            9
           ],
           [
-            31,
-            13
+            35,
+            15
           ]
         ],
         "width": 3,
@@ -203,15 +207,15 @@
         "points": [
           [
             3,
-            17
+            19
           ],
           [
-            18,
-            17
+            22,
+            19
           ],
           [
-            32,
-            17
+            36,
+            19
           ]
         ],
         "width": 3,
@@ -223,15 +227,15 @@
         "points": [
           [
             3,
-            29
+            31
           ],
           [
             16,
-            28
+            30
           ],
           [
-            31,
-            22
+            35,
+            24
           ]
         ],
         "width": 3,
@@ -244,15 +248,15 @@
         "id": "center-crucible-pad",
         "kind": "loading",
         "row": 15,
-        "col": 17,
+        "col": 19,
         "size": 4,
         "rotation": 0
       },
       {
         "id": "south-repair-bay-mark",
         "kind": "loading",
-        "row": 32,
-        "col": 17,
+        "row": 36,
+        "col": 19,
         "size": 4,
         "rotation": 0
       },
@@ -260,15 +264,15 @@
         "id": "label-crucible-center",
         "kind": "label",
         "row": 13,
-        "col": 17,
+        "col": 19,
         "size": 2,
         "text": "IRON CRUCIBLE // KILL ZONE"
       },
       {
         "id": "label-repair-bay",
         "kind": "label",
-        "row": 31,
-        "col": 17,
+        "row": 35,
+        "col": 19,
         "size": 2,
         "text": "ALLIED REPAIR & HANGAR BAY"
       }
@@ -277,10 +281,10 @@
       {
         "id": "clear-repair-bay",
         "bounds": [
-          31,
-          15,
-          34,
-          20
+          35,
+          17,
+          38,
+          22
         ]
       }
     ]

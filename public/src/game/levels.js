@@ -43,11 +43,11 @@ import { resolveMapRules } from './mapRules.js';
 import { normalizeDecoration } from './render/decoration.js';
 import { POWERUP, POWERUP_TYPES, POWERUP_MAX_ON_MAP } from './powerups.js';
 
-export const GRID_SIZE = 36;
+export const GRID_SIZE = 40;
 export const TILE_SIZE = 2.0;
 
 /** Anchor (left) cell of the Allied HQ. The HQ always sits on an outermost row and is two cells wide. */
-export const BASE_CELL = Object.freeze({ row: 35, col: 17 });
+export const BASE_CELL = Object.freeze({ row: 39, col: 19 });
 
 /**
  * Cell layout around the Allied HQ:

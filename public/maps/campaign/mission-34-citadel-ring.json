@@ -5,20 +5,20 @@
   "subtitle": "SECTOR 34 // CAPITAL CITADEL RING",
   "objective": "Destroy the inner stronghold",
   "gameMode": "stronghold_assault",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "enemyBase": {
     "cell": {
       "row": 5,
-      "col": 18
+      "col": 20
     },
     "name": "Inner Citadel Redoubt",
     "maxHp": 48,
@@ -45,21 +45,21 @@
         "name": "West ring arcade wall",
         "cells": [
           {
-            "row": 19,
-            "col": 6
+            "row": 23,
+            "col": 8
           },
           {
-            "row": 19,
-            "col": 7
+            "row": 23,
+            "col": 9
           }
         ],
         "start": {
-          "row": 21,
-          "col": 7
+          "row": 25,
+          "col": 9
         },
         "end": {
           "row": 17,
-          "col": 7
+          "col": 9
         },
         "purpose": "Blast through the west ring block to bypass heavy outer crossfire."
       },
@@ -67,21 +67,21 @@
         "name": "East ring chancellery wall",
         "cells": [
           {
-            "row": 19,
-            "col": 31
+            "row": 23,
+            "col": 33
           },
           {
-            "row": 19,
-            "col": 32
+            "row": 23,
+            "col": 34
           }
         ],
         "start": {
-          "row": 21,
-          "col": 31
+          "row": 25,
+          "col": 33
         },
         "end": {
           "row": 17,
-          "col": 31
+          "col": 33
         },
         "purpose": "Punch through the east ring block to flank the inner redoubt."
       },
@@ -90,20 +90,20 @@
         "cells": [
           {
             "row": 12,
-            "col": 14
+            "col": 16
           },
           {
             "row": 13,
-            "col": 14
+            "col": 16
           }
         ],
         "start": {
           "row": 12,
-          "col": 12
+          "col": 14
         },
         "end": {
           "row": 12,
-          "col": 16
+          "col": 18
         },
         "purpose": "Breach the western colonnade into the Inner Citadel Redoubt court."
       },
@@ -112,20 +112,20 @@
         "cells": [
           {
             "row": 12,
-            "col": 23
+            "col": 25
           },
           {
             "row": 13,
-            "col": 23
+            "col": 25
           }
         ],
         "start": {
           "row": 12,
-          "col": 25
+          "col": 27
         },
         "end": {
           "row": 12,
-          "col": 21
+          "col": 23
         },
         "purpose": "Break through the eastern colonnade into the Inner Citadel Redoubt court."
       }
@@ -141,9 +141,9 @@
         "id": "capital-district-pavers",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "pavers",
         "density": 0.16,
@@ -157,9 +157,9 @@
         "id": "citadel-ring-road-asphalt",
         "bounds": [
           2,
-          2,
-          33,
-          33
+          4,
+          37,
+          35
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -173,9 +173,9 @@
         "id": "inner-citadel-redoubt-plaza",
         "bounds": [
           7,
-          12,
+          14,
           17,
-          23
+          25
         ],
         "surface": "concrete",
         "density": 0.24,
@@ -189,10 +189,10 @@
       {
         "id": "south-approach-plaza",
         "bounds": [
-          28,
-          12,
-          35,
-          23
+          32,
+          14,
+          39,
+          25
         ],
         "surface": "pavers",
         "density": 0.18,
@@ -211,40 +211,40 @@
         "marking": "edges",
         "points": [
           [
-            31,
-            14
+            35,
+            16
           ],
           [
-            26,
-            4
+            30,
+            6
           ],
           [
             16,
-            4
+            6
           ],
           [
             6,
-            4
+            6
           ],
           [
             4,
-            18
+            20
           ],
           [
             6,
-            31
+            33
           ],
           [
             16,
-            31
+            33
           ],
           [
-            26,
-            31
+            30,
+            33
           ],
           [
-            31,
-            20
+            35,
+            22
           ]
         ]
       },
@@ -255,20 +255,20 @@
         "marking": "dashed",
         "points": [
           [
-            32,
-            17
+            36,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
             17,
-            17
+            19
           ],
           [
             6,
-            17
+            19
           ]
         ]
       }
@@ -277,8 +277,8 @@
       {
         "id": "south-ring-crosswalk",
         "kind": "crosswalk",
-        "row": 27,
-        "col": 17,
+        "row": 31,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
@@ -286,23 +286,23 @@
         "id": "north-redoubt-crosswalk",
         "kind": "crosswalk",
         "row": 6,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "west-ring-parking",
         "kind": "parking",
-        "row": 21,
-        "col": 4,
+        "row": 25,
+        "col": 6,
         "size": 2.5,
         "rotation": 0
       },
       {
         "id": "east-ring-parking",
         "kind": "parking",
-        "row": 21,
-        "col": 31,
+        "row": 25,
+        "col": 33,
         "size": 2.5,
         "rotation": 0
       },
@@ -310,15 +310,15 @@
         "id": "redoubt-central-loading",
         "kind": "loading",
         "row": 13,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "citadel-ring-label",
         "kind": "label",
-        "row": 20,
-        "col": 18,
+        "row": 24,
+        "col": 20,
         "size": 3,
         "text": "CITADEL RING"
       },
@@ -326,7 +326,7 @@
         "id": "west-sector-label",
         "kind": "label",
         "row": 15,
-        "col": 4,
+        "col": 6,
         "size": 3,
         "text": "WEST RING"
       },
@@ -334,7 +334,7 @@
         "id": "east-sector-label",
         "kind": "label",
         "row": 15,
-        "col": 31,
+        "col": 33,
         "size": 3,
         "text": "EAST RING"
       }
@@ -350,27 +350,27 @@
       {
         "id": "north-ring-gate",
         "row": 2,
-        "col": 18
+        "col": 20
       },
       {
         "id": "west-ring-head",
         "row": 2,
-        "col": 4
+        "col": 6
       },
       {
         "id": "east-ring-head",
         "row": 2,
-        "col": 31
+        "col": 33
       },
       {
         "id": "citadel-west-ramp",
         "row": 5,
-        "col": 11
+        "col": 13
       },
       {
         "id": "citadel-east-ramp",
         "row": 5,
-        "col": 24
+        "col": 26
       }
     ],
     "encounters": [
@@ -386,33 +386,33 @@
         "initialCells": [
           {
             "row": 6,
-            "col": 16
+            "col": 18
           },
           {
             "row": 7,
-            "col": 19
+            "col": 21
           },
           {
             "row": 5,
-            "col": 4
+            "col": 6
           },
           {
             "row": 5,
-            "col": 31
+            "col": 33
           }
         ],
         "patrolRoute": [
           {
             "row": 7,
-            "col": 18
+            "col": 20
           },
           {
             "row": 16,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 22,
-            "col": 18
+            "row": 26,
+            "col": 20
           }
         ],
         "enemies": [
@@ -436,15 +436,15 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 4
+            "col": 6
           },
           {
-            "row": 18,
-            "col": 4
+            "row": 22,
+            "col": 6
           },
           {
-            "row": 25,
-            "col": 13
+            "row": 29,
+            "col": 15
           }
         ],
         "enemies": [
@@ -468,15 +468,15 @@
         "patrolRoute": [
           {
             "row": 7,
-            "col": 18
+            "col": 20
           },
           {
             "row": 13,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 21,
-            "col": 18
+            "row": 25,
+            "col": 20
           }
         ],
         "enemies": [
@@ -501,15 +501,15 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 31
+            "col": 33
           },
           {
-            "row": 18,
-            "col": 31
+            "row": 22,
+            "col": 33
           },
           {
-            "row": 25,
-            "col": 22
+            "row": 29,
+            "col": 24
           }
         ],
         "enemies": [
@@ -534,15 +534,15 @@
         "patrolRoute": [
           {
             "row": 7,
-            "col": 18
+            "col": 20
           },
           {
             "row": 13,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 18,
-            "col": 18
+            "row": 22,
+            "col": 20
           }
         ],
         "enemies": [
@@ -590,73 +590,77 @@
     "STANDARD"
   ],
   "layout": [
-    "...FF.....CC............CC......FFF.",
-    "..FFF.....CC............CC.......FF.",
-    "...................................F",
-    "....BB.CC......FF..........CCC.BB...",
-    ".CC.BB.CC........CCC.......CC..BB.C.",
-    ".CC.......F...BB.CECBB...F.......CCC",
-    ".....BB.C.....CC.CCCCC......CBB.....",
-    ".....BB..CC..............CC..BB.....",
-    "..FF......CC..CC....CC..CC........FF",
-    ".FFF..BB......C..CC..C.C.....BB...F.",
-    ".....BB..CC...C........C.CC..BB.....",
-    "..CC.....CC...C........C.CC.....CC..",
-    "..CC.BB.......B........B.....BB.CC..",
-    ".....BB..CC...B........B.CC..BB....F",
-    "..CC.BB..CC...C..BB..BBC.CC..BB.CCC.",
-    ".CCC.....CC..QC..BB..BBC.CC.....CCC.",
-    "......QFF................Q..F.......",
-    "..CC.BB..CC...C........C.CC..BB.CC..",
-    "..CC.BB.......C.CC..CC.C.....BB.CC..",
-    "F...CCBBCC.CC.C.CC..CC.C.CCC.CCBBCC.",
-    "..CC.BB..CC...C.......QC.CC.QBB.CC..",
-    "..CC.BB...Q...C.BB..BB.C.....BB.CC..",
-    ".....BB..CC...C.BB..BB.C.CC..BB.....",
-    "...FF....CC..F...........CC....FF...",
-    "..FFF......C...CC...QC..C.......FF..",
-    "F.........QC...CC...CC..C...........",
-    "....BB.CC......CC...CC.....CC.BB....",
-    "....BB.CC..CC...........CC.CC.BB...F",
-    "...........CC...BB.BB...CC.........F",
-    "..CC.BB.FF......BB.BB......FF..BBB..",
-    "..CC.BB.FF...BB......BBB...FF..BBB..",
-    "...F............................FF..",
-    "..FF......FF..........C...F....FFF..",
-    "..........FF....CCCC.BC..FF.........",
-    "..............C......C..............",
-    "...F..........C..HH..C.............F"
+    ".....FF.....CC............CC......FFF...",
+    "....FFF.....CC............CC.......FF...",
+    ".....................................FFF",
+    "......BB.CC......FF..........CCC.BB.....",
+    "...CC.BB.CC........CCC.......CC..BB.C...",
+    "...CC.......F...BB.CECBB...F.......CCCCC",
+    ".......BB.C.....CC.CCCCC......CBB.......",
+    ".......BB..CC..............CC..BB.......",
+    "....FF......CC..CC....CC..CC........FFFF",
+    "...FFF..BB......C..CC..C.C.....BB...F...",
+    ".......BB..CC...C........C.CC..BB.......",
+    "....CC.....CC...C........C.CC.....CC....",
+    "....CC.BB.......B........B.....BB.CC....",
+    ".......BB..CC...B........B.CC..BB....FFF",
+    "....CC.BB..CC...C..BB..BBC.CC..BB.CCC...",
+    "...CCC.....CC..QC..BB..BBC.CC.....CCC...",
+    "........QFF................Q..F.........",
+    "....CC.BB..CC...C........C.CC..BB.CC....",
+    "....CC.BB..CC...C........C.CC..BB.CC....",
+    "....CC.BB..CC...C........C.CC..BB.CC....",
+    "....CC.BB.......C.CC..CC.C.....BB.CC....",
+    "....CC.BB.......C.CC..CC.C.....BB.CC....",
+    "....CC.BB.......C.CC..CC.C.....BB.CC....",
+    "FFF...CCBBCC.CC.C.CC..CC.C.CCC.CCBBCC...",
+    "....CC.BB..CC...C.......QC.CC.QBB.CC....",
+    "....CC.BB...Q...C.BB..BB.C.....BB.CC....",
+    ".......BB..CC...C.BB..BB.C.CC..BB.......",
+    ".....FF....CC..F...........CC....FF.....",
+    "....FFF......C...CC...QC..C.......FF....",
+    "FFF.........QC...CC...CC..C.............",
+    "......BB.CC......CC...CC.....CC.BB......",
+    "......BB.CC..CC...........CC.CC.BB...FFF",
+    ".............CC...BB.BB...CC.........FFF",
+    "....CC.BB.FF......BB.BB......FF..BBB....",
+    "....CC.BB.FF...BB......BBB...FF..BBB....",
+    ".....F............................FF....",
+    "....FF......FF..........C...F....FFF....",
+    "............FF....CCCC.BC..FF...........",
+    "................C......C................",
+    ".....F..........C..HH..C.............FFF"
   ],
   "powerups": [
     {
       "type": "EMP",
-      "row": 20,
-      "col": 17
+      "row": 24,
+      "col": 19
     },
     {
       "type": "REPAIR",
       "row": 16,
-      "col": 4
+      "col": 6
     },
     {
       "type": "MISSILE",
       "row": 16,
-      "col": 31
+      "col": 33
     },
     {
       "type": "MISSILE",
       "row": 11,
-      "col": 11
+      "col": 13
     },
     {
       "type": "APS",
       "row": 11,
-      "col": 24
+      "col": 26
     },
     {
       "type": "REPAIR",
-      "row": 26,
-      "col": 17
+      "row": 30,
+      "col": 19
     }
   ]
 }

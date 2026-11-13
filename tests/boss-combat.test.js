@@ -243,19 +243,19 @@ test('BOSS_MAMMOTH fires homing ATGM salvos from its ROCKET_LAUNCHER pod', () =>
 
 test('crushBossObstacles destroys BRICK and BOXES but leaves CONCRETE intact', () => {
   const game = fakeBossEngine([]);
-  // Cell (18, 18) sits at world (1.0, 1.0) in 36x36 TILE_SIZE=2 coordinates
-  game.grid = Array.from({ length: 36 }, (_, r) =>
-    Array.from({ length: 36 }, (__, c) => ({ row: r, col: c, type: TileType.EMPTY }))
+  // Cell (20, 20) sits at world (1.0, 1.0) in 40x40 TILE_SIZE=2 coordinates
+  game.grid = Array.from({ length: 40 }, (_, r) =>
+    Array.from({ length: 40 }, (__, c) => ({ row: r, col: c, type: TileType.EMPTY }))
   );
-  game.grid[18][18].type = TileType.BRICK;
-  game.grid[18][17].type = TileType.BOXES;
-  game.grid[17][18].type = TileType.CONCRETE;
+  game.grid[20][20].type = TileType.BRICK;
+  game.grid[20][19].type = TileType.BOXES;
+  game.grid[19][20].type = TileType.CONCRETE;
 
   const crushed = game.crushBossObstacles(0.2, 0.2, 1.12);
   assert.equal(crushed, true);
-  assert.equal(game.grid[18][18].type, TileType.EMPTY);
-  assert.equal(game.grid[18][17].type, TileType.EMPTY);
-  assert.equal(game.grid[17][18].type, TileType.CONCRETE);
+  assert.equal(game.grid[20][20].type, TileType.EMPTY);
+  assert.equal(game.grid[20][19].type, TileType.EMPTY);
+  assert.equal(game.grid[19][20].type, TileType.CONCRETE);
 });
 
 test('Campaign mission waits for remaining escort after boss destruction', () => {
@@ -328,8 +328,8 @@ test('detonateThermobaricAt converts FOREST, BRICK, CONCRETE, ICE, WATER within 
   let rebuiltWater = false;
   let rebuiltIce = false;
   const game = fakeBossEngine([]);
-  game.grid = Array.from({ length: 36 }, (_, r) =>
-    Array.from({ length: 36 }, (__, c) => ({ row: r, col: c, type: TileType.EMPTY, hp: 0 }))
+  game.grid = Array.from({ length: 40 }, (_, r) =>
+    Array.from({ length: 40 }, (__, c) => ({ row: r, col: c, type: TileType.EMPTY, hp: 0 }))
   );
   game.worldToGrid = TankGameEngine.prototype.worldToGrid;
   game.gridToWorld = TankGameEngine.prototype.gridToWorld;
@@ -349,26 +349,26 @@ test('detonateThermobaricAt converts FOREST, BRICK, CONCRETE, ICE, WATER within 
   game.playerHullAngle = 0;
   game.damagePlayer = (dmg) => { game.playerHp -= dmg; };
 
-  // Center at cell (18, 18) -> world (1.0, 1.0); radius = 2.5 cells = 5.0m
-  game.grid[18][18].type = TileType.FOREST;
-  game.grid[18][19].type = TileType.BRICK;
-  game.grid[19][18].type = TileType.CONCRETE;
-  game.grid[17][18].type = TileType.ICE;
-  game.grid[18][17].type = TileType.WATER;
+  // Center at cell (20, 20) -> world (1.0, 1.0); radius = 2.5 cells = 5.0m
+  game.grid[20][20].type = TileType.FOREST;
+  game.grid[20][21].type = TileType.BRICK;
+  game.grid[21][20].type = TileType.CONCRETE;
+  game.grid[19][20].type = TileType.ICE;
+  game.grid[20][19].type = TileType.WATER;
   // Far outside 2.5-cell radius (4 cells away)
-  game.grid[18][22].type = TileType.CONCRETE;
+  game.grid[20][24].type = TileType.CONCRETE;
 
   game.detonateThermobaricAt(1.0, 1.0, INFERNO.BLAST_CELLS * TILE_SIZE, 34, false);
 
   assert.equal(thermoFxCalls, 1);
   assert.equal(rebuiltWater, true);
   assert.equal(rebuiltIce, true);
-  assert.equal(game.grid[18][18].type, TileType.SAND);
-  assert.equal(game.grid[18][19].type, TileType.SAND);
-  assert.equal(game.grid[19][18].type, TileType.SAND);
-  assert.equal(game.grid[17][18].type, TileType.SAND);
-  assert.equal(game.grid[18][17].type, TileType.SAND);
-  assert.equal(game.grid[18][22].type, TileType.CONCRETE);
+  assert.equal(game.grid[20][20].type, TileType.SAND);
+  assert.equal(game.grid[20][21].type, TileType.SAND);
+  assert.equal(game.grid[21][20].type, TileType.SAND);
+  assert.equal(game.grid[19][20].type, TileType.SAND);
+  assert.equal(game.grid[20][19].type, TileType.SAND);
+  assert.equal(game.grid[20][24].type, TileType.CONCRETE);
   assert.ok(game.playerHp < 100, 'player in epicenter takes thermobaric blast damage');
 });
 

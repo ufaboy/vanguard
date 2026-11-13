@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 23 // MOUNTAIN PASS DEFENSE",
   "objective": "Defend the mountain HQ",
   "gameMode": "base_defense",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,21 +36,21 @@
         "name": "West gorge snow-wall cut",
         "cells": [
           {
-            "row": 22,
-            "col": 11
+            "row": 26,
+            "col": 13
           },
           {
-            "row": 23,
-            "col": 11
+            "row": 27,
+            "col": 13
           }
         ],
         "start": {
-          "row": 22,
-          "col": 13
+          "row": 26,
+          "col": 15
         },
         "end": {
-          "row": 22,
-          "col": 9
+          "row": 26,
+          "col": 11
         },
         "purpose": "Open a fast lateral rotation cut from the central refuge apron into the West Gorge Pass."
       },
@@ -58,21 +58,21 @@
         "name": "East ridge snow-wall cut",
         "cells": [
           {
-            "row": 22,
-            "col": 23
+            "row": 26,
+            "col": 25
           },
           {
-            "row": 23,
-            "col": 23
+            "row": 27,
+            "col": 25
           }
         ],
         "start": {
-          "row": 22,
-          "col": 21
+          "row": 26,
+          "col": 23
         },
         "end": {
-          "row": 22,
-          "col": 25
+          "row": 26,
+          "col": 27
         },
         "purpose": "Punch through the eastern snow-shed wall to intercept East Ridge striker waves rapidly."
       },
@@ -81,20 +81,20 @@
         "cells": [
           {
             "row": 15,
-            "col": 17
+            "col": 19
           },
           {
             "row": 15,
-            "col": 18
+            "col": 20
           }
         ],
         "start": {
           "row": 17,
-          "col": 17
+          "col": 19
         },
         "end": {
           "row": 13,
-          "col": 17
+          "col": 19
         },
         "purpose": "Breach the central col gate to push north and intercept sapper minelayers before they reach the HQ perimeter."
       },
@@ -103,20 +103,20 @@
         "cells": [
           {
             "row": 10,
-            "col": 12
+            "col": 14
           },
           {
             "row": 11,
-            "col": 12
+            "col": 14
           }
         ],
         "start": {
           "row": 10,
-          "col": 10
+          "col": 12
         },
         "end": {
           "row": 10,
-          "col": 14
+          "col": 16
         },
         "purpose": "Connect the upper West Gorge and Central Col passes to flank northern striker formations."
       }
@@ -132,9 +132,9 @@
         "id": "summit-snow-blanket",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "snow",
         "density": 0.16,
@@ -147,9 +147,9 @@
         "id": "west-gorge-pass-gravel",
         "bounds": [
           3,
-          2,
-          27,
-          10
+          4,
+          31,
+          12
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -163,9 +163,9 @@
         "id": "central-col-terrace",
         "bounds": [
           4,
-          13,
-          25,
-          22
+          15,
+          29,
+          24
         ],
         "surface": "concrete",
         "density": 0.22,
@@ -179,9 +179,9 @@
         "id": "east-ridge-pass-gravel",
         "bounds": [
           3,
-          25,
           27,
-          33
+          31,
+          35
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -194,10 +194,10 @@
       {
         "id": "south-refuge-defense-apron",
         "bounds": [
-          26,
-          7,
-          35,
-          28
+          30,
+          9,
+          39,
+          30
         ],
         "surface": "asphalt",
         "density": 0.24,
@@ -214,23 +214,23 @@
         "points": [
           [
             3,
-            5
+            7
           ],
           [
             11,
-            6
+            8
           ],
           [
-            20,
-            6
+            24,
+            8
           ],
           [
-            28,
-            10
+            32,
+            12
           ],
           [
-            31,
-            17
+            35,
+            19
           ]
         ],
         "width": 2.6,
@@ -242,23 +242,23 @@
         "points": [
           [
             3,
-            17
+            19
           ],
           [
             11,
-            17
+            19
           ],
           [
-            19,
-            17
-          ],
-          [
-            27,
-            17
+            23,
+            19
           ],
           [
             31,
-            17
+            19
+          ],
+          [
+            35,
+            19
           ]
         ],
         "width": 2.8,
@@ -270,23 +270,23 @@
         "points": [
           [
             3,
-            30
+            32
           ],
           [
             11,
-            29
+            31
           ],
           [
-            20,
-            29
+            24,
+            31
           ],
           [
-            28,
-            25
+            32,
+            27
           ],
           [
-            31,
-            17
+            35,
+            19
           ]
         ],
         "width": 2.6,
@@ -298,24 +298,24 @@
       {
         "id": "central-col-crosswalk",
         "kind": "crosswalk",
-        "row": 18,
-        "col": 17,
+        "row": 22,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "refuge-apron-loading",
         "kind": "loading",
-        "row": 28,
-        "col": 17,
+        "row": 32,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "south-hq-parking",
         "kind": "parking",
-        "row": 31,
-        "col": 13,
+        "row": 35,
+        "col": 15,
         "size": 2.5,
         "rotation": 0
       },
@@ -323,15 +323,15 @@
         "id": "west-gorge-label",
         "kind": "label",
         "row": 14,
-        "col": 6,
+        "col": 8,
         "size": 3,
         "text": "WEST GORGE PASS"
       },
       {
         "id": "central-col-label",
         "kind": "label",
-        "row": 18,
-        "col": 17,
+        "row": 22,
+        "col": 19,
         "size": 3,
         "text": "CENTRAL COL"
       },
@@ -339,7 +339,7 @@
         "id": "east-ridge-label",
         "kind": "label",
         "row": 14,
-        "col": 29,
+        "col": 31,
         "size": 3,
         "text": "EAST RIDGE PASS"
       }
@@ -355,32 +355,32 @@
       {
         "id": "north-west-gorge",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-col-west",
         "row": 2,
-        "col": 14
+        "col": 16
       },
       {
         "id": "north-col-east",
         "row": 2,
-        "col": 21
+        "col": 23
       },
       {
         "id": "north-east-ridge",
         "row": 2,
-        "col": 30
+        "col": 32
       },
       {
         "id": "upper-west-ledge",
         "row": 7,
-        "col": 4
+        "col": 6
       },
       {
         "id": "upper-east-ledge",
         "row": 7,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -397,33 +397,33 @@
         "initialCells": [
           {
             "row": 4,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 15
+            "col": 17
           },
           {
             "row": 5,
-            "col": 20
+            "col": 22
           },
           {
             "row": 4,
-            "col": 29
+            "col": 31
           }
         ],
         "patrolRoute": [
           {
             "row": 12,
-            "col": 7
-          },
-          {
-            "row": 20,
             "col": 9
           },
           {
-            "row": 28,
-            "col": 14
+            "row": 24,
+            "col": 11
+          },
+          {
+            "row": 32,
+            "col": 16
           }
         ],
         "enemies": [
@@ -447,15 +447,15 @@
         "patrolRoute": [
           {
             "row": 12,
+            "col": 31
+          },
+          {
+            "row": 24,
             "col": 29
           },
           {
-            "row": 20,
-            "col": 27
-          },
-          {
-            "row": 28,
-            "col": 21
+            "row": 32,
+            "col": 23
           }
         ],
         "enemies": [
@@ -478,15 +478,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 19,
-            "col": 17
+            "row": 23,
+            "col": 19
           },
           {
-            "row": 27,
-            "col": 17
+            "row": 31,
+            "col": 19
           }
         ],
         "enemies": [
@@ -510,15 +510,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 16
+            "col": 18
           },
           {
-            "row": 20,
-            "col": 16
+            "row": 24,
+            "col": 18
           },
           {
-            "row": 27,
-            "col": 16
+            "row": 31,
+            "col": 18
           }
         ],
         "enemies": [
@@ -544,15 +544,15 @@
         "patrolRoute": [
           {
             "row": 12,
+            "col": 22
+          },
+          {
+            "row": 25,
             "col": 20
           },
           {
-            "row": 21,
-            "col": 18
-          },
-          {
-            "row": 27,
-            "col": 18
+            "row": 31,
+            "col": 20
           }
         ],
         "enemies": [
@@ -597,41 +597,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.....III.......FF......III......FF",
-    "F......III.......F.......III......FF",
-    ".......III...............III.......F",
-    ".......III...............III........",
-    "..CC.........FF.....FF.........CC...",
-    "..CC.........FF.....FF.........CC..I",
-    ".......III..CC.......CC..III.......I",
-    ".......III..CC.......CCQ.III.......I",
-    "............C.........C.............",
-    "..FF........C.........C........FF...",
-    ".FFF........B...III...C........FF...",
-    "............BQ..III...C.............",
-    "...III......C...III...C.....III.....",
-    "..CCII......C.........C.....IIICC...",
-    "..CC........C........QC........CC..F",
-    ".......FF...CCCCCBBCCCC...FF.......F",
-    ".......FF......Q..........FF........",
-    "....III....CC.........CC....III.....",
-    "....III....CC.........CC....III....I",
-    ".................II................I",
-    "..CC.......C....IIII...C.......CC...",
-    "..CC.......C....IIII...C......QCC..F",
-    "...........B....IIII...BQ...........",
-    "...FF......B...........B.......FF...",
-    "..FFF.....QC...........C.......FF...",
-    "...........CC.........CC............",
-    "....III....CC.........CC....III.....",
-    "....III................Q....III....I",
-    "...............CCCCCC..............I",
-    "..CC....FF.....CCCCCC.....FF...CCC..",
-    "..CC....FF...BB......BBB..FF....CC..",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "I.........FF....CCCC....FF..........",
-    "II.................................F",
-    "II...............HH...............FF"
+    "FFFF.....III.......FF......III......FFFF",
+    "FFF......III.......F.......III......FFFF",
+    ".........III...............III.......FFF",
+    ".........III...............III..........",
+    "....CC.........FF.....FF.........CC.....",
+    "....CC.........FF.....FF.........CC..III",
+    ".........III..CC.......CC..III.......III",
+    ".........III..CC.......CCQ.III.......III",
+    "..............C.........C...............",
+    "....FF........C.........C........FF.....",
+    "...FFF........B...III...C........FF.....",
+    "..............BQ..III...C...............",
+    ".....III......C...III...C.....III.......",
+    "....CCII......C.........C.....IIICC.....",
+    "....CC........C........QC........CC..FFF",
+    ".........FF...CCCCCBBCCCC...FF.......FFF",
+    ".........FF......Q..........FF..........",
+    "......III....CC.........CC....III.......",
+    "......III....CC.........CC....III.......",
+    "......III....CC.........CC....III.......",
+    "......III....CC.........CC....III....III",
+    "......III....CC.........CC....III....III",
+    "......III....CC.........CC....III....III",
+    "...................II................III",
+    "....CC.......C....IIII...C.......CC.....",
+    "....CC.......C....IIII...C......QCC..FFF",
+    ".............B....IIII...BQ.............",
+    ".....FF......B...........B.......FF.....",
+    "....FFF.....QC...........C.......FF.....",
+    ".............CC.........CC..............",
+    "......III....CC.........CC....III.......",
+    "......III................Q....III....III",
+    ".................CCCCCC..............III",
+    "....CC....FF.....CCCCCC.....FF...CCC....",
+    "....CC....FF...BB......BBB..FF....CC....",
+    ".....F............................FF....",
+    "....FF......FF............FF.....FFF....",
+    "III.........FF....CCCC....FF............",
+    "IIII.................................FFF",
+    "IIII...............HH...............FFFF"
   ]
 }

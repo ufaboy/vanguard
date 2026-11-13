@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 11 // CARAVAN ROAD",
   "objective": "Clear the caravan road",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,25 +36,25 @@
         "name": "West shelter wall",
         "cells": [
           {
-            "row": 18,
-            "col": 8
+            "row": 22,
+            "col": 10
           },
           {
-            "row": 19,
-            "col": 8
+            "row": 23,
+            "col": 10
           },
           {
-            "row": 20,
-            "col": 8
+            "row": 24,
+            "col": 10
           }
         ],
         "start": {
-          "row": 19,
-          "col": 6
+          "row": 23,
+          "col": 8
         },
         "end": {
-          "row": 19,
-          "col": 10
+          "row": 23,
+          "col": 12
         },
         "purpose": "Shorten a lateral flank while preserving the intact route around the shelter."
       },
@@ -63,24 +63,24 @@
         "cells": [
           {
             "row": 15,
-            "col": 24
+            "col": 26
           },
           {
             "row": 16,
-            "col": 24
+            "col": 26
           },
           {
             "row": 17,
-            "col": 24
+            "col": 26
           }
         ],
         "start": {
           "row": 16,
-          "col": 22
+          "col": 24
         },
         "end": {
           "row": 16,
-          "col": 26
+          "col": 28
         },
         "purpose": "Shorten a lateral flank while preserving the intact route around the shelter."
       }
@@ -96,9 +96,9 @@
         "id": "sand-field",
         "bounds": [
           1,
-          1,
-          34,
-          34
+          3,
+          38,
+          36
         ],
         "surface": "sand",
         "density": 0.18,
@@ -110,9 +110,9 @@
         "id": "caravan-bed",
         "bounds": [
           11,
-          18,
-          29,
-          20
+          20,
+          33,
+          22
         ],
         "surface": "dirt",
         "density": 0.18,
@@ -125,9 +125,9 @@
         "id": "west-ruins",
         "bounds": [
           12,
-          3,
-          24,
-          10
+          5,
+          28,
+          12
         ],
         "surface": "gravel",
         "density": 0.18,
@@ -140,9 +140,9 @@
         "id": "east-shelves",
         "bounds": [
           10,
-          25,
-          26,
-          32
+          27,
+          30,
+          34
         ],
         "surface": "sand",
         "density": 0.18,
@@ -155,9 +155,9 @@
         "id": "north-turnout",
         "bounds": [
           2,
-          9,
+          11,
           8,
-          14
+          16
         ],
         "surface": "gravel",
         "density": 0.18,
@@ -168,10 +168,10 @@
       {
         "id": "repair-turnout",
         "bounds": [
-          28,
-          14,
           32,
-          20
+          16,
+          36,
+          22
         ],
         "surface": "dirt",
         "density": 0.18,
@@ -183,9 +183,9 @@
         "id": "north-caravan-ruins",
         "bounds": [
           2,
-          6,
           8,
-          16
+          8,
+          18
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -198,9 +198,9 @@
         "id": "west-court-rubble",
         "bounds": [
           11,
-          7,
+          9,
           15,
-          12
+          14
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -215,32 +215,32 @@
         "id": "caravan-road",
         "points": [
           [
-            31,
-            18
+            35,
+            20
+          ],
+          [
+            28,
+            20
           ],
           [
             24,
-            18
-          ],
-          [
-            20,
-            20
+            22
           ],
           [
             14,
-            20
+            22
           ],
           [
             9,
-            20
+            22
           ],
           [
             9,
-            12
+            14
           ],
           [
             3,
-            12
+            14
           ]
         ],
         "width": 3,
@@ -251,32 +251,32 @@
         "id": "west-track",
         "points": [
           [
-            31,
-            18
+            35,
+            20
           ],
           [
-            31,
-            7
+            35,
+            9
           ],
           [
-            24,
-            6
-          ],
-          [
-            15,
-            6
+            28,
+            8
           ],
           [
             15,
-            2
+            8
+          ],
+          [
+            15,
+            4
           ],
           [
             10,
-            2
+            4
           ],
           [
             3,
-            3
+            5
           ]
         ],
         "width": 2.5,
@@ -287,40 +287,40 @@
         "id": "east-track",
         "points": [
           [
+            35,
+            20
+          ],
+          [
+            36,
+            20
+          ],
+          [
+            36,
+            27
+          ],
+          [
             31,
-            18
+            27
           ],
           [
-            32,
-            18
-          ],
-          [
-            32,
-            25
-          ],
-          [
-            27,
-            25
+            30,
+            29
           ],
           [
             26,
-            27
-          ],
-          [
-            22,
-            27
+            29
           ],
           [
             13,
-            28
+            30
           ],
           [
             10,
-            33
+            35
           ],
           [
             3,
-            33
+            35
           ]
         ],
         "width": 2.5,
@@ -332,24 +332,24 @@
       {
         "id": "west-label",
         "kind": "label",
-        "row": 24,
-        "col": 6,
+        "row": 28,
+        "col": 8,
         "size": 3,
         "text": "WEST RUINS"
       },
       {
         "id": "east-label",
         "kind": "label",
-        "row": 22,
-        "col": 27,
+        "row": 26,
+        "col": 29,
         "size": 3,
         "text": "STONE SHELVES"
       },
       {
         "id": "road-label",
         "kind": "label",
-        "row": 24,
-        "col": 18,
+        "row": 28,
+        "col": 20,
         "size": 3,
         "text": "CARAVAN ROAD"
       }
@@ -359,36 +359,36 @@
         "id": "opening-0",
         "bounds": [
           9,
-          8,
+          10,
           11,
-          10
+          12
         ]
       },
       {
         "id": "opening-1",
         "bounds": [
           9,
-          19,
+          21,
           11,
-          21
+          23
         ]
       },
       {
         "id": "opening-2",
         "bounds": [
           8,
-          26,
+          28,
           10,
-          28
+          30
         ]
       },
       {
         "id": "opening-3",
         "bounds": [
           10,
-          30,
+          32,
           12,
-          32
+          34
         ]
       }
     ]
@@ -401,17 +401,17 @@
       {
         "id": "north-caravan",
         "row": 3,
-        "col": 12
+        "col": 14
       },
       {
         "id": "west-pass",
         "row": 3,
-        "col": 3
+        "col": 5
       },
       {
         "id": "east-pass",
         "row": 3,
-        "col": 33
+        "col": 35
       }
     ],
     "encounters": [
@@ -430,35 +430,35 @@
         ],
         "patrolRoute": [
           {
-            "row": 19,
-            "col": 10
+            "row": 23,
+            "col": 12
           },
           {
-            "row": 24,
-            "col": 18
+            "row": 28,
+            "col": 20
           },
           {
-            "row": 30,
-            "col": 18
+            "row": 34,
+            "col": 20
           }
         ],
         "recoverySec": 0,
         "initialCells": [
           {
             "row": 10,
-            "col": 9
+            "col": 11
           },
           {
             "row": 10,
-            "col": 20
+            "col": 22
           },
           {
             "row": 9,
-            "col": 27
+            "col": 29
           },
           {
             "row": 11,
-            "col": 31
+            "col": 33
           }
         ]
       },
@@ -479,15 +479,15 @@
         "patrolRoute": [
           {
             "row": 16,
-            "col": 5
+            "col": 7
           },
           {
-            "row": 24,
-            "col": 6
+            "row": 28,
+            "col": 8
           },
           {
-            "row": 24,
-            "col": 18
+            "row": 28,
+            "col": 20
           }
         ],
         "recoverySec": 9
@@ -508,15 +508,15 @@
         "patrolRoute": [
           {
             "row": 13,
-            "col": 28
-          },
-          {
-            "row": 22,
-            "col": 27
+            "col": 30
           },
           {
             "row": 26,
-            "col": 24
+            "col": 29
+          },
+          {
+            "row": 30,
+            "col": 26
           }
         ],
         "recoverySec": 10
@@ -538,15 +538,15 @@
         "patrolRoute": [
           {
             "row": 14,
-            "col": 20
-          },
-          {
-            "row": 20,
-            "col": 20
+            "col": 22
           },
           {
             "row": 24,
-            "col": 18
+            "col": 22
+          },
+          {
+            "row": 28,
+            "col": 20
           }
         ],
         "recoverySec": 9
@@ -568,15 +568,15 @@
         "patrolRoute": [
           {
             "row": 13,
-            "col": 28
+            "col": 30
           },
           {
-            "row": 22,
-            "col": 27
+            "row": 26,
+            "col": 29
           },
           {
-            "row": 24,
-            "col": 18
+            "row": 28,
+            "col": 20
           }
         ],
         "recoverySec": 10
@@ -613,41 +613,45 @@
     "STRIKER"
   ],
   "layout": [
-    "......BBBB....BBB.....BBBB...BBB....",
-    "......BBBB....BBB.....BBBB...BBB....",
-    "......BBBB....BBB.....BBBB...BBB....",
-    "......BBBB....BCB.....BCCB...BBB....",
-    "......BBBB....BCB.CC..BCCB.BBBB.....",
-    "......BBBB....BCBCCCC.BBBB.BBBB.....",
-    "..........B...BBB.CCC......BBBB.....",
-    ".....BCCC.B..........BBBBB..........",
-    "....BB.CCC............BBBB...BBB....",
-    "....BB.......................BBB....",
-    "....BB.........BBB......CC..........",
-    ".......B...B...BBBB....CCC..........",
-    "...BBB.BBBBB...BBBB....CC...........",
-    "...BBB.BBBBB............C...........",
-    "...BBB..BBBB.....BB.....C...........",
-    "........C........BB.....B.....B.....",
-    "........C.BBB.CCC.......B...........",
-    "........C.BCBCCCC......QB....CC.....",
-    "........B...BCCCQ.B.....C....CCC....",
-    "...QCC..B...B.CC..B.....C.....CCQ...",
-    "...CCC..B...............C....BB.....",
-    "...CC...CQ.BBB..........C....BB.....",
-    "..BBB...C..BBB......CC.......BB.....",
-    "..BCC...CBBBB.......CCC......BB.....",
-    "..BCC....BCCB...Q....CCC............",
-    "..BBB....BCCB.BBB....QCC............",
-    ".....Q...BCCB.BBB..............BBB..",
-    "...BBB...CCCC.BBB..............BBB..",
-    "...BBB...CCC.................CC.....",
-    "...BBB....C..........BBB....CCC.....",
-    "...BBB...............BBB....CC......",
-    ".....................BBB.....BBBBB..",
-    "...BBB.......................BBBBB..",
-    "...BBB.BBBB.....CCCC.........BBBBB..",
-    ".......................BBB..........",
-    "...BBB...........HH....BBB....BBBB.."
+    "........BBBB....BBB.....BBBB...BBB......",
+    "........BBBB....BBB.....BBBB...BBB......",
+    "........BBBB....BBB.....BBBB...BBB......",
+    "........BBBB....BCB.....BCCB...BBB......",
+    "........BBBB....BCB.CC..BCCB.BBBB.......",
+    "........BBBB....BCBCCCC.BBBB.BBBB.......",
+    "............B...BBB.CCC......BBBB.......",
+    ".......BCCC.B..........BBBBB............",
+    "......BB.CCC............BBBB...BBB......",
+    "......BB.......................BBB......",
+    "......BB.........BBB......CC............",
+    ".........B...B...BBBB....CCC............",
+    ".....BBB.BBBBB...BBBB....CC.............",
+    ".....BBB.BBBBB............C.............",
+    ".....BBB..BBBB.....BB.....C.............",
+    "..........C........BB.....B.....B.......",
+    "..........C.BBB.CCC.......B.............",
+    "..........C.BCBCCCC......QB....CC.......",
+    "..........C.BCBCCCC.......B....CC.......",
+    "..........C.BCBCCCC.......B....CC.......",
+    "..........B...BCCC..B.....C....CCC......",
+    "..........B...BCCC..B.....C....CCC......",
+    "..........B...BCCCQ.B.....C....CCC......",
+    ".....QCC..B...B.CC..B.....C.....CCQ.....",
+    ".....CCC..B...............C....BB.......",
+    ".....CC...CQ.BBB..........C....BB.......",
+    "....BBB...C..BBB......CC.......BB.......",
+    "....BCC...CBBBB.......CCC......BB.......",
+    "....BCC....BCCB...Q....CCC..............",
+    "....BBB....BCCB.BBB....QCC..............",
+    ".......Q...BCCB.BBB..............BBB....",
+    ".....BBB...CCCC.BBB..............BBB....",
+    ".....BBB...CCC.................CC.......",
+    ".....BBB....C..........BBB....CCC.......",
+    ".....BBB...............BBB....CC........",
+    ".......................BBB.....BBBBB....",
+    ".....BBB.......................BBBBB....",
+    ".....BBB.BBBB.....CCCC.........BBBBB....",
+    ".........................BBB............",
+    ".....BBB...........HH....BBB....BBBB...."
   ]
 }

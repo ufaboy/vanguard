@@ -18,6 +18,7 @@
  *   return lane overwatch, split pursuit/delivery intercept)
  */
 
+import { GRID_SIZE, TILE_SIZE } from '../game/constants.js';
 import { EnemyClass } from '../game/tanks.js';
 
 export const CARGO_STATUS = Object.freeze({
@@ -63,8 +64,8 @@ export const LAST_CARGO_GATES = Object.freeze({
     label: 'WEST GATE',
     shortLabel: 'WEST',
     row: 0,
-    col: 5,
-    entryTarget: Object.freeze({ row: 3, col: 5 }),
+    col: 7,
+    entryTarget: Object.freeze({ row: 3, col: 7 }),
     flankGateId: 'center',
   }),
   center: Object.freeze({
@@ -72,8 +73,8 @@ export const LAST_CARGO_GATES = Object.freeze({
     label: 'CENTER GATE',
     shortLabel: 'CENTER',
     row: 0,
-    col: 18,
-    entryTarget: Object.freeze({ row: 3, col: 18 }),
+    col: 20,
+    entryTarget: Object.freeze({ row: 3, col: 20 }),
     flankGateId: 'west',
   }),
   east: Object.freeze({
@@ -81,8 +82,8 @@ export const LAST_CARGO_GATES = Object.freeze({
     label: 'EAST GATE',
     shortLabel: 'EAST',
     row: 0,
-    col: 30,
-    entryTarget: Object.freeze({ row: 3, col: 30 }),
+    col: 32,
+    entryTarget: Object.freeze({ row: 3, col: 32 }),
     flankGateId: 'center',
   }),
 });
@@ -95,30 +96,30 @@ export const LAST_CARGO_CONTAINERS = Object.freeze([
     name: 'Cargo A · Rail Depot',
     shortName: 'RAIL DEPOT',
     row: 14,
-    col: 7,
+    col: 9,
     gateId: 'west',
     accentHex: '#38bdf8',
     searchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 5 }),
-      Object.freeze({ row: 9, col: 6 }),
-      Object.freeze({ row: 14, col: 7 }),
-      Object.freeze({ row: 18, col: 8 }),
+      Object.freeze({ row: 4, col: 7 }),
+      Object.freeze({ row: 9, col: 8 }),
+      Object.freeze({ row: 14, col: 9 }),
+      Object.freeze({ row: 22, col: 10 }),
     ]),
     altSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 9, col: 13 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 9, col: 15 }),
+      Object.freeze({ row: 14, col: 11 }),
       Object.freeze({ row: 14, col: 9 }),
-      Object.freeze({ row: 14, col: 7 }),
     ]),
     waterSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 10, col: 15 }),
-      Object.freeze({ row: 16, col: 12 }),
-      Object.freeze({ row: 14, col: 7 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 10, col: 17 }),
+      Object.freeze({ row: 16, col: 14 }),
+      Object.freeze({ row: 14, col: 9 }),
     ]),
     checkpoints: Object.freeze([
-      Object.freeze({ row: 12, col: 7, zone: Object.freeze({ row: 2, col: 1 }) }),
-      Object.freeze({ row: 16, col: 8, zone: Object.freeze({ row: 2, col: 1 }) }),
+      Object.freeze({ row: 12, col: 9, zone: Object.freeze({ row: 2, col: 1 }) }),
+      Object.freeze({ row: 16, col: 10, zone: Object.freeze({ row: 2, col: 1 }) }),
     ]),
   }),
   Object.freeze({
@@ -127,31 +128,31 @@ export const LAST_CARGO_CONTAINERS = Object.freeze([
     code: 'B',
     name: 'Cargo B · Pump Island',
     shortName: 'PUMP ISLAND',
-    row: 18,
-    col: 18,
+    row: 22,
+    col: 20,
     gateId: 'center',
     accentHex: '#f59e0b',
     searchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 10, col: 18 }),
-      Object.freeze({ row: 16, col: 15 }),
-      Object.freeze({ row: 18, col: 18 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 10, col: 20 }),
+      Object.freeze({ row: 16, col: 17 }),
+      Object.freeze({ row: 22, col: 20 }),
     ]),
     altSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 5 }),
-      Object.freeze({ row: 11, col: 11 }),
-      Object.freeze({ row: 17, col: 13 }),
-      Object.freeze({ row: 18, col: 18 }),
+      Object.freeze({ row: 4, col: 7 }),
+      Object.freeze({ row: 11, col: 13 }),
+      Object.freeze({ row: 17, col: 15 }),
+      Object.freeze({ row: 22, col: 20 }),
     ]),
     waterSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 13, col: 21 }),
-      Object.freeze({ row: 16, col: 21 }),
-      Object.freeze({ row: 18, col: 18 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 13, col: 23 }),
+      Object.freeze({ row: 16, col: 23 }),
+      Object.freeze({ row: 22, col: 20 }),
     ]),
     checkpoints: Object.freeze([
-      Object.freeze({ row: 17, col: 14, zone: Object.freeze({ row: 2, col: 2 }) }),
-      Object.freeze({ row: 21, col: 19, zone: Object.freeze({ row: 3, col: 3 }) }),
+      Object.freeze({ row: 17, col: 16, zone: Object.freeze({ row: 2, col: 2 }) }),
+      Object.freeze({ row: 25, col: 21, zone: Object.freeze({ row: 4, col: 3 }) }),
     ]),
   }),
   Object.freeze({
@@ -161,41 +162,41 @@ export const LAST_CARGO_CONTAINERS = Object.freeze([
     name: 'Cargo C · Container Yard',
     shortName: 'CONTAINER YARD',
     row: 9,
-    col: 28,
+    col: 30,
     gateId: 'east',
     accentHex: '#a855f7',
     searchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 30 }),
-      Object.freeze({ row: 8, col: 29 }),
-      Object.freeze({ row: 9, col: 28 }),
-      Object.freeze({ row: 14, col: 27 }),
+      Object.freeze({ row: 4, col: 32 }),
+      Object.freeze({ row: 8, col: 31 }),
+      Object.freeze({ row: 9, col: 30 }),
+      Object.freeze({ row: 14, col: 29 }),
     ]),
     altSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 8, col: 23 }),
-      Object.freeze({ row: 9, col: 28 }),
-      Object.freeze({ row: 13, col: 31 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 8, col: 25 }),
+      Object.freeze({ row: 9, col: 30 }),
+      Object.freeze({ row: 13, col: 33 }),
     ]),
     waterSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 11, col: 22 }),
-      Object.freeze({ row: 13, col: 25 }),
-      Object.freeze({ row: 9, col: 28 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 11, col: 24 }),
+      Object.freeze({ row: 13, col: 27 }),
+      Object.freeze({ row: 9, col: 30 }),
     ]),
     checkpoints: Object.freeze([
-      Object.freeze({ row: 11, col: 27, zone: Object.freeze({ row: 1, col: 4 }) }),
-      Object.freeze({ row: 14, col: 29, zone: Object.freeze({ row: 2, col: 4 }) }),
+      Object.freeze({ row: 11, col: 29, zone: Object.freeze({ row: 1, col: 4 }) }),
+      Object.freeze({ row: 14, col: 31, zone: Object.freeze({ row: 2, col: 5 }) }),
     ]),
   }),
 ]);
 
 export const LAST_CARGO_DELIVERY_PAD = Object.freeze({
-  rowMin: 30,
-  rowMax: 32,
-  colMin: 16,
-  colMax: 19,
-  centerRow: 31,
-  centerCol: 17.5,
+  rowMin: 34,
+  rowMax: 36,
+  colMin: 18,
+  colMax: 21,
+  centerRow: 35,
+  centerCol: 19.5,
 });
 
 /**
@@ -279,7 +280,7 @@ export const LAST_CARGO_CONTRACT = Object.freeze({
   code: 'CONTRACT-01 // LOGISTICS RAID',
   name: 'Last Cargo',
   subtitle: 'RIVER TERMINAL DATA RECOVERY',
-  theme: 'Industrial River Terminal · 36×36',
+  theme: 'Industrial River Terminal · 40×40',
   targetDuration: '8–12 minutes (no global timer)',
   difficulty: 'High (Late-Game Tier III–V)',
   summary:
@@ -291,9 +292,9 @@ export const LAST_CARGO_CONTRACT = Object.freeze({
   payouts: CONTRACT_PAYOUTS,
   timing: CONTRACT_TIMING,
   landmarks: Object.freeze([
-    Object.freeze({ id: 'west-rail-gantry', kind: 'rail_gantry', row: 11, col: 7, label: 'WEST RAIL GANTRY' }),
-    Object.freeze({ id: 'island-pump-assembly', kind: 'pump_assembly', row: 17, col: 19, label: 'ISLAND PUMP STATION' }),
-    Object.freeze({ id: 'east-cargo-crane', kind: 'cargo_crane', row: 8, col: 30, label: 'EAST CARGO CRANE' }),
+    Object.freeze({ id: 'west-rail-gantry', kind: 'rail_gantry', row: 11, col: 9, label: 'WEST RAIL GANTRY' }),
+    Object.freeze({ id: 'island-pump-assembly', kind: 'pump_assembly', row: 17, col: 21, label: 'ISLAND PUMP STATION' }),
+    Object.freeze({ id: 'east-cargo-crane', kind: 'cargo_crane', row: 8, col: 32, label: 'EAST CARGO CRANE' }),
   ]),
 });
 
@@ -305,29 +306,29 @@ const BLACKOUT_RELAYS = Object.freeze([
     name: 'Relay Alpha · West Listening Array',
     shortName: 'WEST ARRAY',
     row: 13,
-    col: 6,
+    col: 8,
     gateId: 'west',
     accentHex: '#a855f7',
     searchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 5 }),
-      Object.freeze({ row: 8, col: 6 }),
-      Object.freeze({ row: 13, col: 6 }),
-      Object.freeze({ row: 17, col: 7 }),
+      Object.freeze({ row: 4, col: 7 }),
+      Object.freeze({ row: 8, col: 8 }),
+      Object.freeze({ row: 13, col: 8 }),
+      Object.freeze({ row: 17, col: 9 }),
     ]),
     altSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 9, col: 12 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 9, col: 14 }),
+      Object.freeze({ row: 13, col: 10 }),
       Object.freeze({ row: 13, col: 8 }),
-      Object.freeze({ row: 13, col: 6 }),
     ]),
     waterSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 5 }),
-      Object.freeze({ row: 10, col: 6 }),
-      Object.freeze({ row: 13, col: 6 }),
+      Object.freeze({ row: 4, col: 7 }),
+      Object.freeze({ row: 10, col: 8 }),
+      Object.freeze({ row: 13, col: 8 }),
     ]),
     checkpoints: Object.freeze([
-      Object.freeze({ row: 11, col: 6, zone: Object.freeze({ row: 1, col: 1 }) }),
-      Object.freeze({ row: 16, col: 7, zone: Object.freeze({ row: 2, col: 1 }) }),
+      Object.freeze({ row: 11, col: 8, zone: Object.freeze({ row: 1, col: 1 }) }),
+      Object.freeze({ row: 16, col: 9, zone: Object.freeze({ row: 2, col: 1 }) }),
     ]),
   }),
   Object.freeze({
@@ -337,28 +338,28 @@ const BLACKOUT_RELAYS = Object.freeze([
     name: 'Relay Bravo · Central ECM Citadel',
     shortName: 'ECM CITADEL',
     row: 16,
-    col: 17,
+    col: 19,
     gateId: 'center',
     accentHex: '#38bdf8',
     searchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 10, col: 17 }),
-      Object.freeze({ row: 16, col: 17 }),
-      Object.freeze({ row: 21, col: 17 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 10, col: 19 }),
+      Object.freeze({ row: 16, col: 19 }),
+      Object.freeze({ row: 25, col: 19 }),
     ]),
     altSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 5 }),
-      Object.freeze({ row: 11, col: 12 }),
-      Object.freeze({ row: 16, col: 17 }),
+      Object.freeze({ row: 4, col: 7 }),
+      Object.freeze({ row: 11, col: 14 }),
+      Object.freeze({ row: 16, col: 19 }),
     ]),
     waterSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 13, col: 21 }),
-      Object.freeze({ row: 16, col: 17 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 13, col: 23 }),
+      Object.freeze({ row: 16, col: 19 }),
     ]),
     checkpoints: Object.freeze([
-      Object.freeze({ row: 14, col: 16, zone: Object.freeze({ row: 2, col: 2 }) }),
-      Object.freeze({ row: 19, col: 17, zone: Object.freeze({ row: 3, col: 2 }) }),
+      Object.freeze({ row: 14, col: 18, zone: Object.freeze({ row: 2, col: 3 }) }),
+      Object.freeze({ row: 23, col: 19, zone: Object.freeze({ row: 3, col: 3 }) }),
     ]),
   }),
   Object.freeze({
@@ -368,28 +369,28 @@ const BLACKOUT_RELAYS = Object.freeze([
     name: 'Relay Charlie · East Uplink Bunker',
     shortName: 'UPLINK BUNKER',
     row: 9,
-    col: 29,
+    col: 31,
     gateId: 'east',
     accentHex: '#f43f5e',
     searchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 30 }),
-      Object.freeze({ row: 7, col: 29 }),
-      Object.freeze({ row: 9, col: 29 }),
-      Object.freeze({ row: 14, col: 29 }),
+      Object.freeze({ row: 4, col: 32 }),
+      Object.freeze({ row: 7, col: 31 }),
+      Object.freeze({ row: 9, col: 31 }),
+      Object.freeze({ row: 14, col: 31 }),
     ]),
     altSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 8, col: 24 }),
-      Object.freeze({ row: 9, col: 29 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 8, col: 26 }),
+      Object.freeze({ row: 9, col: 31 }),
     ]),
     waterSearchRoute: Object.freeze([
-      Object.freeze({ row: 4, col: 18 }),
-      Object.freeze({ row: 12, col: 22 }),
-      Object.freeze({ row: 9, col: 29 }),
+      Object.freeze({ row: 4, col: 20 }),
+      Object.freeze({ row: 12, col: 24 }),
+      Object.freeze({ row: 9, col: 31 }),
     ]),
     checkpoints: Object.freeze([
-      Object.freeze({ row: 11, col: 29, zone: Object.freeze({ row: 1, col: 4 }) }),
-      Object.freeze({ row: 15, col: 29, zone: Object.freeze({ row: 2, col: 4 }) }),
+      Object.freeze({ row: 11, col: 31, zone: Object.freeze({ row: 1, col: 5 }) }),
+      Object.freeze({ row: 15, col: 31, zone: Object.freeze({ row: 2, col: 5 }) }),
     ]),
   }),
 ]);
@@ -471,7 +472,7 @@ const BLACKOUT_PROTOCOL_CONTRACT = Object.freeze({
   code: 'CONTRACT-02 // SABOTAGE RAID',
   name: 'Blackout Protocol',
   subtitle: 'RADAR & ECM RELAY DEMOLITION',
-  theme: 'Armored Comms & ECM Array · 36×36',
+  theme: 'Armored Comms & ECM Array · 40×40',
   targetDuration: '7–11 minutes (8.0s blast fuses)',
   difficulty: 'Very High (Stealth / Jammer / Breacher QRF)',
   summary:
@@ -483,9 +484,9 @@ const BLACKOUT_PROTOCOL_CONTRACT = Object.freeze({
   payouts: CONTRACT_PAYOUTS,
   timing: CONTRACT_TIMING,
   landmarks: Object.freeze([
-    Object.freeze({ id: 'west-listening-dish', kind: 'rail_gantry', row: 11, col: 6, label: 'WEST LISTENING ARRAY' }),
-    Object.freeze({ id: 'central-ecm-citadel', kind: 'pump_assembly', row: 15, col: 17, label: 'CENTRAL ECM CITADEL' }),
-    Object.freeze({ id: 'east-uplink-bunker', kind: 'cargo_crane', row: 8, col: 29, label: 'EAST UPLINK BUNKER' }),
+    Object.freeze({ id: 'west-listening-dish', kind: 'rail_gantry', row: 11, col: 8, label: 'WEST LISTENING ARRAY' }),
+    Object.freeze({ id: 'central-ecm-citadel', kind: 'pump_assembly', row: 15, col: 19, label: 'CENTRAL ECM CITADEL' }),
+    Object.freeze({ id: 'east-uplink-bunker', kind: 'cargo_crane', row: 8, col: 31, label: 'EAST UPLINK BUNKER' }),
   ]),
 });
 
@@ -611,10 +612,10 @@ export function buildContractUnitAssignment(contractState, groupEntry, unitType,
   if (groupId === 'G3') {
     // Overwatch areas near open return lanes (west, center-west, center-east, east)
     const overwatchLanes = [
-      { gateId: 'west', route: [{ row: 4, col: 5 }, { row: 14, col: 6 }, { row: 21, col: 8 }], zone: { row: 3, col: 1 } },
-      { gateId: 'center', route: [{ row: 4, col: 18 }, { row: 12, col: 15 }, { row: 20, col: 14 }], zone: { row: 3, col: 2 } },
-      { gateId: 'center', route: [{ row: 4, col: 18 }, { row: 12, col: 21 }, { row: 21, col: 22 }], zone: { row: 3, col: 3 } },
-      { gateId: 'east', route: [{ row: 4, col: 30 }, { row: 14, col: 30 }, { row: 21, col: 28 }], zone: { row: 3, col: 4 } },
+      { gateId: 'west', route: [{ row: 4, col: 7 }, { row: 14, col: 8 }, { row: 25, col: 10 }], zone: { row: 4, col: 1 } },
+      { gateId: 'center', route: [{ row: 4, col: 20 }, { row: 12, col: 17 }, { row: 24, col: 16 }], zone: { row: 4, col: 2 } },
+      { gateId: 'center', route: [{ row: 4, col: 20 }, { row: 12, col: 23 }, { row: 25, col: 24 }], zone: { row: 4, col: 4 } },
+      { gateId: 'east', route: [{ row: 4, col: 32 }, { row: 14, col: 32 }, { row: 25, col: 30 }], zone: { row: 4, col: 5 } },
     ];
     const lane = overwatchLanes[unitIndex % overwatchLanes.length];
     return {
@@ -636,16 +637,16 @@ export function buildContractUnitAssignment(contractState, groupEntry, unitType,
     const route =
       interceptSide === 'west'
         ? [
-            { row: 4, col: 5 },
-            { row: 15, col: 5 },
-            { row: 24, col: 9 },
-            { row: 27, col: 13 },
+            { row: 4, col: 7 },
+            { row: 15, col: 7 },
+            { row: 28, col: 11 },
+            { row: 31, col: 15 },
           ]
         : [
-            { row: 4, col: 30 },
-            { row: 15, col: 30 },
-            { row: 24, col: 26 },
-            { row: 27, col: 22 },
+            { row: 4, col: 32 },
+            { row: 15, col: 32 },
+            { row: 28, col: 28 },
+            { row: 31, col: 24 },
           ];
     const last = route.at(-1);
     return {
@@ -669,11 +670,12 @@ export function buildContractUnitAssignment(contractState, groupEntry, unitType,
 
 /** Creates a fresh per-attempt runtime state for a Contract operation. */
 export function createContractState(contractDef = LAST_CARGO_CONTRACT, gridToWorld = null) {
+  const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
   const toWorld =
     gridToWorld ||
     ((row, col) => ({
-      x: (col + 0.5) * 2 - 36,
-      z: (row + 0.5) * 2 - 36,
+      x: (col + 0.5) * TILE_SIZE - halfArena,
+      z: (row + 0.5) * TILE_SIZE - halfArena,
     }));
 
   const containers = contractDef.containers.map((def) => {

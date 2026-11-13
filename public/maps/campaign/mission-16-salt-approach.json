@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 16 // COASTAL CAUSEWAY",
   "objective": "Clear the coastal causeway",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,25 +36,25 @@
         "name": "Central causeway toll wall",
         "cells": [
           {
-            "row": 18,
-            "col": 18
-          },
-          {
-            "row": 18,
-            "col": 19
-          },
-          {
-            "row": 18,
+            "row": 22,
             "col": 20
+          },
+          {
+            "row": 22,
+            "col": 21
+          },
+          {
+            "row": 22,
+            "col": 22
           }
         ],
         "start": {
-          "row": 20,
-          "col": 19
+          "row": 24,
+          "col": 21
         },
         "end": {
           "row": 16,
-          "col": 19
+          "col": 21
         },
         "purpose": "Punch straight through the central causeway island barrier instead of looping around its concrete customs block."
       },
@@ -62,25 +62,25 @@
         "name": "West island warehouse cut",
         "cells": [
           {
-            "row": 18,
-            "col": 8
+            "row": 22,
+            "col": 10
           },
           {
-            "row": 19,
-            "col": 8
+            "row": 23,
+            "col": 10
           },
           {
-            "row": 20,
-            "col": 8
+            "row": 24,
+            "col": 10
           }
         ],
         "start": {
-          "row": 19,
-          "col": 6
+          "row": 23,
+          "col": 8
         },
         "end": {
-          "row": 19,
-          "col": 10
+          "row": 23,
+          "col": 12
         },
         "purpose": "Open a quick lateral cut across the western island to intercept hover tanks crossing the lagoon."
       },
@@ -89,24 +89,24 @@
         "cells": [
           {
             "row": 17,
-            "col": 28
+            "col": 30
           },
           {
-            "row": 18,
-            "col": 28
+            "row": 22,
+            "col": 30
           },
           {
-            "row": 19,
-            "col": 28
+            "row": 23,
+            "col": 30
           }
         ],
         "start": {
-          "row": 18,
-          "col": 26
+          "row": 22,
+          "col": 28
         },
         "end": {
-          "row": 18,
-          "col": 30
+          "row": 22,
+          "col": 32
         },
         "purpose": "Connect the inner quay road with the outer salt-pan flank without detouring north or south."
       }
@@ -121,9 +121,9 @@
         "id": "coastal-salt-flats",
         "bounds": [
           1,
-          1,
-          34,
-          34
+          3,
+          38,
+          36
         ],
         "surface": "sand",
         "density": 0.16,
@@ -137,9 +137,9 @@
         "id": "west-causeway-island",
         "bounds": [
           9,
-          2,
-          27,
-          10
+          4,
+          31,
+          12
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -153,9 +153,9 @@
         "id": "central-causeway-plaza",
         "bounds": [
           8,
-          15,
-          28,
-          21
+          17,
+          32,
+          23
         ],
         "surface": "pavers",
         "density": 0.24,
@@ -169,9 +169,9 @@
         "id": "east-quay-road",
         "bounds": [
           9,
-          25,
-          28,
-          33
+          27,
+          32,
+          35
         ],
         "surface": "concrete",
         "density": 0.2,
@@ -184,10 +184,10 @@
       {
         "id": "south-causeway-staging",
         "bounds": [
-          27,
-          9,
-          33,
-          26
+          31,
+          11,
+          37,
+          28
         ],
         "surface": "gravel",
         "density": 0.18,
@@ -202,24 +202,24 @@
         "id": "west-dry-causeway",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            6
+            32,
+            8
           ],
           [
-            19,
-            6
+            23,
+            8
           ],
           [
             9,
-            6
+            8
           ],
           [
             3,
-            6
+            8
           ]
         ],
         "width": 2.6,
@@ -230,24 +230,24 @@
         "id": "central-causeway-spine",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            21,
-            18
+            25,
+            20
           ],
           [
             15,
-            18
+            20
           ],
           [
             9,
-            17
+            19
           ],
           [
             3,
-            17
+            19
           ]
         ],
         "width": 2.8,
@@ -258,24 +258,24 @@
         "id": "east-quay-causeway",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            27
+            32,
+            29
           ],
           [
-            18,
-            26
+            22,
+            28
           ],
           [
             10,
-            27
+            29
           ],
           [
             3,
-            29
+            31
           ]
         ],
         "width": 2.6,
@@ -287,8 +287,8 @@
       {
         "id": "west-causeway-label",
         "kind": "label",
-        "row": 19,
-        "col": 5,
+        "row": 23,
+        "col": 7,
         "size": 3,
         "text": "WEST CAUSEWAY"
       },
@@ -296,15 +296,15 @@
         "id": "central-spine-label",
         "kind": "label",
         "row": 16,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "text": "SALT CAUSEWAY"
       },
       {
         "id": "east-quay-label",
         "kind": "label",
-        "row": 18,
-        "col": 30,
+        "row": 22,
+        "col": 32,
         "size": 3,
         "text": "EAST QUAY"
       }
@@ -314,36 +314,36 @@
         "id": "opening-0",
         "bounds": [
           7,
-          5,
+          7,
           9,
-          7
+          9
         ]
       },
       {
         "id": "opening-1",
         "bounds": [
           4,
-          16,
+          18,
           6,
-          18
+          20
         ]
       },
       {
         "id": "opening-2",
         "bounds": [
           8,
-          22,
+          24,
           10,
-          24
+          26
         ]
       },
       {
         "id": "opening-3",
         "bounds": [
           9,
-          29,
+          31,
           11,
-          31
+          33
         ]
       }
     ]
@@ -356,17 +356,17 @@
       {
         "id": "west-causeway-head",
         "row": 2,
-        "col": 6
+        "col": 8
       },
       {
         "id": "north-lagoon-channel",
         "row": 2,
-        "col": 17
+        "col": 19
       },
       {
         "id": "east-quay-gate",
         "row": 2,
-        "col": 29
+        "col": 31
       }
     ],
     "encounters": [
@@ -382,19 +382,19 @@
         "initialCells": [
           {
             "row": 8,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 17
+            "col": 19
           },
           {
             "row": 9,
-            "col": 23
+            "col": 25
           },
           {
             "row": 10,
-            "col": 30
+            "col": 32
           }
         ],
         "entrances": [
@@ -404,15 +404,15 @@
         "patrolRoute": [
           {
             "row": 17,
-            "col": 14
+            "col": 16
           },
           {
-            "row": 20,
-            "col": 22
+            "row": 24,
+            "col": 24
           },
           {
-            "row": 19,
-            "col": 6
+            "row": 23,
+            "col": 8
           }
         ],
         "recoverySec": 0
@@ -433,16 +433,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 19,
-            "col": 6
+            "row": 23,
+            "col": 8
           },
           {
-            "row": 20,
-            "col": 14
+            "row": 24,
+            "col": 16
           },
           {
             "row": 10,
-            "col": 6
+            "col": 8
           }
         ],
         "recoverySec": 8
@@ -463,16 +463,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 18,
-            "col": 26
+            "row": 22,
+            "col": 28
           },
           {
-            "row": 26,
-            "col": 22
+            "row": 30,
+            "col": 24
           },
           {
             "row": 16,
-            "col": 18
+            "col": 20
           }
         ],
         "recoverySec": 8
@@ -494,15 +494,15 @@
         "patrolRoute": [
           {
             "row": 16,
-            "col": 18
-          },
-          {
-            "row": 26,
-            "col": 14
-          },
-          {
-            "row": 20,
             "col": 20
+          },
+          {
+            "row": 30,
+            "col": 16
+          },
+          {
+            "row": 24,
+            "col": 22
           }
         ],
         "recoverySec": 9
@@ -524,16 +524,16 @@
         ],
         "patrolRoute": [
           {
-            "row": 20,
-            "col": 18
+            "row": 24,
+            "col": 20
           },
           {
-            "row": 27,
-            "col": 27
+            "row": 31,
+            "col": 29
           },
           {
-            "row": 27,
-            "col": 7
+            "row": 31,
+            "col": 9
           }
         ],
         "recoverySec": 9
@@ -567,41 +567,45 @@
     "STANDARD"
   ],
   "layout": [
-    "WWWW......BBB....FF....BB......WWWWW",
-    "WWW........BBB.........BB........WWW",
-    "...BB....CC...BB....CC...BB....BB...",
-    "...BC....CC...BB....CC...BC....BB...",
-    "F........BB...CC.........BC........F",
-    "F...CC...BB...CC....BB...CC...BBB..F",
-    "....CC....F...CC....BB...FF...CCB...",
-    "...BBB..CCC...FF....CCC..CCC........",
-    "........CCB..CCC....CCB..CCB..BBB...",
-    "W..CC.........B..........FF...CCB..W",
-    "W..CC..CCC....B.....CCC..CC........W",
-    "W......CCB..........CCB.......CCC..W",
-    "W..BB......WWWW.....WWWWWW....CCB..W",
-    "...BC..CC..WWWW..C..WWWWWW..F.CCB...",
-    ".......CC..WWWW..C..WWWWWW..FF......",
-    "...CC..CB..WWWW.....WWWWWW..FF.BB...",
-    "...CC..CC........C..........CC.BB...",
-    "F.......C..CCC..CC...CCC....B......F",
-    "F..BB...B..CCB..CCBBBCCB....B..CC..F",
-    "...BC...B.......CC...CCBQ...B..CB...",
-    "........B..CC...Q...........C.......",
-    "...CCC..CQ.CB...CC...CC.....C..BB...",
-    "W..CCB.....WWWW..B...WWWW...C..BC..W",
-    "W...Q..CC..WWWW..B...WWWW...Q..BB..W",
-    "W..BB..CC..WWWW......WWWW..CC......W",
-    "W..BC..FF..WWWW..CC..WWWW..CB..BB..W",
-    ".......FF...Q....CC........FF..BC...",
-    "...CC......CCC.......CCC...FF..Q....",
-    "...CB..BB..CCB..CC...CCB...CCC......",
-    "...Q...BB.......CC.........CCB..BB..",
-    "...CC..BC...CC......BB..CC......BB..",
-    "F..CC.......CC..........CC...BB....F",
-    "F.......BB...................BB....F",
-    "....BB..BB......CCCC....BB..........",
-    ".......................BBB..........",
-    "WWWW.......FF....HH....BBB......WWWW"
+    "WWWWWW......BBB....FF....BB......WWWWWWW",
+    "WWWWW........BBB.........BB........WWWWW",
+    ".....BB....CC...BB....CC...BB....BB.....",
+    ".....BC....CC...BB....CC...BC....BB.....",
+    "FFF........BB...CC.........BC........FFF",
+    "FFF...CC...BB...CC....BB...CC...BBB..FFF",
+    "......CC....F...CC....BB...FF...CCB.....",
+    ".....BBB..CCC...FF....CCC..CCC..........",
+    "..........CCB..CCC....CCB..CCB..BBB.....",
+    "WWW..CC.........B..........FF...CCB..WWW",
+    "WWW..CC..CCC....B.....CCC..CC........WWW",
+    "WWW......CCB..........CCB.......CCC..WWW",
+    "WWW..BB......WWWW.....WWWWWW....CCB..WWW",
+    ".....BC..CC..WWWW..C..WWWWWW..F.CCB.....",
+    ".........CC..WWWW..C..WWWWWW..FF........",
+    ".....CC..CB..WWWW.....WWWWWW..FF.BB.....",
+    ".....CC..CC........C..........CC.BB.....",
+    "FFF.......C..CCC..CC...CCC....B......FFF",
+    "FFF.......C..CCC..CC...CCC....B......FFF",
+    "FFF.......C..CCC..CC...CCC....B......FFF",
+    "FFF..BB...B..CCB..CC...CCB....B..CC..FFF",
+    "FFF..BB...B..CCB..CC...CCB....B..CC..FFF",
+    "FFF..BB...B..CCB..CCBBBCCB....B..CC..FFF",
+    ".....BC...B.......CC...CCBQ...B..CB.....",
+    "..........B..CC...Q...........C.........",
+    ".....CCC..CQ.CB...CC...CC.....C..BB.....",
+    "WWW..CCB.....WWWW..B...WWWW...C..BC..WWW",
+    "WWW...Q..CC..WWWW..B...WWWW...Q..BB..WWW",
+    "WWW..BB..CC..WWWW......WWWW..CC......WWW",
+    "WWW..BC..FF..WWWW..CC..WWWW..CB..BB..WWW",
+    ".........FF...Q....CC........FF..BC.....",
+    ".....CC......CCC.......CCC...FF..Q......",
+    ".....CB..BB..CCB..CC...CCB...CCC........",
+    ".....Q...BB.......CC.........CCB..BB....",
+    ".....CC..BC...CC......BB..CC......BB....",
+    "FFF..CC.......CC..........CC...BB....FFF",
+    "FFF.......BB...................BB....FFF",
+    "......BB..BB......CCCC....BB............",
+    ".........................BBB............",
+    "WWWWWW.......FF....HH....BBB......WWWWWW"
   ]
 }
