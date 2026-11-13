@@ -92,7 +92,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
   const metrics = {
     cannon: [['Damage', 'damage', '', false], ['Penetration', 'penetration', '%', false], ['Reload', 'fireCooldown', ' s', true]],
     chassis: [['Travel speed', 'moveSpeed', ' c/s', false], ['Total mass', 'totalMass', ' t', true]],
-    frame: [['Durability', 'maxHP', ' HP', false], ['APS cap', 'apsMaxAmmo', '', false], ['ATGM cap', 'missileMaxAmmo', '', false], ['Shells cap', 'cannonMaxAmmo', '', false], ['Total mass', 'totalMass', ' t', true]],
+    frame: [['Durability', 'maxHP', ' HP', false], ['APS capacity', 'apsMaxAmmo', '', false], ['Missile capacity', 'missileMaxAmmo', '', false], ['Shells capacity', 'cannonMaxAmmo', '', false], ['Total mass', 'totalMass', ' t', true]],
     engine: [['Travel speed', 'moveSpeed', ' c/s', false], ['Total mass', 'totalMass', ' t', true]],
     armor: [['Damage reduction', 'armor', '%', false], ['Durability', 'maxHP', ' HP', false], ['Total mass', 'totalMass', ' t', true]],
   }[track.key];
@@ -141,7 +141,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       <div class="garage-component-panel">
         <div class="garage-component-head">
           <div>
-            <span class="garage-eyebrow">${escape(track.role)} · ${maxed ? 'MAXED' : `TIER ${tier} → ${tier + 1}`}</span>
+            <span class="garage-eyebrow">${escape(track.role)} · ${maxed ? 'MAX TIER' : `TIER ${tier} → ${tier + 1}`}</span>
             <h2>${escape(track.label)}</h2>
           </div>
           <span class="garage-current-badge">INSTALLED: ${escape(current.name)}</span>
