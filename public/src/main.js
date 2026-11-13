@@ -1,11 +1,10 @@
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
-import { MENU_PAGES, renderMenu } from './menu.js';
-import { syncCampaignMapState } from './views/campaign.js';
-import { CONTRACT_PAGE_PATHS, PAGE_PATHS } from './app/routes.js';
+import { CONTRACT_PAGE_PATHS, PAGE_PATHS, battlefieldUrl } from './app/routes.js';
 import { attachSettingsModal } from './app/shell.js';
 import {
   CAMERA_LABELS,
   FPS_CAP_OPTIONS,
+  loadPlayerSave,
   loadPreferences,
   loadUpgrades,
   savePreferences as persistPreferences,
@@ -36,8 +35,7 @@ import {
   ARMORS,
 } from './game/components/index.js';
 import { CODEX_ITEMS } from './game/codex.js';
-import { renderCodex } from './views/codex.js';
-import { renderCampaignBrief } from './views/campaign.js';
+import { renderCodex } from './pages/codex.js';
 import {
   renderPowerUpBadgeSvg,
 } from './game/icons.js';
@@ -349,7 +347,7 @@ function initApp() {
       }
     }
     if (!engine) return;
-    if (e.code === 'KeyI') {
+    if (e.code === 'KeyI' && document.body?.dataset?.page === 'codex') {
       toggleCodexStudio();
       return;
     }
@@ -434,6 +432,65 @@ function routeFromState() {
   return { page: state.menuPage, param };
 }
 
+function battlefieldUrlForSector(sector) {
+  if (!sector) return PAGE_PATHS.campaign;
+  if (sector.gameMode === 'survival') return battlefieldUrl({ mode: 'survival' });
+  if (sector.gameMode === 'contract') {
+    return battlefieldUrl({ mode: 'contract', id: sector.contractId || sector.mapId });
+  }
+  return battlefieldUrl({ mode: 'campaign', mission: sector.mapId });
+}
+
+function resolveBattlefieldTarget() {
+  const params = new URLSearchParams(location.search);
+  const mode = params.get('mode') || '';
+  const mission = params.get('mission') || '';
+  const id = params.get('id') || '';
+  const sectorParam = params.get('sector');
+  const completedMissions =
+    state.hud?.playerSave?.completedMissions || loadPlayerSave()?.completedMissions || {};
+
+  if (mode === 'survival') {
+    const idx = SECTORS.findIndex(
+      (sector) => sector.gameMode === 'survival' || sector.mapId === 'survival-iron-crucible'
+    );
+    return idx >= 0 ? { index: idx } : { redirect: PAGE_PATHS.survival };
+  }
+
+  if (mode === 'contract' || (!mode && id)) {
+    const idx = SECTORS.findIndex(
+      (sector) => sector.gameMode === 'contract' && (sector.contractId === id || sector.mapId === id)
+    );
+    return idx >= 0 ? { index: idx } : { redirect: PAGE_PATHS.contracts };
+  }
+
+  if (mode === 'campaign' || (!mode && mission)) {
+    const idx = SECTORS.findIndex(
+      (sector) =>
+        sector.mapId === mission && sector.gameMode !== 'contract' && sector.gameMode !== 'survival'
+    );
+    if (idx < 0 || !isCampaignMissionUnlocked(mission, completedMissions)) {
+      return { redirect: PAGE_PATHS.campaign };
+    }
+    return { index: idx };
+  }
+
+  if (sectorParam !== null && sectorParam !== '') {
+    const idx = Number.parseInt(sectorParam, 10);
+    const targetSector = Number.isInteger(idx) ? SECTORS[idx] : null;
+    if (
+      targetSector &&
+      (targetSector.gameMode === 'contract' ||
+        targetSector.gameMode === 'survival' ||
+        isCampaignMissionUnlocked(targetSector.mapId, completedMissions))
+    ) {
+      return { index: idx };
+    }
+  }
+
+  return { redirect: PAGE_PATHS.campaign };
+}
+
 /** Opens the screen a URL hash names (Back / Forward, reload, deep link). Ignored during a mission. */
 function applyRoute(route) {
   if (state.hud.status !== GameStatus.MENU) return;
@@ -446,6 +503,16 @@ function applyRoute(route) {
     return;
   }
   setCurrentRoutePage(route.page);
+
+  if (route.page === 'battlefield') {
+    const target = resolveBattlefieldTarget();
+    if (target.redirect) {
+      location.replace(target.redirect);
+      return;
+    }
+    startSector(target.index);
+    return;
+  }
 
   if (route.page === 'codex') {
     const item = CODEX_ITEMS.find((entry) => entry.id === route.param);
@@ -482,41 +549,7 @@ function applyRoute(route) {
       return;
     }
   }
-  const normalizedPage = route.page === 'contract' ? 'contracts' : route.page;
-  const targetPage = MENU_PAGES.includes(normalizedPage) ? normalizedPage : 'home';
-  const pageChanged = state.menuPage !== targetPage;
-  state.menuPage = targetPage;
-  if (state.menuPage === 'campaign' && CAMPAIGN_MISSIONS.some((mission) => mission.id === route.param)) {
-    if (state.selectedCampaignMission !== route.param) {
-      state.selectedCampaignMission = route.param;
-      if (!pageChanged) {
-        renderCampaignBrief(route.param, state.hud?.playerSave?.completedMissions);
-        document.querySelectorAll('.cinematic-node').forEach((node) => {
-          node.classList.toggle('is-selected', node.dataset.mission === route.param);
-        });
-        return;
-      }
-    }
-  } else if (state.menuPage === 'contracts') {
-    const nextContract = CONTRACTS_CATALOG.some((c) => c.id === route.param) ? route.param : '';
-    if (state.selectedContract !== nextContract) {
-      state.selectedContract = nextContract;
-      if (!pageChanged) {
-        document.querySelectorAll('.contract-banner[data-contract-card]').forEach((card) => {
-          const isSelected = card.dataset.contractCard === nextContract;
-          card.classList.toggle('is-selected', isSelected);
-          const selectBtn = card.querySelector('[data-action="select-contract"]');
-          if (selectBtn) selectBtn.setAttribute('aria-pressed', String(isSelected));
-        });
-        return;
-      }
-    }
-  }
-  const statusModal = document.getElementById('status-modal');
-  if (pageChanged || !statusModal?.dataset?.page) {
-    renderUI(true);
-    document.querySelector('.menu-page h1')?.focus();
-  }
+  location.replace(PAGE_PATHS.index);
 }
 
 function cycleCameraPreset() {
@@ -573,6 +606,12 @@ async function startSector(sectorIndex) {
     }
     engine?.setInspectMode(false);
     engine?.startSector(sectorIndex);
+    if (document.body?.dataset?.page === 'battlefield') {
+      const targetUrl = battlefieldUrlForSector(targetSector);
+      if (`${location.pathname}${location.search}` !== targetUrl) {
+        history.replaceState(null, '', targetUrl);
+      }
+    }
     renderUI(true);
   } finally {
     startingSector = false;
@@ -594,10 +633,7 @@ function setupDelegatedEvents(root) {
 
     switch (action) {
       case 'menu-page':
-        if (!MENU_PAGES.includes(btn.dataset.page)) break;
-        state.menuPage = btn.dataset.page;
-        renderUI(true);
-        document.querySelector('.menu-page h1')?.focus();
+        location.href = PAGE_PATHS[btn.dataset.page] || PAGE_PATHS.index;
         break;
       case 'select-campaign-mission': {
         const missionId = btn.dataset.mission;
@@ -687,6 +723,10 @@ function setupDelegatedEvents(root) {
         break;
       }
       case 'return-survival':
+        if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
+          location.href = PAGE_PATHS.survival;
+          break;
+        }
         state.menuPage = 'survival';
         engine?.abortMissionToHangar();
         renderUI(true);
@@ -696,7 +736,7 @@ function setupDelegatedEvents(root) {
         renderUI(false);
         break;
       case 'return-contracts':
-        if (CONTRACT_PAGE_PATHS[document.body?.dataset?.page]) {
+        if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.contracts;
           break;
         }
@@ -713,6 +753,10 @@ function setupDelegatedEvents(root) {
         renderUI(false);
         break;
       case 'return-campaign':
+        if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
+          location.href = PAGE_PATHS.campaign;
+          break;
+        }
         state.menuPage = 'campaign';
         engine?.abortMissionToHangar();
         renderUI(true);
@@ -1522,6 +1566,34 @@ function renderContractHud(hud) {
   }
 }
 
+function renderBattlefieldLoaderHtml() {
+  return `
+    <div class="battlefield-loader" role="status" aria-live="polite">
+      <span class="btn-rivet top-left" aria-hidden="true"></span>
+      <span class="btn-rivet top-right" aria-hidden="true"></span>
+      <span class="btn-rivet bottom-left" aria-hidden="true"></span>
+      <span class="btn-rivet bottom-right" aria-hidden="true"></span>
+      <div class="battlefield-loader-radar" aria-hidden="true">
+        <div class="battlefield-loader-sweep"></div>
+        <svg class="battlefield-loader-tank" viewBox="0 0 48 22" fill="currentColor">
+          <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+        </svg>
+      </div>
+      <div class="battlefield-loader-kicker">BATTLEFIELD DEPLOYMENT</div>
+      <h1 class="battlefield-loader-title">DEPLOYING UNIT</h1>
+      <p class="battlefield-loader-sub">Initializing 3D tactical arena…</p>
+      <div class="battlefield-loader-track" aria-hidden="true">
+        <div class="battlefield-loader-bar"></div>
+      </div>
+      <div class="battlefield-loader-steps" aria-hidden="true">
+        <span>TEXTURES</span>
+        <span>TERRAIN</span>
+        <span>SYSTEMS</span>
+      </div>
+    </div>
+  `;
+}
+
 function renderUI(forceModals = false) {
   if (forceModals && !routePendingEngine) {
     const route = routeFromState();
@@ -1551,7 +1623,7 @@ function renderUI(forceModals = false) {
   const statusModal = document.getElementById('status-modal');
 
   const menuVisible = hud.status === GameStatus.MENU && !state.showCodexModal && !state.showUpgradeDrawer;
-  statusModal?.classList.toggle('menu-screen', menuVisible);
+  statusModal?.classList.toggle('menu-screen', menuVisible && state.menuPage !== 'battlefield');
   // The menu screen is opaque: let the engine skip simulating and drawing the hidden scene
   engine?.setSceneOccluded(menuVisible);
   if (menuVisible) {
@@ -1561,10 +1633,8 @@ function renderUI(forceModals = false) {
     renderCodexStudio();
     setHidden(statusModal, false);
     if (statusModal.dataset.page !== state.menuPage) {
-      setHtml(statusModal, renderMenu(state, CAMERA_LABELS));
+      setHtml(statusModal, renderBattlefieldLoaderHtml());
       statusModal.dataset.page = state.menuPage;
-    } else if (state.menuPage === 'campaign') {
-      syncCampaignMapState(state.hud?.playerSave?.completedMissions || {}, state.selectedCampaignMission);
     }
     return;
   }
@@ -2100,43 +2170,43 @@ function renderUI(forceModals = false) {
       setHidden(statusModal, false);
 
       if (hud.status === GameStatus.MENU) {
-        setHtml(statusModal, renderMenu(state, CAMERA_LABELS));
+        setHtml(statusModal, renderBattlefieldLoaderHtml());
       } else if (hud.status === GameStatus.PAUSED) {
         const isSurvival = hud.gameMode === 'survival' || currentSector.gameMode === 'survival';
         setHtml(statusModal, `
-          <div class="w-full max-w-xl bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl text-center">
+          <div style="width:fit-content;max-width:92vw;" class="bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl text-center">
             <div class="text-xs font-mono uppercase tracking-[0.2em] text-amber-400 mb-1">
               OPERATION SUSPENDED
             </div>
             <h2 class="text-2xl font-bold uppercase tracking-wider mb-6">TACTICAL PAUSE</h2>
-            <div class="flex flex-wrap justify-center gap-3">
+            <div class="flex flex-col gap-3">
               <button
                 data-action="toggle-pause"
-                class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded uppercase tracking-wider text-xs cursor-pointer"
+                class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded uppercase tracking-wider text-xs cursor-pointer"
               >
                 ▶ RESUME COMBAT
               </button>
               <button
                 data-action="toggle-sound"
                 aria-pressed="${state.soundEnabled}"
-                class="bg-slate-800 hover:bg-slate-700 border ${
+                class="w-full bg-slate-800 hover:bg-slate-700 border ${
                   state.soundEnabled ? 'border-slate-600/80 text-slate-200' : 'border-red-500/70 text-red-300'
                 } font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
               >
                 ${state.soundEnabled ? '🔊 SOUND: ON' : '🔇 SOUND: OFF'}
               </button>
               <button
-                data-action="${isSurvival ? 'return-survival' : 'abort-mission'}"
-                class="bg-red-950 hover:bg-red-700 text-red-200 border border-red-600/60 font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
-              >
-                ${isSurvival ? '⏎ END SURVIVAL RUN (SAVE RECORD)' : '⏎ MAIN MENU (KEEP COLLECTED LOOT)'}
-              </button>
-              <button
                 data-action="start-sector"
                 data-sector="${hud.sectorId}"
-                class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
+                class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
               >
                 ${isSurvival ? '↺ RESTART SURVIVAL (TIER I)' : '↺ RESTART SECTOR'}
+              </button>
+              <button
+                data-action="${isSurvival ? 'return-survival' : 'abort-mission'}"
+                class="w-full bg-red-950 hover:bg-red-700 text-red-200 border border-red-600/60 font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
+              >
+                ${isSurvival ? '⏎ END SURVIVAL RUN (SAVE RECORD)' : '⏎ MAIN MENU (KEEP COLLECTED LOOT)'}
               </button>
             </div>
           </div>

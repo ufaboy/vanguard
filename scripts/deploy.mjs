@@ -1,7 +1,10 @@
 /** Runs Cloudflare Pages deploy while loading per-project `.env` variables if present. */
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+
+const EXCLUDED_FROM_DEPLOY = new Set(['codex.html']);
 
 function loadDotEnv(filePath) {
   if (!fs.existsSync(filePath)) return {};
@@ -24,16 +27,34 @@ function loadDotEnv(filePath) {
 
 const isPreview = process.argv.includes('--preview');
 const env = { ...process.env, ...loadDotEnv(path.resolve(process.cwd(), '.env')) };
-const args = [
-  'wrangler',
-  'pages',
-  'deploy',
-  'public',
-  '--project-name=iron-vanguard',
-  ...(isPreview ? [] : ['--branch=main']),
-  '--commit-dirty=true',
-];
+const publicDir = path.resolve(process.cwd(), 'public');
+const stagingDir = fs.mkdtempSync(path.join(os.tmpdir(), 'battle-tank-deploy-'));
 
-const res = spawnSync('npx', args, { stdio: 'inherit', shell: true, env });
-process.exit(res.status ?? 1);
+let exitCode = 1;
+try {
+  fs.cpSync(publicDir, stagingDir, {
+    recursive: true,
+    filter: (src) => {
+      const rel = path.relative(publicDir, src).replace(/\\/g, '/');
+      return !EXCLUDED_FROM_DEPLOY.has(rel);
+    },
+  });
+
+  const args = [
+    'wrangler',
+    'pages',
+    'deploy',
+    stagingDir,
+    '--project-name=battle-tank',
+    ...(isPreview ? [] : ['--branch=main']),
+    '--commit-dirty=true',
+  ];
+
+  const res = spawnSync('npx', args, { stdio: 'inherit', shell: true, env });
+  exitCode = res.status ?? 1;
+} finally {
+  fs.rmSync(stagingDir, { recursive: true, force: true });
+}
+
+process.exit(exitCode);
 

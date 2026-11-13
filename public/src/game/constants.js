@@ -98,6 +98,7 @@ export const CANNON_AMMO = Object.freeze({
   PICKUP_AMMO: 6, // Shells replenished upon collecting an AMMO power-up from a BOX cache
   CREDIT_PRICE_PER_PACK: 150, // Credit cost in Hangar per ammunition pack
   SHELLS_PER_PACK: 5, // Shells added per Hangar pack purchase
+  BASE_REARM_CAP: 5, // Free emergency shell cap replenished while parked in the Command Base repair zone
   BASE_REARM_INTERVAL_SEC: 1.25, // Auto-rearm interval in seconds while parked in the Command Base repair zone
 });
 

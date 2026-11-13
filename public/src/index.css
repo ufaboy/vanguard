@@ -508,7 +508,11 @@ html, body {
 #status-modal[data-page="campaign"] .menu-page,
 #status-modal[data-page="survival"] .menu-page,
 #status-modal[data-page="contracts"] .menu-page,
-#status-modal[data-page="contract"] .menu-page {
+#status-modal[data-page="contract"] .menu-page,
+body[data-page="campaign"] .menu-page,
+body[data-page="survival"] .menu-page,
+body[data-page="contracts"] .menu-page,
+body[data-page="contract"] .menu-page {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
@@ -1806,6 +1810,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 /* Block 4: Massive Golden "START »" Button */
 .brief-action-block {
   flex-shrink: 0;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.75));
 }
 
 .brief-start-btn {
@@ -1814,32 +1819,59 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 185px;
-  height: 74px;
-  padding: 0 32px;
-  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
-  background: linear-gradient(180deg, #6e8a59 0%, var(--color-olive-drab) 48%, #35442a 100%);
-  border: 2px solid #8fb176;
-  box-shadow: 0 0 22px rgba(85, 107, 69, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  min-width: 244px;
+  height: 62px;
+  padding: 0 24px;
+  border: none;
+  background: linear-gradient(180deg, #cbe49a 0%, #86a65a 48%, #4d6235 100%);
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: transform 0.14s ease, filter 0.14s ease;
+}
+
+.brief-start-btn::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  z-index: 0;
+  background: linear-gradient(180deg, #738e56 0%, var(--color-olive-drab) 52%, #354429 100%);
+  clip-path: polygon(11px 0, calc(100% - 11px) 0, 100% 11px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 11px 100%, 0 calc(100% - 11px), 0 11px);
+  box-shadow: inset 0 1px 0 rgba(236, 252, 203, 0.4), inset 0 -2px 4px rgba(0, 0, 0, 0.45);
+}
+
+.brief-start-btn .start-content {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.brief-start-btn .start-tank-icon {
+  width: 34px;
+  height: 18px;
+  color: #f4f7ee;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.75));
 }
 
 .brief-start-btn .start-text {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.85);
 }
 
 .brief-start-btn:hover:not(:disabled) {
-  transform: scale(1.02);
-  filter: brightness(1.12);
-  border-color: #b4d49b;
-  box-shadow: 0 0 30px rgba(122, 153, 99, 0.7), inset 0 1px 0 #ffffff;
+  transform: translateY(-1px) scale(1.02);
+  filter: brightness(1.1);
 }
 
 .brief-start-btn:active:not(:disabled) {
@@ -1848,10 +1880,14 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 .brief-start-btn.is-locked,
 .brief-start-btn:disabled {
-  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
-  border-color: #475569;
-  box-shadow: none;
+  background: linear-gradient(180deg, #646d72 0%, #3e4447 100%);
   cursor: not-allowed;
+}
+
+.brief-start-btn.is-locked::before,
+.brief-start-btn:disabled::before {
+  background: linear-gradient(180deg, #272c2e 0%, #16191b 100%);
+  box-shadow: none;
 }
 
 .brief-start-btn.is-locked .start-text,
@@ -1862,8 +1898,10 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 }
 
 .brief-start-btn .locked-sub {
+  position: relative;
+  z-index: 1;
   font-size: 10px;
-  color: #64748b;
+  color: #94a3b8;
   margin-top: 2px;
 }
 
@@ -3693,4 +3731,125 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   font-size: 9px;
   color: #64748b;
   white-space: nowrap;
+}
+
+/* Battlefield Tactical Loader */
+.battlefield-loader {
+  position: relative;
+  width: min(440px, 92vw);
+  padding: 28px 28px 24px;
+  background: linear-gradient(165deg, #111827 0%, #0b0f17 100%);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 6px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  text-align: center;
+  font-family: var(--font-mono, monospace);
+}
+
+.battlefield-loader-radar {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.14) 0%, rgba(11, 15, 23, 0.92) 72%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.battlefield-loader-radar::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  border: 1px dashed rgba(245, 158, 11, 0.3);
+}
+
+.battlefield-loader-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(245, 158, 11, 0.42) 0deg, transparent 70deg, transparent 360deg);
+  animation: bf-radar-spin 1.6s linear infinite;
+}
+
+.battlefield-loader-tank {
+  position: relative;
+  z-index: 1;
+  width: 36px;
+  height: 18px;
+  color: #f59e0b;
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.45));
+}
+
+.battlefield-loader-kicker {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #f59e0b;
+  margin-bottom: 6px;
+}
+
+.battlefield-loader-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f8fafc;
+  margin: 0 0 6px;
+}
+
+.battlefield-loader-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0 0 18px;
+}
+
+.battlefield-loader-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: #0f172a;
+  border: 1px solid rgba(100, 116, 139, 0.35);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.battlefield-loader-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -40%;
+  width: 45%;
+  background: linear-gradient(90deg, transparent 0%, #f59e0b 55%, #fde68a 100%);
+  border-radius: 999px;
+  animation: bf-loader-slide 1.25s ease-in-out infinite;
+}
+
+.battlefield-loader-steps {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.battlefield-loader-steps span::before {
+  content: '● ';
+  color: #10b981;
+}
+
+@keyframes bf-radar-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bf-loader-slide {
+  0% { left: -45%; }
+  100% { left: 105%; }
 }
