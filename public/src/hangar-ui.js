@@ -61,7 +61,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
         <div class="garage-supply-info">
           <div class="garage-supply-meta">
             <strong>${label}</strong>
-            <span>${count}<small>/${max}</small></span>
+            <span>${count}<small> / ${max}</small></span>
           </div>
           <div class="garage-supply-bar" aria-hidden="true"><i style="width:${pct}%"></i></div>
         </div>
@@ -159,7 +159,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
             <div class="garage-repair-row">
               <strong>${escape(track.label)} damaged (Tier ${tier} → ${Math.max(1, tier - 1)})</strong>
               <button data-action="repair-component" data-track="${track.key}" ${credits < repairCost ? 'disabled' : ''}>
-                ${credits < repairCost ? `Need $${money(repairCost)}` : `Repair · $${money(repairCost)}`}
+                ${credits < repairCost ? `Need $ ${money(repairCost)}` : `Repair component · $ ${money(repairCost)}`}
               </button>
             </div>
           </div>
@@ -173,7 +173,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
 
         <div class="hangar-purchase">
           <button class="hangar-buy" data-action="upgrade-track" data-track="${track.key}" ${maxed || credits < cost ? 'disabled' : ''}>
-            <span>${maxed ? 'System complete' : credits < cost ? `Need $${money(cost - credits)} more` : `Install upgrade · $${money(cost)}`}</span>
+            <span>${maxed ? 'System complete' : credits < cost ? `Need $ ${money(cost - credits)} more` : `Install upgrade · $ ${money(cost)}`}</span>
             <span class="hangar-buy-arrow" aria-hidden="true">${maxed ? '✓' : '↗'}</span>
           </button>
           ${feedback ? `<div class="hangar-feedback" role="status" aria-live="polite">${escape(feedback)}</div>` : ''}
