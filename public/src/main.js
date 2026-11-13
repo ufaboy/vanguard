@@ -2158,39 +2158,39 @@ function renderUI(forceModals = false) {
       } else if (hud.status === GameStatus.PAUSED) {
         const isSurvival = hud.gameMode === 'survival' || currentSector.gameMode === 'survival';
         setHtml(statusModal, `
-          <div class="w-full max-w-xl bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl text-center">
+          <div class="w-full max-w-md bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl text-center">
             <div class="text-xs font-mono uppercase tracking-[0.2em] text-amber-400 mb-1">
               OPERATION SUSPENDED
             </div>
             <h2 class="text-2xl font-bold uppercase tracking-wider mb-6">TACTICAL PAUSE</h2>
-            <div class="flex flex-wrap justify-center gap-3">
+            <div class="flex flex-col gap-3">
               <button
                 data-action="toggle-pause"
-                class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded uppercase tracking-wider text-xs cursor-pointer"
+                class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 px-6 rounded uppercase tracking-wider text-xs cursor-pointer"
               >
                 ▶ RESUME COMBAT
               </button>
               <button
                 data-action="toggle-sound"
                 aria-pressed="${state.soundEnabled}"
-                class="bg-slate-800 hover:bg-slate-700 border ${
+                class="w-full bg-slate-800 hover:bg-slate-700 border ${
                   state.soundEnabled ? 'border-slate-600/80 text-slate-200' : 'border-red-500/70 text-red-300'
                 } font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
               >
                 ${state.soundEnabled ? '🔊 SOUND: ON' : '🔇 SOUND: OFF'}
               </button>
               <button
-                data-action="${isSurvival ? 'return-survival' : 'abort-mission'}"
-                class="bg-red-950 hover:bg-red-700 text-red-200 border border-red-600/60 font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
-              >
-                ${isSurvival ? '⏎ END SURVIVAL RUN (SAVE RECORD)' : '⏎ MAIN MENU (KEEP COLLECTED LOOT)'}
-              </button>
-              <button
                 data-action="start-sector"
                 data-sector="${hud.sectorId}"
-                class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
+                class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
               >
                 ${isSurvival ? '↺ RESTART SURVIVAL (TIER I)' : '↺ RESTART SECTOR'}
+              </button>
+              <button
+                data-action="${isSurvival ? 'return-survival' : 'abort-mission'}"
+                class="w-full bg-red-950 hover:bg-red-700 text-red-200 border border-red-600/60 font-mono py-2.5 px-5 rounded uppercase tracking-wider text-xs cursor-pointer"
+              >
+                ${isSurvival ? '⏎ END SURVIVAL RUN (SAVE RECORD)' : '⏎ MAIN MENU (KEEP COLLECTED LOOT)'}
               </button>
             </div>
           </div>

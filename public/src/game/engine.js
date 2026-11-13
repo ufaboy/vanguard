@@ -3961,7 +3961,11 @@ export class TankGameEngine {
     }
 
     const radius = 0.72;
+    const isMoving = Math.abs(this.playerVx) > 0.05 || Math.abs(this.playerVz) > 0.05;
     const nextX = this.playerX + this.playerVx * dt;
+    if (isMoving) {
+      this.crushBoxObstacles(nextX, this.playerZ, radius, true);
+    }
     if (
       !this.checkTankWallCollision(
         nextX,
@@ -3976,6 +3980,9 @@ export class TankGameEngine {
     }
 
     const nextZ = this.playerZ + this.playerVz * dt;
+    if (isMoving) {
+      this.crushBoxObstacles(this.playerX, nextZ, radius, true);
+    }
     if (
       !this.checkTankWallCollision(
         this.playerX,
@@ -5988,8 +5995,9 @@ export class TankGameEngine {
         const nextZ = e.z + e.targetDirZ * worldSpeed * dt;
         const isTryingToMove = Math.hypot(e.targetDirX, e.targetDirZ) > 0.1;
 
-        if (e.isBoss && isTryingToMove) {
-          this.crushBossObstacles(nextX, e.z, radius);
+        if (isTryingToMove) {
+          this.crushBoxObstacles(nextX, e.z, radius, false);
+          if (e.isBoss) this.crushBossObstacles(nextX, e.z, radius);
         }
         let blocked = false;
         if (
@@ -6002,8 +6010,9 @@ export class TankGameEngine {
           blocked = true;
         }
 
-        if (e.isBoss && isTryingToMove) {
-          this.crushBossObstacles(e.x, nextZ, radius);
+        if (isTryingToMove) {
+          this.crushBoxObstacles(e.x, nextZ, radius, false);
+          if (e.isBoss) this.crushBossObstacles(e.x, nextZ, radius);
         }
         if (
           !this.checkTankWallCollision(e.x, nextZ, radius, e.stats.canCrossWater) &&
@@ -6888,6 +6897,36 @@ export class TankGameEngine {
     }
     sound.playMissileLaunch(e);
     this.setStatusBanner(`${e.name.toUpperCase()}: HOMING ATGM SALVO INBOUND`, 1.6);
+  }
+
+  /** Crushes BOXES supply crates under any moving tank; only player-crushed crates drop loot. */
+  crushBoxObstacles(x, z, radius, fromPlayer = false) {
+    if (!this.grid?.length) return false;
+    const half = (GRID_SIZE * TILE_SIZE) / 2;
+    const minCol = Math.max(0, Math.floor((x - radius + half) / TILE_SIZE));
+    const maxCol = Math.min(GRID_SIZE - 1, Math.floor((x + radius + half) / TILE_SIZE));
+    const minRow = Math.max(0, Math.floor((z - radius + half) / TILE_SIZE));
+    const maxRow = Math.min(GRID_SIZE - 1, Math.floor((z + radius + half) / TILE_SIZE));
+    let crushed = false;
+    for (let r = minRow; r <= maxRow; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
+        const cell = this.grid[r]?.[c];
+        if (!cell || cell.type !== TileType.BOXES) continue;
+        const pos = this.gridToWorld(cell.row, cell.col);
+        this.destroyTileCell(cell);
+        sound.playBrickHit({ x: pos.x, z: pos.z });
+        if (fromPlayer) {
+          const type = rollBoxLoot(this.boxPowerUpPool, Math.random, this);
+          if (type) this.createPowerUpEntity(type, pos.x, pos.z);
+        }
+        crushed = true;
+      }
+    }
+    if (crushed) {
+      this.screenShake = Math.max(this.screenShake || 0, 0.12);
+      this.emitHudUpdate();
+    }
+    return crushed;
   }
 
   /** Super-heavy bosses crush BRICK and BOXES obstacles under their hull mass when advancing. */
