@@ -85,7 +85,7 @@ export function renderContractHud(hud) {
     const baseDownWarn = !hud.baseAlive
       ? `<div class="bg-red-950/95 border border-red-500/80 px-3.5 py-1.5 rounded flex items-center gap-2 font-mono text-xs text-red-100 shadow-lg">
            <span class="text-amber-300 font-bold">⚠ REPAIR BAY DESTROYED</span>
-           <span>REPAIR & HANGAR [U] OFFLINE — RECOVER BASE_RESTORE FROM SUPPLY CRATES</span>
+           <span>REPAIR & GARAGE [U] OFFLINE — RECOVER BASE_RESTORE FROM SUPPLY CRATES</span>
          </div>`
       : '';
 

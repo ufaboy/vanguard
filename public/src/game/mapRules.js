@@ -140,13 +140,13 @@ export const MAP_MODE_CONFIGS = Object.freeze({
     hasEnemyFortifiedBase: false,
     enemyBaseMaxHp: 0,
     description:
-      'Logistics raid: recover at least two of three sealed data containers to the southern delivery pad and trigger extraction. Eliminating all hostiles never completes the contract; losing the repair HQ disables repairs and Hangar access without causing defeat.',
+      'Logistics raid: recover at least two of three sealed data containers to the southern delivery pad and trigger extraction. Eliminating all hostiles never completes the contract; losing the repair HQ disables repairs and Garage access without causing defeat.',
     objectiveBanner:
       'CONTRACT OBJECTIVE: DELIVER 2+ DATA CONTAINERS TO SOUTH PAD & EXTRACT',
     victoryBanner:
       'CONTRACT COMPLETE! EXTRACTION CONFIRMED & PAYOUT COMMITTED!',
     baseLostBanner:
-      'REPAIR HQ DESTROYED! FIELD REPAIRS & HANGAR OFFLINE — DELIVERY PAD REMAINS ACTIVE!',
+      'REPAIR HQ DESTROYED! FIELD REPAIRS & GARAGE OFFLINE — DELIVERY PAD REMAINS ACTIVE!',
   }),
 
   [MAP_MODES.SURVIVAL]: Object.freeze({
@@ -167,12 +167,12 @@ export const MAP_MODE_CONFIGS = Object.freeze({
     hasEnemyFortifiedBase: false,
     enemyBaseMaxHp: 0,
     description:
-      'Endless wave holdout starting on a stock Tier I tank. Earn session credits to upgrade in the field Hangar [U]. Losing the Allied HQ disables repairs and Hangar access until a BASE_RESTORE pickup is recovered from supply crates.',
+      'Endless wave holdout starting on a stock Tier I tank. Earn session credits to upgrade in the field Garage [U]. Losing the Allied HQ disables repairs and Garage access until a BASE_RESTORE pickup is recovered from supply crates.',
     objectiveBanner:
       'SURVIVAL OBJECTIVE: HOLD THE LINE AGAINST ENDLESS ARMORED WAVES',
     victoryBanner: 'WAVE CLEARED!',
     baseLostBanner:
-      'REPAIR HQ DESTROYED! FIELD REPAIRS & HANGAR OFFLINE — BREAK SUPPLY CRATES FOR BASE RESTORE!',
+      'REPAIR HQ DESTROYED! FIELD REPAIRS & GARAGE OFFLINE — BREAK SUPPLY CRATES FOR BASE RESTORE!',
   }),
 });
 

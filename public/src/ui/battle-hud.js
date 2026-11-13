@@ -136,10 +136,10 @@ export function renderBattlefieldHud({
               ? 'border-teal-400 text-teal-300 ring-2 ring-teal-400/50 animate-pulse'
               : 'border-amber-500/60 text-amber-400'
           } px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
-          title="Allied Base Hangar & Upgrades [U]"
+          title="Allied Base Garage & Upgrades [U]"
         >
           <span>⚙</span>
-          <span class="hidden sm:inline">HANGAR [U]</span>
+          <span class="hidden sm:inline">GARAGE [U]</span>
         </button>
 
         <button
@@ -298,7 +298,7 @@ export function renderBattlefieldHud({
         items.push(`
           <div class="bg-teal-950/95 border border-teal-400 px-3.5 py-1.5 rounded flex items-center gap-2 text-xs font-mono text-teal-200 shadow-xl animate-pulse pointer-events-auto cursor-pointer" data-action="toggle-upgrades">
             <span class="px-1.5 py-0.5 bg-teal-400 text-slate-950 font-bold rounded">U</span>
-            <span>BASE REPAIR BAY: PRESS [U] TO ENTER HANGAR & UPGRADE</span>
+            <span>BASE REPAIR BAY: PRESS [U] TO ENTER GARAGE & UPGRADE</span>
           </div>
         `);
       }

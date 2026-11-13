@@ -55,7 +55,7 @@ export class HangarOps {
       if (e.status === GameStatus.PLAYING || e.status === GameStatus.BOSS_INTRO) {
         if (!e.inBaseRepairZone) {
           e.setStatusBanner(
-            'HANGAR UNAVAILABLE: RETURN TO ALLIED BASE REPAIR ZONE TO UPGRADE',
+            'GARAGE UNAVAILABLE: RETURN TO ALLIED BASE REPAIR ZONE TO UPGRADE',
             2.5
           );
           return false;
@@ -104,13 +104,13 @@ export class HangarOps {
       e.componentWaterEgress = e.grid[row]?.[col]?.type === TileType.WATER;
     }
     e.persistComponentDamage();
-    e.setStatusBanner(`${track.toUpperCase()} DAMAGED: TIER ${e.upgrades[track]} -> ${e.effectiveUpgrades[track]}. HANGAR REPAIR $${componentRepairCost(e.upgrades[track])}`, 4);
+    e.setStatusBanner(`${track.toUpperCase()} DAMAGED: TIER ${e.upgrades[track]} -> ${e.effectiveUpgrades[track]}. GARAGE REPAIR $${componentRepairCost(e.upgrades[track])}`, 4);
     e.emitHudUpdate();
   }
 
   repairComponent(track) {
     const e = this.engine;
-    if (!e.isHangarOpen) return { success: false, reason: 'Open the hangar to repair components.' };
+    if (!e.isHangarOpen) return { success: false, reason: 'Open the garage to repair components.' };
     if (!Object.hasOwn(e.componentDamage, track) || !e.componentDamage[track]) {
       return { success: false, reason: 'This component does not need repair.' };
     }
@@ -139,7 +139,7 @@ export class HangarOps {
   upgradeTrack(track) {
     const e = this.engine;
     if (!e.isHangarOpen || !Object.hasOwn(UPGRADE_MAX_LEVEL, track)) {
-      return { success: false, reason: 'Select a system in the hangar first.' };
+      return { success: false, reason: 'Select a system in the garage first.' };
     }
     const curLvl = e.upgrades[track] || 1;
     const maxLvl = UPGRADE_MAX_LEVEL[track] || 5;
@@ -173,7 +173,7 @@ export class HangarOps {
 
   buyCannonAmmo() {
     const e = this.engine;
-    if (!e.isHangarOpen) return { success: false, reason: 'Open the hangar to purchase ammunition.' };
+    if (!e.isHangarOpen) return { success: false, reason: 'Open the garage to purchase ammunition.' };
     const maxAmmo = e.getPlayerMaxCannonAmmo();
     if (e.cannonAmmo >= maxAmmo) {
       return { success: false, reason: `Ammunition magazine is full (${maxAmmo} shells).` };
@@ -194,7 +194,7 @@ export class HangarOps {
 
   buyMissile() {
     const e = this.engine;
-    if (!e.isHangarOpen) return { success: false, reason: 'Open the hangar to purchase missiles.' };
+    if (!e.isHangarOpen) return { success: false, reason: 'Open the garage to purchase missiles.' };
     const maxMissiles = e.getPlayerMaxMissileAmmo();
     if (e.missileAmmo >= maxMissiles) {
       return { success: false, reason: `Missile magazine is full (${maxMissiles}).` };
@@ -218,7 +218,7 @@ export class HangarOps {
   buyApsCharge() {
     const e = this.engine;
     if (!e.isHangarOpen) {
-      return { success: false, reason: 'Open the hangar to purchase APS charges.' };
+      return { success: false, reason: 'Open the garage to purchase APS charges.' };
     }
     const maxAps = e.getPlayerMaxApsAmmo();
     const currentTotal = e.apsAmmo.reduce((a, b) => a + b, 0);
