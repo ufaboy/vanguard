@@ -1,9 +1,11 @@
 import { CAMERA_LABELS, FPS_CAP_OPTIONS, loadPreferences, savePreferences } from './state.js';
 import { renderSettings } from '../pages/settings.js';
 import { sound } from '../game/sound.js';
+import { attachAchievementsModal } from '../ui/achievements-modal.js';
 
 /** Attaches a lightweight Settings modal handler to any page root. */
 export function attachSettingsModal(root, onSettingsChange = null) {
+  attachAchievementsModal(root);
   const prefs = loadPreferences();
   let modal = document.getElementById('settings-modal');
   if (!modal) {

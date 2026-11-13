@@ -38,6 +38,11 @@ import { renderContractHud } from './ui/contract-hud.js';
 import { renderBattlefieldHud } from './ui/battle-hud.js';
 import { renderBattlefieldLoaderHtml, renderStatusModal } from './ui/status-modal.js';
 import { setupDelegatedEvents } from './ui/battle-events.js';
+import {
+  evaluateBattleAchievements,
+  recordUnlockedAchievements,
+  updateCareerStats,
+} from './sim/index.js';
 
 const INITIAL_STATS = computeTankStats({
   gun: CANNONS.CANNON_Mk1,
@@ -65,6 +70,9 @@ const state = {
   hangarFeedback: '',
   adRewardClaimed: false,
   adRewardFeedback: '',
+  battleAchievements: [],
+  achievementBonusCredits: 0,
+  shareFeedback: '',
   upgradeTab: 'HANGAR',
   upgrades: {
     cannon: 1,
@@ -217,16 +225,62 @@ function initApp() {
         state.upgrades = syncedUpgrades;
       }
       if (
-        prevStatus === GameStatus.PLAYING &&
+        prevStatus !== snapshot.status &&
         (snapshot.status === GameStatus.VICTORY || snapshot.status === GameStatus.GAME_OVER)
       ) {
-        state.adRewardClaimed = false;
-        state.adRewardFeedback = '';
-        adManager.onBattleEnd({
-          outcome: snapshot.status === GameStatus.VICTORY ? 'victory' : 'defeat',
-          mode: snapshot.gameMode,
-          sectorId: snapshot.sectorId,
+        const currentSector = SECTORS[snapshot.sectorId] || SECTORS[0];
+        const acc =
+          snapshot.shotsFired > 0
+            ? Math.round((snapshot.shotsHit / snapshot.shotsFired) * 100)
+            : 0;
+        const playerSave = snapshot.playerSave || engine?.playerSave;
+        const isVictory = snapshot.status === GameStatus.VICTORY;
+        if (playerSave && snapshot.gameMode !== 'survival') {
+          updateCareerStats(playerSave, {
+            kills: snapshot.kills,
+            blocksDestroyed: snapshot.blocksDestroyed,
+            isVictory,
+          });
+        }
+        const { earned, totalBonusCredits } = evaluateBattleAchievements({
+          hud: snapshot,
+          currentSector,
+          accuracy: acc,
+          unlockedMap: playerSave?.achievements || {},
+          playerSave,
+          upgrades: state.upgrades,
+          totalCampaignMissions: CAMPAIGN_MISSIONS.length,
         });
+        state.battleAchievements = earned;
+        state.achievementBonusCredits = totalBonusCredits;
+        state.shareFeedback = '';
+        if (playerSave) {
+          if (earned.length > 0) {
+            recordUnlockedAchievements(playerSave, earned);
+          }
+          if (totalBonusCredits > 0) {
+            playerSave.credits = (Number(playerSave.credits) || 0) + totalBonusCredits;
+            snapshot.credits = playerSave.credits;
+            engine?.syncCampaignCredits?.();
+          }
+          engine?.saveRepo?.savePlayerSave(playerSave);
+        }
+        if (prevStatus === GameStatus.PLAYING) {
+          state.adRewardClaimed = false;
+          state.adRewardFeedback = '';
+          adManager.onBattleEnd({
+            outcome: snapshot.status === GameStatus.VICTORY ? 'victory' : 'defeat',
+            mode: snapshot.gameMode,
+            sectorId: snapshot.sectorId,
+          });
+        }
+      } else if (
+        prevStatus !== snapshot.status &&
+        (snapshot.status === GameStatus.PLAYING || snapshot.status === GameStatus.MENU)
+      ) {
+        state.battleAchievements = [];
+        state.achievementBonusCredits = 0;
+        state.shareFeedback = '';
       }
       renderUI(prevStatus !== snapshot.status);
     }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated });

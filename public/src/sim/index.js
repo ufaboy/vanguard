@@ -7,4 +7,5 @@ export * from './hangar.js';
 export * from './missions.js';
 export * from './contract.js';
 export * from './survival.js';
+export * from './achievements.js';
 export * from './behavior/index.js';

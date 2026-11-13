@@ -1,6 +1,7 @@
 import { battlefieldUrl } from '../app/routes.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { loadPlayerSave } from '../app/state.js';
+import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
 
 const root = document.getElementById('root');
 const playerSave = loadPlayerSave();
@@ -8,6 +9,13 @@ const completedMissions = playerSave?.completedMissions || {};
 
 if (root) {
   attachSettingsModal(root);
+  renderChallengeBannerIfPresent({
+    container: root.querySelector('main') || root,
+    pageHint: 'contracts',
+    onAccept: (challenge) => {
+      location.href = battlefieldUrl({ mode: 'contract', id: challenge.missionId || 'contract-last-cargo' });
+    },
+  });
 
   document.querySelectorAll('.contract-banner[data-contract-card]').forEach((card) => {
     const id = card.getAttribute('data-contract-card');

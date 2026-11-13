@@ -1,7 +1,7 @@
 import { POWERUP_TYPES } from '../game/constants.js';
 import { SECTORS } from '../game/levels.js';
 import { GameStatus } from '../game/types.js';
-import { getPartCatalogEntry } from '../sim/index.js';
+import { buildBattleSharePayload, buildSocialShareLinks, getPartCatalogEntry } from '../sim/index.js';
 import { formatSurvivalDuration } from './contract-hud.js';
 import { setHidden, setHtml } from './dom-helpers.js';
 
@@ -47,6 +47,124 @@ function renderRewardedAdSlot(state) {
       >
         WATCH AD (+$150)
       </button>
+    </div>
+  `;
+}
+
+function getRarityClass(rarity) {
+  if (rarity === 'epic') return 'is-epic';
+  if (rarity === 'rare') return 'is-rare';
+  return '';
+}
+
+function renderBattleAchievementsSection(state) {
+  const earned = Array.isArray(state.battleAchievements) ? state.battleAchievements : [];
+  const bonus = Number(state.achievementBonusCredits) || 0;
+  const allMedalsBtn = `
+    <button
+      type="button"
+      data-action="open-achievements"
+      class="battle-share-btn"
+    >
+      🏅 ALL MEDALS
+    </button>
+  `;
+
+  if (earned.length === 0) {
+    return `
+      <div class="battle-ach-box">
+        <div class="battle-ach-header">
+          <span class="battle-ach-kicker">ACHIEVEMENTS</span>
+          ${allMedalsBtn}
+        </div>
+        <p class="battle-ach-desc">No medals earned this sortie.</p>
+      </div>
+    `;
+  }
+
+  const cards = earned
+    .map(
+      (ach) => `
+      <div class="battle-ach-card ${getRarityClass(ach.rarity)}">
+        <span class="battle-ach-icon" aria-hidden="true">${ach.icon}</span>
+        <div class="battle-ach-body">
+          <div class="battle-ach-top">
+            <span class="battle-ach-title">${ach.title}</span>
+            ${
+              ach.isNew
+                ? `<span class="battle-new-pill">NEW +$${ach.rewardCredits || 0}</span>`
+                : ''
+            }
+          </div>
+          <p class="battle-ach-desc">${ach.description}</p>
+        </div>
+      </div>
+    `
+    )
+    .join('');
+
+  return `
+    <div class="battle-ach-box">
+      <div class="battle-ach-header">
+        <div class="battle-ach-header-left">
+          <span class="battle-ach-kicker">ACHIEVEMENTS (${earned.length})</span>
+          ${bonus > 0 ? `<span class="battle-ach-bonus">+$${bonus} CREDITS</span>` : ''}
+        </div>
+        ${allMedalsBtn}
+      </div>
+      <div class="battle-ach-grid">
+        ${cards}
+      </div>
+    </div>
+  `;
+}
+
+const RIVETS_HTML = `<span class="btn-rivet top-left" aria-hidden="true"></span><span class="btn-rivet top-right" aria-hidden="true"></span><span class="btn-rivet bottom-left" aria-hidden="true"></span><span class="btn-rivet bottom-right" aria-hidden="true"></span>`;
+const ICON_TANK = `<svg viewBox="0 0 48 22" fill="currentColor" aria-hidden="true"><path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>`;
+const ICON_CHEVRONS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>`;
+const ICON_COPY = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+const ICON_SHARE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
+const ICON_CARD = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+const ICON_TELEGRAM = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 3.46a1.1 1.1 0 0 0-1.15-.17L2.48 10.65a1.1 1.1 0 0 0 .08 2.06l4.64 1.56 1.78 5.47a1 1 0 0 0 1.71.38l2.58-2.67 4.74 3.5a1.1 1.1 0 0 0 1.73-.66l2.45-15.65a1.1 1.1 0 0 0-.25-1.18zM9.7 14.37l-.38 3.31-1.18-3.62 9.48-6.4-7.92 6.71z"/></svg>`;
+const ICON_X = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
+
+function renderBattleShareBar(state, hud, currentSector, accuracy) {
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const payload = buildBattleSharePayload({
+    hud,
+    currentSector,
+    accuracy,
+    earnedAchievements: state.battleAchievements || [],
+    origin,
+  });
+  const social = buildSocialShareLinks(payload);
+  const feedback = state.shareFeedback
+    ? `<div class="battle-share-feedback">${state.shareFeedback}</div>`
+    : '';
+
+  return `
+    <div class="battle-share-bar">
+      <div class="battle-share-row">
+        <span class="battle-share-label">SHARE RESULT</span>
+        <div class="battle-share-actions">
+          <button type="button" data-action="copy-share-link" class="battle-share-btn is-primary">
+            ${ICON_COPY}<span>COPY LINK</span>
+          </button>
+          <button type="button" data-action="share-battle" class="battle-share-btn">
+            ${ICON_SHARE}<span>SHARE</span>
+          </button>
+          <button type="button" data-action="download-share-card" class="battle-share-btn" title="Download 1200x630 PNG card">
+            ${ICON_CARD}<span>CARD</span>
+          </button>
+          <a href="${social.telegramUrl}" target="_blank" rel="noopener noreferrer" class="battle-share-icon-btn" aria-label="Share on Telegram" title="Share on Telegram">
+            ${ICON_TELEGRAM}
+          </a>
+          <a href="${social.xUrl}" target="_blank" rel="noopener noreferrer" class="battle-share-icon-btn" aria-label="Share on X" title="Share on X">
+            ${ICON_X}
+          </a>
+        </div>
+      </div>
+      ${feedback}
     </div>
   `;
 }
@@ -97,7 +215,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
   const s = hud.lastSettlementSummary;
   if (hud.gameMode === 'contract' || currentSector.gameMode === 'contract') {
     return `
-      <div class="w-full max-w-2xl bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl">
+      <div class="battle-modal-card">
         <div class="text-emerald-400 font-mono text-xs uppercase tracking-[0.2em] mb-1">
           CONTRACT EXTRACTED // TERMINAL PAYOUT SETTLEMENT
         </div>
@@ -107,39 +225,36 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-4 font-mono">
           <div>
-            <span class="text-[10px] text-slate-400 uppercase block">CARGO DELIVERED (${s?.deliveredCount ?? 0}/3)</span>
+            <span class="battle-stat-label">CARGO (${s?.deliveredCount ?? 0}/3)</span>
             <span class="text-lg font-bold text-sky-300 tabular-nums">+$ ${s?.cargoCreditsSecured ?? 0}</span>
           </div>
           <div>
-            <span class="text-[10px] text-slate-400 uppercase block">EXTRACTION PAYOUT</span>
+            <span class="battle-stat-label">EXTRACTION</span>
             <span class="text-lg font-bold text-emerald-400 tabular-nums">+$ ${s?.extractionBonus ?? 0}</span>
           </div>
           <div>
-            <span class="text-[10px] text-slate-400 uppercase block">3RD CARGO BONUS ★</span>
+            <span class="battle-stat-label">3RD CARGO ★</span>
             <span class="text-lg font-bold text-amber-300 tabular-nums">+$ ${s?.thirdCargoBonus ?? 0}</span>
           </div>
           <div>
-            <span class="text-[10px] text-slate-400 uppercase block">TOTAL OBJECTIVE CREDITS</span>
+            <span class="battle-stat-label">TOTAL CREDITS</span>
             <span class="text-lg font-bold text-emerald-300 tabular-nums">+$ ${s?.totalObjectiveCredits ?? 0}</span>
           </div>
         </div>
+        ${renderBattleAchievementsSection(state)}
+        ${renderBattleShareBar(state, hud, currentSector, accuracy)}
         ${renderRewardedAdSlot(state)}
 
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="battle-modal-actions">
           <button
             data-action="start-sector"
             data-sector="${hud.sectorId}"
-            class="menu-primary flex-1 whitespace-nowrap"
+            class="battle-btn-primary"
           >
-            <span>↺ REPLAY CONTRACT</span>
+            ${RIVETS_HTML}${ICON_TANK}<span>REPLAY CONTRACT</span>${ICON_CHEVRONS}
           </button>
-          <button class="menu-secondary" data-action="return-contracts">Contracts menu</button>
-          <button
-            data-action="toggle-upgrades"
-            class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-400/70 rounded font-mono text-xs uppercase tracking-wider font-bold cursor-pointer"
-          >
-            ⚙ OPEN HANGAR [U]
-          </button>
+          <button class="battle-btn-secondary" data-action="return-contracts">${RIVETS_HTML}<span>Contracts</span></button>
+          <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ HANGAR [U]</span></button>
         </div>
       </div>
     `;
@@ -153,9 +268,9 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
     : '↺ REPLAY MISSION';
 
   return `
-    <div class="w-full max-w-2xl bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl">
+    <div class="battle-modal-card">
       <div class="text-emerald-400 font-mono text-xs uppercase tracking-[0.2em] mb-1">
-        SECTOR SECURED // VICTORY & LOOT AUTO-COLLECTION
+        SECTOR SECURED // VICTORY
       </div>
       <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-white mb-4">
         ${currentSector.rules.spawnSectorBossOnClear ? `${currentSector.bossName} DESTROYED` : `${currentSector.name.toUpperCase()} COMPLETE`}
@@ -163,51 +278,46 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
 
       ${s?.bossReward ? `
         <div class="p-3 mb-4 border border-amber-400/70 rounded bg-slate-900 font-mono text-xs text-amber-300">
-          <strong>BOSS REWARD SECURED</strong>
-          <p>${s.bossReward.loot?.type === 'part'
+          <strong>BOSS REWARD SECURED:</strong> ${s.bossReward.loot?.type === 'part'
             ? (getPartCatalogEntry(s.bossReward.loot.definitionId)?.name || s.bossReward.loot.definitionId)
-            : `+$${s.bossReward.loot?.amount || s.bossReward.loot?.credits || 500} CREDITS`} — added to balance.</p>
-          <p>${POWERUP_TYPES[s.bossReward.powerUp]?.name || 'Power-up'} — reserved at your next deployment. No expiry.</p>
+            : `+$${s.bossReward.loot?.amount || s.bossReward.loot?.credits || 500} CREDITS`} · ${POWERUP_TYPES[s.bossReward.powerUp]?.name || 'Power-up'} reserved
         </div>
       ` : ''}
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-4 font-mono">
+      <div class="grid grid-cols-3 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-4 font-mono">
         <div>
-          <span class="text-[10px] text-slate-400 uppercase block">CREDITS RECOVERED</span>
+          <span class="battle-stat-label">CREDITS</span>
           <span class="text-lg font-bold text-emerald-400 tabular-nums">+$ ${s?.creditsGained ?? 400}</span>
         </div>
         <div>
-          <span class="text-[10px] text-slate-400 uppercase block">AUTO-COLLECTED DROPS</span>
+          <span class="battle-stat-label">DROPS</span>
           <span class="text-lg font-bold text-teal-300 tabular-nums">${s?.autoCollectedCount ?? 0}</span>
         </div>
         <div>
-          <span class="text-[10px] text-slate-400 uppercase block">ACCURACY</span>
+          <span class="battle-stat-label">ACCURACY</span>
           <span class="text-lg font-bold text-sky-400 tabular-nums">${accuracy}%</span>
         </div>
       </div>
+      ${renderBattleAchievementsSection(state)}
+      ${renderBattleShareBar(state, hud, currentSector, accuracy)}
       ${renderRewardedAdSlot(state)}
 
-      <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="battle-modal-actions">
         <button
           data-action="start-sector"
           data-sector="${nextSectorIdx}"
-          class="menu-primary flex-1 whitespace-nowrap"
+          class="battle-btn-primary"
         >
-          <span>${nextBtnLabel}</span>
+          ${RIVETS_HTML}${ICON_TANK}<span>${nextBtnLabel}</span>${ICON_CHEVRONS}
         </button>
-        <button class="menu-secondary" data-action="return-campaign">Campaign map</button>
-        <button
-          data-action="toggle-upgrades"
-          class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-400/70 rounded font-mono text-xs uppercase tracking-wider font-bold cursor-pointer"
-        >
-          ⚙ OPEN HANGAR [U]
-        </button>
+        <button class="battle-btn-secondary" data-action="return-campaign">${RIVETS_HTML}<span>Campaign map</span></button>
+        <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ HANGAR [U]</span></button>
       </div>
     </div>
   `;
 }
 
-function renderGameOverModal(state, hud, currentSector) {
+function renderGameOverModal(state, hud, currentSector, accuracy) {
   const s = hud.lastSettlementSummary;
   const isSurvival = hud.gameMode === 'survival' || currentSector.gameMode === 'survival';
   if (isSurvival) {
@@ -217,49 +327,52 @@ function renderGameOverModal(state, hud, currentSector) {
     const wavesCleared = rec?.wavesCleared ?? sv?.wavesCleared ?? 0;
     const timeSec = rec?.timeSec ?? sv?.elapsedSec ?? 0;
     const bosses = rec?.bossesDefeated ?? sv?.bossesDefeated ?? 0;
-    const newWaveBadge = rec?.isNewWaveRecord ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[9px] font-bold">★ NEW RECORD</span>' : '';
-    const newKillBadge = rec?.isNewKillRecord ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[9px] font-bold">★ NEW RECORD</span>' : '';
-    const newTimeBadge = rec?.isNewTimeRecord ? '<span class="ml-1.5 px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 text-[9px] font-bold">★ NEW RECORD</span>' : '';
+    const newWaveBadge = rec?.isNewWaveRecord ? '<span class="battle-new-pill">★ NEW</span>' : '';
+    const newKillBadge = rec?.isNewKillRecord ? '<span class="battle-new-pill">★ NEW</span>' : '';
+    const newTimeBadge = rec?.isNewTimeRecord ? '<span class="battle-new-pill">★ NEW</span>' : '';
     return `
-      <div class="w-full max-w-2xl bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl">
+      <div class="battle-modal-card">
         <div class="text-amber-400 font-mono text-xs uppercase tracking-[0.2em] mb-1">
-          SURVIVAL RUN CONCLUDED // PERSONAL RECORD LOGGED
+          SURVIVAL RUN CONCLUDED // RECORD LOGGED
         </div>
-        <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-white mb-3">
+        <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-white mb-2">
           FALLEN ON WAVE ${waveReached} (${wavesCleared} WAVES CLEARED)
         </h2>
-        <p class="text-xs font-mono text-slate-300 mb-4">
-          Survival runs start from a clean Tier I tank and award no persistent profile credits. Your main campaign profile, upgrades, and treasury have been restored intact.
+        <p class="text-xs font-mono text-slate-400 mb-4">
+          Tier I run · Campaign profile &amp; credits restored intact.
         </p>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-6 font-mono">
+        <div class="grid grid-cols-4 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-4 font-mono">
           <div>
-            <span class="text-[10px] text-slate-400 uppercase block">WAVE REACHED ${newWaveBadge}</span>
+            <span class="battle-stat-label">WAVE ${newWaveBadge}</span>
             <span class="text-lg font-bold text-amber-300 tabular-nums">WAVE ${waveReached}</span>
           </div>
           <div>
-            <span class="text-[10px] text-slate-400 uppercase block">HOSTILES DESTROYED ${newKillBadge}</span>
+            <span class="battle-stat-label">KILLS ${newKillBadge}</span>
             <span class="text-lg font-bold text-emerald-400 tabular-nums">${hud.kills}</span>
           </div>
           <div>
-            <span class="text-[10px] text-slate-400 uppercase block">SURVIVAL TIME ${newTimeBadge}</span>
+            <span class="battle-stat-label">TIME ${newTimeBadge}</span>
             <span class="text-lg font-bold text-sky-300 tabular-nums">${formatSurvivalDuration(timeSec)}</span>
           </div>
           <div>
-            <span class="text-[10px] text-slate-400 uppercase block">BOSSES DEFEATED</span>
+            <span class="battle-stat-label">BOSSES</span>
             <span class="text-lg font-bold text-red-300 tabular-nums">${bosses}</span>
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-3">
+        ${renderBattleAchievementsSection(state)}
+        ${renderBattleShareBar(state, hud, currentSector, accuracy)}
+
+        <div class="battle-modal-actions">
           <button
             data-action="start-survival"
-            class="flex-1 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 px-6 rounded uppercase tracking-wider text-sm transition-colors cursor-pointer"
+            class="battle-btn-primary"
           >
-            <span>↺ NEW SURVIVAL RUN (TIER I)</span>
+            ${RIVETS_HTML}${ICON_TANK}<span>NEW SURVIVAL RUN</span>${ICON_CHEVRONS}
           </button>
-          <button class="menu-secondary" data-action="return-survival">Survival records</button>
-          <button class="menu-secondary" data-action="main-menu">Main menu</button>
+          <button class="battle-btn-secondary" data-action="return-survival">${RIVETS_HTML}<span>Survival records</span></button>
+          <button class="battle-btn-secondary" data-action="main-menu">${RIVETS_HTML}<span>Main menu</span></button>
         </div>
       </div>
     `;
@@ -272,52 +385,49 @@ function renderGameOverModal(state, hud, currentSector) {
       : 'PLAYER TANK DESTROYED IN ACTION';
 
   return `
-    <div class="w-full max-w-2xl bg-[#0B0F17] border border-slate-700/80 rounded p-7 shadow-2xl">
+    <div class="battle-modal-card">
       <div class="text-red-400 font-mono text-xs uppercase tracking-[0.2em] mb-1">
-        ${defeatReason} // DEFEAT SETTLEMENT
+        ${defeatReason} // DEFEAT
       </div>
-      <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-white mb-3">
-        ${isContract ? 'CONTRACT FAILED — DELIVERED CARGO CREDITS PRESERVED' : 'MISSION FAILED — MANUALLY COLLECTED LOOT PRESERVED'}
+      <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-white mb-2">
+        ${isContract ? 'CONTRACT FAILED — DELIVERED CARGO PRESERVED' : 'MISSION FAILED — COLLECTED LOOT PRESERVED'}
       </h2>
-      <p class="text-xs font-mono text-slate-300 mb-4">
+      <p class="text-xs font-mono text-slate-400 mb-4">
         ${
           isContract
-            ? `Already delivered cargo payouts (+$${s?.cargoCreditsSecured ?? 0}) and combat kill bounties remain yours. Extraction and 3rd-cargo bonuses require a live extraction.`
-            : `Your tank loadout and installed modules remain intact. Recovered battlefield credits (+$${s?.creditsGained ?? 0}) were deposited; ${s?.lostCount ?? 0} uncollected containers were lost.`
+            ? `Delivered cargo (+$${s?.cargoCreditsSecured ?? 0}) &amp; bounties preserved.`
+            : `Loadout intact · +$${s?.creditsGained ?? 0} preserved · ${s?.lostCount ?? 0} uncollected drops lost.`
         }
       </p>
 
-      <div class="grid grid-cols-3 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-6 font-mono">
+      <div class="grid grid-cols-3 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-4 font-mono">
         <div>
-          <span class="text-[10px] text-slate-400 uppercase block">${isContract ? 'DELIVERED CARGO CREDITS' : 'CREDITS PRESERVED'}</span>
+          <span class="battle-stat-label">${isContract ? 'CARGO CREDITS' : 'CREDITS'}</span>
           <span class="text-lg font-bold text-emerald-400 tabular-nums">+$ ${isContract ? (s?.cargoCreditsSecured ?? 0) : (s?.creditsGained ?? 0)}</span>
         </div>
         <div>
-          <span class="text-[10px] text-slate-400 uppercase block">${isContract ? 'CARGO DELIVERED' : 'LOST CONTAINERS'}</span>
+          <span class="battle-stat-label">${isContract ? 'CARGO' : 'LOST DROPS'}</span>
           <span class="text-lg font-bold ${isContract ? 'text-sky-300' : 'text-red-400'} tabular-nums">${isContract ? `${s?.deliveredCount ?? 0} / 3` : (s?.lostCount ?? 0)}</span>
         </div>
         <div>
-          <span class="text-[10px] text-slate-400 uppercase block">HOSTILES DESTROYED</span>
+          <span class="battle-stat-label">KILLS</span>
           <span class="text-lg font-bold text-emerald-400 tabular-nums">${hud.kills}</span>
         </div>
       </div>
+      ${renderBattleAchievementsSection(state)}
+      ${renderBattleShareBar(state, hud, currentSector, accuracy)}
       ${renderRewardedAdSlot(state)}
 
-      <div class="flex flex-wrap gap-3">
+      <div class="battle-modal-actions">
         <button
           data-action="start-sector"
           data-sector="${hud.sectorId}"
-          class="flex-1 flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 px-6 rounded uppercase tracking-wider text-sm transition-colors cursor-pointer"
+          class="battle-btn-primary"
         >
-          <span>${isContract ? '↺ RETRY CONTRACT' : '↺ RETRY SECTOR ASSAULT'}</span>
+          ${RIVETS_HTML}${ICON_TANK}<span>${isContract ? 'RETRY CONTRACT' : 'RETRY SECTOR'}</span>${ICON_CHEVRONS}
         </button>
-        <button class="menu-secondary" data-action="${isContract ? 'return-contracts' : 'return-campaign'}">${isContract ? 'Contracts menu' : 'Campaign map'}</button>
-        <button
-          data-action="toggle-upgrades"
-          class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-teal-300 border border-teal-400/70 rounded font-mono text-xs uppercase tracking-wider font-bold cursor-pointer"
-        >
-          ⚙ HANGAR & WORKSHOP [U]
-        </button>
+        <button class="battle-btn-secondary" data-action="${isContract ? 'return-contracts' : 'return-campaign'}">${RIVETS_HTML}<span>${isContract ? 'Contracts' : 'Campaign map'}</span></button>
+        <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ HANGAR [U]</span></button>
       </div>
     </div>
   `;
@@ -342,7 +452,7 @@ export function renderStatusModal({ statusModal, state, hud, currentSector, accu
   } else if (hud.status === GameStatus.VICTORY) {
     setHtml(statusModal, renderVictoryModal(state, hud, currentSector, accuracy));
   } else if (hud.status === GameStatus.GAME_OVER) {
-    setHtml(statusModal, renderGameOverModal(state, hud, currentSector));
+    setHtml(statusModal, renderGameOverModal(state, hud, currentSector, accuracy));
   }
 }
 

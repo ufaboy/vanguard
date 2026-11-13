@@ -18,6 +18,13 @@ export function createInitialPlayerSave() {
     activeTankId: 'tank_alpha',
     unlockedMissions: ['mission_01', 'mission_02', 'mission_03'],
     completedMissions: {},
+    achievements: {},
+    stats: {
+      totalKills: 0,
+      totalBattles: 0,
+      totalVictories: 0,
+      totalBlocksDestroyed: 0,
+    },
     parts: [
       {
         instanceId: 'part_hull_bars_1',
@@ -384,6 +391,17 @@ export class SaveRepository {
           }
           if (!parsed.completedMissions || typeof parsed.completedMissions !== 'object' || Array.isArray(parsed.completedMissions)) {
             parsed.completedMissions = {};
+          }
+          if (!parsed.achievements || typeof parsed.achievements !== 'object' || Array.isArray(parsed.achievements)) {
+            parsed.achievements = {};
+          }
+          if (!parsed.stats || typeof parsed.stats !== 'object' || Array.isArray(parsed.stats)) {
+            parsed.stats = {
+              totalKills: 0,
+              totalBattles: 0,
+              totalVictories: 0,
+              totalBlocksDestroyed: 0,
+            };
           }
           this.savePlayerSave(parsed);
           return parsed;

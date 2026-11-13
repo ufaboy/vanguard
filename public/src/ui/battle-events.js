@@ -7,7 +7,8 @@ import { SECTORS } from '../game/levels.js';
 import { sound } from '../game/sound.js';
 import { GameStatus } from '../game/types.js';
 import { HANGAR_TRACKS } from '../hangar-ui.js';
-import { CONTRACTS_CATALOG } from '../sim/index.js';
+import { buildBattleSharePayload, CONTRACTS_CATALOG } from '../sim/index.js';
+import { downloadBattleShareCard } from './share-card.js';
 
 const UI_ONLY_ACTIONS = new Set([
   'menu-page',
@@ -18,7 +19,39 @@ const UI_ONLY_ACTIONS = new Set([
   'select-contract',
   'toggle-campaign-brief',
   'close-campaign-brief',
+  'copy-share-link',
+  'share-battle',
+  'download-share-card',
+  'open-achievements',
 ]);
+
+async function copyTextToClipboard(text) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Fallback below
+    }
+  }
+  if (typeof document !== 'undefined') {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    } catch {
+      document.body.removeChild(ta);
+    }
+  }
+  return false;
+}
 
 export function setupDelegatedEvents(
   root,
@@ -358,6 +391,74 @@ export function setupDelegatedEvents(
         savePreferences();
         renderUI(true);
         break;
+      case 'download-share-card': {
+        const hud = state.hud;
+        const currentSector = SECTORS[hud.sectorId] || SECTORS[0];
+        const accuracy =
+          hud.shotsFired > 0 ? Math.round((hud.shotsHit / hud.shotsFired) * 100) : 0;
+        downloadBattleShareCard({
+          hud,
+          currentSector,
+          accuracy,
+          earnedAchievements: state.battleAchievements || [],
+        }).then((ok) => {
+          state.shareFeedback = ok
+            ? '✓ Battle report PNG card downloaded!'
+            : 'Unable to generate PNG card in this browser.';
+          renderUI(true);
+        });
+        break;
+      }
+      case 'copy-share-link':
+      case 'share-battle': {
+        const hud = state.hud;
+        const currentSector = SECTORS[hud.sectorId] || SECTORS[0];
+        const accuracy =
+          hud.shotsFired > 0 ? Math.round((hud.shotsHit / hud.shotsFired) * 100) : 0;
+        const payload = buildBattleSharePayload({
+          hud,
+          currentSector,
+          accuracy,
+          earnedAchievements: state.battleAchievements || [],
+          origin: typeof window !== 'undefined' ? window.location.origin : '',
+        });
+
+        if (action === 'share-battle' && typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+          navigator
+            .share({
+              title: payload.title,
+              text: payload.text,
+              url: payload.url,
+            })
+            .then(() => {
+              state.shareFeedback = '✓ Battle report shared!';
+              renderUI(true);
+            })
+            .catch(async (err) => {
+              if (err?.name === 'AbortError') return;
+              const copied = await copyTextToClipboard(payload.fullText);
+              state.shareFeedback = copied
+                ? '✓ Battle summary & link copied to clipboard!'
+                : 'Unable to copy automatically — select the URL above.';
+              renderUI(true);
+            });
+          break;
+        }
+
+        const textToCopy = action === 'share-battle' ? payload.fullText : payload.url;
+        copyTextToClipboard(textToCopy).then((copied) => {
+          if (copied) {
+            state.shareFeedback =
+              action === 'share-battle'
+                ? '✓ Battle summary & link copied to clipboard!'
+                : '✓ Share link copied to clipboard for social media!';
+          } else {
+            state.shareFeedback = 'Unable to copy automatically — select the URL above.';
+          }
+          renderUI(true);
+        });
+        break;
+      }
       case 'watch-rewarded-ad':
         if (state.adRewardClaimed || adManager.isShowingAd) break;
         adManager
