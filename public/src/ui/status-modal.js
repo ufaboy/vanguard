@@ -129,7 +129,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
           <button
             data-action="start-sector"
             data-sector="${hud.sectorId}"
-            class="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 px-6 rounded uppercase tracking-wider text-sm transition-colors cursor-pointer"
+            class="menu-primary flex-1 whitespace-nowrap"
           >
             <span>↺ REPLAY CONTRACT</span>
           </button>
@@ -191,7 +191,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
         <button
           data-action="start-sector"
           data-sector="${nextSectorIdx}"
-          class="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 px-6 rounded uppercase tracking-wider text-sm transition-colors cursor-pointer"
+          class="menu-primary flex-1 whitespace-nowrap"
         >
           <span>${nextBtnLabel}</span>
         </button>
