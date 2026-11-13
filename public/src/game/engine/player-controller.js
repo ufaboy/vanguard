@@ -111,7 +111,7 @@ export class PlayerController {
       engine.playerSalvoResetTimer = 0;
     }
 
-    engine.syncPlayerVisuals(0, engine.clock ? engine.clock.getElapsed() : 0);
+    engine.playerController.syncPlayerVisuals(0, engine.clock ? engine.clock.getElapsed() : 0);
   }
 
   getPlayerMaxCannonAmmo() {
@@ -155,7 +155,7 @@ export class PlayerController {
 
   syncApsVisuals() {
     const engine = this.engine;
-    engine.syncPlayerVisuals(0, engine.clock ? engine.clock.getElapsed() : 0);
+    engine.playerController.syncPlayerVisuals(0, engine.clock ? engine.clock.getElapsed() : 0);
   }
 
   persistRepairKitCharges() {
@@ -180,7 +180,7 @@ export class PlayerController {
         const hp = engine.playerHp;
         engine.restoreAllComponents();
         engine.playerHp = hp;
-        engine.persistRepairKitCharges();
+        engine.playerController.persistRepairKitCharges();
         sound.playEngineerWeld();
         engine.setStatusBanner(
           'RM-1: COMPONENTS RESTORED / REGENERATING 25 HP OVER 10s',
@@ -255,7 +255,7 @@ export class PlayerController {
       mesh: group,
       material: puffMat,
     });
-    engine.breakEnemyLockInSmoke();
+    engine.playerController.breakEnemyLockInSmoke();
   }
 
   /** Checks whether world point `(x, z)` lies inside an active smoke screen. */
@@ -580,7 +580,7 @@ export class PlayerController {
     const isMoving = Math.abs(engine.playerVx) > 0.05 || Math.abs(engine.playerVz) > 0.05;
     const nextX = engine.playerX + engine.playerVx * dt;
     if (isMoving) {
-      engine.crushBoxObstacles(nextX, engine.playerZ, radius, true);
+      engine.enemyCombat.crushBoxObstacles(nextX, engine.playerZ, radius, true);
     }
     if (
       !engine.checkTankWallCollision(
@@ -597,7 +597,7 @@ export class PlayerController {
 
     const nextZ = engine.playerZ + engine.playerVz * dt;
     if (isMoving) {
-      engine.crushBoxObstacles(engine.playerX, nextZ, radius, true);
+      engine.enemyCombat.crushBoxObstacles(engine.playerX, nextZ, radius, true);
     }
     if (
       !engine.checkTankWallCollision(
@@ -622,7 +622,7 @@ export class PlayerController {
       const distE = Math.hypot(dxE, dzE);
 
       if (distE < minDist) {
-        if (e.contactAbility && engine.spendContactEnemy(e)) continue;
+        if (e.contactAbility && engine.enemyCombat.spendContactEnemy(e)) continue;
 
         const nx = distE > 1e-4 ? dxE / distE : Math.sin(engine.playerHullAngle);
         const nz = distE > 1e-4 ? dzE / distE : Math.cos(engine.playerHullAngle);
@@ -718,7 +718,7 @@ export class PlayerController {
 
     const speedMag = Math.hypot(engine.playerVx, engine.playerVz);
     engine.playerForwardSpeed = speedMag;
-    engine.syncPlayerVisuals(speedMag * dt * 2.5, elapsed);
+    engine.playerController.syncPlayerVisuals(speedMag * dt * 2.5, elapsed);
 
     if (engine.isMouseDown) {
       engine.tryPlayerFire();
@@ -732,7 +732,7 @@ export class PlayerController {
       return;
     }
 
-    const baseWorld = engine.getCommandBaseCenter();
+    const baseWorld = engine.sectorLoader.getCommandBaseCenter();
     const distCells =
       Math.hypot(engine.playerX - baseWorld.x, engine.playerZ - baseWorld.z) /
       TILE_SIZE;
@@ -853,7 +853,7 @@ export class PlayerController {
       // Check if an impassable obstacle (Brick or Concrete) stands between projectile and player
       if (!engine.hasLineOfSight(p.x, p.z, engine.playerX, engine.playerZ)) continue;
 
-      if (engine.consumeApsLauncherTowards(p.x, p.z, 0.95, cost)) {
+      if (engine.playerController.consumeApsLauncherTowards(p.x, p.z, 0.95, cost)) {
         engine.removeProjectile(i);
         return;
       }
@@ -871,7 +871,7 @@ export class PlayerController {
         const dist = Math.hypot(hz.x - engine.playerX, hz.z - engine.playerZ);
         if (dist <= maxArtilleryThreatRadius && dist <= detectWorldRadius) {
           const shell = hz.shellMesh.position;
-          if (engine.consumeApsLauncherTowards(shell.x, shell.z, shell.y, cost)) {
+          if (engine.playerController.consumeApsLauncherTowards(shell.x, shell.z, shell.y, cost)) {
             engine.fxGroup.remove(hz.ringMesh);
             engine.fxGroup.remove(hz.fillMesh);
             engine.fxGroup.remove(hz.shellMesh);
@@ -997,7 +997,7 @@ export class PlayerController {
         worldSpeed,
         isHeavy
       );
-      engine.firePlayerMuzzleFx(shotX, shotZ, dirX, dirZ, isHeavy);
+      engine.playerController.firePlayerMuzzleFx(shotX, shotZ, dirX, dirZ, isHeavy);
     } else {
       const fullCooldown = engine.playerStats.fireCooldown || 1.25;
       engine.playerFireCooldown = fullCooldown;
@@ -1018,14 +1018,14 @@ export class PlayerController {
         worldSpeed,
         isHeavy
       );
-      engine.firePlayerMuzzleFx(muzzleX, muzzleZ, dirX, dirZ, isHeavy);
+      engine.playerController.firePlayerMuzzleFx(muzzleX, muzzleZ, dirX, dirZ, isHeavy);
     }
     sound.playCannonShot(isHeavy);
   }
 
   firePlayerMuzzleFx(x, z, dirX, dirZ, isHeavy) {
     const engine = this.engine;
-    const muzzle = engine.getRigMuzzle(engine.playerRig, engine.playerX, engine.playerZ, dirX, dirZ);
+    const muzzle = engine.physics.getRigMuzzle(engine.playerRig, engine.playerX, engine.playerZ, dirX, dirZ);
     const cannonTier = engine.effectiveUpgrades.cannon || 1;
     engine.fx.muzzleFlash(x, muzzle.y, z, dirX, dirZ, {
       scale: (isHeavy ? 1.15 : 0.9) + cannonTier * 0.05,

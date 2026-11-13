@@ -39,7 +39,7 @@ export class InputCameraController {
       } else if (e.code === 'KeyE') {
         e.preventDefault();
         if (engine.contractState) {
-          engine.interactContractObjective();
+          engine.contractDirector.interactObjective();
         } else {
           engine.firePlayerHomingMissile();
         }
@@ -189,7 +189,7 @@ export class InputCameraController {
     else if (engine.cameraPreset === 'TACTICAL_HIGH') engine.frustumSize = 44;
     else if (engine.cameraPreset === 'CLOSE_COMBAT') engine.frustumSize = 20;
 
-    engine.handleResize();
+    engine.handleResize?.();
     return engine.cameraPreset;
   }
 

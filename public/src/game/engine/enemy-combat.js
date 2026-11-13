@@ -93,10 +93,10 @@ export class EnemyCombatController {
       }
       case 'shoot_player_base': {
         if (!(engine.activeMapRules?.defeatOnBaseLoss && engine.baseAlive)) return null;
-        const base = engine.getCommandBaseCenter();
+        const base = engine.sectorLoader.getCommandBaseCenter();
         const inRange = indirect
           ? this.inArtilleryRange(e, base.x, base.z, ARTILLERY.BASE_MAX_RANGE)
-          : engine.canEngageCommandBase(e.x, e.z);
+          : engine.enemyAi.canEngageCommandBase(e.x, e.z);
         if (!inRange) return null;
         return { kind: 'base', key: 'base', target: base, radius: TILE_SIZE, react: false };
       }
@@ -108,7 +108,7 @@ export class EnemyCombatController {
       case 'shoot_random': {
         if (!state.randomShotTarget) {
           if (state.randomShotTimer > 0 || state.fireCooldown > 0) return null;
-          state.randomShotTarget = engine.findRandomTerrainTarget(e);
+          state.randomShotTarget = engine.enemyCombat.findRandomTerrainTarget(e);
           if (!state.randomShotTarget) {
             state.randomShotTimer = 3.5 + Math.random() * 4.0;
             return null;
@@ -144,7 +144,7 @@ export class EnemyCombatController {
     engine.updateBossSecondaryWeapons(e, dt, s);
 
     if (e.turrets?.length > 1) {
-      engine.updateMultiTurretGunnery(e, dt, s);
+      engine.enemyCombat.updateMultiTurretGunnery(e, dt, s);
       return;
     }
 
@@ -182,9 +182,9 @@ export class EnemyCombatController {
     });
 
     if (e.enemyClass === EnemyClass.ARTILLERY) {
-      engine.updateIndirectFire(e, dt, shot, aim);
+      engine.enemyCombat.updateIndirectFire(e, dt, shot, aim);
     } else {
-      engine.updateDirectFire(e, dt, shot, aim, s);
+      engine.enemyCombat.updateDirectFire(e, dt, shot, aim, s);
     }
     // A harassing shot is spent once the gun has fired at it
     if (shot.kind === 'terrain' && !e.gunner.shot) {
@@ -254,11 +254,11 @@ export class EnemyCombatController {
       t.angle = engine.lerpAngle(t.angle, aim.desiredTurretAngle, turnSpeed * dt);
 
       if (t.fireCooldown <= 0) {
-        const token = shot.kind !== 'player' || engine.hasAttackToken(e);
+        const token = shot.kind !== 'player' || engine.enemyAi.hasAttackToken(e);
         if (aim.canFire && token) {
           const reloadMult = e.titanOverload ? (TITAN.OVERLOAD_RELOAD_MULT ?? 0.65) : 1.0;
           t.fireCooldown = e.stats.fireCooldown * reloadMult + onGunnerFired(t.gunner);
-          engine.fireEnemyTurretWeapon(e, t, tx, tz);
+          engine.enemyCombat.fireEnemyTurretWeapon(e, t, tx, tz);
         }
       }
 
@@ -283,7 +283,7 @@ export class EnemyCombatController {
     const perpX = Math.cos(t.angle);
     const perpZ = -Math.sin(t.angle);
     const muzzleDist = t.slot.muzzleDist ?? e.rig.muzzleDist ?? 1.35;
-    const muzzleY = engine.getRigMuzzle(t.slot, tx, tz, dx, dz, muzzleDist).y;
+    const muzzleY = engine.physics.getRigMuzzle(t.slot, tx, tz, dx, dz, muzzleDist).y;
     const flashScale = e.isBoss ? 1.35 : 1.05;
     const worldSpeed = (e.stats.bulletSpeed || 7.2) * TILE_SIZE;
     const isHeavy = e.stats.bulletPower === BULLET_POWER.HEAVY;
@@ -341,7 +341,7 @@ export class EnemyCombatController {
     const { engine } = this;
     e.turretAngle = engine.lerpAngle(e.turretAngle, aim.desiredTurretAngle, (e.isBoss ? 7 : 5.8) * dt);
     if (e.fireCooldown > 0) return;
-    const token = shot.kind !== 'player' || engine.hasAttackToken(e);
+    const token = shot.kind !== 'player' || engine.enemyAi.hasAttackToken(e);
     const hit = e.gunner.shot.hit;
 
     if (e.weaponAbility) {
@@ -356,7 +356,7 @@ export class EnemyCombatController {
         e.fireCooldown =
           e.stats.fireCooldown * (e.hydraEnraged ? HYDRA.PHASE2_RELOAD_MULT : 1) +
           onGunnerFired(e.gunner);
-        engine.triggerHydraSalvo(e, this.clampToArena(point));
+        engine.enemyCombat.triggerHydraSalvo(e, this.clampToArena(point));
       }
     } else if (aim.canFire && token) {
       const reloadMult =
@@ -366,7 +366,7 @@ export class EnemyCombatController {
           ? INFERNO.PHASE2_RELOAD_MULT
           : 1;
       e.fireCooldown = e.stats.fireCooldown * reloadMult + onGunnerFired(e.gunner);
-      engine.fireEnemyWeapon(e, { homing: hit && e.missileCfg.homing });
+      engine.enemyCombat.fireEnemyWeapon(e, { homing: hit && e.missileCfg.homing });
     }
   }
 
@@ -381,7 +381,7 @@ export class EnemyCombatController {
     if (e.indirectAim && e.indirectAim.key !== shot.key) e.indirectAim = null;
     if (!e.indirectAim) {
       if (e.fireCooldown > 0 || !aim.reacted) return;
-      if (shot.kind === 'player' && !engine.hasAttackToken(e)) return;
+      if (shot.kind === 'player' && !engine.enemyAi.hasAttackToken(e)) return;
       e.indirectAim = { key: shot.key, timer: e.artilleryCfg.aimSec };
     }
     e.indirectAim.timer -= dt;
@@ -394,7 +394,7 @@ export class EnemyCombatController {
       : indirectMissPoint(shot.target, ARTILLERY.SPLASH_RADIUS * TILE_SIZE, random);
     e.fireCooldown = ARTILLERY.RELOAD_MIN + random() * (ARTILLERY.RELOAD_MAX - ARTILLERY.RELOAD_MIN);
     onGunnerFired(e.gunner);
-    engine.triggerEnemyArtilleryBarrage(e, this.clampToArena(point));
+    engine.enemyCombat.triggerEnemyArtilleryBarrage(e, this.clampToArena(point));
   }
 
   /** Boss extra weapons: Hydra ATGM salvo, Mammoth artillery barrage. */
@@ -409,7 +409,7 @@ export class EnemyCombatController {
           ? player
           : indirectMissPoint(player, ARTILLERY.SPLASH_RADIUS * TILE_SIZE, random);
         e.bossBarrage = null;
-        engine.triggerEnemyArtilleryBarrage(e, this.clampToArena(point));
+        engine.enemyCombat.triggerEnemyArtilleryBarrage(e, this.clampToArena(point));
       }
     }
     if (!e.isBoss || !s.canSeePlayer) return;
@@ -430,7 +430,7 @@ export class EnemyCombatController {
       }
       if (reacted && e.hydraMissileCooldown <= 0 && s.distToPlayer <= HYDRA.MISSILE_RANGE_CELLS * TILE_SIZE) {
         e.hydraMissileCooldown = HYDRA.MISSILE_COOLDOWN;
-        engine.fireBossMissileSalvo(e, s.toPlayerX, s.toPlayerZ, rollLuck(shootLuck, random), HYDRA.MISSILE_SALVO, HYDRA.MISSILE_SPREAD_RAD);
+        engine.enemyCombat.fireBossMissileSalvo(e, s.toPlayerX, s.toPlayerZ, rollLuck(shootLuck, random), HYDRA.MISSILE_SALVO, HYDRA.MISSILE_SPREAD_RAD);
       }
     } else if (e.enemyClass === EnemyClass.BOSS_MAMMOTH && reacted) {
       if (e.specialCooldown <= 0 && !e.bossBarrage) {
@@ -440,13 +440,13 @@ export class EnemyCombatController {
       }
       if (e.mammothMissileCooldown <= 0 && s.distToPlayer <= MAMMOTH.MISSILE_RANGE_CELLS * TILE_SIZE) {
         e.mammothMissileCooldown = MAMMOTH.MISSILE_COOLDOWN * (e.mammothEnraged ? MAMMOTH.PHASE2_RELOAD_MULT : 1);
-        engine.fireBossMissileSalvo(e, s.toPlayerX, s.toPlayerZ, rollLuck(shootLuck, random), MAMMOTH.MISSILE_SALVO, MAMMOTH.MISSILE_SPREAD_RAD);
+        engine.enemyCombat.fireBossMissileSalvo(e, s.toPlayerX, s.toPlayerZ, rollLuck(shootLuck, random), MAMMOTH.MISSILE_SALVO, MAMMOTH.MISSILE_SPREAD_RAD);
       }
     } else if (e.enemyClass === EnemyClass.BOSS_INFERNO && reacted) {
       if (e.infernoMissileCooldown <= 0 && s.distToPlayer <= INFERNO.MISSILE_RANGE_CELLS * TILE_SIZE) {
         e.infernoMissileCooldown = INFERNO.MISSILE_COOLDOWN * (e.infernoEnraged ? INFERNO.PHASE2_RELOAD_MULT : 1);
         const salvoCount = e.infernoEnraged ? INFERNO.PHASE2_MISSILE_SALVO : INFERNO.MISSILE_SALVO;
-        engine.fireBossMissileSalvo(e, s.toPlayerX, s.toPlayerZ, rollLuck(shootLuck, random), salvoCount, INFERNO.MISSILE_SPREAD_RAD);
+        engine.enemyCombat.fireBossMissileSalvo(e, s.toPlayerX, s.toPlayerZ, rollLuck(shootLuck, random), salvoCount, INFERNO.MISSILE_SPREAD_RAD);
       }
     }
   }
@@ -556,7 +556,7 @@ export class EnemyCombatController {
       return;
     }
     const muzzleDist = e.rig.muzzleDist ?? 1.25;
-    const muzzleY = engine.getRigMuzzle(e.rig, e.x, e.z, dx, dz).y;
+    const muzzleY = engine.physics.getRigMuzzle(e.rig, e.x, e.z, dx, dz).y;
     const flashScale = (isHeavyShot) => (e.isBoss ? 1.35 : isHeavyShot ? 1.05 : 0.85);
 
     const worldSpeed = (e.stats.bulletSpeed || 7.2) * TILE_SIZE;
@@ -677,7 +677,7 @@ export class EnemyCombatController {
     if (e.rig?.turret) e.rig.turret.rotation.y = e.turretAngle;
     const dx = Math.sin(e.turretAngle);
     const dz = Math.cos(e.turretAngle);
-    return engine.getRigMuzzle(e.rig, e.x, e.z, dx, dz, e.rig?.muzzleDist ?? 1.25);
+    return engine.physics.getRigMuzzle(e.rig, e.x, e.z, dx, dz, e.rig?.muzzleDist ?? 1.25);
   }
 
   /** BOSS_HYDRA MLRS salvo: three telegraphed rockets in a triangle whose first vertex is the. */
@@ -807,13 +807,13 @@ export class EnemyCombatController {
     }
 
     const nextHp = enemy.hp - dmg;
-    const gate = engine.nextBossPhaseGate(enemy);
+    const gate = engine.bossCombat.nextPhaseGate(enemy);
     if (gate) {
       const gateHp = enemy.maxHp * gate.ratio;
       if (nextHp <= gateHp) {
         enemy.hp = Math.min(enemy.hp, gateHp);
         enemy.hullHP = Math.max(0, enemy.hp * 10);
-        engine.triggerBossPhaseTransition(enemy, gate.id);
+        engine.bossCombat.triggerPhaseTransition(enemy, gate.id);
         return;
       }
     }
@@ -862,7 +862,7 @@ export class EnemyCombatController {
           (!spec?.isBossWave || engine.bossSpawned) &&
           engine.enemies.length === 0
         ) {
-          engine.onSurvivalWaveCleared();
+          engine.survivalDirector.onWaveCleared();
         } else if (enemy.isBoss) {
           engine.setStatusBanner(
             `${unitName.toUpperCase()} DESTROYED! ELIMINATE REMAINING ESCORT!`,
@@ -877,7 +877,7 @@ export class EnemyCombatController {
           engine.bossStageIndex + 1 < sector.bossSequence.length &&
           !engine.enemies.some((u) => u.isBoss);
         if (hasPendingBossStage) {
-          engine.spawnBossStage(engine.bossStageIndex + 1);
+          engine.enemySpawner.spawnBossStage(engine.bossStageIndex + 1);
           engine.saveProgress();
           return;
         }

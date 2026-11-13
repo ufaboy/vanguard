@@ -82,7 +82,7 @@ export class ProfileSaveController {
     engine.componentDamage = Object.fromEntries(COMPONENT_TRACKS.map((t) => [t, false]));
     engine.componentDamageCooldown = 0;
     engine.componentWaterEgress = false;
-    engine.initApsLaunchers(APS.START_ROUNDS);
+    engine.playerController.initApsLaunchers(APS.START_ROUNDS);
     engine.missileAmmo = 2;
     engine.cannonAmmo = getMaxCannonAmmo(1);
     engine.repairKitState = createRepairKitState(0);

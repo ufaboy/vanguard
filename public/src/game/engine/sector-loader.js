@@ -121,7 +121,7 @@ export class SectorLoaderController {
     engine.clearGroup(engine.fxGroup);
     engine.fx.clear();
 
-    engine.clearPendingTimeouts();
+    engine.enemySpawner.clearPendingTimeouts();
     engine.pendingBarrelExplosions = [];
     engine.enemies = [];
     engine.brickRubble = [];
@@ -387,7 +387,7 @@ export class SectorLoaderController {
     }
 
     if (isIsolatedSector) {
-      engine.initApsLaunchers(APS.START_ROUNDS);
+      engine.playerController.initApsLaunchers(APS.START_ROUNDS);
       engine.missileAmmo = 2;
     } else if (Array.isArray(engine.playerSave?.apsAmmo)) {
       engine.apsAmmo = [...engine.playerSave.apsAmmo];
@@ -396,7 +396,7 @@ export class SectorLoaderController {
         engine.addApsRounds(APS.START_ROUNDS - total);
       }
     } else {
-      engine.initApsLaunchers(APS.START_ROUNDS);
+      engine.playerController.initApsLaunchers(APS.START_ROUNDS);
     }
     engine.apsRearmTimer = 0;
     if (!isIsolatedSector) {
@@ -408,7 +408,7 @@ export class SectorLoaderController {
     engine.repairKitCount = REPAIR_KIT.MAX;
 
     engine.playerRig.root.position.set(engine.playerX, 0, engine.playerZ);
-    engine.syncPlayerVisuals(0, 0);
+    engine.playerController.syncPlayerVisuals(0, 0);
     engine.entityGroup.add(engine.playerRig.root);
 
     // Honor previously earned boss reserves without creating new battlefield drops.
@@ -468,7 +468,7 @@ export class SectorLoaderController {
 
     if (isSurvivalSector) {
       engine.survivalState = createSurvivalState();
-      engine.startSurvivalWave(1, false);
+      engine.survivalDirector.startWave(1, false);
     } else if (isContractSector) {
       const contractDef =
         CONTRACTS_CATALOG.find(
@@ -502,7 +502,7 @@ export class SectorLoaderController {
         0.01,
         engine.enemies.length,
         (unitType, assignment, groupEntry) =>
-          engine.spawnContractEnemy(unitType, assignment, groupEntry)
+          engine.contractDirector.spawnEnemy(unitType, assignment, groupEntry)
       );
       engine.vanguardRemainingToSpawn =
         engine.contractState.scheduler.totalBudget - engine.contractState.scheduler.totalSpawned;

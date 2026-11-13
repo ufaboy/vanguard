@@ -88,7 +88,7 @@ export class PowerupsController {
           engine.repairKitState.charges < engine.repairKitState.maxCharges
         ) {
           engine.repairKitState.charges++;
-          engine.persistRepairKitCharges();
+          engine.playerController.persistRepairKitCharges();
           engine.setStatusBanner(
             'RM-1 FIELD REPAIR KIT ACQUIRED / PRESS [1] TO REPAIR',
             2.6

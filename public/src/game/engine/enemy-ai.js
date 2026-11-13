@@ -42,7 +42,7 @@ export class EnemyAiController {
 
   canEngageCommandBase(x0, z0) {
     const engine = this.engine;
-    const baseWorld = engine.getCommandBaseCenter();
+    const baseWorld = engine.sectorLoader.getCommandBaseCenter();
     const dx = baseWorld.x - x0;
     const dz = baseWorld.z - z0;
     const dist = Math.hypot(dx, dz);
@@ -130,7 +130,7 @@ export class EnemyAiController {
     const engine = this.engine;
     const role = e.brain?.role;
     const usesSpotters = role === 'artillery' || role === 'ewar';
-    const repairTarget = role === 'support' ? engine.findRepairTarget(e) : null;
+    const repairTarget = role === 'support' ? engine.enemyAi.findRepairTarget(e) : null;
     const knows =
       canSeePlayer ||
       hasActiveAlert ||
@@ -162,8 +162,8 @@ export class EnemyAiController {
       case 'patrol_zone':
         return true;
       case 'take_cover': {
-        if (engine.movePlanActive(e, action.id)) return true;
-        if (!engine.enemyThreatPos(situation)) return false;
+        if (engine.enemyAi.movePlanActive(e, action.id)) return true;
+        if (!engine.enemyAi.enemyThreatPos(situation)) return false;
         const afterHit = action.afterHitSec ?? ACTION_TUNING.COVER_AFTER_HIT_SEC;
         const lowHp = action.hpBelow !== undefined && e.hp / e.maxHp < action.hpBelow;
         return e.sinceHit <= afterHit || lowHp;
@@ -172,7 +172,7 @@ export class EnemyAiController {
         // Sprung: the player came close enough, the next action (usually move_to_player) takes over
         const trigger = (action.triggerCells ?? ACTION_TUNING.AMBUSH_TRIGGER_CELLS) * TILE_SIZE;
         if (situation.canSeePlayer && situation.distToPlayer <= trigger) return false;
-        return engine.movePlanActive(e, action.id) || Boolean(engine.ambushAnchor(situation));
+        return engine.enemyAi.movePlanActive(e, action.id) || Boolean(engine.enemyAi.ambushAnchor(situation));
       }
       default:
         return false;
@@ -196,10 +196,10 @@ export class EnemyAiController {
   /** Ambush anchor: the known player position, the spotted player, else the player HQ. */
   ambushAnchor(situation) {
     const engine = this.engine;
-    const threat = engine.enemyThreatPos(situation);
+    const threat = engine.enemyAi.enemyThreatPos(situation);
     if (threat) return threat;
     if (situation.spotted && !engine.inSmoke) return { x: engine.playerX, z: engine.playerZ };
-    if (engine.activeMapRules?.defeatOnBaseLoss && engine.baseAlive) return engine.getCommandBaseCenter();
+    if (engine.activeMapRules?.defeatOnBaseLoss && engine.baseAlive) return engine.sectorLoader.getCommandBaseCenter();
     return null;
   }
 
@@ -263,7 +263,7 @@ export class EnemyAiController {
     const canCross = Boolean(e.stats.canCrossWater);
     switch (action.id) {
       case 'move_to_player': {
-        const threat = engine.enemyThreatPos(situation);
+        const threat = engine.enemyAi.enemyThreatPos(situation);
         const pos = threat || (!engine.inSmoke ? { x: engine.playerX, z: engine.playerZ } : { x: e.x, z: e.z });
         const target = engine.worldToGrid(pos.x, pos.z);
         return { goal: null, zone: zoneOf(target.row, target.col) };
@@ -273,7 +273,7 @@ export class EnemyAiController {
         const center = { row: baseCell.row, col: baseCell.col + 0.5 };
         const goal = randomCellAround(engine.grid, center, ACTION_TUNING.BASE_ATTACK_CELLS, random, canCross, (r, c) => {
           const p = engine.gridToWorld(r, c);
-          return engine.canEngageCommandBase(p.x, p.z);
+          return engine.enemyAi.canEngageCommandBase(p.x, p.z);
         });
         return { goal, zone: zoneOf(baseCell.row, baseCell.col), holdSec: Infinity };
       }
@@ -300,10 +300,10 @@ export class EnemyAiController {
         return { goal, zone: home };
       }
       case 'take_cover': {
-        const pos = engine.enemyThreatPos(situation) ?? { x: engine.playerX, z: engine.playerZ };
+        const pos = engine.enemyAi.enemyThreatPos(situation) ?? { x: engine.playerX, z: engine.playerZ };
         const threat = engine.worldToGrid(pos.x, pos.z);
         const [minCells, maxCells] = ACTION_TUNING.COVER_CELLS;
-        const goal = engine.pickTacticalGoal(e, here, threat, {
+        const goal = engine.enemyAi.pickTacticalGoal(e, here, threat, {
           minCells,
           maxCells,
           los: false,
@@ -315,11 +315,11 @@ export class EnemyAiController {
         return { goal, zone: zoneOf(here.row, here.col), holdSec: lo + random() * (hi - lo) };
       }
       case 'ambush': {
-        const pos = engine.ambushAnchor(situation);
+        const pos = engine.enemyAi.ambushAnchor(situation);
         if (!pos) return { goal: null, zone: null };
         const anchor = engine.worldToGrid(pos.x, pos.z);
         const [minCells, maxCells] = ACTION_TUNING.AMBUSH_CELLS;
-        const goal = engine.pickTacticalGoal(e, here, anchor, {
+        const goal = engine.enemyAi.pickTacticalGoal(e, here, anchor, {
           minCells,
           maxCells,
           los: false,
@@ -343,7 +343,7 @@ export class EnemyAiController {
     const engine = this.engine;
     const random = e.behaviorRng ?? Math.random;
     const here = engine.worldToGrid(e.x, e.z);
-    const intended = engine.intendedMoveGoal(e, action, here, situation);
+    const intended = engine.enemyAi.intendedMoveGoal(e, action, here, situation);
     const success = rollLuck(action.luck, random);
     const goal = success
       ? intended.goal
@@ -374,7 +374,7 @@ export class EnemyAiController {
    */
   updateEnemyMovement(e, dt, elapsed, situation) {
     const engine = this.engine;
-    const action = selectAction(e.actions, ACTION_KIND.MOVE, (a) => engine.isMoveActionAvailable(e, a, situation));
+    const action = selectAction(e.actions, ACTION_KIND.MOVE, (a) => engine.enemyAi.isMoveActionAvailable(e, a, situation));
     let plan = e.movePlan;
     if (!action) {
       e.movePlan = null;
@@ -384,19 +384,19 @@ export class EnemyAiController {
       return;
     }
     if (!plan || plan.id !== action.id || plan.done || plan.timer <= 0) {
-      plan = e.movePlan = engine.assignMovePlan(e, action, situation);
+      plan = e.movePlan = engine.enemyAi.assignMovePlan(e, action, situation);
     }
     plan.timer -= dt;
 
     if (plan.success && plan.id === 'move_to_player') {
-      engine.stepEnemyBrain(e, dt, elapsed, situation);
+      engine.enemyAi.stepEnemyBrain(e, dt, elapsed, situation);
       return;
     }
     if (e.brain && e.brain.tactic !== 'idle') resetBrain(e.brain);
     e.brainHolding = false;
     e.brainCharging = false;
     if (e.ai) e.ai.state = plan.success ? plan.id : 'wander';
-    engine.followMovePlan(e, plan, dt);
+    engine.enemyAi.followMovePlan(e, plan, dt);
   }
 
   /** Drives a path-following movement order toward its goal cell. */
@@ -456,7 +456,7 @@ export class EnemyAiController {
       if (Math.hypot(fx - (wp.col + 0.5), fz - (wp.row + 0.5)) > wpTol) break;
       plan.pathIdx++;
     }
-    engine.steerEnemyToWaypoint(e, plan.path[plan.pathIdx] ?? plan.goal);
+    engine.enemyAi.steerEnemyToWaypoint(e, plan.path[plan.pathIdx] ?? plan.goal);
   }
 
   /** Steer toward a waypoint cell; a destructible wall on it becomes the breach target. */
@@ -505,7 +505,7 @@ export class EnemyAiController {
     const tz = live ? engine.playerZ : navTargetZ ?? e.z;
     const target = engine.worldToGrid(tx, tz);
     const replanDue = e.aiTimer <= 0;
-    if (replanDue) e.aiTimer = engine.enemyReplanDelay(e);
+    if (replanDue) e.aiTimer = engine.enemyAi.enemyReplanDelay(e);
 
     const occupiedCells = new Set();
     const allyGoals = [];
@@ -568,7 +568,7 @@ export class EnemyAiController {
       e.targetDirZ = Math.cos(ang);
       e.brainHolding = false;
     } else if (out.waypoint) {
-      e.brainHolding = engine.steerEnemyToWaypoint(e, out.waypoint);
+      e.brainHolding = engine.enemyAi.steerEnemyToWaypoint(e, out.waypoint);
     } else {
       e.targetDirX = 0;
       e.targetDirZ = 0;
@@ -774,7 +774,7 @@ export class EnemyAiController {
       const e = engine.enemies[i];
       if (e.phaseShieldTimer > 0) {
         e.phaseShieldTimer = Math.max(0, e.phaseShieldTimer - dt);
-        engine.syncBossPhaseShieldVisual(e, elapsed);
+        engine.bossCombat.syncPhaseShieldVisual(e, elapsed);
       } else if (e.phaseShieldMesh?.visible) {
         e.phaseShieldMesh.visible = false;
       }
@@ -905,7 +905,7 @@ export class EnemyAiController {
         }
       }
 
-      if (inContactRange(e, distToPlayer) && engine.spendContactEnemy(e)) continue;
+      if (inContactRange(e, distToPlayer) && engine.enemyCombat.spendContactEnemy(e)) continue;
 
       // Seconds since the last hit (take_cover)
       e.sinceHit = e.prevHp !== undefined && e.hp < e.prevHp ? 0 : (e.sinceHit ?? Infinity) + dt;
@@ -995,7 +995,7 @@ export class EnemyAiController {
         const isTryingToMove = Math.hypot(e.targetDirX, e.targetDirZ) > 0.1;
 
         if (isTryingToMove) {
-          engine.crushBoxObstacles(nextX, e.z, radius, false);
+          engine.enemyCombat.crushBoxObstacles(nextX, e.z, radius, false);
           if (e.isBoss) engine.crushBossObstacles(nextX, e.z, radius);
         }
         let blocked = false;
@@ -1010,7 +1010,7 @@ export class EnemyAiController {
         }
 
         if (isTryingToMove) {
-          engine.crushBoxObstacles(e.x, nextZ, radius, false);
+          engine.enemyCombat.crushBoxObstacles(e.x, nextZ, radius, false);
           if (e.isBoss) engine.crushBossObstacles(e.x, nextZ, radius);
         }
         if (

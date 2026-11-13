@@ -330,7 +330,7 @@ export class EnemySpawnerController {
     sound.playBossAlarm();
     sound.playExplosion(1.6);
     engine.screenShake = 1.35;
-    engine.scheduleBossAftershock();
+    engine.enemySpawner.scheduleBossAftershock();
 
     const stageTag = `BOSS WAVE ${stageIndex + 1}/${sequence.length}`;
     engine.setStatusBanner(
@@ -352,7 +352,7 @@ export class EnemySpawnerController {
       !overrideBossClass &&
       !engine.survivalState
     ) {
-      engine.spawnBossStage(0);
+      engine.enemySpawner.spawnBossStage(0);
       return;
     }
 
@@ -375,7 +375,7 @@ export class EnemySpawnerController {
     sound.playExplosion(1.6);
     engine.screenShake = 1.35;
 
-    engine.scheduleBossAftershock();
+    engine.enemySpawner.scheduleBossAftershock();
 
     const bossTitle = (bossName || 'SECTOR COMMANDER').toUpperCase();
     engine.setStatusBanner(
@@ -642,7 +642,7 @@ export class EnemySpawnerController {
       if (engine.survivalState.phase === 'intermission') {
         engine.survivalState.intermissionTimer -= dt;
         if (engine.survivalState.intermissionTimer <= 0) {
-          engine.startSurvivalWave(engine.survivalState.wave + 1, false);
+          engine.survivalDirector.startWave(engine.survivalState.wave + 1, false);
         }
         return;
       }
@@ -675,7 +675,7 @@ export class EnemySpawnerController {
         (!spec?.isBossWave || engine.bossSpawned) &&
         engine.enemies.length === 0
       ) {
-        engine.onSurvivalWaveCleared();
+        engine.survivalDirector.onWaveCleared();
       }
       return;
     }
@@ -687,7 +687,7 @@ export class EnemySpawnerController {
         engine.enemies.length,
         sector.maxConcurrentEnemies,
         sector.spawnIntervalSec,
-        (type, group) => engine.spawnEncounterEnemy(type, group),
+        (type, group) => engine.enemySpawner.spawnEncounterEnemy(type, group),
         (label) => engine.setStatusBanner(label, 4)
       );
       engine.vanguardRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);

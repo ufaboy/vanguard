@@ -252,7 +252,7 @@ export class ExplosionsController {
         } else if (cell.type === TileType.SPAWNER) {
           engine.destroyTileCell(cell);
         } else if (cell.type === TileType.BASE && !fromPlayer) {
-          engine.destroyCommandBase();
+          engine.terrainDestruction.destroyCommandBase();
         } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
           engine.damageEnemyBase(cell, 16, pos.x, pos.z);
         }
@@ -335,7 +335,7 @@ export class ExplosionsController {
           } else if (cell.type === TileType.CONCRETE) {
             engine.damageTileCell(cell, 6, pos.x, pos.z);
           } else if (cell.type === TileType.BASE && !fromPlayer) {
-            engine.destroyCommandBase();
+            engine.terrainDestruction.destroyCommandBase();
           } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
             engine.damageEnemyBase(cell, 12, pos.x, pos.z);
           }

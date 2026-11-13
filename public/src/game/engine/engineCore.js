@@ -196,7 +196,7 @@ export class TankGameEngine {
     this.lasers = [];
     this.hazardZones = [];
     this.burningForests = [];
-    this.clearPendingTimeouts();
+    this.enemySpawner.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
     this.particles = [];
     this.powerUps = [];
@@ -216,7 +216,7 @@ export class TankGameEngine {
     this.shotsHit = 0;
     this.hudSyncAccumulator = 0;
 
-    this.loadSavedProgress();
+    this.profileSave.loadSavedProgress();
     this.recomputePlayerStats(false);
 
     this.isSoftwareGl = (() => {
@@ -303,7 +303,7 @@ export class TankGameEngine {
       this.modelFactory.onModelReady = (model) => this.warmupTankShaders(model);
     }
 
-    this.bindEvents();
+    this.inputCamera.bindEvents();
     this.clock = new THREE.Timer();
     this.clock.connect(document);
     this.emitHudUpdate();
@@ -314,24 +314,12 @@ export class TankGameEngine {
     return (this._profileSave ||= new ProfileSaveController(this));
   }
 
-  getUpgradesStorage() {
-    return this.profileSave.getUpgradesStorage();
-  }
-
-  loadSavedProgress() {
-    this.profileSave.loadSavedProgress();
-  }
-
   saveProgress() {
     this.profileSave.saveProgress();
   }
 
   syncCampaignCredits() {
     this.profileSave.syncCampaignCredits();
-  }
-
-  resetToStockTank() {
-    this.profileSave.resetToStockTank();
   }
 
   setProfileMode(mode = 'campaign', options = {}) {
@@ -443,8 +431,6 @@ export class TankGameEngine {
     return effectiveUpgradeTiers(this.upgrades, this.componentDamage);
   }
 
-  syncPlayerVisuals(wheelDelta = 0, elapsed = 0) { this.playerController.syncPlayerVisuals(wheelDelta, elapsed); }
-
   recomputePlayerStats(preserveRatio = true) { this.playerController.recomputePlayerStats(preserveRatio); }
 
   getPlayerMaxCannonAmmo() { return this.playerController.getPlayerMaxCannonAmmo(); }
@@ -452,8 +438,6 @@ export class TankGameEngine {
   getPlayerMaxApsAmmo() { return this.playerController.getPlayerMaxApsAmmo(); }
 
   getPlayerMaxMissileAmmo() { return this.playerController.getPlayerMaxMissileAmmo(); }
-
-  initApsLaunchers(rounds) { this.playerController.initApsLaunchers(rounds); }
 
   addApsRounds(count) { this.playerController.addApsRounds(count); }
 
@@ -603,12 +587,6 @@ export class TankGameEngine {
     return this.enemySpawner.spawnVanguardEnemy();
   }
 
-  startSurvivalWave(waveNumber = 1, isEarlyCall = false) {
-    this.survivalDirector.startWave(waveNumber, isEarlyCall);
-  }
-
-  onSurvivalWaveCleared() { this.survivalDirector.onWaveCleared(); }
-
   callNextSurvivalWave() { return this.survivalDirector.callNextWave(); }
 
   spawnSpecificEnemy(enemyClass) {
@@ -619,20 +597,8 @@ export class TankGameEngine {
     this.enemySpawner.spawnBossEntry(sector, bossClass, bossCell);
   }
 
-  spawnBossStage(stageIndex) {
-    return this.enemySpawner.spawnBossStage(stageIndex);
-  }
-
   spawnSectorBoss(overrideBossClass = null, overrideBossName = null) {
     this.enemySpawner.spawnSectorBoss(overrideBossClass, overrideBossName);
-  }
-
-  scheduleBossAftershock() {
-    this.enemySpawner.scheduleBossAftershock();
-  }
-
-  clearPendingTimeouts() {
-    this.enemySpawner.clearPendingTimeouts();
   }
 
   getEnemyLoadoutStats(enemyClass) {
@@ -644,7 +610,6 @@ export class TankGameEngine {
   }
 
   /** Persists RM-1 Field Repair Kit charges to playerSave outside Survival sessions. */
-  persistRepairKitCharges() { this.playerController.persistRepairKitCharges(); }
 
   activateModuleSlot(slotNumber) { this.playerController.activateModuleSlot(slotNumber); }
 
@@ -653,8 +618,6 @@ export class TankGameEngine {
   isPointInSmoke(x, z) { return this.playerController.isPointInSmoke(x, z); }
 
   isSegmentInSmoke(x0, z0, x1, z1) { return this.playerController.isSegmentInSmoke(x0, z0, x1, z1); }
-
-  breakEnemyLockInSmoke() { this.playerController.breakEnemyLockInSmoke(); }
 
   mountHangarPart(instanceId, socketId = null) { return this.hangarOps.mountPart(instanceId, socketId); }
 
@@ -682,10 +645,6 @@ export class TankGameEngine {
 
   get inputCamera() {
     return (this._inputCamera ||= new InputCameraController(this));
-  }
-
-  bindEvents() {
-    this.inputCamera.bindEvents();
   }
 
   startMission(sectorIdx) {
@@ -872,10 +831,10 @@ export class TankGameEngine {
     if (this.isHangarPaused || this.isAdPaused) {
       if (this.playerRig) {
         this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;
-        this.syncPlayerVisuals(dt * 1.2, elapsed);
+        this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
       }
       this.updateParticles(dt);
-      this.updateCamera(dt, elapsed);
+      this.inputCamera.updateCamera(dt, elapsed);
       this.fx.update(dt, this.camera, this.renderer);
       return;
     }
@@ -883,23 +842,23 @@ export class TankGameEngine {
     if (this.status === GameStatus.PLAYING) {
       this.componentDamageCooldown = Math.max(0, this.componentDamageCooldown - dt);
       this.updatePlayer(dt, elapsed);
-      this.updateBaseMaintenance(dt);
+      this.playerController.updateBaseMaintenance(dt);
       this.updateApsInterception(dt);
       this.updateSpawnerLogic(dt);
       if (this.contractState) {
-        this.updateContractLogic(dt, elapsed);
+        this.contractDirector.update(dt, elapsed);
       }
       this.updateEnemies(dt, elapsed);
-      this.updateDefenseTurrets(dt, elapsed);
+      this.defenseTurretsCtrl.update(dt, elapsed);
       this.updateProjectiles(dt);
       this.updateMines(dt, elapsed);
       this.updateLasers(dt);
-      this.updateHazardZones(dt, elapsed);
+      this.explosions.updateHazardZones(dt, elapsed);
       this.updatePowerUps(dt, elapsed);
-      this.updateSmokeAndLoot(dt);
+      this.playerController.updateSmokeAndLoot(dt);
       this.updateBarrelExplosions(dt);
       this.updateBrickRubble(dt);
-      this.updateBurningForests(dt, elapsed);
+      this.forestFire.update(dt, elapsed);
     } else if (this.playerRig) {
       const canHover = Boolean(this.playerStats?.canHover);
       const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
@@ -907,11 +866,11 @@ export class TankGameEngine {
       if (this.inspectMode) {
         this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;
       }
-      this.syncPlayerVisuals(dt * 1.2, elapsed);
+      this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
     }
 
     this.updateParticles(dt);
-    this.updateCamera(dt, elapsed);
+    this.inputCamera.updateCamera(dt, elapsed);
     this.fx.update(dt, this.camera, this.renderer);
 
     this.hudSyncAccumulator += dt;
@@ -922,8 +881,6 @@ export class TankGameEngine {
     }
   }
 
-  updateSmokeAndLoot(dt) { this.playerController.updateSmokeAndLoot(dt); }
-
   updatePlayer(dt, elapsed) { this.playerController.updatePlayer(dt, elapsed); }
 
   getBaseLayout() {
@@ -931,11 +888,6 @@ export class TankGameEngine {
   }
 
   /** World centre of the two-cell Allied HQ. */
-  getCommandBaseCenter() {
-    return this.sectorLoader.getCommandBaseCenter();
-  }
-
-  updateBaseMaintenance(dt) { this.playerController.updateBaseMaintenance(dt); }
 
   setBasePerimeterMaterial(targetType) {
     this.sectorLoader.setBasePerimeterMaterial(targetType);
@@ -943,74 +895,33 @@ export class TankGameEngine {
 
   updateApsInterception() { this.playerController.updateApsInterception(); }
 
-  consumeApsLauncherTowards(threatX, threatZ, threatY = 0.95, cost = 1) { return this.playerController.consumeApsLauncherTowards(threatX, threatZ, threatY, cost); }
-
   tryPlayerFire() { this.playerController.tryPlayerFire(); }
-
-  firePlayerMuzzleFx(x, z, dirX, dirZ, isHeavy) { this.playerController.firePlayerMuzzleFx(x, z, dirX, dirZ, isHeavy); }
-
-  spawnEncounterEnemy(enemyClass, group) {
-    return this.enemySpawner.spawnEncounterEnemy(enemyClass, group);
-  }
-
-  spawnContractEnemy(enemyClass, assignment, groupEntry) {
-    return this.contractDirector.spawnEnemy(enemyClass, assignment, groupEntry);
-  }
 
   startContractCargoLoad() { return this.contractDirector.startCargoLoad(); }
 
   startContractExtract() { return this.contractDirector.startExtract(); }
 
-  interactContractObjective() { return this.contractDirector.interactObjective(); }
-
   detonateSabotageRelay(relay) { this.contractDirector.detonateSabotageRelay(relay); }
-
-  updateContractLogic(dt, elapsed) { this.contractDirector.update(dt, elapsed); }
 
   updateSpawnerLogic(dt) {
     this.enemySpawner.updateSpawnerLogic(dt);
   }
 
   /** Checks optical line-of-sight between two world coordinates (x0, z0) and (x1, z1). */
-  canEngageCommandBase(x0, z0) { return this.enemyAi.canEngageCommandBase(x0, z0); }
 
   hasLineOfSight(x0, z0, x1, z1) { return this.enemyAi.hasLineOfSight(x0, z0, x1, z1); }
 
   broadcastPlayerLocationFrom(spotter, targetX, targetZ) { this.enemyAi.broadcastPlayerLocationFrom(spotter, targetX, targetZ); }
 
-  enemyReplanDelay(e) { return this.enemyAi.enemyReplanDelay(e); }
-
   enemyRoleTarget(e, situation) { return this.enemyAi.enemyRoleTarget(e, situation); }
-
-  isMoveActionAvailable(e, action, situation) { return this.enemyAi.isMoveActionAvailable(e, action, situation); }
-
-  movePlanActive(e, id) { return this.enemyAi.movePlanActive(e, id); }
-
-  enemyThreatPos(situation) { return this.enemyAi.enemyThreatPos(situation); }
-
-  ambushAnchor(situation) { return this.enemyAi.ambushAnchor(situation); }
-
-  pickTacticalGoal(e, here, target, query) { return this.enemyAi.pickTacticalGoal(e, here, target, query); }
 
   enemyBaseCell() { return this.enemyAi.enemyBaseCell(); }
 
   getEnemyBaseCenter() { return this.enemyAi.getEnemyBaseCenter(); }
 
-  intendedMoveGoal(e, action, here, situation) { return this.enemyAi.intendedMoveGoal(e, action, here, situation); }
-
-  assignMovePlan(e, action, situation) { return this.enemyAi.assignMovePlan(e, action, situation); }
-
   updateEnemyMovement(e, dt, elapsed, situation) { this.enemyAi.updateEnemyMovement(e, dt, elapsed, situation); }
 
-  followMovePlan(e, plan, dt) { this.enemyAi.followMovePlan(e, plan, dt); }
-
-  steerEnemyToWaypoint(e, waypoint) { return this.enemyAi.steerEnemyToWaypoint(e, waypoint); }
-
-  stepEnemyBrain(e, dt, elapsed, situation) { return this.enemyAi.stepEnemyBrain(e, dt, elapsed, situation); }
-
   bossBrainOverrides(enemyClass) { return this.enemyAi.bossBrainOverrides(enemyClass); }
-
-  findRepairTarget(e) { return this.enemyAi.findRepairTarget(e); }
 
   updateSquadDirector(dt, spottedLastFrame) { this.enemyAi.updateSquadDirector(dt, spottedLastFrame); }
 
@@ -1019,8 +930,6 @@ export class TankGameEngine {
   enemyActionSummary(e) { return this.aiDebugOverlay.actionSummary(e); }
 
   isOnPlayerTrail(e) { return this.enemyAi.isOnPlayerTrail(e); }
-
-  hasAttackToken(e) { return this.enemyAi.hasAttackToken(e); }
 
   syncEnemyTurretVisuals(e, dt) { this.enemyAi.syncEnemyTurretVisuals(e, dt); }
 
@@ -1048,41 +957,14 @@ export class TankGameEngine {
    * A contact ability (e.g. the KAMIKAZE warhead) went off. The tank is spent: it leaves the
    * battlefield without a kill reward. Returns false when the ability chose not to trigger.
    */
-  spendContactEnemy(e) { return this.enemyCombat.spendContactEnemy(e); }
-
-  inArtilleryRange(e, x, z, maxCells) { return this.enemyCombat.inArtilleryRange(e, x, z, maxCells); }
-
-  clampToArena(point) { return this.enemyCombat.clampToArena(point); }
 
   enemyShotTarget(e, action, s, turretState = null) { return this.enemyCombat.enemyShotTarget(e, action, s, turretState); }
 
   updateEnemyGunnery(e, dt, s) { this.enemyCombat.updateEnemyGunnery(e, dt, s); }
 
-  updateMultiTurretGunnery(e, dt, s) { this.enemyCombat.updateMultiTurretGunnery(e, dt, s); }
-
-  fireEnemyTurretWeapon(e, t, tx, tz) { this.enemyCombat.fireEnemyTurretWeapon(e, t, tx, tz); }
-
-  updateDirectFire(e, dt, shot, aim, s) { this.enemyCombat.updateDirectFire(e, dt, shot, aim, s); }
-
-  updateIndirectFire(e, dt, shot, aim) { this.enemyCombat.updateIndirectFire(e, dt, shot, aim); }
-
   updateBossSecondaryWeapons(e, dt, s) { this.enemyCombat.updateBossSecondaryWeapons(e, dt, s); }
 
-  findRandomTerrainTarget(e, maxRangeCells = 8) { return this.enemyCombat.findRandomTerrainTarget(e, maxRangeCells); }
-
-  fireEnemyWeapon(e, opts) { this.enemyCombat.fireEnemyWeapon(e, opts); }
-
   spawnEnemyHomingMissile(x, z, dirX, dirZ, homing = true) { return this.enemyCombat.spawnEnemyHomingMissile(x, z, dirX, dirZ, homing); }
-
-  triggerEnemyArtilleryBarrage(e, target) { this.enemyCombat.triggerEnemyArtilleryBarrage(e, target); }
-
-  aimRigAtAndGetMuzzle(e, tx, tz) { return this.enemyCombat.aimRigAtAndGetMuzzle(e, tx, tz); }
-
-  triggerHydraSalvo(e, aim) { this.enemyCombat.triggerHydraSalvo(e, aim); }
-
-  fireBossMissileSalvo(e, toPlayerX, toPlayerZ, hit, count, spreadRad) { this.enemyCombat.fireBossMissileSalvo(e, toPlayerX, toPlayerZ, hit, count, spreadRad); }
-
-  crushBoxObstacles(x, z, radius, fromPlayer = false) { return this.enemyCombat.crushBoxObstacles(x, z, radius, fromPlayer); }
 
   crushBossObstacles(x, z, radius) { return this.enemyCombat.crushBossObstacles(x, z, radius); }
 
@@ -1092,21 +974,11 @@ export class TankGameEngine {
 
   updateInfernoDash(e, dt, info) { return this.bossCombat.updateInfernoDash(e, dt, info); }
 
-  nextBossPhaseGate(e) { return this.bossCombat.nextPhaseGate(e); }
-
-  syncBossPhaseShieldVisual(e, elapsed) { this.bossCombat.syncPhaseShieldVisual(e, elapsed); }
-
-  triggerBossPhaseTransition(e, phaseId) { this.bossCombat.triggerPhaseTransition(e, phaseId); }
-
   callBossEscort(e, escortClasses = TITAN.ESCORT_CLASSES) { this.bossCombat.callEscort(e, escortClasses); }
 
   tryBossApsIntercept(projectile) { return this.bossCombat.tryApsIntercept(projectile); }
 
   setupDefenseTurrets() { this.defenseTurretsCtrl.setup(); }
-
-  updateDefenseTurrets(dt, elapsed) { this.defenseTurretsCtrl.update(dt, elapsed); }
-
-  damageDefenseTurret(turret, p) { this.defenseTurretsCtrl.damage(turret, p); }
 
   get physics() {
     return (this._physics ||= new PhysicsController(this));
@@ -1205,10 +1077,6 @@ export class TankGameEngine {
     );
   }
 
-  updateHazardZones(dt, elapsed) {
-    this.explosions.updateHazardZones(dt, elapsed);
-  }
-
   get terrainDestruction() {
     return (this._terrainDestruction ||= new TerrainDestructionController(this));
   }
@@ -1273,10 +1141,6 @@ export class TankGameEngine {
     this.terrainDestruction.damageEnemyBase(cell, dmg, hitX, hitZ);
   }
 
-  destroyCommandBase() {
-    this.terrainDestruction.destroyCommandBase();
-  }
-
   restoreCommandBase() {
     this.terrainDestruction.restoreCommandBase();
   }
@@ -1339,9 +1203,6 @@ export class TankGameEngine {
   }
 
   /** World-space muzzle position of a rig (falls back to a forward offset). */
-  getRigMuzzle(rig, x, z, dirX, dirZ, fallbackDist = 1.4, out = { x: 0, y: 0.85, z: 0 }) {
-    return this.physics.getRigMuzzle(rig, x, z, dirX, dirZ, fallbackDist, out);
-  }
 
   updateParticles(dt) {
     for (let i = this.particles.length - 1; i >= 0; i--) {
@@ -1363,10 +1224,6 @@ export class TankGameEngine {
       const s = Math.max(0.05, pt.life / pt.maxLife);
       pt.mesh.scale.setScalar(s);
     }
-  }
-
-  updateCamera(dt, elapsed) {
-    this.inputCamera.updateCamera(dt, elapsed);
   }
 
   checkTankEnemyCollision(e, testX, testZ, radius) {
@@ -1391,13 +1248,11 @@ export class TankGameEngine {
 
   checkAndIgniteForestOnEnemyKill(enemy) { this.forestFire.checkAndIgniteOnEnemyKill(enemy); }
 
-  updateBurningForests(dt, elapsed) { this.forestFire.update(dt, elapsed); }
-
   dispose() {
     this.isDisposed = true;
     this.hangarStage?.dispose();
     this.modelFactory.brickModels.dispose();
-    this.clearPendingTimeouts();
+    this.enemySpawner.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
     this._aiDebugOverlay?.clear();
     this.clock?.dispose();

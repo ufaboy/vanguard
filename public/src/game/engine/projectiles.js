@@ -338,7 +338,7 @@ export class ProjectilesController {
       if (cell?.defenseTurret?.alive && (!p.isMissile || !p.fromPlayer)) {
         if (p.fromPlayer) {
           engine.shotsHit++;
-          engine.damageDefenseTurret(cell.defenseTurret, p);
+          engine.defenseTurretsCtrl.damage(cell.defenseTurret, p);
         }
         if (p.isMissile) engine.detonateMissile(p);
         engine.removeProjectile(i);
@@ -387,7 +387,7 @@ export class ProjectilesController {
           continue;
         } else if (cell.type === TileType.BASE && !p.fromPlayer) {
           if (p.isMissile) engine.detonateMissile(p);
-          engine.destroyCommandBase();
+          engine.terrainDestruction.destroyCommandBase();
           engine.removeProjectile(i);
           continue;
         } else if (cell.type === TileType.ENEMY_BASE && !p.fromPlayer) {
@@ -425,7 +425,7 @@ export class ProjectilesController {
             if (Math.hypot(turret.x - p.x, turret.z - p.z) <= turret.radius) {
               hitTurret = true;
               engine.shotsHit++;
-              engine.damageDefenseTurret(turret, p);
+              engine.defenseTurretsCtrl.damage(turret, p);
               break;
             }
           }

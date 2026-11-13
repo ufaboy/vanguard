@@ -118,7 +118,7 @@ export class TerrainDestructionController {
     if (!engine.baseAlive) return;
     engine.baseAlive = false;
     engine.inBaseRepairZone = false;
-    const basePos = engine.getCommandBaseCenter();
+    const basePos = engine.sectorLoader.getCommandBaseCenter();
     for (const { row, col } of engine.getBaseLayout().cells) {
       const baseCell = engine.grid[row]?.[col];
       if (baseCell?.type === TileType.BASE) engine.destroyTileCell(baseCell);
@@ -161,7 +161,7 @@ export class TerrainDestructionController {
     if (engine.baseAlive || engine.status !== GameStatus.PLAYING) return;
     const cells = engine.getBaseLayout().cells.map(({ row, col }) => engine.grid[row]?.[col]);
     if (!cells.length || cells.some((cell) => !cell)) return;
-    const pos = engine.getCommandBaseCenter();
+    const pos = engine.sectorLoader.getCommandBaseCenter();
     const mesh = engine.modelFactory.createCommandBaseBlock();
     mesh.position.set(pos.x, 0, pos.z);
     engine.mapGroup.add(mesh);
@@ -376,7 +376,7 @@ export class TerrainDestructionController {
     const { engine } = this;
     if (engine.isDisposed || engine.isHangarPaused || engine.isAdPaused || engine.status !== GameStatus.PLAYING) return;
     const pending = engine.pendingBarrelExplosions || [];
-    engine.clearPendingTimeouts();
+    engine.enemySpawner.clearPendingTimeouts();
     engine.pendingBarrelExplosions = [];
     for (const event of pending) {
       const { cell } = event;
