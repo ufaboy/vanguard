@@ -1,7 +1,8 @@
-/** Increments the patch version in package.json (and package-lock.json if present). */
+/** Increments the patch (default) or minor (--minor) version in package.json (and package-lock.json if present). */
 import fs from 'node:fs';
 import path from 'node:path';
 
+const isMinor = process.argv.includes('--minor');
 const root = process.cwd();
 const pkgPath = path.join(root, 'package.json');
 const lockPath = path.join(root, 'package-lock.json');
@@ -13,7 +14,9 @@ if (parts.length !== 3 || parts.some((n) => !Number.isInteger(n) || n < 0)) {
 }
 
 const prevVersion = pkg.version;
-const nextVersion = `${parts[0]}.${parts[1]}.${parts[2] + 1}`;
+const nextVersion = isMinor
+  ? `${parts[0]}.${parts[1] + 1}.0`
+  : `${parts[0]}.${parts[1]}.${parts[2] + 1}`;
 pkg.version = nextVersion;
 fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
 

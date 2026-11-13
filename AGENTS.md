@@ -38,9 +38,12 @@
 7. **Release Before Deploy (On `main` After PR Merge)**:
    - Do **not** create Git tags or GitHub releases on a feature/PR branch or prior to PR merge.
    - Only **after** a PR is merged/squashed into `main`, create the annotated Git tag matching the `package.json` version on the resulting squash commit on `main` (e.g., `git tag -a v1.4.1 -m "Release v1.4.1"`) and create the remote/GitHub release, then run production deploy (`npm run deploy`). Do not deploy uncommitted work directly to production without a release.
-8. **Version Bump Policy (Branches & PRs)**:
+8. **Version Bump Policy (SemVer, Branches & PRs)**:
+   - **Patch (`x.y.Z`)**: Bug fixes, removing blocks/elements, or content/code cleanup (`node scripts/bump-version.mjs`).
+   - **Minor (`x.Y.0`)**: Adding new functionality or substantially changing existing functionality (`node scripts/bump-version.mjs --minor`, staging `package.json` and `package-lock.json` before committing so `.githooks/pre-commit` preserves the minor bump).
+   - **Major (`X.0.0`)**: Never bumped automatically by agents; reserved strictly for the user to update manually in `package.json`.
    - The `.githooks/pre-commit` hook auto-bumps the patch version **only** on direct commits to `main` (it skips feature branches, merges/rebases, and commits where `package.json` version is already staged).
-   - While working on a feature branch, do **not** bump the version on intermediate commits. Bump the version (`node scripts/bump-version.mjs` or manually in `package.json` / `package-lock.json`) **only immediately before creating the Pull Request into `main`** (if it has not already been bumped relative to `main`), without creating any tag or release yet.
+   - While working on a feature branch, do **not** bump the version on intermediate commits. Bump the version (`node scripts/bump-version.mjs` or `node scripts/bump-version.mjs --minor`) **only immediately before creating the Pull Request into `main`** (if it has not already been bumped relative to `main`), without creating any tag or release yet.
 9. **Target Platform & Viewport Orientation (Desktop & Landscape Tablets)**:
    - The game UI, HUD, tactical 36×36 isometric arena, and cinematic operations screens are designed exclusively for **Desktop displays and Tablets in Landscape orientation** (16:9 or wider aspect ratio recommended).
    - Mobile phones and portrait orientations are strictly non-target configurations. Layouts, interactive controls, and visual styling must optimize for horizontal widescreen viewing.
