@@ -1347,7 +1347,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   min-width: 0;
   max-height: none;
   aspect-ratio: auto;
-  background: #070c12 url('/images/campaign-map-clean.jpg') no-repeat center / 100% 100%;
+  background: #070c12 url('/images/campaign-map-clean.webp') no-repeat center / 100% 100%;
   overflow: hidden;
   user-select: none;
 }
