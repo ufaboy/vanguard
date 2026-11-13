@@ -10,7 +10,6 @@
     "vendor": "node scripts/sync-vendor.mjs",
     "optimize-models": "node scripts/optimize-models.mjs",
     "lint": "node scripts/lint.mjs",
-    "prerender": "node scripts/prerender-pages.mjs",
     "pack-bricks": "node scripts/pack-bricks.mjs",
     "benchmark:bricks": "node scripts/run-brick-benchmark.mjs",
     "deploy": "node scripts/deploy.mjs",

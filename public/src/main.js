@@ -1,6 +1,4 @@
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
-import { MENU_PAGES, renderMenu } from './menu.js';
-import { syncCampaignMapState } from './views/campaign.js';
 import { CONTRACT_PAGE_PATHS, PAGE_PATHS, battlefieldUrl } from './app/routes.js';
 import { attachSettingsModal } from './app/shell.js';
 import {
@@ -37,8 +35,7 @@ import {
   ARMORS,
 } from './game/components/index.js';
 import { CODEX_ITEMS } from './game/codex.js';
-import { renderCodex } from './views/codex.js';
-import { renderCampaignBrief } from './views/campaign.js';
+import { renderCodex } from './pages/codex.js';
 import {
   renderPowerUpBadgeSvg,
 } from './game/icons.js';
@@ -552,41 +549,7 @@ function applyRoute(route) {
       return;
     }
   }
-  const normalizedPage = route.page === 'contract' ? 'contracts' : route.page;
-  const targetPage = MENU_PAGES.includes(normalizedPage) ? normalizedPage : 'home';
-  const pageChanged = state.menuPage !== targetPage;
-  state.menuPage = targetPage;
-  if (state.menuPage === 'campaign' && CAMPAIGN_MISSIONS.some((mission) => mission.id === route.param)) {
-    if (state.selectedCampaignMission !== route.param) {
-      state.selectedCampaignMission = route.param;
-      if (!pageChanged) {
-        renderCampaignBrief(route.param, state.hud?.playerSave?.completedMissions);
-        document.querySelectorAll('.cinematic-node').forEach((node) => {
-          node.classList.toggle('is-selected', node.dataset.mission === route.param);
-        });
-        return;
-      }
-    }
-  } else if (state.menuPage === 'contracts') {
-    const nextContract = CONTRACTS_CATALOG.some((c) => c.id === route.param) ? route.param : '';
-    if (state.selectedContract !== nextContract) {
-      state.selectedContract = nextContract;
-      if (!pageChanged) {
-        document.querySelectorAll('.contract-banner[data-contract-card]').forEach((card) => {
-          const isSelected = card.dataset.contractCard === nextContract;
-          card.classList.toggle('is-selected', isSelected);
-          const selectBtn = card.querySelector('[data-action="select-contract"]');
-          if (selectBtn) selectBtn.setAttribute('aria-pressed', String(isSelected));
-        });
-        return;
-      }
-    }
-  }
-  const statusModal = document.getElementById('status-modal');
-  if (pageChanged || !statusModal?.dataset?.page) {
-    renderUI(true);
-    document.querySelector('.menu-page h1')?.focus();
-  }
+  location.replace(PAGE_PATHS.index);
 }
 
 function cycleCameraPreset() {
@@ -670,10 +633,7 @@ function setupDelegatedEvents(root) {
 
     switch (action) {
       case 'menu-page':
-        if (!MENU_PAGES.includes(btn.dataset.page)) break;
-        state.menuPage = btn.dataset.page;
-        renderUI(true);
-        document.querySelector('.menu-page h1')?.focus();
+        location.href = PAGE_PATHS[btn.dataset.page] || PAGE_PATHS.index;
         break;
       case 'select-campaign-mission': {
         const missionId = btn.dataset.mission;
@@ -1645,20 +1605,14 @@ function renderUI(forceModals = false) {
     renderCodexStudio();
     setHidden(statusModal, false);
     if (statusModal.dataset.page !== state.menuPage) {
-      if (state.menuPage === 'battlefield') {
-        setHtml(
-          statusModal,
-          `<div class="w-full max-w-md bg-[#0B0F17] border border-slate-700/80 rounded p-6 text-center font-mono">
-            <div class="text-amber-400 text-xs uppercase tracking-[0.2em] mb-2">BATTLEFIELD DEPLOYMENT</div>
-            <p class="text-slate-300 text-sm">Initializing 3D tactical arena…</p>
-          </div>`
-        );
-      } else {
-        setHtml(statusModal, renderMenu(state, CAMERA_LABELS));
-      }
+      setHtml(
+        statusModal,
+        `<div class="w-full max-w-md bg-[#0B0F17] border border-slate-700/80 rounded p-6 text-center font-mono">
+          <div class="text-amber-400 text-xs uppercase tracking-[0.2em] mb-2">BATTLEFIELD DEPLOYMENT</div>
+          <p class="text-slate-300 text-sm">Initializing 3D tactical arena…</p>
+        </div>`
+      );
       statusModal.dataset.page = state.menuPage;
-    } else if (state.menuPage === 'campaign') {
-      syncCampaignMapState(state.hud?.playerSave?.completedMissions || {}, state.selectedCampaignMission);
     }
     return;
   }
@@ -2194,7 +2148,13 @@ function renderUI(forceModals = false) {
       setHidden(statusModal, false);
 
       if (hud.status === GameStatus.MENU) {
-        setHtml(statusModal, renderMenu(state, CAMERA_LABELS));
+        setHtml(
+          statusModal,
+          `<div class="w-full max-w-md bg-[#0B0F17] border border-slate-700/80 rounded p-6 text-center font-mono">
+            <div class="text-amber-400 text-xs uppercase tracking-[0.2em] mb-2">BATTLEFIELD DEPLOYMENT</div>
+            <p class="text-slate-300 text-sm">Initializing 3D tactical arena…</p>
+          </div>`
+        );
       } else if (hud.status === GameStatus.PAUSED) {
         const isSurvival = hud.gameMode === 'survival' || currentSector.gameMode === 'survival';
         setHtml(statusModal, `
