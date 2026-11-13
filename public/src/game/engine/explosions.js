@@ -9,7 +9,7 @@ import {
   computeEffectiveDamage,
 } from '../constants.js';
 import { markOwned } from '../dispose.js';
-import { createProjectileVisual } from '../fx.js';
+import { createProjectileVisual } from '../effects/index.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { TileType } from '../types.js';

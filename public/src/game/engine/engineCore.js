@@ -10,7 +10,7 @@ import { HangarOps } from '../hangar-ops.js';
 import { BossCombat } from '../boss-combat.js';
 import { DefenseTurretsController } from '../defense-turrets.js';
 import { buildHudSnapshot } from '../hud-snapshot.js';
-import { ForestFireController } from '../forest-fire.js';
+import { ForestFireController } from '../terrains/forest-fire.js';
 import { ProfileSaveController } from './profile-save.js';
 import { PowerupsController } from './powerups-controller.js';
 import { InputCameraController } from './input-camera.js';
@@ -42,7 +42,7 @@ import {
 import { ModelFactory } from '../models.js';
 import { TileBatcher } from '../tile-batcher.js';
 import { autoDisposeOwned, disposeOwned } from '../dispose.js';
-import { FxSystem, createProjectileVisual } from '../fx.js';
+import { FxSystem, createProjectileVisual } from '../effects/index.js';
 import { sound } from '../sound.js';
 import { ARMOR_PANEL_CATALOG, TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';

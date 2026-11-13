@@ -1,9 +1,9 @@
 /** Forest ignition, burning lifecycle, burn damage, and burnout to sand. */
 
 import * as THREE from 'three';
-import { TileType } from './types.js';
-import { GRID_SIZE, TILE_SIZE } from './levels.js';
-import { sound } from './sound.js';
+import { TileType } from '../types.js';
+import { GRID_SIZE, TILE_SIZE } from '../levels.js';
+import { sound } from '../sound.js';
 
 export class ForestFireController {
   constructor(engine) {

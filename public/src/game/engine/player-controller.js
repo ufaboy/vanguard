@@ -21,7 +21,7 @@ import { PLAYER_TANK_CONFIG } from '../tanks.js';
 import { GameStatus, TileType } from '../types.js';
 import { SECTORS } from '../levels.js';
 import { sound } from '../sound.js';
-import { createMissileVisual } from '../fx.js';
+import { createMissileVisual } from '../effects/index.js';
 import { markOwned } from '../dispose.js';
 import { deckClearance } from '../models.js';
 import { apsInterceptCost } from '../../sim/aps.js';
