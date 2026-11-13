@@ -6,13 +6,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { renderPageShell } from '../public/src/app/shell.js';
 import { CAMPAIGN_MISSIONS } from '../public/src/game/campaign.js';
-import { renderAbout } from '../public/src/views/about.js';
 import { renderCampaign } from '../public/src/views/campaign.js';
-import { renderContact } from '../public/src/views/contact.js';
 import { renderContracts } from '../public/src/views/contracts.js';
-import { renderHowToPlay } from '../public/src/views/how-to-play.js';
-import { renderPrivacyPolicy } from '../public/src/views/privacy-policy.js';
-import { renderSurvival } from '../public/src/views/survival.js';
 
 function wrapGameShell(pageId, innerHtml) {
   return `
@@ -70,50 +65,6 @@ function wrapGameShell(pageId, innerHtml) {
 
 const PAGES = [
   {
-    file: 'public/how-to-play.html',
-    render: () =>
-      renderPageShell({
-        activePage: 'how-to-play',
-        title: 'How to Play',
-        subtitle: 'Field Manual & Tactical Controls',
-        className: 'how-to-play-content',
-        bodyHtml: renderHowToPlay(),
-      }),
-  },
-  {
-    file: 'public/about.html',
-    render: () =>
-      renderPageShell({
-        activePage: 'about',
-        title: 'About Battle Tank',
-        subtitle: 'Project Overview & Architecture',
-        className: 'about-content',
-        bodyHtml: renderAbout(),
-      }),
-  },
-  {
-    file: 'public/privacy-policy.html',
-    render: () =>
-      renderPageShell({
-        activePage: 'privacy-policy',
-        title: 'Privacy Policy',
-        subtitle: 'Classification & Data Protections',
-        className: 'privacy-content',
-        bodyHtml: renderPrivacyPolicy(),
-      }),
-  },
-  {
-    file: 'public/contact.html',
-    render: () =>
-      renderPageShell({
-        activePage: 'contact',
-        title: 'Command Inquiries',
-        subtitle: 'Signal HQ & Operations',
-        className: 'contact-content',
-        bodyHtml: renderContact(),
-      }),
-  },
-  {
     file: 'public/campaign.html',
     render: () =>
       renderPageShell({
@@ -123,18 +74,6 @@ const PAGES = [
         showBack: true,
         className: 'campaign-content',
         bodyHtml: renderCampaign(CAMPAIGN_MISSIONS[0].id, []),
-      }),
-  },
-  {
-    file: 'public/survival.html',
-    render: () =>
-      renderPageShell({
-        activePage: 'survival',
-        title: 'Endless survival',
-        subtitle: 'The Iron Crucible',
-        showBack: true,
-        className: 'campaign-content',
-        bodyHtml: renderSurvival(null),
       }),
   },
   {
