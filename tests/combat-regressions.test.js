@@ -2,7 +2,7 @@ import test from 'node:test';
 import { BoxPowerUpPool } from '../public/src/game/terrains/boxes-loot.js';
 import assert from 'node:assert/strict';
 import { determineHitAspect, resolveArmorHit } from '../public/src/sim/ballistics.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { findBorderIngressCell } from '../public/src/game/campaign-navigation.js';
 import { TileType, GameStatus } from '../public/src/game/types.js';
 import { computeTankStats, computeEffectiveDamage, CANNONS } from '../public/src/game/constants.js';

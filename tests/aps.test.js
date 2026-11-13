@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { apsInterceptCost } from '../public/src/sim/aps.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 
 test('APS cost follows weapon identity and missiles override heavy classification', () => {
   for (const weaponId of ['CANNON_Mk1', 'CANNON_Mk2', 'CANNON_Mk3', 'AUTOCANNON']) assert.equal(apsInterceptCost({ weaponId }), 1);

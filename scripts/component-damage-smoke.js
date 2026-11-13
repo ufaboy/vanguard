@@ -1,4 +1,4 @@
-import { TankGameEngine } from '/src/game/engine.js';
+import { TankGameEngine } from '/src/game/engine/engineCore.js';
 import { renderHangar } from '/src/hangar-ui.js';
 import { renderComponentCondition } from '/src/component-condition-ui.js';
 import { SaveRepository } from '/src/sim/hangar.js';

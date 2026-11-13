@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRepairKitState, activateRepairKit, stepRepairKit } from '../public/src/sim/subsystems.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { GameStatus } from '../public/src/game/types.js';
 import { POWERUP } from '../public/src/game/powerups.js';
 import { isUsefulPowerUp } from '../public/src/game/powerup-drops.js';

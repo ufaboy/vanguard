@@ -1,6 +1,6 @@
 // Offline key art: the existing Player asset, rendered once for a zero-WebGL menu.
 import * as THREE from 'three';
-import { TankGameEngine } from '/src/game/engine.js';
+import { TankGameEngine } from '/src/game/engine/engineCore.js';
 const report = data => fetch('/__results', { method: 'POST', body: JSON.stringify(data) });
 try {
   TankGameEngine.prototype.startLoop = () => {};

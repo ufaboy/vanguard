@@ -3,7 +3,7 @@ import { PAGE_PATHS } from '../app/routes.js';
 import { FPS_CAP_OPTIONS } from '../app/state.js';
 import { CODEX_ITEMS } from '../game/codex.js';
 import { CAMPAIGN_MISSIONS } from '../game/campaign.js';
-import { QUALITY_PRESETS } from '../game/engine.js';
+import { QUALITY_PRESETS } from '../game/engine/engineCore.js';
 import { SECTORS } from '../game/levels.js';
 import { sound } from '../game/sound.js';
 import { GameStatus } from '../game/types.js';

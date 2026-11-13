@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { BrickModels } from '../public/src/game/terrains/brick-models.js';
 import { ModelFactory } from '../public/src/game/models.js';
 import { TileBatcher } from '../public/src/game/tile-batcher.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { engineerSupport } from '../public/src/game/abilities/engineer-support.js';
 import { TileType } from '../public/src/game/types.js';
 import { NodeIO } from '@gltf-transform/core';

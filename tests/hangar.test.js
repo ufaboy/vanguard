@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { renderHangar, hangarStats } from '../public/src/hangar-ui.js';
-import { TankGameEngine } from '../public/src/game/engine.js';
+import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { GameStatus } from '../public/src/game/types.js';
 import { getMaxApsAmmo, getMaxMissileAmmo } from '../public/src/game/constants.js';
 import { isUsefulPowerUp } from '../public/src/game/powerup-drops.js';
