@@ -1,7 +1,6 @@
 import { adManager } from '../app/ads.js';
 import { PAGE_PATHS } from '../app/routes.js';
 import { FPS_CAP_OPTIONS } from '../app/state.js';
-import { CODEX_ITEMS } from '../game/codex.js';
 import { CAMPAIGN_MISSIONS } from '../game/campaign.js';
 import { QUALITY_PRESETS } from '../game/engine/engineCore.js';
 import { SECTORS } from '../game/levels.js';
@@ -174,48 +173,6 @@ export function setupDelegatedEvents(
           break;
         }
         state.menuPage = 'home';
-        renderUI(true);
-        break;
-      case 'toggle-codex':
-        toggleCodexStudio();
-        break;
-      case 'open-codex-powerup': {
-        const pType = btn.getAttribute('data-powerup');
-        const found = CODEX_ITEMS.find((i) => i.powerupType === pType);
-        if (found) {
-          state.codexCategory = 'POWERUPS';
-          state.codexSelectedId = found.id;
-        }
-        toggleCodexStudio(true);
-        break;
-      }
-      case 'select-codex-category': {
-        const cat = btn.getAttribute('data-category');
-        if (cat && cat !== state.codexCategory) {
-          state.codexCategory = cat;
-          const firstInCat = CODEX_ITEMS.find((i) => i.category === cat);
-          if (firstInCat) {
-            state.codexSelectedId = firstInCat.id;
-            engine?.loadCodexShowcaseItem(firstInCat);
-          }
-          renderUI(true);
-        }
-        break;
-      }
-      case 'select-codex-item': {
-        const itemId = btn.getAttribute('data-item-id');
-        const found = CODEX_ITEMS.find((i) => i.id === itemId);
-        if (found) {
-          state.codexSelectedId = found.id;
-          state.codexCategory = found.category;
-          engine?.loadCodexShowcaseItem(found);
-          renderUI(true);
-        }
-        break;
-      }
-      case 'codex-toggle-rotate':
-        state.codexAutoRotate = !state.codexAutoRotate;
-        if (engine) engine.codexAutoRotate = state.codexAutoRotate;
         renderUI(true);
         break;
       case 'codex-trigger-demo':
@@ -444,7 +401,7 @@ export function setupDelegatedEvents(
       case 'spawn-powerup': {
         if (state.hud.status === GameStatus.MENU) break;
         const type = btn.getAttribute('data-powerup') || undefined;
-        toggleCodexStudio(false);
+        toggleCodexStudio?.(false);
         engine?.spawnPowerUpOnField(type);
         renderUI(true);
         break;
@@ -454,7 +411,7 @@ export function setupDelegatedEvents(
         if (state.hud.status === GameStatus.MENU) break;
         const enemyClass = btn.getAttribute('data-enemy');
         if (enemyClass) {
-          toggleCodexStudio(false);
+          toggleCodexStudio?.(false);
           engine?.spawnSpecificEnemy(enemyClass);
           renderUI(true);
         }
