@@ -5,20 +5,20 @@
   "subtitle": "SECTOR 10 // FOREST STRONGHOLD",
   "objective": "Destroy the forest stronghold",
   "gameMode": "stronghold_assault",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "enemyBase": {
     "cell": {
       "row": 6,
-      "col": 18
+      "col": 20
     },
     "name": "Deepwood Command Core",
     "maxHp": 48,
@@ -45,25 +45,25 @@
         "name": "South gate",
         "cells": [
           {
-            "row": 22,
-            "col": 14
-          },
-          {
-            "row": 22,
-            "col": 15
-          },
-          {
-            "row": 22,
+            "row": 26,
             "col": 16
+          },
+          {
+            "row": 26,
+            "col": 17
+          },
+          {
+            "row": 26,
+            "col": 18
           }
         ],
         "start": {
-          "row": 24,
-          "col": 15
+          "row": 28,
+          "col": 17
         },
         "end": {
-          "row": 20,
-          "col": 15
+          "row": 24,
+          "col": 17
         },
         "purpose": "Shorten the front assault, with an internal screen protecting the core."
       },
@@ -72,24 +72,24 @@
         "cells": [
           {
             "row": 16,
-            "col": 24
+            "col": 26
           },
           {
             "row": 17,
-            "col": 24
+            "col": 26
           },
           {
-            "row": 18,
-            "col": 24
+            "row": 22,
+            "col": 26
           }
         ],
         "start": {
           "row": 17,
-          "col": 26
+          "col": 28
         },
         "end": {
           "row": 17,
-          "col": 22
+          "col": 24
         },
         "purpose": "Attack the core from its flank without circling to the northern entrance."
       }
@@ -104,9 +104,9 @@
         "id": "woodland-ring",
         "bounds": [
           1,
-          1,
-          34,
-          34
+          3,
+          38,
+          36
         ],
         "surface": "dirt",
         "density": 0.2,
@@ -118,10 +118,10 @@
       {
         "id": "south-staging",
         "bounds": [
-          23,
-          10,
-          29,
-          24
+          27,
+          12,
+          33,
+          26
         ],
         "surface": "gravel",
         "density": 0.2,
@@ -134,9 +134,9 @@
         "id": "inner-court",
         "bounds": [
           11,
-          13,
-          21,
-          23
+          15,
+          25,
+          25
         ],
         "surface": "concrete",
         "density": 0.2,
@@ -148,10 +148,10 @@
       {
         "id": "west-clearing",
         "bounds": [
-          18,
-          7,
-          24,
-          11
+          22,
+          9,
+          28,
+          13
         ],
         "surface": "dirt",
         "density": 0.2,
@@ -164,9 +164,9 @@
         "id": "east-clearing",
         "bounds": [
           12,
-          26,
-          23,
-          29
+          28,
+          27,
+          31
         ],
         "surface": "gravel",
         "density": 0.2,
@@ -179,14 +179,78 @@
         "id": "north-service",
         "bounds": [
           7,
-          16,
+          18,
           9,
-          24
+          26
         ],
         "surface": "gravel",
         "density": 0.2,
         "details": [
           "tracks"
+        ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "dirt",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "weeds",
+          "tracks"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "weeds",
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "weeds",
+          "tracks"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "dirt",
+        "density": 0.45,
+        "details": [
+          "weeds",
+          "tracks",
+          "patches"
         ]
       }
     ],
@@ -195,36 +259,36 @@
         "id": "west-ring",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            29,
+            33,
+            13
+          ],
+          [
+            28,
             11
           ],
           [
-            24,
-            9
-          ],
-          [
             12,
-            9
+            11
           ],
           [
             3,
-            9
+            11
           ],
           [
             3,
-            18
+            20
           ],
           [
             8,
-            21
+            23
           ],
           [
             12,
-            21
+            23
           ]
         ],
         "width": 2.5,
@@ -235,28 +299,28 @@
         "id": "east-ring",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            31,
-            25
-          ],
-          [
-            24,
+            35,
             27
+          ],
+          [
+            28,
+            29
           ],
           [
             12,
-            27
+            29
           ],
           [
             8,
-            26
+            28
           ],
           [
             8,
-            21
+            23
           ]
         ],
         "width": 2.5,
@@ -267,28 +331,68 @@
         "id": "south-approach",
         "points": [
           [
-            31,
+            35,
+            19
+          ],
+          [
+            33,
+            20
+          ],
+          [
+            28,
+            20
+          ],
+          [
+            28,
             17
           ],
           [
-            29,
-            18
-          ],
-          [
             24,
-            18
-          ],
-          [
-            24,
-            15
-          ],
-          [
-            20,
-            15
+            17
           ]
         ],
         "width": 3,
         "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "dirt",
         "marking": "none"
       }
     ],
@@ -296,16 +400,16 @@
       {
         "id": "west-label",
         "kind": "label",
-        "row": 20,
-        "col": 9,
+        "row": 24,
+        "col": 11,
         "size": 3,
         "text": "WEST RING"
       },
       {
         "id": "east-label",
         "kind": "label",
-        "row": 20,
-        "col": 28,
+        "row": 24,
+        "col": 30,
         "size": 3,
         "text": "EAST RING"
       },
@@ -313,9 +417,41 @@
         "id": "north-label",
         "kind": "label",
         "row": 8,
-        "col": 21,
+        "col": 23,
         "size": 3,
         "text": "SERVICE ENTRY"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "parking",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "parking",
+        "row": 25,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "manhole",
+        "row": 12,
+        "col": 36,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "parking",
+        "row": 28,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 90
       }
     ],
     "exclusions": [
@@ -323,45 +459,45 @@
         "id": "core-clear",
         "bounds": [
           14,
-          17,
+          19,
           16,
-          19
+          21
         ]
       },
       {
         "id": "opening-0",
         "bounds": [
           8,
-          8,
           10,
-          10
+          10,
+          12
         ]
       },
       {
         "id": "opening-1",
         "bounds": [
           7,
-          16,
+          18,
           9,
-          18
+          20
         ]
       },
       {
         "id": "opening-2",
         "bounds": [
           9,
-          26,
+          28,
           11,
-          28
+          30
         ]
       },
       {
         "id": "opening-3",
         "bounds": [
           6,
-          4,
+          6,
           8,
-          6
+          8
         ]
       }
     ]
@@ -374,17 +510,17 @@
       {
         "id": "west-wood",
         "row": 3,
-        "col": 4
+        "col": 6
       },
       {
         "id": "north-service",
         "row": 3,
-        "col": 18
+        "col": 20
       },
       {
         "id": "east-wood",
         "row": 4,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -403,35 +539,35 @@
         ],
         "patrolRoute": [
           {
-            "row": 20,
-            "col": 9
-          },
-          {
-            "row": 26,
+            "row": 24,
             "col": 11
           },
           {
-            "row": 29,
-            "col": 17
+            "row": 30,
+            "col": 13
+          },
+          {
+            "row": 33,
+            "col": 19
           }
         ],
         "recoverySec": 0,
         "initialCells": [
           {
             "row": 9,
-            "col": 9
+            "col": 11
           },
           {
             "row": 8,
-            "col": 17
+            "col": 19
           },
           {
             "row": 10,
-            "col": 27
+            "col": 29
           },
           {
             "row": 7,
-            "col": 5
+            "col": 7
           }
         ]
       },
@@ -450,15 +586,15 @@
         "patrolRoute": [
           {
             "row": 13,
-            "col": 9
-          },
-          {
-            "row": 20,
-            "col": 9
-          },
-          {
-            "row": 26,
             "col": 11
+          },
+          {
+            "row": 24,
+            "col": 11
+          },
+          {
+            "row": 30,
+            "col": 13
           }
         ],
         "recoverySec": 9
@@ -480,15 +616,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 27
+            "col": 29
           },
           {
-            "row": 24,
-            "col": 26
+            "row": 28,
+            "col": 28
           },
           {
-            "row": 24,
-            "col": 18
+            "row": 28,
+            "col": 20
           }
         ],
         "recoverySec": 10
@@ -508,15 +644,15 @@
         "patrolRoute": [
           {
             "row": 16,
+            "col": 30
+          },
+          {
+            "row": 28,
             "col": 28
           },
           {
-            "row": 24,
+            "row": 33,
             "col": 26
-          },
-          {
-            "row": 29,
-            "col": 24
           }
         ],
         "recoverySec": 10
@@ -537,15 +673,15 @@
         "patrolRoute": [
           {
             "row": 8,
-            "col": 21
+            "col": 23
           },
           {
             "row": 12,
-            "col": 21
+            "col": 23
           },
           {
             "row": 16,
-            "col": 21
+            "col": 23
           }
         ],
         "recoverySec": 10
@@ -566,15 +702,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 27
+            "col": 29
           },
           {
-            "row": 24,
-            "col": 26
+            "row": 28,
+            "col": 28
           },
           {
-            "row": 24,
-            "col": 18
+            "row": 28,
+            "col": 20
           }
         ],
         "recoverySec": 10
@@ -613,41 +749,45 @@
     "JAMMER"
   ],
   "layout": [
-    "FFFF.......BBB......FFFFFFFFF...FFFF",
-    "FFF........BBB.....FFFFFFFFFF....FFF",
-    ".......................F............",
-    "........F...........FFFFFFFFF.......",
-    "......FFFFFF........FFFFFFFFFF......",
-    "....FFFFFFFFF...FCCCFFFFFFFFFF......",
-    ".......FFFFFBBB..CECFFFFFFFFFF......",
-    "........F...BBB..CCCFFFFFFFFF.......",
-    "...B........Q..........F.....BBB....",
-    "...BBBFF.....................BBB....",
-    "...BBBFF....CCCCCCCC...CC....BBB....",
-    "....FFFFF...C...........C....FFF....",
-    "....FFFFF..QC...........C...FFFFF...",
-    "....FFFFF...C.BBQ....BB.C...FFFFF...",
-    "....FFFFF...C.BB.....BBQC...FFFFF...",
-    "...FFFFFFF..C...........C..FFFFFFF..",
-    "....FFFFF...C...........B...FFFFF...",
-    "....FFFFF...C...........B...FFFFF...",
-    "....FFFFF...C...BCCCB...B...FFFFF...",
-    "....FFFFF...C...........C....FFF....",
-    "....FFFFF...C...........C.....F.....",
-    "...BBBFF....C...........C...........",
-    "...BBBF.....CCBBBCCCCCCCC......Q....",
-    "...BBB..............Q.....F..BBB....",
-    "...Q.....F..............FFFFFBBB....",
-    "......FFFFFFFQBBB......FFFFFFBBB....",
-    ".....FFFFFFFFFBBB......FFFFFFF......",
-    "....FFFFFFFFFFBBB.....FFFFFFFFF.....",
-    ".....FFFFFFFFF.........FFFFFFF......",
-    "......FFFFFFF.......BBBFFFFFFF......",
-    ".........F..........BBB.FFFFF.......",
-    "..........................F.........",
-    "...FF.....................F.........",
-    "...FF...........CCCC................",
-    ".......................BB...........",
-    "FFFF.............HH....BB.....FFFFFF"
+    "FFFFFF.......BBB......FFFFFFFFF...FFFFFF",
+    "FFFFF........BBB.....FFFFFFFFFF....FFFFF",
+    "W........................F............B.",
+    "WW........F...........FFFFFFFFF.......W.",
+    "........FFFFFF........FFFFFFFFFF......WB",
+    "......FFFFFFFFF...FCCCFFFFFFFFFF.......B",
+    "FF.......FFFFFBBB..CECFFFFFFFFFF.......W",
+    ".F........F...BBB..CCCFFFFFFFFF.......WW",
+    ".F...B........Q..........F.....BBB....WW",
+    ".F...BBBFF.....................BBB......",
+    ".....BBBFF....CCCCCCCC...CC....BBB....F.",
+    "C.....FFFFF...C...........C....FFF....F.",
+    ".F....FFFFF..QC...........C...FFFFF.....",
+    ".F....FFFFF...C.BBQ....BB.C...FFFFF...C.",
+    ".F....FFFFF...C.BB.....BBQC...FFFFF...C.",
+    ".F...FFFFFFF..C...........C..FFFFFFF....",
+    "W.....FFFFF...C...........B...FFFFF.....",
+    "B.....FFFFF...C...........B...FFFFF....W",
+    "WW....FFFFF...C...........B...FFFFF...FF",
+    "WW....FFFFF...C...........B...FFFFF.....",
+    "......FFFFF...C...BCCCB...B...FFFFF.....",
+    "......FFFFF...C...BCCCB...B...FFFFF...F.",
+    "WW....FFFFF...C...BCCCB...B...FFFFF...FB",
+    "WW....FFFFF...C...........C....FFF....B.",
+    "......FFFFF...C...........C.....F.......",
+    ".....BBBFF....C...........C.............",
+    ".....BBBF.....CCBBBCCCCCCCC......Q....F.",
+    "CC...BBB..............Q.....F..BBB....FF",
+    "FF...Q.....F..............FFFFFBBB....C.",
+    "FF......FFFFFFFQBBB......FFFFFFBBB......",
+    ".......FFFFFFFFFBBB......FFFFFFF........",
+    ".C....FFFFFFFFFFBBB.....FFFFFFFFF.....F.",
+    "FF.....FFFFFFFFF.........FFFFFFF......FF",
+    "FF......FFFFFFF.......BBBFFFFFFF......BF",
+    "FC.........F..........BBB.FFFFF.......BF",
+    "B...........................F...........",
+    ".....FF.....................F...........",
+    ".....FF...........CCCC..................",
+    ".........................BB.............",
+    "FFFFFF.............HH....BB.....FFFFFFFF"
   ]
 }

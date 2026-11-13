@@ -7,15 +7,15 @@
   "theme": "City outskirts",
   "palette": "chapter-1-outskirts",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "completionReward": {
     "credits": 400
@@ -204,9 +204,9 @@
         "id": "northwest-siding-zone",
         "bounds": [
           2,
-          3,
+          5,
           9,
-          19
+          21
         ],
         "surface": "concrete",
         "density": 0.36,
@@ -221,9 +221,9 @@
         "id": "west-service-tunnel-zone",
         "bounds": [
           10,
-          2,
-          27,
-          6
+          4,
+          31,
+          8
         ],
         "surface": "asphalt",
         "density": 0.38,
@@ -238,9 +238,9 @@
         "id": "west-passenger-platform-zone",
         "bounds": [
           10,
-          8,
-          21,
-          11
+          10,
+          25,
+          13
         ],
         "surface": "pavers",
         "density": 0.3,
@@ -254,9 +254,9 @@
         "id": "central-railway-cut-zone",
         "bounds": [
           8,
-          12,
-          27,
-          20
+          14,
+          31,
+          22
         ],
         "surface": "concrete",
         "density": 0.44,
@@ -272,9 +272,9 @@
         "id": "east-goods-platform-zone",
         "bounds": [
           15,
-          21,
-          26,
-          25
+          23,
+          30,
+          27
         ],
         "surface": "pavers",
         "density": 0.34,
@@ -288,9 +288,9 @@
         "id": "east-coal-yard-zone",
         "bounds": [
           7,
-          26,
-          25,
-          33
+          28,
+          29,
+          35
         ],
         "surface": "gravel",
         "density": 0.4,
@@ -304,10 +304,10 @@
       {
         "id": "southeast-bus-forecourt-zone",
         "bounds": [
-          26,
-          11,
-          33,
-          28
+          30,
+          13,
+          37,
+          30
         ],
         "surface": "asphalt",
         "density": 0.28,
@@ -315,6 +315,70 @@
           "patches",
           "cracks",
           "leaves"
+        ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "rubble",
+          "weeds"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "rubble",
+          "weeds"
         ]
       }
     ],
@@ -324,23 +388,23 @@
         "points": [
           [
             3,
-            6
+            8
+          ],
+          [
+            10,
+            8
           ],
           [
             10,
             6
           ],
           [
-            10,
-            4
+            30,
+            6
           ],
           [
-            26,
-            4
-          ],
-          [
-            26,
-            11
+            30,
+            13
           ]
         ],
         "width": 2.8,
@@ -352,15 +416,15 @@
         "points": [
           [
             3,
-            15
+            17
           ],
           [
             12,
-            13
+            15
           ],
           [
-            29,
-            13
+            33,
+            15
           ]
         ],
         "width": 2.5,
@@ -372,15 +436,15 @@
         "points": [
           [
             8,
-            19
+            21
           ],
           [
-            20,
-            19
+            24,
+            21
           ],
           [
-            29,
-            19
+            33,
+            21
           ]
         ],
         "width": 2.5,
@@ -392,19 +456,19 @@
         "points": [
           [
             8,
-            29
+            31
           ],
           [
-            23,
-            29
+            27,
+            31
           ],
           [
-            23,
-            26
+            27,
+            28
           ],
           [
-            31,
-            26
+            35,
+            28
           ]
         ],
         "width": 3,
@@ -416,15 +480,15 @@
         "points": [
           [
             8,
-            6
+            8
           ],
           [
             8,
-            18
+            20
           ],
           [
             8,
-            29
+            31
           ]
         ],
         "width": 2.8,
@@ -435,19 +499,59 @@
         "id": "south-forecourt-loop",
         "points": [
           [
-            30,
-            11
+            34,
+            13
           ],
           [
-            30,
-            19
+            34,
+            21
           ],
           [
-            30,
-            26
+            34,
+            28
           ]
         ],
         "width": 3,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
         "surface": "asphalt",
         "marking": "dashed"
       }
@@ -456,16 +560,16 @@
       {
         "id": "forecourt-crosswalk-west",
         "kind": "crosswalk",
-        "row": 26,
-        "col": 11,
+        "row": 30,
+        "col": 13,
         "size": 2.2,
         "rotation": 0
       },
       {
         "id": "forecourt-crosswalk-east",
         "kind": "crosswalk",
-        "row": 29,
-        "col": 23,
+        "row": 33,
+        "col": 25,
         "size": 2.2,
         "rotation": 0
       },
@@ -473,7 +577,7 @@
         "id": "overpass-crosswalk-north",
         "kind": "crosswalk",
         "row": 8,
-        "col": 15,
+        "col": 17,
         "size": 2.4,
         "rotation": 90
       },
@@ -481,31 +585,31 @@
         "id": "west-platform-loading",
         "kind": "loading",
         "row": 15,
-        "col": 9,
+        "col": 11,
         "size": 2.2,
         "rotation": 0
       },
       {
         "id": "east-goods-loading",
         "kind": "loading",
-        "row": 21,
-        "col": 23,
+        "row": 25,
+        "col": 25,
         "size": 2.2,
         "rotation": 0
       },
       {
         "id": "bus-forecourt-parking",
         "kind": "parking",
-        "row": 31,
-        "col": 24,
+        "row": 35,
+        "col": 26,
         "size": 2.4,
         "rotation": 0
       },
       {
         "id": "label-west-tunnel",
         "kind": "label",
-        "row": 18,
-        "col": 4,
+        "row": 22,
+        "col": 6,
         "size": 3,
         "text": "WEST TUNNEL"
       },
@@ -513,7 +617,7 @@
         "id": "label-railway-cut",
         "kind": "label",
         "row": 11,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "text": "RAILWAY CUT"
       },
@@ -521,23 +625,23 @@
         "id": "label-coal-yard",
         "kind": "label",
         "row": 14,
-        "col": 30,
+        "col": 32,
         "size": 3,
         "text": "COAL SIDING"
       },
       {
         "id": "label-forecourt",
         "kind": "label",
-        "row": 30,
-        "col": 22,
+        "row": 34,
+        "col": 24,
         "size": 3,
         "text": "BUS FORECOURT"
       },
       {
         "id": "cut-manhole-south",
         "kind": "manhole",
-        "row": 24,
-        "col": 13,
+        "row": 28,
+        "col": 15,
         "size": 1,
         "rotation": 0
       },
@@ -545,28 +649,60 @@
         "id": "tunnel-manhole-east",
         "kind": "manhole",
         "row": 16,
-        "col": 29,
+        "col": 31,
         "size": 1,
         "rotation": 0
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "manhole",
+        "row": 10,
+        "col": 3,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "manhole",
+        "row": 25,
+        "col": 3,
+        "size": 1,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "crosswalk",
+        "row": 12,
+        "col": 36,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "loading",
+        "row": 28,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 90
       }
     ],
     "exclusions": [
       {
         "id": "base-alcove-clear",
         "bounds": [
-          32,
-          15,
-          35,
-          19
+          36,
+          17,
+          39,
+          21
         ]
       },
       {
         "id": "player-spawn-clear",
         "bounds": [
-          30,
-          16,
-          32,
-          18
+          34,
+          18,
+          36,
+          20
         ]
       }
     ]
@@ -582,24 +718,24 @@
         "cells": [
           {
             "row": 14,
-            "col": 8
+            "col": 10
           },
           {
             "row": 15,
-            "col": 8
+            "col": 10
           },
           {
             "row": 16,
-            "col": 8
+            "col": 10
           }
         ],
         "start": {
           "row": 15,
-          "col": 6
+          "col": 8
         },
         "end": {
           "row": 15,
-          "col": 10
+          "col": 12
         },
         "purpose": "Blast through the brick retaining wall from the narrow west service tunnel directly into the West Passenger Platform howitzer bay."
       },
@@ -608,24 +744,24 @@
         "cells": [
           {
             "row": 16,
-            "col": 18
+            "col": 20
           },
           {
             "row": 17,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 18,
-            "col": 18
+            "row": 22,
+            "col": 20
           }
         ],
         "start": {
           "row": 17,
-          "col": 16
+          "col": 18
         },
         "end": {
           "row": 17,
-          "col": 20
+          "col": 22
         },
         "purpose": "Cut between the upper west trackbed and the lower east switchyard without detouring around the central signal gantry."
       },
@@ -633,25 +769,25 @@
         "name": "East goods shed breach",
         "cells": [
           {
-            "row": 20,
-            "col": 25
+            "row": 24,
+            "col": 27
           },
           {
-            "row": 21,
-            "col": 25
+            "row": 25,
+            "col": 27
           },
           {
-            "row": 22,
-            "col": 25
+            "row": 26,
+            "col": 27
           }
         ],
         "start": {
-          "row": 21,
-          "col": 23
+          "row": 25,
+          "col": 25
         },
         "end": {
-          "row": 21,
-          "col": 27
+          "row": 25,
+          "col": 29
         },
         "purpose": "Open the brick goods-shed wall between the lower-east artillery bay and the outer coal siding tunnel."
       }
@@ -666,27 +802,27 @@
       {
         "id": "northwest-siding",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-rail-cut",
         "row": 2,
-        "col": 16
+        "col": 18
       },
       {
         "id": "northeast-coal-gate",
         "row": 7,
-        "col": 31
+        "col": 33
       },
       {
         "id": "west-service-tunnel",
         "row": 9,
-        "col": 2
+        "col": 4
       },
       {
         "id": "southeast-freight-spur",
         "row": 9,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -701,15 +837,15 @@
         "initialCells": [
           {
             "row": 8,
-            "col": 5
+            "col": 7
           },
           {
             "row": 9,
-            "col": 15
+            "col": 17
           },
           {
             "row": 8,
-            "col": 26
+            "col": 28
           }
         ],
         "entrances": [
@@ -721,16 +857,16 @@
         "fallbackSeconds": 25,
         "patrolRoute": [
           {
-            "row": 25,
-            "col": 13
+            "row": 29,
+            "col": 15
           },
           {
-            "row": 27,
-            "col": 20
+            "row": 31,
+            "col": 22
           },
           {
-            "row": 25,
-            "col": 9
+            "row": 29,
+            "col": 11
           }
         ]
       },
@@ -755,15 +891,15 @@
         "patrolRoute": [
           {
             "row": 15,
-            "col": 9
+            "col": 11
           },
           {
             "row": 15,
-            "col": 4
+            "col": 6
           },
           {
-            "row": 21,
-            "col": 13
+            "row": 25,
+            "col": 15
           }
         ]
       },
@@ -787,16 +923,16 @@
         "fallbackSeconds": 30,
         "patrolRoute": [
           {
-            "row": 21,
-            "col": 23
+            "row": 25,
+            "col": 25
           },
           {
-            "row": 18,
-            "col": 27
+            "row": 22,
+            "col": 29
           },
           {
-            "row": 26,
-            "col": 19
+            "row": 30,
+            "col": 21
           }
         ]
       },
@@ -821,15 +957,15 @@
         "patrolRoute": [
           {
             "row": 6,
-            "col": 8
+            "col": 10
           },
           {
             "row": 9,
-            "col": 18
+            "col": 20
           },
           {
             "row": 11,
-            "col": 5
+            "col": 7
           }
         ]
       },
@@ -855,15 +991,15 @@
         "patrolRoute": [
           {
             "row": 17,
-            "col": 13
+            "col": 15
           },
           {
-            "row": 23,
+            "row": 27,
+            "col": 21
+          },
+          {
+            "row": 32,
             "col": 19
-          },
-          {
-            "row": 28,
-            "col": 17
           }
         ]
       }
@@ -898,41 +1034,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF........BBB........BB.BBBBBB....FF",
-    "..........BBB........BB.BBBBBB......",
-    "..FF......BBB........BB.BBBBBB..FF..",
-    "..FF..BB......FF........BBBBBB..FF..",
-    "......BB..BBB.FF............BB......",
-    "..........BBB..BB...........BB......",
-    "...BBBB........BB....BBBB...........",
-    "...BBBB..............BBBB...BBB.....",
-    "............................BBB.....",
-    "....BB..............................",
-    "B...BB.BCB...BB..........BB....BBB.B",
-    "B......BCB...BB..BCB.....BB.FF.BBB.B",
-    ".......BCB.......BCB........FF......",
-    "...BB..BCB.......BCB................",
-    "...BB...B....BB..BCB....BCB..BB.....",
-    "........B....BB..BCB....BCB..BB.....",
-    "........B.........B.....BCB.....BB..",
-    ".......BCB........B.....BCB..BB.BB..",
-    "..FF...BCB........B.....BCB..BB.....",
-    "..FF..QBCB.......BCB....BCB.........",
-    ".......BCB.......BCB.....B......FF..",
-    "................QBCB.....B..BB..FF..",
-    "...BBB.....BBB...BCB.....B..BB......",
-    "...BBB....QBCB..........BCB...BBBB..",
-    "...Q.......BBB..........BCB...BBBB..",
-    "...............Q........BCB....Q....",
-    "....BB.....BBBBBB...................",
-    "....BB.....BCCCCB....BB.......BBB...",
-    "........Q..BCCCCB....BB..FF...BBB...",
-    "...BBBBBB................FF...Q.....",
-    "...BBBBBB.................BB........",
-    "......BBB....BB...........BB..BBBB..",
-    "......BBB....BB...............BBBB..",
-    "................CCCC..........BBBB..",
-    ".......................BB...........",
-    "..FF.............HH....BB.......FF.."
+    "FFFF........BBB........BB.BBBBBB....FFFF",
+    "............BBB........BB.BBBBBB........",
+    "....FF......BBB........BB.BBBBBB..FF..CC",
+    "XF..FF..BB......FF........BBBBBB..FF....",
+    "FF......BB..BBB.FF............BB........",
+    "............BBB..BB...........BB........",
+    "FF...BBBB........BB....BBBB.............",
+    "FF...BBBB..............BBBB...BBB.......",
+    "FF............................BBB.......",
+    "BB....BB................................",
+    "BBB...BB.BCB...BB..........BB....BBB.BBB",
+    "BBB......BCB...BB..BCB.....BB.FF.BBB.BBB",
+    "X........BCB.......BCB........FF........",
+    "X....BB..BCB.......BCB................XX",
+    "BC...BB...B....BB..BCB....BCB..BB.....FF",
+    ".C........B....BB..BCB....BCB..BB.......",
+    "..........B.........B.....BCB.....BB...B",
+    ".........BCB........B.....BCB..BB.BB..CC",
+    "F........BCB........B.....BCB..BB.BB....",
+    "F........BCB........B.....BCB..BB.BB....",
+    "....FF...BCB........B.....BCB..BB.....BB",
+    "CC..FF...BCB........B.....BCB..BB.....BB",
+    ".C..FF...BCB........B.....BCB..BB......F",
+    "FF..FF..QBCB.......BCB....BCB.........BF",
+    ".........BCB.......BCB.....B......FF....",
+    "CC................QBCB.....B..BB..FF....",
+    ".....BBB.....BBB...BCB.....B..BB.......F",
+    "CC...BBB....QBCB..........BCB...BBBB...C",
+    "XB...Q.......BBB..........BCB...BBBB..FF",
+    "FF...............Q........BCB....Q......",
+    "......BB.....BBBBBB.....................",
+    "CC....BB.....BCCCCB....BB.......BBB....B",
+    "CC........Q..BCCCCB....BB..FF...BBB.....",
+    "C....BBBBBB................FF...Q.....F.",
+    "F....BBBBBB.................BB........FB",
+    "........BBB....BB...........BB..BBBB....",
+    "........BBB....BB...............BBBB....",
+    "B.................CCCC..........BBBB..CC",
+    ".........................BB.............",
+    "....FF.............HH....BB.......FF...."
   ]
 }

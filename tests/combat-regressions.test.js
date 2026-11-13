@@ -183,7 +183,7 @@ test('Entering enemies engage gunnery during border ingress and clear entryTarge
     hp: 16,
     maxHp: 16,
     x: 0,
-    z: -37.5,
+    z: -41.5,
     hullAngle: 0,
     turretAngle: 0,
     targetDirX: 0,
@@ -227,8 +227,8 @@ test('Entering enemies engage gunnery during border ingress and clear entryTarge
   assert.equal(gunneryCalls, 1);
   assert.ok(enemy.entryTarget !== null);
 
-  // Advance until inside arena (|z| <= 35) -> entryTarget clears immediately
-  enemy.z = -35.2;
+  // Advance until inside arena (|z| <= 39) -> entryTarget clears immediately
+  enemy.z = -39.2;
   engine.updateEnemies(0.2, 0.3);
   assert.equal(gunneryCalls, 2);
   assert.equal(enemy.entryTarget, null);
@@ -297,8 +297,8 @@ test('findBorderIngressCell supports North/West/East edges, boss clearance, and 
 });
 
 test('resolveBorderSpawn drives straight perpendicular across border and avoids occupied entry cells', () => {
-  const grid = Array.from({ length: 36 }, () =>
-    Array.from({ length: 36 }, () => ({ type: TileType.EMPTY }))
+  const grid = Array.from({ length: 40 }, () =>
+    Array.from({ length: 40 }, () => ({ type: TileType.EMPTY }))
   );
   // Mission-01-like brick wall next to col 10 on row 0
   grid[0][11].type = TileType.BRICK;
@@ -319,7 +319,7 @@ test('resolveBorderSpawn drives straight perpendicular across border and avoids 
   assert.equal(first.ingress.col, 10);
   // Straight south path: spawnPos.x === entryTarget.x so tank never cuts diagonally into (0, 11) brick
   assert.equal(first.spawnPos.x, first.entryTarget.x);
-  assert.ok(first.spawnPos.z < -36 && first.entryTarget.z === -35);
+  assert.ok(first.spawnPos.z < -40 && first.entryTarget.z === -39);
 
   // Second enemy spawning while first occupies (0, 10) spreads out (>= 4.6 units away) instead of bunching
   engine.enemies.push({ x: first.spawnPos.x, z: first.spawnPos.z, isBoss: false });
@@ -330,12 +330,12 @@ test('resolveBorderSpawn drives straight perpendicular across border and avoids 
 });
 
 test('pickEscapeDirection steers border-hugging tanks inward instead of reversing into boundary walls', () => {
-  const grid = Array.from({ length: 36 }, () =>
-    Array.from({ length: 36 }, () => ({ type: TileType.EMPTY }))
+  const grid = Array.from({ length: 40 }, () =>
+    Array.from({ length: 40 }, () => ({ type: TileType.EMPTY }))
   );
   const tank = {
     id: 2,
-    x: 35.1,
+    x: 39.1,
     z: -10,
     hullAngle: Math.PI / 2,
     targetDirX: 0,
@@ -345,7 +345,7 @@ test('pickEscapeDirection steers border-hugging tanks inward instead of reversin
   };
   const blocker = {
     id: 1,
-    x: 35.1,
+    x: 39.1,
     z: -8.3,
     isBoss: false,
     stats: { canCrossWater: false },
@@ -362,8 +362,8 @@ test('pickEscapeDirection steers border-hugging tanks inward instead of reversin
 });
 
 test('Border ingress does not clear entryTarget prematurely while tank footprint overhangs outer border', () => {
-  const grid = Array.from({ length: 36 }, () =>
-    Array.from({ length: 36 }, () => ({ type: TileType.EMPTY }))
+  const grid = Array.from({ length: 40 }, () =>
+    Array.from({ length: 40 }, () => ({ type: TileType.EMPTY }))
   );
   const enemy = {
     id: 1,
@@ -372,13 +372,13 @@ test('Border ingress does not clear entryTarget prematurely while tank footprint
     hp: 16,
     maxHp: 16,
     x: 1,
-    z: -35.35, // within 0.4 of entryTarget (-35.0), yet rear (z - 0.72 = -36.07) is still outside -36.0
+    z: -39.35, // within 0.4 of entryTarget (-39.0), yet rear (z - 0.72 = -40.07) is still outside -40.0
     hullAngle: 0,
     turretAngle: 0,
     targetDirX: 0,
     targetDirZ: 1,
     stats: { moveSpeed: 2.5, canHover: true, canCrossWater: true, sightRadius: 20 },
-    entryTarget: { x: 1, z: -35 },
+    entryTarget: { x: 1, z: -39 },
     aiTimer: 1,
     fireCooldown: 0,
     specialCooldown: 5,
@@ -408,12 +408,12 @@ test('Border ingress does not clear entryTarget prematurely while tank footprint
     updateAiDebugOverlay() {},
   });
 
-  // Step small dt (0.04s -> moves +0.20s -> z = -35.15): entryTarget stays until |z| <= 35.0
+  // Step small dt (0.04s -> moves +0.20s -> z = -39.15): entryTarget stays until |z| <= 39.0
   engine.updateEnemies(0.04, 0.04);
   assert.ok(enemy.entryTarget !== null);
-  assert.ok(enemy.z > -35.35);
+  assert.ok(enemy.z > -39.35);
 
-  // Step again -> crosses z >= -35.0 -> entryTarget clears cleanly inside bounds and moves unobstructed
+  // Step again -> crosses z >= -39.0 -> entryTarget clears cleanly inside bounds and moves unobstructed
   engine.updateEnemies(0.05, 0.09);
   assert.equal(enemy.entryTarget, null);
   assert.equal(engine.checkTankWallCollision(enemy.x, enemy.z, 0.72, true), false);

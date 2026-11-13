@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 06 // WOODLAND ROAD",
   "objective": "Clear the woodland road",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,25 +36,25 @@
         "name": "Ranger wall",
         "cells": [
           {
-            "row": 19,
-            "col": 7
+            "row": 23,
+            "col": 9
           },
           {
-            "row": 20,
-            "col": 7
+            "row": 24,
+            "col": 9
           },
           {
-            "row": 21,
-            "col": 7
+            "row": 25,
+            "col": 9
           }
         ],
         "start": {
-          "row": 20,
-          "col": 5
+          "row": 24,
+          "col": 7
         },
         "end": {
-          "row": 20,
-          "col": 9
+          "row": 24,
+          "col": 11
         },
         "purpose": "Open a short retreat between the western canopy and Ranger Clearing."
       },
@@ -63,24 +63,24 @@
         "cells": [
           {
             "row": 14,
-            "col": 26
+            "col": 28
           },
           {
             "row": 15,
-            "col": 26
+            "col": 28
           },
           {
             "row": 16,
-            "col": 26
+            "col": 28
           }
         ],
         "start": {
           "row": 15,
-          "col": 24
+          "col": 26
         },
         "end": {
           "row": 15,
-          "col": 28
+          "col": 30
         },
         "purpose": "Cross from the road bend into the eastern canopy without going around the ruins."
       }
@@ -96,9 +96,9 @@
         "id": "woodland-floor",
         "bounds": [
           1,
-          1,
-          34,
-          34
+          3,
+          38,
+          36
         ],
         "surface": "dirt",
         "density": 0.18,
@@ -110,10 +110,10 @@
       {
         "id": "ranger-clearing",
         "bounds": [
-          21,
-          8,
-          26,
-          15
+          25,
+          10,
+          30,
+          17
         ],
         "surface": "gravel",
         "density": 0.3,
@@ -126,9 +126,9 @@
         "id": "pond-verge",
         "bounds": [
           14,
-          14,
-          24,
-          24
+          16,
+          28,
+          26
         ],
         "surface": "dirt",
         "density": 0.3,
@@ -141,9 +141,9 @@
         "id": "north-turnout",
         "bounds": [
           2,
-          15,
+          17,
           9,
-          23
+          25
         ],
         "surface": "gravel",
         "density": 0.2,
@@ -156,9 +156,9 @@
         "id": "ruin-apron",
         "bounds": [
           15,
-          3,
-          24,
-          9
+          5,
+          28,
+          11
         ],
         "surface": "dirt",
         "density": 0.25,
@@ -170,15 +170,79 @@
       {
         "id": "repair-clearing",
         "bounds": [
-          28,
-          13,
           32,
-          21
+          15,
+          36,
+          23
         ],
         "surface": "gravel",
         "density": 0.15,
         "details": [
           "tracks"
+        ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "dirt",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "weeds",
+          "tracks"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "weeds",
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "weeds",
+          "tracks"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "dirt",
+        "density": 0.45,
+        "details": [
+          "weeds",
+          "tracks",
+          "patches"
         ]
       }
     ],
@@ -187,36 +251,36 @@
         "id": "woodland-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
-            24,
-            11
-          ],
-          [
-            17,
-            11
+            28,
+            13
           ],
           [
             17,
-            23
+            13
+          ],
+          [
+            17,
+            25
           ],
           [
             10,
-            23
+            25
           ],
           [
             6,
-            19
+            21
           ],
           [
             3,
-            19
+            21
           ]
         ],
         "width": 3,
@@ -227,28 +291,28 @@
         "id": "west-track",
         "points": [
           [
-            31,
-            17
+            35,
+            19
+          ],
+          [
+            33,
+            14
           ],
           [
             29,
             12
           ],
           [
-            25,
-            10
-          ],
-          [
             15,
-            9
+            11
           ],
           [
             9,
-            9
+            11
           ],
           [
             4,
-            4
+            6
           ]
         ],
         "width": 2,
@@ -259,24 +323,24 @@
         "id": "east-track",
         "points": [
           [
-            29,
-            18
+            33,
+            20
           ],
           [
-            26,
-            23
+            30,
+            25
           ],
           [
-            23,
-            30
+            27,
+            32
           ],
           [
             10,
-            30
+            32
           ],
           [
             4,
-            31
+            33
           ]
         ],
         "width": 2,
@@ -288,15 +352,55 @@
         "points": [
           [
             7,
-            5
+            7
           ],
           [
             7,
-            19
+            21
           ],
           [
             7,
-            31
+            33
+          ]
+        ],
+        "width": 2,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
           ]
         ],
         "width": 2,
@@ -308,8 +412,8 @@
       {
         "id": "ranger-label",
         "kind": "label",
-        "row": 24,
-        "col": 11,
+        "row": 28,
+        "col": 13,
         "size": 3,
         "text": "RANGER CLEARING"
       },
@@ -317,17 +421,49 @@
         "id": "north-label",
         "kind": "label",
         "row": 7,
-        "col": 19,
+        "col": 21,
         "size": 3,
         "text": "NORTH TURNOUT"
       },
       {
         "id": "east-label",
         "kind": "label",
-        "row": 22,
-        "col": 29,
+        "row": 26,
+        "col": 31,
         "size": 3,
         "text": "EAST TRAIL"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "loading",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "parking",
+        "row": 25,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "parking",
+        "row": 12,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "crosswalk",
+        "row": 28,
+        "col": 36,
+        "size": 2,
+        "rotation": 90
       }
     ],
     "exclusions": [
@@ -335,36 +471,36 @@
         "id": "opening-0",
         "bounds": [
           9,
-          10,
+          12,
           11,
-          12
+          14
         ]
       },
       {
         "id": "opening-1",
         "bounds": [
           9,
-          22,
+          24,
           11,
-          24
+          26
         ]
       },
       {
         "id": "opening-2",
         "bounds": [
           8,
-          7,
+          9,
           10,
-          9
+          11
         ]
       },
       {
         "id": "opening-3",
         "bounds": [
           9,
-          29,
+          31,
           11,
-          31
+          33
         ]
       }
     ]
@@ -377,17 +513,17 @@
       {
         "id": "north-road",
         "row": 3,
-        "col": 19
+        "col": 21
       },
       {
         "id": "west-trail",
         "row": 4,
-        "col": 4
+        "col": 6
       },
       {
         "id": "east-trail",
         "row": 4,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -407,34 +543,34 @@
         "patrolRoute": [
           {
             "row": 17,
-            "col": 11
+            "col": 13
           },
           {
-            "row": 24,
-            "col": 11
+            "row": 28,
+            "col": 13
           },
           {
-            "row": 24,
-            "col": 17
+            "row": 28,
+            "col": 19
           }
         ],
         "recoverySec": 0,
         "initialCells": [
           {
             "row": 10,
-            "col": 11
+            "col": 13
           },
           {
             "row": 10,
-            "col": 23
+            "col": 25
           },
           {
             "row": 9,
-            "col": 8
+            "col": 10
           },
           {
             "row": 10,
-            "col": 30
+            "col": 32
           }
         ]
       },
@@ -454,15 +590,15 @@
         "patrolRoute": [
           {
             "row": 14,
-            "col": 9
-          },
-          {
-            "row": 21,
-            "col": 4
-          },
-          {
-            "row": 24,
             "col": 11
+          },
+          {
+            "row": 25,
+            "col": 6
+          },
+          {
+            "row": 28,
+            "col": 13
           }
         ],
         "recoverySec": 8
@@ -484,15 +620,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 23
+            "col": 25
           },
           {
             "row": 17,
-            "col": 23
+            "col": 25
           },
           {
-            "row": 24,
-            "col": 23
+            "row": 28,
+            "col": 25
           }
         ],
         "recoverySec": 9
@@ -514,15 +650,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 30
-          },
-          {
-            "row": 20,
-            "col": 30
+            "col": 32
           },
           {
             "row": 24,
-            "col": 23
+            "col": 32
+          },
+          {
+            "row": 28,
+            "col": 25
           }
         ],
         "recoverySec": 9
@@ -544,19 +680,19 @@
         "patrolRoute": [
           {
             "row": 17,
-            "col": 23
+            "col": 25
           },
           {
             "row": 17,
-            "col": 11
+            "col": 13
           },
           {
-            "row": 24,
-            "col": 11
+            "row": 28,
+            "col": 13
           },
           {
-            "row": 24,
-            "col": 17
+            "row": 28,
+            "col": 19
           }
         ],
         "recoverySec": 8
@@ -591,41 +727,45 @@
     "SCOUT"
   ],
   "layout": [
-    "FFFF......BBB..........FFFFFFF..FFFF",
-    "FFF....................BBFFFFFF..FFF",
-    ".......F...................F........",
-    "......FFFF.............FFFFFFF......",
-    "......FFFFF...........BBFFFFFF......",
-    "......FFFFF...........BBFFFFFF......",
-    "...FFFFFFFFBBB........BBQ..F........",
-    "....FFFFFFFBCB................F.....",
-    "....FFF...FBBB.QBB...........FFF....",
-    ".....FF........FBB.........BB...F...",
-    "..............FFF..........BB.......",
-    "....BBB......FFFFF..................",
-    "....BCB......FFFFF........CQ..F.....",
-    "....BBB.....FFFFFFF.......C..FFF....",
-    ".............FFFFF..BB....B.FFFFF...",
-    ".............FFFFF..BB....B.FFFFF...",
-    ".......CQ.................B.FFFFF...",
-    "....F..C.................QCFFFFFFF..",
-    "...FFF.C..................C.FFFFF...",
-    "...FFF.B.....Q..WWWWW.....C.FFFFF...",
-    "...FFF.B.....BBBWWWWW.......FFFFF...",
-    "...FFF.B.....BBB.WWW..BBB....FFF....",
-    "..FFFFFC..........W...BBB.....F.....",
-    "...FFF.C.................F..........",
-    "...FFF.C...............FFFFF........",
-    "...FFF.Q..............FFFFFFF.......",
-    "...FFF.FFFF........BBBFFFFFFF.......",
-    "....F.FFFFFFF.....QBCBFFFFFFFF......",
-    ".....FFFFFFFFBB....BBBFFFFFFF.......",
-    "...BBBFFFFFFFBB.......FFFFFFF.......",
-    "...BBB.FFFFF...........FFFFF..F.....",
-    "...BBB...F...............F..FFFFF...",
-    "...........................FFFFFFF..",
-    "................CCCC........FFFFF...",
-    "..............................F.....",
-    "FFFF.............HH...........FFFFFF"
+    "FFFFFF......BBB..........FFFFFFF..FFFFFF",
+    "FFFFF....................BBFFFFFF..FFFFF",
+    ".........F...................F........FF",
+    "WW......FFFF.............FFFFFFF........",
+    "WW......FFFFF...........BBFFFFFF........",
+    "WW......FFFFF...........BBFFFFFF........",
+    "FF...FFFFFFFFBBB........BBQ..F..........",
+    "FF....FFFFFFFBCB................F.....FF",
+    "CC....FFF...FBBB.QBB...........FFF....FF",
+    ".C.....FF........FBB.........BB...F...FF",
+    ".C..............FFF..........BB.........",
+    "......BBB......FFFFF..................WW",
+    "W.....BCB......FFFFF........CQ..F.....FF",
+    "F.....BBB.....FFFFFFF.......C..FFF......",
+    "FF.............FFFFF..BB....B.FFFFF...FF",
+    "...............FFFFF..BB....B.FFFFF.....",
+    "F........CQ.................B.FFFFF.....",
+    ".C....F..C.................QCFFFFFFF..CC",
+    "......F..C..................CFFFFFFF..CC",
+    "WW....F..C..................CFFFFFFF..F.",
+    ".C...FFF.C..................C.FFFFF...F.",
+    ".C...FFF.C..................C.FFFFF...WF",
+    ".....FFF.C..................C.FFFFF...FF",
+    "C....FFF.B.....Q..WWWWW.....C.FFFFF...F.",
+    ".....FFF.B.....BBBWWWWW.......FFFFF...F.",
+    ".....FFF.B.....BBB.WWW..BBB....FFF......",
+    "....FFFFFC..........W...BBB.....F.......",
+    "B....FFF.C.................F..........FW",
+    "BF...FFF.C...............FFFFF........FC",
+    ".....FFF.Q..............FFFFFFF........F",
+    ".....FFF.FFFF........BBBFFFFFFF.........",
+    "F.....F.FFFFFFF.....QBCBFFFFFFFF......FF",
+    "BB.....FFFFFFFFBB....BBBFFFFFFF.........",
+    "BB...BBBFFFFFFFBB.......FFFFFFF.........",
+    "B....BBB.FFFFF...........FFFFF..F......B",
+    ".....BBB...F...............F..FFFFF.....",
+    "CC...........................FFFFFFF...F",
+    "BB................CCCC........FFFFF.....",
+    "................................F.......",
+    "FFFFFF.............HH...........FFFFFFFF"
   ]
 }

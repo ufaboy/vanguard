@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 26 // INDUSTRIAL BELT",
   "objective": "Clear the factory approaches",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,21 +36,21 @@
         "name": "South foundry loading gate",
         "cells": [
           {
-            "row": 23,
-            "col": 14
+            "row": 27,
+            "col": 16
           },
           {
-            "row": 23,
-            "col": 15
+            "row": 27,
+            "col": 17
           }
         ],
         "start": {
-          "row": 25,
-          "col": 14
+          "row": 29,
+          "col": 16
         },
         "end": {
-          "row": 21,
-          "col": 14
+          "row": 25,
+          "col": 16
         },
         "purpose": "Blast open the southern brick loading bay to fire directly into the lower smelter alley from the marshaling yard."
       },
@@ -59,20 +59,20 @@
         "cells": [
           {
             "row": 17,
-            "col": 12
+            "col": 14
           },
           {
-            "row": 18,
-            "col": 12
+            "row": 22,
+            "col": 14
           }
         ],
         "start": {
           "row": 17,
-          "col": 10
+          "col": 12
         },
         "end": {
           "row": 17,
-          "col": 14
+          "col": 16
         },
         "purpose": "Open a lateral escape and firing cut between the West Haul Road and the central foundry alley."
       },
@@ -81,20 +81,20 @@
         "cells": [
           {
             "row": 17,
-            "col": 24
+            "col": 26
           },
           {
-            "row": 18,
-            "col": 24
+            "row": 22,
+            "col": 26
           }
         ],
         "start": {
           "row": 17,
-          "col": 26
+          "col": 28
         },
         "end": {
           "row": 17,
-          "col": 22
+          "col": 24
         },
         "purpose": "Punch through the rolling-mill brick partition to flank factory-alley flamethrowers from the East Slag Service Road."
       },
@@ -103,20 +103,20 @@
         "cells": [
           {
             "row": 10,
-            "col": 17
+            "col": 19
           },
           {
             "row": 10,
-            "col": 18
+            "col": 20
           }
         ],
         "start": {
           "row": 12,
-          "col": 17
+          "col": 19
         },
         "end": {
           "row": 8,
-          "col": 17
+          "col": 19
         },
         "purpose": "Breach the northern furnace bulkhead for a direct push into the upper foundry staging plaza."
       }
@@ -132,9 +132,9 @@
         "id": "industrial-slag-gravel",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "gravel",
         "density": 0.18,
@@ -148,9 +148,9 @@
         "id": "west-haul-service-road-zone",
         "bounds": [
           2,
-          2,
-          31,
-          9
+          4,
+          35,
+          11
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -164,9 +164,9 @@
         "id": "central-smelter-complex",
         "bounds": [
           7,
-          10,
-          26,
-          25
+          12,
+          30,
+          27
         ],
         "surface": "concrete",
         "density": 0.25,
@@ -181,9 +181,9 @@
         "id": "east-slag-service-road-zone",
         "bounds": [
           2,
-          26,
-          31,
-          33
+          28,
+          35,
+          35
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -196,10 +196,10 @@
       {
         "id": "south-foundry-marshaling-apron",
         "bounds": [
-          27,
-          9,
-          35,
-          26
+          31,
+          11,
+          39,
+          28
         ],
         "surface": "pavers",
         "density": 0.22,
@@ -208,6 +208,70 @@
           "oil",
           "tracks"
         ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
       }
     ],
     "paths": [
@@ -215,24 +279,24 @@
         "id": "west-haul-service-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
+            32,
+            10
+          ],
+          [
+            23,
             8
           ],
           [
-            19,
-            6
-          ],
-          [
             9,
-            6
+            8
           ],
           [
             3,
-            9
+            11
           ]
         ],
         "width": 2.8,
@@ -243,24 +307,24 @@
         "id": "central-foundry-alley-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
             17,
-            17
+            19
           ],
           [
             11,
-            17
+            19
           ],
           [
             4,
-            17
+            19
           ]
         ],
         "width": 2.6,
@@ -271,29 +335,69 @@
         "id": "east-slag-service-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            27
-          ],
-          [
-            19,
+            32,
             29
+          ],
+          [
+            23,
+            31
           ],
           [
             9,
-            29
+            31
           ],
           [
             3,
-            26
+            28
           ]
         ],
         "width": 2.8,
         "surface": "asphalt",
         "marking": "dashed"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
       }
     ],
     "landmarks": [
@@ -301,7 +405,7 @@
         "id": "north-furnace-loading",
         "kind": "loading",
         "row": 6,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
@@ -309,15 +413,15 @@
         "id": "smelter-alley-crosswalk",
         "kind": "crosswalk",
         "row": 17,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "south-yard-parking",
         "kind": "parking",
-        "row": 31,
-        "col": 13,
+        "row": 35,
+        "col": 15,
         "size": 2.5,
         "rotation": 0
       },
@@ -325,7 +429,7 @@
         "id": "west-road-label",
         "kind": "label",
         "row": 16,
-        "col": 6,
+        "col": 8,
         "size": 3,
         "text": "WEST HAUL ROAD"
       },
@@ -333,7 +437,7 @@
         "id": "central-foundry-label",
         "kind": "label",
         "row": 16,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "text": "SMELTER ALLEYS"
       },
@@ -341,9 +445,41 @@
         "id": "east-road-label",
         "kind": "label",
         "row": 16,
-        "col": 29,
+        "col": 31,
         "size": 3,
         "text": "SLAG SERVICE ROAD"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "parking",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "manhole",
+        "row": 25,
+        "col": 3,
+        "size": 1,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "loading",
+        "row": 12,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "parking",
+        "row": 28,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 90
       }
     ]
   },
@@ -357,32 +493,32 @@
       {
         "id": "north-west-haul-gate",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-foundry-west",
         "row": 2,
-        "col": 14
+        "col": 16
       },
       {
         "id": "north-foundry-east",
         "row": 2,
-        "col": 21
+        "col": 23
       },
       {
         "id": "north-east-slag-gate",
         "row": 2,
-        "col": 30
+        "col": 32
       },
       {
         "id": "upper-west-service",
         "row": 7,
-        "col": 4
+        "col": 6
       },
       {
         "id": "upper-east-service",
         "row": 7,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -399,33 +535,33 @@
         "initialCells": [
           {
             "row": 4,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 14
+            "col": 16
           },
           {
             "row": 5,
-            "col": 21
+            "col": 23
           },
           {
             "row": 4,
-            "col": 29
+            "col": 31
           }
         ],
         "patrolRoute": [
           {
             "row": 11,
-            "col": 6
+            "col": 8
           },
           {
-            "row": 20,
-            "col": 6
+            "row": 24,
+            "col": 8
           },
           {
-            "row": 27,
-            "col": 13
+            "row": 31,
+            "col": 15
           }
         ],
         "enemies": [
@@ -449,15 +585,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 15
+            "col": 17
           },
           {
-            "row": 19,
-            "col": 15
+            "row": 23,
+            "col": 17
           },
           {
-            "row": 26,
-            "col": 16
+            "row": 30,
+            "col": 18
           }
         ],
         "enemies": [
@@ -481,15 +617,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 29
+            "col": 31
           },
           {
-            "row": 20,
-            "col": 29
+            "row": 24,
+            "col": 31
           },
           {
-            "row": 27,
-            "col": 22
+            "row": 31,
+            "col": 24
           }
         ],
         "enemies": [
@@ -512,15 +648,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 21
+            "col": 23
           },
           {
-            "row": 19,
-            "col": 21
+            "row": 23,
+            "col": 23
           },
           {
-            "row": 26,
-            "col": 19
+            "row": 30,
+            "col": 21
           }
         ],
         "enemies": [
@@ -545,15 +681,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 18,
-            "col": 17
+            "row": 22,
+            "col": 19
           },
           {
-            "row": 26,
-            "col": 17
+            "row": 30,
+            "col": 19
           }
         ],
         "enemies": [
@@ -597,41 +733,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.........CC...........CC........FF",
-    "F..........CC...........CC........FF",
-    "...................................F",
-    "F...................................",
-    "..CC.......FF...........FF.....CCC..",
-    "..CC.......FF...........FF......CC..",
-    "...........CC...........CC.........W",
-    "...........CC...........CC.........W",
-    "............C..........QC..........W",
-    "..FF........C...........C......FF...",
-    ".FFF....CC..CCCCCBBCCCCCC..CC..FF...",
-    "........CC..C...........C..CC.......",
-    "............C...CC.CC...C...........",
-    "..CC........C...CC.CC...C......CCC..",
-    "..CC........C...........C.......CC.F",
-    ".......FF...C...........C..FF......F",
-    ".......FF...C....FF.....C..FF.......",
-    "..BB........B....FF.....B.......BB..",
-    "..BB........B......Q....B.......BBB.",
-    "............C...CC.CC...C...........",
-    "..CC........C...CC.CC...C......CCC..",
-    "..CC........CQ..........C..Q....CC.F",
-    "........CC..C...........C..CC.......",
-    "...FF...CC..CCBB...QBBCCC..CC..FF...",
-    "..FFF.......C...........C......FF...",
-    "F...........C...........C...........",
-    "...........Q.......................W",
-    "...........CC...........CC.........W",
-    "...........CC...BB.BB...CCQ........W",
-    "..CC....FF......BB.BB......FF.QCCC..",
-    "..CC....FF...BB......BBB...FF...CC..",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "W.........FF....CCCC....FF..........",
-    "WW.................................F",
-    "WW...............HH...............FF"
+    "FFFF.........CC...........CC........FFFF",
+    "FFF..........CC...........CC........FFFF",
+    "FF...................................FFF",
+    "FFF...................................BB",
+    "BB..CC.......FF...........FF.....CCC....",
+    "....CC.......FF...........FF......CC....",
+    "B............CC...........CC.........WWW",
+    "FX...........CC...........CC.........WWW",
+    "FC............C..........QC..........WWW",
+    "....FF........C...........C......FF.....",
+    "...FFF....CC..CCCCCBBCCCCCC..CC..FF.....",
+    "BB........CC..C...........C..CC........B",
+    "C.............C...CC.CC...C...........BB",
+    "BB..CC........C...CC.CC...C......CCC..FF",
+    "....CC........C...........C.......CC.FFF",
+    "F........FF...C...........C..FF......FFF",
+    "F........FF...C....FF.....C..FF........B",
+    "C...BB........B....FF.....B.......BB...B",
+    "....BB........B....FF.....B.......BB....",
+    "....BB........B....FF.....B.......BB..C.",
+    "CC..BB........B...........B.......BBB.C.",
+    "CC..BB........B...........B.......BBB.BB",
+    "B...BB........B......Q....B.......BBB.FF",
+    "C.............C...CC.CC...C...........CC",
+    "B...CC........C...CC.CC...C......CCC..CC",
+    "....CC........CQ..........C..Q....CC.FFF",
+    "..........CC..C...........C..CC.......BB",
+    ".....FF...CC..CCBB...QBBCCC..CC..FF...BB",
+    "....FFF.......C...........C......FF...BB",
+    "FFF...........C...........C............B",
+    ".............Q.......................WWW",
+    ".............CC...........CC.........WWW",
+    "CC...........CC...BB.BB...CCQ........WWW",
+    "CC..CC....FF......BB.BB......FF.QCCC...F",
+    "....CC....FF...BB......BBB...FF...CC..FF",
+    ".....F............................FF....",
+    "....FF......FF............FF.....FFF....",
+    "WWW.........FF....CCCC....FF............",
+    "WWWW.................................FFF",
+    "WWWW...............HH...............FFFF"
   ]
 }

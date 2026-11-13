@@ -8,15 +8,15 @@
   "rules": {
     "spawnSectorBossOnClear": false
   },
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "environment": {
     "tint": "#d2bb94",
@@ -29,42 +29,46 @@
     "credits": 300
   },
   "layout": [
-    "..FF......BBB.........BBBB......FF..",
-    "..FF......BCB.........BCCB......FF..",
-    "...BBBBBBBCCB...BBBBBBCCBB...BBB....",
-    "..B.......BCC...B......BBBB..BBB....",
-    "..B.......BCC.....FF......BC........",
-    "..B.......BCC.....FF......BC....BB..",
-    "...BBBB...BCC.............BBBBBBBB..",
-    ".....BB...BBCCC.......B.........B...",
-    "...B.......BBBB...BBBBB.........B...",
-    "...B.BB...........BCCCB...BBB....B..",
-    "...B.BB...........BCCCB...BBC....B..",
-    "...B..............BCCCB..........B..",
-    "...B.......BBBBBBBBBBBB......BB..B..",
-    "..BB....BBB...B..............BB..B..",
-    ".B......BBB...B............BBB...B..",
-    ".B............B............BCB...B..",
-    ".B.......BBBBBCBBB...BBBBBBCCB...B..",
-    ".B...B...BCCCCCCCB...BCCCCCCCB...B..",
-    ".B...B...BBBBCBBBB...BBBBBCBBB...B..",
-    ".B...B.......B.......Q....B......B..",
-    ".B...B.......BQ...........B......B..",
-    ".B...B.......B............B......B..",
-    ".B...B.............BBBB...BBBB...B..",
-    ".B...B............QBCCB...BBBB...B..",
-    ".B.....Q...........BBBB......Q...B..",
-    ".B....BB.....BQ..................B..",
-    ".B....CCB....B...................B..",
-    ".BQ..........B...........BB...BBBB..",
-    "..BBB......QBCBB...BBBB..BB...BCC...",
-    ".....BBBBBBBCBBB...BBBCBBCB...BCC...",
-    "...FF.......B.........BBBBB...B.....",
-    "...FF.......B.................B..BB.",
-    "............B.................B..BB.",
-    "...BBB......B...CCCC..........B.....",
-    "...BBB......B.........BBBBBBBB......",
-    ".................HH.............FF.."
+    "....FF......BBB.........BBBB......FF....",
+    "....FF......BCB.........BCCB......FF....",
+    "XX...BBBBBBBCCB...BBBBBBCCBB...BBB....BB",
+    "BB..B.......BCC...B......BBBB..BBB......",
+    "....B.......BCC.....FF......BC........XC",
+    "....B.......BCC.....FF......BC....BB..X.",
+    ".....BBBB...BCC.............BBBBBBBB....",
+    "BB.....BB...BBCCC.......B.........B...XX",
+    "FF...B.......BBBB...BBBBB.........B....B",
+    "FF...B.BB...........BCCCB...BBB....B..BB",
+    ".....B.BB...........BCCCB...BBC....B....",
+    "BB...B..............BCCCB..........B..CC",
+    ".....B.......BBBBBBBBBBBB......BB..B...C",
+    "B...BB....BBB...B..............BB..B..BF",
+    "...B......BBB...B............BBB...B..B.",
+    "...B............B............BCB...B....",
+    "CC.B.......BBBBBCBBB...BBBBBBCCB...B..C.",
+    "XX.B...B...BCCCCCCCB...BCCCCCCCB...B..CB",
+    "BB.B...B...BCCCCCCCB...BCCCCCCCB...B..BB",
+    "...B...B...BCCCCCCCB...BCCCCCCCB...B..XB",
+    "FF.B...B...BBBBCBBBB...BBBBBCBBB...B....",
+    "FF.B...B...BBBBCBBBB...BBBBBCBBB...B...B",
+    "XB.B...B...BBBBCBBBB...BBBBBCBBB...B...B",
+    "FF.B...B.......B.......Q....B......B..BB",
+    ".B.B...B.......BQ...........B......B..BB",
+    "...B...B.......B............B......B....",
+    "...B...B.............BBBB...BBBB...B..X.",
+    "C..B...B............QBCCB...BBBB...B..XC",
+    ".F.B.....Q...........BBBB......Q...B..BB",
+    "BF.B....BB.....BQ..................B..BB",
+    "...B....CCB....B...................B....",
+    ".B.BQ..........B...........BB...BBBB..C.",
+    "....BBB......QBCBB...BBBB..BB...BCC...CB",
+    ".......BBBBBBBCBBB...BBBCBBCB...BCC...CB",
+    "XX...FF.......B.........BBBBB...B.....BB",
+    ".....FF.......B.................B..BB...",
+    "CC............B.................B..BB...",
+    "BB...BBB......B...CCCC..........B.....X.",
+    ".....BBB......B.........BBBBBBBB........",
+    "...................HH.............FF...."
   ],
   "enemyPool": [
     "SCOUT",
@@ -106,15 +110,15 @@
         "initialCells": [
           {
             "row": 8,
-            "col": 8
+            "col": 10
           },
           {
             "row": 6,
-            "col": 17
+            "col": 19
           },
           {
             "row": 10,
-            "col": 24
+            "col": 26
           }
         ],
         "entrances": [
@@ -123,16 +127,16 @@
         "recoverySec": 0,
         "patrolRoute": [
           {
-            "row": 26,
-            "col": 10
+            "row": 30,
+            "col": 12
           },
           {
-            "row": 26,
-            "col": 17
+            "row": 30,
+            "col": 19
           },
           {
-            "row": 31,
-            "col": 17
+            "row": 35,
+            "col": 19
           }
         ]
       },
@@ -153,19 +157,19 @@
         "patrolRoute": [
           {
             "row": 14,
-            "col": 6
+            "col": 8
           },
           {
-            "row": 20,
-            "col": 7
+            "row": 24,
+            "col": 9
           },
           {
-            "row": 23,
-            "col": 16
+            "row": 27,
+            "col": 18
           },
           {
-            "row": 26,
-            "col": 17
+            "row": 30,
+            "col": 19
           }
         ]
       },
@@ -185,20 +189,20 @@
         "recoverySec": 7,
         "patrolRoute": [
           {
-            "row": 20,
-            "col": 30
+            "row": 24,
+            "col": 32
           },
           {
-            "row": 20,
-            "col": 24
+            "row": 24,
+            "col": 26
           },
           {
-            "row": 20,
+            "row": 24,
+            "col": 20
+          },
+          {
+            "row": 27,
             "col": 18
-          },
-          {
-            "row": 23,
-            "col": 16
           }
         ]
       },
@@ -220,19 +224,19 @@
         "patrolRoute": [
           {
             "row": 5,
-            "col": 16
+            "col": 18
           },
           {
             "row": 10,
-            "col": 16
+            "col": 18
           },
           {
             "row": 14,
-            "col": 19
+            "col": 21
           },
           {
-            "row": 20,
-            "col": 19
+            "row": 24,
+            "col": 21
           }
         ]
       },
@@ -254,23 +258,23 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 24
+            "col": 26
           },
           {
             "row": 14,
-            "col": 24
+            "col": 26
           },
           {
-            "row": 20,
-            "col": 24
+            "row": 24,
+            "col": 26
           },
           {
-            "row": 26,
-            "col": 24
+            "row": 30,
+            "col": 26
           },
           {
-            "row": 26,
-            "col": 17
+            "row": 30,
+            "col": 19
           }
         ]
       }
@@ -280,31 +284,31 @@
         "id": "west",
         "label": "West lane",
         "row": 11,
-        "col": 6
+        "col": 8
       },
       {
         "id": "northwest",
         "label": "Northwest residences",
         "row": 4,
-        "col": 4
+        "col": 6
       },
       {
         "id": "east",
         "label": "East avenue",
         "row": 11,
-        "col": 31
+        "col": 33
       },
       {
         "id": "northeast",
         "label": "East courtyard",
         "row": 8,
-        "col": 31
+        "col": 33
       },
       {
         "id": "garden",
         "label": "Garden access",
         "row": 4,
-        "col": 21
+        "col": 23
       }
     ]
   },
@@ -314,50 +318,50 @@
         "name": "West avenue partition",
         "cells": [
           {
-            "row": 19,
-            "col": 13
+            "row": 23,
+            "col": 15
           },
           {
-            "row": 20,
-            "col": 13
+            "row": 24,
+            "col": 15
           },
           {
-            "row": 21,
-            "col": 13
+            "row": 25,
+            "col": 15
           }
         ],
         "start": {
-          "row": 20,
-          "col": 11
+          "row": 24,
+          "col": 13
         },
         "end": {
-          "row": 20,
-          "col": 15
+          "row": 24,
+          "col": 17
         }
       },
       {
         "name": "East avenue partition",
         "cells": [
           {
-            "row": 19,
-            "col": 26
+            "row": 23,
+            "col": 28
           },
           {
-            "row": 20,
-            "col": 26
+            "row": 24,
+            "col": 28
           },
           {
-            "row": 21,
-            "col": 26
+            "row": 25,
+            "col": 28
           }
         ],
         "start": {
-          "row": 20,
-          "col": 24
+          "row": 24,
+          "col": 26
         },
         "end": {
-          "row": 20,
-          "col": 28
+          "row": 24,
+          "col": 30
         }
       },
       {
@@ -365,24 +369,24 @@
         "cells": [
           {
             "row": 13,
-            "col": 14
+            "col": 16
           },
           {
             "row": 14,
-            "col": 14
+            "col": 16
           },
           {
             "row": 15,
-            "col": 14
+            "col": 16
           }
         ],
         "start": {
           "row": 14,
-          "col": 12
+          "col": 14
         },
         "end": {
           "row": 14,
-          "col": 16
+          "col": 18
         }
       }
     ]
@@ -396,9 +400,9 @@
         "id": "west-housing",
         "bounds": [
           9,
-          3,
-          18,
-          12
+          5,
+          22,
+          14
         ],
         "surface": "pavers",
         "density": 0.35,
@@ -410,10 +414,10 @@
       {
         "id": "avenue",
         "bounds": [
-          18,
-          6,
           22,
-          31
+          8,
+          26,
+          33
         ],
         "surface": "asphalt",
         "density": 0.35,
@@ -426,9 +430,9 @@
         "id": "gardens",
         "bounds": [
           3,
-          13,
+          15,
           9,
-          22
+          24
         ],
         "surface": "dirt",
         "density": 0.35,
@@ -440,16 +444,80 @@
       {
         "id": "garages",
         "bounds": [
-          23,
-          23,
-          30,
-          32
+          27,
+          25,
+          34,
+          34
         ],
         "surface": "concrete",
         "density": 0.35,
         "details": [
           "oil",
           "cracks"
+        ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "rubble",
+          "weeds"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "leaves",
+          "rubble",
+          "weeds"
         ]
       }
     ],
@@ -458,24 +526,24 @@
         "id": "street-0",
         "points": [
           [
-            32,
-            17
+            36,
+            19
           ],
           [
-            26,
-            17
+            30,
+            19
           ],
           [
-            26,
-            7
+            30,
+            9
           ],
           [
-            20,
-            7
+            24,
+            9
           ],
           [
-            20,
-            31
+            24,
+            33
           ]
         ],
         "width": 3,
@@ -486,52 +554,52 @@
         "id": "street-1",
         "points": [
           [
-            32,
-            17
+            36,
+            19
           ],
           [
-            32,
-            28
+            36,
+            30
           ],
           [
-            25,
-            28
+            29,
+            30
           ],
           [
-            25,
-            31
+            29,
+            33
           ],
           [
-            20,
-            31
-          ],
-          [
-            10,
-            31
+            24,
+            33
           ],
           [
             10,
-            24
+            33
+          ],
+          [
+            10,
+            26
           ],
           [
             5,
-            24
+            26
           ],
           [
             5,
-            16
+            18
           ],
           [
             10,
-            16
+            18
           ],
           [
             10,
-            7
+            9
           ],
           [
-            20,
-            7
+            24,
+            9
           ]
         ],
         "width": 3,
@@ -542,20 +610,20 @@
         "id": "street-2",
         "points": [
           [
-            26,
-            7
+            30,
+            9
           ],
           [
-            26,
-            3
-          ],
-          [
-            15,
-            3
+            30,
+            5
           ],
           [
             15,
-            7
+            5
+          ],
+          [
+            15,
+            9
           ]
         ],
         "width": 3,
@@ -567,15 +635,15 @@
         "points": [
           [
             10,
-            7
+            9
           ],
           [
             4,
-            7
+            9
           ],
           [
             4,
-            3
+            5
           ]
         ],
         "width": 3,
@@ -586,16 +654,16 @@
         "id": "street-4",
         "points": [
           [
-            20,
-            19
+            24,
+            21
           ],
           [
             14,
-            19
+            21
           ],
           [
             14,
-            7
+            9
           ]
         ],
         "width": 3,
@@ -607,15 +675,15 @@
         "points": [
           [
             14,
-            19
+            21
           ],
           [
             14,
-            25
+            27
           ],
           [
             10,
-            25
+            27
           ]
         ],
         "width": 3,
@@ -626,29 +694,69 @@
         "id": "street-6",
         "points": [
           [
-            26,
-            17
+            30,
+            19
           ],
           [
-            26,
-            24
+            30,
+            26
           ],
           [
-            20,
-            24
+            24,
+            26
           ]
         ],
         "width": 3,
         "surface": "asphalt",
         "marking": "none"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "dashed"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "dashed"
       }
     ],
     "landmarks": [
       {
         "id": "district-0",
         "kind": "label",
-        "row": 32,
-        "col": 17,
+        "row": 36,
+        "col": 19,
         "text": "REPAIR GARAGES",
         "size": 3
       },
@@ -656,15 +764,15 @@
         "id": "district-1",
         "kind": "label",
         "row": 12,
-        "col": 7,
+        "col": 9,
         "text": "WEST RESIDENCES",
         "size": 3
       },
       {
         "id": "district-2",
         "kind": "label",
-        "row": 20,
-        "col": 20,
+        "row": 24,
+        "col": 22,
         "text": "BROKEN AVENUE",
         "size": 3
       },
@@ -672,7 +780,7 @@
         "id": "district-3",
         "kind": "label",
         "row": 6,
-        "col": 18,
+        "col": 20,
         "text": "GARDEN COURT",
         "size": 3
       },
@@ -680,38 +788,70 @@
         "id": "district-4",
         "kind": "label",
         "row": 11,
-        "col": 25,
+        "col": 27,
         "text": "EAST RESIDENCES",
         "size": 3
       },
       {
         "id": "district-5",
         "kind": "label",
-        "row": 25,
-        "col": 27,
+        "row": 29,
+        "col": 29,
         "text": "GARAGE LOOP",
         "size": 3
       },
       {
         "id": "avenue-crossing",
         "kind": "crosswalk",
-        "row": 20,
-        "col": 24,
+        "row": 24,
+        "col": 26,
         "size": 2.5
       },
       {
         "id": "garage-parking",
         "kind": "parking",
-        "row": 25,
-        "col": 28,
+        "row": 29,
+        "col": 30,
         "size": 3
       },
       {
         "id": "service-cover",
         "kind": "manhole",
         "row": 14,
-        "col": 19,
+        "col": 21,
         "size": 1
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "manhole",
+        "row": 10,
+        "col": 3,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "parking",
+        "row": 25,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "manhole",
+        "row": 12,
+        "col": 36,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "crosswalk",
+        "row": 28,
+        "col": 36,
+        "size": 2,
+        "rotation": 90
       }
     ],
     "exclusions": []

@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 29 // STEELWORKS FURNACE COMPLEX",
   "objective": "Clear the steelworks",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,21 +36,21 @@
         "name": "South casting-yard gate",
         "cells": [
           {
-            "row": 23,
-            "col": 17
+            "row": 27,
+            "col": 19
           },
           {
-            "row": 23,
-            "col": 18
+            "row": 27,
+            "col": 20
           }
         ],
         "start": {
-          "row": 25,
-          "col": 17
+          "row": 29,
+          "col": 19
         },
         "end": {
-          "row": 21,
-          "col": 17
+          "row": 25,
+          "col": 19
         },
         "purpose": "Blast open the southern brick gate to enter the Central Casting Plaza directly from the marshaling apron."
       },
@@ -59,20 +59,20 @@
         "cells": [
           {
             "row": 16,
-            "col": 11
+            "col": 13
           },
           {
             "row": 17,
-            "col": 11
+            "col": 13
           }
         ],
         "start": {
           "row": 16,
-          "col": 9
+          "col": 11
         },
         "end": {
           "row": 16,
-          "col": 13
+          "col": 15
         },
         "purpose": "Open a wide escape cut between the West Quenching Yard and the Central Casting Plaza."
       },
@@ -81,20 +81,20 @@
         "cells": [
           {
             "row": 16,
-            "col": 24
+            "col": 26
           },
           {
             "row": 17,
-            "col": 24
+            "col": 26
           }
         ],
         "start": {
           "row": 16,
-          "col": 26
+          "col": 28
         },
         "end": {
           "row": 16,
-          "col": 22
+          "col": 24
         },
         "purpose": "Punch through the eastern furnace duct to connect the East Ingot Yard with the Central Casting Plaza."
       },
@@ -103,20 +103,20 @@
         "cells": [
           {
             "row": 10,
-            "col": 17
+            "col": 19
           },
           {
             "row": 10,
-            "col": 18
+            "col": 20
           }
         ],
         "start": {
           "row": 12,
-          "col": 17
+          "col": 19
         },
         "end": {
           "row": 8,
-          "col": 17
+          "col": 19
         },
         "purpose": "Breach the northern converter bay wall to push directly into the upper steelworks artillery yard."
       }
@@ -132,9 +132,9 @@
         "id": "steelworks-slag-ground",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "gravel",
         "density": 0.18,
@@ -148,9 +148,9 @@
         "id": "west-quenching-yard",
         "bounds": [
           8,
-          2,
-          26,
-          10
+          4,
+          30,
+          12
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -164,9 +164,9 @@
         "id": "central-casting-plaza",
         "bounds": [
           8,
-          12,
-          25,
-          23
+          14,
+          29,
+          25
         ],
         "surface": "concrete",
         "density": 0.25,
@@ -181,9 +181,9 @@
         "id": "east-ingot-yard",
         "bounds": [
           8,
-          25,
-          26,
-          33
+          27,
+          30,
+          35
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -196,10 +196,10 @@
       {
         "id": "south-steelworks-apron",
         "bounds": [
-          27,
-          8,
-          35,
-          27
+          31,
+          10,
+          39,
+          29
         ],
         "surface": "pavers",
         "density": 0.22,
@@ -213,9 +213,9 @@
         "id": "converter-apron",
         "bounds": [
           11,
-          12,
+          14,
           15,
-          17
+          19
         ],
         "surface": "concrete",
         "density": 0.2,
@@ -228,15 +228,79 @@
         "id": "casting-house-apron",
         "bounds": [
           16,
-          19,
           21,
-          23
+          25,
+          25
         ],
         "surface": "concrete",
         "density": 0.2,
         "details": [
           "rubble",
           "oil"
+        ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
         ]
       }
     ],
@@ -245,24 +309,24 @@
         "id": "west-quenching-lane",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
+            32,
+            10
+          ],
+          [
+            23,
             8
           ],
           [
-            19,
-            6
-          ],
-          [
             10,
-            6
+            8
           ],
           [
             4,
-            11
+            13
           ]
         ],
         "width": 2.6,
@@ -273,24 +337,24 @@
         "id": "central-casting-spine",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
             17,
-            17
+            19
           ],
           [
             11,
-            17
+            19
           ],
           [
             4,
-            17
+            19
           ]
         ],
         "width": 2.8,
@@ -301,27 +365,67 @@
         "id": "east-ingot-lane",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            27
-          ],
-          [
-            19,
+            32,
             29
+          ],
+          [
+            23,
+            31
           ],
           [
             10,
-            29
+            31
           ],
           [
             4,
-            24
+            26
           ]
         ],
         "width": 2.6,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
         "surface": "asphalt",
         "marking": "edges"
       }
@@ -331,7 +435,7 @@
         "id": "converter-bay-loading",
         "kind": "loading",
         "row": 6,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
@@ -339,15 +443,15 @@
         "id": "casting-plaza-crosswalk",
         "kind": "crosswalk",
         "row": 17,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "south-yard-parking",
         "kind": "parking",
-        "row": 31,
-        "col": 13,
+        "row": 35,
+        "col": 15,
         "size": 2.5,
         "rotation": 0
       },
@@ -355,7 +459,7 @@
         "id": "west-yard-label",
         "kind": "label",
         "row": 15,
-        "col": 6,
+        "col": 8,
         "size": 3,
         "text": "QUENCHING YARD"
       },
@@ -363,7 +467,7 @@
         "id": "central-plaza-label",
         "kind": "label",
         "row": 16,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "text": "CASTING PLAZA"
       },
@@ -371,9 +475,41 @@
         "id": "east-yard-label",
         "kind": "label",
         "row": 15,
-        "col": 29,
+        "col": 31,
         "size": 3,
         "text": "INGOT YARD"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "crosswalk",
+        "row": 10,
+        "col": 3,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "crosswalk",
+        "row": 25,
+        "col": 3,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "loading",
+        "row": 12,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "manhole",
+        "row": 28,
+        "col": 36,
+        "size": 1,
+        "rotation": 90
       }
     ]
   },
@@ -387,32 +523,32 @@
       {
         "id": "north-west-quench",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-converter-west",
         "row": 2,
-        "col": 14
+        "col": 16
       },
       {
         "id": "north-converter-east",
         "row": 2,
-        "col": 21
+        "col": 23
       },
       {
         "id": "north-east-ingot",
         "row": 2,
-        "col": 30
+        "col": 32
       },
       {
         "id": "upper-west-furnace",
         "row": 7,
-        "col": 4
+        "col": 6
       },
       {
         "id": "upper-east-furnace",
         "row": 7,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -429,33 +565,33 @@
         "initialCells": [
           {
             "row": 4,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 14
+            "col": 16
           },
           {
             "row": 5,
-            "col": 21
+            "col": 23
           },
           {
             "row": 4,
-            "col": 29
+            "col": 31
           }
         ],
         "patrolRoute": [
           {
             "row": 12,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 18,
-            "col": 16
+            "row": 22,
+            "col": 18
           },
           {
-            "row": 26,
-            "col": 16
+            "row": 30,
+            "col": 18
           }
         ],
         "enemies": [
@@ -479,15 +615,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 6
+            "col": 8
           },
           {
-            "row": 19,
-            "col": 7
+            "row": 23,
+            "col": 9
           },
           {
-            "row": 26,
-            "col": 13
+            "row": 30,
+            "col": 15
           }
         ],
         "enemies": [
@@ -511,15 +647,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 18,
-            "col": 18
+            "row": 22,
+            "col": 20
           },
           {
-            "row": 26,
-            "col": 18
+            "row": 30,
+            "col": 20
           }
         ],
         "enemies": [
@@ -543,15 +679,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 29
+            "col": 31
           },
           {
-            "row": 19,
-            "col": 28
+            "row": 23,
+            "col": 30
           },
           {
-            "row": 26,
-            "col": 22
+            "row": 30,
+            "col": 24
           }
         ],
         "enemies": [
@@ -576,15 +712,15 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 18,
-            "col": 17
+            "row": 22,
+            "col": 19
           },
           {
-            "row": 26,
-            "col": 17
+            "row": 30,
+            "col": 19
           }
         ],
         "enemies": [
@@ -633,41 +769,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.........CC...........CC........FF",
-    "F..........CC...........CC........FF",
-    "...................................F",
-    "F...................................",
-    "..CC.......FF...........FF.....CCC..",
-    "..CC.......FF...........FF......CC..",
-    "...........CC...........CC.........W",
-    "...........CC...........CC.........W",
-    "............C...........C..........W",
-    "..FF........C...........C......FF...",
-    ".FFF....CC..CCCCCBBCCCCCC..CC..FF...",
-    "........CC..C...........C..CC.......",
-    "F............CBB....................",
-    "..CC.........CBB................CCC.",
-    "..CC.......CCBBB........CC.......CC.",
-    ".......FF..CC...........CC..FF.....F",
-    ".......FF..B............B...FF......",
-    "..BB.......B........BBB.B.......BBB.",
-    "..BB.......CC.......BCC.CC......BBB.",
-    "...........CC.......BCC.CC..........",
-    "..CC.......Q..BB........Q.......CCC.",
-    "..CC..........BB................CC.F",
-    "........CC..C....Q......C..CC.......",
-    "...FF...CC..CCCCCBBCCCCCC..CC..FF...",
-    "..FFF.......C...........C......FF...",
-    "F...........C...........CQ..........",
-    "...................................W",
-    "...........CC...........CC.........W",
-    "...Q.......CCQ..BB.BB...CC......Q..W",
-    "..CC....FF......BB.BBQ.....FF..CCC..",
-    "..CC....FF...BB......BBB...FF...CC..",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "W.........FF....CCCC....FF..........",
-    "WW.................................F",
-    "WW...............HH...............FF"
+    "FFFF.........CC...........CC........FFFF",
+    "FFF..........CC...........CC........FFFF",
+    "FC...................................FFF",
+    "FFF...................................CC",
+    "CF..CC.......FF...........FF.....CCC....",
+    "....CC.......FF...........FF......CC....",
+    "XX...........CC...........CC.........WWW",
+    ".C...........CC...........CC.........WWW",
+    ".B............C...........C..........WWW",
+    ".B..FF........C...........C......FF...FF",
+    "...FFF....CC..CCCCCBBCCCCCC..CC..FF.....",
+    "..........CC..C...........C..CC.......CC",
+    "FFF............CBB....................CC",
+    ".B..CC.........CBB................CCC...",
+    "....CC.......CCBBB........CC.......CC.BB",
+    ".........FF..CC...........CC..FF.....FFF",
+    "XB.......FF..B............B...FF........",
+    ".B..BB.......B........BBB.B.......BBB..C",
+    "....BB.......B........BBB.B.......BBB...",
+    "CC..BB.......B........BBB.B.......BBB...",
+    ".B..BB.......CC.......BCC.CC......BBB.BB",
+    "....BB.......CC.......BCC.CC......BBB...",
+    "....BB.......CC.......BCC.CC......BBB...",
+    "CC...........CC.......BCC.CC............",
+    "CC..CC.......Q..BB........Q.......CCC...",
+    "FF..CC..........BB................CC.FFF",
+    ".F........CC..C....Q......C..CC........B",
+    ".C...FF...CC..CCCCCBBCCCCCC..CC..FF....B",
+    "B...FFF.......C...........C......FF...XX",
+    "FFF...........C...........CQ............",
+    ".....................................WWW",
+    ".............CC...........CC.........WWW",
+    ".....Q.......CCQ..BB.BB...CC......Q..WWW",
+    ".B..CC....FF......BB.BBQ.....FF..CCC..X.",
+    ".B..CC....FF...BB......BBB...FF...CC....",
+    ".....F............................FF..BB",
+    "....FF......FF............FF.....FFF....",
+    "WWW.........FF....CCCC....FF............",
+    "WWWW.................................FFF",
+    "WWWW...............HH...............FFFF"
   ]
 }

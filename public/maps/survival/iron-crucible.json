@@ -1,20 +1,20 @@
 {
   "mapId": "survival-iron-crucible",
   "id": 201,
-  "code": "SURVIVAL S-01 // 36×36",
+  "code": "SURVIVAL S-01 // 40×40",
   "name": "Iron Crucible",
   "subtitle": "ENDLESS ARMORED HOLDOUT",
   "objective": "Survive endless enemy waves starting from a Tier I tank and set a new Survival Record",
   "gameMode": "survival",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 32,
-    "col": 15
+    "row": 36,
+    "col": 17
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "gameMode": "survival",
@@ -34,33 +34,33 @@
   "powerups": [
     {
       "type": "REPAIR",
-      "row": 25,
-      "col": 11
+      "row": 29,
+      "col": 13
     },
     {
       "type": "APS",
-      "row": 25,
-      "col": 24
+      "row": 29,
+      "col": 26
     },
     {
       "type": "MISSILE",
-      "row": 18,
-      "col": 6
+      "row": 22,
+      "col": 8
     },
     {
       "type": "EMP",
-      "row": 18,
-      "col": 29
+      "row": 22,
+      "col": 31
     },
     {
       "type": "REPAIR",
       "row": 11,
-      "col": 17
+      "col": 19
     },
     {
       "type": "APS",
-      "row": 30,
-      "col": 17
+      "row": 34,
+      "col": 19
     }
   ],
   "enemies": {
@@ -82,47 +82,51 @@
       "enemyClass": "BOSS_MAMMOTH",
       "spawnCell": {
         "row": 3,
-        "col": 17
+        "col": 19
       }
     }
   },
   "layout": [
-    "....................................",
-    "..BB....BB......BBBB......BB....BB..",
-    "..BB.G..BB...G..BBBB..G...BB..G.BB..",
-    "....................................",
-    "....BBBB..CC....BBBB....CC..BBBB....",
-    "....BBBB..CC..D......D..CC..BBBB....",
-    "..FF.....Q..............Q.......FF..",
-    "..FF..BBBB....CCCCCCCC....BBBB..FF..",
-    "......BBBB..D.......Q..D..BBBB......",
-    ".............Q......................",
-    "..WWWW....BBBB........BBBB....WWWW..",
-    "..WWWW....BBBB...FF...BBBB....WWWW..",
-    "..WWWW...........FF....Q......WWWW..",
-    "..........CC............CC..........",
-    "....FF...QCC....BBBB....CC....FF....",
-    "....FF..........BBBBQ.........FF....",
-    "........BBBB..D......D..BBBB........",
-    "........BBBB............BBBB........",
-    "..WWWW........CCCCCCCC........WWWW..",
-    "..WWWW........Q...............WWWW..",
-    "..WWWW....FF............FF....WWWW..",
-    "..........FF....BBBB....FF..........",
-    "....BBBB........BBBB........BBBB....",
-    "....BBBB..CC............CC..BBBB....",
-    "..........CC..D......D..CC..........",
-    "....................................",
-    "..FF....BBBB............BBBB....FF..",
-    "..FF....BBBB............BBBB....FF..",
-    "..............CC....CC..............",
-    "....BBBB......CC....CC......BBBB....",
-    "....BBBB..D..............D..BBBB....",
-    "....................................",
-    "..........BBBB........BBBB..........",
-    "..........BBBB.CCCCCC.BBBB..........",
-    "....................................",
-    ".................HH................."
+    "........................................",
+    "....BB....BB......BBBB......BB....BB....",
+    "....BB.G..BB...G..BBBB..G...BB..G.BB..C.",
+    "C.......................................",
+    "BB....BBBB..CC....BBBB....CC..BBBB......",
+    ".C....BBBB..CC..D......D..CC..BBBB....CC",
+    "....FF.....Q..............Q.......FF..C.",
+    "....FF..BBBB....CCCCCCCC....BBBB..FF..C.",
+    "........BBBB..D.......Q..D..BBBB........",
+    "CC.............Q........................",
+    "....WWWW....BBBB........BBBB....WWWW..BB",
+    ".F..WWWW....BBBB...FF...BBBB....WWWW..CC",
+    "CF..WWWW...........FF....Q......WWWW....",
+    "............CC............CC..........B.",
+    "......FF...QCC....BBBB....CC....FF....B.",
+    ".B....FF..........BBBBQ.........FF......",
+    "BB........BBBB..D......D..BBBB.........F",
+    "C.........BBBB............BBBB........CC",
+    "CX........BBBB............BBBB........CC",
+    "..........BBBB............BBBB.........X",
+    ".F..WWWW........CCCCCCCC........WWWW....",
+    "X...WWWW........CCCCCCCC........WWWW...X",
+    "C...WWWW........CCCCCCCC........WWWW..XX",
+    "C...WWWW........Q...............WWWW..BB",
+    "....WWWW....FF............FF....WWWW....",
+    "............FF....BBBB....FF............",
+    "CC....BBBB........BBBB........BBBB....BB",
+    "X.....BBBB..CC............CC..BBBB....F.",
+    "............CC..D......D..CC..........BB",
+    "BB....................................B.",
+    "....FF....BBBB............BBBB....FF....",
+    "X...FF....BBBB............BBBB....FF....",
+    "X...............CC....CC..............XX",
+    "XX....BBBB......CC....CC......BBBB....XX",
+    "CX....BBBB..D..............D..BBBB....X.",
+    "CB......................................",
+    "............BBBB........BBBB...........C",
+    "............BBBB.CCCCCC.BBBB...........C",
+    "........................................",
+    "...................HH..................."
   ],
   "decoration": {
     "version": 1,
@@ -133,9 +137,9 @@
         "id": "north-staging-apron",
         "bounds": [
           1,
-          2,
+          4,
           8,
-          33
+          35
         ],
         "surface": "concrete",
         "density": 0.35,
@@ -149,9 +153,9 @@
         "id": "central-crucible-yard",
         "bounds": [
           12,
-          8,
-          24,
-          27
+          10,
+          28,
+          29
         ],
         "surface": "gravel",
         "density": 0.3,
@@ -164,15 +168,79 @@
       {
         "id": "south-bastion-apron",
         "bounds": [
-          28,
-          10,
-          34,
-          25
+          32,
+          12,
+          38,
+          27
         ],
         "surface": "pavers",
         "density": 0.25,
         "details": [
           "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "oil",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "rubble",
           "cracks"
         ]
       }
@@ -183,15 +251,15 @@
         "points": [
           [
             3,
-            6
+            8
           ],
           [
             16,
-            7
+            9
           ],
           [
-            31,
-            13
+            35,
+            15
           ]
         ],
         "width": 3,
@@ -203,15 +271,15 @@
         "points": [
           [
             3,
-            17
+            19
           ],
           [
-            18,
-            17
+            22,
+            19
           ],
           [
-            32,
-            17
+            36,
+            19
           ]
         ],
         "width": 3,
@@ -223,20 +291,60 @@
         "points": [
           [
             3,
-            29
+            31
           ],
           [
             16,
-            28
+            30
           ],
           [
-            31,
-            22
+            35,
+            24
           ]
         ],
         "width": 3,
         "surface": "asphalt",
         "marking": "dashed"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
       }
     ],
     "landmarks": [
@@ -244,15 +352,15 @@
         "id": "center-crucible-pad",
         "kind": "loading",
         "row": 15,
-        "col": 17,
+        "col": 19,
         "size": 4,
         "rotation": 0
       },
       {
         "id": "south-repair-bay-mark",
         "kind": "loading",
-        "row": 32,
-        "col": 17,
+        "row": 36,
+        "col": 19,
         "size": 4,
         "rotation": 0
       },
@@ -260,27 +368,59 @@
         "id": "label-crucible-center",
         "kind": "label",
         "row": 13,
-        "col": 17,
+        "col": 19,
         "size": 2,
         "text": "IRON CRUCIBLE // KILL ZONE"
       },
       {
         "id": "label-repair-bay",
         "kind": "label",
-        "row": 31,
-        "col": 17,
+        "row": 35,
+        "col": 19,
         "size": 2,
         "text": "ALLIED REPAIR & HANGAR BAY"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "loading",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "manhole",
+        "row": 25,
+        "col": 3,
+        "size": 1,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "crosswalk",
+        "row": 12,
+        "col": 36,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "loading",
+        "row": 28,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 90
       }
     ],
     "exclusions": [
       {
         "id": "clear-repair-bay",
         "bounds": [
-          31,
-          15,
-          34,
-          20
+          35,
+          17,
+          38,
+          22
         ]
       }
     ]

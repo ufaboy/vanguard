@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 33 // CIVIC DISTRICT HQ DEFENSE",
   "objective": "Defend the civic HQ",
   "gameMode": "base_defense",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,21 +36,21 @@
         "name": "West municipal residential breach",
         "cells": [
           {
-            "row": 22,
-            "col": 6
+            "row": 26,
+            "col": 8
           },
           {
-            "row": 23,
-            "col": 6
+            "row": 27,
+            "col": 8
           }
         ],
         "start": {
-          "row": 22,
-          "col": 7
+          "row": 26,
+          "col": 9
         },
         "end": {
-          "row": 22,
-          "col": 5
+          "row": 26,
+          "col": 7
         },
         "purpose": "Punch through the west residential block partition to intercept flanking sappers and flamethrowers."
       },
@@ -58,21 +58,21 @@
         "name": "East clinic block breach",
         "cells": [
           {
-            "row": 22,
-            "col": 28
+            "row": 26,
+            "col": 30
           },
           {
-            "row": 23,
-            "col": 28
+            "row": 27,
+            "col": 30
           }
         ],
         "start": {
-          "row": 22,
-          "col": 27
+          "row": 26,
+          "col": 29
         },
         "end": {
-          "row": 22,
-          "col": 29
+          "row": 26,
+          "col": 31
         },
         "purpose": "Open a direct cut through the eastern clinic building to engage standoff strikers before they sight the shelter."
       },
@@ -81,20 +81,20 @@
         "cells": [
           {
             "row": 16,
-            "col": 17
+            "col": 19
           },
           {
             "row": 16,
-            "col": 18
+            "col": 20
           }
         ],
         "start": {
-          "row": 18,
-          "col": 17
+          "row": 22,
+          "col": 19
         },
         "end": {
           "row": 14,
-          "col": 17
+          "col": 19
         },
         "purpose": "Break the central street barricade to sally forth into the northern plaza against advancing columns."
       },
@@ -103,20 +103,20 @@
         "cells": [
           {
             "row": 10,
-            "col": 12
+            "col": 14
           },
           {
             "row": 11,
-            "col": 12
+            "col": 14
           }
         ],
         "start": {
           "row": 10,
-          "col": 11
+          "col": 13
         },
         "end": {
           "row": 10,
-          "col": 13
+          "col": 15
         },
         "purpose": "Link the northwest arcade and central plaza to isolate enemy strike teams."
       }
@@ -132,9 +132,9 @@
         "id": "capital-district-pavers",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "pavers",
         "density": 0.16,
@@ -148,9 +148,9 @@
         "id": "west-residential-quarter",
         "bounds": [
           4,
-          2,
-          28,
-          12
+          4,
+          32,
+          14
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -164,9 +164,9 @@
         "id": "central-civic-avenue",
         "bounds": [
           2,
-          13,
-          33,
-          22
+          15,
+          37,
+          24
         ],
         "surface": "asphalt",
         "density": 0.24,
@@ -181,9 +181,9 @@
         "id": "east-clinic-quarter",
         "bounds": [
           4,
-          23,
-          28,
-          33
+          25,
+          32,
+          35
         ],
         "surface": "asphalt",
         "density": 0.22,
@@ -196,10 +196,10 @@
       {
         "id": "civic-shelter-sanctuary",
         "bounds": [
-          28,
-          11,
-          35,
-          24
+          32,
+          13,
+          39,
+          26
         ],
         "surface": "concrete",
         "density": 0.2,
@@ -207,6 +207,70 @@
           "cracks",
           "rubble",
           "tracks"
+        ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "rubble",
+          "patches",
+          "oil"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "rubble",
+          "patches",
+          "oil"
         ]
       }
     ],
@@ -218,20 +282,20 @@
         "marking": "dashed",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
             15,
-            17
+            19
           ],
           [
             5,
-            17
+            19
           ]
         ]
       },
@@ -242,24 +306,24 @@
         "marking": "edges",
         "points": [
           [
-            31,
-            13
+            35,
+            15
           ],
           [
-            25,
-            4
+            29,
+            6
           ],
           [
             15,
-            4
+            6
           ],
           [
             7,
-            4
+            6
           ],
           [
             3,
-            11
+            13
           ]
         ]
       },
@@ -270,34 +334,74 @@
         "marking": "edges",
         "points": [
           [
-            31,
-            21
+            35,
+            23
           ],
           [
-            25,
-            31
+            29,
+            33
           ],
           [
             15,
-            31
+            33
           ],
           [
             7,
-            31
+            33
           ],
           [
             3,
-            23
+            25
           ]
         ]
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
       }
     ],
     "landmarks": [
       {
         "id": "shelter-front-crosswalk",
         "kind": "crosswalk",
-        "row": 27,
-        "col": 17,
+        "row": 31,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
@@ -305,31 +409,31 @@
         "id": "mid-avenue-crosswalk",
         "kind": "crosswalk",
         "row": 15,
-        "col": 17,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "west-residential-parking",
         "kind": "parking",
-        "row": 23,
-        "col": 4,
+        "row": 27,
+        "col": 6,
         "size": 2.5,
         "rotation": 0
       },
       {
         "id": "east-clinic-parking",
         "kind": "parking",
-        "row": 23,
-        "col": 31,
+        "row": 27,
+        "col": 33,
         "size": 2.5,
         "rotation": 0
       },
       {
         "id": "shelter-hq-loading",
         "kind": "loading",
-        "row": 32,
-        "col": 17,
+        "row": 36,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
@@ -337,7 +441,7 @@
         "id": "west-block-label",
         "kind": "label",
         "row": 13,
-        "col": 4,
+        "col": 6,
         "size": 3,
         "text": "CIVIC WEST"
       },
@@ -345,17 +449,49 @@
         "id": "east-block-label",
         "kind": "label",
         "row": 13,
-        "col": 31,
+        "col": 33,
         "size": 3,
         "text": "CIVIC EAST"
       },
       {
         "id": "civic-shelter-label",
         "kind": "label",
-        "row": 30,
-        "col": 17,
+        "row": 34,
+        "col": 19,
         "size": 3,
         "text": "LAST SHELTER"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "manhole",
+        "row": 10,
+        "col": 3,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "crosswalk",
+        "row": 25,
+        "col": 3,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "loading",
+        "row": 12,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "manhole",
+        "row": 28,
+        "col": 36,
+        "size": 1,
+        "rotation": 90
       }
     ]
   },
@@ -369,27 +505,27 @@
       {
         "id": "north-avenue-gate",
         "row": 2,
-        "col": 17
+        "col": 19
       },
       {
         "id": "west-housing-entry",
         "row": 2,
-        "col": 4
+        "col": 6
       },
       {
         "id": "east-clinic-entry",
         "row": 2,
-        "col": 31
+        "col": 33
       },
       {
         "id": "mid-west-alley",
         "row": 6,
-        "col": 3
+        "col": 5
       },
       {
         "id": "mid-east-alley",
         "row": 6,
-        "col": 32
+        "col": 34
       }
     ],
     "encounters": [
@@ -405,33 +541,33 @@
         "initialCells": [
           {
             "row": 6,
-            "col": 16
+            "col": 18
           },
           {
             "row": 6,
-            "col": 19
+            "col": 21
           },
           {
             "row": 5,
-            "col": 4
+            "col": 6
           },
           {
             "row": 5,
-            "col": 31
+            "col": 33
           }
         ],
         "patrolRoute": [
           {
             "row": 9,
-            "col": 17
+            "col": 19
           },
           {
             "row": 17,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 26,
-            "col": 17
+            "row": 30,
+            "col": 19
           }
         ],
         "enemies": [
@@ -455,15 +591,15 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 4
+            "col": 6
           },
           {
-            "row": 19,
-            "col": 4
+            "row": 23,
+            "col": 6
           },
           {
-            "row": 26,
-            "col": 12
+            "row": 30,
+            "col": 14
           }
         ],
         "enemies": [
@@ -487,15 +623,15 @@
         "patrolRoute": [
           {
             "row": 9,
-            "col": 17
+            "col": 19
           },
           {
             "row": 15,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 23,
-            "col": 17
+            "row": 27,
+            "col": 19
           }
         ],
         "enemies": [
@@ -519,15 +655,15 @@
         "patrolRoute": [
           {
             "row": 10,
-            "col": 31
+            "col": 33
           },
           {
-            "row": 19,
-            "col": 31
+            "row": 23,
+            "col": 33
           },
           {
-            "row": 26,
-            "col": 22
+            "row": 30,
+            "col": 24
           }
         ],
         "enemies": [
@@ -552,15 +688,15 @@
         "patrolRoute": [
           {
             "row": 9,
-            "col": 17
+            "col": 19
           },
           {
             "row": 17,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 27,
-            "col": 17
+            "row": 31,
+            "col": 19
           }
         ],
         "enemies": [
@@ -607,73 +743,77 @@
     "STRIKER"
   ],
   "layout": [
-    "...FF.....BB............BB.....F....",
-    "..FFF.....BB............BB.....FF...",
-    "....................................",
-    ".....BB.CC........FF........CCC.BB..",
-    ".CC..BB.CC..................CC..BB.C",
-    ".CC.......F...BB....BB...F.......CCC",
-    ".....BB.C.....CC....CC......CBB.....",
-    ".....BB..CC..............CC..BB.....",
-    "..F......CC...BB....BB...CC......FF.",
-    ".FF..BB.......CC....CC.......BB...F.",
-    ".....BB..CC.B............CC..BB.....",
-    "..CC..C..CC.B.C......C...CC..C..CC..",
-    "..CC.BB.......C......C.......BB.CC.F",
-    ".....BB..CC...C......C...CC..BB....F",
-    ".F.......CC...C.....QC...CC.......FF",
-    "...BB.CC.Q....C......C...Q..CCC.BB..",
-    "...BB.CC......BBBBBBBB......CC..BB..",
-    ".........CC....Q.........CC..FQ.....",
-    "..CC.BB..CC..C......C....CC..BB.CC..",
-    "..CC.BB..Q...C......C....Q...BB.CC..",
-    ".....BB..CC..C......C...CC...BB..Q..",
-    ".F.......CC..............CC..F....F.",
-    "...BB.B.CCC...BB....BB...CC.B.B.BB..",
-    "...BB.B.CC....CC....CC....C.B.B.BB..",
-    "F........CC..............CC.........",
-    "..CC.BB..CC..BB....BB....CC..BB.CC..",
-    "..CC.BB......CC....CC........BB.CC..",
-    ".....BB..CC..............CC..BB..F..",
-    ".F.......CC...CCCCCCCC...CC.....FFF.",
-    "...BB.CC......C......C......CCC.BB..",
-    "...BB.CC......C......C......CC..BB..",
-    ".........F................F...F.....",
-    "..CC.BB.......C......C.......BB.CC.F",
-    "..CC.BB..FF...C.CCCC.C...FF...B.CC..",
-    ".........FF...C......C...FF.........",
-    "....F.........C..HH..C.......F......"
+    ".....FF.....BB............BB.....F......",
+    "....FFF.....BB............BB.....FF.....",
+    ".B....................................C.",
+    ".B.....BB.CC........FF........CCC.BB..BB",
+    "BB.CC..BB.CC..................CC..BB.CCC",
+    "...CC.......F...BB....BB...F.......CCCCC",
+    "B......BB.C.....CC....CC......CBB.....BB",
+    "FF.....BB..CC..............CC..BB.....BB",
+    "FF..F......CC...BB....BB...CC......FF...",
+    "BB.FF..BB.......CC....CC.......BB...F...",
+    ".......BB..CC.B............CC..BB.....B.",
+    ".X..CC..C..CC.B.C......C...CC..C..CC..FF",
+    ".F..CC.BB.......C......C.......BB.CC.FFF",
+    "CC.....BB..CC...C......C...CC..BB....FFF",
+    "...F.......CC...C.....QC...CC.......FFFF",
+    ".X...BB.CC.Q....C......C...Q..CCC.BB....",
+    "FF...BB.CC......BBBBBBBB......CC..BB...C",
+    ".F.........CC....Q.........CC..FQ......C",
+    ".F.........CC..............CC..F........",
+    ".F.........CC..............CC..F........",
+    "CC..CC.BB..CC..C......C....CC..BB.CC..B.",
+    "B...CC.BB..CC..C......C....CC..BB.CC....",
+    "FF..CC.BB..CC..C......C....CC..BB.CC..BB",
+    "FF..CC.BB..Q...C......C....Q...BB.CC..BB",
+    "XX.....BB..CC..C......C...CC...BB..Q....",
+    "...F.......CC..............CC..F....F...",
+    ".....BB.B.CCC...BB....BB...CC.B.B.BB....",
+    "B....BB.B.CC....CC....CC....C.B.B.BB..FF",
+    "FFF........CC..............CC.........F.",
+    "....CC.BB..CC..BB....BB....CC..BB.CC..CC",
+    "....CC.BB......CC....CC........BB.CC....",
+    ".......BB..CC..............CC..BB..F..CC",
+    "B..F.......CC...CCCCCCCC...CC.....FFF...",
+    ".F...BB.CC......C......C......CCC.BB....",
+    ".....BB.CC......C......C......CC..BB....",
+    "...........F................F...F.......",
+    "BB..CC.BB.......C......C.......BB.CC.FFF",
+    "BB..CC.BB..FF...C.CCCC.C...FF...B.CC....",
+    "...........FF...C......C...FF...........",
+    "......F.........C..HH..C.......F........"
   ],
   "powerups": [
     {
       "type": "MISSILE",
-      "row": 21,
-      "col": 17
+      "row": 25,
+      "col": 19
     },
     {
       "type": "APS",
       "row": 14,
-      "col": 4
+      "col": 6
     },
     {
       "type": "REPAIR",
       "row": 15,
-      "col": 31
+      "col": 33
     },
     {
       "type": "APS",
-      "row": 27,
-      "col": 17
+      "row": 31,
+      "col": 19
     },
     {
       "type": "EMP",
       "row": 8,
-      "col": 17
+      "col": 19
     },
     {
       "type": "REPAIR",
-      "row": 31,
-      "col": 22
+      "row": 35,
+      "col": 24
     }
   ]
 }

@@ -81,14 +81,14 @@ test('Contract mode rules and SECTORS registration', () => {
   assert.equal(CONTRACTS_CATALOG[0].id, LAST_CARGO_CONTRACT.id);
 });
 
-test('Last Cargo 36x36 map passes inspectMap and satisfies CH1 + CH5 reachability, bridge widths, and 10 BOX caches', async () => {
+test('Last Cargo 40x40 map passes inspectMap and satisfies CH1 + CH5 reachability, bridge widths, and 10 BOX caches', async () => {
   const report = await inspectMap(process.cwd(), mapPath);
   assert.deepEqual(report.errors, [], `inspectMap errors: ${report.errors.join('; ')}`);
   assert.equal(report.openCells, report.reachableCells);
 
   const rows = rawMap.layout;
-  assert.equal(rows.length, 36);
-  for (const r of rows) assert.equal(r.length, 36);
+  assert.equal(rows.length, 40);
+  for (const r of rows) assert.equal(r.length, 40);
 
   // CH1 (dry + brick breach) reachability from player spawn to all 3 cargos and delivery pad
   const spawn = rawMap.playerSpawnCell;
@@ -111,25 +111,25 @@ test('Last Cargo 36x36 map passes inspectMap and satisfies CH1 + CH5 reachabilit
     }
   }
 
-  // Island bridge width >= 3 cells and 4x4 turning clearance around Cargo B (18, 18)
-  for (let r = 16; r <= 18; r++) {
-    assert.equal(rows[r][13], '.', `West island bridge (${r},13) is dry`);
-    assert.equal(rows[r][14], '.', `West island bridge (${r},14) is dry`);
+  // Island bridge width >= 3 cells and 4x4 turning clearance around Cargo B (22, 20)
+  for (let r = 16; r <= 22; r++) {
+    assert.equal(rows[r][15], '.', `West island bridge (${r},15) is dry`);
+    assert.equal(rows[r][16], '.', `West island bridge (${r},16) is dry`);
   }
-  for (let c = 17; c <= 20; c++) {
-    assert.equal(rows[21][c], '.', `South island bridge (21,${c}) is dry`);
-    assert.equal(rows[22][c], '.', `South island bridge (22,${c}) is dry`);
+  for (let c = 19; c <= 22; c++) {
+    assert.equal(rows[25][c], '.', `South island bridge (25,${c}) is dry`);
+    assert.equal(rows[26][c], '.', `South island bridge (26,${c}) is dry`);
   }
-  for (let r = 16; r <= 19; r++) {
-    for (let c = 17; c <= 20; c++) {
+  for (let r = 16; r <= 23; r++) {
+    for (let c = 19; c <= 22; c++) {
       assert.ok(rows[r][c] === '.' || rows[r][c] === 'F', `Island 4x4 turning cell (${r},${c}) is drivable`);
     }
   }
 
-  // 10 BOX caches total, at least 9 outside the southern HQ staging area (rows < 27)
+  // 10 BOX caches total, at least 9 outside the southern HQ staging area (rows < 31)
   const powerupItems = rawMap.powerups?.items || rawMap.powerups || [];
   assert.equal(powerupItems.length, 10);
-  const outsideHq = powerupItems.filter((p) => p.row < 27);
+  const outsideHq = powerupItems.filter((p) => p.row < 31);
   assert.equal(outsideHq.length, 9);
 });
 

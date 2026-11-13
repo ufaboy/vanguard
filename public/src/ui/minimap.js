@@ -1,3 +1,4 @@
+import { GRID_SIZE, TILE_SIZE } from '../game/constants.js';
 import { GameStatus } from '../game/types.js';
 import { setAttr, setHidden, setHtml, syncPool } from './dom-helpers.js';
 
@@ -46,7 +47,9 @@ export function renderNorthUpSensorMinimap(hud) {
   }
   const mm = el.__mm;
 
-  const toPct = (coord) => Math.max(4, Math.min(96, ((coord + 36) / 72) * 100));
+  const arenaSpan = GRID_SIZE * TILE_SIZE;
+  const halfArena = arenaSpan / 2;
+  const toPct = (coord) => Math.max(4, Math.min(96, ((coord + halfArena) / arenaSpan) * 100));
   const fmt = (v) => v.toFixed(1);
   const px = toPct(hud.playerX || 0);
   const pz = toPct(hud.playerZ || 0);
@@ -83,13 +86,13 @@ export function renderNorthUpSensorMinimap(hud) {
 
   if (mm.contract) {
     if (hud.contract?.containers?.length) {
-      const cellToPct = (cell) => Math.max(3, Math.min(97, ((cell + 0.5) / 36) * 100));
+      const cellToPct = (cell) => Math.max(3, Math.min(97, ((cell + 0.5) / GRID_SIZE) * 100));
       const isSabotage = Boolean(hud.contract.isSabotage);
       const pad = hud.contract.deliveryPad;
-      const padX = ((pad.minCol) / 36) * 100;
-      const padY = ((pad.minRow) / 36) * 100;
-      const padW = ((pad.maxCol - pad.minCol + 1) / 36) * 100;
-      const padH = ((pad.maxRow - pad.minRow + 1) / 36) * 100;
+      const padX = (pad.minCol / GRID_SIZE) * 100;
+      const padY = (pad.minRow / GRID_SIZE) * 100;
+      const padW = ((pad.maxCol - pad.minCol + 1) / GRID_SIZE) * 100;
+      const padH = ((pad.maxRow - pad.minRow + 1) / GRID_SIZE) * 100;
       const cargoMarks = hud.contract.containers
         .map((c) => {
           const cx = cellToPct(c.col);

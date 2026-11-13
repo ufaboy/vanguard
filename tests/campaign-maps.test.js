@@ -37,11 +37,11 @@ test('Every authored map has reachable deployment, pickups and useful brick shor
 });
 
 test('Map normalization rejects blocked, duplicate and unknown authored supplies', () => {
-  const map = { layout: Array(36).fill('.'.repeat(36)), powerups: [{ type: 'REPAIR', row: 4, col: 5 }] };
+  const map = { layout: Array(40).fill('.'.repeat(40)), powerups: [{ type: 'REPAIR', row: 4, col: 5 }] };
   assert.equal(normalizeMapDefinition(map).powerups[0].type, POWERUP.REPAIR);
   assert.throws(() => normalizeMapDefinition({ ...map, powerups: [...map.powerups, ...map.powerups] }), /invalid or blocked/);
   assert.throws(() => normalizeMapDefinition({ ...map, powerups: [{ type: 'UNKNOWN', row: 4, col: 5 }] }), /invalid or blocked/);
-  map.layout[4] = 'C'.repeat(36);
+  map.layout[4] = 'C'.repeat(40);
   assert.throws(() => normalizeMapDefinition(map), /invalid or blocked/);
 });
 
@@ -72,7 +72,7 @@ test('All released supplies survive travel time and collection removes each supp
 test('Former duplicate battlefields retain different cover and patrol geometry', () => {
   for (const [a, b] of [[26, 29], [28, 30]]) {
     let intersection = 0, union = 0;
-    for (let r = 1; r < 35; r++) for (let c = 1; c < 35; c++) {
+    for (let r = 1; r < 39; r++) for (let c = 1; c < 39; c++) {
       const solid = sector => [TileType.BRICK, TileType.CONCRETE].includes(sector.grid[r][c]);
       const x = solid(SECTORS[a]), y = solid(SECTORS[b]);
       intersection += x && y; union += x || y;

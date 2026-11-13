@@ -5,15 +5,15 @@
   "subtitle": "SECTOR 31 // CAPITAL CITY OUTSKIRTS",
   "objective": "Clear the capital outskirts",
   "gameMode": "extermination",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "rules": {
     "spawnSectorBossOnClear": false,
@@ -36,25 +36,25 @@
         "name": "Market partition",
         "cells": [
           {
-            "row": 20,
-            "col": 17
-          },
-          {
-            "row": 20,
-            "col": 18
-          },
-          {
-            "row": 20,
+            "row": 24,
             "col": 19
+          },
+          {
+            "row": 24,
+            "col": 20
+          },
+          {
+            "row": 24,
+            "col": 21
           }
         ],
         "start": {
-          "row": 21,
-          "col": 18
+          "row": 25,
+          "col": 20
         },
         "end": {
-          "row": 18,
-          "col": 18
+          "row": 22,
+          "col": 20
         },
         "purpose": "Break the market partition to connect the south arcade with the northern cross-street."
       }
@@ -70,9 +70,9 @@
         "id": "capital-outskirts-pavers",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "pavers",
         "density": 0.16,
@@ -86,9 +86,9 @@
         "id": "west-embassy-avenue-zone",
         "bounds": [
           2,
-          2,
-          30,
-          10
+          4,
+          34,
+          12
         ],
         "surface": "asphalt",
         "density": 0.2,
@@ -102,9 +102,9 @@
         "id": "central-civic-plaza-zone",
         "bounds": [
           8,
-          12,
-          25,
-          23
+          14,
+          29,
+          25
         ],
         "surface": "concrete",
         "density": 0.22,
@@ -118,9 +118,9 @@
         "id": "east-tramway-district-zone",
         "bounds": [
           2,
-          25,
-          30,
-          33
+          27,
+          34,
+          35
         ],
         "surface": "asphalt",
         "density": 0.2,
@@ -133,10 +133,10 @@
       {
         "id": "south-outskirts-staging-square",
         "bounds": [
-          27,
-          8,
-          35,
-          27
+          31,
+          10,
+          39,
+          29
         ],
         "surface": "pavers",
         "density": 0.2,
@@ -145,6 +145,70 @@
           "leaves",
           "tracks"
         ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "rubble",
+          "patches",
+          "oil"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "concrete",
+        "density": 0.45,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.45,
+        "details": [
+          "rubble",
+          "patches",
+          "oil"
+        ]
       }
     ],
     "paths": [
@@ -152,24 +216,24 @@
         "id": "west-arcade",
         "points": [
           [
+            35,
+            19
+          ],
+          [
             31,
-            17
+            13
           ],
           [
-            27,
-            11
-          ],
-          [
-            21,
-            5
+            25,
+            7
           ],
           [
             14,
-            6
+            8
           ],
           [
             8,
-            9
+            11
           ]
         ],
         "width": 3,
@@ -180,24 +244,24 @@
         "id": "east-tramway",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            26
+            32,
+            28
           ],
           [
-            20,
-            26
+            24,
+            28
           ],
           [
             14,
-            28
+            30
           ],
           [
             8,
-            28
+            30
           ]
         ],
         "width": 3,
@@ -209,27 +273,67 @@
         "points": [
           [
             14,
-            6
+            8
           ],
           [
             14,
-            14
+            16
           ],
           [
-            19,
-            14
+            23,
+            16
           ],
           [
-            24,
-            14
+            28,
+            16
           ],
           [
-            24,
-            24
+            28,
+            26
           ]
         ],
         "width": 3,
         "surface": "pavers",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "edges"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
         "marking": "edges"
       }
     ],
@@ -237,18 +341,50 @@
       {
         "id": "market-name",
         "kind": "label",
-        "row": 19,
-        "col": 17,
+        "row": 23,
+        "col": 19,
         "size": 3,
         "text": "MARKET"
       },
       {
         "id": "tram-crossing",
         "kind": "crosswalk",
-        "row": 21,
-        "col": 26,
+        "row": 25,
+        "col": 28,
         "size": 3,
         "rotation": 0
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "loading",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "parking",
+        "row": 25,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "manhole",
+        "row": 12,
+        "col": 36,
+        "size": 1,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "loading",
+        "row": 28,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 90
       }
     ]
   },
@@ -262,32 +398,32 @@
       {
         "id": "north-west-embassy",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-boulevard-west",
         "row": 2,
-        "col": 14
+        "col": 16
       },
       {
         "id": "north-boulevard-east",
         "row": 2,
-        "col": 21
+        "col": 23
       },
       {
         "id": "north-east-tramway",
         "row": 2,
-        "col": 30
+        "col": 32
       },
       {
         "id": "upper-west-cross",
         "row": 7,
-        "col": 4
+        "col": 6
       },
       {
         "id": "upper-east-cross",
         "row": 7,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -304,37 +440,37 @@
         "initialCells": [
           {
             "row": 4,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 14
+            "col": 16
           },
           {
             "row": 5,
-            "col": 21
+            "col": 23
           },
           {
             "row": 4,
-            "col": 29
+            "col": 31
           }
         ],
         "patrolRoute": [
           {
             "row": 9,
-            "col": 9
+            "col": 11
           },
           {
             "row": 14,
-            "col": 14
+            "col": 16
           },
           {
-            "row": 19,
-            "col": 7
+            "row": 23,
+            "col": 9
           },
           {
-            "row": 27,
-            "col": 11
+            "row": 31,
+            "col": 13
           }
         ],
         "enemies": [
@@ -358,19 +494,19 @@
         "patrolRoute": [
           {
             "row": 9,
-            "col": 1
+            "col": 3
           },
           {
             "row": 14,
-            "col": 6
+            "col": 8
           },
           {
-            "row": 21,
-            "col": 5
-          },
-          {
-            "row": 27,
+            "row": 25,
             "col": 7
+          },
+          {
+            "row": 31,
+            "col": 9
           }
         ],
         "enemies": [
@@ -393,19 +529,19 @@
         "patrolRoute": [
           {
             "row": 9,
-            "col": 28
+            "col": 30
           },
           {
             "row": 14,
-            "col": 24
-          },
-          {
-            "row": 21,
-            "col": 25
-          },
-          {
-            "row": 28,
             "col": 26
+          },
+          {
+            "row": 25,
+            "col": 27
+          },
+          {
+            "row": 32,
+            "col": 28
           }
         ],
         "enemies": [
@@ -429,19 +565,19 @@
         "patrolRoute": [
           {
             "row": 12,
-            "col": 16
-          },
-          {
-            "row": 17,
-            "col": 15
-          },
-          {
-            "row": 19,
             "col": 18
           },
           {
-            "row": 24,
-            "col": 22
+            "row": 17,
+            "col": 17
+          },
+          {
+            "row": 23,
+            "col": 20
+          },
+          {
+            "row": 28,
+            "col": 24
           }
         ],
         "enemies": [
@@ -465,19 +601,19 @@
         "patrolRoute": [
           {
             "row": 14,
-            "col": 28
+            "col": 30
           },
           {
-            "row": 20,
-            "col": 28
-          },
-          {
-            "row": 26,
-            "col": 24
+            "row": 24,
+            "col": 30
           },
           {
             "row": 30,
-            "col": 18
+            "col": 26
+          },
+          {
+            "row": 34,
+            "col": 20
           }
         ],
         "enemies": [
@@ -522,41 +658,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.........CC...........CC........FF",
-    "F..........CC...........CC........FF",
-    "...................................F",
-    "F...................................",
-    "..CC.......FF...........FF.....CCC..",
-    "..CC.......FF...........FF......CC..",
-    "...........CC...........CC.........W",
-    "...........CC...........CC.........W",
-    ".............Q.........BBBB.........",
-    "..CCCCB....BBBB........BBBB....BBBB.",
-    "..BBBBB....BBBB........BBBB....BBBB.",
-    "..BBBBB....BBBB........BBBB...QBBBB.",
-    "..BBBBB...........FF...BBBB.........",
-    "..FF..............FF................",
-    ".................CCCC...............",
-    "........CBBB.....BBBB...............",
-    ".BBBB...CBBBQ....BBBB........BBBBB..",
-    ".BBBB...BBBB......Q.....FF...BBCCC..",
-    ".BBBB...BBBB............FF...BBCCC..",
-    ".BBBBQ.......................BBBBB..",
-    ".BBBB.......BCCCCBBBCCCB............",
-    "................B...................",
-    "......CBBBB.....BBBB..........FFF...",
-    "......CBBBB.....BBBB..........FFF...",
-    "......BBBBB...............QBCCCB....",
-    "......BBBBB................BBBBB....",
-    "....Q.........FFF..........BBBBB....",
-    "..BBB.........FFF..........BBBBBQ...",
-    "..BBB.......BBBB......CBB...........",
-    "..BBB.......BBBB......CBB...........",
-    "......................BBB...........",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "W.........FF....CCCC....FF..........",
-    "WW.................................F",
-    "WW...............HH...............FF"
+    "FFFF.........CC...........CC........FFFF",
+    "FFF..........CC...........CC........FFFF",
+    "C....................................FFF",
+    "FFF....................................F",
+    "....CC.......FF...........FF.....CCC..BB",
+    "....CC.......FF...........FF......CC..BB",
+    "B............CC...........CC.........WWW",
+    "B............CC...........CC.........WWW",
+    "...............Q.........BBBB...........",
+    "....CCCCB....BBBB........BBBB....BBBB...",
+    "F...BBBBB....BBBB........BBBB....BBBB.F.",
+    ".X..BBBBB....BBBB........BBBB...QBBBB...",
+    ".X..BBBBB...........FF...BBBB..........F",
+    ".C..FF..............FF.................F",
+    "...................CCCC................C",
+    "..........CBBB.....BBBB.................",
+    "BB.BBBB...CBBBQ....BBBB........BBBBB....",
+    "F..BBBB...BBBB......Q.....FF...BBCCC....",
+    "F..BBBB...BBBB............FF...BBCCC....",
+    ".C.BBBB...BBBB............FF...BBCCC..FF",
+    "B..BBBB...BBBB............FF...BBCCC....",
+    ".F.BBBB...BBBB............FF...BBCCC..F.",
+    "...BBBB...BBBB............FF...BBCCC....",
+    ".X.BBBBQ.......................BBBBB..C.",
+    "FF.BBBB.......BCCCCBBBCCCB............CX",
+    "..................B.....................",
+    ".B......CBBBB.....BBBB..........FFF...BB",
+    "BB......CBBBB.....BBBB..........FFF....F",
+    "XX......BBBBB...............QBCCCB....XF",
+    "B.......BBBBB................BBBBB....X.",
+    "......Q.........FFF..........BBBBB......",
+    "BB..BBB.........FFF..........BBBBBQ...F.",
+    "BB..BBB.......BBBB......CBB...........BC",
+    "FF..BBB.......BBBB......CBB............F",
+    "BB......................BBB...........FF",
+    "BB...F............................FF..BB",
+    "BB..FF......FF............FF.....FFF...F",
+    "WWW.........FF....CCCC....FF...........F",
+    "WWWW.................................FFF",
+    "WWWW...............HH...............FFFF"
   ]
 }

@@ -5,20 +5,20 @@
   "subtitle": "SECTOR 22 // ALPINE RELAY STRONGHOLD",
   "objective": "Destroy the alpine relay",
   "gameMode": "stronghold_assault",
-  "gridSize": 36,
+  "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 31,
-    "col": 17
+    "row": 35,
+    "col": 19
   },
   "baseCell": {
-    "row": 35,
-    "col": 17
+    "row": 39,
+    "col": 19
   },
   "enemyBase": {
     "cell": {
       "row": 5,
-      "col": 18
+      "col": 20
     },
     "name": "White Relay Command Array",
     "maxHp": 48,
@@ -46,20 +46,20 @@
         "cells": [
           {
             "row": 15,
-            "col": 17
+            "col": 19
           },
           {
             "row": 15,
-            "col": 18
+            "col": 20
           }
         ],
         "start": {
           "row": 17,
-          "col": 18
+          "col": 20
         },
         "end": {
           "row": 13,
-          "col": 18
+          "col": 20
         },
         "purpose": "Blast through the southern antenna compound wall for a direct firing line onto the White Relay Command Array."
       },
@@ -68,20 +68,20 @@
         "cells": [
           {
             "row": 11,
-            "col": 14
+            "col": 16
           },
           {
             "row": 12,
-            "col": 14
+            "col": 16
           }
         ],
         "start": {
           "row": 11,
-          "col": 12
+          "col": 14
         },
         "end": {
           "row": 11,
-          "col": 16
+          "col": 18
         },
         "purpose": "Punch into the western side of the relay courtyard from the west radome shelter."
       },
@@ -90,20 +90,20 @@
         "cells": [
           {
             "row": 11,
-            "col": 22
+            "col": 24
           },
           {
             "row": 12,
-            "col": 22
+            "col": 24
           }
         ],
         "start": {
           "row": 11,
-          "col": 24
+          "col": 26
         },
         "end": {
           "row": 11,
-          "col": 20
+          "col": 22
         },
         "purpose": "Breach the eastern transformer wall to strike the relay core from the east snowfield shelf."
       },
@@ -111,21 +111,21 @@
         "name": "Mid-plateau shelter cut",
         "cells": [
           {
-            "row": 22,
-            "col": 16
+            "row": 26,
+            "col": 18
           },
           {
-            "row": 22,
-            "col": 17
+            "row": 26,
+            "col": 19
           }
         ],
         "start": {
-          "row": 24,
-          "col": 16
+          "row": 28,
+          "col": 18
         },
         "end": {
-          "row": 20,
-          "col": 16
+          "row": 24,
+          "col": 18
         },
         "purpose": "Open a central shortcut through the mid-plateau windbreak wall to rotate quickly between weather shelters."
       }
@@ -141,9 +141,9 @@
         "id": "plateau-snow-drift",
         "bounds": [
           0,
-          0,
-          35,
-          35
+          2,
+          39,
+          37
         ],
         "surface": "snow",
         "density": 0.16,
@@ -156,9 +156,9 @@
         "id": "relay-compound-apron",
         "bounds": [
           8,
-          13,
+          15,
           16,
-          23
+          25
         ],
         "surface": "concrete",
         "density": 0.25,
@@ -172,9 +172,9 @@
         "id": "west-radome-shelter-yard",
         "bounds": [
           10,
-          3,
-          25,
-          11
+          5,
+          29,
+          13
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -188,9 +188,9 @@
         "id": "east-transformer-shelf",
         "bounds": [
           10,
-          25,
-          25,
-          33
+          27,
+          29,
+          35
         ],
         "surface": "gravel",
         "density": 0.22,
@@ -203,10 +203,10 @@
       {
         "id": "south-staging-road-apron",
         "bounds": [
-          26,
-          10,
-          35,
-          25
+          30,
+          12,
+          39,
+          27
         ],
         "surface": "asphalt",
         "density": 0.2,
@@ -215,6 +215,70 @@
           "tracks",
           "patches"
         ]
+      },
+      {
+        "id": "edge-west-north",
+        "bounds": [
+          1,
+          0,
+          18,
+          3
+        ],
+        "surface": "snow",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "patches",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-west-south",
+        "bounds": [
+          20,
+          0,
+          38,
+          3
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "patches",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "edge-east-north",
+        "bounds": [
+          1,
+          36,
+          18,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.45,
+        "details": [
+          "tracks",
+          "patches",
+          "rubble"
+        ]
+      },
+      {
+        "id": "edge-east-south",
+        "bounds": [
+          20,
+          36,
+          38,
+          39
+        ],
+        "surface": "snow",
+        "density": 0.45,
+        "details": [
+          "patches",
+          "rubble",
+          "cracks"
+        ]
       }
     ],
     "paths": [
@@ -222,24 +286,24 @@
         "id": "west-radome-service-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            9
+            32,
+            11
           ],
           [
-            20,
-            6
-          ],
-          [
-            11,
+            24,
             8
           ],
           [
             11,
-            13
+            10
+          ],
+          [
+            11,
+            15
           ]
         ],
         "width": 2.6,
@@ -250,20 +314,20 @@
         "id": "central-relay-causeway",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            24,
-            17
+            28,
+            19
           ],
           [
             17,
-            18
+            20
           ],
           [
             13,
-            18
+            20
           ]
         ],
         "width": 2.8,
@@ -274,29 +338,69 @@
         "id": "east-transformer-service-road",
         "points": [
           [
-            31,
-            17
+            35,
+            19
           ],
           [
-            28,
-            27
+            32,
+            29
           ],
           [
-            19,
+            23,
+            31
+          ],
+          [
+            11,
             29
           ],
           [
             11,
-            27
-          ],
-          [
-            11,
-            23
+            25
           ]
         ],
         "width": 2.6,
         "surface": "gravel",
         "marking": "edges"
+      },
+      {
+        "id": "edge-west-road",
+        "points": [
+          [
+            4,
+            3
+          ],
+          [
+            20,
+            3
+          ],
+          [
+            35,
+            3
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "edge-east-road",
+        "points": [
+          [
+            4,
+            36
+          ],
+          [
+            20,
+            36
+          ],
+          [
+            35,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
       }
     ],
     "landmarks": [
@@ -304,23 +408,23 @@
         "id": "relay-compound-loading",
         "kind": "loading",
         "row": 13,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "mid-shelter-crosswalk",
         "kind": "crosswalk",
-        "row": 20,
-        "col": 17,
+        "row": 24,
+        "col": 19,
         "size": 3,
         "rotation": 0
       },
       {
         "id": "south-hq-parking",
         "kind": "parking",
-        "row": 31,
-        "col": 13,
+        "row": 35,
+        "col": 15,
         "size": 2.5,
         "rotation": 0
       },
@@ -328,7 +432,7 @@
         "id": "west-radome-label",
         "kind": "label",
         "row": 16,
-        "col": 6,
+        "col": 8,
         "size": 3,
         "text": "WEST RADOME SHELTER"
       },
@@ -336,7 +440,7 @@
         "id": "white-relay-label",
         "kind": "label",
         "row": 17,
-        "col": 18,
+        "col": 20,
         "size": 3,
         "text": "WHITE RELAY ARRAY"
       },
@@ -344,9 +448,41 @@
         "id": "east-bunker-label",
         "kind": "label",
         "row": 16,
-        "col": 29,
+        "col": 31,
         "size": 3,
         "text": "EAST BUNKER SHELF"
+      },
+      {
+        "id": "edge-mark-0",
+        "kind": "loading",
+        "row": 10,
+        "col": 3,
+        "size": 1.8,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-1",
+        "kind": "crosswalk",
+        "row": 25,
+        "col": 3,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "edge-mark-2",
+        "kind": "crosswalk",
+        "row": 12,
+        "col": 36,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "edge-mark-3",
+        "kind": "parking",
+        "row": 28,
+        "col": 36,
+        "size": 1.8,
+        "rotation": 90
       }
     ]
   },
@@ -360,32 +496,32 @@
       {
         "id": "north-west-drift",
         "row": 2,
-        "col": 5
+        "col": 7
       },
       {
         "id": "north-west-relay-gate",
         "row": 2,
-        "col": 13
+        "col": 15
       },
       {
         "id": "north-east-relay-gate",
         "row": 2,
-        "col": 23
+        "col": 25
       },
       {
         "id": "north-east-drift",
         "row": 2,
-        "col": 31
+        "col": 33
       },
       {
         "id": "upper-west-radome",
         "row": 7,
-        "col": 4
+        "col": 6
       },
       {
         "id": "upper-east-shelf",
         "row": 7,
-        "col": 31
+        "col": 33
       }
     ],
     "encounters": [
@@ -402,33 +538,33 @@
         "initialCells": [
           {
             "row": 4,
-            "col": 6
+            "col": 8
           },
           {
             "row": 5,
-            "col": 14
+            "col": 16
           },
           {
             "row": 5,
-            "col": 22
+            "col": 24
           },
           {
             "row": 4,
-            "col": 30
+            "col": 32
           }
         ],
         "patrolRoute": [
           {
             "row": 9,
-            "col": 12
+            "col": 14
           },
           {
             "row": 17,
-            "col": 15
+            "col": 17
           },
           {
-            "row": 24,
-            "col": 16
+            "row": 28,
+            "col": 18
           }
         ],
         "enemies": [
@@ -451,15 +587,15 @@
         "patrolRoute": [
           {
             "row": 11,
-            "col": 7
-          },
-          {
-            "row": 18,
             "col": 9
           },
           {
-            "row": 25,
-            "col": 14
+            "row": 22,
+            "col": 11
+          },
+          {
+            "row": 29,
+            "col": 16
           }
         ],
         "enemies": [
@@ -483,15 +619,15 @@
         "patrolRoute": [
           {
             "row": 8,
-            "col": 18
+            "col": 20
           },
           {
             "row": 17,
-            "col": 18
+            "col": 20
           },
           {
-            "row": 24,
-            "col": 18
+            "row": 28,
+            "col": 20
           }
         ],
         "enemies": [
@@ -514,15 +650,15 @@
         "patrolRoute": [
           {
             "row": 11,
+            "col": 31
+          },
+          {
+            "row": 22,
             "col": 29
           },
           {
-            "row": 18,
-            "col": 27
-          },
-          {
-            "row": 25,
-            "col": 22
+            "row": 29,
+            "col": 24
           }
         ],
         "enemies": [
@@ -547,15 +683,15 @@
         "patrolRoute": [
           {
             "row": 8,
-            "col": 17
+            "col": 19
           },
           {
             "row": 17,
-            "col": 17
+            "col": 19
           },
           {
-            "row": 25,
-            "col": 17
+            "row": 29,
+            "col": 19
           }
         ],
         "enemies": [
@@ -598,41 +734,45 @@
     "STANDARD"
   ],
   "layout": [
-    "FF.....III.......FF......III......FF",
-    "F......III.......F.......III......FF",
-    ".......III...............III.......F",
-    ".......III...............III........",
-    "..CC.........FF..CCCFF.........CC...",
-    "..CC.........FF..CECFF.........CC..I",
-    ".......III.......CCC.....III.......I",
-    ".......III...............III.......I",
-    ".........I....CC.....CC............I",
-    "..FF..........CC....QCC........FF...",
-    ".FFF.....CC...C.......C..QCC...FF...",
-    ".........CC...B.......B...CC........",
-    "....III...Q...B.......B......IIIQ..F",
-    "..CCIII.......C.......C......IIICC.F",
-    "..CC..........C......QC.........CC.F",
-    ".......FF.....CCCBBCCCC...FF........",
-    ".......FF.................FF....III.",
-    "..III......CC..........CC.......III.",
-    "..III......CC..........CC.......III.",
-    "F................II.................",
-    "..CC....FF......IIII......FF...CC...",
-    "..CC....FF......IIII......FF...CC..F",
-    ".............CCCBB..CC..........Q...",
-    "....III......C.......C....III.......",
-    "....III......C.......C....III...FF..",
-    "..FF.....Q.....................FFF..",
-    ".FFF.....CC.....IIII.....CCQ.......I",
-    ".........CC.....IIII.....CC........I",
-    "................IIII............III.",
-    "..CC....FF................FF...CCC..",
-    "..CC....FF...BB......BBB..FF....CC..",
-    "...F............................FF..",
-    "..FF......FF............FF.....FFF..",
-    "I.........FF....CCCC....FF..........",
-    "II.................................F",
-    "II...............HH...............FF"
+    "FFFF.....III.......FF......III......FFFF",
+    "FFF......III.......F.......III......FFFF",
+    "BI.......III...............III.......FFF",
+    "II.......III...............III........BB",
+    "FF..CC.........FF..CCCFF.........CC...BB",
+    "....CC.........FF..CECFF.........CC..III",
+    "II.......III.......CCC.....III.......III",
+    "CC.......III...............III.......III",
+    "I..........I....CC.....CC............III",
+    ".B..FF..........CC....QCC........FF...II",
+    "I..FFF.....CC...C.......C..QCC...FF...IB",
+    "II.........CC...B.......B...CC..........",
+    "II....III...Q...B.......B......IIIQ..FFF",
+    "II..CCIII.......C.......C......IIICC.FFF",
+    ".C..CC..........C......QC.........CC.FFF",
+    ".I.......FF.....CCCBBCCCC...FF..........",
+    "II.......FF.................FF....III...",
+    "II..III......CC..........CC.......III.BB",
+    "CC..III......CC..........CC.......III...",
+    "BB..III......CC..........CC.......III...",
+    "BB..III......CC..........CC.......III..I",
+    "CC..III......CC..........CC.......III.CC",
+    "CC..III......CC..........CC.......III.CC",
+    "FFF................II.................CI",
+    "II..CC....FF......IIII......FF...CC.....",
+    "....CC....FF......IIII......FF...CC..FFF",
+    "BB.............CCCBB..CC..........Q....B",
+    "BB....III......C.......C....III.......CC",
+    "B.....III......C.......C....III...FF...I",
+    "B...FF.....Q.....................FFF....",
+    "...FFF.....CC.....IIII.....CCQ.......III",
+    "II.........CC.....IIII.....CC........III",
+    "..................IIII............III...",
+    "II..CC....FF................FF...CCC....",
+    "I...CC....FF...BB......BBB..FF....CC..II",
+    "C....F............................FF..II",
+    "FF..FF......FF............FF.....FFF....",
+    "III.........FF....CCCC....FF............",
+    "IIII.................................FFF",
+    "IIII...............HH...............FFFF"
   ]
 }
