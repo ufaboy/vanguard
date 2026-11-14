@@ -1,4 +1,5 @@
 import { adManager } from '../app/ads.js';
+import { analyticsManager } from '../app/analyticsManager.js';
 import { PAGE_PATHS } from '../app/routes.js';
 import { FPS_CAP_OPTIONS } from '../app/state.js';
 import { CAMPAIGN_MISSIONS } from '../game/campaign.js';
@@ -264,6 +265,9 @@ export function setupDelegatedEvents(
           const ok = engine ? engine.setHangarOpen(true) : false;
           if (ok) {
             state.showUpgradeDrawer = true;
+            analyticsManager.trackEvent('hangar_open', {
+              source: state.hud.status === GameStatus.PLAYING ? 'battle_hud' : 'menu',
+            });
             renderUI(true);
           }
         } else {
@@ -277,6 +281,12 @@ export function setupDelegatedEvents(
         const track = btn.getAttribute('data-track');
         if (track && engine) {
           const res = engine.upgradeTrackInHangar(track);
+          if (res.success) {
+            analyticsManager.trackEvent('upgrade_purchase', {
+              track,
+              tier: state.upgrades?.[track],
+            });
+          }
           state.hangarFeedback = res.success
             ? `${HANGAR_TRACKS.find((item) => item.key === track)?.label || 'System'} upgraded. Ready for deployment.`
             : res.reason;
@@ -290,12 +300,18 @@ export function setupDelegatedEvents(
       case 'repair-component':
         if (engine) {
           const result = engine.repairComponentInHangar(btn.dataset.track);
+          if (result.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: 'component_repair', track: btn.dataset.track });
+          }
           state.hangarFeedback = result.reason;
           renderUI(true);
         }
         break;
       case 'buy-cannon-ammo': {
         const res = engine?.buyCannonAmmoInHangar();
+        if (res?.success) {
+          analyticsManager.trackEvent('supply_purchase', { item: 'cannon_ammo' });
+        }
         if (res?.reason) state.hangarFeedback = res.reason;
         renderUI(true);
         break;
@@ -303,6 +319,9 @@ export function setupDelegatedEvents(
       case 'buy-missile':
         if (engine) {
           const result = engine.buyMissileInHangar();
+          if (result.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: 'missile' });
+          }
           state.hangarFeedback = result.reason;
           renderUI(true);
         }
@@ -310,6 +329,9 @@ export function setupDelegatedEvents(
       case 'buy-aps-charge':
         if (engine) {
           const res = engine.buyApsChargeInHangar();
+          if (res.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: 'aps_charge' });
+          }
           state.hangarFeedback = res.reason;
           if (!res.success && res.reason) {
             engine.setStatusBanner(`APS RESUPPLY BLOCKED: ${res.reason.toUpperCase()}`, 2.4);
@@ -339,6 +361,10 @@ export function setupDelegatedEvents(
           if (!res.success && errReason) {
             engine.setStatusBanner(`MOUNT REJECTED: ${errReason.toUpperCase()}`, 2.6);
           } else if (res.success && res.reason) {
+            analyticsManager.trackEvent('module_equip', {
+              module_id: instanceId,
+              socket_id: socketId || 'auto',
+            });
             engine.setStatusBanner(res.reason.toUpperCase(), 2.2);
           }
           renderUI(true);
@@ -373,6 +399,7 @@ export function setupDelegatedEvents(
       case 'cycle-fps':
         state.fpsCap = FPS_CAP_OPTIONS[(FPS_CAP_OPTIONS.indexOf(state.fpsCap) + 1) % FPS_CAP_OPTIONS.length];
         engine?.setFpsCap(state.fpsCap);
+        analyticsManager.trackEvent('setting_change', { setting: 'fps_cap', value: state.fpsCap });
         savePreferences();
         renderUI(true);
         break;
@@ -380,6 +407,7 @@ export function setupDelegatedEvents(
         const order = Object.keys(QUALITY_PRESETS);
         state.graphicsQuality = order[(order.indexOf(state.graphicsQuality) + 1) % order.length];
         engine?.setQuality(state.graphicsQuality);
+        analyticsManager.trackEvent('setting_change', { setting: 'quality', value: state.graphicsQuality });
         savePreferences();
         renderUI(true);
         break;
@@ -388,6 +416,7 @@ export function setupDelegatedEvents(
         state.soundEnabled = !state.soundEnabled;
         sound.enabled = state.soundEnabled;
         adManager.syncSound(state.soundEnabled);
+        analyticsManager.trackEvent('setting_change', { setting: 'sound', value: state.soundEnabled });
         savePreferences();
         renderUI(true);
         break;
@@ -402,6 +431,10 @@ export function setupDelegatedEvents(
           accuracy,
           earnedAchievements: state.battleAchievements || [],
         }).then((ok) => {
+          analyticsManager.trackEvent('share_click', {
+            method: 'download_card',
+            outcome: ok ? 'success' : 'failed',
+          });
           state.shareFeedback = ok
             ? '✓ Battle report PNG card downloaded!'
             : 'Unable to generate PNG card in this browser.';
@@ -431,6 +464,7 @@ export function setupDelegatedEvents(
               url: payload.url,
             })
             .then(() => {
+              analyticsManager.trackEvent('share_click', { method: 'native_share', outcome: 'success' });
               state.shareFeedback = '✓ Battle report shared!';
               renderUI(true);
             })
@@ -447,6 +481,10 @@ export function setupDelegatedEvents(
 
         const textToCopy = action === 'share-battle' ? payload.fullText : payload.url;
         copyTextToClipboard(textToCopy).then((copied) => {
+          analyticsManager.trackEvent('share_click', {
+            method: action === 'share-battle' ? 'copy_text' : 'copy_link',
+            outcome: copied ? 'success' : 'failed',
+          });
           if (copied) {
             state.shareFeedback =
               action === 'share-battle'
@@ -469,6 +507,10 @@ export function setupDelegatedEvents(
               if (granted > 0) {
                 state.adRewardClaimed = true;
                 state.adRewardFeedback = `+$${granted} BONUS CREDITS AWARDED`;
+                analyticsManager.trackEvent('rewarded_ad_claimed', {
+                  reward_type: 'credits',
+                  amount: granted,
+                });
               }
             },
           })

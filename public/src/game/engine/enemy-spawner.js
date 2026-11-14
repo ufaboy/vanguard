@@ -8,6 +8,7 @@ import {
 import { ARMOR_PANEL_CATALOG, HULL_CATALOG, TURRET_CATALOG } from '../../sim/catalog.js';
 import { SeededRng } from '../../sim/rng.js';
 import { equipAbilities } from '../abilities/index.js';
+import { analyticsManager } from '../../app/analyticsManager.js';
 import { findBorderIngressCell } from '../campaign-navigation.js';
 import {
   ARTILLERY,
@@ -306,6 +307,10 @@ export class EnemySpawnerController {
       true,
       entryTarget
     );
+    analyticsManager.trackEvent('boss_encounter', {
+      boss_id: bossClass,
+      sector_id: engine.currentSectorIndex,
+    });
   }
 
   spawnBossStage(stageIndex) {

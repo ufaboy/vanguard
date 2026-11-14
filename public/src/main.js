@@ -32,6 +32,7 @@ import {
 } from './game/components/index.js';
 import { sound } from './game/sound.js';
 import { adManager } from './app/ads.js';
+import { analyticsManager } from './app/analyticsManager.js';
 import { setHidden, setHtml } from './ui/dom-helpers.js';
 import { renderNorthUpSensorMinimap } from './ui/minimap.js';
 import { renderContractHud } from './ui/contract-hud.js';
@@ -211,6 +212,16 @@ function initApp() {
   }
 
   const mountEl = document.getElementById('canvas-mount');
+  analyticsManager.init({
+    defaultParams: { page: state.menuPage },
+  });
+  analyticsManager.trackPageView(`${location.pathname}${location.search}`);
+  window.addEventListener('error', (event) => {
+    analyticsManager.trackEvent('app_error', {
+      stage: 'runtime',
+      message: String(event?.message || 'Unknown error').slice(0, 100),
+    });
+  });
   adManager.init({
     soundEnabled: state.soundEnabled,
     onPause: () => engine?.setAdPaused(true),
@@ -259,6 +270,12 @@ function initApp() {
         if (playerSave) {
           if (earned.length > 0) {
             recordUnlockedAchievements(playerSave, earned);
+            for (const item of earned) {
+              analyticsManager.trackEvent('achievement_unlocked', {
+                achievement_id: item.id || item.key || item.title,
+                bonus_credits: item.bonusCredits || 0,
+              });
+            }
           }
           if (totalBonusCredits > 0) {
             playerSave.credits = (Number(playerSave.credits) || 0) + totalBonusCredits;
@@ -270,8 +287,22 @@ function initApp() {
         if (prevStatus === GameStatus.PLAYING) {
           state.adRewardClaimed = false;
           state.adRewardFeedback = '';
+          const outcome = isVictory ? 'victory' : 'defeat';
+          const durationSec = missionStartedAt > 0
+            ? Math.max(0, Math.round((performance.now() - missionStartedAt) / 1000))
+            : undefined;
+          analyticsManager.trackEvent('mission_end', {
+            outcome,
+            mode: snapshot.gameMode,
+            sector_id: snapshot.sectorId,
+            kills: snapshot.kills,
+            accuracy: acc,
+            duration_sec: durationSec,
+            reason: snapshot.gameOverReason || (isVictory ? 'cleared' : 'defeat'),
+            wave: snapshot.survivalWave || undefined,
+          });
           adManager.onBattleEnd({
-            outcome: snapshot.status === GameStatus.VICTORY ? 'victory' : 'defeat',
+            outcome,
             mode: snapshot.gameMode,
             sectorId: snapshot.sectorId,
           });
@@ -499,10 +530,12 @@ function cycleCameraPreset() {
   state.cameraZoom = null;
   savePreferences();
   engine?.setCameraPreset(next);
+  analyticsManager.trackEvent('setting_change', { setting: 'camera_preset', value: next });
   renderUI(true);
 }
 
 let startingSector = false;
+let missionStartedAt = 0;
 
 async function startSector(sectorIndex) {
   if (startingSector) return;
@@ -537,10 +570,17 @@ async function startSector(sectorIndex) {
     engine?.setInspectMode(false);
     await engine?.waitForSectorModels?.(sectorIndex);
     engine?.startSector(sectorIndex);
+    missionStartedAt = performance.now();
+    analyticsManager.trackEvent('mission_start', {
+      mode: targetSector.gameMode,
+      sector_id: sectorIndex,
+      map_id: targetSector.mapId,
+    });
     if (document.body?.dataset?.page === 'battlefield') {
       const targetUrl = battlefieldUrlForSector(targetSector);
       if (`${location.pathname}${location.search}` !== targetUrl) {
         history.replaceState(null, '', targetUrl);
+        analyticsManager.trackPageView(targetUrl);
       }
     }
     renderUI(true);

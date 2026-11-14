@@ -44,6 +44,7 @@ import { TileBatcher } from '../render/tile-batcher.js';
 import { autoDisposeOwned, disposeOwned } from '../render/dispose.js';
 import { FxSystem, createProjectileVisual } from '../effects/index.js';
 import { sound } from '../sound.js';
+import { analyticsManager } from '../../app/analyticsManager.js';
 import { ARMOR_PANEL_CATALOG, TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
 import { resolveAssembledTank, SaveRepository, settleMission } from '../../sim/hangar.js';
@@ -228,6 +229,11 @@ export class TankGameEngine {
       gl.getExtension('WEBGL_lose_context')?.loseContext();
       return /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(gpu);
     })();
+    analyticsManager.trackEvent('webgl_profile', {
+      is_software_gl: this.isSoftwareGl,
+      quality: this.quality,
+      fps_cap: this.fpsCap,
+    });
 
     this.renderer = new THREE.WebGLRenderer({
       antialias: !this.isSoftwareGl && QUALITY_PRESETS[this.quality].antialias,

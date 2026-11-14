@@ -10,6 +10,7 @@ import {
 import { GameStatus, TileType } from '../types.js';
 import { HangarStage } from '../render/hangar-stage.js';
 import { sound } from '../sound.js';
+import { analyticsManager } from '../../app/analyticsManager.js';
 import {
   COMPONENT_TRACKS,
   COMPONENT_DAMAGE_COOLDOWN,
@@ -262,6 +263,12 @@ export class HangarOps {
 
   abortMissionToHangar() {
     const e = this.engine;
+    if (e.status === GameStatus.PLAYING) {
+      analyticsManager.trackEvent('mission_abort', {
+        mode: e.survivalState ? 'survival' : (e.activeMissionRun?.mode || 'campaign'),
+        sector_id: e.currentSectorIndex,
+      });
+    }
     if (e.survivalState) {
       const campaignSave = e.campaignSaveRepo?.loadPlayerSave();
       if (campaignSave && !e.survivalState.recordSummary) {
