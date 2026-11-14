@@ -33,7 +33,10 @@ export function renderBattlefieldLoaderHtml() {
   `;
 }
 
+const SHOW_REWARDED_AD_SLOT = false;
+
 function renderRewardedAdSlot(state) {
+  if (!SHOW_REWARDED_AD_SLOT) return '';
   if (state.adRewardClaimed) {
     return `<div class="mb-4 px-3 py-2 rounded border border-emerald-500/40 bg-emerald-950/30 font-mono text-xs text-emerald-300">${state.adRewardFeedback || '+$150 BONUS CREDITS AWARDED'}</div>`;
   }
@@ -58,7 +61,9 @@ function getRarityClass(rarity) {
 }
 
 function renderBattleAchievementsSection(state) {
-  const earned = Array.isArray(state.battleAchievements) ? state.battleAchievements : [];
+  const earned = (Array.isArray(state.battleAchievements) ? state.battleAchievements : []).filter(
+    (ach) => ach?.isNew
+  );
   const bonus = Number(state.achievementBonusCredits) || 0;
   const allMedalsBtn = `
     <button
@@ -77,7 +82,7 @@ function renderBattleAchievementsSection(state) {
           <span class="battle-ach-kicker">ACHIEVEMENTS</span>
           ${allMedalsBtn}
         </div>
-        <p class="battle-ach-desc">No medals earned this sortie.</p>
+        <p class="battle-ach-desc">No new medals earned this sortie.</p>
       </div>
     `;
   }
@@ -254,7 +259,6 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
             ${RIVETS_HTML}${ICON_TANK}<span>REPLAY CONTRACT</span>${ICON_CHEVRONS}
           </button>
           <button class="battle-btn-secondary" data-action="return-contracts">${RIVETS_HTML}<span>Contracts</span></button>
-          <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ GARAGE [U]</span></button>
         </div>
       </div>
     `;
@@ -311,7 +315,6 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
           ${RIVETS_HTML}${ICON_TANK}<span>${nextBtnLabel}</span>${ICON_CHEVRONS}
         </button>
         <button class="battle-btn-secondary" data-action="return-campaign">${RIVETS_HTML}<span>Campaign map</span></button>
-        <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ GARAGE [U]</span></button>
       </div>
     </div>
   `;
@@ -427,7 +430,6 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
           ${RIVETS_HTML}${ICON_TANK}<span>${isContract ? 'RETRY CONTRACT' : 'RETRY SECTOR'}</span>${ICON_CHEVRONS}
         </button>
         <button class="battle-btn-secondary" data-action="${isContract ? 'return-contracts' : 'return-campaign'}">${RIVETS_HTML}<span>${isContract ? 'Contracts' : 'Campaign map'}</span></button>
-        <button class="battle-btn-secondary" data-action="toggle-upgrades">${RIVETS_HTML}<span>⚙ GARAGE [U]</span></button>
       </div>
     </div>
   `;
