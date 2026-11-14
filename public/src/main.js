@@ -39,6 +39,7 @@ import { renderContractHud } from './ui/contract-hud.js';
 import { renderBattlefieldHud } from './ui/battle-hud.js';
 import { renderBattlefieldLoaderHtml, renderStatusModal } from './ui/status-modal.js';
 import { setupDelegatedEvents } from './ui/battle-events.js';
+import { TouchControlsOverlay, isTouchCapable } from './ui/touch-controls.js';
 import {
   evaluateBattleAchievements,
   recordUnlockedAchievements,
@@ -64,6 +65,7 @@ const state = {
   soundEnabled: true,
   graphicsQuality: 'high',
   fpsCap: 60,
+  touchControlsMode: 'auto',
   hudCollapsed: false,
   showUpgradeDrawer: false,
   hangarTrack: 'cannon',
@@ -164,6 +166,7 @@ state.cameraPreset = initialPrefs.cameraPreset;
 state.cameraZoom = initialPrefs.cameraZoom;
 state.graphicsQuality = initialPrefs.graphicsQuality;
 state.fpsCap = initialPrefs.fpsCap;
+state.touchControlsMode = initialPrefs.touchControlsMode;
 
 function savePreferences() {
   persistPreferences({
@@ -172,10 +175,13 @@ function savePreferences() {
     cameraZoom: state.cameraZoom,
     graphicsQuality: state.graphicsQuality,
     fpsCap: state.fpsCap,
+    touchControlsMode: state.touchControlsMode,
   });
 }
 
 let engine = null;
+let touchDetected = isTouchCapable();
+let touchControls = null;
 let resolveEngineReady;
 const engineReady = new Promise((resolve) => (resolveEngineReady = resolve));
 
@@ -199,6 +205,7 @@ function initApp() {
       <div id="modifiers-strip" class="fixed top-64 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
       <div id="upgrade-drawer" class="hidden hangar-shell" role="dialog" aria-modal="true" aria-label="Vehicle maintenance garage"></div>
       <footer id="bottom-hud" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-20 w-[min(1120px,96vw)] bg-[#0B0F17]/95 border border-slate-700/70 px-5 py-3 rounded shadow-2xl flex flex-wrap items-center justify-between gap-4"></footer>
+      <div id="touch-controls" class="hidden touch-controls-layer" aria-hidden="true"></div>
       <div id="status-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center bg-black/75 p-4"></div>
     </div>
   `;
@@ -212,6 +219,17 @@ function initApp() {
   }
 
   const mountEl = document.getElementById('canvas-mount');
+  touchControls = new TouchControlsOverlay(document.getElementById('touch-controls'), () => engine);
+  window.addEventListener(
+    'pointerdown',
+    (e) => {
+      if (e.pointerType === 'touch' && !touchDetected) {
+        touchDetected = true;
+        renderUI();
+      }
+    },
+    { passive: true }
+  );
   analyticsManager.init({
     defaultParams: { page: state.menuPage },
   });
@@ -397,6 +415,7 @@ function initApp() {
     state.cameraPreset = prefs.cameraPreset;
     state.graphicsQuality = prefs.graphicsQuality;
     state.fpsCap = prefs.fpsCap;
+    state.touchControlsMode = prefs.touchControlsMode;
     engine?.setCameraPreset(prefs.cameraPreset);
     engine?.setQuality(prefs.graphicsQuality);
     engine?.setFpsCap(prefs.fpsCap);
@@ -600,12 +619,25 @@ function renderHangarAndWorkshopDrawer(hud, upgrades) {
   }
 }
 
+function syncTouchControlsVisibility(hud) {
+  if (!touchControls) return;
+  const mode = state.touchControlsMode || 'auto';
+  const enabled = mode === 'on' || (mode === 'auto' && touchDetected);
+  const show =
+    enabled &&
+    hud?.status === GameStatus.PLAYING &&
+    !state.showUpgradeDrawer &&
+    !engine?.isAdPaused;
+  touchControls.sync(Boolean(show), hud);
+}
+
 function renderUI(forceModals = false) {
   if (forceModals && !routePendingEngine) {
     const route = routeFromState();
     if (route) syncRoute(route);
   }
   const { hud, upgrades } = state;
+  syncTouchControlsVisibility(hud);
   const currentSector = SECTORS[hud.sectorId] || SECTORS[0];
   const accuracy =
     hud.shotsFired > 0 ? Math.round((hud.shotsHit / hud.shotsFired) * 100) : 100;

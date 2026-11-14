@@ -489,15 +489,15 @@ export class PlayerController {
       ? { ...TERRAIN_SURFACES.sand, label: 'Scorched Sand', speedMultiplier: 0.78 }
       : terrainSample.surface;
 
-    let inFwd = 0;
-    let inRight = 0;
+    let inFwd = Number(engine.touchMoveY) || 0;
+    let inRight = Number(engine.touchMoveX) || 0;
     if (engine.keys['KeyW'] || engine.keys['ArrowUp']) inFwd += 1;
     if (engine.keys['KeyS'] || engine.keys['ArrowDown']) inFwd -= 1;
     if (engine.keys['KeyA'] || engine.keys['ArrowLeft']) inRight -= 1;
     if (engine.keys['KeyD'] || engine.keys['ArrowRight']) inRight += 1;
 
     const len = Math.hypot(inFwd, inRight);
-    if (len > 0) {
+    if (len > 1) {
       inFwd /= len;
       inRight /= len;
     }

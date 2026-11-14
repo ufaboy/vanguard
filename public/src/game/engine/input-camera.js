@@ -10,6 +10,29 @@ const _intersectPoint = new THREE.Vector3();
 export class InputCameraController {
   constructor(engine) {
     this.engine = engine;
+    this.activeCanvasTouches = new Map();
+    this.pinchPrevDist = null;
+  }
+
+  getPinchDistance() {
+    if (this.activeCanvasTouches.size < 2) return null;
+    const pts = [...this.activeCanvasTouches.values()];
+    return Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+  }
+
+  updateAimFromPointer(e) {
+    const { engine } = this;
+    const rect = engine.renderer.domElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    engine.mouseNdc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    engine.mouseNdc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+    engine.raycaster.setFromCamera(engine.mouseNdc, engine.camera);
+    if (engine.raycaster.ray.intersectPlane(_plane, _intersectPoint)) {
+      const limit = (GRID_SIZE * TILE_SIZE) / 2 - 1.2;
+      engine.aimWorld.x = THREE.MathUtils.clamp(_intersectPoint.x, -limit, limit);
+      engine.aimWorld.z = THREE.MathUtils.clamp(_intersectPoint.z, -limit, limit);
+    }
   }
 
   bindEvents() {
@@ -61,6 +84,21 @@ export class InputCameraController {
     engine.handlePointerMove = (e) => {
       if (engine.isHangarOpen) return;
 
+      if (e.pointerType === 'touch' && this.activeCanvasTouches.has(e.pointerId)) {
+        this.activeCanvasTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (this.activeCanvasTouches.size >= 2) {
+          const dist = this.getPinchDistance();
+          if (dist !== null && this.pinchPrevDist !== null) {
+            const delta = (this.pinchPrevDist - dist) * 0.06;
+            engine.frustumSize = THREE.MathUtils.clamp(engine.frustumSize + delta, 14, 46);
+            engine.handleResize();
+            engine.onCameraZoomChange?.(engine.frustumSize);
+          }
+          this.pinchPrevDist = dist;
+          return;
+        }
+      }
+
       if (engine.cameraRotating) {
         const dx = e.clientX - engine.cameraDragPrevX;
         engine.cameraDragPrevX = e.clientX;
@@ -68,20 +106,25 @@ export class InputCameraController {
         return;
       }
 
-      const rect = engine.renderer.domElement.getBoundingClientRect();
-      engine.mouseNdc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      engine.mouseNdc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-      engine.raycaster.setFromCamera(engine.mouseNdc, engine.camera);
-      if (engine.raycaster.ray.intersectPlane(_plane, _intersectPoint)) {
-        const limit = (GRID_SIZE * TILE_SIZE) / 2 - 1.2;
-        engine.aimWorld.x = THREE.MathUtils.clamp(_intersectPoint.x, -limit, limit);
-        engine.aimWorld.z = THREE.MathUtils.clamp(_intersectPoint.z, -limit, limit);
+      if (e.pointerType === 'touch' && engine.activeAimPointerId !== e.pointerId) {
+        return;
       }
+
+      this.updateAimFromPointer(e);
     };
 
     engine.handlePointerDown = (e) => {
       if (engine.isHangarOpen) return;
+
+      if (e.pointerType === 'touch') {
+        this.activeCanvasTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (this.activeCanvasTouches.size >= 2) {
+          this.pinchPrevDist = this.getPinchDistance();
+          engine.isMouseDown = false;
+          engine.activeAimPointerId = null;
+          return;
+        }
+      }
 
       if (e.button === 1 || (e.button === 0 && e.altKey)) {
         e.preventDefault();
@@ -90,7 +133,7 @@ export class InputCameraController {
         return;
       }
 
-      engine.handlePointerMove(e);
+      this.updateAimFromPointer(e);
       if (engine.status !== GameStatus.PLAYING || engine.isAdPaused) return;
 
       if (e.button === 2) {
@@ -119,15 +162,25 @@ export class InputCameraController {
           engine.firePlayerHomingMissile();
         }
       } else if (e.button === 0) {
+        engine.activeAimPointerId = e.pointerId;
         engine.isMouseDown = true;
         engine.tryPlayerFire();
       }
     };
 
     engine.handlePointerUp = (e) => {
-      if (e.button === 0) {
-        engine.isMouseDown = false;
-        engine.cameraRotating = false;
+      if (e.pointerType === 'touch') {
+        this.activeCanvasTouches.delete(e.pointerId);
+        if (this.activeCanvasTouches.size < 2) {
+          this.pinchPrevDist = null;
+        }
+      }
+      if (e.pointerId === engine.activeAimPointerId || e.button === 0) {
+        if (e.pointerId === engine.activeAimPointerId || e.pointerType !== 'touch') {
+          engine.isMouseDown = false;
+          engine.activeAimPointerId = null;
+          engine.cameraRotating = false;
+        }
       } else if (e.button === 1) {
         engine.cameraRotating = false;
       }
@@ -167,10 +220,12 @@ export class InputCameraController {
     }
 
     const canvas = engine.renderer.domElement;
+    canvas.style.touchAction = 'none';
     canvas.addEventListener('pointermove', engine.handlePointerMove);
     canvas.addEventListener('pointerdown', engine.handlePointerDown);
     canvas.addEventListener('wheel', engine.handleWheel, { passive: false });
     window.addEventListener('pointerup', engine.handlePointerUp);
+    window.addEventListener('pointercancel', engine.handlePointerUp);
     engine.handleContextMenu = (e) => e.preventDefault();
     canvas.addEventListener('contextmenu', engine.handleContextMenu);
   }

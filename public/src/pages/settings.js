@@ -1,5 +1,6 @@
-/** Settings screen: audio, graphics quality, frame-rate cap and camera preferences. */
+/** Settings screen: audio, graphics quality, frame-rate cap, camera and touch preferences. */
 const QUALITY_LABELS = Object.freeze({ low: 'Low', medium: 'Medium', high: 'High' });
+const TOUCH_MODE_LABELS = Object.freeze({ auto: 'Auto', on: 'Always On', off: 'Off' });
 
 function settingRow(heading, description, button) {
   return `<div class="menu-settings"><div><h2>${heading}</h2><p>${description}</p></div>${button}</div>`;
@@ -15,5 +16,7 @@ export function renderSettings(state, cameraLabels) {
       `<button class="menu-secondary" data-action="cycle-fps">Frame rate: ${state.fpsCap ? `${state.fpsCap} FPS` : 'Unlimited'} ↻</button>`),
     settingRow('Camera view', 'Choose your starting perspective. Press C during combat to cycle views.',
       `<button class="menu-secondary" data-action="cycle-camera">${cameraLabels[state.cameraPreset]} ↻</button>`),
+    settingRow('Tablet touch controls', 'On-screen virtual joystick and fire buttons for landscape tablets. Auto enables on touch devices.',
+      `<button class="menu-secondary" data-action="cycle-touch-controls">Touch: ${TOUCH_MODE_LABELS[state.touchControlsMode] || 'Auto'} ↻</button>`),
   ].join('')}`;
 }
