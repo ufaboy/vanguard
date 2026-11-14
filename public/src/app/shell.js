@@ -2,6 +2,7 @@ import { CAMERA_LABELS, FPS_CAP_OPTIONS, loadPreferences, savePreferences } from
 import { renderSettings } from '../pages/settings.js';
 import { sound } from '../game/sound.js';
 import { attachAchievementsModal } from '../ui/achievements-modal.js';
+import { analyticsManager } from './analyticsManager.js';
 
 /** Attaches a lightweight Settings modal handler to any page root. */
 export function attachSettingsModal(root, onSettingsChange = null) {
@@ -51,6 +52,12 @@ export function attachSettingsModal(root, onSettingsChange = null) {
   root.addEventListener('click', (event) => {
     if (event.target.closest('[data-action="open-settings"]')) {
       openModal();
+      return;
+    }
+    const ctaLink = event.target.closest('a[href]');
+    const href = ctaLink?.getAttribute('href') || '';
+    if (/^\/?(campaign|contracts|survival|battlefield)/.test(href)) {
+      analyticsManager.trackEvent('cta_click', { target: href.replace(/^\.\//, '') });
     }
   });
 
@@ -62,20 +69,31 @@ export function attachSettingsModal(root, onSettingsChange = null) {
     const actionEl = event.target.closest('[data-action]');
     if (!actionEl) return;
     const action = actionEl.dataset.action;
+    let settingName = '';
+    let settingValue = '';
     if (action === 'toggle-sound') {
       prefs.soundEnabled = !prefs.soundEnabled;
       sound.enabled = prefs.soundEnabled;
+      settingName = 'sound';
+      settingValue = prefs.soundEnabled;
     } else if (action === 'cycle-quality') {
       const order = ['high', 'medium', 'low'];
       prefs.graphicsQuality = order[(order.indexOf(prefs.graphicsQuality) + 1) % order.length];
+      settingName = 'quality';
+      settingValue = prefs.graphicsQuality;
     } else if (action === 'cycle-fps') {
       prefs.fpsCap = FPS_CAP_OPTIONS[(FPS_CAP_OPTIONS.indexOf(prefs.fpsCap) + 1) % FPS_CAP_OPTIONS.length];
+      settingName = 'fps_cap';
+      settingValue = prefs.fpsCap;
     } else if (action === 'cycle-camera') {
       const order = ['ISOMETRIC', 'TACTICAL_HIGH', 'CLOSE_COMBAT'];
       prefs.cameraPreset = order[(order.indexOf(prefs.cameraPreset) + 1) % order.length];
+      settingName = 'camera_preset';
+      settingValue = prefs.cameraPreset;
     } else {
       return;
     }
+    analyticsManager.trackEvent('setting_change', { setting: settingName, value: settingValue });
     savePreferences(prefs);
     renderModal();
     if (onSettingsChange) onSettingsChange(prefs);

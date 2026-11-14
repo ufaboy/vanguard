@@ -31,6 +31,7 @@ import {
 import { createMissileVisual } from '../effects/index.js';
 import { GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
+import { analyticsManager } from '../../app/analyticsManager.js';
 import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';
 import { EnemyClass, TANK_CONFIGS, TileType, checkMapVictory } from '../types.js';
@@ -857,6 +858,12 @@ export class EnemyCombatController {
       engine.fx.tankDestroyed(enemy.x, enemy.z, { boss: enemy.isBoss });
       sound.playExplosion(enemy.isBoss ? 2.0 : 1.7, { x: enemy.x, z: enemy.z });
       engine.checkAndIgniteForestOnEnemyKill(enemy);
+      if (enemy.isBoss) {
+        analyticsManager.trackEvent('boss_defeated', {
+          boss_id: enemy.enemyClass,
+          sector_id: engine.currentSectorIndex,
+        });
+      }
 
       if (engine.survivalState) {
         if (enemy.isBoss) {

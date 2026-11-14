@@ -3,6 +3,7 @@
  * Handles battle-end interstitials, level transitions, and voluntary rewarded ads
  * while guaranteeing game control and audio restoration even when ads are unavailable.
  */
+import { analyticsManager } from './analyticsManager.js';
 
 const DEFAULT_COOLDOWN_MS = 30000;
 const DEFAULT_UNAVAILABLE_TIMEOUT_MS = 1200;
@@ -111,6 +112,11 @@ export class AdManager {
         }
         ensureResumed();
         this.isShowingAd = false;
+        analyticsManager.trackEvent('ad_break_result', {
+          placement: config?.type || 'unknown',
+          name: config?.name || 'unknown',
+          status,
+        });
         resolve({
           shown: status === 'viewed',
           rewarded,
