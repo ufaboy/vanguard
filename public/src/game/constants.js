@@ -95,7 +95,9 @@ export const APS = Object.freeze({
 export const CANNON_AMMO = Object.freeze({
   START_ROUNDS: 15, // Default shells available upon fresh start
   MAX_AMMO_BY_FRAME: Object.freeze([15, 22, 30, 40, 50]), // Max cannon shell capacity per Frame tier 1..5
-  PICKUP_AMMO: 6, // Shells replenished upon collecting an AMMO power-up from a BOX cache
+  PICKUP_MIN: 3, // Minimum cannon shells replenished from an AMMO power-up
+  PICKUP_MAX: 7, // Maximum cannon shells replenished from an AMMO power-up
+  PICKUP_AMMO: 5, // Expected average shells used for usefulness checks
   CREDIT_PRICE_PER_PACK: 150, // Credit cost in Hangar per ammunition pack
   SHELLS_PER_PACK: 5, // Shells added per Hangar pack purchase
   BASE_REARM_CAP: 5, // Free emergency shell cap replenished while parked in the Command Base repair zone

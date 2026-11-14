@@ -128,9 +128,12 @@ export class PowerupsController {
 
       case POWERUP.AMMO: {
         const maxShells = engine.getPlayerMaxCannonAmmo();
-        engine.cannonAmmo = Math.min(maxShells, engine.cannonAmmo + CANNON_AMMO.PICKUP_AMMO);
+        const minShells = CANNON_AMMO.PICKUP_MIN ?? 3;
+        const maxDrop = CANNON_AMMO.PICKUP_MAX ?? 7;
+        const shells = minShells + Math.floor(Math.random() * (maxDrop - minShells + 1));
+        engine.cannonAmmo = Math.min(maxShells, engine.cannonAmmo + shells);
         engine.setStatusBanner(
-          `AMMO CRATE COLLECTED: +${CANNON_AMMO.PICKUP_AMMO} SHELLS (${engine.cannonAmmo}/${maxShells})`,
+          `AMMO CRATE COLLECTED: +${shells} SHELLS (${engine.cannonAmmo}/${maxShells})`,
           2.5
         );
         break;

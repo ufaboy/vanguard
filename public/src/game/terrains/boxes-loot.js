@@ -1,6 +1,7 @@
 import { POWERUP, POWERUP_DROP_TYPES } from '../powerups.js';
 
-export const BOX_POWERUP_DROP_CHANCE = 0.50;
+export const BOX_POWERUP_DROP_CHANCE = 1;
+export const BOX_AMMO_DROP_CHANCE = 0.50;
 
 /** One shuffled bag per match, replenished only after every entry has been drawn. */
 export class BoxPowerUpPool {
@@ -38,11 +39,15 @@ export class BoxPowerUpPool {
   }
 }
 
-/** An empty BOX roll must not consume an entry from the match's bag. */
+/** Roll BOX loot: 100% HQ Restore when base is destroyed, else 50% AMMO / 50% equal other power-ups. */
 export function rollBoxLoot(pool, random = Math.random, state = null) {
-  if (random() >= BOX_POWERUP_DROP_CHANCE) return null;
-  if (!state) return pool.draw();
-  const needsRestore = state.baseAlive === false &&
-    !state.powerUps.some(item => item.type === POWERUP.BASE_RESTORE);
-  return pool.draw(needsRestore ? POWERUP.BASE_RESTORE : null, [POWERUP.BASE_RESTORE]);
+  const needsRestore = state?.baseAlive === false &&
+    !(state.powerUps || []).some(item => item.type === POWERUP.BASE_RESTORE);
+  if (needsRestore) {
+    return pool.draw(POWERUP.BASE_RESTORE, [POWERUP.BASE_RESTORE]);
+  }
+  if (random() < BOX_AMMO_DROP_CHANCE) {
+    return POWERUP.AMMO;
+  }
+  return pool.draw(null, [POWERUP.BASE_RESTORE, POWERUP.AMMO]);
 }

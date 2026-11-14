@@ -113,14 +113,14 @@ export const POWERUP_TYPES = Object.freeze({
   [POWERUP.AMMO]: Object.freeze({
     id: POWERUP.AMMO,
     code: 'AMMO',
-    name: 'Cannon Shells (+6)',
+    name: 'Cannon Shells (+3–7)',
     role: 'Ammunition Crate',
     duration: 0,
     effect: POWERUP_EFFECT.AMMO,
     colorHex: 0xf59e0b,
     accentHex: '#f59e0b',
     description:
-      'Replenishes +6 cannon rounds for the main gun (capped by Frame tier capacity 15..50).',
+      'Replenishes 3 to 7 cannon rounds for the main gun (capped by Frame tier capacity 15..50).',
     specs: Object.freeze([
       Object.freeze({ label: 'CRATE CODE', value: 'AMMO' }),
       Object.freeze({ label: 'EFFECT DURATION', value: 'Instant / Permanent' }),

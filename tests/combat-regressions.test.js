@@ -120,7 +120,7 @@ test('Successful BOX roll yields one supply after the final player hit and ignor
   finally { Math.random = originalRandom; }
   assert.equal(cell.type, TileType.EMPTY);
   assert.equal(engine.drops, 1);
-  assert.deepEqual(engine.lastDrop, { type: 'repair', x: 8, z: 6 });
+  assert.deepEqual(engine.lastDrop, { type: 'ammo', x: 8, z: 6 });
   assert.equal(engine.playerSave.credits, 0);
 });
 

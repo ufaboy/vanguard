@@ -305,10 +305,10 @@ export const SURFACE_CONFIGS = Object.freeze({
     accentHex: '#B8874F', destructible: true, maxHP: 2,
     normalShellDamage: 1, heavyShellDamage: 1, artilleryDamage: 1,
     passableByTracks: false, passableByHover: false, blocksProjectiles: true,
-    description: `Four wooden supply crates form one cache. Each cannon hit breaks two crates; two hits open the cache with a ${Math.round(BOX_POWERUP_DROP_CHANCE * 100)}% chance to release one random field Power-Up from the match pool at its location. Ordinary supplies draw without replacement; exhausted pools reshuffle without adjacent repeats. HQ reconstruction takes emergency priority while the base is destroyed and no kit is pending. Drive over the bonus to collect it, or leave it for later: it never expires during the mission. Boxes contain no credits. Crates broken by enemy fire are lost. Player missiles fly over the crates.`,
+    description: `Four wooden supply crates form one cache. Each cannon hit breaks two crates; two hits open the cache with a ${Math.round(BOX_POWERUP_DROP_CHANCE * 100)}% chance to release one field Power-Up at its location: HQ Restore (100% while the base is destroyed and no kit is pending), otherwise 50% Cannon Shells (+3-7) and 50% divided equally among REPAIR, EMP, APS, and MISSILE. Drive over the bonus to collect it, or leave it for later: it never expires during the mission. Boxes contain no credits. Crates broken by enemy fire are lost. Player missiles fly over the crates.`,
     specs: Object.freeze([
       Object.freeze({ label: 'DURABILITY', value: '2 hits / 4 crates' }),
-      Object.freeze({ label: 'CONTENTS', value: `${Math.round(BOX_POWERUP_DROP_CHANCE * 100)}% chance of a random Power-Up` }),
+      Object.freeze({ label: 'CONTENTS', value: `${Math.round(BOX_POWERUP_DROP_CHANCE * 100)}% Power-Up (50% AMMO / 50% other)` }),
       Object.freeze({ label: 'COVER', value: 'Blocks tanks and direct fire until cleared' }),
     ]),
   }),
