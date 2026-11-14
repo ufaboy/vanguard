@@ -75,14 +75,15 @@ export function renderBattlefieldHud({
     `);
   }
 
-  // 1b. Top-Center Live Compass
+  // 1b. Top-Center Live Compass (quantized to 2° steps to avoid redundant DOM rebuilds)
   if (topCompass) {
+    const compassHeading = Math.round(turretAzimuthDeg / 2) * 2;
     const compassLabels = { 0: 'N', 45: 'NE', 90: 'E', 135: 'SE', 180: 'S', 225: 'SW', 270: 'W', 315: 'NW' };
     const ticks = [];
     for (let offset = -75; offset <= 75; offset += 15) {
-      const snapped = Math.round((turretAzimuthDeg + offset) / 15) * 15;
+      const snapped = Math.round((compassHeading + offset) / 15) * 15;
       const deg = ((snapped % 360) + 360) % 360;
-      const diff = snapped - turretAzimuthDeg;
+      const diff = snapped - compassHeading;
       const pct = 50 + (diff / 150) * 100;
       if (pct < 4 || pct > 96) continue;
       const lbl = compassLabels[deg] || (deg % 30 === 0 ? String(deg).padStart(3, '0') : '');
