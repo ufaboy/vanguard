@@ -43,12 +43,21 @@ export function loadUpgrades() {
   return defaults;
 }
 
+export function isMobileOrTabletDevice() {
+  if (typeof window === 'undefined') return false;
+  const coarse = Boolean(window.matchMedia?.('(pointer: coarse)')?.matches);
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+  const mobileUa = /Android|iPad|iPhone|iPod|Tablet/i.test(ua);
+  const hasTouch = typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0;
+  return mobileUa || (coarse && hasTouch);
+}
+
 export function loadPreferences() {
   const prefs = {
     soundEnabled: true,
     cameraPreset: 'ISOMETRIC',
     cameraZoom: null,
-    graphicsQuality: 'high',
+    graphicsQuality: isMobileOrTabletDevice() ? 'low' : 'high',
     fpsCap: 60,
     touchControlsMode: 'auto',
   };

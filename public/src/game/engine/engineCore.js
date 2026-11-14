@@ -49,11 +49,11 @@ import { ARMOR_PANEL_CATALOG, TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
 import { getSafeStorage, resolveAssembledTank, SaveRepository, settleMission } from '../../sim/hangar.js';
 
-/** Graphics quality presets. Pixel ratio, shadows and particle budget apply immediately;. */
+/** Graphics quality presets. Pixel ratio, shadows, IBL and particle budget apply immediately. */
 export const QUALITY_PRESETS = Object.freeze({
-  low: { label: 'Low', pixelRatio: 1, shadows: false, fx: 0.55, antialias: false, physicalWater: false },
-  medium: { label: 'Medium', pixelRatio: 1.5, shadows: true, fx: 0.8, antialias: true, physicalWater: false },
-  high: { label: 'High', pixelRatio: 2, shadows: true, fx: 1, antialias: true, physicalWater: true },
+  low: { label: 'Low', pixelRatio: 1, shadows: false, fx: 0.45, antialias: false, physicalWater: false, envLighting: false },
+  medium: { label: 'Medium', pixelRatio: 1.5, shadows: true, fx: 0.8, antialias: true, physicalWater: false, envLighting: true },
+  high: { label: 'High', pixelRatio: 2, shadows: true, fx: 1, antialias: true, physicalWater: true, envLighting: true },
 });
 const IDLE_SCREEN_FPS = 15;
 /** Half-amplitude (radians) of the KAMIKAZE zigzag during its final charge. */
@@ -238,17 +238,18 @@ export class TankGameEngine {
       fps_cap: this.fpsCap,
     });
 
+    const initialPreset = QUALITY_PRESETS[this.quality];
     this.renderer = new THREE.WebGLRenderer({
-      antialias: !this.isSoftwareGl && QUALITY_PRESETS[this.quality].antialias,
+      antialias: !this.isSoftwareGl && initialPreset.antialias,
       powerPreference: 'high-performance',
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.12;
     this.renderer.setPixelRatio(
-      this.isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2)
+      this.isSoftwareGl ? 1 : Math.min(window.devicePixelRatio || 1, initialPreset.pixelRatio)
     );
-    this.renderer.shadowMap.enabled = !this.isSoftwareGl;
+    this.renderer.shadowMap.enabled = !this.isSoftwareGl && initialPreset.shadows;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.setSize(
       container.clientWidth || window.innerWidth,
@@ -261,12 +262,10 @@ export class TankGameEngine {
     this.scene.background = new THREE.Color(0x0b1120);
     this.scene.fog = new THREE.FogExp2(0x0b1120, 0.012);
 
-    const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
-    this.scene.environment = pmremGenerator.fromScene(
-      new RoomEnvironment(),
-      0.04
-    ).texture;
-    pmremGenerator.dispose();
+    this._envTexture = null;
+    if (initialPreset.envLighting) {
+      this.scene.environment = this._getEnvTexture();
+    }
 
     const aspect =
       (container.clientWidth || window.innerWidth) /
@@ -365,6 +364,16 @@ export class TankGameEngine {
     this.applyQuality();
   }
 
+  /** Lazily generates and caches the PMREM environment texture for IBL-enabled presets. */
+  _getEnvTexture() {
+    if (!this._envTexture) {
+      const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+      this._envTexture = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+      pmremGenerator.dispose();
+    }
+    return this._envTexture;
+  }
+
   applyQuality() {
     const preset = QUALITY_PRESETS[this.quality];
     const pixelRatio = this.isSoftwareGl ? 1 : Math.min(window.devicePixelRatio || 1, preset.pixelRatio);
@@ -380,7 +389,14 @@ export class TankGameEngine {
           m.needsUpdate = true;
         });
       });
+    } else if (this.keyLight) {
+      this.keyLight.castShadow = shadows;
     }
+
+    const useEnv = Boolean(preset.envLighting);
+    this.scene.environment = useEnv ? this._getEnvTexture() : null;
+    if (this.hemiLight) this.hemiLight.intensity = useEnv ? 0.78 : 1.15;
+    if (this.explosionLight) this.explosionLight.visible = useEnv;
 
     const fxScale = this.isSoftwareGl ? Math.min(0.55, preset.fx) : preset.fx;
     if (this.fx) this.fx.q = fxScale;
@@ -898,7 +914,7 @@ export class TankGameEngine {
     this.fx.update(dt, this.camera, this.renderer);
 
     this.hudSyncAccumulator += dt;
-    const hudInterval = this.status === GameStatus.PLAYING ? 0.12 : 0.5;
+    const hudInterval = this.status === GameStatus.PLAYING ? (this.quality === 'low' ? 0.2 : 0.12) : 0.5;
     if (this.hudSyncAccumulator >= hudInterval) {
       this.hudSyncAccumulator = 0;
       this.emitHudUpdate();
@@ -1310,6 +1326,8 @@ export class TankGameEngine {
     this.clearGroup(this.fxGroup);
     this.fx?.clear();
 
+    this._envTexture?.dispose();
+    this._envTexture = null;
     this.urbanGroundTexture?.dispose();
     if (this.perimeterMesh) {
       this.perimeterMesh.traverse(node => { if (node.isInstancedMesh) node.dispose(); });

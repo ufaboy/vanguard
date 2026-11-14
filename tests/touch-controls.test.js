@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TOUCH_CONTROLS_MODES } from '../public/src/app/state.js';
+import { TOUCH_CONTROLS_MODES, isMobileOrTabletDevice, loadPreferences } from '../public/src/app/state.js';
 import { TouchControlsOverlay } from '../public/src/ui/touch-controls.js';
 
 function createMockElement() {
@@ -73,4 +73,26 @@ test('TouchControlsOverlay maps joystick movement with deadzone and resets when 
   assert.equal(engine.touchMoveX, 0);
   assert.equal(engine.touchMoveY, 0);
   assert.equal(engine.isMouseDown, false);
+});
+
+test('isMobileOrTabletDevice defaults graphicsQuality to low on Android tablets', () => {
+  const origWindow = globalThis.window;
+  const origNavigator = globalThis.navigator;
+  try {
+    assert.equal(isMobileOrTabletDevice(), false);
+    assert.equal(loadPreferences().graphicsQuality, 'high');
+
+    globalThis.window = { matchMedia: () => ({ matches: true }) };
+    Object.defineProperty(globalThis, 'navigator', {
+      configurable: true,
+      value: { userAgent: 'Mozilla/5.0 (Linux; Android 13; SM-P613)', maxTouchPoints: 5 },
+    });
+    assert.equal(isMobileOrTabletDevice(), true);
+    assert.equal(loadPreferences().graphicsQuality, 'low');
+  } finally {
+    globalThis.window = origWindow;
+    if (origNavigator !== undefined) {
+      Object.defineProperty(globalThis, 'navigator', { configurable: true, value: origNavigator });
+    }
+  }
 });
