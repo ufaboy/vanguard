@@ -62,11 +62,24 @@ function createZipArchive(sourceDir, zipPath) {
     fs.rmSync(zipPath, { force: true });
   }
   if (process.platform === 'win32') {
-    const res = spawnSync(
-      'powershell',
-      ['-NoProfile', '-Command', `Compress-Archive -Path '${sourceDir}\\*' -DestinationPath '${zipPath}' -Force`],
-      { stdio: 'inherit' }
-    );
+    // PowerShell Compress-Archive writes Windows backslashes (`\`) in ZIP entry names,
+    // which breaks directory extraction on Linux servers such as itch.io.
+    // Use .NET ZipArchive with explicit POSIX `/` entry names instead.
+    const psScript = [
+      'Add-Type -AssemblyName System.IO.Compression',
+      'Add-Type -AssemblyName System.IO.Compression.FileSystem',
+      `$src = (Resolve-Path '${sourceDir}').Path`,
+      `$zip = [System.IO.Compression.ZipFile]::Open('${zipPath}', [System.IO.Compression.ZipArchiveMode]::Create)`,
+      'try {',
+      '  Get-ChildItem -Path $src -Recurse -File | ForEach-Object {',
+      '    $rel = $_.FullName.Substring($src.Length + 1).Replace("\\", "/")',
+      '    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $rel, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null',
+      '  }',
+      '} finally {',
+      '  $zip.Dispose()',
+      '}',
+    ].join('; ');
+    const res = spawnSync('powershell', ['-NoProfile', '-Command', psScript], { stdio: 'inherit' });
     return res.status === 0;
   }
   const res = spawnSync('zip', ['-r', '-q', zipPath, '.'], { cwd: sourceDir, stdio: 'inherit' });
