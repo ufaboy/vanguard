@@ -6,16 +6,16 @@
   Content-Security-Policy: object-src 'none'; base-uri 'self'; frame-ancestors 'self'
 
 /vendor/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
 /images/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
 /audio/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
 /favicon.svg
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
 /src/*
   Cache-Control: no-cache
