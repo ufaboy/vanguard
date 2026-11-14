@@ -363,10 +363,22 @@ export function settleMission({
   return summary;
 }
 
+/** Safely resolves `localStorage` or `sessionStorage`, returning `null` if access is blocked (e.g. strict iframe). */
+export function getSafeStorage(kind = 'local') {
+  try {
+    const storage = kind === 'session'
+      ? (typeof sessionStorage !== 'undefined' ? sessionStorage : null)
+      : (typeof localStorage !== 'undefined' ? localStorage : null);
+    return storage ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export class SaveRepository {
   constructor(
     storageKey = 'iron_vanguard_player_save_v1',
-    storage = typeof localStorage !== 'undefined' ? localStorage : null
+    storage = getSafeStorage('local')
   ) {
     this.storageKey = storageKey;
     this.storage = storage;

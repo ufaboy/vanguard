@@ -172,7 +172,7 @@ test('buildBattleSharePayload and buildSocialShareLinks use opaque encoded token
     origin: 'https://battletank.online/',
   });
   const campaignUrl = new URL(campaignShare.url);
-  assert.equal(campaignUrl.pathname, '/campaign');
+  assert.equal(campaignUrl.pathname, '/campaign.html');
   const campaignToken = campaignUrl.searchParams.get('c');
   assert.ok(campaignToken && !campaignShare.url.includes('kills='));
   assert.deepEqual(decodeShareToken(campaignToken), {
@@ -204,7 +204,7 @@ test('buildBattleSharePayload and buildSocialShareLinks use opaque encoded token
     origin: '',
   });
   const survivalUrl = new URL(survivalShare.url);
-  assert.equal(survivalUrl.pathname, '/survival');
+  assert.equal(survivalUrl.pathname, '/survival.html');
   assert.ok(!survivalShare.url.includes('wave='));
   assert.deepEqual(decodeShareToken(survivalUrl.searchParams.get('c')), {
     m: 's',
@@ -226,7 +226,7 @@ test('buildBattleSharePayload and buildSocialShareLinks use opaque encoded token
     origin: 'http://localhost:3000',
   });
   const contractUrl = new URL(contractShare.url);
-  assert.equal(contractUrl.pathname, '/contracts');
+  assert.equal(contractUrl.pathname, '/contracts.html');
   assert.deepEqual(decodeShareToken(contractUrl.searchParams.get('c')), {
     m: 'k',
     id: 'contract-last-cargo',

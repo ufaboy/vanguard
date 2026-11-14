@@ -1,4 +1,5 @@
 import { COMPONENT_TRACKS, normalizeComponentDamage } from '../../sim/component-damage.js';
+import { getSafeStorage } from '../../sim/hangar.js';
 import { createRepairKitState } from '../../sim/subsystems.js';
 import { SURVIVAL_CONFIG } from '../../sim/survival.js';
 import { APS, MISSILE, UPGRADE_MAX_LEVEL, getMaxCannonAmmo } from '../constants.js';
@@ -13,18 +14,18 @@ export class ProfileSaveController {
     const { engine } = this;
     if (engine.profileMode === 'survival') {
       return {
-        storage: typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+        storage: getSafeStorage('session'),
         key: 'iron_vanguard_survival_upgrades_v1',
       };
     }
     if (engine.profileMode === 'contract') {
       return {
-        storage: typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+        storage: getSafeStorage('session'),
         key: 'iron_vanguard_contract_upgrades_v1',
       };
     }
     return {
-      storage: typeof localStorage !== 'undefined' ? localStorage : null,
+      storage: getSafeStorage('local'),
       key: 'iron_vanguard_upgrades_v3',
     };
   }
@@ -32,8 +33,8 @@ export class ProfileSaveController {
   loadSavedProgress() {
     const { engine } = this;
     try {
-      if (engine.profileMode === 'campaign' && typeof localStorage !== 'undefined') {
-        localStorage.removeItem('iron_vanguard_highscore');
+      if (engine.profileMode === 'campaign') {
+        getSafeStorage('local')?.removeItem('iron_vanguard_highscore');
       }
       const { storage, key } = this.getUpgradesStorage();
       const savedUpgrades = storage?.getItem(key);

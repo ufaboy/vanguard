@@ -47,7 +47,7 @@ import { sound } from '../sound.js';
 import { analyticsManager } from '../../app/analyticsManager.js';
 import { ARMOR_PANEL_CATALOG, TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
-import { resolveAssembledTank, SaveRepository, settleMission } from '../../sim/hangar.js';
+import { getSafeStorage, resolveAssembledTank, SaveRepository, settleMission } from '../../sim/hangar.js';
 
 /** Graphics quality presets. Pixel ratio, shadows and particle budget apply immediately;. */
 export const QUALITY_PRESETS = Object.freeze({
@@ -97,15 +97,15 @@ export class TankGameEngine {
 
     this.campaignSaveRepo = new SaveRepository(
       'iron_vanguard_player_save_v1',
-      typeof localStorage !== 'undefined' ? localStorage : null
+      getSafeStorage('local')
     );
     this.survivalSaveRepo = new SaveRepository(
       'iron_vanguard_survival_save_v1',
-      typeof sessionStorage !== 'undefined' ? sessionStorage : null
+      getSafeStorage('session')
     );
     this.contractSaveRepo = new SaveRepository(
       'iron_vanguard_contract_save_v1',
-      typeof sessionStorage !== 'undefined' ? sessionStorage : null
+      getSafeStorage('session')
     );
     this.profileMode = 'campaign';
     this.saveRepo = this.campaignSaveRepo;

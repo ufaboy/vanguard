@@ -497,7 +497,7 @@ export function buildBattleSharePayload({
     headline = `${isVictory ? 'CONTRACT EXTRACTED' : 'CONTRACT REPORT'} — ${sectorName} (${delivered}/3 cargo)`;
   }
 
-  const url = `${baseOrigin}${path}`;
+  const url = new URL(path, `${baseOrigin}/`).href;
   const medalNames = earnedAchievements.slice(0, 3).map((a) => a.title);
   const medalPart = medalNames.length > 0 ? ` | Medals: ${medalNames.join(', ')}` : '';
   const statsPart = isSurvival ? `${kills} hostiles destroyed` : `${kills} hostiles destroyed | ${acc}% accuracy`;
