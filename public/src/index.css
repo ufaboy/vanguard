@@ -745,7 +745,7 @@ body[data-page="contract"] .menu-page {
 .command-home-view {
   position: relative;
   width: 100%;
-  height: clamp(540px, calc(100vh - 58px), 860px);
+  height: clamp(540px, calc(100vh - 58px), 1100px);
   flex: 0 0 auto;
   min-height: 0;
   display: flex;
@@ -1054,6 +1054,7 @@ body[data-page="contract"] .menu-page {
 /* Clean Editorial Tactical Overview (Below-the-fold SEO Section, No Card Boxes) */
 .home-briefing-strip {
   padding: 26px 8px 18px;
+  margin-block: auto;
   border-top: 1px solid #1e293b;
 }
 .home-briefing-head {
@@ -3057,10 +3058,10 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 .hud-sector-strip {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 6px 10px;
   font-family: var(--font-mono, monospace);
   font-size: 10px;
   color: #cbd5e1;
