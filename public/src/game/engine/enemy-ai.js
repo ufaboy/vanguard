@@ -34,6 +34,19 @@ import {
 } from '../../sim/behavior/index.js';
 
 const HUNTER_ZIGZAG_RAD = 0.45;
+const HULL_FLANK_ANGLE_THRESHOLD_RAD = 0.45;
+const HULL_HOLD_REACTION_DELAY_SEC = 0.32;
+
+function moveTowardsAngle(current, target, maxStep) {
+  const diff = normalizeAngleSigned(target - current);
+  if (Math.abs(diff) <= maxStep) return target;
+  return current + Math.sign(diff) * maxStep;
+}
+
+function getEnemyHullTurnRate(e) {
+  const moveSpeed = e.stats?.moveSpeed ?? 2.07;
+  return Math.max(1.05, Math.min(5.5, 1.3 * Math.pow(moveSpeed / 1.77, 2.2)));
+}
 
 export class EnemyAiController {
   constructor(engine) {
@@ -987,12 +1000,55 @@ export class EnemyAiController {
           }
         }
 
+        if (e.enemyClass === EnemyClass.BOSS_TITAN && canSeePlayer) {
+          const turnRate = e.titanOverload ? TITAN.HULL_TURN_RATE_OVERLOAD : TITAN.HULL_TURN_RATE;
+          const bearingToPlayer = Math.atan2(toPlayerX, toPlayerZ);
+          // Angle the hull ~20 deg inside the frontal Aegis cone so both front and rear turrets unmask past the central citadel
+          const angleSign = normalizeAngleSigned(e.hullAngle - bearingToPlayer) >= 0 ? 1 : -1;
+          const dreadnoughtHeading = bearingToPlayer + angleSign * 0.34;
+          e.hullAngle = engine.lerpAngle(e.hullAngle, dreadnoughtHeading, turnRate * dt);
+        } else if (Math.hypot(e.targetDirX, e.targetDirZ) > 0.05) {
+          e.hullHoldReactTimer = null;
+          const desiredHull = Math.atan2(e.targetDirX, e.targetDirZ);
+          e.hullAngle = moveTowardsAngle(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+        } else if (e.brainHolding && canSeePlayer) {
+          const desiredHull = Math.atan2(toPlayerX, toPlayerZ);
+          const angleDiff = Math.abs(normalizeAngleSigned(desiredHull - e.hullAngle));
+          if (angleDiff > HULL_FLANK_ANGLE_THRESHOLD_RAD) {
+            if (e.hullHoldReactTimer == null) {
+              e.hullHoldReactTimer = HULL_HOLD_REACTION_DELAY_SEC;
+            }
+            if (e.hullHoldReactTimer > 0) {
+              e.hullHoldReactTimer = Math.max(0, e.hullHoldReactTimer - dt);
+            } else {
+              e.hullAngle = moveTowardsAngle(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+            }
+          } else {
+            e.hullHoldReactTimer = null;
+            e.hullAngle = moveTowardsAngle(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+          }
+        } else {
+          e.hullHoldReactTimer = null;
+        }
+
+        let moveDirX = e.targetDirX;
+        let moveDirZ = e.targetDirZ;
+        const hasMoveTarget = Math.hypot(e.targetDirX, e.targetDirZ) > 0.1;
+        if (hasMoveTarget && e.enemyClass !== EnemyClass.BOSS_TITAN && !e.stats?.canHover) {
+          const desiredHull = Math.atan2(e.targetDirX, e.targetDirZ);
+          const angleError = Math.abs(normalizeAngleSigned(desiredHull - e.hullAngle));
+          const driveScale = angleError >= Math.PI * 0.45 ? 0 : Math.cos(angleError);
+          moveDirX = Math.sin(e.hullAngle) * driveScale;
+          moveDirZ = Math.cos(e.hullAngle) * driveScale;
+        }
+
         const startX = e.x;
         const startZ = e.z;
         const radius = e.isBoss ? 1.12 : 0.72;
-        const nextX = e.x + e.targetDirX * worldSpeed * dt;
-        const nextZ = e.z + e.targetDirZ * worldSpeed * dt;
-        const isTryingToMove = Math.hypot(e.targetDirX, e.targetDirZ) > 0.1;
+        const nextX = e.x + moveDirX * worldSpeed * dt;
+        const nextZ = e.z + moveDirZ * worldSpeed * dt;
+        const moveMag = Math.hypot(moveDirX, moveDirZ);
+        const isTryingToMove = moveMag > 0.05;
 
         if (isTryingToMove) {
           engine.enemyCombat.crushBoxObstacles(nextX, e.z, radius, false);
@@ -1025,7 +1081,7 @@ export class EnemyAiController {
 
         const distMoved = Math.hypot(e.x - startX, e.z - startZ);
 
-        if (isTryingToMove && distMoved < 0.2 * dt * worldSpeed) {
+        if (isTryingToMove && distMoved < 0.2 * dt * worldSpeed * moveMag) {
           if (e.yieldTimer > 0) {
             e.yieldTimer = 0;
             e.aiTimer = 0;
@@ -1097,20 +1153,6 @@ export class EnemyAiController {
           }
         } else {
           e.stuckTimer = Math.max(0, (e.stuckTimer || 0) - dt * 2);
-        }
-
-        if (e.enemyClass === EnemyClass.BOSS_TITAN && canSeePlayer) {
-          const turnRate = e.titanOverload ? TITAN.HULL_TURN_RATE_OVERLOAD : TITAN.HULL_TURN_RATE;
-          const bearingToPlayer = Math.atan2(toPlayerX, toPlayerZ);
-          // Angle the hull ~20 deg inside the frontal Aegis cone so both front and rear turrets unmask past the central citadel
-          const angleSign = normalizeAngleSigned(e.hullAngle - bearingToPlayer) >= 0 ? 1 : -1;
-          const dreadnoughtHeading = bearingToPlayer + angleSign * 0.34;
-          e.hullAngle = engine.lerpAngle(e.hullAngle, dreadnoughtHeading, turnRate * dt);
-        } else if (Math.hypot(e.targetDirX, e.targetDirZ) > 0.05) {
-          const desiredHull = Math.atan2(e.targetDirX, e.targetDirZ);
-          e.hullAngle = engine.lerpAngle(e.hullAngle, desiredHull, 8 * dt);
-        } else if (e.brainHolding && canSeePlayer) {
-          e.hullAngle = engine.lerpAngle(e.hullAngle, Math.atan2(toPlayerX, toPlayerZ), 3 * dt);
         }
       }
 
