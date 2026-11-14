@@ -1221,7 +1221,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   min-width: 0;
   max-height: none;
   aspect-ratio: auto;
-  background: #070c12 url('/images/campaign-map-clean.webp') no-repeat center / 100% 100%;
+  background: #070c12 url('../images/campaign-map-clean.webp') no-repeat center / 100% 100%;
   overflow: hidden;
   user-select: none;
 }
@@ -4198,4 +4198,121 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   min-width: 96px;
   padding: 8px 12px;
   font-size: 12px;
+}
+
+
+/* ============================================================================
+   Tablet Landscape Overflow & Responsive Safeguards
+   ============================================================================ */
+
+body.scrollable-page {
+  overflow-x: clip;
+}
+
+.menu-content,
+.menu-card,
+.armored-mode-plate,
+.home-briefing-card,
+.hud-card {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1180px), (max-height: 820px) {
+  #status-modal[data-page="campaign"].menu-screen,
+  #status-modal[data-page="survival"].menu-screen,
+  #status-modal[data-page="contracts"].menu-screen,
+  #status-modal[data-page="contract"].menu-screen {
+    height: 100dvh;
+    min-height: 540px;
+    overflow-y: auto;
+    overflow-x: clip;
+  }
+
+  #status-modal[data-page="campaign"] .menu-page,
+  #status-modal[data-page="survival"] .menu-page,
+  #status-modal[data-page="contracts"] .menu-page,
+  #status-modal[data-page="contract"] .menu-page,
+  body[data-page="campaign"] .menu-page,
+  body[data-page="survival"] .menu-page,
+  body[data-page="contracts"] .menu-page,
+  body[data-page="contract"] .menu-page {
+    height: 100dvh;
+    min-height: 540px;
+    overflow-y: auto;
+    overflow-x: clip;
+  }
+
+  .command-home-view {
+    height: auto;
+    min-height: clamp(460px, calc(100dvh - 58px), 780px);
+  }
+
+  .armored-hero-board {
+    min-height: 380px;
+  }
+
+  .hero-command-flank {
+    width: min(580px, 66%);
+    padding: 20px 24px 96px 28px;
+  }
+
+  .hero-tactical-desc {
+    margin-bottom: 16px;
+  }
+
+  .settings-modal-panel,
+  .battle-modal-card {
+    max-height: 92dvh;
+    max-width: min(680px, 94vw);
+    overflow-y: auto;
+  }
+
+  .garage-sidebar {
+    max-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .cinematic-region-badge {
+    padding: 4px 9px;
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+  }
+}
+
+@media (max-width: 1100px) {
+  #top-telemetry {
+    max-width: 44vw;
+  }
+
+  .hud-mission-strip {
+    max-width: 100%;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  #top-compass {
+    transform: translateX(-50%) scale(0.85);
+    transform-origin: top center;
+  }
+
+  #game-shell.has-touch-controls #bottom-hud {
+    left: 160px;
+    right: 112px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  #game-shell.has-touch-controls .hud-weapon-card {
+    padding: 6px 10px;
+  }
+
+  #game-shell.has-touch-controls .hud-modules-card button {
+    min-height: 44px;
+    min-width: 84px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
 }

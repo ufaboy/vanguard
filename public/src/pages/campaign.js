@@ -54,7 +54,7 @@ const CAMPAIGN_REGIONS = Object.freeze([
   {
     id: 'urban',
     name: 'City Outskirts',
-    x: 6.5,
+    x: 9.5,
     y: 13.0,
     color: '#38bdf8',
     iconSvg: '<path d="M3 21h18M5 21V7l8-4v18M13 10h4v11M9 9h1M9 13h1M9 17h1M15 14h1M15 17h1"/>',
@@ -62,7 +62,7 @@ const CAMPAIGN_REGIONS = Object.freeze([
   {
     id: 'forest',
     name: 'Forest Frontier',
-    x: 3.5,
+    x: 10.5,
     y: 43.5,
     color: '#4ade80',
     iconSvg: '<path d="M12 2L6 12h4l-3 7h10l-3-7h4L12 2zM12 19v3"/>',
@@ -70,7 +70,7 @@ const CAMPAIGN_REGIONS = Object.freeze([
   {
     id: 'desert',
     name: 'Desert Crossing',
-    x: 3.5,
+    x: 10.5,
     y: 64.0,
     color: '#f59e0b',
     iconSvg: '<path d="M12 3v18M8 8v4a4 4 0 008 0V7M5 12h3M16 11h3"/>',
