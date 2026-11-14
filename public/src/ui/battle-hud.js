@@ -28,18 +28,6 @@ export function renderBattlefieldHud({
     ((Math.round((-(hud.playerTurretAngle || 0) * 180) / Math.PI + 180) % 360) + 360) % 360;
 
   if (topTelemetry) {
-    const baseStatusColor = !hud.baseAlive
-      ? 'text-red-400'
-      : hud.inBaseRepairZone
-      ? 'text-emerald-400'
-      : 'text-amber-300';
-
-    const baseStatusText = !hud.baseAlive
-      ? 'OFFLINE'
-      : hud.inBaseRepairZone
-      ? 'REPAIR +3/s'
-      : 'ONLINE';
-
     const enemyCitadelHtml = hud.enemyBaseAlive
       ? `<span>CITADEL <b class="text-red-400">${hud.enemyBaseHp}/${hud.enemyBaseMaxHp}</b></span>`
       : '';
@@ -51,6 +39,14 @@ export function renderBattlefieldHud({
       { length: 8 },
       (_, idx) => `<span class="${idx < activeHpSegs ? 'is-on' : ''}"></span>`
     ).join('');
+
+    const isCampaignSector =
+      currentSector.gameMode !== 'contract' &&
+      currentSector.gameMode !== 'survival' &&
+      !currentSector.contractId;
+    const sectorTitle = isCampaignSector
+      ? `MISSION ${String(currentSector.id).padStart(2, '0')}`
+      : `${currentSector.code} · ${currentSector.name}`;
 
     setHtml(topTelemetry, `
       <div class="hud-top-row">
@@ -71,10 +67,9 @@ export function renderBattlefieldHud({
       </div>
 
       <div class="hud-card hud-sector-strip">
-        <strong>${currentSector.code} · ${currentSector.name}</strong>
+        <strong>${sectorTitle}</strong>
         <span>HOSTILES <b class="text-emerald-400">${hud.enemiesRemaining}/${hud.totalEnemiesInSector}</b></span>
         <span>CREDITS <b class="text-emerald-400">$${hud.credits ?? 0}</b></span>
-        <span>BASE <b class="${baseStatusColor}">${baseStatusText}</b></span>
         ${enemyCitadelHtml}
       </div>
     `);

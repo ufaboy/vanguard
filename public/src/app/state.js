@@ -11,6 +11,7 @@ export const CAMERA_LABELS = Object.freeze({
 
 // Frame-rate cap choices cycled in Settings (0 = unlimited)
 export const FPS_CAP_OPTIONS = Object.freeze([60, 30, 0]);
+export const TOUCH_CONTROLS_MODES = Object.freeze(['auto', 'on', 'off']);
 
 const UPGRADES_KEY = 'iron_vanguard_upgrades_v3';
 const SETTINGS_KEY = 'iron_vanguard_settings_v1';
@@ -49,6 +50,7 @@ export function loadPreferences() {
     cameraZoom: null,
     graphicsQuality: 'high',
     fpsCap: 60,
+    touchControlsMode: 'auto',
   };
   try {
     const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
@@ -59,6 +61,7 @@ export function loadPreferences() {
     }
     if (VALID_QUALITY_PRESETS.includes(raw.graphicsQuality)) prefs.graphicsQuality = raw.graphicsQuality;
     if (FPS_CAP_OPTIONS.includes(raw.fpsCap)) prefs.fpsCap = raw.fpsCap;
+    if (TOUCH_CONTROLS_MODES.includes(raw.touchControlsMode)) prefs.touchControlsMode = raw.touchControlsMode;
   } catch {
     // ignore storage errors
   }
@@ -76,6 +79,7 @@ export function savePreferences(prefs) {
         : null,
       graphicsQuality: prefs.graphicsQuality,
       fpsCap: prefs.fpsCap,
+      touchControlsMode: TOUCH_CONTROLS_MODES.includes(prefs.touchControlsMode) ? prefs.touchControlsMode : 'auto',
     }));
   } catch {
     // ignore storage errors

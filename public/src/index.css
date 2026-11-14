@@ -745,7 +745,7 @@ body[data-page="contract"] .menu-page {
 .command-home-view {
   position: relative;
   width: 100%;
-  height: clamp(540px, calc(100vh - 58px), 860px);
+  height: clamp(540px, calc(100vh - 58px), 1100px);
   flex: 0 0 auto;
   min-height: 0;
   display: flex;
@@ -1053,8 +1053,8 @@ body[data-page="contract"] .menu-page {
 
 /* Clean Editorial Tactical Overview (Below-the-fold SEO Section, No Card Boxes) */
 .home-briefing-strip {
-  margin-top: 22px;
   padding: 26px 8px 18px;
+  margin-block: auto;
   border-top: 1px solid #1e293b;
 }
 .home-briefing-head {
@@ -1222,7 +1222,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   min-width: 0;
   max-height: none;
   aspect-ratio: auto;
-  background: #070c12 url('/images/campaign-map-clean.webp') no-repeat center / 100% 100%;
+  background: #070c12 url('../images/campaign-map-clean.webp') no-repeat center / 100% 100%;
   overflow: hidden;
   user-select: none;
 }
@@ -3058,10 +3058,10 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 .hud-sector-strip {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 6px 10px;
   font-family: var(--font-mono, monospace);
   font-size: 10px;
   color: #cbd5e1;
@@ -4044,4 +4044,276 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   font-size: 12px;
   line-height: 1.35;
   color: #cbd5e1;
+}
+
+
+/* ============================================================================
+   Tablet Landscape Virtual Touch Controls
+   ============================================================================ */
+
+.touch-controls-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 22;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.touch-zone-left {
+  position: fixed;
+  left: 18px;
+  bottom: 16px;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.touch-joystick-base {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  border-radius: 9999px;
+  background: rgba(11, 15, 23, 0.82);
+  border: 2px solid rgba(148, 163, 184, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+.touch-joystick-base.is-active {
+  border-color: rgba(245, 158, 11, 0.85);
+}
+
+.touch-joystick-ring {
+  position: absolute;
+  inset: 16px;
+  border-radius: 9999px;
+  border: 1px dashed rgba(148, 163, 184, 0.35);
+  pointer-events: none;
+}
+
+.touch-joystick-knob {
+  width: 52px;
+  height: 52px;
+  border-radius: 9999px;
+  background: linear-gradient(145deg, #f59e0b, #b45309);
+  border: 2px solid #fef3c7;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.touch-zone-right {
+  position: fixed;
+  right: 18px;
+  bottom: 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.touch-action-btn {
+  position: relative;
+  border-radius: 9999px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+  transition: transform 0.08s ease, border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.touch-action-btn:active,
+.touch-action-btn.is-active {
+  transform: scale(0.94);
+}
+
+.touch-fire-btn {
+  width: 82px;
+  height: 82px;
+  background: rgba(153, 27, 27, 0.92);
+  border: 2px solid rgba(248, 113, 113, 0.85);
+  color: #fef2f2;
+  font-size: 13px;
+}
+
+.touch-fire-btn.is-active {
+  background: rgba(220, 38, 38, 0.96);
+  border-color: #fecaca;
+}
+
+.touch-wave-btn {
+  width: 58px;
+  height: 58px;
+  background: rgba(6, 78, 59, 0.92);
+  border: 2px solid rgba(52, 211, 153, 0.85);
+  color: #d1fae5;
+  font-size: 10px;
+}
+
+@media (pointer: coarse) {
+  #bottom-hud button,
+  #top-controls button {
+    min-height: 36px;
+  }
+}
+
+#game-shell.has-touch-controls .hud-silhouette-card {
+  position: fixed;
+  left: 18px;
+  bottom: 158px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+#game-shell.has-touch-controls #sensor-minimap {
+  bottom: 114px;
+  right: 16px;
+}
+
+#game-shell.has-touch-controls #bottom-hud {
+  left: 164px;
+  right: 118px;
+  justify-content: center;
+}
+
+#game-shell.has-touch-controls .hud-modules-card {
+  gap: 8px;
+}
+
+#game-shell.has-touch-controls .hud-modules-card button {
+  min-height: 48px;
+  min-width: 96px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+
+/* ============================================================================
+   Tablet Landscape Overflow & Responsive Safeguards
+   ============================================================================ */
+
+body.scrollable-page {
+  overflow-x: clip;
+}
+
+.menu-content,
+.menu-card,
+.armored-mode-plate,
+.home-briefing-card,
+.hud-card {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1180px), (max-height: 820px) {
+  #status-modal[data-page="campaign"].menu-screen,
+  #status-modal[data-page="survival"].menu-screen,
+  #status-modal[data-page="contracts"].menu-screen,
+  #status-modal[data-page="contract"].menu-screen {
+    height: 100dvh;
+    min-height: 540px;
+    overflow-y: auto;
+    overflow-x: clip;
+  }
+
+  #status-modal[data-page="campaign"] .menu-page,
+  #status-modal[data-page="survival"] .menu-page,
+  #status-modal[data-page="contracts"] .menu-page,
+  #status-modal[data-page="contract"] .menu-page,
+  body[data-page="campaign"] .menu-page,
+  body[data-page="survival"] .menu-page,
+  body[data-page="contracts"] .menu-page,
+  body[data-page="contract"] .menu-page {
+    height: 100dvh;
+    min-height: 540px;
+    overflow-y: auto;
+    overflow-x: clip;
+  }
+
+  .command-home-view {
+    height: auto;
+    min-height: clamp(460px, calc(100dvh - 58px), 780px);
+  }
+
+  .armored-hero-board {
+    min-height: 380px;
+  }
+
+  .hero-command-flank {
+    width: min(580px, 66%);
+    padding: 20px 24px 96px 28px;
+  }
+
+  .hero-tactical-desc {
+    margin-bottom: 16px;
+  }
+
+  .settings-modal-panel,
+  .battle-modal-card {
+    max-height: 92dvh;
+    max-width: min(680px, 94vw);
+    overflow-y: auto;
+  }
+
+  .garage-sidebar {
+    max-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .cinematic-region-badge {
+    padding: 4px 9px;
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+  }
+}
+
+@media (max-width: 1100px) {
+  #top-telemetry {
+    max-width: 44vw;
+  }
+
+  .hud-mission-strip {
+    max-width: 100%;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  #top-compass {
+    transform: translateX(-50%) scale(0.85);
+    transform-origin: top center;
+  }
+
+  #game-shell.has-touch-controls #bottom-hud {
+    left: 160px;
+    right: 112px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  #game-shell.has-touch-controls .hud-weapon-card {
+    padding: 6px 10px;
+  }
+
+  #game-shell.has-touch-controls .hud-modules-card button {
+    min-height: 44px;
+    min-width: 84px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
 }

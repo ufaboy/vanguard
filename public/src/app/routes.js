@@ -29,7 +29,9 @@ export function battlefieldUrl({ mode, mission, id, sector } = {}) {
 }
 
 export function pageUrl(page, params = null) {
-  const base = PAGE_PATHS[page] || PAGE_PATHS.index;
+  const rawBase = PAGE_PATHS[page] || PAGE_PATHS.index;
+  const useHtml = typeof location === 'undefined' || location.pathname.endsWith('.html');
+  const base = useHtml ? rawBase : rawBase.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
   if (!params) return base;
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {

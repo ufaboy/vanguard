@@ -79,6 +79,9 @@ export class TankGameEngine {
     this.screenShake = 0;
 
     this.keys = {};
+    this.touchMoveX = 0;
+    this.touchMoveY = 0;
+    this.activeAimPointerId = null;
     this.mouseNdc = new THREE.Vector2(0, 0);
     this.aimWorld = new THREE.Vector3(0, 0, 0);
     this.raycaster = new THREE.Raycaster();
@@ -1292,6 +1295,7 @@ export class TankGameEngine {
     this._resizeObserver?.disconnect();
     this._resizeObserver = null;
     window.removeEventListener('pointerup', this.handlePointerUp);
+    window.removeEventListener('pointercancel', this.handlePointerUp);
 
     const canvas = this.renderer.domElement;
     canvas.removeEventListener('pointermove', this.handlePointerMove);

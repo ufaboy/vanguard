@@ -1,4 +1,4 @@
-import { CAMERA_LABELS, FPS_CAP_OPTIONS, loadPreferences, savePreferences } from './state.js';
+import { CAMERA_LABELS, FPS_CAP_OPTIONS, TOUCH_CONTROLS_MODES, loadPreferences, savePreferences } from './state.js';
 import { renderSettings } from '../pages/settings.js';
 import { sound } from '../game/sound.js';
 import { attachAchievementsModal } from '../ui/achievements-modal.js';
@@ -90,6 +90,11 @@ export function attachSettingsModal(root, onSettingsChange = null) {
       prefs.cameraPreset = order[(order.indexOf(prefs.cameraPreset) + 1) % order.length];
       settingName = 'camera_preset';
       settingValue = prefs.cameraPreset;
+    } else if (action === 'cycle-touch-controls') {
+      prefs.touchControlsMode =
+        TOUCH_CONTROLS_MODES[(TOUCH_CONTROLS_MODES.indexOf(prefs.touchControlsMode) + 1) % TOUCH_CONTROLS_MODES.length];
+      settingName = 'touch_controls';
+      settingValue = prefs.touchControlsMode;
     } else {
       return;
     }
