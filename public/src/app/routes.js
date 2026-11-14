@@ -10,6 +10,8 @@ export const PAGE_PATHS = Object.freeze({
   contractLastCargo: '/contract-last-cargo',
   contractBlackoutProtocol: '/contract-blackout-protocol',
   howToPlay: '/how-to-play',
+  enemies: '/enemies',
+  arsenal: '/arsenal',
   about: '/about',
   privacyPolicy: '/privacy-policy',
   contact: '/contact',

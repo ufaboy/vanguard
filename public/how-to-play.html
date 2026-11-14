@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>How to Play — BATTLE TANK</title>
-    <meta name="description" content="Complete field manual for BATTLE TANK: controls, game modes, directional armor penetration, APS mechanics, and modular upgrades." />
+    <meta name="description" content="Complete field manual for BATTLE TANK: controls, game modes, directional armor penetration, APS mechanics, and modular VANGUARD tank upgrades." />
     <meta name="theme-color" content="#0B1120" />
     <meta name="google-adsense-account" content="ca-pub-3217305527287787">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3217305527287787" crossorigin="anonymous"></script>
@@ -18,10 +18,81 @@
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta property="og:site_name" content="BATTLE TANK" />
     <meta property="og:title" content="How to Play — BATTLE TANK" />
-    <meta property="og:description" content="Complete field manual for BATTLE TANK: controls, game modes, directional armor penetration, APS mechanics, and modular upgrades." />
+    <meta property="og:description" content="Complete field manual for BATTLE TANK: controls, game modes, directional armor penetration, APS mechanics, and modular VANGUARD tank upgrades." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://battletank.online/how-to-play" />
     <meta property="og:image" content="https://battletank.online/images/og-battle.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How to Play — BATTLE TANK" />
+    <meta name="twitter:description" content="Controls, game modes, directional armor penetration, APS mechanics, and modular upgrades for BATTLE TANK." />
+    <meta name="twitter:image" content="https://battletank.online/images/og-battle.jpg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://battletank.online/" },
+              { "@type": "ListItem", "position": 2, "name": "How to Play", "item": "https://battletank.online/how-to-play" }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How do tank stats and armor penetration work?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Every tank combines a base hull with 5 core tracks (Cannon, Chassis, Frame, Engine, Armor) and optional modules. Armor is evaluated per hit side (front, left, right, rear). Cannon penetration reduces the target's effective armor percentage before final damage is applied."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I cross water or drive smoothly on ice?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Upgrade your Chassis to Tier IV (All-Terrain Tracks) or Tier V (Grav-Hover). Both cross deep water and handle ice, mud, and sand without slip or slowdown."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does the Active Protection System (APS) work?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The 4-corner APS intercepts incoming Cannon Mk1-Mk3 shells and missiles for 1 charge each. Heavy Cannon Mk4/Mk5, Howitzer, and Mammoth Dual shells cost 2 charges. Flamethrowers and Titan Rail shots bypass APS."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do BOX supply drops and field repairs work?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Shoot wooden BOX caches to roll tactical Power-Ups (Repair, EMP, Base Restore, APS, or Missile). Your Command Base HQ also repairs your hull while it remains intact. Below 33% hull integrity, movement speed drops by 30%."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How are credits, repairs, and progress saved?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Campaign unlocks, credits, component tiers, and survival records are stored locally in your browser via localStorage and persist across sessions."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What happens if I abort a mission early?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Collected credits and salvaged loot remain in your save, while uncollected battlefield drops are lost."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
     <link rel="stylesheet" href="./src/index.css" />
     <script type="importmap">
       {
@@ -57,6 +128,8 @@
     <div class="menu-grid" style="margin-top:16px;"><article class="menu-card" style="cursor:default"><strong>How do tank stats and armor penetration work?</strong><p>Every tank combines a base hull with 5 core tracks (Cannon, Chassis, Frame, Engine, Armor) and optional modules. Armor is evaluated per hit side (front, left, right, rear). Cannon penetration reduces the target’s effective armor percentage before final damage is applied.</p></article><article class="menu-card" style="cursor:default"><strong>How do I cross water or drive smoothly on ice?</strong><p>Upgrade your Chassis to Tier IV (All-Terrain Tracks) or Tier V (Grav-Hover). Both cross deep water and handle ice, mud, and sand without slip or slowdown.</p></article><article class="menu-card" style="cursor:default"><strong>How does the Active Protection System (APS) work?</strong><p>The 4-corner APS intercepts incoming Cannon Mk1–Mk3 shells and missiles for 1 charge each. Heavy Cannon Mk4/Mk5, Howitzer, and Mammoth Dual shells cost 2 charges. Flamethrowers and Titan Rail shots bypass APS.</p></article><article class="menu-card" style="cursor:default"><strong>How do BOX supply drops and field repairs work?</strong><p>Shoot wooden BOX caches to roll tactical Power-Ups (Repair, EMP, Base Restore, APS, or Missile). Your Command Base HQ also repairs your hull while it remains intact. Below 33% hull integrity, movement speed drops by 30%.</p></article><article class="menu-card" style="cursor:default"><strong>How are credits, repairs, and progress saved?</strong><p>Campaign unlocks, credits, component tiers, and survival records are stored locally in your browser via localStorage and persist across sessions.</p></article><article class="menu-card" style="cursor:default"><strong>What happens if I abort a mission early?</strong><p>Collected credits and salvaged loot remain in your save, while uncollected battlefield drops are lost.</p></article></div>
     <div class="menu-actions" style="margin-top:28px;">
       <a class="menu-primary" href="/campaign">Launch Campaign →</a>
+      <a class="menu-secondary" href="/enemies">Enemy &amp; Boss Guide</a>
+      <a class="menu-secondary" href="/arsenal">Tank Arsenal &amp; Upgrades</a>
       <a class="menu-secondary" href="/contracts">View Contracts</a>
       <a class="menu-secondary" href="/survival">Endless Survival</a>
     </div>
@@ -79,6 +152,8 @@
               <a href="/contracts">CONTRACTS</a>
               <span class="footer-sep" aria-hidden="true">|</span>
               <a class="is-active" aria-current="page" href="/how-to-play">HOW TO PLAY</a>
+              <a href="/enemies">ENEMIES</a>
+              <a href="/arsenal">ARSENAL</a>
               <a href="/about">ABOUT</a>
               <a href="/privacy-policy">PRIVACY POLICY</a>
               <a href="/contact">CONTACT</a>
