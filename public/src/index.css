@@ -745,8 +745,8 @@ body[data-page="contract"] .menu-page {
 .command-home-view {
   position: relative;
   width: 100%;
-  height: 100%;
-  flex: 1 1 auto;
+  height: clamp(540px, calc(100vh - 58px), 860px);
+  flex: 0 0 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -1051,9 +1051,80 @@ body[data-page="contract"] .menu-page {
   transform: translateX(2px);
 }
 
+/* Clean Editorial Tactical Overview (Below-the-fold SEO Section, No Card Boxes) */
+.home-briefing-strip {
+  margin-top: 22px;
+  padding: 26px 8px 18px;
+  border-top: 1px solid #1e293b;
+}
+.home-briefing-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-bottom: 20px;
+}
+.home-briefing-head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #f1f5f9;
+}
+.home-briefing-head p {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+.home-briefing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+.home-briefing-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 12px;
+  border-top: 2px solid #263548;
+  transition: border-color 0.15s ease;
+}
+.home-briefing-card:hover {
+  border-top-color: #f59e0b;
+}
+.home-briefing-card strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.3;
+}
+.home-briefing-card p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #94a3b8;
+}
+.home-briefing-link {
+  margin-top: auto;
+  padding-top: 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.home-briefing-card:hover .home-briefing-link,
+.home-briefing-link:hover {
+  color: #f59e0b;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1100px) {
   .command-modes-deck { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-briefing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-height: 760px) {
   .hero-tactical-desc { display: none; }

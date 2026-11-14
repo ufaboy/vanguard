@@ -1,13 +1,14 @@
 {
   "name": "iron-vanguard",
   "private": true,
-  "version": "1.10.2",
+  "version": "1.11.0",
   "type": "module",
   "scripts": {
     "dev": "npx --yes serve public -l 3000",
     "codex": "npx --yes serve . -l 3001",
     "start": "npx --yes serve public -l 3000",
     "build": "npm run lint",
+    "build:itch": "node scripts/build-itch.mjs",
     "vendor": "node scripts/sync-vendor.mjs",
     "optimize-models": "node scripts/optimize-models.mjs",
     "lint": "node scripts/lint.mjs",

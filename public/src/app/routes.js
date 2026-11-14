@@ -2,21 +2,21 @@
  * Canonical page URLs for the multi-page architecture and legacy hash redirect helper.
  */
 export const PAGE_PATHS = Object.freeze({
-  index: '/',
-  battlefield: '/battlefield',
-  campaign: '/campaign',
-  survival: '/survival',
-  contracts: '/contracts',
-  contractLastCargo: '/contract-last-cargo',
-  contractBlackoutProtocol: '/contract-blackout-protocol',
-  howToPlay: '/how-to-play',
-  walkthrough: '/walkthrough',
-  enemies: '/enemies',
-  arsenal: '/arsenal',
-  changelog: '/changelog',
-  about: '/about',
-  privacyPolicy: '/privacy-policy',
-  contact: '/contact',
+  index: './index.html',
+  battlefield: './battlefield.html',
+  campaign: './campaign.html',
+  survival: './survival.html',
+  contracts: './contracts.html',
+  contractLastCargo: './contract-last-cargo.html',
+  contractBlackoutProtocol: './contract-blackout-protocol.html',
+  howToPlay: './how-to-play.html',
+  walkthrough: './walkthrough.html',
+  enemies: './enemies.html',
+  arsenal: './arsenal.html',
+  changelog: './changelog.html',
+  about: './about.html',
+  privacyPolicy: './privacy-policy.html',
+  contact: './contact.html',
 });
 
 export const CONTRACT_PAGE_PATHS = Object.freeze({
