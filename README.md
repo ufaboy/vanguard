@@ -1,21 +1,21 @@
-# IRON VANGUARD
+# BATTLE TANK
 
 A 3D isometric tactical tank assault game inspired by *Battle City*, built with **Three.js** and **Vanilla JavaScript** (native ES modules, zero bundler).
 
 ## Overview
 
-**IRON VANGUARD** combines classic arcade base-defense with modular tank engineering, directional armor, destructible 36×36 arenas, and role-driven enemy AI.
+**BATTLE TANK** combines classic arcade base-defense with modular tank engineering, directional armor, destructible 40×40 arenas, and role-driven enemy AI.
 
 ### Game Modes
-- **Campaign**: Progress through 3 sectors and 15 missions against 12 specialized enemy tank classes and 3 unique Sector Bosses (`BOSS_MAMMOTH`, `BOSS_HYDRA`, `BOSS_TITAN`). Campaign progress, credits, and Hangar upgrades persist in `localStorage`.
+- **Campaign**: Progress through 4 sectors and 35 missions against 12 specialized enemy tank classes and 4 unique Sector Bosses (`BOSS_MAMMOTH`, `BOSS_HYDRA`, `BOSS_TITAN`, `BOSS_INFERNO`). Campaign progress, credits, and Hangar upgrades persist in `localStorage`.
 - **Survival (*Iron Crucible*)**: Endless wave defense starting with a stock Tier-1 tank in `sessionStorage` while saving personal records to `localStorage`.
 - **Contracts**: Standalone tactical operations (*Last Cargo*, *Blackout Protocol*) starting with a stock Tier-1 tank in `sessionStorage` and syncing earned credits back to your Campaign balance.
 
 ### Key Features
 - **Modular 5×5 Tank Upgrades**: Upgrade **Cannon**, **Chassis**, **Frame**, **Engine**, and **Armor** across Tiers I–V in the Hangar (`[U]`), with live 3D visual changes on the player tank.
 - **Directional Armor & Ballistics**: Per-side armor (`front`, `left`, `right`, `rear`), armor penetration, mass-to-power mobility, and active component damage/repair.
-- **Standalone Equipment & Field Power-Ups**: 4-corner Active Protection System (APS), homing ATGM rocket pod, emergency repair kits (`RM-1`), EMP, and base restoration.
-- **Destructible 36×36 Tactical Arenas**: Sub-block destructible Brick walls, multi-hit Reinforced Concrete, stealth Forest canopies, Water (crossable by `CH4`/`CH5`), low-friction Ice, Enemy Spawners, and a fortified Command Base HQ.
+- **Standalone Equipment & Field Power-Ups**: 4-corner Active Protection System (APS), homing ATGM rocket pod, emergency repair kits (`RM-1`), EMP, smoke grenades, and base restoration.
+- **Destructible 40×40 Tactical Arenas**: Sub-block destructible Brick walls, multi-hit Reinforced Concrete, stealth Forest canopies, Water (crossable by `CH4`/`CH5`), low-friction Ice, Roads, Swamps, ignitable Oil Slicks, 3D Blast Craters, destructible Water Towers (flood nearby tiles & extinguish fires), Explosive Barrels, Wooden Crates, Anti-Tank Hedgehogs, Defense Turrets, Enemy Spawners, and a fortified Command Base HQ.
 - **Tactical Enemy AI**: Role-based brains (`line`, `flanker`, `spearhead`, `artillery`, `minelayer`, `raider`, `hunter`, `ambusher`, `ewar`, `support`, `standoff`, `sniper`) coordinated by a Squad Director. Press `F3` in-game to toggle the AI Telemetry Overlay.
 
 ## Tech Stack & Architecture
@@ -25,8 +25,9 @@ A 3D isometric tactical tank assault game inspired by *Battle City*, built with 
 
 ```text
 ├── public/              # Self-contained static web app (index.html, src/, maps/, models/, vendor/)
+├── codex/               # Standalone 3D Codex studio (npm run codex -> http://localhost:3001/codex)
 ├── tests/               # Node.js test runner suites (node --test)
-├── scripts/             # Linter, Three.js vendor sync, GLB optimizer, Cloudflare Pages deploy
+├── scripts/             # Linter, Three.js vendor sync, GLB optimizer, itch.io packager, Cloudflare Pages deploy
 ├── assets/blender/      # Source Blender scripts for 3D models
 ├── docs/                # Engineering specifications and design docs
 ├── .env.example         # Environment variable template (Cloudflare Pages credentials, etc.)
@@ -47,6 +48,11 @@ A 3D isometric tactical tank assault game inspired by *Battle City*, built with 
    ```
    *(or `npm start`)*
 3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+4. *(Optional)* Start the standalone **3D Codex** studio:
+   ```bash
+   npm run codex
+   ```
+   and open [http://localhost:3001/codex](http://localhost:3001/codex).
 
 No build step is required—the browser loads ES modules directly from `public/`.
 
@@ -59,7 +65,7 @@ No build step is required—the browser loads ES modules directly from `public/`
   *(Also aliased as `npm run build`.)*
 - **Run tests** (uses Node's built-in test runner):
   ```bash
-  node --test tests/*.test.js
+  npm test
   ```
 - **Sync Three.js vendor files** into `public/vendor/` after updating `three`:
   ```bash
@@ -68,6 +74,10 @@ No build step is required—the browser loads ES modules directly from `public/`
 - **Optimize 3D models** (converts Blender GLBs with KTX2/Draco into `public/models/`):
   ```bash
   npm run optimize-models
+  ```
+- **Build itch.io bundle**:
+  ```bash
+  npm run build:itch
   ```
 
 ## Deployment (Cloudflare Pages)
