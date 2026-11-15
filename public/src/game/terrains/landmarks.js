@@ -1,0 +1,529 @@
+/**
+ * Paris landmark catalog and 3D model loader for Survival S-01 "Paris: Last Stand".
+ *
+ * Footprints follow docs/paris-last-stand.md: 1 cell = 2 world units, +X east,
+ * +Z south, model origin at the footprint centre on the ground. Blocked cells
+ * become TileType.LANDMARK (indestructible walls); the rest stay drivable.
+ *
+ * `LandmarkModels.create(kind)` returns a THREE.Group immediately (populated from
+ * `public/models/landmarks/paris_landmarks.glb` when loaded, or a detailed procedural
+ * representation that upgrades in-place once the GLB finishes loading).
+ */
+
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const ALL = (cols, rows) => {
+  const cells = [];
+  for (let dr = 0; dr < rows; dr++) for (let dc = 0; dc < cols; dc++) cells.push([dr, dc]);
+  return cells;
+};
+
+const LANDMARK_SPECS = Object.freeze({
+  ELYSEE: Object.freeze({ cols: 4, rows: 2, blocked: ALL(4, 2), height: 4.5 }),
+  ELYSEE_RUINED: Object.freeze({ cols: 4, rows: 2, blocked: [], height: 3.0 }),
+  EIFFEL_TOWER: Object.freeze({ cols: 3, rows: 3, blocked: [[0, 0], [0, 2], [2, 0], [2, 2]], height: 13 }),
+  ARC_DE_TRIOMPHE: Object.freeze({ cols: 3, rows: 2, blocked: [[0, 0], [1, 0], [0, 2], [1, 2]], height: 6 }),
+  NOTRE_DAME: Object.freeze({ cols: 4, rows: 2, blocked: ALL(4, 2), height: 8 }),
+  LOUVRE_PYRAMID: Object.freeze({ cols: 2, rows: 2, blocked: ALL(2, 2), height: 4 }),
+  SACRE_COEUR: Object.freeze({ cols: 3, rows: 2, blocked: ALL(3, 2), height: 8 }),
+  CONCORDE_OBELISK: Object.freeze({ cols: 1, rows: 1, blocked: [[0, 0]], height: 7 }),
+  BRIDGE_DECK: Object.freeze({ cols: 1, rows: 1, blocked: [], height: 1.2 }),
+  MINE_SIGN: Object.freeze({ cols: 1, rows: 1, blocked: [], height: 1.4 }),
+});
+
+/** Kinds that may be authored in a map's `landmarks3d` list. */
+export const PLACEABLE_LANDMARKS = Object.freeze([
+  'EIFFEL_TOWER',
+  'ARC_DE_TRIOMPHE',
+  'NOTRE_DAME',
+  'LOUVRE_PYRAMID',
+  'SACRE_COEUR',
+  'CONCORDE_OBELISK',
+]);
+
+/** Grid cells blocked by a `{ kind, row, col }` landmark entry. */
+export function landmarkBlockedCells(entry) {
+  const spec = LANDMARK_SPECS[entry?.kind];
+  if (!spec) throw new Error(`Unknown landmark kind: ${entry?.kind}`);
+  return spec.blocked.map(([dr, dc]) => ({ row: entry.row + dr, col: entry.col + dc }));
+}
+
+/** World-space centre of a landmark footprint whose top-left cell is (row, col). */
+export function landmarkFootprintCenter(kind, row, col, gridToWorld) {
+  const spec = LANDMARK_SPECS[kind];
+  if (!spec) throw new Error(`Unknown landmark kind: ${kind}`);
+  const topLeft = gridToWorld(row, col);
+  const cell = 2.0;
+  return {
+    x: topLeft.x + ((spec.cols - 1) * cell) / 2,
+    z: topLeft.z + ((spec.rows - 1) * cell) / 2,
+  };
+}
+
+/**
+ * World-space architectural masonry, travertine grain, and rain/ground weathering
+ * shader finish applied to both Blender GLB and procedural Paris landmark materials.
+ */
+function applyLandmarkFinish(material) {
+  if (!material || material.userData?.landmarkFinishApplied) return material;
+  material.userData ||= {};
+  material.userData.landmarkFinishApplied = true;
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        '#include <common>',
+        `
+      #include <common>
+      varying vec3 vLandmarkWorld;
+      varying vec3 vLandmarkNormal;
+    `
+      )
+      .replace(
+        '#include <worldpos_vertex>',
+        `
+      #include <worldpos_vertex>
+      vec4 lmWorldPos = modelMatrix * vec4(transformed, 1.0);
+      vLandmarkWorld = lmWorldPos.xyz;
+      vLandmarkNormal = normalize(mat3(modelMatrix) * objectNormal);
+    `
+      );
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `
+      #include <common>
+      varying vec3 vLandmarkWorld;
+      varying vec3 vLandmarkNormal;
+      float lmHash(vec3 p) {
+        p = fract(p * 0.1031);
+        p += dot(p, p.yzx + 33.33);
+        return fract((p.x + p.y) * p.z);
+      }
+      float lmNoise(vec3 p) {
+        vec3 i = floor(p), f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        return mix(
+          mix(mix(lmHash(i), lmHash(i + vec3(1, 0, 0)), f.x),
+              mix(lmHash(i + vec3(0, 1, 0)), lmHash(i + vec3(1, 1, 0)), f.x), f.y),
+          mix(mix(lmHash(i + vec3(0, 0, 1)), lmHash(i + vec3(1, 0, 1)), f.x),
+              mix(lmHash(i + vec3(0, 1, 1)), lmHash(i + vec3(1, 1, 1)), f.x), f.y),
+          f.z
+        );
+      }
+    `
+      )
+      .replace(
+        '#include <map_fragment>',
+        `
+      #include <map_fragment>
+      vec3 wp = vLandmarkWorld;
+      vec3 wn = abs(normalize(vLandmarkNormal));
+      // Triplanar horizontal coordinate along wall face
+      float wallU = wn.x > wn.z ? wp.z : wp.x;
+      float courseH = 0.34;
+      float blockW = 0.68;
+      float rowIdx = floor(wp.y / courseH);
+      float rowFrac = fract(wp.y / courseH);
+      float colIdx = floor((wallU + mod(rowIdx, 2.0) * 0.34) / blockW);
+      float colFrac = fract((wallU + mod(rowIdx, 2.0) * 0.34) / blockW);
+
+      // Identify stone/masonry vs glass/emissive/gold by colour saturation & channel balance
+      float lum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+      float maxC = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b));
+      float minC = min(diffuseColor.r, min(diffuseColor.g, diffuseColor.b));
+      float sat = (maxC - minC) / max(maxC, 0.001);
+      bool isMasonry = sat < 0.36 && lum > 0.14 && lum < 0.92 && wn.y < 0.75;
+
+      float fineGrain = lmNoise(wp * 6.5) * 0.5 + lmNoise(wp * 15.0) * 0.5;
+      float weather = lmNoise(wp * vec3(0.9, 0.45, 0.9) + 11.7);
+
+      if (isMasonry) {
+        float mortarH = 1.0 - smoothstep(0.0, 0.08, min(rowFrac, 1.0 - rowFrac));
+        float mortarV = 1.0 - smoothstep(0.0, 0.05, min(colFrac, 1.0 - colFrac));
+        float mortar = max(mortarH, mortarV);
+        float blockTone = (lmHash(vec3(colIdx, rowIdx, floor((wn.x > wn.z ? wp.x : wp.z) * 2.0))) - 0.5) * 0.11;
+        diffuseColor.rgb *= (1.0 + blockTone + (fineGrain - 0.5) * 0.09);
+        diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 0.74, mortar * 0.65);
+      } else {
+        diffuseColor.rgb *= (0.95 + fineGrain * 0.10);
+      }
+
+      // Subtle rain-streak patina and ground-contact dampness
+      float rainStreak = smoothstep(0.45, 0.85, weather) * 0.08 * (1.0 - wn.y);
+      diffuseColor.rgb *= (1.0 - rainStreak);
+      float groundDamp = (1.0 - smoothstep(0.04, 0.68, wp.y)) * (0.07 + weather * 0.12);
+      diffuseColor.rgb *= (1.0 - groundDamp);
+    `
+      );
+  };
+  material.customProgramCacheKey = () => 'paris-landmark-finish-v1';
+  material.needsUpdate = true;
+  return material;
+}
+
+function makeProceduralLandmarkTex(drawFn) {
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  drawFn(ctx, 128, 128);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+export class LandmarkModels {
+  constructor() {
+    this.templates = new Map();
+    this.sharedMaterials = new Set();
+    this.fallbackMats = null;
+    this.fallbackTextures = [];
+    this.liveGroups = new Set();
+    this.loadPromise = null;
+    this.disposed = false;
+  }
+
+  /** Loads the Blender GLB templates. Resolves to true when they are ready. */
+  async load() {
+    const glbUrl = new URL('../../../models/landmarks/paris_landmarks.glb', import.meta.url).href;
+    const gltf = await new GLTFLoader().loadAsync(glbUrl);
+    if (this.disposed) return false;
+    gltf.scene.updateMatrixWorld(true);
+    for (const child of gltf.scene.children) {
+      const kind = child.name;
+      if (!LANDMARK_SPECS[kind]) continue;
+      const root = child.clone(true);
+      root.position.set(0, 0, 0);
+      root.traverse((node) => {
+        if (!node.isMesh) return;
+        node.castShadow = true;
+        node.receiveShadow = true;
+        if (node.material) {
+          const mats = Array.isArray(node.material) ? node.material : [node.material];
+          for (const mat of mats) {
+            if (mat.map) {
+              mat.map.colorSpace = THREE.SRGBColorSpace;
+              mat.map.anisotropy = 8;
+            }
+            if (mat.normalMap) mat.normalMap.anisotropy = 8;
+            if (mat.roughnessMap) mat.roughnessMap.anisotropy = 8;
+            if (mat.metalnessMap) mat.metalnessMap.anisotropy = 8;
+            applyLandmarkFinish(mat);
+            this.sharedMaterials.add(mat);
+          }
+        }
+      });
+      this.templates.set(kind, root);
+    }
+    for (const group of this.liveGroups) {
+      const kind = group.userData?.landmarkKind;
+      if (kind && this.templates.has(kind)) {
+        this.populateFromTemplate(group, kind);
+      }
+    }
+    return this.templates.size > 0;
+  }
+
+  /** Idempotent lazy load: maps with landmarks call this, other maps never pay for the GLB. */
+  ensureLoaded() {
+    this.loadPromise ||= this.load().catch((error) => {
+      console.warn('Landmark GLB unavailable; using procedural landmark meshes.', error);
+      return false;
+    });
+    return this.loadPromise;
+  }
+
+  populateFromTemplate(group, kind) {
+    const template = this.templates.get(kind);
+    if (!template) return false;
+    group.clear();
+    const clone = template.clone(true);
+    clone.traverse((node) => {
+      if (node.isMesh) {
+        node.castShadow = true;
+        node.receiveShadow = true;
+      }
+    });
+    group.add(clone);
+    group.userData.landmarkKind = kind;
+    group.userData.landmarkSource = 'blender';
+    return true;
+  }
+
+  create(kind) {
+    const spec = LANDMARK_SPECS[kind];
+    if (!spec) throw new Error(`Unknown landmark kind: ${kind}`);
+    const group = new THREE.Group();
+    group.userData.landmarkKind = kind;
+    if (!this.populateFromTemplate(group, kind)) {
+      this.populateFallback(group, kind);
+      this.liveGroups.add(group);
+    }
+    return group;
+  }
+
+  /** Swaps an existing landmark group (e.g. ELYSEE -> ELYSEE_RUINED when HQ falls). */
+  setKind(group, kind) {
+    if (!group) return;
+    group.userData.landmarkKind = kind;
+    if (!this.populateFromTemplate(group, kind)) {
+      this.populateFallback(group, kind);
+      this.liveGroups.add(group);
+    }
+  }
+
+  getMaterials() {
+    if (this.fallbackMats) return this.fallbackMats;
+    const drawAshlar = (ctx, w, h, baseHex, mortarHex, courseH = 16, blockW = 32) => {
+      ctx.fillStyle = baseHex;
+      ctx.fillRect(0, 0, w, h);
+      for (let y = 0; y < h; y += courseH) {
+        const row = Math.floor(y / courseH);
+        const offset = (row % 2) * (blockW / 2);
+        for (let x = -blockW; x < w; x += blockW) {
+          const shade = (((row * 31 + Math.floor(x / blockW) * 17) % 11) - 5) * 3;
+          ctx.fillStyle = shade >= 0 ? `rgba(255,250,235,${shade * 0.008})` : `rgba(20,16,12,${-shade * 0.008})`;
+          ctx.fillRect(x + offset, y, blockW, courseH);
+        }
+        ctx.fillStyle = mortarHex;
+        ctx.fillRect(0, y, w, 2);
+        for (let x = offset; x < w; x += blockW) {
+          ctx.fillRect(x, y, 2, courseH);
+        }
+      }
+    };
+
+    const regTex = (drawFn) => {
+      const t = makeProceduralLandmarkTex(drawFn);
+      if (t) this.fallbackTextures.push(t);
+      return t;
+    };
+
+    const stoneTex = regTex((ctx, w, h) => drawAshlar(ctx, w, h, '#d2c3a4', '#9a8c72', 16, 32));
+    const darkStoneTex = regTex((ctx, w, h) => drawAshlar(ctx, w, h, '#948870', '#635a49', 16, 24));
+    const whiteStoneTex = regTex((ctx, w, h) => drawAshlar(ctx, w, h, '#ece8e0', '#b8b2a6', 16, 32));
+    const slateTex = regTex((ctx, w, h) => {
+      drawAshlar(ctx, w, h, '#334155', '#1e293b', 12, 16);
+      ctx.fillStyle = '#64748b';
+      for (let x = 0; x < w; x += 32) ctx.fillRect(x, 0, 2, h);
+    });
+    const ironTex = regTex((ctx, w, h) => {
+      ctx.fillStyle = '#3d2c20';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#6e523d';
+      ctx.lineWidth = 4;
+      for (let y = 0; y < h; y += 32) {
+        for (let x = 0; x < w; x += 32) {
+          ctx.strokeRect(x + 1, y + 1, 30, 30);
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + 32, y + 32);
+          ctx.moveTo(x + 32, y);
+          ctx.lineTo(x, y + 32);
+          ctx.stroke();
+        }
+      }
+    });
+    const glassTex = regTex((ctx, w, h) => {
+      ctx.fillStyle = '#2da8c4';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 3;
+      for (let i = -h; i < w + h; i += 24) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i + h, h);
+        ctx.moveTo(i, h);
+        ctx.lineTo(i + h, 0);
+        ctx.stroke();
+      }
+    });
+    const graniteTex = regTex((ctx, w, h) => drawAshlar(ctx, w, h, '#c48372', '#945b4c', 16, 32));
+
+    this.fallbackMats = {
+      stone: applyLandmarkFinish(new THREE.MeshStandardMaterial({ color: 0xd4c6a8, map: stoneTex, roughness: 0.72, metalness: 0.06 })),
+      darkStone: applyLandmarkFinish(new THREE.MeshStandardMaterial({ color: 0x968b74, map: darkStoneTex, roughness: 0.78, metalness: 0.08 })),
+      whiteStone: applyLandmarkFinish(new THREE.MeshStandardMaterial({ color: 0xeeeae2, map: whiteStoneTex, roughness: 0.62, metalness: 0.06 })),
+      slate: applyLandmarkFinish(new THREE.MeshStandardMaterial({ color: 0x3b495e, map: slateTex, roughness: 0.52, metalness: 0.30 })),
+      iron: applyLandmarkFinish(new THREE.MeshStandardMaterial({ color: 0x694e3a, map: ironTex, roughness: 0.45, metalness: 0.68 })),
+      glass: new THREE.MeshStandardMaterial({
+        color: 0x56ccf2,
+        map: glassTex,
+        emissive: 0x0369a1,
+        emissiveIntensity: 0.25,
+        roughness: 0.16,
+        metalness: 0.45,
+      }),
+      gold: new THREE.MeshStandardMaterial({
+        color: 0xfbbf24,
+        emissive: 0xb45309,
+        emissiveIntensity: 0.25,
+        roughness: 0.24,
+        metalness: 0.88,
+      }),
+      granite: applyLandmarkFinish(new THREE.MeshStandardMaterial({ color: 0xc68676, map: graniteTex, roughness: 0.42, metalness: 0.12 })),
+      ruin: applyLandmarkFinish(new THREE.MeshStandardMaterial({ color: 0x3b3532, map: darkStoneTex, roughness: 0.9, metalness: 0.08 })),
+      red: new THREE.MeshStandardMaterial({
+        color: 0xdc2626,
+        emissive: 0x7f1d1d,
+        emissiveIntensity: 0.25,
+        roughness: 0.5,
+      }),
+      blue: new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.55 }),
+    };
+    return this.fallbackMats;
+  }
+
+  populateFallback(group, kind) {
+    group.clear();
+    const m = this.getMaterials();
+    const addBox = (w, h, d, mat, x, y, z) => {
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+      return mesh;
+    };
+    const addCyl = (rt, rb, h, segs, mat, x, y, z) => {
+      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, segs), mat);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+      return mesh;
+    };
+
+    switch (kind) {
+      case 'ELYSEE': {
+        addBox(7.6, 0.22, 3.6, m.darkStone, 0, 0.11, 0);
+        addBox(7.0, 2.2, 2.0, m.stone, 0, 1.32, -0.65);
+        addBox(6.4, 0.85, 1.5, m.slate, 0, 2.84, -0.65);
+        addBox(1.45, 1.85, 1.8, m.stone, -2.8, 1.14, 0.7);
+        addBox(1.45, 1.85, 1.8, m.stone, 2.8, 1.14, 0.7);
+        addBox(2.4, 2.1, 0.6, m.whiteStone, 0, 1.25, 0.55);
+        addCyl(0.03, 0.03, 1.1, 8, m.gold, 0, 3.8, -0.65);
+        addBox(0.18, 0.26, 0.04, m.blue, 0.12, 4.15, -0.65);
+        addBox(0.18, 0.26, 0.04, m.whiteStone, 0.30, 4.15, -0.65);
+        addBox(0.18, 0.26, 0.04, m.red, 0.48, 4.15, -0.65);
+        break;
+      }
+      case 'ELYSEE_RUINED': {
+        addBox(7.6, 0.2, 3.6, m.ruin, 0, 0.1, 0);
+        addBox(3.0, 1.1, 1.8, m.ruin, -1.8, 0.65, -0.65);
+        addBox(2.6, 0.85, 1.7, m.darkStone, 1.9, 0.52, -0.65);
+        addBox(1.4, 0.9, 1.6, m.ruin, -2.8, 0.55, 0.7);
+        addBox(1.4, 0.65, 1.6, m.ruin, 2.8, 0.42, 0.7);
+        break;
+      }
+      case 'EIFFEL_TOWER': {
+        for (const sx of [-1, 1]) {
+          for (const sz of [-1, 1]) {
+            addBox(1.38, 1.1, 1.38, m.darkStone, sx * 2.0, 0.55, sz * 2.0);
+            addCyl(0.42, 0.62, 2.8, 4, m.iron, sx * 1.65, 2.5, sz * 1.65);
+          }
+        }
+        addBox(3.5, 0.35, 3.5, m.iron, 0, 3.95, 0);
+        addCyl(0.95, 1.55, 3.3, 4, m.iron, 0, 5.75, 0);
+        addBox(2.1, 0.3, 2.1, m.iron, 0, 7.5, 0);
+        addCyl(0.32, 0.88, 3.8, 4, m.iron, 0, 9.55, 0);
+        addCyl(0.04, 0.22, 1.5, 8, m.gold, 0, 12.2, 0);
+        break;
+      }
+      case 'ARC_DE_TRIOMPHE': {
+        addBox(1.72, 3.5, 3.3, m.stone, -1.95, 1.75, 0);
+        addBox(1.72, 3.5, 3.3, m.stone, 1.95, 1.75, 0);
+        addBox(5.6, 1.3, 3.45, m.stone, 0, 4.15, 0);
+        addBox(5.3, 0.95, 3.15, m.darkStone, 0, 5.25, 0);
+        addCyl(0.22, 0.28, 0.12, 10, m.gold, 0, 0.06, 0);
+        break;
+      }
+      case 'NOTRE_DAME': {
+        addBox(7.6, 0.25, 3.6, m.darkStone, 0, 0.12, 0);
+        addBox(5.4, 2.9, 2.5, m.stone, 0.35, 1.7, 0);
+        addBox(1.6, 3.0, 3.4, m.stone, 0.65, 1.75, 0);
+        addBox(1.45, 5.2, 1.4, m.stone, -2.85, 2.85, -0.98);
+        addBox(1.45, 5.2, 1.4, m.stone, -2.85, 2.85, 0.98);
+        addCyl(0.05, 0.35, 3.6, 8, m.slate, 0.65, 5.8, 0);
+        break;
+      }
+      case 'LOUVRE_PYRAMID': {
+        addBox(3.8, 0.18, 3.8, m.darkStone, 0, 0.09, 0);
+        const cone = addCyl(0.02, 2.15, 3.6, 4, m.glass, 0, 1.98, 0);
+        cone.rotation.y = Math.PI / 4;
+        break;
+      }
+      case 'SACRE_COEUR': {
+        addBox(5.6, 0.55, 3.6, m.whiteStone, 0, 0.27, 0);
+        addBox(4.4, 2.4, 2.6, m.whiteStone, 0, 1.75, -0.15);
+        addCyl(1.15, 1.22, 1.8, 14, m.whiteStone, 0, 3.85, -0.15);
+        addCyl(0.15, 1.15, 2.2, 14, m.whiteStone, 0, 5.85, -0.15);
+        break;
+      }
+      case 'CONCORDE_OBELISK': {
+        addBox(1.2, 0.55, 1.2, m.darkStone, 0, 0.27, 0);
+        addBox(0.88, 1.25, 0.88, m.stone, 0, 1.18, 0);
+        addCyl(0.26, 0.44, 4.3, 4, m.granite, 0, 3.95, 0).rotation.y = Math.PI / 4;
+        addCyl(0.01, 0.26, 0.85, 4, m.gold, 0, 6.52, 0).rotation.y = Math.PI / 4;
+        break;
+      }
+      case 'BRIDGE_DECK': {
+        addBox(2.0, 0.12, 2.0, m.darkStone, 0, 0.02, 0);
+        addBox(0.22, 0.48, 2.0, m.stone, -0.89, 0.30, 0);
+        addBox(0.22, 0.48, 2.0, m.stone, 0.89, 0.30, 0);
+        addCyl(0.06, 0.06, 0.45, 8, m.gold, -0.89, 0.76, 0);
+        addCyl(0.06, 0.06, 0.45, 8, m.gold, 0.89, 0.76, 0);
+        break;
+      }
+      case 'MINE_SIGN': {
+        addCyl(0.04, 0.04, 1.05, 8, m.slate, 0, 0.52, 0);
+        addBox(0.5, 0.36, 0.05, m.red, 0, 1.12, 0);
+        break;
+      }
+    }
+    group.userData.landmarkSource = 'fallback';
+  }
+
+  clearLiveGroups() {
+    this.liveGroups.clear();
+  }
+
+  /** Frees loaded GLB templates, textures, and materials while keeping the loader reusable. */
+  unload() {
+    this.liveGroups.clear();
+    this.loadPromise = null;
+    for (const template of this.templates.values()) {
+      template.traverse((node) => {
+        node.geometry?.dispose?.();
+      });
+    }
+    this.templates.clear();
+    for (const mat of this.sharedMaterials) {
+      mat.map?.dispose?.();
+      mat.normalMap?.dispose?.();
+      mat.roughnessMap?.dispose?.();
+      mat.metalnessMap?.dispose?.();
+      mat.dispose?.();
+    }
+    this.sharedMaterials.clear();
+    for (const tex of this.fallbackTextures) {
+      tex.dispose?.();
+    }
+    this.fallbackTextures = [];
+    if (this.fallbackMats) {
+      for (const mat of Object.values(this.fallbackMats)) mat.dispose();
+      this.fallbackMats = null;
+    }
+  }
+
+  dispose() {
+    this.disposed = true;
+    this.unload();
+  }
+}

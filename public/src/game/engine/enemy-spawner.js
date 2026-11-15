@@ -135,15 +135,29 @@ export class EnemySpawnerController {
           entryTarget: { x: halfArena - inset, z: entryZ },
         };
       }
+      if (edge === 'south') {
+        return {
+          spawnPos: { x: entryX, z: halfArena + margin },
+          entryTarget: { x: entryX, z: halfArena - inset },
+        };
+      }
       return {
         spawnPos: { x: entryX, z: -halfArena - margin },
         entryTarget: { x: entryX, z: -halfArena + inset },
       };
     };
 
+    const allEdges = Boolean(engine.survivalState);
     const ingress = findBorderIngressCell(engine.grid, targetCell, waterAllowed, {
       radius,
       tileSize: TILE_SIZE,
+      ...(allEdges
+        ? {
+            edges: ['north', 'west', 'east', 'south'],
+            maxEdgeRow: GRID_SIZE - 1,
+            maxSearchRow: GRID_SIZE - 1,
+          }
+        : {}),
       isOccupied: (wx, wz, info) => {
         const { spawnPos } = toSpawnCoords(info.edge, wx, wz);
         return engine.enemies.some((e) => {
@@ -644,11 +658,26 @@ export class EnemySpawnerController {
     }
     if (engine.survivalState) {
       engine.survivalState.elapsedSec += dt;
+      engine.survivalState.waveTimer = Math.max(
+        0,
+        (engine.survivalState.waveTimer ?? 60) - dt
+      );
       if (engine.survivalState.phase === 'intermission') {
-        engine.survivalState.intermissionTimer -= dt;
-        if (engine.survivalState.intermissionTimer <= 0) {
-          engine.survivalDirector.startWave(engine.survivalState.wave + 1, false);
-        }
+        engine.survivalState.intermissionTimer = engine.survivalState.waveTimer;
+      }
+
+      if (
+        !engine.survivalState.victoryAchieved &&
+        !engine.survivalState.overtime &&
+        engine.baseAlive &&
+        engine.survivalState.elapsedSec >= (engine.survivalState.holdTargetSec || 420)
+      ) {
+        engine.survivalDirector.onHoldVictory();
+        return;
+      }
+
+      if (engine.survivalState.waveTimer <= 0) {
+        engine.survivalDirector.startWave(engine.survivalState.wave + 1, false);
         return;
       }
 
@@ -676,6 +705,7 @@ export class EnemySpawnerController {
       }
 
       if (
+        !engine.survivalState.currentWaveCleared &&
         engine.vanguardRemainingToSpawn === 0 &&
         (!spec?.isBossWave || engine.bossSpawned) &&
         engine.enemies.length === 0

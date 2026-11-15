@@ -1,0 +1,345 @@
+{
+  "mapId": "survival-paris-last-stand",
+  "id": 201,
+  "code": "SURVIVAL S-01 // 40×40",
+  "name": "Paris: Last Stand",
+  "subtitle": "DEFEND THE ÉLYSÉE PALACE",
+  "objective": "Hold the fortified Élysée Palace HQ for 7:00 against timed armored waves across central Paris, then extract or push into endless Overtime.",
+  "gameMode": "survival",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 21,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 18,
+    "col": 18
+  },
+  "baseFootprint": {
+    "cols": 4,
+    "rows": 2
+  },
+  "baseMaxHp": 120,
+  "baseModel": "ELYSEE",
+  "baseDefense": "authored",
+  "rules": {
+    "gameMode": "survival",
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true,
+    "victoryOnAllEnemiesDestroyed": false
+  },
+  "completionReward": {
+    "credits": 0
+  },
+  "environment": {
+    "theme": "urban",
+    "tint": "#f59e0b",
+    "fogColor": "#0d1322",
+    "groundColor": "#2c333f"
+  },
+  "landmarks3d": [
+    {
+      "kind": "SACRE_COEUR",
+      "row": 3,
+      "col": 25
+    },
+    {
+      "kind": "ARC_DE_TRIOMPHE",
+      "row": 7,
+      "col": 6
+    },
+    {
+      "kind": "CONCORDE_OBELISK",
+      "row": 22,
+      "col": 12
+    },
+    {
+      "kind": "LOUVRE_PYRAMID",
+      "row": 21,
+      "col": 29
+    },
+    {
+      "kind": "NOTRE_DAME",
+      "row": 27,
+      "col": 28
+    },
+    {
+      "kind": "EIFFEL_TOWER",
+      "row": 33,
+      "col": 6
+    }
+  ],
+  "mines": [
+    { "row": 5, "col": 11 },
+    { "row": 5, "col": 14 },
+    { "row": 6, "col": 22 },
+    { "row": 6, "col": 34 },
+    { "row": 10, "col": 5 },
+    { "row": 10, "col": 15 },
+    { "row": 10, "col": 24 },
+    { "row": 10, "col": 35 },
+    { "row": 13, "col": 9 },
+    { "row": 13, "col": 13 },
+    { "row": 13, "col": 26 },
+    { "row": 13, "col": 31 },
+    { "row": 16, "col": 5 },
+    { "row": 16, "col": 11 },
+    { "row": 16, "col": 28 },
+    { "row": 16, "col": 34 },
+    { "row": 20, "col": 5 },
+    { "row": 20, "col": 34 },
+    { "row": 24, "col": 8 },
+    { "row": 24, "col": 17 },
+    { "row": 24, "col": 22 },
+    { "row": 24, "col": 34 },
+    { "row": 25, "col": 6 },
+    { "row": 25, "col": 14 },
+    { "row": 25, "col": 21 },
+    { "row": 30, "col": 9 },
+    { "row": 30, "col": 15 },
+    { "row": 30, "col": 24 },
+    { "row": 31, "col": 34 },
+    { "row": 34, "col": 15 },
+    { "row": 34, "col": 24 },
+    { "row": 35, "col": 29 }
+  ],
+  "mineSigns": [
+    { "row": 5, "col": 10, "rotation": 0.4 },
+    { "row": 6, "col": 21, "rotation": -0.3 },
+    { "row": 10, "col": 14, "rotation": 0.2 },
+    { "row": 10, "col": 25, "rotation": -0.2 },
+    { "row": 13, "col": 8, "rotation": 0.0 },
+    { "row": 13, "col": 30, "rotation": 0.0 },
+    { "row": 16, "col": 10, "rotation": 0.5 },
+    { "row": 16, "col": 29, "rotation": -0.5 },
+    { "row": 24, "col": 14, "rotation": 0.0 },
+    { "row": 24, "col": 25, "rotation": 0.0 },
+    { "row": 25, "col": 5, "rotation": 0.3 },
+    { "row": 30, "col": 14, "rotation": 3.14 },
+    { "row": 30, "col": 25, "rotation": 3.14 },
+    { "row": 34, "col": 16, "rotation": 3.14 }
+  ],
+  "powerups": [
+    {
+      "type": "REPAIR",
+      "row": 16,
+      "col": 19
+    },
+    {
+      "type": "APS",
+      "row": 22,
+      "col": 19
+    },
+    {
+      "type": "MISSILE",
+      "row": 11,
+      "col": 7
+    },
+    {
+      "type": "EMP",
+      "row": 19,
+      "col": 26
+    },
+    {
+      "type": "REPAIR",
+      "row": 31,
+      "col": 19
+    },
+    {
+      "type": "APS",
+      "row": 23,
+      "col": 12
+    }
+  ],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 6,
+    "spawnIntervalSec": 2.2,
+    "maxAttackers": 3,
+    "enemyPool": [
+      "SCOUT",
+      "STANDARD",
+      "SCOUT",
+      "SAPPER"
+    ],
+    "boss": {
+      "name": "MAMMOTH MK-V",
+      "title": "Super-Heavy Command Dreadnought",
+      "enemyClass": "BOSS_MAMMOTH",
+      "spawnCell": {
+        "row": 2,
+        "col": 19
+      }
+    }
+  },
+  "layout": [
+    "......RR...........RR...........RR......",
+    "....B.RR.B.......B.RR.B.......B.RR.B....",
+    "...X..RG..X.....X..RG..X.....X..RG..X...",
+    "......RR....BB.....RR....BBB....RR......",
+    "....FFRR..K.BB..Q..RR..F.BBB.F..RR..FF..",
+    "..C.FFRR...........RR..F.....F..RR..FF.C",
+    "RRR...RR....XX..D..RR..D.XX.....RR...RRR",
+    "..G...BRB..........RR...........RR...G..",
+    "RRR...BRB...BB.....RR....BB.....RR...RRR",
+    "......RRR...BB.RRRRRRRRR.BB..RRRRR......",
+    "....X..RRRRR...RR..CC..RR....RR..R..X...",
+    "...BB....RRRRRRRR..CC..RRRRRRRR..R..BB..",
+    "...BB..F....RR.....Q......RR....FR..BB..",
+    "......FF..D.RR.XX......XX.RR.D..FF......",
+    "....X.....B.RR.BB.RRRR.BB.RR.B.....X....",
+    "......CC..B.RR....RRRR....RR.B..CC......",
+    "....X.CC....RRRRRRRRRRRRRRRR....CC.X....",
+    ".........BB.RRRR.B.RR.B.RRRR.BB.........",
+    "RRR...X..BC.RR..B.HHHH.B..RR.CB..X...RRR",
+    "..G......BC.RR..B.HHHH.B..RR.CB......G..",
+    "RRR...X..BB.RRRR...RR...RRRR.BB..X...RRR",
+    ".........B..RR..RRRRRRRR..RR.BB.........",
+    "....X.CC....BC..B.RRRR.B..FF.BB.CC.X....",
+    "......CC.Q..RR....RRRR....FF..Q.CC......",
+    "....X....D..RR.XX.RRRR.XX.RR..D....X....",
+    "...BB..XX...RR....RRRR....RR....XX..BB..",
+    "......RRRRRRRRRRRRRRRRRRRR==WWWW==RRRR..",
+    "WWWWWWW==WWW==WWWWW==WWWWW.RBBBB.RWW==WW",
+    "WWWWWWW==WWW==WWWWW==WWWWW.RBBBB.RWW==WW",
+    "......RRRRRRRRRRRRRRRRRRRR==WWWW==RRRR..",
+    "...BB..XX...RR....RRRR....RR....XX..BB..",
+    "....X....D..RR.XX.RRRR.XX.RR..D....X....",
+    "..G...FF.Q..RR....RRRR....RR..Q.FF...G..",
+    "RRR...BRB...BB....RRRR....BB....RR...RRR",
+    "......RRR...BB.RRRRRRRRR.BB..RRRRR......",
+    "....F.BRB......RR..CC..RR....RR..F......",
+    "...FF.RRR.K....RR..CC..RR.K..RR..FF.....",
+    "...X..RG..X.....X..RG..X.....X..RG..X...",
+    "....B.RR.B.......B.RR.B.......B.RR.B....",
+    "......RR...........RR...........RR......"
+  ],
+  "decoration": {
+    "version": 1,
+    "seed": 50202,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "elysee-courtyard-zone",
+        "bounds": [15, 14, 24, 25],
+        "surface": "pavers",
+        "density": 0.3,
+        "details": ["patches", "cracks"]
+      },
+      {
+        "id": "etoile-concorde-west",
+        "bounds": [4, 3, 25, 13],
+        "surface": "pavers",
+        "density": 0.28,
+        "details": ["tracks", "cracks", "rubble"]
+      },
+      {
+        "id": "louvre-montmartre-east",
+        "bounds": [2, 24, 25, 36],
+        "surface": "concrete",
+        "density": 0.3,
+        "details": ["patches", "cracks", "rubble"]
+      },
+      {
+        "id": "left-bank-south",
+        "bounds": [30, 3, 38, 36],
+        "surface": "gravel",
+        "density": 0.32,
+        "details": ["tracks", "rubble", "cracks"]
+      }
+    ],
+    "paths": [
+      {
+        "id": "champs-elysees-axis",
+        "points": [
+          [9, 7],
+          [16, 15],
+          [16, 24]
+        ],
+        "width": 2.0,
+        "surface": "pavers",
+        "marking": "dashed"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-elysee-hq",
+        "kind": "label",
+        "row": 16,
+        "col": 19,
+        "size": 2,
+        "text": "PALAIS DE L'ELYSEE // ALLIED HQ"
+      },
+      {
+        "id": "label-etoile",
+        "kind": "label",
+        "row": 10,
+        "col": 7,
+        "size": 1.8,
+        "text": "PLACE DE L'ETOILE"
+      },
+      {
+        "id": "label-concorde",
+        "kind": "label",
+        "row": 24,
+        "col": 12,
+        "size": 1.8,
+        "text": "PLACE DE LA CONCORDE"
+      },
+      {
+        "id": "label-louvre",
+        "kind": "label",
+        "row": 24,
+        "col": 29,
+        "size": 1.8,
+        "text": "COUR NAPOLEON // LOUVRE"
+      },
+      {
+        "id": "label-cite",
+        "kind": "label",
+        "row": 25,
+        "col": 29,
+        "size": 1.8,
+        "text": "ILE DE LA CITE"
+      },
+      {
+        "id": "label-champ-de-mars",
+        "kind": "label",
+        "row": 31,
+        "col": 7,
+        "size": 1.8,
+        "text": "CHAMP DE MARS // TOUR EIFFEL"
+      },
+      {
+        "id": "elysee-helipad",
+        "kind": "helipad",
+        "row": 21,
+        "col": 19,
+        "size": 1.8
+      },
+      {
+        "id": "concorde-crosswalk",
+        "kind": "crosswalk",
+        "row": 25,
+        "col": 12,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "alexandre-crosswalk",
+        "kind": "crosswalk",
+        "row": 25,
+        "col": 19,
+        "size": 2,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "clear-elysee-hq",
+        "bounds": [17, 17, 21, 22]
+      }
+    ]
+  }
+}

@@ -251,6 +251,7 @@ function initApp() {
   const createEngine = (pregenerated) => {
     engine = new TankGameEngine(mountEl, (snapshot, syncedUpgrades) => {
       const prevStatus = state.hud.status;
+      const prevDefeatCinematics = Boolean(state.hud.defeatCinematicsActive);
       state.hud = snapshot;
       if (syncedUpgrades) {
         state.upgrades = syncedUpgrades;
@@ -319,12 +320,24 @@ function initApp() {
             reason: snapshot.gameOverReason || (isVictory ? 'cleared' : 'defeat'),
             wave: snapshot.survivalWave || undefined,
           });
-          adManager.onBattleEnd({
-            outcome,
-            mode: snapshot.gameMode,
-            sectorId: snapshot.sectorId,
-          });
+          if (!snapshot.defeatCinematicsActive) {
+            adManager.onBattleEnd({
+              outcome,
+              mode: snapshot.gameMode,
+              sectorId: snapshot.sectorId,
+            });
+          }
         }
+      } else if (
+        prevDefeatCinematics &&
+        !snapshot.defeatCinematicsActive &&
+        snapshot.status === GameStatus.GAME_OVER
+      ) {
+        adManager.onBattleEnd({
+          outcome: 'defeat',
+          mode: snapshot.gameMode,
+          sectorId: snapshot.sectorId,
+        });
       } else if (
         prevStatus !== snapshot.status &&
         (snapshot.status === GameStatus.PLAYING || snapshot.status === GameStatus.MENU)
@@ -333,7 +346,10 @@ function initApp() {
         state.achievementBonusCredits = 0;
         state.shareFeedback = '';
       }
-      renderUI(prevStatus !== snapshot.status);
+      renderUI(
+        prevStatus !== snapshot.status ||
+          prevDefeatCinematics !== Boolean(snapshot.defeatCinematicsActive)
+      );
     }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated });
     engine.applyUpgrades(state.upgrades);
     engine.setCameraPreset(state.cameraPreset);
@@ -458,7 +474,7 @@ function resolveBattlefieldTarget() {
 
   if (mode === 'survival') {
     const idx = SECTORS.findIndex(
-      (sector) => sector.gameMode === 'survival' || sector.mapId === 'survival-iron-crucible'
+      (sector) => sector.gameMode === 'survival' || sector.mapId === 'survival-paris-last-stand'
     );
     return idx >= 0 ? { index: idx } : { redirect: PAGE_PATHS.survival };
   }

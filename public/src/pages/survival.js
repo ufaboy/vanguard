@@ -31,7 +31,8 @@ if (root) {
   if (rec.totalRuns > 0) {
     const pill = document.querySelector('.survival-record-pill span:last-child');
     if (pill) {
-      pill.textContent = `BEST: WAVE ${rec.bestWave}  ·  ${rec.bestKills} KILLS  ·  ${formatSurvivalTime(rec.bestTimeSec)}`;
+      const winsPart = rec.parisVictories > 0 ? `  ·  ${rec.parisVictories} WINS` : '';
+      pill.textContent = `BEST: WAVE ${rec.bestWave}  ·  ${rec.bestKills} KILLS  ·  ${formatSurvivalTime(rec.bestTimeSec)}${winsPart}`;
     }
   }
 

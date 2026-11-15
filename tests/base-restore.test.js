@@ -40,10 +40,26 @@ test('Reconstruction restores both HQ cells and services without shielding or ch
   assert.equal(added, 1);
 });
 
-test('HQ is two cells on the outer row behind a 4-cell concrete line with an open lane', async () => {
+test('HQ is two cells on the outer row behind a 4-cell concrete line with an open lane (or authored footprint)', async () => {
   const { getBaseLayout } = await import('../public/src/game/levels.js');
   for (const sector of SECTORS) {
-    const { row, col } = sector.baseCell;
+    if (sector.baseDefense === 'authored') {
+      const layout = getBaseLayout(sector.baseCell, 40, {
+        footprint: sector.baseFootprint,
+        baseDefense: sector.baseDefense,
+      });
+      for (const c of layout.cells) {
+        assert.equal(sector.grid[c.row][c.col], TileType.BASE);
+      }
+      const baseCount = sector.grid.flat().filter((t) => t === TileType.BASE).length;
+      assert.equal(
+        baseCount,
+        sector.baseFootprint.cols * sector.baseFootprint.rows,
+        `${sector.name}: HQ cell count matches baseFootprint`
+      );
+      continue;
+    }
+    const { row } = sector.baseCell;
     assert.equal(row, 39, `${sector.name}: HQ must sit on the outermost row`);
     const layout = getBaseLayout(sector.baseCell);
     for (const c of layout.cells) assert.equal(sector.grid[c.row][c.col], TileType.BASE);

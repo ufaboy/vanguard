@@ -21,6 +21,8 @@ export const TileType = Object.freeze({
   OIL_SLICK: 15,
   CRATER: 16,
   WATER_TOWER: 17,
+  LANDMARK: 18,
+  BRIDGE: 19,
 });
 
 export const SURFACE_TYPES = Object.freeze({
@@ -42,6 +44,8 @@ export const SURFACE_TYPES = Object.freeze({
   OIL_SLICK: 'OIL_SLICK',
   CRATER: 'CRATER',
   WATER_TOWER: 'WATER_TOWER',
+  LANDMARK: 'LANDMARK',
+  BRIDGE: 'BRIDGE',
   TURRET_CANNON: 'TURRET_CANNON',
   TURRET_HOWITZER: 'TURRET_HOWITZER',
   TURRET_MLRS: 'TURRET_MLRS',
@@ -553,6 +557,52 @@ export const SURFACE_CONFIGS = Object.freeze({
       Object.freeze({ label: 'DURABILITY', value: '2 HP (1 Heavy AP / 2 Standard hits)' }),
       Object.freeze({ label: 'FLOOD RADIUS', value: '1.5 cells converted to Swamp' }),
       Object.freeze({ label: 'FIRE SUPPRESSION', value: 'Extinguishes fires within 2.5 cells' }),
+    ]),
+  }),
+
+  [SURFACE_TYPES.LANDMARK]: Object.freeze({
+    id: 'tile_landmark',
+    surfaceType: SURFACE_TYPES.LANDMARK,
+    tileId: TileType.LANDMARK,
+    code: 'TILE-LANDMARK',
+    name: 'Monumental Landmark Structure',
+    role: 'Indestructible Architectural Cover',
+    accentHex: '#F59E0B',
+    destructible: false,
+    maxHP: 0,
+    passableByTracks: false,
+    passableByHover: false,
+    blocksProjectiles: true,
+    description:
+      'Protected historical monument and heavy stone/iron architecture. Completely indestructible — blocks all direct-fire shells, missiles, line of sight, and tank movement.',
+    specs: Object.freeze([
+      Object.freeze({ label: 'DURABILITY', value: 'Indestructible monument' }),
+      Object.freeze({ label: 'BALLISTICS', value: 'Blocks all shells, missiles & LOS' }),
+      Object.freeze({ label: 'MOBILITY', value: 'Impassable to all chassis types' }),
+    ]),
+  }),
+
+  [SURFACE_TYPES.BRIDGE]: Object.freeze({
+    id: 'tile_bridge',
+    surfaceType: SURFACE_TYPES.BRIDGE,
+    tileId: TileType.BRIDGE,
+    code: 'TILE-BRIDGE',
+    name: 'Fortified Stone River Bridge',
+    role: 'All-Chassis River Crossing Deck',
+    accentHex: '#94A3B8',
+    destructible: false,
+    maxHP: 0,
+    passableByTracks: true,
+    passableByHover: true,
+    blocksProjectiles: false,
+    speedMultiplier: 1.15,
+    accelMultiplier: 1.15,
+    description:
+      'Paved stone arch bridge spanning deep water channels. Allows conventional tracked tanks to cross rivers at road speed (+15%) while amphibious units can still pass beneath or alongside.',
+    specs: Object.freeze([
+      Object.freeze({ label: 'TOP SPEED', value: '+15% paved roadway bonus' }),
+      Object.freeze({ label: 'CROSSING', value: 'Passable by all tracked & hover units' }),
+      Object.freeze({ label: 'BALLISTICS', value: 'Clear line of fire across water' }),
     ]),
   }),
 });

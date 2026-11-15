@@ -101,7 +101,7 @@ export class BossCombat {
         e.infernoDashTimer <= INFERNO.DASH_DURATION_SEC * 0.5 &&
         e.minesRemaining > 0 &&
         engine.mines &&
-        engine.mines.length < 10 &&
+        engine.mines.filter((m) => !m.mapMine).length < 10 &&
         !e._dashMineDropped
       ) {
         e._dashMineDropped = true;

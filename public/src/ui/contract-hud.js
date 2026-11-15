@@ -44,13 +44,35 @@ export function renderContractHud(hud) {
   ) {
     const sv = hud.survival;
     setHidden(hudEl, false);
+    const baseMaxHp = Math.max(1, hud.baseMaxHp || 120);
+    const baseHp = Math.max(0, hud.baseHp ?? baseMaxHp);
+    const basePct = Math.max(0, Math.min(100, Math.round((baseHp / baseMaxHp) * 100)));
+    const baseBarColor =
+      basePct > 60 ? 'bg-emerald-400' : basePct > 30 ? 'bg-amber-400' : 'bg-red-500';
+    const baseTextColor =
+      basePct > 60 ? 'text-emerald-300' : basePct > 30 ? 'text-amber-300' : 'text-red-300';
+
+    const hqBarHtml = `
+      <div class="px-3 py-1.5 rounded border ${
+        basePct <= 30 ? 'border-red-500/90 bg-red-950/90' : 'border-slate-700 bg-slate-900/95'
+      } font-mono text-xs">
+        <div class="flex items-center justify-between gap-2 mb-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-200">🏛 ÉLYSÉE PALACE HQ</span>
+          <span class="text-[11px] font-bold tabular-nums ${baseTextColor}">${baseHp} / ${baseMaxHp} HP</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-800 rounded overflow-hidden">
+          <div class="h-full ${baseBarColor}" style="width:${basePct}%"></div>
+        </div>
+      </div>
+    `;
+
     const phaseBadge =
       sv.phase === 'intermission'
         ? `<div class="px-3 py-1.5 rounded border border-teal-400 bg-teal-950/90 text-teal-200 font-mono text-xs flex items-center gap-2 font-bold">
              <span class="text-base leading-none">⏱</span>
              <div>
-               <div class="text-[11px]">INTERMISSION (${Math.ceil(sv.intermissionTimer)}s)</div>
-               <div class="text-[9px] text-teal-300">REPAIR & UPGRADE AT ALLIED BAY [U]</div>
+               <div class="text-[11px]">WAVE ${sv.wave} CLEARED · NEXT WAVE IN ${Math.ceil(sv.waveTimer)}s</div>
+               <div class="text-[9px] text-teal-300">REPAIR & UPGRADE AT ÉLYSÉE HQ [U] OR CALL WAVE [N]</div>
              </div>
            </div>`
         : `<div class="px-3 py-1.5 rounded border ${
@@ -61,13 +83,23 @@ export function renderContractHud(hud) {
              <span class="text-base leading-none">${sv.isBossWave ? '⚠' : '⚔'}</span>
              <div>
                <div class="text-[11px]">WAVE ${sv.wave} // ${sv.title}</div>
-               <div class="text-[9px] opacity-85">${sv.hostilesRemaining}/${sv.totalWaveHostiles} HOSTILES · CLEAR +$${sv.waveRewardCredits}</div>
+               <div class="text-[9px] opacity-85">${sv.hostilesRemaining}/${sv.totalWaveHostiles} HOSTILES · NEXT WAVE IN ${Math.ceil(sv.waveTimer)}s · +$${sv.waveRewardCredits}</div>
              </div>
            </div>`;
+
+    const timerLabel = sv.overtime ? 'OVERTIME' : 'HOLD PARIS';
+    const timerValue = sv.overtime
+      ? formatSurvivalDuration(sv.elapsedSec)
+      : formatSurvivalDuration(sv.holdRemainingSec);
+    const timerColor = sv.overtime ? 'text-amber-300' : 'text-sky-300';
 
     const statsBadge = `
       <div class="px-3 py-1.5 rounded border border-slate-700 bg-slate-900/95 text-slate-200 font-mono text-xs flex items-center gap-3">
         <div>
+          <div class="text-[9px] text-slate-400 uppercase">${timerLabel}</div>
+          <div class="text-[11px] font-bold ${timerColor} tabular-nums">${timerValue}</div>
+        </div>
+        <div class="border-l border-slate-700 pl-3">
           <div class="text-[9px] text-slate-400 uppercase">CLEARED</div>
           <div class="text-[11px] font-bold text-emerald-400 tabular-nums">${sv.wavesCleared} WAVES</div>
         </div>
@@ -75,44 +107,33 @@ export function renderContractHud(hud) {
           <div class="text-[9px] text-slate-400 uppercase">KILLS</div>
           <div class="text-[11px] font-bold text-amber-300 tabular-nums">${hud.kills || 0}</div>
         </div>
-        <div class="border-l border-slate-700 pl-3">
-          <div class="text-[9px] text-slate-400 uppercase">SURVIVAL TIME</div>
-          <div class="text-[11px] font-bold text-sky-300 tabular-nums">${formatSurvivalDuration(sv.elapsedSec)}</div>
-        </div>
       </div>
     `;
-
-    const baseDownWarn = !hud.baseAlive
-      ? `<div class="bg-red-950/95 border border-red-500/80 px-3.5 py-1.5 rounded flex items-center gap-2 font-mono text-xs text-red-100 shadow-lg">
-           <span class="text-amber-300 font-bold">⚠ REPAIR BAY DESTROYED</span>
-           <span>REPAIR & GARAGE [U] OFFLINE — RECOVER BASE_RESTORE FROM SUPPLY CRATES</span>
-         </div>`
-      : '';
 
     setHtml(
       hudEl,
       `
         <div class="hud-card hud-objectives-card">
-          ${phaseBadge}
+          ${hqBarHtml}
+          <div class="mt-1.5">${phaseBadge}</div>
           <div class="mt-1.5">${statsBadge}</div>
         </div>
-        ${baseDownWarn}
       `
     );
 
     if (hud.status === GameStatus.PLAYING && sv.phase === 'intermission') {
-      const ratio = sv.intermissionTimer / Math.max(1, sv.intermissionDuration || 15);
+      const ratio = sv.waveTimer / Math.max(1, sv.waveDuration || 60);
       setHidden(actionEl, false);
       setHtml(
         actionEl,
         `
           <div class="flex flex-wrap items-center gap-2.5">
             <div class="bg-slate-950/95 border border-teal-400/80 px-3.5 py-2 rounded shadow-2xl flex items-center gap-2.5 font-mono text-xs text-teal-100">
-              ${renderContractProgressRingSvg(ratio, '#2dd4bf', `${Math.ceil(sv.intermissionTimer)}s`)}
+              ${renderContractProgressRingSvg(ratio, '#2dd4bf', `${Math.ceil(sv.waveTimer)}s`)}
               <div>
                 <div class="font-bold text-xs uppercase text-white">NEXT: WAVE ${sv.nextWaveNumber} — ${sv.nextWaveTitle}</div>
                 <div class="text-[10px] ${sv.nextWaveIsBoss ? 'text-red-300 font-bold' : 'text-teal-300'}">
-                  ${sv.nextWaveIsBoss ? `⚠ SECTOR BOSS WAVE (${sv.nextWaveBossName})` : 'FIELD SUPPLY CRATES DEPLOYED · VISIT BASE BAY [U] TO UPGRADE'}
+                  ${sv.nextWaveIsBoss ? `⚠ SECTOR BOSS WAVE (${sv.nextWaveBossName})` : 'FIELD SUPPLY CRATES DEPLOYED · VISIT ÉLYSÉE HQ [U] TO UPGRADE'}
                 </div>
               </div>
             </div>

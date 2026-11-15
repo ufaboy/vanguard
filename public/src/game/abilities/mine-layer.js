@@ -44,7 +44,8 @@ export const mineLayer = Object.freeze({
     // With an active brain the minelayer role picks chokepoints; on patrol only the player's trail.
     const wantsMine = brainActive ? tank.brain?.wantMine : game.isOnPlayerTrail(tank);
     if (!wantsMine) return 0;
-    if (game.mines.length < MINE_LAYER.MAP_LIMIT) {
+    const activeSapperMines = game.mines.filter((m) => !m.mapMine).length;
+    if (activeSapperMines < MINE_LAYER.MAP_LIMIT) {
       tank.minesRemaining--;
       const planned = {
         x: tank.x - Math.sin(tank.hullAngle) * MINE_LAYER.DROP_OFFSET,

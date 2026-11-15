@@ -1,4 +1,5 @@
 import test from 'node:test';
+import * as THREE from 'three';
 import { BoxPowerUpPool } from '../public/src/game/terrains/boxes-loot.js';
 import assert from 'node:assert/strict';
 import { determineHitAspect, resolveArmorHit } from '../public/src/sim/ballistics.js';
@@ -451,6 +452,8 @@ test('Emergency repair kit triggers below 33% HP only when surviving the hit, no
   assert.equal(lethal.playerHp, 0);
   assert.equal(lethal.status, GameStatus.GAME_OVER);
   assert.equal(lethal.repairKitCount, 2);
+  assert.equal(lethal.defeatCinematicsTimer, 2.8);
+  assert.ok(lethal.playerDeathState && lethal.playerDeathState.turretVy > 8);
 
   // Non-lethal hit dropping below 33% HP (22 - 16 = 6 HP) triggers repair kit
   const nonLethal = makeEngine();
@@ -458,4 +461,68 @@ test('Emergency repair kit triggers below 33% HP only when surviving the hit, no
   assert.equal(nonLethal.playerHp, 22);
   assert.equal(nonLethal.status, GameStatus.PLAYING);
   assert.equal(nonLethal.repairKitCount, 1);
+});
+
+test('catastrophic player destruction pops off the 3D turret, bounces it, and triggers cook-off blasts', () => {
+  let tankDestroyedOpts = null;
+  const hullGroup = new THREE.Group();
+  const turretGroup = new THREE.Group();
+  const rootGroup = new THREE.Group();
+  rootGroup.add(hullGroup, turretGroup);
+
+  const engine = {
+    playerHp: 20,
+    playerMaxHp: 22,
+    repairKitCount: 0,
+    playerX: 4,
+    playerZ: -6,
+    screenShake: 0,
+    status: GameStatus.PLAYING,
+    wasDefeated: false,
+    fxGroup: new THREE.Group(),
+    particles: [],
+    playerRig: {
+      root: rootGroup,
+      hull: hullGroup,
+      turret: turretGroup,
+    },
+    fx: {
+      tankDestroyed(_x, _z, opts) {
+        tankDestroyedOpts = opts;
+      },
+      scorch() {},
+    },
+    tryDamageComponent() {},
+    spawnSparks() {},
+    setStatusBanner() {},
+    emitHudUpdate() {},
+    restoreAllComponents() {},
+    syncCampaignCredits() {},
+    saveProgress() {},
+  };
+  engine.playerController = new PlayerController(engine);
+
+  engine.playerController.damagePlayer(25);
+  assert.equal(engine.status, GameStatus.GAME_OVER);
+  assert.equal(engine.defeatCinematicsTimer, 2.8);
+  assert.deepEqual(tankDestroyedOpts, { boss: false, player: true });
+  assert.ok(engine.playerRig.cookOffRingMesh, 'hull should have glowing exposed turret ring');
+  assert.equal(engine.particles.length, 7);
+
+  // Step through 0.25s: turret should be high in the air and rotated
+  for (let i = 0; i < 5; i++) {
+    engine.playerController.updatePlayerDeathSequence(0.05);
+  }
+  assert.ok(turretGroup.position.y > 1.2, 'turret should fly high into the air');
+  assert.ok(Math.hypot(turretGroup.position.x, turretGroup.position.z) > 0.3, 'turret should travel laterally');
+
+  // Step through 2.5s: turret bounces and settles, and both secondary blasts trigger
+  for (let i = 0; i < 50; i++) {
+    engine.playerController.updatePlayerDeathSequence(0.05);
+  }
+  assert.equal(engine.playerDeathState.bounces, 1);
+  assert.equal(engine.playerDeathState.turretSettled, true);
+  assert.equal(engine.playerDeathState.secondaryBlast1, true);
+  assert.equal(engine.playerDeathState.secondaryBlast2, true);
+  assert.ok(Math.abs(turretGroup.position.y - 0.18) < 1e-6);
 });

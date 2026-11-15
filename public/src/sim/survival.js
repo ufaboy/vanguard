@@ -1,23 +1,29 @@
 /**
- * Survival Mode: Endless Wave Director, Session Rules & Survival Records.
+ * Survival Mode: "Paris: Last Stand" — Timed 7-Minute Holdout, Overtime & Survival Records.
  *
  * Rules:
- * - Every Survival run starts from a clean Tier I tank (all 5 tracks at level 1) with $500 session credits.
+ * - Every Survival run deploys in fortified central Paris on a stock Tier I tank with $500 session credits.
+ * - Objective: Defend the Élysée Palace HQ (120 HP) for at least 7:00 (420s). Losing the HQ or player tank
+ *   causes defeat.
+ * - Waves arrive on a strict 60s timer (0:00, 1:00, ..., 5:00) even if prior waves are still active.
+ * - Wave 7 at 6:00 deploys the Finale Sector Boss (MAMMOTH MK-V) with an armored escort.
+ * - Reaching 7:00 with the HQ standing achieves Victory; the player may Extract or continue into Endless
+ *   Overtime (rotating Sector Bosses every 5th wave: waves 10, 15, 20, 25...) to set higher records.
  * - Credits earned in Survival are spent in the field Hangar [U] during the run and never carry over
  *   to the main Campaign/Contracts profile.
- * - Destroying the Allied HQ disables field repairs and Hangar [U] access until a BASE_RESTORE pickup
- *   is recovered from battlefield supply crates; the run continues as long as the player tank survives.
- * - Every 5th wave deploys a Sector Boss (MAMMOTH -> HYDRA -> TITAN rotation) with an armored escort.
  */
 
 import { EnemyClass } from '../game/tanks.js';
 
 export const SURVIVAL_CONFIG = Object.freeze({
-  MAP_ID: 'survival-iron-crucible',
-  CODE: 'SURVIVAL S-01 // IRON CRUCIBLE',
-  NAME: 'Iron Crucible',
-  SUBTITLE: 'ENDLESS ARMORED HOLDOUT',
+  MAP_ID: 'survival-paris-last-stand',
+  CODE: 'SURVIVAL S-01 // PARIS: LAST STAND',
+  NAME: 'Paris: Last Stand',
+  SUBTITLE: 'DEFEND THE ÉLYSÉE PALACE',
   STARTING_CREDITS: 500,
+  HOLD_DURATION_SEC: 420.0,
+  WAVE_INTERVAL_SEC: 60.0,
+  FINALE_WAVE: 7,
   INTERMISSION_SEC: 15.0,
   EARLY_CALL_BONUS: 150,
   WAVE_BASE_REWARD: 250,
@@ -32,7 +38,7 @@ const BOSS_ROTATION = Object.freeze([
     bossClass: EnemyClass.BOSS_MAMMOTH,
     bossName: 'MAMMOTH MK-V',
     bossTitle: 'Super-Heavy Siege Dreadnought',
-    title: 'SIEGE DREADNOUGHT ASSAULT',
+    title: 'FINAL ASSAULT // SIEGE DREADNOUGHT',
     escortBase: [
       EnemyClass.STANDARD,
       EnemyClass.ARMOR,
@@ -46,7 +52,7 @@ const BOSS_ROTATION = Object.freeze([
     bossClass: EnemyClass.BOSS_HYDRA,
     bossName: 'HYDRA MLRS-X',
     bossTitle: 'Amphibious Rocket-Artillery Cruiser',
-    title: 'AMPHIBIOUS ROCKET BARRAGE',
+    title: 'SEINE FLOTILLA // ROCKET BARRAGE',
     escortBase: [
       EnemyClass.HOVER,
       EnemyClass.STRIKER,
@@ -92,93 +98,88 @@ const BOSS_ROTATION = Object.freeze([
 
 const WAVE_PRESETS = Object.freeze({
   1: {
-    title: 'RECON VANGUARD',
+    title: 'RECON PROBE',
     roster: [
       EnemyClass.SCOUT,
       EnemyClass.STANDARD,
       EnemyClass.SCOUT,
-      EnemyClass.STANDARD,
       EnemyClass.SAPPER,
+      EnemyClass.STANDARD,
       EnemyClass.SCOUT,
     ],
   },
   2: {
-    title: 'SAPPER CORDONS',
+    title: 'BOULEVARD BRIDGEHEAD',
     roster: [
       EnemyClass.STANDARD,
+      EnemyClass.ARMOR,
+      EnemyClass.SCOUT,
+      EnemyClass.ENGINEER,
+      EnemyClass.STANDARD,
       EnemyClass.SAPPER,
       EnemyClass.SCOUT,
-      EnemyClass.STANDARD,
-      EnemyClass.SAPPER,
-      EnemyClass.STANDARD,
-      EnemyClass.SCOUT,
-      EnemyClass.STANDARD,
     ],
   },
   3: {
-    title: 'HEAVY BREACHERS',
+    title: 'SEINE RIVER RAIDERS',
     roster: [
-      EnemyClass.ARMOR,
-      EnemyClass.STANDARD,
+      EnemyClass.HOVER,
+      EnemyClass.HOVER,
       EnemyClass.HOWITZER,
-      EnemyClass.SCOUT,
-      EnemyClass.SAPPER,
-      EnemyClass.ARMOR,
-      EnemyClass.KAMIKAZE,
       EnemyClass.STANDARD,
+      EnemyClass.FLAMETHROWER,
       EnemyClass.SCOUT,
+      EnemyClass.STANDARD,
+      EnemyClass.SAPPER,
     ],
   },
   4: {
-    title: 'ARTILLERY & DEMOLITION',
+    title: 'CHAMPS-ÉLYSÉES BREACHERS',
     roster: [
       EnemyClass.ARMOR,
-      EnemyClass.HOWITZER,
-      EnemyClass.STANDARD,
+      EnemyClass.ARMOR,
       EnemyClass.KAMIKAZE,
       EnemyClass.SAPPER,
-      EnemyClass.ARMOR,
+      EnemyClass.STRIKER,
+      EnemyClass.STANDARD,
+      EnemyClass.ENGINEER,
       EnemyClass.HOWITZER,
       EnemyClass.SCOUT,
+    ],
+  },
+  5: {
+    title: 'ELECTRONIC SIEGE',
+    roster: [
+      EnemyClass.JAMMER,
+      EnemyClass.STEALTH,
+      EnemyClass.STRIKER,
+      EnemyClass.ARMOR,
+      EnemyClass.HOWITZER,
       EnemyClass.ENGINEER,
+      EnemyClass.HOVER,
+      EnemyClass.SAPPER,
       EnemyClass.STANDARD,
+      EnemyClass.SCOUT,
     ],
   },
   6: {
-    title: 'RIVER FLANKERS',
+    title: 'GRAND PINCER',
     roster: [
-      EnemyClass.HOVER,
-      EnemyClass.FLAMETHROWER,
-      EnemyClass.STANDARD,
-      EnemyClass.HOVER,
-      EnemyClass.ARMOR,
-      EnemyClass.SAPPER,
-      EnemyClass.HOWITZER,
-      EnemyClass.ENGINEER,
-      EnemyClass.FLAMETHROWER,
-      EnemyClass.SCOUT,
-      EnemyClass.STANDARD,
-    ],
-  },
-  7: {
-    title: 'NAPALM & ELECTRONIC WARFARE',
-    roster: [
-      EnemyClass.FLAMETHROWER,
-      EnemyClass.JAMMER,
       EnemyClass.ARMOR,
       EnemyClass.HOVER,
-      EnemyClass.HOWITZER,
+      EnemyClass.FLAMETHROWER,
+      EnemyClass.STRIKER,
       EnemyClass.KAMIKAZE,
-      EnemyClass.ENGINEER,
       EnemyClass.STANDARD,
-      EnemyClass.FLAMETHROWER,
       EnemyClass.SAPPER,
+      EnemyClass.HOWITZER,
+      EnemyClass.ENGINEER,
       EnemyClass.ARMOR,
-      EnemyClass.HOVER,
+      EnemyClass.SCOUT,
     ],
   },
   8: {
-    title: 'SHOCK SPEARHEAD',
+    title: 'OVERTIME // SHOCK SPEARHEAD',
     roster: [
       EnemyClass.ARMOR,
       EnemyClass.STRIKER,
@@ -196,7 +197,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   9: {
-    title: 'MISSILE & SIEGE BATTERY',
+    title: 'OVERTIME // MISSILE BATTERY',
     roster: [
       EnemyClass.STRIKER,
       EnemyClass.HOWITZER,
@@ -215,7 +216,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   11: {
-    title: 'PHANTOM OVERWATCH',
+    title: 'OVERTIME // PHANTOM OVERWATCH',
     roster: [
       EnemyClass.STEALTH,
       EnemyClass.STRIKER,
@@ -234,7 +235,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   12: {
-    title: 'IRON PHALANX',
+    title: 'OVERTIME // IRON PHALANX',
     roster: [
       EnemyClass.ARMOR,
       EnemyClass.ENGINEER,
@@ -254,7 +255,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   13: {
-    title: 'COMBINED ARMS BLITZ',
+    title: 'OVERTIME // COMBINED ARMS BLITZ',
     roster: [
       EnemyClass.STRIKER,
       EnemyClass.STEALTH,
@@ -275,7 +276,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   14: {
-    title: 'CITADEL VANGUARD',
+    title: 'OVERTIME // CITADEL VANGUARD',
     roster: [
       EnemyClass.ARMOR,
       EnemyClass.STRIKER,
@@ -313,11 +314,19 @@ const ENDLESS_CYCLE_POOL = Object.freeze([
   EnemyClass.SCOUT,
 ]);
 
+/**
+ * Boss waves occur on Wave 7 (the 6:00 Finale) and then every 5th wave in Overtime (10, 15, 20, 25...).
+ */
+function isSurvivalBossWave(waveNumber = 1) {
+  const wave = Math.max(1, Math.floor(waveNumber));
+  return wave === SURVIVAL_CONFIG.FINALE_WAVE || (wave >= 10 && wave % 5 === 0);
+}
+
 /** Builds the deterministic wave specification for a 1-based Survival wave number. */
 export function buildSurvivalWaveSpec(waveNumber = 1) {
   const wave = Math.max(1, Math.floor(waveNumber));
-  const isBossWave = wave % 5 === 0;
-  const maxConcurrentEnemies = Math.min(9, 4 + Math.floor(wave / 3));
+  const isBossWave = isSurvivalBossWave(wave);
+  const maxConcurrentEnemies = Math.min(9, 4 + Math.floor(wave / 2));
   const maxAttackers = wave <= 2 ? 2 : wave <= 6 ? 3 : wave <= 14 ? 4 : 5;
   const spawnIntervalSec = Math.max(1.05, Number((2.25 - wave * 0.065).toFixed(2)));
   const waveRewardCredits =
@@ -326,8 +335,9 @@ export function buildSurvivalWaveSpec(waveNumber = 1) {
     (isBossWave ? SURVIVAL_CONFIG.BOSS_WAVE_BONUS : 0);
 
   if (isBossWave) {
-    const bossIndex = (Math.floor(wave / 5) - 1) % BOSS_ROTATION.length;
-    const cycleTier = Math.floor((wave - 1) / (BOSS_ROTATION.length * 5));
+    const bossSlot = wave === SURVIVAL_CONFIG.FINALE_WAVE ? 0 : Math.floor(wave / 5) - 1;
+    const bossIndex = bossSlot % BOSS_ROTATION.length;
+    const cycleTier = Math.floor(bossSlot / BOSS_ROTATION.length);
     const bossEntry = BOSS_ROTATION[bossIndex];
     const extraEscortCount = cycleTier * 3;
     const roster = [...bossEntry.escortBase];
@@ -377,7 +387,7 @@ export function buildSurvivalWaveSpec(waveNumber = 1) {
   }
   return {
     wave,
-    title: `ENDLESS ASSAULT // ECHELON ${wave}`,
+    title: `OVERTIME ASSAULT // ECHELON ${wave}`,
     isBossWave: false,
     bossClass: null,
     bossName: null,
@@ -397,6 +407,8 @@ export function createDefaultSurvivalRecords() {
     bestWavesCleared: 0,
     bestKills: 0,
     bestTimeSec: 0,
+    bestHoldSec: 0,
+    parisVictories: 0,
     totalRuns: 0,
     totalKills: 0,
     bossesDefeated: 0,
@@ -410,9 +422,15 @@ export function createSurvivalState() {
     wave: 1,
     wavesCleared: 0,
     phase: 'combat', // 'combat' | 'intermission'
+    waveTimer: SURVIVAL_CONFIG.WAVE_INTERVAL_SEC,
+    waveDuration: SURVIVAL_CONFIG.WAVE_INTERVAL_SEC,
     intermissionTimer: 0,
     intermissionDuration: SURVIVAL_CONFIG.INTERMISSION_SEC,
     elapsedSec: 0,
+    holdTargetSec: SURVIVAL_CONFIG.HOLD_DURATION_SEC,
+    victoryAchieved: false,
+    overtime: false,
+    currentWaveCleared: false,
     bossesDefeated: 0,
     earlyWaveCalls: 0,
     lastWaveReward: 0,
@@ -432,6 +450,10 @@ export function recordSurvivalRun(playerSave, survivalState, kills = 0) {
   const wavesCleared = survivalState?.wavesCleared || 0;
   const timeSec = Math.round(survivalState?.elapsedSec || 0);
   const bosses = survivalState?.bossesDefeated || 0;
+  const victoryAchieved = Boolean(
+    survivalState?.victoryAchieved || timeSec >= SURVIVAL_CONFIG.HOLD_DURATION_SEC
+  );
+  const alreadyRecordedVictory = Boolean(survivalState?._victoryCounted);
 
   const isNewWaveRecord = waveReached > prev.bestWave || wavesCleared > prev.bestWavesCleared;
   const isNewKillRecord = kills > prev.bestKills;
@@ -442,18 +464,26 @@ export function recordSurvivalRun(playerSave, survivalState, kills = 0) {
     bestWavesCleared: Math.max(prev.bestWavesCleared, wavesCleared),
     bestKills: Math.max(prev.bestKills, kills),
     bestTimeSec: Math.max(prev.bestTimeSec, timeSec),
-    totalRuns: (prev.totalRuns || 0) + 1,
-    totalKills: (prev.totalKills || 0) + kills,
-    bossesDefeated: (prev.bossesDefeated || 0) + bosses,
+    bestHoldSec: Math.max(prev.bestHoldSec || 0, timeSec),
+    parisVictories:
+      (prev.parisVictories || 0) + (victoryAchieved && !alreadyRecordedVictory ? 1 : 0),
+    totalRuns: (prev.totalRuns || 0) + (alreadyRecordedVictory ? 0 : 1),
+    totalKills: (prev.totalKills || 0) + (alreadyRecordedVictory ? 0 : kills),
+    bossesDefeated: (prev.bossesDefeated || 0) + (alreadyRecordedVictory ? 0 : bosses),
     lastRun: {
       waveReached,
       wavesCleared,
       kills,
       timeSec,
+      victoryAchieved,
       bossesDefeated: bosses,
       recordedAt: Date.now(),
     },
   };
+
+  if (survivalState && victoryAchieved) {
+    survivalState._victoryCounted = true;
+  }
 
   if (playerSave) {
     playerSave.survivalRecords = updated;
@@ -464,6 +494,7 @@ export function recordSurvivalRun(playerSave, survivalState, kills = 0) {
     wavesCleared,
     kills,
     timeSec,
+    victoryAchieved,
     bossesDefeated: bosses,
     isNewWaveRecord,
     isNewKillRecord,
@@ -472,11 +503,20 @@ export function recordSurvivalRun(playerSave, survivalState, kills = 0) {
   };
 }
 
-export function buildSurvivalHudSnapshot(survivalState, activeEnemiesCount = 0, vanguardRemaining = 0) {
+export function buildSurvivalHudSnapshot(
+  survivalState,
+  activeEnemiesCount = 0,
+  vanguardRemaining = 0
+) {
   if (!survivalState) return null;
   const spec = survivalState.waveSpec;
   const nextSpec = survivalState.nextWaveSpec;
   const bossPending = spec?.isBossWave && vanguardRemaining === 0 && activeEnemiesCount === 0 ? 1 : 0;
+  const elapsedSec = Math.floor(survivalState.elapsedSec || 0);
+  const holdTargetSec = survivalState.holdTargetSec || SURVIVAL_CONFIG.HOLD_DURATION_SEC;
+  const holdRemainingSec = Math.max(0, Math.ceil(holdTargetSec - (survivalState.elapsedSec || 0)));
+  const waveTimer = Math.max(0, survivalState.waveTimer ?? survivalState.intermissionTimer ?? 0);
+  const waveDuration = survivalState.waveDuration || SURVIVAL_CONFIG.WAVE_INTERVAL_SEC;
   return {
     wave: survivalState.wave,
     wavesCleared: survivalState.wavesCleared,
@@ -484,10 +524,17 @@ export function buildSurvivalHudSnapshot(survivalState, activeEnemiesCount = 0, 
     title: spec?.title || `WAVE ${survivalState.wave}`,
     isBossWave: Boolean(spec?.isBossWave),
     bossName: spec?.bossName || null,
-    intermissionTimer: Math.max(0, survivalState.intermissionTimer || 0),
+    waveTimer,
+    waveDuration,
+    nextWaveCountdown: waveTimer,
+    intermissionTimer: Math.max(0, survivalState.intermissionTimer || waveTimer),
     intermissionDuration: survivalState.intermissionDuration || SURVIVAL_CONFIG.INTERMISSION_SEC,
     earlyCallBonus: SURVIVAL_CONFIG.EARLY_CALL_BONUS,
-    elapsedSec: Math.floor(survivalState.elapsedSec || 0),
+    elapsedSec,
+    holdTargetSec,
+    holdRemainingSec,
+    victoryAchieved: Boolean(survivalState.victoryAchieved),
+    overtime: Boolean(survivalState.overtime),
     bossesDefeated: survivalState.bossesDefeated || 0,
     hostilesRemaining: activeEnemiesCount + vanguardRemaining + bossPending,
     totalWaveHostiles: spec?.totalHostiles || 1,
@@ -499,4 +546,3 @@ export function buildSurvivalHudSnapshot(survivalState, activeEnemiesCount = 0, 
     recordSummary: survivalState.recordSummary || null,
   };
 }
-

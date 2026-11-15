@@ -993,57 +993,99 @@ export class FxSystem {
   }
 
   /** Tank kill: main blast, delayed ammo cook-off, flung turret chunk and a burning wreck. */
-  tankDestroyed(x, z, { boss = false, tint = 0xff8a2a } = {}) {
-    const s = boss ? 2.0 : 1.4;
+  tankDestroyed(x, z, { boss = false, player = false, tint = 0xff8a2a } = {}) {
+    const major = boss || player;
+    const s = player ? 2.15 : boss ? 2.0 : 1.4;
     this.explosion(x, 0.7, z, { scale: s, tint });
+    if (player) {
+      this.shockwave(x, 0.08, z, 0.35, 5.2, 0xfff0cc, 0.45, 0.95);
+      this.shockwave(x, 0.1, z, 0.25, 4.1, 0xff4500, 0.68, 0.82);
+      const nJet = this.n(18);
+      for (let i = 0; i < nJet; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const rOff = rand(0, 0.32);
+        this.point('glow', {
+          x: x + Math.cos(a) * rOff,
+          y: rand(0.55, 1.15),
+          z: z + Math.sin(a) * rOff,
+          vx: Math.cos(a) * rand(0.3, 1.8),
+          vy: rand(4.5, 9.8),
+          vz: Math.sin(a) * rand(0.3, 1.8),
+          drag: 2.1,
+          gravity: -1.8,
+          delay: rand(0.0, 0.35),
+          life: rand(0.65, 1.25),
+          size: rand(0.85, 1.35),
+          size1: rand(1.9, 2.9),
+          tex: FxTex.FIRE,
+          ramp: RAMP_FIRE,
+          heat: rand(0.95, 1.25),
+          rotV: rand(-3.0, 3.0),
+        });
+      }
+    }
     this.schedule(0.18, () => {
       this.explosion(x + rand(-0.4, 0.4), 1.0, z + rand(-0.4, 0.4), {
-        scale: s * 0.6,
+        scale: s * 0.65,
         tint: 0xffb347,
         scorch: false,
       });
     });
-    if (boss) {
+    if (major) {
       this.schedule(0.42, () => {
-        this.explosion(x + rand(-0.8, 0.8), 0.9, z + rand(-0.8, 0.8), {
-          scale: 1.2,
+        this.explosion(x + rand(-0.7, 0.7), 0.9, z + rand(-0.7, 0.7), {
+          scale: player ? 1.45 : 1.2,
           tint: 0xff6a20,
           scorch: false,
         });
       });
     }
-    const nf = this.n(boss ? 30 : 18);
+    if (player) {
+      this.schedule(0.78, () => {
+        this.explosion(x + rand(-0.5, 0.5), 0.85, z + rand(-0.5, 0.5), {
+          scale: 1.25,
+          tint: 0xff4500,
+          scorch: false,
+        });
+      });
+    }
+    const nf = this.n(player ? 42 : boss ? 30 : 18);
     for (let i = 0; i < nf; i++) {
       const a = Math.random() * Math.PI * 2;
-      const h = rand(0.5, 3);
+      const h = rand(0.6, player ? 4.8 : 3);
       this.streak({
         x, y: 1.0, z,
         vx: Math.cos(a) * h,
-        vy: rand(8, 15),
+        vy: rand(8, player ? 17 : 15),
         vz: Math.sin(a) * h,
         gravity: 15,
         drag: 0.6,
-        delay: rand(0.1, 0.5),
-        life: rand(0.7, 1.3),
-        len: 0.03,
-        width: 0.07,
+        delay: rand(0.05, player ? 0.75 : 0.5),
+        life: rand(0.7, 1.45),
+        len: player ? 0.04 : 0.03,
+        width: player ? 0.085 : 0.07,
         color: [1, 0.6, 0.2],
       });
     }
-    this.point('smoke', {
-      x, y: 1.0, z,
-      vx: rand(-2, 2),
-      vy: 11,
-      vz: rand(-2, 2),
-      gravity: 18,
-      bounce: 0.25,
-      life: 2.2,
-      size: boss ? 0.75 : 0.5,
-      color: [0.16, 0.15, 0.14],
-      tex: FxTex.CHUNK,
-      rotV: rand(-8, 8),
-    });
-    this.addEmitter('burn', x, 0.55, z, boss ? 8 : 5, boss ? 1.5 : 1);
+    const nChunks = player ? this.n(10) : 1;
+    for (let i = 0; i < nChunks; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const spd = player ? rand(1.8, 5.2) : rand(0.5, 2.0);
+      this.point('smoke', {
+        x, y: 1.0, z,
+        vx: Math.cos(a) * spd,
+        vy: rand(8.5, 13.0),
+        vz: Math.sin(a) * spd,
+        gravity: 18,
+        bounce: 0.28,
+        life: rand(2.0, 2.8),
+        size: boss ? 0.75 : player ? rand(0.28, 0.58) : 0.5,
+        color: [0.16, 0.15, 0.14],
+        tex: FxTex.CHUNK,
+        rotV: rand(-10, 10),
+      });
+    }
+    this.addEmitter('burn', x, 0.55, z, major ? 8.5 : 5, major ? 1.5 : 1);
   }
 
   /** Debris burst for a destroyed wall/obstacle cell. */

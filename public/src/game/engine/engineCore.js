@@ -17,7 +17,7 @@ import { InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
 import { TerrainDestructionController } from './terrain-destruction.js';
-import { SectorLoaderController, getSectorEnemyClasses } from './sector-loader.js';
+import { SectorLoaderController, getSectorEnemyClasses, sectorUsesLandmarks } from './sector-loader.js';
 import { ProjectilesController } from './projectiles.js';
 import { EnemySpawnerController } from './enemy-spawner.js';
 import { EnemyCombatController } from './enemy-combat.js';
@@ -116,6 +116,8 @@ export class TankGameEngine {
     this.componentDamage = normalizeComponentDamage(this.playerSave.componentDamage);
     this.componentDamageCooldown = Math.max(0, Math.min(8, Number(this.playerSave.componentDamageCooldown) || 0));
     this.wasDefeated = false;
+    this.defeatCinematicsTimer = 0;
+    this.playerDeathState = null;
     this.assembledTank = resolveAssembledTank(this.playerSave);
     this.subsystems = createTankSubsystems();
     const savedRepairCharges = Number.isInteger(this.playerSave?.repairKitCharges)
@@ -175,6 +177,9 @@ export class TankGameEngine {
     this.isAdPaused = false;
     this.creditsEarnedThisMission = 0;
     this.baseAlive = true;
+    this.baseHp = 1;
+    this.baseMaxHp = 1;
+    this.baseLandmarkMesh = null;
     this.enemyBaseAlive = false;
     this._enemyBaseCell = null;
     this.inForest = false;
@@ -340,7 +345,10 @@ export class TankGameEngine {
   }
 
   waitForSectorModels(sectorIdx) {
-    return this.modelFactory.waitForModels(getSectorEnemyClasses(SECTORS[sectorIdx]));
+    const sector = SECTORS[sectorIdx];
+    return this.modelFactory.waitForModels(getSectorEnemyClasses(sector), {
+      landmarks: sectorUsesLandmarks(sector),
+    });
   }
 
   startSector(sectorIdx) {
@@ -441,7 +449,7 @@ export class TankGameEngine {
     const resultScreen =
       this.status === GameStatus.PAUSED ||
       this.status === GameStatus.VICTORY ||
-      this.status === GameStatus.GAME_OVER;
+      (this.status === GameStatus.GAME_OVER && !(this.defeatCinematicsTimer > 0));
     if (resultScreen && !this.isHangarOpen && !this.inspectMode && !this.cameraRotating) {
       return 1000 / IDLE_SCREEN_FPS;
     }
@@ -629,6 +637,7 @@ export class TankGameEngine {
   }
 
   callNextSurvivalWave() { return this.survivalDirector.callNextWave(); }
+  continueSurvivalOvertime() { return this.survivalDirector.enterOvertime(); }
 
   spawnSpecificEnemy(enemyClass) {
     this.enemySpawner.spawnSpecificEnemy(enemyClass);
@@ -901,7 +910,19 @@ export class TankGameEngine {
       this.terrainDestruction.updateBurningOil(dt);
       this.updateBrickRubble(dt);
       this.forestFire.update(dt, elapsed);
-    } else if (this.playerRig) {
+    } else if (this.status === GameStatus.GAME_OVER && this.defeatCinematicsTimer > 0) {
+      this.defeatCinematicsTimer = Math.max(0, this.defeatCinematicsTimer - dt);
+      this.playerController.updatePlayerDeathSequence(dt);
+      this.updateProjectiles(dt);
+      this.explosions.updateHazardZones(dt, elapsed);
+      this.updateBarrelExplosions(dt);
+      this.terrainDestruction.updateBurningOil(dt);
+      this.updateBrickRubble(dt);
+      this.forestFire.update(dt, elapsed);
+      if (this.defeatCinematicsTimer <= 0) {
+        this.emitHudUpdate();
+      }
+    } else if (this.playerRig && !this.playerDeathState) {
       const canHover = Boolean(this.playerStats?.canHover);
       const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
       this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
@@ -1300,6 +1321,7 @@ export class TankGameEngine {
     this.isDisposed = true;
     this.hangarStage?.dispose();
     this.modelFactory.brickModels.dispose();
+    this.modelFactory.landmarkModels?.dispose?.();
     this.enemySpawner.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
     this._aiDebugOverlay?.clear();

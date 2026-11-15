@@ -56,6 +56,7 @@ export function buildHudSnapshot(engine) {
 
   return {
     status: engine.status,
+    defeatCinematicsActive: (engine.defeatCinematicsTimer || 0) > 0,
     sectorId: engine.currentSectorIndex,
     credits: engine.playerSave?.credits ?? 0,
     creditsEarnedThisMission: engine.creditsEarnedThisMission || 0,
@@ -124,6 +125,8 @@ export function buildHudSnapshot(engine) {
     jammedTimer: engine.jammedTimer,
     inBaseRepairZone: engine.inBaseRepairZone,
     baseAlive: engine.baseAlive,
+    baseHp: Math.ceil(engine.baseHp ?? (engine.baseAlive ? 1 : 0)),
+    baseMaxHp: engine.baseMaxHp || 1,
     gameMode: engine.activeMapRules?.gameMode || sector.gameMode || 'extermination',
     mapModeName: engine.activeMapRules?.name || 'Total Extermination',
     mapObjectiveLabel:

@@ -319,6 +319,7 @@ export class ProjectilesController {
             TileType.WATER_TOWER,
             TileType.BRICK,
             TileType.CONCRETE,
+            TileType.LANDMARK,
             TileType.BASE,
             TileType.ENEMY_BASE,
           ].includes(cell.type);
@@ -389,14 +390,26 @@ export class ProjectilesController {
           engine.damageTileCell(cell, concreteDmg, p.x, p.z);
           engine.removeProjectile(i);
           continue;
+        } else if (cell.type === TileType.LANDMARK) {
+          if (p.isMissile) engine.detonateMissile(p);
+          sound.playBrickHit({ x: p.x, z: p.z });
+          engine.fx.masonryHit(p.x, 0.85, p.z, { concrete: true, heavy: false });
+          engine.removeProjectile(i);
+          continue;
         } else if (cell.type === TileType.SPAWNER && p.fromPlayer) {
           if (p.isMissile) engine.detonateMissile(p);
           engine.damageTileCell(cell, 1, p.x, p.z);
           engine.removeProjectile(i);
           continue;
-        } else if (cell.type === TileType.BASE && !p.fromPlayer) {
+        } else if (cell.type === TileType.BASE) {
           if (p.isMissile) engine.detonateMissile(p);
-          engine.terrainDestruction.destroyCommandBase();
+          if (p.fromPlayer) {
+            sound.playBrickHit({ x: p.x, z: p.z });
+            engine.fx.masonryHit(p.x, 0.85, p.z, { concrete: true, heavy: false });
+          } else {
+            const baseDmg = p.isFlame ? (p.damage || 1.2) * 0.5 : p.damage || 12;
+            engine.terrainDestruction.damageCommandBase(baseDmg, p.x, p.z);
+          }
           engine.removeProjectile(i);
           continue;
         } else if (cell.type === TileType.ENEMY_BASE && !p.fromPlayer) {
