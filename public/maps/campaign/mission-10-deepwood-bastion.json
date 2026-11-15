@@ -192,9 +192,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "dirt",
@@ -210,7 +210,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -224,9 +224,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -242,7 +242,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "dirt",
@@ -255,46 +255,6 @@
       }
     ],
     "paths": [
-      {
-        "id": "west-ring",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            33,
-            13
-          ],
-          [
-            28,
-            11
-          ],
-          [
-            12,
-            11
-          ],
-          [
-            3,
-            11
-          ],
-          [
-            3,
-            20
-          ],
-          [
-            8,
-            23
-          ],
-          [
-            12,
-            23
-          ]
-        ],
-        "width": 2.5,
-        "surface": "gravel",
-        "marking": "none"
-      },
       {
         "id": "east-ring",
         "points": [
@@ -325,74 +285,6 @@
         ],
         "width": 2.5,
         "surface": "gravel",
-        "marking": "none"
-      },
-      {
-        "id": "south-approach",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            33,
-            20
-          ],
-          [
-            28,
-            20
-          ],
-          [
-            28,
-            17
-          ],
-          [
-            24,
-            17
-          ]
-        ],
-        "width": 3,
-        "surface": "gravel",
-        "marking": "none"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
         "marking": "none"
       }
     ],
@@ -425,7 +317,7 @@
         "id": "edge-mark-0",
         "kind": "parking",
         "row": 10,
-        "col": 3,
+        "col": 1,
         "size": 1.8,
         "rotation": 0
       },
@@ -433,7 +325,7 @@
         "id": "edge-mark-1",
         "kind": "parking",
         "row": 25,
-        "col": 3,
+        "col": 1,
         "size": 1.8,
         "rotation": 90
       },
@@ -441,17 +333,39 @@
         "id": "edge-mark-2",
         "kind": "manhole",
         "row": 12,
-        "col": 36,
+        "col": 38,
         "size": 1,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "parking",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 1.8,
         "rotation": 90
+      },
+      {
+        "id": "m10-wt-haz-8-22",
+        "kind": "hazard_zone",
+        "row": 8,
+        "col": 22,
+        "size": 1.3
+      },
+      {
+        "id": "m10-helipad-hq",
+        "kind": "helipad",
+        "row": 35,
+        "col": 15,
+        "size": 1.8
+      },
+      {
+        "id": "m10-chev-n",
+        "kind": "chevron",
+        "row": 24,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
       }
     ],
     "exclusions": [
@@ -750,44 +664,44 @@
   ],
   "layout": [
     "FFFFFF.......BBB......FFFFFFFFF...FFFFFF",
-    "FFFFF........BBB.....FFFFFFFFFF....FFFFF",
-    "W........................F............B.",
+    "FFFFF....M.T.BBB...M.FFFFFFFFFF...MFFFFF",
+    "WM.......................F............BM",
     "WW........F...........FFFFFFFFF.......W.",
     "........FFFFFF........FFFFFFFFFF......WB",
-    "......FFFFFFFFF...FCCCFFFFFFFFFF.......B",
+    "MM....FFFFFFFFF...FCCCFFFFFFFFFF......MB",
     "FF.......FFFFFBBB..CECFFFFFFFFFF.......W",
     ".F........F...BBB..CCCFFFFFFFFF.......WW",
-    ".F...B........Q..........F.....BBB....WW",
+    "MF...B........Q.......T..FL...LBBB....WW",
     ".F...BBBFF.....................BBB......",
     ".....BBBFF....CCCCCCCC...CC....BBB....F.",
-    "C.....FFFFF...C...........C....FFF....F.",
+    "CM....FFFFF...C...MM..MM..C....FFF....FM",
     ".F....FFFFF..QC...........C...FFFFF.....",
     ".F....FFFFF...C.BBQ....BB.C...FFFFF...C.",
-    ".F....FFFFF...C.BB.....BBQC...FFFFF...C.",
+    "MF....FFFFF...C.BB.....BBQC...FFFFF...CM",
     ".F...FFFFFFF..C...........C..FFFFFFF....",
     "W.....FFFFF...C...........B...FFFFF.....",
-    "B.....FFFFF...C...........B...FFFFF....W",
+    "BM....FFFFF...C...K.......B...FFFFF...MW",
     "WW....FFFFF...C...........B...FFFFF...FF",
     "WW....FFFFF...C...........B...FFFFF.....",
-    "......FFFFF...C...BCCCB...B...FFFFF.....",
+    "MM....FFFFF...C...BCCCB...B...FFFFF...MM",
     "......FFFFF...C...BCCCB...B...FFFFF...F.",
     "WW....FFFFF...C...BCCCB...B...FFFFF...FB",
-    "WW....FFFFF...C...........C....FFF....B.",
+    "WW....FFFFF...C.......K...C....FFF....BM",
     "......FFFFF...C...........C.....F.......",
     ".....BBBFF....C...........C.............",
-    ".....BBBF.....CCBBBCCCCCCCC......Q....F.",
+    "MM...BBBF.....CCBBBCCCCCCCC......Q....FM",
     "CC...BBB..............Q.....F..BBB....FF",
     "FF...Q.....F..............FFFFFBBB....C.",
-    "FF......FFFFFFFQBBB......FFFFFFBBB......",
+    "MF....K.FFFFFFFQBBB......FFFFFFBBB....MM",
     ".......FFFFFFFFFBBB......FFFFFFF........",
     ".C....FFFFFFFFFFBBB.....FFFFFFFFF.....F.",
-    "FF.....FFFFFFFFF.........FFFFFFF......FF",
+    "MF.....FFFFFFFFF.........FFFFFFF......FM",
     "FF......FFFFFFF.......BBBFFFFFFF......BF",
     "FC.........F..........BBB.FFFFF.......BF",
-    "B...........................F...........",
+    "BM..........................F.........MM",
     ".....FF.....................F...........",
     ".....FF...........CCCC..................",
-    ".........................BB.............",
+    "....K....KT...K.........KBB..K....K.....",
     "FFFFFF.............HH....BB.....FFFFFFFF"
   ]
 }

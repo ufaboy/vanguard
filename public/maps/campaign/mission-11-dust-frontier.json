@@ -212,9 +212,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "sand",
@@ -230,7 +230,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -244,9 +244,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -262,7 +262,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "sand",
@@ -390,46 +390,6 @@
         "width": 2.5,
         "surface": "dirt",
         "marking": "none"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
       }
     ],
     "landmarks": [
@@ -461,7 +421,7 @@
         "id": "edge-mark-0",
         "kind": "loading",
         "row": 10,
-        "col": 3,
+        "col": 1,
         "size": 1.8,
         "rotation": 0
       },
@@ -469,7 +429,7 @@
         "id": "edge-mark-1",
         "kind": "manhole",
         "row": 25,
-        "col": 3,
+        "col": 1,
         "size": 1,
         "rotation": 90
       },
@@ -477,17 +437,39 @@
         "id": "edge-mark-2",
         "kind": "loading",
         "row": 12,
-        "col": 36,
+        "col": 38,
         "size": 1.8,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "crosswalk",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 2,
         "rotation": 90
+      },
+      {
+        "id": "m11-wt-haz-7-21",
+        "kind": "hazard_zone",
+        "row": 7,
+        "col": 21,
+        "size": 1.3
+      },
+      {
+        "id": "m11-helipad-hq",
+        "kind": "helipad",
+        "row": 35,
+        "col": 15,
+        "size": 1.8
+      },
+      {
+        "id": "m11-chev-main",
+        "kind": "chevron",
+        "row": 25,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
       }
     ],
     "exclusions": [
@@ -750,24 +732,24 @@
   ],
   "layout": [
     "........BBBB....BBB.....BBBB...BBB......",
-    "........BBBB....BBB.....BBBB...BBB......",
+    "....K...BBBB....BBB...K.BBBBK.LBBBK.....",
     ".F......BBBB....BBB.....BBBB...BBB......",
     "........BBBB....BCB.....BCCB...BBB....B.",
     ".C......BBBB....BCB.CC..BCCB.BBBB.....CC",
     "........BBBB....BCBCCCC.BBBB.BBBB.......",
     "............B...BBB.CCC......BBBB.....C.",
-    "B......BCCC.B..........BBBBB..........C.",
+    "B......BCCC.B........T.BBBBB..........C.",
     "BF....BB.CCC............BBBB...BBB....C.",
     ".C....BB.......................BBB....CF",
-    "......BB.........BBB......CC............",
+    "......BB.K.......BBB.....LCC............",
     "C........B...B...BBBB....CCC..........XX",
-    "CB...BBB.BBBBB...BBBB....CC............C",
+    "CB...BBB.BBBBB...BBBB....CC...........KC",
     "XX...BBB.BBBBB............C............F",
     "XX...BBB..BBBB.....BB.....C............B",
-    "..........C........BB.....B.....B.......",
-    "B.........C.BBB.CCC.......B.............",
+    "..........C........BB.....B.....B.....K.",
+    "B........KC.BBB.CCC..K....B..L...K......",
     "CC........C.BCBCCCC......QB....CC.......",
-    "CC........C.BCBCCCC.......B....CC.......",
+    "CC........C.BCBCCCC.......B....CC.....K.",
     "BF........C.BCBCCCC.......B....CC.......",
     "BB........B...BCCC..B.....C....CCC......",
     "BB........B...BCCC..B.....C....CCC....CC",
@@ -779,15 +761,15 @@
     "BB..BCC...CBBBB.......CCC......BB.....CC",
     "CC..BCC....BCCB...Q....CCC............BB",
     "....BBB....BCCB.BBB....QCC............BB",
-    ".......Q...BCCB.BBB..............BBB....",
+    ".......Q...BCCB.BBB..............BBB..K.",
     "B....BBB...CCCC.BBB..............BBB..BB",
     "CC...BBB...CCC.................CC.....BB",
-    "CC...BBB....C..........BBB....CCC.......",
+    "CC...BBB....C..........BBB....CCC.....K.",
     "BB...BBB...............BBB....CC......BB",
     ".C.....................BBB.....BBBBB....",
-    ".....BBB.......................BBBBB....",
+    ".....BBB.......................BBBBB..K.",
     ".....BBB.BBBB.....CCCC.........BBBBB....",
-    ".........................BBB............",
+    "....K.....KTL............BBBK.....K.....",
     ".....BBB...........HH....BBB....BBBB...."
   ]
 }

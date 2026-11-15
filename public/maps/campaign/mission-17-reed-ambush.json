@@ -199,9 +199,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "sand",
@@ -217,7 +217,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "concrete",
@@ -231,9 +231,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "concrete",
@@ -249,7 +249,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "sand",
@@ -261,132 +261,7 @@
         ]
       }
     ],
-    "paths": [
-      {
-        "id": "west-dry-embankment",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            32,
-            8
-          ],
-          [
-            23,
-            8
-          ],
-          [
-            9,
-            8
-          ],
-          [
-            3,
-            8
-          ]
-        ],
-        "width": 2.6,
-        "surface": "gravel",
-        "marking": "none"
-      },
-      {
-        "id": "central-wetland-causeway",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            25,
-            20
-          ],
-          [
-            14,
-            20
-          ],
-          [
-            8,
-            19
-          ],
-          [
-            3,
-            19
-          ]
-        ],
-        "width": 2.6,
-        "surface": "pavers",
-        "marking": "none"
-      },
-      {
-        "id": "east-dry-escape-road",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            32,
-            30
-          ],
-          [
-            24,
-            31
-          ],
-          [
-            10,
-            31
-          ],
-          [
-            3,
-            31
-          ]
-        ],
-        "width": 2.8,
-        "surface": "gravel",
-        "marking": "edges"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      }
-    ],
+    "paths": [],
     "landmarks": [
       {
         "id": "west-reeds-label",
@@ -415,34 +290,63 @@
       {
         "id": "edge-mark-0",
         "kind": "parking",
-        "row": 10,
-        "col": 3,
+        "row": 8,
+        "col": 2,
         "size": 1.8,
         "rotation": 0
       },
       {
         "id": "edge-mark-1",
         "kind": "loading",
-        "row": 25,
-        "col": 3,
+        "row": 24,
+        "col": 0,
         "size": 1.8,
         "rotation": 90
       },
       {
         "id": "edge-mark-2",
         "kind": "parking",
-        "row": 12,
-        "col": 36,
+        "row": 13,
+        "col": 37,
         "size": 1.8,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "manhole",
-        "row": 28,
+        "row": 26,
         "col": 36,
         "size": 1,
         "rotation": 90
+      },
+      {
+        "id": "m17-wt-haz-7-21",
+        "kind": "hazard_zone",
+        "row": 7,
+        "col": 21,
+        "size": 1.3
+      },
+      {
+        "id": "m17-helipad-hq",
+        "kind": "helipad",
+        "row": 35,
+        "col": 17,
+        "size": 1.8
+      },
+      {
+        "id": "m17-chev-main",
+        "kind": "chevron",
+        "row": 24,
+        "col": 18,
+        "size": 1.2,
+        "rotation": 0
+      },
+      {
+        "id": "m17-drain-coast",
+        "kind": "drain_grate",
+        "row": 33,
+        "col": 36,
+        "size": 1
       }
     ],
     "exclusions": [
@@ -706,44 +610,44 @@
   ],
   "layout": [
     "FFFFFF...WWW...BBB....FFF...BB....FFFFFF",
-    "FFFFF....WWW....BBB...FF....BB.....FFFFF",
-    "F....BB....CC...BB....CC...BB....BB...BB",
+    "FFFFFM...WWW.T.MBBB...FF.M..BB.....FFFFF",
+    "MM...BB....CC...BB....CC...BB....BB...BB",
     "BB...BC..F.CC...BB....CC...BC..F.BB...FF",
-    "FFF......FFBB...CC....FF...BC..FF....FFF",
-    "FFF...CC.FFBB...CC....BB...CC..FFBBB.FFF",
-    "B.....CC........CC....BB.........CCB..W.",
-    "FF...BBB..CCC...FF....CCC..CCC........W.",
+    "MFF.....RFFBB...CC....FF...BC..FF....FFF",
+    "FFF...CCRFFBB...CC....BB...CC..FFBBB.FFF",
+    "BM....CCR.......CC....BB.........CCB..W.",
+    "FF...BBB..CCC...FF...TCCC..CCC........W.",
     "WW........CCB..CCC....CCB..CCB..BBB...FF",
     "WWW..FFF........B..........FFF..CCB..WWW",
-    "WWW..FFF.CCC....B.....CCC..FFF.......WWW",
-    "WWW......CCB..........CCB.......CCC..WWW",
-    "WWW..BB......WWWW..F..WWWWWW....CCB..WWW",
-    ".F...BC..FFF.WWWW..C..WWWWWW.FF.CCB...WW",
-    ".........FFF.WWWW..C..WWWWWW.FFF......W.",
+    "WWW..FFFRCCC....B....KCCC..FFF.......WWW",
+    "WWW.....RCCB..........CCB.......CCC..WWW",
+    "WWW..BB.R....WWWW..F..WWWWWW....CCB..WWW",
+    ".F...BC.RFFF.WWWWL.C.LWWWWWW.FF.CCB...WW",
+    "MM......RFFF.WWWW..C..WWWWWW.FFF......W.",
     ".....CC..FF..WWWW.....WWWWWW.FFF.BB...W.",
-    "CC...CC..CCC.....CCBBBCCC....CC..BB.....",
-    "FFF........C..FF..........FF.C.......FFF",
-    "FFF........C..FF..........FF.C.......FFF",
-    "FFF........C..FF..........FF.C.......FFF",
-    "FFF..BB....B..FFF.CC..CC.FFF.C...CC..FFF",
-    "FFF..BB....B..FFF.CC..CC.FFF.C...CC..FFF",
-    "FFF..BB....B..FFF.CC..CC.FFF.C...CC..FFF",
-    "CC...BC....B......CB..CB.....B...CB...WW",
-    "FF....Q....B..FF..........FF.B...Q....WW",
-    ".W...CCC...C..FFF.CC..CC.FFFQB...BB.....",
-    "WWW..CCB...C.WWWW..B..WWWW...C...BC..WWW",
-    "WWW......FFF.WWWW..BQ.WWWW...C...BB..WWW",
-    "WWW..BB..FFF.WWWW.....WWWW..FFF......WWW",
-    "WWW..BCQ.FF..WWWW.CC..WWWW..FFF..BB..WWW",
-    "..............Q...CC........FF...BC.....",
-    "WW...CC..FF..CCC......CCC........BBQ...W",
-    "CB...CB..FF..CCB..CC.QCCB...CCC.......WW",
-    "CC.......BB.......CC........CCB..BB...CF",
-    ".....CC..BC...CC......BB..CC.....BB....F",
+    "CC...CC.RCCC.M...CCBBBCCC....CC..BB...M.",
+    "FFF.....R..C..FF..........FF.C.......FFF",
+    "MFF.....R..C..FF..........FF.C.......FFF",
+    "FFF.....R..C.MFF.........MFF.C.......FFF",
+    "MFF..BB.R..B..FFF.CC..CC.FFF.C...CC..FFF",
+    "FFF..BB.R..B..FFF.CC..CC.FFF.C...CC..FFF",
+    "MFF..BB.RK.B.MFFFMCC.KCC.FFF.C...CC..FFF",
+    "CC...BC....B......CB..CB.....B.R.CB...WW",
+    "MF....Q.R..B..FF..........FF.B.R.Q....WW",
+    ".W...CCCR..C..FFF.CC..CC.FFFQB.R.BB.....",
+    "WWW..CCBR..C.WWWW..B..WWWW...C.R.BC..WWW",
+    "WWW.....RFFF.WWWW..BQ.WWWW...C.R.BB..WWW",
+    "WWW..BB.RFFF.WWWW....KWWWW..FFFR.....WWW",
+    "WWW..BCQRFF..WWWW.CC..WWWW..FFF..BB..WWW",
+    "MM......R.....Q...CC........FF...BC...M.",
+    "WW...CC.RFF..CCC......CCC........BBQ...W",
+    "CB...CB.RFF..CCB..CC.QCCB...CCC.......WW",
+    "CC.......BBRRR....CC.....RRRCCB..BB...CF",
+    "MM...CC..BC...CC......BB..CC.....BB...MF",
     "FFF..CC.......CC..........CC...BB....FFF",
-    "FFF.......BB...................BB....FFF",
+    "MFF.......BB...................BB....FFF",
     "F.....BB..BB......CCCC....BB..........BB",
-    ".........................BBB............",
+    ".....K...TK....K.........BBB..K.........",
     "FFFFFF......WWW....HH....BBB......FFFFFF"
   ]
 }

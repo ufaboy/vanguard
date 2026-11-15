@@ -237,9 +237,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "pavers",
@@ -255,7 +255,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "concrete",
@@ -269,9 +269,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "concrete",
@@ -287,7 +287,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "pavers",
@@ -299,128 +299,7 @@
         ]
       }
     ],
-    "paths": [
-      {
-        "id": "grand-central-boulevard-highway",
-        "surface": "asphalt",
-        "width": 4,
-        "marking": "dashed",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            28,
-            19
-          ],
-          [
-            16,
-            20
-          ],
-          [
-            6,
-            20
-          ]
-        ]
-      },
-      {
-        "id": "west-arcade-flank-avenue",
-        "surface": "asphalt",
-        "width": 3,
-        "marking": "edges",
-        "points": [
-          [
-            35,
-            16
-          ],
-          [
-            30,
-            8
-          ],
-          [
-            16,
-            8
-          ],
-          [
-            9,
-            10
-          ],
-          [
-            8,
-            17
-          ]
-        ]
-      },
-      {
-        "id": "east-chancellery-flank-avenue",
-        "surface": "asphalt",
-        "width": 3,
-        "marking": "edges",
-        "points": [
-          [
-            35,
-            22
-          ],
-          [
-            30,
-            30
-          ],
-          [
-            16,
-            30
-          ],
-          [
-            9,
-            29
-          ],
-          [
-            8,
-            23
-          ]
-        ]
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      }
-    ],
+    "paths": [],
     "landmarks": [
       {
         "id": "south-boulevard-crosswalk",
@@ -433,7 +312,7 @@
       {
         "id": "mid-boulevard-crosswalk",
         "kind": "crosswalk",
-        "row": 16,
+        "row": 18,
         "col": 20,
         "size": 3,
         "rotation": 0
@@ -457,8 +336,8 @@
       {
         "id": "east-chancellery-parking",
         "kind": "parking",
-        "row": 26,
-        "col": 30,
+        "row": 25,
+        "col": 29,
         "size": 2.5,
         "rotation": 0
       },
@@ -489,24 +368,24 @@
       {
         "id": "edge-mark-0",
         "kind": "loading",
-        "row": 10,
-        "col": 3,
+        "row": 9,
+        "col": 2,
         "size": 1.8,
         "rotation": 0
       },
       {
         "id": "edge-mark-1",
         "kind": "loading",
-        "row": 25,
-        "col": 3,
+        "row": 24,
+        "col": 0,
         "size": 1.8,
         "rotation": 90
       },
       {
         "id": "edge-mark-2",
         "kind": "crosswalk",
-        "row": 12,
-        "col": 36,
+        "row": 11,
+        "col": 37,
         "size": 2,
         "rotation": 0
       },
@@ -514,9 +393,45 @@
         "id": "edge-mark-3",
         "kind": "manhole",
         "row": 28,
-        "col": 36,
+        "col": 38,
         "size": 1,
         "rotation": 90
+      },
+      {
+        "id": "m32-wt-haz-7-5",
+        "kind": "hazard_zone",
+        "row": 7,
+        "col": 5,
+        "size": 1.3
+      },
+      {
+        "id": "m32-helipad-hq",
+        "kind": "helipad",
+        "row": 36,
+        "col": 15,
+        "size": 1.8
+      },
+      {
+        "id": "m32-chev-main",
+        "kind": "chevron",
+        "row": 26,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
+      },
+      {
+        "id": "m32-drain-w",
+        "kind": "drain_grate",
+        "row": 18,
+        "col": 2,
+        "size": 1
+      },
+      {
+        "id": "m32-drain-e",
+        "kind": "drain_grate",
+        "row": 19,
+        "col": 38,
+        "size": 1
       }
     ]
   },
@@ -766,44 +681,44 @@
   ],
   "layout": [
     "FFFF.........CC...........CC.......FFFFF",
-    "FFF..........CC...........CC........FFFF",
+    "FFF..K.....K.CC..K.....K.TCC.K......FFFF",
     "BB...................................FFF",
     "FFF...................................B.",
     "CC..CC.......FF....CCC....FF.....CCC...F",
     "CC..CC.......FF....CEC....FF......CC....",
     ".............CC....CCC....CC.........WWW",
-    "BB...................................WWW",
+    "BB...T...............K...........K...WWW",
     "CC..FF........C..CC...CC..C..........WWW",
     "CB.FFF........C..CC...CC..C......FF...FB",
-    "XX........CC..C...........C..CC..FFF....",
-    "XX........CC..C...........C..CC........C",
-    "..............B...........B..........FFF",
-    "C...CC........B...........B......CCC..BB",
-    "CF..CC........C..BB...BB..C.......CC.FFF",
+    "XX...L....CC..C.....R.....C..CC..FFF....",
+    "XX.......RCC..C.....R.....C..CC........C",
+    ".........R....B.....R.....B..........FFF",
+    "C...CC...R....B......K....B......CCC..BB",
+    "CF..CC...R....C..BB...BB..C.......CC.FFF",
     "X........FF...C..BB...BB..C..FF......FFF",
     "BB.......FF..................FF......FFF",
     "BB..BB........C...........C.......BBB.F.",
-    "BB..BB........C...........C.......BBB.FB",
-    "CC..BB........C...........C.......BBB..F",
-    ".B..BB........C...CC..CC..C.......BBB.F.",
-    "....BB........C...CC..CC..C.......BBB.F.",
-    "....BB........C...CC..CC..C.......BBB.FF",
-    "FFF....CCBBCC.C...CC..CC..C.CCBBCC....F.",
-    "....CC........C..Q........C..Q...CCC....",
-    ".B..CC........C..BB...BB..C.......CC.FFF",
-    ".B........CC..C..BB...BB..C..CC.......XB",
-    "BB...FF...CC.Q............C..CC..FF...BB",
-    "BB..FFF......C........Q...C.......FF....",
-    "FFF..........C...CC...CC..C...........CC",
-    ".................CC...CC...Q.........WWW",
-    ".X...........CC...........CC.........WWW",
+    "BB..BB..R.....C.....R.....C.......BBB.FB",
+    "CC..BB..RK....C.....R.....C.......BBB..F",
+    ".B..BB..R.....C...CCR.CC..C.......BBB.F.",
+    "....BB..R.....C...CCR.CC..C.......BBB.F.",
+    "....BB..R.....C...CCR.CC..C.......BBB.FF",
+    "FFF...CCRBBCC.C...CC..CC..C.CCBBCC....F.",
+    "....CC..R.....C..Q.R......C..Q...CCC....",
+    ".B..CC..R.....C..BBR..BB..C.......CC.FFF",
+    ".B......R.CC..C..BBR..BB..C..CC.......XB",
+    "BB...FF.R.CC.Q.....R......C..CC..FF...BB",
+    "BB..FFF.R....C.....R..Q...C......LFF....",
+    "FFF.....R....C...CCR..CC..C...........CC",
+    "........R........CCR..CC...Q.........WWW",
+    ".X...........CC....R......CC.........WWW",
     ".B...........CCQ..BB.BB...CC......Q..WWW",
     "C...CC....FF......BB.BBQ.....FF..CCC..BB",
     "XB..CC....FF...BB......BBB...FF...CC...C",
     ".....F............................FF....",
     ".F..FF......FF............FF.....FFF...X",
     "WWW.........FF....CCCC....FF...........X",
-    "WWWW.................................FFF",
+    "WWWW.K..T..KL..........K....LK.......FFF",
     "WWWW...............HH...............FFFF"
   ]
 }

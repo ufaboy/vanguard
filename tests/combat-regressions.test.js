@@ -81,7 +81,7 @@ test('Barrel chains wait for active simulation and ignore cells from a replaced 
   engine.updateBarrelExplosions(0.05);
   assert.equal(next.type, TileType.BARREL);
   engine.updateBarrelExplosions(0.03);
-  assert.equal(next.type, TileType.EMPTY);
+  assert.equal(next.type, TileType.CRATER);
 
   const replacement = { type: TileType.BARREL, row: 0, col: 1 };
   next.type = TileType.BARREL;

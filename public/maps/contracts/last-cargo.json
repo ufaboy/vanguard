@@ -186,15 +186,15 @@
   },
   "layout": [
     "........................................",
-    "........................................",
+    "....K.....K....TK...........K...........",
     "BB......................................",
     "BB......................................",
     "FF....C.........CC.....CC..............C",
     "CCCC..C.........CC.....CC...............",
     "CCCC..C.....C................CCC.......F",
     "BC..........C.....BB..................BB",
-    "FC....B.....C.....BB..FF.........C....BB",
-    ".B....B.BB..C.........FF.........C....BB",
+    "FC....B.....C..FF.BB..FF.........C....BB",
+    ".B....B.BB..C.FFF.....FF.........C....BB",
     "FFFF..B.....C....................C......",
     "FFFF........B...........WWW...BB....CCCC",
     "FFFF..C.....B...........WWW.........CCCC",
@@ -223,7 +223,7 @@
     "......CCC......................CCC......",
     ".C....CCC......................CCC....BB",
     "..................CCCC.................C",
-    "........................................",
+    "....K....TK.L...............K.....K.....",
     "...................HH..................."
   ],
   "decoration": {
@@ -311,9 +311,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "concrete",
@@ -329,7 +329,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -343,9 +343,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -361,7 +361,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "concrete",
@@ -374,58 +374,6 @@
       }
     ],
     "paths": [
-      {
-        "id": "west-rail-spine",
-        "points": [
-          [
-            1,
-            7
-          ],
-          [
-            14,
-            9
-          ],
-          [
-            32,
-            9
-          ],
-          [
-            36,
-            16
-          ]
-        ],
-        "width": 3,
-        "surface": "gravel",
-        "marking": "edges"
-      },
-      {
-        "id": "central-road",
-        "points": [
-          [
-            1,
-            20
-          ],
-          [
-            11,
-            19
-          ],
-          [
-            17,
-            13
-          ],
-          [
-            28,
-            14
-          ],
-          [
-            35,
-            19
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
       {
         "id": "island-bridge-loop",
         "points": [
@@ -451,34 +399,6 @@
         "marking": "edges"
       },
       {
-        "id": "east-quay-road",
-        "points": [
-          [
-            1,
-            32
-          ],
-          [
-            9,
-            30
-          ],
-          [
-            26,
-            28
-          ],
-          [
-            32,
-            24
-          ],
-          [
-            35,
-            21
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
         "id": "north-cross-link",
         "points": [
           [
@@ -493,46 +413,6 @@
         "width": 3,
         "surface": "asphalt",
         "marking": "none"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
       }
     ],
     "landmarks": [
@@ -619,23 +499,23 @@
       {
         "id": "edge-mark-0",
         "kind": "crosswalk",
-        "row": 10,
-        "col": 3,
+        "row": 9,
+        "col": 0,
         "size": 2,
         "rotation": 0
       },
       {
         "id": "edge-mark-1",
         "kind": "manhole",
-        "row": 25,
-        "col": 3,
+        "row": 24,
+        "col": 2,
         "size": 1,
         "rotation": 90
       },
       {
         "id": "edge-mark-2",
         "kind": "crosswalk",
-        "row": 12,
+        "row": 10,
         "col": 36,
         "size": 2,
         "rotation": 0
@@ -643,10 +523,32 @@
       {
         "id": "edge-mark-3",
         "kind": "loading",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 1.8,
         "rotation": 90
+      },
+      {
+        "id": "last-cargo-helipad-hq",
+        "kind": "helipad",
+        "row": 35,
+        "col": 15,
+        "size": 1.8
+      },
+      {
+        "id": "last-cargo-chev-main",
+        "kind": "chevron",
+        "row": 24,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
+      },
+      {
+        "id": "last-cargo-drain-w",
+        "kind": "drain_grate",
+        "row": 16,
+        "col": 2,
+        "size": 1
       }
     ],
     "exclusions": [

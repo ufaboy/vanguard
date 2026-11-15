@@ -214,9 +214,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "sand",
@@ -232,7 +232,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -246,9 +246,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -264,7 +264,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "sand",
@@ -276,140 +276,7 @@
         ]
       }
     ],
-    "paths": [
-      {
-        "id": "main-switchback-road",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            30,
-            17
-          ],
-          [
-            24,
-            17
-          ],
-          [
-            24,
-            9
-          ],
-          [
-            11,
-            9
-          ],
-          [
-            11,
-            18
-          ],
-          [
-            4,
-            18
-          ]
-        ],
-        "width": 3,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "east-ledge-bypass",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            32,
-            24
-          ],
-          [
-            25,
-            24
-          ],
-          [
-            25,
-            32
-          ],
-          [
-            11,
-            32
-          ],
-          [
-            4,
-            31
-          ]
-        ],
-        "width": 2.6,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "central-crosslink-trail",
-        "points": [
-          [
-            22,
-            9
-          ],
-          [
-            17,
-            18
-          ],
-          [
-            17,
-            24
-          ],
-          [
-            14,
-            31
-          ]
-        ],
-        "width": 2.5,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      }
-    ],
+    "paths": [],
     "landmarks": [
       {
         "id": "west-switchback-label",
@@ -438,8 +305,8 @@
       {
         "id": "summit-pass-label",
         "kind": "label",
-        "row": 5,
-        "col": 18,
+        "row": 4,
+        "col": 17,
         "size": 3,
         "text": "SUMMIT PASS"
       },
@@ -447,7 +314,7 @@
         "id": "edge-mark-0",
         "kind": "parking",
         "row": 10,
-        "col": 3,
+        "col": 1,
         "size": 1.8,
         "rotation": 0
       },
@@ -455,7 +322,7 @@
         "id": "edge-mark-1",
         "kind": "parking",
         "row": 25,
-        "col": 3,
+        "col": 1,
         "size": 1.8,
         "rotation": 90
       },
@@ -463,7 +330,7 @@
         "id": "edge-mark-2",
         "kind": "manhole",
         "row": 12,
-        "col": 36,
+        "col": 38,
         "size": 1,
         "rotation": 0
       },
@@ -471,9 +338,31 @@
         "id": "edge-mark-3",
         "kind": "manhole",
         "row": 28,
-        "col": 36,
+        "col": 38,
         "size": 1,
         "rotation": 90
+      },
+      {
+        "id": "m13-wt-haz-10-25",
+        "kind": "hazard_zone",
+        "row": 10,
+        "col": 25,
+        "size": 1.3
+      },
+      {
+        "id": "m13-helipad-hq",
+        "kind": "helipad",
+        "row": 34,
+        "col": 16,
+        "size": 1.8
+      },
+      {
+        "id": "m13-chev-main",
+        "kind": "chevron",
+        "row": 25,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
       }
     ],
     "exclusions": [
@@ -742,44 +631,44 @@
   ],
   "layout": [
     ".....BBB......BBB........BB......BBB....",
-    "..............BBB........BB.............",
+    "....K.....K...BBB.....K.TBB.K.L...K.....",
     "CC...BBB....BBBB.....BBB...BBBB..BB.....",
-    ".C...BBB....BCCB.....BCB...BCCB..BB....X",
+    ".C...BBB....BCCB.....BCB...BCCB..BB...KX",
     ".....BBB....BCCB.....BCB...BBBB.......CC",
     "............BBBB.BB..BBB.........BBB....",
     "BB...BBBB........BB......BBBB....BBB..X.",
     "CC...BCCB...BBB......BB..BCCB..........B",
     ".C...BBBB...BBB......BB..BBBB...BBB....B",
-    ".C..........BBB.................BBB.....",
-    ".....BBB......CC....BBB...BBCC..........",
+    ".C..........BBB.................BBB...K.",
+    ".....BBB.....KCC....BBB..TBBCC..........",
     "X....BBB.....CCC....BCB...BBCC..BBB....B",
-    ".B...BBB.....CCB....BCB.....C...BBB.....",
-    ".B...........C......CCC.....B...BBB.....",
+    ".B...BBB.....CCB....BCB.....C...BBB...K.",
+    ".B...L.......C......CCC.....B...BBB.....",
     "......BBB....C..BB..CCC.....B.........FF",
     ".C....BCC.......BB..CCC.....B...BBB...FF",
-    "BC....BCC..BBB......B.......C...BCC.....",
+    "BC....BCC..BBB......B....K..CL..BCC.....",
     "B.....BBB..BCB.....QB.......C...BBB...CC",
     "BX....BBB..BCB......B.......C...BBB...CC",
     "XX....BBB..BCB......B.......C...BBB.....",
     "...........BBB..BB..B....BBCC.........CC",
-    "...........BBB..BB..B....BBCC...........",
+    "...........BBB..BB..B....BBCC.........K.",
     "CC...Q.....BBB..BB..B....BBCCQ........CC",
     "FC...BBB.....Q..BB..CCC..CCCC..BBB....CC",
-    ".....BBB...CCC......CCC..CCCB..BBB......",
+    ".....BBB...CCC......CCC..CCCB..BBB....K.",
     ".....BBB...CCC..BBB..CQ....C...BBB......",
     "FF....Q.....B...BCB..........BBBB.......",
-    "XX...BBBB...B...BBB...BBB...QBCCB.......",
-    "XX...BCCB...B.........BCB....BBBB.Q.....",
+    "XX...BBBB...B...BBB...BBB...QBCCB.....K.",
+    "XX...BCCB...BK........BCBK...BBBB.Q.....",
     ".....BBBB..CCC..BB....BBB........BBB..BB",
-    "...........CCC..BB.........BBB...BBB....",
+    "...........CCC..BB.........BBB...BBB..K.",
     "BF....BBB..CCC......BBBB...BBB...BBB...C",
     "BF....BBB...CCC.....BCCB...............C",
-    "BF....BBB....CC.....BBBB...BBB..BBBB....",
+    "BF....BBB....CC.....BBBB...BBB..BBBB..K.",
     "CC..................BBB....BBB..BBBB....",
     "BB...BBBB...BBB............BBB..........",
-    "CC...BBBB...BBB.................BBBB....",
+    "CC...BBBB...BBB.................BBBB..K.",
     ".F...BBBB.........CCCC...BBB....BBBB....",
-    ".........................BBB............",
+    "....K.....KTL............BBBK.....K.....",
     ".....BBBB..........HH....BBB....BBBB...."
   ]
 }

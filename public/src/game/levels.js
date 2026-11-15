@@ -104,6 +104,19 @@ const CHAR_TO_TILE = {
   BOXES: TileType.BOXES,
   N: TileType.SAND,
   SAND: TileType.SAND,
+  R: TileType.ROAD,
+  ROAD: TileType.ROAD,
+  M: TileType.SWAMP,
+  SWAMP: TileType.SWAMP,
+  MUD: TileType.SWAMP,
+  L: TileType.OIL_SLICK,
+  OIL: TileType.OIL_SLICK,
+  OIL_SLICK: TileType.OIL_SLICK,
+  K: TileType.CRATER,
+  CRATER: TileType.CRATER,
+  T: TileType.WATER_TOWER,
+  WATER_TOWER: TileType.WATER_TOWER,
+  TOWER: TileType.WATER_TOWER,
 };
 
 function parseHexColor(val, fallback = 0x0b1120) {
@@ -202,7 +215,17 @@ export function normalizeMapDefinition(rawMap, index = 0) {
     const { row, col } = pickup;
     const key = `${row},${col}`;
     if (!POWERUP_TYPES[type] || !Number.isInteger(row) || !Number.isInteger(col) ||
-        ![TileType.EMPTY, TileType.FOREST, TileType.ICE, TileType.SPAWNER, TileType.SAND].includes(grid[row]?.[col]) || pickupCells.has(key)) {
+        ![
+          TileType.EMPTY,
+          TileType.FOREST,
+          TileType.ICE,
+          TileType.SPAWNER,
+          TileType.SAND,
+          TileType.ROAD,
+          TileType.SWAMP,
+          TileType.OIL_SLICK,
+          TileType.CRATER,
+        ].includes(grid[row]?.[col]) || pickupCells.has(key)) {
       throw new Error(`${rawMap.mapId}: invalid or blocked authored powerup at ${key}`);
     }
     pickupCells.add(key);

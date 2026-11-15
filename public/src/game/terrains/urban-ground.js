@@ -111,6 +111,45 @@ function drawLandmark(ctx, landmark, unit, accent) {
     ctx.textAlign = 'center';
     ctx.fillStyle = accent || '#c8c3ab';
     ctx.fillText(landmark.text, 0, unit * 0.1);
+  } else if (landmark.kind === 'helipad') {
+    const r = span * 0.44;
+    ctx.strokeStyle = '#eab30899';
+    ctx.lineWidth = 2.0;
+    ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#eab308aa';
+    ctx.font = `bold ${Math.max(8, r * 1.1)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('H', 0, 1);
+  } else if (landmark.kind === 'hazard_zone') {
+    ctx.strokeStyle = '#f59e0baa';
+    ctx.lineWidth = 2.0;
+    ctx.setLineDash([4, 4]);
+    ctx.strokeRect(-span * 0.46, -span * 0.46, span * 0.92, span * 0.92);
+    ctx.setLineDash([]);
+  } else if (landmark.kind === 'chevron') {
+    ctx.strokeStyle = '#e2e8f099';
+    ctx.lineWidth = 2.0;
+    ctx.beginPath();
+    ctx.moveTo(-span * 0.25, span * 0.18);
+    ctx.lineTo(0, -span * 0.22);
+    ctx.lineTo(span * 0.25, span * 0.18);
+    ctx.stroke();
+  } else if (landmark.kind === 'drain_grate') {
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-span * 0.22, -span * 0.14, span * 0.44, span * 0.28);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1.0;
+    for (let sx = -0.15; sx <= 0.16; sx += 0.1) {
+      ctx.beginPath();
+      ctx.moveTo(span * sx, -span * 0.12);
+      ctx.lineTo(span * sx, span * 0.12);
+      ctx.stroke();
+    }
   }
   ctx.restore();
 }
@@ -210,6 +249,30 @@ export function paintDecoration(ctx, sector, options = {}, size = 1024) {
       ctx.lineWidth = 1.5;
       ctx.setLineDash([unit * 0.5, unit * 0.8]);
       ctx.stroke();
+    } else if (road.marking === 'railway') {
+      trace();
+      ctx.strokeStyle = '#5c4033';
+      ctx.lineWidth = Math.max(3, unit * 0.55);
+      ctx.setLineDash([unit * 0.16, unit * 0.26]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      for (const offset of [-unit * 0.18, unit * 0.18]) {
+        ctx.beginPath();
+        for (let i = 1; i < road.points.length; i++) {
+          const [r0, c0] = road.points[i - 1];
+          const [r1, c1] = road.points[i];
+          const dx = c1 - c0;
+          const dy = r1 - r0;
+          const len = Math.hypot(dx, dy) || 1;
+          const nx = (-dy / len) * offset;
+          const ny = (dx / len) * offset;
+          if (i === 1) ctx.moveTo((c0 + 0.5) * unit + nx, (r0 + 0.5) * unit + ny);
+          ctx.lineTo((c1 + 0.5) * unit + nx, (r1 + 0.5) * unit + ny);
+        }
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+      }
     }
   }
   ctx.setLineDash([]);

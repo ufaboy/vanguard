@@ -246,6 +246,29 @@ export class CodexStage {
           if (idx > 0) e.modelFactory.updateBoxesDamage(block, 1);
         } else if (item.surfaceType === 'BARREL') {
           block = e.modelFactory.createBarrelBlock();
+        } else if (item.surfaceType === 'WATER_TOWER') {
+          if (idx === 0) {
+            const tower = e.modelFactory.createWaterTowerBlock();
+            tower.position.set(0, 0, 0);
+            tower.scale.setScalar(1.25);
+            e.codexStageGroup.add(tower);
+          }
+          return;
+        } else if (item.surfaceType === 'ROAD') {
+          const roadMasks = [6, 12, 3, 9];
+          block = e.modelFactory.createRoadBlock(pos.x, pos.z, roadMasks[idx], 0);
+        } else if (item.surfaceType === 'SWAMP') {
+          block = e.modelFactory.createSwampBlock(pos.x, pos.z);
+        } else if (item.surfaceType === 'OIL_SLICK') {
+          block = e.modelFactory.createOilSlickBlock(pos.x, pos.z);
+        } else if (item.surfaceType === 'CRATER') {
+          if (idx === 0) {
+            const crater = e.modelFactory.createCraterBlock(0, 0);
+            crater.position.set(0, 0, 0);
+            crater.scale.setScalar(1.35);
+            e.codexStageGroup.add(crater);
+          }
+          return;
         } else if (item.surfaceType === 'ENEMY_BASE') {
           if (idx === 0) {
             const citadel = e.modelFactory.createEnemyBaseBlock();

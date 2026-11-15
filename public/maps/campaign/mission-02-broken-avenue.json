@@ -30,44 +30,44 @@
   },
   "layout": [
     "....FF......BBB.........BBBB......FF....",
-    "....FF......BCB.........BCCB......FF....",
+    "....FF....L.BCB.........BCCB......FF....",
     "XX...BBBBBBBCCB...BBBBBBCCBB...BBB....BB",
     "BB..B.......BCC...B......BBBB..BBB......",
     "....B.......BCC.....FF......BC........XC",
     "....B.......BCC.....FF......BC....BB..X.",
-    ".....BBBB...BCC.............BBBBBBBB....",
-    "BB.....BB...BBCCC.......B.........B...XX",
-    "FF...B.......BBBB...BBBBB.........B....B",
-    "FF...B.BB...........BCCCB...BBB....B..BB",
-    ".....B.BB...........BCCCB...BBC....B....",
-    "BB...B..............BCCCB..........B..CC",
-    ".....B.......BBBBBBBBBBBB......BB..B...C",
+    ".....BBBB...BCC.............BBBBBBBB..R.",
+    "BB.....BB...BBCCC.......B.........B...RX",
+    "FF...B.......BBBB.FFBBBBB.....K...B...RB",
+    "FF...B.BB........FFFBCCCB...BBB....B..RB",
+    ".R...B.BB...........BCCCB...BBC....B..R.",
+    "BR...B..............BCCCB..........B..CC",
+    ".R...B.......BBBBBBBBBBBB......BB..B...C",
     "B...BB....BBB...B..............BB..B..BF",
-    "...B......BBB...B............BBB...B..B.",
+    "...B......BBB.K.B............BBB...B..B.",
     "...B............B............BCB...B....",
     "CC.B.......BBBBBCBBB...BBBBBBCCB...B..C.",
-    "XX.B...B...BCCCCCCCB...BCCCCCCCB...B..CB",
-    "BB.B...B...BCCCCCCCB...BCCCCCCCB...B..BB",
-    "...B...B...BCCCCCCCB...BCCCCCCCB...B..XB",
-    "FF.B...B...BBBBCBBBB...BBBBBCBBB...B....",
-    "FF.B...B...BBBBCBBBB...BBBBBCBBB...B...B",
-    "XB.B...B...BBBBCBBBB...BBBBBCBBB...B...B",
-    "FF.B...B.......B.......Q....B......B..BB",
-    ".B.B...B.......BQ...........B......B..BB",
-    "...B...B.......B............B......B....",
-    "...B...B.............BBBB...BBBB...B..X.",
-    "C..B...B............QBCCB...BBBB...B..XC",
-    ".F.B.....Q...........BBBB......Q...B..BB",
-    "BF.B....BB.....BQ..................B..BB",
-    "...B....CCB....B...................B....",
-    ".B.BQ..........B...........BB...BBBB..C.",
-    "....BBB......QBCBB...BBBB..BB...BCC...CB",
-    ".......BBBBBBBCBBB...BBBCBBCB...BCC...CB",
+    "XX.B..KB...BCCCCCCCB...BCCCCCCCB.R.B..CB",
+    "BB.B...B...BCCCCCCCB...BCCCCCCCB.R.B..BB",
+    "...B...B...BCCCCCCCB...BCCCCCCCB.R.B..XB",
+    "FF.B...B...BBBBCBBBB...BBBBBCBBB.R.B....",
+    "FF.B...B...BBBBCBBBB...BBBBBCBBB.R.B...B",
+    "XB.B...B...BBBBCBBBB...BBBBBCBBB.R.B...B",
+    "FF.B...B......QB.......Q....B....R.B..BB",
+    ".B.B...B..RRRRRBRRRR..RRRR..BRRR.R.B..BB",
+    "...B...B.RFFFF.B............B....R.B....",
+    "...B...B.R...........BBBB...BBBB.R.B..X.",
+    "C..B...B.R..........QBCCB...BBBB.R.B..XC",
+    ".F.B.....Q...........BBBB......Q.R.B..BB",
+    "BF.B....BB.....BQ.............RRRR.B..BB",
+    ".R.B....CCB..RRRRRR...........R....B....",
+    ".R.BQ..........B...R.......BB.R.BBBB..C.",
+    ".R..BBB......QBCBB.R.BBBB..BB.R.BCC...CB",
+    ".......BBBBBBBCBBB.R.BBBCBBCB.R.BCC...CB",
     "XX...FF.......B.........BBBBB...B.....BB",
     ".....FF.......B.................B..BB...",
     "CC............B.................B..BB...",
     "BB...BBB......B...CCCC..........B.....X.",
-    ".....BBB......B.........BBBBBBBB........",
+    ".....BBBT.....B.........BBBBBBBB.K......",
     "...................HH.............FF...."
   ],
   "enemyPool": [
@@ -459,9 +459,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "pavers",
@@ -477,7 +477,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -491,9 +491,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -509,7 +509,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "pavers",
@@ -522,114 +522,6 @@
       }
     ],
     "paths": [
-      {
-        "id": "street-0",
-        "points": [
-          [
-            36,
-            19
-          ],
-          [
-            30,
-            19
-          ],
-          [
-            30,
-            9
-          ],
-          [
-            24,
-            9
-          ],
-          [
-            24,
-            33
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "street-1",
-        "points": [
-          [
-            36,
-            19
-          ],
-          [
-            36,
-            30
-          ],
-          [
-            29,
-            30
-          ],
-          [
-            29,
-            33
-          ],
-          [
-            24,
-            33
-          ],
-          [
-            10,
-            33
-          ],
-          [
-            10,
-            26
-          ],
-          [
-            5,
-            26
-          ],
-          [
-            5,
-            18
-          ],
-          [
-            10,
-            18
-          ],
-          [
-            10,
-            9
-          ],
-          [
-            24,
-            9
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "street-2",
-        "points": [
-          [
-            30,
-            9
-          ],
-          [
-            30,
-            5
-          ],
-          [
-            15,
-            5
-          ],
-          [
-            15,
-            9
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      },
       {
         "id": "street-3",
         "points": [
@@ -644,26 +536,6 @@
           [
             4,
             5
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      },
-      {
-        "id": "street-4",
-        "points": [
-          [
-            24,
-            21
-          ],
-          [
-            14,
-            21
-          ],
-          [
-            14,
-            9
           ]
         ],
         "width": 3,
@@ -709,46 +581,6 @@
         "width": 3,
         "surface": "asphalt",
         "marking": "none"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "dashed"
       }
     ],
     "landmarks": [
@@ -804,7 +636,7 @@
         "id": "avenue-crossing",
         "kind": "crosswalk",
         "row": 24,
-        "col": 26,
+        "col": 25,
         "size": 2.5
       },
       {
@@ -825,7 +657,7 @@
         "id": "edge-mark-0",
         "kind": "manhole",
         "row": 10,
-        "col": 3,
+        "col": 1,
         "size": 1,
         "rotation": 0
       },
@@ -833,7 +665,7 @@
         "id": "edge-mark-1",
         "kind": "parking",
         "row": 25,
-        "col": 3,
+        "col": 1,
         "size": 1.8,
         "rotation": 90
       },
@@ -841,17 +673,46 @@
         "id": "edge-mark-2",
         "kind": "manhole",
         "row": 12,
-        "col": 36,
+        "col": 38,
         "size": 1,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "crosswalk",
-        "row": 28,
-        "col": 36,
+        "row": 23,
+        "col": 33,
         "size": 2,
         "rotation": 90
+      },
+      {
+        "id": "m2-helipad-hq",
+        "kind": "helipad",
+        "row": 35,
+        "col": 16,
+        "size": 1.8
+      },
+      {
+        "id": "m2-drain-w",
+        "kind": "drain_grate",
+        "row": 19,
+        "col": 0,
+        "size": 1
+      },
+      {
+        "id": "m2-drain-e",
+        "kind": "drain_grate",
+        "row": 20,
+        "col": 38,
+        "size": 1
+      },
+      {
+        "id": "m2-chev-s",
+        "kind": "chevron",
+        "row": 28,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
       }
     ],
     "exclusions": []

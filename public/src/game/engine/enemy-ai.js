@@ -988,9 +988,17 @@ export class EnemyAiController {
           !e.isBoss && hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
         const { row: eRow, col: eCol } = engine.worldToGrid(e.x, e.z);
         const eCell = engine.grid[eRow]?.[eCol];
-        const eOnSand = eCell?.type === TileType.SAND && !e.stats.canHover && !e.stats.allTerrain;
-        const sandSpeedMult = eOnSand ? 0.78 : 1.0;
-        const worldSpeed = e.stats.moveSpeed * TILE_SIZE * lowSpeedMult * sandSpeedMult * dashSpeedMult;
+        const eAllTerrain = Boolean(e.stats.canHover || e.stats.allTerrain);
+        let terrainSpeedMult = 1.0;
+        if (eCell?.type === TileType.ROAD) {
+          terrainSpeedMult = 1.2;
+        } else if (!eAllTerrain) {
+          if (eCell?.type === TileType.SAND) terrainSpeedMult = 0.78;
+          else if (eCell?.type === TileType.SWAMP) terrainSpeedMult = 0.58;
+          else if (eCell?.type === TileType.CRATER) terrainSpeedMult = 0.85;
+          else if (eCell?.type === TileType.OIL_SLICK) terrainSpeedMult = 0.9;
+        }
+        const worldSpeed = e.stats.moveSpeed * TILE_SIZE * lowSpeedMult * terrainSpeedMult * dashSpeedMult;
 
         if (e.yieldTimer > 0) {
           e.yieldTimer -= dt;

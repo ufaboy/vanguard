@@ -16,6 +16,11 @@ import { applyBrickFinish } from '../terrains/brick-finish.js';
 import { createWaterSurface } from '../terrains/water.js';
 import { createIceSurface } from '../terrains/ice.js';
 import { createMountainPerimeter } from '../terrains/mountains.js';
+import {
+  PerimeterBuildingCatalog,
+  ALL_URBAN_BUILDING_KINDS,
+  CIVIC_INDUSTRIAL_BUILDING_KINDS,
+} from '../terrains/perimeter-buildings.js';
 import { buildEnemyStronghold } from '../terrains/enemy-stronghold.js';
 import { createSandCanvas, createSandPatchMask } from '../terrains/sand.js';
 
@@ -308,12 +313,16 @@ function setPartActive(group, active) {
 }
 
 let tankGltfLoader = null;
+const PUBLIC_ROOT_URL = new URL('../../../', import.meta.url).href;
+function resolvePublicUrl(relPath) {
+  return new URL(relPath, PUBLIC_ROOT_URL).href;
+}
 function getTankGltfLoader(renderer) {
   if (!tankGltfLoader) {
     const draco = new DRACOLoader();
-    draco.setDecoderPath('./vendor/three/examples/jsm/libs/draco/gltf/');
+    draco.setDecoderPath(resolvePublicUrl('./vendor/three/examples/jsm/libs/draco/gltf/'));
     const ktx2 = new KTX2Loader();
-    ktx2.setTranscoderPath('./vendor/three/examples/jsm/libs/basis/');
+    ktx2.setTranscoderPath(resolvePublicUrl('./vendor/three/examples/jsm/libs/basis/'));
     ktx2.detectSupport(renderer);
     tankGltfLoader = new GLTFLoader();
     tankGltfLoader.setDRACOLoader(draco);
@@ -446,7 +455,7 @@ export class ModelFactory extends TextureGenerator {
   loadPlayerGlbModel() {
     return new Promise((resolve) => {
       getTankGltfLoader(this.renderer).load(
-        PLAYER_GLB_MODEL.url,
+        resolvePublicUrl(PLAYER_GLB_MODEL.url),
         (gltf) => {
           gltf.scene.updateMatrixWorld(true);
           const parts = new Map();
@@ -581,7 +590,7 @@ export class ModelFactory extends TextureGenerator {
   loadGlbTankModel(enemyClasses, url) {
     return new Promise((resolve) => {
       getTankGltfLoader(this.renderer).load(
-        url,
+        resolvePublicUrl(url),
         (gltf) => {
         gltf.scene.updateMatrixWorld(true);
         const rawMeshes = [];
@@ -875,7 +884,7 @@ export class ModelFactory extends TextureGenerator {
     this.glbTurretRequestedUrls.add(cfg.url);
 
     getTankGltfLoader(this.renderer).load(
-      cfg.url,
+      resolvePublicUrl(cfg.url),
       (gltf) => {
         gltf.scene.updateMatrixWorld(true);
         const parts = { hull: [], turret: [], gun: [] };
@@ -1831,7 +1840,7 @@ export class ModelFactory extends TextureGenerator {
   }
 
   createBoxesBlock() {
-    this.boxMats ||= [0x9b693b, 0xb58550, 0x79502d, 0x493a2a].map(color => {
+    this.boxMats ||= [0x5c3e24, 0x6e4b2c, 0x3b2615, 0x241d17].map(color => {
       const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.94 });
       mat.userData.batchKey = `boxes-${color}`;
       return mat;
@@ -2417,7 +2426,6 @@ export class ModelFactory extends TextureGenerator {
     group.userData.batchTile = true;
     return markOwned(group, { materials: false });
   }
-
   createBarrelBlock() {
     const group = new THREE.Group();
     if (!this.barrelMats) {
@@ -2499,6 +2507,570 @@ export class ModelFactory extends TextureGenerator {
     }
 
     group.userData.batchTile = true;
+    return markOwned(group, { materials: false });
+  }
+
+  /**
+   * High-traction military asphalt road tile at world (x, z).
+   * @param {number} x
+   * @param {number} z
+   * @param {number} neighborMask Bitmask of adjacent ROAD tiles (N=1, E=2, S=4, W=8).
+   * @param {number} doubleLaneMask Bitmask indicating parallel second-lane direction (N=1, E=2, S=4, W=8).
+   */
+  createRoadBlock(x = 0, z = 0, neighborMask = 5, doubleLaneMask = 0) {
+    if (!this.roadMats) {
+      this.roadMats = {
+        asphalt: new THREE.MeshStandardMaterial({
+          color: 0x2a313c,
+          roughness: 0.78,
+          metalness: 0.08,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1,
+        }),
+        shoulder: new THREE.MeshStandardMaterial({
+          color: 0x475569,
+          roughness: 0.85,
+          metalness: 0.05,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
+        }),
+        stripe: new THREE.MeshStandardMaterial({
+          color: 0xd97706,
+          roughness: 0.65,
+          metalness: 0.05,
+          polygonOffset: true,
+          polygonOffsetFactor: -3,
+          polygonOffsetUnits: -3,
+        }),
+      };
+    }
+    const { asphalt, shoulder, stripe } = this.roadMats;
+    const group = new THREE.Group();
+    group.position.set(x, 0, z);
+
+    const slab = new THREE.Mesh(this.sharedGeometry('PlaneGeometry', TILE_SIZE, TILE_SIZE), asphalt);
+    slab.rotation.x = -Math.PI / 2;
+    slab.position.y = 0.01;
+    slab.receiveShadow = true;
+    group.add(slab);
+
+    const hasN = (neighborMask & 1) !== 0;
+    const hasE = (neighborMask & 2) !== 0;
+    const hasS = (neighborMask & 4) !== 0;
+    const hasW = (neighborMask & 8) !== 0;
+    const count = (hasN ? 1 : 0) + (hasE ? 1 : 0) + (hasS ? 1 : 0) + (hasW ? 1 : 0);
+
+    // Draw curbs only along edges without an adjacent road tile.
+    const curbHGeo = this.sharedGeometry('PlaneGeometry', TILE_SIZE, 0.1);
+    const curbVGeo = this.sharedGeometry('PlaneGeometry', 0.1, TILE_SIZE);
+    if (!hasN) {
+      const curb = new THREE.Mesh(curbHGeo, shoulder);
+      curb.rotation.x = -Math.PI / 2;
+      curb.position.set(0, 0.013, -0.95);
+      curb.receiveShadow = true;
+      group.add(curb);
+    }
+    if (!hasS) {
+      const curb = new THREE.Mesh(curbHGeo, shoulder);
+      curb.rotation.x = -Math.PI / 2;
+      curb.position.set(0, 0.013, 0.95);
+      curb.receiveShadow = true;
+      group.add(curb);
+    }
+    if (!hasW) {
+      const curb = new THREE.Mesh(curbVGeo, shoulder);
+      curb.rotation.x = -Math.PI / 2;
+      curb.position.set(-0.95, 0.013, 0);
+      curb.receiveShadow = true;
+      group.add(curb);
+    }
+    if (!hasE) {
+      const curb = new THREE.Mesh(curbVGeo, shoulder);
+      curb.rotation.x = -Math.PI / 2;
+      curb.position.set(0.95, 0.013, 0);
+      curb.receiveShadow = true;
+      group.add(curb);
+    }
+
+    // Centerline / divider markings aligned to actual road width and connectivity.
+    const dashVGeo = this.sharedGeometry('PlaneGeometry', 0.1, 0.52);
+    const dashHGeo = this.sharedGeometry('PlaneGeometry', 0.52, 0.1);
+    const addDash = (geo, dx, dz) => {
+      const dash = new THREE.Mesh(geo, stripe);
+      dash.rotation.x = -Math.PI / 2;
+      dash.position.set(dx, 0.015, dz);
+      group.add(dash);
+    };
+
+    if (doubleLaneMask !== 0) {
+      // Wide 2-lane avenue: place dashed divider along the shared seam between lanes.
+      if ((doubleLaneMask & 4) !== 0 && !hasN) {
+        addDash(dashHGeo, -0.52, 0.92);
+        addDash(dashHGeo, 0.52, 0.92);
+      } else if ((doubleLaneMask & 1) !== 0 && !hasS) {
+        addDash(dashHGeo, -0.52, -0.92);
+        addDash(dashHGeo, 0.52, -0.92);
+      } else if ((doubleLaneMask & 2) !== 0 && !hasW) {
+        addDash(dashVGeo, 0.92, -0.52);
+        addDash(dashVGeo, 0.92, 0.52);
+      } else if ((doubleLaneMask & 8) !== 0 && !hasE) {
+        addDash(dashVGeo, -0.92, -0.52);
+        addDash(dashVGeo, -0.92, 0.52);
+      }
+    } else if (count === 0) {
+      addDash(dashVGeo, 0, -0.52);
+      addDash(dashVGeo, 0, 0.52);
+    } else if (count === 1) {
+      if (hasN) addDash(dashVGeo, 0, -0.52);
+      if (hasS) addDash(dashVGeo, 0, 0.52);
+      if (hasW) addDash(dashHGeo, -0.52, 0);
+      if (hasE) addDash(dashHGeo, 0.52, 0);
+    } else if (count === 2 && hasN && hasS) {
+      addDash(dashVGeo, 0, -0.52);
+      addDash(dashVGeo, 0, 0.52);
+    } else if (count === 2 && hasE && hasW) {
+      addDash(dashHGeo, -0.52, 0);
+      addDash(dashHGeo, 0.52, 0);
+    } else if (count === 2) {
+      // 90-degree corner turn: guide dashes toward both connected arms.
+      if (hasN) addDash(dashVGeo, 0, -0.52);
+      if (hasS) addDash(dashVGeo, 0, 0.52);
+      if (hasW) addDash(dashHGeo, -0.52, 0);
+      if (hasE) addDash(dashHGeo, 0.52, 0);
+    }
+    // T- and X-junctions (count >= 3, non-double-lane) stay clean inside the intersection box.
+    return markOwned(group, { materials: false });
+  }
+
+  /** Seamless wet mud & flooded puddle patch at world (x, z). */
+  createSwampBlock(x = 0, z = 0) {
+    if (!this.swampPatchMats) {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#33291d';
+      ctx.fillRect(0, 0, 256, 256);
+
+      // Organic wet mud mottling + standing water pools + ripple highlights
+      let seed = 1337;
+      const rand = () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        return seed / 4294967296;
+      };
+      for (let i = 0; i < 65; i++) {
+        const px = rand() * 256;
+        const py = rand() * 256;
+        const r = 14 + rand() * 28;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(35, 27, 18, 0.45)' : 'rgba(62, 50, 34, 0.35)';
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      for (let i = 0; i < 18; i++) {
+        const px = rand() * 256;
+        const py = rand() * 256;
+        const rx = 18 + rand() * 34;
+        const ry = 12 + rand() * 24;
+        ctx.fillStyle = 'rgba(26, 62, 74, 0.72)';
+        ctx.beginPath();
+        ctx.ellipse(px, py, rx, ry, rand() * Math.PI, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(105, 165, 182, 0.28)';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.ellipse(px - 2, py - 2, rx * 0.72, ry * 0.65, 0, 0.2, Math.PI * 1.1);
+        ctx.stroke();
+      }
+
+      const swampTex = this.configureColorTexture(new THREE.CanvasTexture(c));
+      swampTex.wrapS = THREE.RepeatWrapping;
+      swampTex.wrapT = THREE.RepeatWrapping;
+
+      this.swampPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
+        const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
+        mask.channel = 1;
+        return new THREE.MeshStandardMaterial({
+          map: swampTex,
+          alphaMap: mask,
+          transparent: true,
+          depthWrite: false,
+          roughness: 0.28,
+          metalness: 0.25,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1,
+        });
+      });
+    }
+
+    const span = TILE_SIZE / SAND_PATCH_CELL_FRACTION;
+    const geometry = new THREE.PlaneGeometry(span, span);
+    geometry.setAttribute('uv1', geometry.attributes.uv.clone());
+    const pos = geometry.attributes.position;
+    const uv = geometry.attributes.uv;
+    const patternSpan = TILE_SIZE * SAND_PATTERN_CELLS;
+    for (let i = 0; i < pos.count; i++) {
+      uv.setXY(i, (x + pos.getX(i)) / patternSpan, (z - pos.getY(i)) / patternSpan);
+    }
+
+    const cellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
+    const floor = new THREE.Mesh(geometry, this.swampPatchMats[cellHash % SAND_PATCH_VARIANTS]);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = 0.013;
+    floor.receiveShadow = true;
+
+    const group = new THREE.Group();
+    group.position.set(x, 0, z);
+    group.add(floor);
+    return markOwned(group, { materials: false });
+  }
+
+  /** Seamless glossy crude oil slick patch at world (x, z). */
+  createOilSlickBlock(x = 0, z = 0) {
+    if (!this.oilPatchMats) {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#0c0e12';
+      ctx.fillRect(0, 0, 256, 256);
+      let seed = 4242;
+      const rand = () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        return seed / 4294967296;
+      };
+      for (let i = 0; i < 24; i++) {
+        const px = rand() * 256;
+        const py = rand() * 256;
+        const r = 16 + rand() * 28;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(58, 36, 22, 0.35)' : 'rgba(34, 30, 54, 0.4)';
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      const oilTex = this.configureColorTexture(new THREE.CanvasTexture(c));
+      oilTex.wrapS = THREE.RepeatWrapping;
+      oilTex.wrapT = THREE.RepeatWrapping;
+
+      this.oilPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
+        const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
+        mask.channel = 1;
+        return new THREE.MeshStandardMaterial({
+          map: oilTex,
+          alphaMap: mask,
+          transparent: true,
+          depthWrite: false,
+          roughness: 0.14,
+          metalness: 0.72,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
+        });
+      });
+    }
+
+    const span = TILE_SIZE / SAND_PATCH_CELL_FRACTION;
+    const geometry = new THREE.PlaneGeometry(span, span);
+    geometry.setAttribute('uv1', geometry.attributes.uv.clone());
+    const pos = geometry.attributes.position;
+    const uv = geometry.attributes.uv;
+    const patternSpan = TILE_SIZE * SAND_PATTERN_CELLS;
+    for (let i = 0; i < pos.count; i++) {
+      uv.setXY(i, (x + pos.getX(i)) / patternSpan, (z - pos.getY(i)) / patternSpan);
+    }
+
+    const cellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
+    const floor = new THREE.Mesh(geometry, this.oilPatchMats[cellHash % SAND_PATCH_VARIANTS]);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = 0.015;
+    floor.receiveShadow = true;
+
+    const group = new THREE.Group();
+    group.position.set(x, 0, z);
+    group.add(floor);
+    return markOwned(group, { materials: false });
+  }
+
+  /** Naturalistic blast crater with scorch rays, radial cracks, and jagged dirt rim. */
+  createCraterBlock(x = 0, z = 0) {
+    if (!this.craterMats) {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, 256, 256);
+
+      const cx = 128;
+      const cy = 128;
+
+      let seed = 4242;
+      const rand = () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        return seed / 4294967296;
+      };
+
+      // 1. Star-shaped soot / blast scorch rays radiating outward
+      for (let i = 0; i < 22; i++) {
+        const ang = (i / 22) * Math.PI * 2 + (rand() - 0.5) * 0.22;
+        const len = 76 + rand() * 44;
+        const spread = 0.08 + rand() * 0.14;
+        const grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, len);
+        grad.addColorStop(0, 'rgba(12, 10, 9, 0.85)');
+        grad.addColorStop(0.55, 'rgba(28, 22, 18, 0.52)');
+        grad.addColorStop(1, 'rgba(28, 22, 18, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(ang - spread) * len, cy + Math.sin(ang - spread) * len);
+        ctx.lineTo(cx + Math.cos(ang + spread) * len, cy + Math.sin(ang + spread) * len);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // 2. Deep bowl gradient: charred pit -> churned earth -> faded edge
+      const bowlGrad = ctx.createRadialGradient(cx, cy, 6, cx, cy, 98);
+      bowlGrad.addColorStop(0, 'rgba(10, 9, 8, 0.96)');
+      bowlGrad.addColorStop(0.38, 'rgba(24, 19, 15, 0.92)');
+      bowlGrad.addColorStop(0.65, 'rgba(58, 45, 34, 0.82)');
+      bowlGrad.addColorStop(0.84, 'rgba(72, 58, 44, 0.42)');
+      bowlGrad.addColorStop(1, 'rgba(72, 58, 44, 0)');
+      ctx.fillStyle = bowlGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 98, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 3. Radial fracture cracks in surrounding ground/asphalt
+      ctx.strokeStyle = 'rgba(15, 13, 12, 0.72)';
+      for (let i = 0; i < 11; i++) {
+        let ang = (i / 11) * Math.PI * 2 + (rand() - 0.5) * 0.3;
+        let dist = 46;
+        ctx.lineWidth = 1.6 + rand() * 1.4;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(ang) * dist, cy + Math.sin(ang) * dist);
+        for (let s = 0; s < 3; s++) {
+          dist += 16 + rand() * 14;
+          ang += (rand() - 0.5) * 0.35;
+          ctx.lineTo(cx + Math.cos(ang) * dist, cy + Math.sin(ang) * dist);
+        }
+        ctx.stroke();
+      }
+
+      // 4. Scattered blast gravel & ash flecks
+      for (let i = 0; i < 55; i++) {
+        const ang = rand() * Math.PI * 2;
+        const dist = 20 + rand() * 88;
+        const r = 1.2 + rand() * 2.8;
+        ctx.fillStyle = i % 3 === 0 ? 'rgba(92, 78, 62, 0.65)' : 'rgba(20, 18, 16, 0.65)';
+        ctx.beginPath();
+        ctx.arc(cx + Math.cos(ang) * dist, cy + Math.sin(ang) * dist, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const decalTex = new THREE.CanvasTexture(c);
+      decalTex.colorSpace = THREE.SRGBColorSpace;
+      decalTex.needsUpdate = true;
+
+      this.craterMats = {
+        decal: new THREE.MeshStandardMaterial({
+          map: decalTex,
+          transparent: true,
+          depthWrite: false,
+          roughness: 0.96,
+          metalness: 0.02,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
+        }),
+        earth: new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          vertexColors: true,
+          roughness: 0.98,
+          metalness: 0.02,
+        }),
+        rubble: new THREE.MeshStandardMaterial({
+          color: 0x1c1917,
+          roughness: 0.95,
+          metalness: 0.05,
+        }),
+        rubbleDark: new THREE.MeshStandardMaterial({
+          color: 0x110f0e,
+          roughness: 0.97,
+          metalness: 0.04,
+        }),
+      };
+
+      // Continuous 3D sculpted dark blast crater funnel + jagged scorched rim (linear RGB vertex colors)
+      const angSegs = 28;
+      const ringRadii = [0.06, 0.28, 0.48, 0.62, 0.78, 0.96];
+      const ringHeights = [0.002, 0.008, 0.055, 0.088, 0.032, 0.002];
+      const ringWeights = [0.05, 0.25, 0.85, 1.0, 0.5, 0.05];
+      const ringColors = [
+        [0.008, 0.007, 0.006], // deep charred pit center
+        [0.012, 0.010, 0.009], // soot pit wall
+        [0.028, 0.022, 0.017], // scorched inner lip
+        [0.045, 0.035, 0.026], // dark churned earth / charred asphalt crest
+        [0.026, 0.021, 0.017], // dark soot slope
+        [0.014, 0.012, 0.010], // ash fade to ground
+      ];
+      const positions = [];
+      const colors = [];
+      const indices = [];
+
+      for (let r = 0; r < ringRadii.length; r++) {
+        const baseR = ringRadii[r];
+        const baseY = ringHeights[r];
+        const w = ringWeights[r];
+        const [cr, cg, cb] = ringColors[r];
+        for (let a = 0; a < angSegs; a++) {
+          const ang = (a / angSegs) * Math.PI * 2;
+          const n1 = Math.sin(ang * 3 + 0.7) * 0.55 + Math.cos(ang * 5 - 1.1) * 0.4;
+          const n2 = Math.sin(ang * 11 + 2.3 + r * 0.9) * 0.3;
+          const rad = Math.max(0.02, baseR + (n1 * 0.085 + n2 * 0.035) * (r === 0 ? 0.3 : 1.0));
+          const y = Math.max(0.002, baseY + (n1 * 0.026 + n2 * 0.016) * w);
+          positions.push(Math.cos(ang) * rad, y, Math.sin(ang) * rad);
+          const shade = 0.85 + (n1 + n2) * 0.16;
+          colors.push(cr * shade, cg * shade, cb * shade);
+        }
+      }
+
+      for (let r = 0; r < ringRadii.length - 1; r++) {
+        for (let a = 0; a < angSegs; a++) {
+          const aNext = (a + 1) % angSegs;
+          const i0 = r * angSegs + a;
+          const i1 = r * angSegs + aNext;
+          const i2 = (r + 1) * angSegs + a;
+          const i3 = (r + 1) * angSegs + aNext;
+          indices.push(i0, i1, i2, i1, i3, i2);
+        }
+      }
+
+      const rimGeo = new THREE.BufferGeometry();
+      rimGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      rimGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+      rimGeo.setIndex(indices);
+      rimGeo.computeVertexNormals();
+      this.craterRimGeo = rimGeo;
+    }
+
+    const { decal, earth, rubble, rubbleDark } = this.craterMats;
+    const group = new THREE.Group();
+    group.position.set(x, 0, z);
+
+    // Deterministic per-cell orientation so neighboring craters don't look cloned
+    const hash = (Math.imul(Math.round(x * 13), 73856093) ^ Math.imul(Math.round(z * 17), 19349663)) >>> 0;
+    group.rotation.y = ((hash % 360) * Math.PI) / 180;
+
+    // Textured blast scorch + outward soot rays
+    const pitDecal = new THREE.Mesh(
+      this.sharedGeometry('PlaneGeometry', TILE_SIZE * 1.24, TILE_SIZE * 1.24),
+      decal
+    );
+    pitDecal.rotation.x = -Math.PI / 2;
+    pitDecal.position.y = 0.006;
+    pitDecal.receiveShadow = true;
+    group.add(pitDecal);
+
+    // Sculpted 3D dark crater funnel & blast rim
+    const rimMesh = new THREE.Mesh(this.craterRimGeo, earth);
+    rimMesh.castShadow = true;
+    rimMesh.receiveShadow = true;
+    group.add(rimMesh);
+
+    // Scattered charred debris & ejected chunks around the rim and outer blast zone
+    const chunkGeo = this.sharedGeometry('DodecahedronGeometry', 0.085, 0);
+    const chunkPlacements = [
+      { ang: 0.38, rad: 0.66, sx: 1.4, sy: 0.45, sz: 0.9, dark: false },
+      { ang: 0.92, rad: 0.92, sx: 0.85, sy: 0.5, sz: 0.75, dark: true },
+      { ang: 1.55, rad: 0.76, sx: 1.15, sy: 0.6, sz: 1.25, dark: false },
+      { ang: 2.15, rad: 0.98, sx: 0.7, sy: 0.4, sz: 0.9, dark: true },
+      { ang: 2.75, rad: 0.62, sx: 1.5, sy: 0.42, sz: 0.85, dark: true },
+      { ang: 3.45, rad: 0.84, sx: 1.0, sy: 0.55, sz: 1.1, dark: false },
+      { ang: 4.18, rad: 0.71, sx: 1.3, sy: 0.48, sz: 0.8, dark: true },
+      { ang: 4.82, rad: 0.95, sx: 0.8, sy: 0.38, sz: 0.7, dark: false },
+      { ang: 5.35, rad: 0.68, sx: 1.25, sy: 0.52, sz: 0.95, dark: true },
+      { ang: 5.88, rad: 0.88, sx: 0.95, sy: 0.44, sz: 1.15, dark: false },
+    ];
+    chunkPlacements.forEach((c, i) => {
+      const chunk = new THREE.Mesh(chunkGeo, c.dark ? rubbleDark : rubble);
+      chunk.position.set(Math.cos(c.ang) * c.rad, 0.036, Math.sin(c.ang) * c.rad);
+      chunk.scale.set(c.sx, c.sy, c.sz);
+      chunk.rotation.set(i * 0.7, c.ang + i * 0.9, i * 0.5);
+      chunk.castShadow = true;
+      chunk.receiveShadow = true;
+      group.add(chunk);
+    });
+
+    return markOwned(group, { geometries: false, materials: false });
+  }
+
+  /** Destructible steel pressurized water tower structure. */
+  createWaterTowerBlock() {
+    if (!this.waterTowerMats) {
+      this.waterTowerMats = {
+        pad: new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.85, metalness: 0.15 }),
+        steel: new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.48, metalness: 0.7 }),
+        tank: new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.38, metalness: 0.45 }),
+        band: new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.4, metalness: 0.5 }),
+        roof: new THREE.MeshStandardMaterial({ color: 0x0369a1, roughness: 0.42, metalness: 0.55 }),
+      };
+    }
+    const { pad, steel, tank, band, roof } = this.waterTowerMats;
+    const group = new THREE.Group();
+
+    const basePad = new THREE.Mesh(this.sharedGeometry('BoxGeometry', 1.55, 0.12, 1.55), pad);
+    basePad.position.y = 0.06;
+    basePad.receiveShadow = true;
+    basePad.castShadow = true;
+    group.add(basePad);
+
+    const legGeo = this.sharedGeometry('CylinderGeometry', 0.065, 0.08, 1.15, 8);
+    for (const [lx, lz] of [
+      [-0.45, -0.45],
+      [0.45, -0.45],
+      [-0.45, 0.45],
+      [0.45, 0.45],
+    ]) {
+      const leg = new THREE.Mesh(legGeo, steel);
+      leg.position.set(lx, 0.68, lz);
+      leg.castShadow = true;
+      group.add(leg);
+    }
+
+    const pipe = new THREE.Mesh(
+      this.sharedGeometry('CylinderGeometry', 0.14, 0.14, 1.15, 10),
+      steel
+    );
+    pipe.position.y = 0.68;
+    pipe.castShadow = true;
+    group.add(pipe);
+
+    const drum = new THREE.Mesh(
+      this.sharedGeometry('CylinderGeometry', 0.64, 0.64, 0.95, 16),
+      tank
+    );
+    drum.position.y = 1.68;
+    drum.castShadow = true;
+    drum.receiveShadow = true;
+    group.add(drum);
+
+    const stripe = new THREE.Mesh(
+      this.sharedGeometry('CylinderGeometry', 0.655, 0.655, 0.16, 16),
+      band
+    );
+    stripe.position.y = 1.68;
+    group.add(stripe);
+
+    const cap = new THREE.Mesh(
+      this.sharedGeometry('ConeGeometry', 0.68, 0.42, 16),
+      roof
+    );
+    cap.position.y = 2.36;
+    cap.castShadow = true;
+    group.add(cap);
+
     return markOwned(group, { materials: false });
   }
 
@@ -2971,6 +3543,181 @@ export class ModelFactory extends TextureGenerator {
 
   createOutdoorPerimeter() {
     return createMountainPerimeter((GRID_SIZE * TILE_SIZE) / 2, { lowQuality: this.isSoftwareGl });
+  }
+
+  /** Lightweight thematic 3D silhouettes placed behind the far edges of the arena. */
+  createThemePerimeterProps(theme = 'urban', halfSpan = 40, seed = 1) {
+    const group = new THREE.Group();
+    if (this.isSoftwareGl) return markOwned(group, { materials: false });
+
+    const rng = mulberry32((seed ^ 0x9e3779b9) >>> 0);
+
+    if (!this.themePropMats) {
+      const makeTex = (drawFn, w = 128, h = 128) => {
+        const c = document.createElement('canvas');
+        c.width = w;
+        c.height = h;
+        drawFn(c.getContext('2d'), w, h);
+        const tex = this.configureColorTexture(new THREE.CanvasTexture(c));
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        return tex;
+      };
+
+      const facadeTex = makeTex((ctx, w, h) => {
+        ctx.fillStyle = '#384152';
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#2d3544';
+        for (let y = 0; y < h; y += 32) ctx.fillRect(0, y, w, 3);
+        for (let y = 8; y < h; y += 24) {
+          for (let x = 8; x < w; x += 22) {
+            const lit = ((x * 7 + y * 13) % 11) < 4;
+            ctx.fillStyle = lit ? '#eab308' : '#18202c';
+            ctx.fillRect(x, y, 12, 14);
+            ctx.fillStyle = lit ? '#fef08a' : '#243042';
+            ctx.fillRect(x + 2, y + 2, 8, 5);
+          }
+        }
+      });
+
+      const siloTex = makeTex((ctx, w, h) => {
+        ctx.fillStyle = '#4b5563';
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#374151';
+        for (let y = 0; y < h; y += 32) ctx.fillRect(0, y, w, 4);
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(0, h * 0.42, w, 14);
+        ctx.fillStyle = '#1f2937';
+        for (let x = 0; x < w; x += 24) ctx.fillRect(x, h * 0.42, 12, 14);
+      });
+
+      const rockTex = makeTex((ctx, w, h) => {
+        ctx.fillStyle = '#8b6f47';
+        ctx.fillRect(0, 0, w, h);
+        const bands = ['#7c613c', '#9c7e54', '#6d5433', '#a6895e'];
+        for (let y = 0; y < h; y += 16) {
+          ctx.fillStyle = bands[(y / 16) % bands.length];
+          ctx.fillRect(0, y, w, 12);
+        }
+      });
+
+      this.themePropMats = {
+        facade: new THREE.MeshStandardMaterial({ map: facadeTex, roughness: 0.82, metalness: 0.15 }),
+        roof: new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9, metalness: 0.1 }),
+        curb: new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.88, metalness: 0.1 }),
+        silo: new THREE.MeshStandardMaterial({ map: siloTex, roughness: 0.55, metalness: 0.55 }),
+        pine: new THREE.MeshStandardMaterial({ color: 0x1e3f20, roughness: 0.9 }),
+        pineTip: new THREE.MeshStandardMaterial({ color: 0x2a542d, roughness: 0.88 }),
+        trunk: new THREE.MeshStandardMaterial({ color: 0x4a3525, roughness: 0.92 }),
+        sandstone: new THREE.MeshStandardMaterial({ map: rockTex, roughness: 0.92 }),
+        snow: new THREE.MeshStandardMaterial({ color: 0xdbeafe, roughness: 0.85 }),
+        beacon: new THREE.MeshStandardMaterial({
+          color: 0xef4444,
+          emissive: 0xef4444,
+          emissiveIntensity: 0.75,
+        }),
+      };
+    }
+
+    const m = this.themePropMats;
+    if (!this.perimeterBuildingCatalog) {
+      this.perimeterBuildingCatalog = new PerimeterBuildingCatalog(
+        (type, ...args) => this.sharedGeometry(type, ...args),
+        (tex) => this.configureColorTexture(tex)
+      );
+    }
+
+    // Irregular, map-seeded offsets along the far North (pz < 0) and West (px < 0) edges,
+    // seated on the flat apron between the arena border and the mountain slope.
+    const farSlots = [];
+    for (let pos = -halfSpan + 4.5 + rng() * 3.0; pos <= halfSpan - 4.5; pos += 7.2 + rng() * 6.8) {
+      const depthN = halfSpan + 3.1 + rng() * 2.2;
+      const rotN = (Math.floor(rng() * 4) * Math.PI) / 2;
+      farSlots.push({ px: pos, pz: -depthN, rot: rotN });
+    }
+    for (let pos = -halfSpan + 4.5 + rng() * 3.0; pos <= halfSpan - 4.5; pos += 7.2 + rng() * 6.8) {
+      const depthW = halfSpan + 3.1 + rng() * 2.2;
+      const rotW = (Math.floor(rng() * 4) * Math.PI) / 2;
+      farSlots.push({ px: -depthW, pz: pos, rot: rotW });
+    }
+
+    farSlots.forEach(({ px, pz, rot }, idx) => {
+      if (theme === 'urban' || theme === 'capital') {
+        const kind = ALL_URBAN_BUILDING_KINDS[Math.floor(rng() * ALL_URBAN_BUILDING_KINDS.length)];
+        const bldg = this.perimeterBuildingCatalog.build(kind);
+        bldg.position.set(px, 0, pz);
+        bldg.rotation.y = rot;
+        group.add(bldg);
+      } else if (theme === 'industrial') {
+        if (rng() < 0.32) {
+          const silo = new THREE.Mesh(this.sharedGeometry('CylinderGeometry', 1.55, 1.55, 4.0, 12), m.silo);
+          silo.position.set(px, 1.8, pz);
+          group.add(silo);
+          const dome = new THREE.Mesh(this.sharedGeometry('SphereGeometry', 1.5, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), m.roof);
+          dome.position.set(px, 3.8, pz);
+          group.add(dome);
+        } else {
+          const kind = CIVIC_INDUSTRIAL_BUILDING_KINDS[Math.floor(rng() * CIVIC_INDUSTRIAL_BUILDING_KINDS.length)];
+          const bldg = this.perimeterBuildingCatalog.build(kind);
+          bldg.position.set(px, 0, pz);
+          bldg.rotation.y = rot;
+          group.add(bldg);
+        }
+      } else if (theme === 'forest' || theme === 'alpine') {
+        const scale = 0.8 + rng() * 0.55;
+        const tree = new THREE.Group();
+        const trunk = new THREE.Mesh(this.sharedGeometry('CylinderGeometry', 0.26, 0.36, 1.4, 6), m.trunk);
+        trunk.position.y = 0.5;
+        tree.add(trunk);
+        const lowerMat = theme === 'alpine' && idx % 2 === 0 ? m.snow : m.pine;
+        const lower = new THREE.Mesh(this.sharedGeometry('ConeGeometry', 1.7, 2.5, 7), lowerMat);
+        lower.position.y = 2.1;
+        tree.add(lower);
+        const upper = new THREE.Mesh(this.sharedGeometry('ConeGeometry', 1.15, 2.1, 7), theme === 'alpine' ? m.snow : m.pineTip);
+        upper.position.y = 3.4;
+        tree.add(upper);
+        tree.scale.setScalar(scale);
+        tree.rotation.y = rng() * Math.PI * 2;
+        tree.position.set(px, 0, pz);
+        group.add(tree);
+      } else if (theme === 'desert') {
+        const mesa = new THREE.Group();
+        const baseMesa = new THREE.Mesh(this.sharedGeometry('CylinderGeometry', 2.2, 3.1, 1.6 + (idx % 2) * 0.8, 7), m.sandstone);
+        baseMesa.position.y = 0.7;
+        mesa.add(baseMesa);
+        const capMesa = new THREE.Mesh(this.sharedGeometry('CylinderGeometry', 1.2, 1.9, 1.1, 7), m.sandstone);
+        capMesa.position.set(0.3, 1.9, -0.2);
+        mesa.add(capMesa);
+        mesa.scale.setScalar(0.75 + rng() * 0.55);
+        mesa.rotation.y = rng() * Math.PI * 2;
+        mesa.position.set(px, 0, pz);
+        group.add(mesa);
+      } else if (theme === 'coast') {
+        const bollard = new THREE.Mesh(this.sharedGeometry('CylinderGeometry', 0.32, 0.42, 0.9, 8), m.silo);
+        bollard.position.set(px, 0.35, pz);
+        group.add(bollard);
+        if (rng() < 0.4) {
+          const light = new THREE.Mesh(this.sharedGeometry('SphereGeometry', 0.24, 8, 8), m.beacon);
+          light.position.set(px, 0.95, pz);
+          group.add(light);
+        }
+      }
+    });
+
+    // Low ground-level curb markers along front edges (never occlude the arena)
+    for (let pos = -halfSpan + 5 + rng() * 4; pos <= halfSpan - 5; pos += 8.5 + rng() * 6.5) {
+      const curbS = new THREE.Mesh(this.sharedGeometry('BoxGeometry', 1.8, 0.24, 0.45), m.curb);
+      curbS.position.set(pos, 0.12, halfSpan + 2.0 + rng() * 0.9);
+      group.add(curbS);
+    }
+    for (let pos = -halfSpan + 5 + rng() * 4; pos <= halfSpan - 5; pos += 8.5 + rng() * 6.5) {
+      const curbE = new THREE.Mesh(this.sharedGeometry('BoxGeometry', 1.8, 0.24, 0.45), m.curb);
+      curbE.position.set(halfSpan + 2.0 + rng() * 0.9, 0.12, pos);
+      curbE.rotation.y = Math.PI / 2;
+      group.add(curbE);
+    }
+
+    return markOwned(group, { materials: false });
   }
 
   /**

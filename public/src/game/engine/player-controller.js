@@ -478,12 +478,54 @@ export class PlayerController {
     const canCrossWater = engine.playerStats.canCrossWater || engine.componentWaterEgress;
     engine.onIce = !canHover && !allTerrain && currentCell?.type === TileType.ICE;
     engine.onSand = !canHover && !allTerrain && currentCell?.type === TileType.SAND;
+    engine.onSwamp = !canHover && !allTerrain && currentCell?.type === TileType.SWAMP;
+    engine.onOilSlick = !canHover && !allTerrain && currentCell?.type === TileType.OIL_SLICK;
+    engine.onRoad = currentCell?.type === TileType.ROAD;
+    engine.onCrater = !canHover && !allTerrain && currentCell?.type === TileType.CRATER;
     engine.inForest = currentCell?.type === TileType.FOREST && !currentCell?.isBurning;
-    engine.inSmoke = engine.isPointInSmoke(engine.playerX, engine.playerZ);
+    engine.inSmoke =
+      engine.isPointInSmoke(engine.playerX, engine.playerZ) ||
+      (currentCell?.type === TileType.OIL_SLICK && Boolean(currentCell?.isBurning));
 
     const authoredMission = SECTORS[engine.currentSectorIndex];
     const terrainSample = sampleMissionTerrain(authoredMission, engine.playerX, engine.playerZ);
-    engine.currentSurface = engine.onIce
+    engine.currentSurface = engine.onRoad
+      ? {
+          ...TERRAIN_SURFACES.asphalt,
+          id: 'road',
+          label: 'Military Highway',
+          speedMultiplier: 1.2,
+          accelMultiplier: 1.25,
+          brakeMultiplier: 1.15,
+        }
+      : engine.onSwamp
+      ? {
+          ...TERRAIN_SURFACES.mud,
+          id: 'swamp',
+          label: 'Deep Swamp',
+          speedMultiplier: 0.58,
+          accelMultiplier: 0.55,
+          turnMultiplier: 0.65,
+          brakeMultiplier: 0.85,
+        }
+      : engine.onOilSlick
+      ? {
+          ...TERRAIN_SURFACES.sand,
+          id: 'oil_slick',
+          label: 'Oil Slick',
+          speedMultiplier: 0.9,
+          accelMultiplier: 0.23,
+          brakeMultiplier: 0.1,
+        }
+      : engine.onCrater
+      ? {
+          ...TERRAIN_SURFACES.dirt,
+          id: 'crater',
+          label: 'Blast Crater',
+          speedMultiplier: 0.85,
+          accelMultiplier: 0.85,
+        }
+      : engine.onIce
       ? { ...TERRAIN_SURFACES.sand, label: 'Low-Friction Ice', speedMultiplier: 0.85 }
       : engine.onSand
       ? { ...TERRAIN_SURFACES.sand, label: 'Scorched Sand', speedMultiplier: 0.78 }
@@ -519,8 +561,9 @@ export class PlayerController {
 
     const surfAccel = engine.currentSurface?.accelMultiplier || 1.0;
     const surfBrake = engine.currentSurface?.brakeMultiplier || 1.0;
-    const accel = (engine.onIce ? 4.5 : 22.0) * (allTerrain ? Math.max(1.0, surfAccel) : surfAccel);
-    const drag = (engine.onIce ? 1.8 : 20.0) * (allTerrain ? Math.max(1.0, surfBrake) : surfBrake);
+    const lowTraction = engine.onIce || engine.onOilSlick;
+    const accel = (lowTraction ? 4.5 : 22.0) * (allTerrain ? Math.max(1.0, surfAccel) : surfAccel);
+    const drag = (lowTraction ? 1.8 : 20.0) * (allTerrain ? Math.max(1.0, surfBrake) : surfBrake);
 
     if (!subMods.immobilized && len > 0) {
       const quadrantOffset =
@@ -534,9 +577,11 @@ export class PlayerController {
       const moveZ = rawX * sinA + rawZ * cosA;
 
       const desiredHullAngle = Math.atan2(moveX, moveZ);
+      const surfTurn = !canHover && !allTerrain ? (engine.currentSurface?.turnMultiplier || 1.0) : 1.0;
       const maxHullTurnStep =
         (((engine.assembledTank?.hull?.turnRate || 160) * Math.PI) / 180) *
         subMods.turnMultiplier *
+        surfTurn *
         dt *
         4.2;
       engine.playerHullAngle = stepAngleTowards(

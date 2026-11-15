@@ -180,6 +180,7 @@ export class PhysicsController {
           cell.type === TileType.ENEMY_BASE ||
           cell.type === TileType.HEDGEHOG ||
           cell.type === TileType.BARREL ||
+          cell.type === TileType.WATER_TOWER ||
           (cell.type === TileType.WATER && !canCrossWater)
         ) {
           return true;

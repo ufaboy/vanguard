@@ -220,9 +220,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "sand",
@@ -238,7 +238,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "concrete",
@@ -252,9 +252,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "concrete",
@@ -270,7 +270,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "sand",
@@ -282,140 +282,7 @@
         ]
       }
     ],
-    "paths": [
-      {
-        "id": "west-seawall-approach",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            33,
-            12
-          ],
-          [
-            30,
-            6
-          ],
-          [
-            17,
-            6
-          ],
-          [
-            8,
-            6
-          ],
-          [
-            3,
-            14
-          ]
-        ],
-        "width": 2.6,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "central-lock-spine",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            28,
-            19
-          ],
-          [
-            17,
-            19
-          ],
-          [
-            11,
-            19
-          ],
-          [
-            4,
-            19
-          ]
-        ],
-        "width": 3,
-        "surface": "concrete",
-        "marking": "dashed"
-      },
-      {
-        "id": "east-quay-approach",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            33,
-            27
-          ],
-          [
-            30,
-            33
-          ],
-          [
-            17,
-            33
-          ],
-          [
-            8,
-            33
-          ],
-          [
-            3,
-            25
-          ]
-        ],
-        "width": 2.6,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      }
-    ],
+    "paths": [],
     "landmarks": [
       {
         "id": "north-spillway-loading",
@@ -428,7 +295,7 @@
       {
         "id": "mid-lock-deck-crosswalk",
         "kind": "crosswalk",
-        "row": 17,
+        "row": 22,
         "col": 19,
         "size": 3,
         "rotation": 0
@@ -469,15 +336,15 @@
         "id": "edge-mark-0",
         "kind": "manhole",
         "row": 10,
-        "col": 3,
+        "col": 1,
         "size": 1,
         "rotation": 0
       },
       {
         "id": "edge-mark-1",
         "kind": "crosswalk",
-        "row": 25,
-        "col": 3,
+        "row": 20,
+        "col": 6,
         "size": 2,
         "rotation": 90
       },
@@ -485,17 +352,46 @@
         "id": "edge-mark-2",
         "kind": "manhole",
         "row": 12,
-        "col": 36,
+        "col": 38,
         "size": 1,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "manhole",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 1,
         "rotation": 90
+      },
+      {
+        "id": "m20-wt-haz-7-21",
+        "kind": "hazard_zone",
+        "row": 7,
+        "col": 21,
+        "size": 1.3
+      },
+      {
+        "id": "m20-helipad-hq",
+        "kind": "helipad",
+        "row": 33,
+        "col": 17,
+        "size": 1.8
+      },
+      {
+        "id": "m20-chev-main",
+        "kind": "chevron",
+        "row": 25,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
+      },
+      {
+        "id": "m20-drain-coast",
+        "kind": "drain_grate",
+        "row": 32,
+        "col": 37,
+        "size": 1
       }
     ]
   },
@@ -748,44 +644,44 @@
   ],
   "layout": [
     "WWWW....WWWW...FF......FF...WWWW....F...",
-    "WWW.....WWWW..FF........FF..WWWW....F...",
+    "WWW.....WWWW.TFF....M.L.FF..WWWW....F...",
     "WWW.....WWWW..F..........F..WWWW......FW",
     "WWW.....WWWW................WWWW....F..W",
-    "....CC..WWWW................WWWW...CC.CC",
+    "MM..CC..WWWW................WWWW...CC.CC",
     "W...CC..W..W................W..W...CC...",
-    "FFF.....W..W..CC........CC..W..W......WW",
-    "FFF...........CC........CC...........WWW",
+    "MFF.....W..W..CC........CC..W..W......WW",
+    "FFF......K....CC.....T..CC...........WWW",
     "WW...........QB..........B...........WWW",
     "FW......W..W..CCCCQBB.CCCC..W..W.....WWW",
-    "F...FF..WWWW..C.........QC..WWWW...FF.WW",
+    "MM..FF..WWWW..C.........QC..WWWW...FF.WW",
     "W..FFF..WWWW................WWWW..FF..WW",
-    "F.......WWWW..CC........CC..WWWW....F...",
-    "WW.CCC..WWWW..CCC..Q....CC..WWWW..CC..CC",
-    "WW..CB..WWWW...CC..B....CC..WWWW..BC..W.",
-    "........W..W..FF...B....FF..W..W....F.W.",
-    "FFF...........FF........FF............FF",
-    "WWW........X...DD......DD...X........FFF",
-    "WWW........X................X........FFF",
-    "WWW........X................X........FFF",
-    "........W..W..FF........FF..W..W....FFFF",
-    "BB......W..W..FF........FF..W..W....FFFF",
-    "BB......W..W..FF........FF..W..W....FFFF",
-    "....CC..WWWW.QC..........CQ.WWWW...CC.FF",
-    "....CC..WWWW..CCBB....BBCC..WWWW...CC...",
-    "FFF.....WWWW..C..........C..WWWW........",
-    ".F..FF..WWWW..C.........CC..WWWW..FF..FF",
-    ".W.FFF..WWWW..CC........CC..WWWW..FF..FB",
-    ".W......W..W..CC........C...W..W......FB",
-    "WWW...........Q.......................W.",
-    "WWW...........FF........FF...........FFF",
-    "W.......W..W..FFF.......FF..W..W......WB",
-    "W...CC..WWWW............Q...WWWW...CC.BB",
-    ".W..CC..WWWW..BB........BB..WWWW...CC.BB",
-    "FFF.....W..W..BB.......BBB..W..W.......W",
+    "MM....R.WWWW..CC........CC..WWWW....F.M.",
+    "WW.CCCR.WWWW..CCC..Q.K..CC..WWWW.KCC..CC",
+    "WW..CBR.WWWW...CC..B....CC..WWWW..BC..W.",
+    "......R.W..W..FF...B....FF..W..W....F.W.",
+    "MFF...R......LFF........FF............FF",
+    "WWW...R....X...DD......DD...X........FFF",
+    "WWW...R....X................X........FFF",
+    "WWW...R..K.X.............L..X........FFF",
+    "MM....R.W..W..FF........FF..W..W....FFFF",
+    "BB....R.W..W..FF........FF..W..W....FFFF",
+    "BB....R.W..W.MFF...R....FF..W..W....FFFF",
+    "....CCR.WWWW.QC....R.....CQ.WWWW...CC.FF",
+    "MM..CCR.WWWW..CCBB.R..BBCC..WWWW...CC.M.",
+    "FFF..MR.WWWW..C....R.....C..WWWW........",
+    "MF..FFR.WWWW..C....R....CC..WWWW..FF..FF",
+    ".W.FFFR.WWWW..CC........CC..WWWW..FF..FB",
+    "MW...MR.W..W..CC........C...W..W......FB",
+    "WWW...R.......Q.......................W.",
+    "WWW...R.......FF...R....FF...........FFF",
+    "W.......W..W.MFFFM.R....FF..W..W......WB",
+    "WM..CC..WWWW.......R....Q...WWWW...CC.BB",
+    ".W..CC..WWWW..BB...R....BB..WWWW...CC.BB",
+    "MFF.....W..W..BB.......BBB..W..W......MW",
     ".....F..........X......X.........FF.....",
-    "....FF......FF............FF.....FFF...W",
+    "MM..FF......FF............FF.....FFF..MW",
     "WWW.........FF....CCCC....FF............",
-    "WWW..................................FFF",
+    "WWW..K...TK....K.........K....K......FFF",
     "WWWW...............HH...............FFFF"
   ]
 }

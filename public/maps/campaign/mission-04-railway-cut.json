@@ -320,9 +320,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "pavers",
@@ -338,7 +338,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -352,9 +352,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -370,7 +370,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "pavers",
@@ -382,186 +382,13 @@
         ]
       }
     ],
-    "paths": [
-      {
-        "id": "west-tunnel-lane",
-        "points": [
-          [
-            3,
-            8
-          ],
-          [
-            10,
-            8
-          ],
-          [
-            10,
-            6
-          ],
-          [
-            30,
-            6
-          ],
-          [
-            30,
-            13
-          ]
-        ],
-        "width": 2.8,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "west-trackbed",
-        "points": [
-          [
-            3,
-            17
-          ],
-          [
-            12,
-            15
-          ],
-          [
-            33,
-            15
-          ]
-        ],
-        "width": 2.5,
-        "surface": "concrete",
-        "marking": "edges"
-      },
-      {
-        "id": "east-trackbed",
-        "points": [
-          [
-            8,
-            21
-          ],
-          [
-            24,
-            21
-          ],
-          [
-            33,
-            21
-          ]
-        ],
-        "width": 2.5,
-        "surface": "concrete",
-        "marking": "edges"
-      },
-      {
-        "id": "east-coal-lane",
-        "points": [
-          [
-            8,
-            31
-          ],
-          [
-            27,
-            31
-          ],
-          [
-            27,
-            28
-          ],
-          [
-            35,
-            28
-          ]
-        ],
-        "width": 3,
-        "surface": "concrete",
-        "marking": "dashed"
-      },
-      {
-        "id": "north-overpass-crossing",
-        "points": [
-          [
-            8,
-            8
-          ],
-          [
-            8,
-            20
-          ],
-          [
-            8,
-            31
-          ]
-        ],
-        "width": 2.8,
-        "surface": "concrete",
-        "marking": "edges"
-      },
-      {
-        "id": "south-forecourt-loop",
-        "points": [
-          [
-            34,
-            13
-          ],
-          [
-            34,
-            21
-          ],
-          [
-            34,
-            28
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "dashed"
-      }
-    ],
+    "paths": [],
     "landmarks": [
       {
         "id": "forecourt-crosswalk-west",
         "kind": "crosswalk",
         "row": 30,
-        "col": 13,
+        "col": 12,
         "size": 2.2,
         "rotation": 0
       },
@@ -616,16 +443,16 @@
       {
         "id": "label-railway-cut",
         "kind": "label",
-        "row": 11,
-        "col": 20,
+        "row": 10,
+        "col": 19,
         "size": 3,
         "text": "RAILWAY CUT"
       },
       {
         "id": "label-coal-yard",
         "kind": "label",
-        "row": 14,
-        "col": 32,
+        "row": 13,
+        "col": 31,
         "size": 3,
         "text": "COAL SIDING"
       },
@@ -640,8 +467,8 @@
       {
         "id": "cut-manhole-south",
         "kind": "manhole",
-        "row": 28,
-        "col": 15,
+        "row": 27,
+        "col": 16,
         "size": 1,
         "rotation": 0
       },
@@ -656,16 +483,16 @@
       {
         "id": "edge-mark-0",
         "kind": "manhole",
-        "row": 10,
-        "col": 3,
+        "row": 9,
+        "col": 2,
         "size": 1,
         "rotation": 0
       },
       {
         "id": "edge-mark-1",
         "kind": "manhole",
-        "row": 25,
-        "col": 3,
+        "row": 24,
+        "col": 0,
         "size": 1,
         "rotation": 90
       },
@@ -673,17 +500,46 @@
         "id": "edge-mark-2",
         "kind": "crosswalk",
         "row": 12,
-        "col": 36,
+        "col": 38,
         "size": 2,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "loading",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 1.8,
         "rotation": 90
+      },
+      {
+        "id": "m4-helipad-hq",
+        "kind": "helipad",
+        "row": 34,
+        "col": 13,
+        "size": 1.8
+      },
+      {
+        "id": "m4-drain-w",
+        "kind": "drain_grate",
+        "row": 20,
+        "col": 1,
+        "size": 1
+      },
+      {
+        "id": "m4-drain-e",
+        "kind": "drain_grate",
+        "row": 19,
+        "col": 37,
+        "size": 1
+      },
+      {
+        "id": "m4-chev-s",
+        "kind": "chevron",
+        "row": 28,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
       }
     ],
     "exclusions": [
@@ -1035,44 +891,44 @@
   ],
   "layout": [
     "FFFF........BBB........BB.BBBBBB....FFFF",
-    "............BBB........BB.BBBBBB........",
+    ".....K....L.BBB........BB.BBBBBB..K.....",
     "....FF......BBB........BB.BBBBBB..FF..CC",
     "XF..FF..BB......FF........BBBBBB..FF....",
     "FF......BB..BBB.FF............BB........",
     "............BBB..BB...........BB........",
     "FF...BBBB........BB....BBBB.............",
     "FF...BBBB..............BBBB...BBB.......",
-    "FF............................BBB.......",
-    "BB....BB................................",
+    "FF..........FF................BBB.......",
+    "BB....BB...FFF..........................",
     "BBB...BB.BCB...BB..........BB....BBB.BBB",
     "BBB......BCB...BB..BCB.....BB.FF.BBB.BBB",
     "X........BCB.......BCB........FF........",
     "X....BB..BCB.......BCB................XX",
-    "BC...BB...B....BB..BCB....BCB..BB.....FF",
+    "BC...BB...B....BB..BCBK...BCB..BB.....FF",
     ".C........B....BB..BCB....BCB..BB.......",
-    "..........B.........B.....BCB.....BB...B",
-    ".........BCB........B.....BCB..BB.BB..CC",
-    "F........BCB........B.....BCB..BB.BB....",
-    "F........BCB........B.....BCB..BB.BB....",
-    "....FF...BCB........B.....BCB..BB.....BB",
-    "CC..FF...BCB........B.....BCB..BB.....BB",
-    ".C..FF...BCB........B.....BCB..BB......F",
-    "FF..FF..QBCB.......BCB....BCB.........BF",
-    ".........BCB.......BCB.....B......FF....",
-    "CC................QBCB.....B..BB..FF....",
-    ".....BBB.....BBB...BCB.....B..BB.......F",
-    "CC...BBB....QBCB..........BCB...BBBB...C",
-    "XB...Q.......BBB..........BCB...BBBB..FF",
-    "FF...............Q........BCB....Q......",
-    "......BB.....BBBBBB.....................",
-    "CC....BB.....BCCCCB....BB.......BBB....B",
+    "......R...B.........B.....BCB.....BB...B",
+    "......R..BCB..K.....B.....BCB..BB.BB..CC",
+    "F.....R..BCB........B.....BCB..BB.BB....",
+    "F.....R..BCB........B.....BCB..BB.BB....",
+    "....FFR..BCB........B.....BCB..BB.....BB",
+    "CC..FFR..BCB........B.....BCB..BB.....BB",
+    ".C..FFR..BCB........B.....BCB..BB.....RF",
+    "FF..FFR.QBCB......KBCB....BCB.........RF",
+    "......R..BCB.......BCB.....B......FF..R.",
+    "CC....R...........QBCB.....B..BB..FF....",
+    ".....BRB.....BBB...BCB.....B..BB.......F",
+    "CC...BRB....QBCB..........BCB...BBBB...C",
+    "XB...QR......BBB..........BCB...BBBB..FF",
+    "FF....R..........Q........BCB....Q......",
+    "......BBRRRRRBBBBBB.....................",
+    "CC....BBFFFF.BCCCCB....BB.......BBB....B",
     "CC........Q..BCCCCB....BB..FF...BBB.....",
     "C....BBBBBB................FF...Q.....F.",
     "F....BBBBBB.................BB........FB",
     "........BBB....BB...........BB..BBBB....",
     "........BBB....BB...............BBBB....",
     "B.................CCCC..........BBBB..CC",
-    ".........................BB.............",
+    "......K.T................BB..L...K......",
     "....FF.............HH....BB.......FF...."
   ]
 }
