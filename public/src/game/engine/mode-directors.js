@@ -17,7 +17,11 @@ import {
   stepContractCargo,
   stepContractScheduler,
 } from '../../sim/contract.js';
-import { SURVIVAL_CONFIG, buildSurvivalWaveSpec } from '../../sim/survival.js';
+import {
+  SURVIVAL_CONFIG,
+  buildSurvivalWaveSpec,
+  recordSurvivalRun,
+} from '../../sim/survival.js';
 
 export class SurvivalDirector {
   constructor(engine) {
@@ -27,16 +31,43 @@ export class SurvivalDirector {
   startWave(waveNumber = 1, isEarlyCall = false) {
     const e = this.engine;
     if (!e.survivalState) return;
+    if (waveNumber > 1 && !e.survivalState.currentWaveCleared) {
+      const prevReward = e.survivalState.waveSpec?.waveRewardCredits || 300;
+      if (e.playerSave) {
+        e.playerSave.credits = (e.playerSave.credits || 0) + prevReward;
+      }
+      e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + prevReward;
+      e.survivalState.lastWaveReward = prevReward;
+      e.survivalState.wavesCleared = Math.max(
+        e.survivalState.wavesCleared || 0,
+        waveNumber - 1
+      );
+    }
+
     const spec = buildSurvivalWaveSpec(waveNumber);
     e.survivalState.wave = spec.wave;
     e.survivalState.phase = 'combat';
+    e.survivalState.currentWaveCleared = false;
+    e.survivalState.waveTimer = SURVIVAL_CONFIG.WAVE_INTERVAL_SEC;
+    e.survivalState.waveDuration = SURVIVAL_CONFIG.WAVE_INTERVAL_SEC;
     e.survivalState.intermissionTimer = 0;
     e.survivalState.waveSpec = spec;
     e.survivalState.nextWaveSpec = buildSurvivalWaveSpec(spec.wave + 1);
 
-    e.enemySpawnQueue = [...spec.roster];
+    e.modelFactory?.ensureEnemyModels?.([
+      ...spec.roster,
+      ...(spec.bossClass ? [spec.bossClass] : []),
+      ...(e.survivalState.nextWaveSpec?.roster || []),
+      ...(e.survivalState.nextWaveSpec?.bossClass ? [e.survivalState.nextWaveSpec.bossClass] : []),
+    ]);
+
+    e.enemySpawnQueue =
+      spec.wave === 1
+        ? [...spec.roster]
+        : [...(e.enemySpawnQueue || []), ...spec.roster];
     e.vanguardRemainingToSpawn = e.enemySpawnQueue.length;
     e.bossSpawned = false;
+    e.bossSequenceStarted = false;
     e.spawnTimer = 0.7;
     e.squadDirector = createSquadDirector({ maxAttackers: spec.maxAttackers });
 
@@ -76,8 +107,8 @@ export class SurvivalDirector {
     const e = this.engine;
     let cratesPlaced = 0;
     for (let attempt = 0; attempt < 60 && cratesPlaced < crateCount; attempt++) {
-      const r = 6 + Math.floor(Math.random() * (GRID_SIZE - 12));
-      const c = 3 + Math.floor(Math.random() * (GRID_SIZE - 6));
+      const r = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
+      const c = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
       const cell = e.grid[r]?.[c];
       if (!cell || cell.type !== TileType.EMPTY) continue;
       const { x, z } = e.gridToWorld(r, c);
@@ -96,7 +127,7 @@ export class SurvivalDirector {
 
     let barrelsPlaced = 0;
     for (let attempt = 0; attempt < 40 && barrelsPlaced < barrelCount; attempt++) {
-      const r = 5 + Math.floor(Math.random() * (GRID_SIZE - 12));
+      const r = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
       const c = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
       const cell = e.grid[r]?.[c];
       if (!cell || cell.type !== TileType.EMPTY) continue;
@@ -119,9 +150,13 @@ export class SurvivalDirector {
 
   onWaveCleared() {
     const e = this.engine;
-    if (!e.survivalState || e.survivalState.phase === 'intermission') return;
+    if (!e.survivalState || e.survivalState.currentWaveCleared) return;
     const spec = e.survivalState.waveSpec;
-    e.survivalState.wavesCleared = e.survivalState.wave;
+    e.survivalState.currentWaveCleared = true;
+    e.survivalState.wavesCleared = Math.max(
+      e.survivalState.wavesCleared || 0,
+      e.survivalState.wave
+    );
     const reward = spec?.waveRewardCredits || 300;
     if (e.playerSave) {
       e.playerSave.credits = (e.playerSave.credits || 0) + reward;
@@ -134,11 +169,16 @@ export class SurvivalDirector {
     }
 
     e.survivalState.phase = 'intermission';
-    e.survivalState.intermissionTimer = SURVIVAL_CONFIG.INTERMISSION_SEC;
-    e.survivalState.intermissionDuration = SURVIVAL_CONFIG.INTERMISSION_SEC;
+    e.survivalState.intermissionTimer = Math.max(0.5, e.survivalState.waveTimer || 0);
+    e.survivalState.intermissionDuration = Math.max(
+      1,
+      e.survivalState.intermissionTimer
+    );
     sound.playPowerUp();
     e.setStatusBanner(
-      `WAVE ${e.survivalState.wave} CLEARED! +$${reward} CREDITS · 15s REARM INTERMISSION ([N] CALL NEXT WAVE +$${SURVIVAL_CONFIG.EARLY_CALL_BONUS})`,
+      `WAVE ${e.survivalState.wave} CLEARED! +$${reward} CREDITS · NEXT WAVE IN ${Math.ceil(
+        e.survivalState.waveTimer || 0
+      )}s ([N] CALL NOW +$${SURVIVAL_CONFIG.EARLY_CALL_BONUS})`,
       4.5
     );
     e.emitHudUpdate();
@@ -148,8 +188,8 @@ export class SurvivalDirector {
     const e = this.engine;
     if (
       !e.survivalState ||
-      e.survivalState.phase !== 'intermission' ||
-      e.status !== GameStatus.PLAYING
+      e.status !== GameStatus.PLAYING ||
+      (e.survivalState.phase !== 'intermission' && e.vanguardRemainingToSpawn > 0)
     ) {
       return false;
     }
@@ -161,6 +201,47 @@ export class SurvivalDirector {
     e.survivalState.earlyWaveCalls = (e.survivalState.earlyWaveCalls || 0) + 1;
     sound.playPowerUp();
     this.startWave(e.survivalState.wave + 1, true);
+    return true;
+  }
+
+  onHoldVictory() {
+    const e = this.engine;
+    if (!e.survivalState || e.survivalState.victoryAchieved || !e.baseAlive) return;
+    e.survivalState.victoryAchieved = true;
+    const campaignSave = e.campaignSaveRepo?.loadPlayerSave();
+    if (campaignSave) {
+      e.survivalState.recordSummary = recordSurvivalRun(
+        campaignSave,
+        e.survivalState,
+        e.kills
+      );
+      e.campaignSaveRepo.savePlayerSave(campaignSave);
+    }
+    e.status = GameStatus.SECTOR_CLEAR;
+    sound.stopEngineLoop();
+    sound.playPowerUp();
+    e.setStatusBanner(
+      'ÉLYSÉE PALACE HELD FOR 7:00! PARIS SECURED — EXTRACT OR CONTINUE IN OVERTIME!',
+      5.0
+    );
+    e.emitHudUpdate();
+  }
+
+  enterOvertime() {
+    const e = this.engine;
+    if (!e.survivalState) return false;
+    e.survivalState.overtime = true;
+    e.survivalState.victoryAchieved = true;
+    e.status = GameStatus.PLAYING;
+    if (e.survivalState.wave < 8 && e.enemies.length === 0 && e.vanguardRemainingToSpawn === 0) {
+      this.startWave(8, false);
+    } else {
+      e.setStatusBanner(
+        'OVERTIME ENGAGED! HOLD THE ÉLYSÉE PALACE FOR A NEW SURVIVAL RECORD!',
+        4.0
+      );
+      e.emitHudUpdate();
+    }
     return true;
   }
 }

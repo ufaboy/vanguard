@@ -37,11 +37,12 @@ import brokenAvenue from '../../maps/campaign/mission-02-broken-avenue.json' wit
 import firstContact from '../../maps/campaign/mission-01-first-contact.json' with { type: 'json' };
 import lastCargo from '../../maps/contracts/last-cargo.json' with { type: 'json' };
 import blackoutProtocol from '../../maps/contracts/blackout-protocol.json' with { type: 'json' };
-import ironCrucible from '../../maps/survival/iron-crucible.json' with { type: 'json' };
+import parisLastStand from '../../maps/survival/paris-last-stand.json' with { type: 'json' };
 import { EnemyClass, TileType } from './types.js';
 import { resolveMapRules } from './mapRules.js';
 import { normalizeDecoration } from './render/decoration.js';
 import { POWERUP, POWERUP_TYPES, POWERUP_MAX_ON_MAP } from './powerups.js';
+import { PLACEABLE_LANDMARKS, landmarkBlockedCells } from './terrains/landmarks.js';
 
 export const GRID_SIZE = 40;
 export const TILE_SIZE = 2.0;
@@ -51,17 +52,29 @@ export const BASE_CELL = Object.freeze({ row: 39, col: 19 });
 
 /**
  * Cell layout around the Allied HQ:
- * - `cells`: the two HQ cells (anchor + its right neighbour);
+ * - `cells`: the HQ footprint cells (default 2×1: anchor + its right neighbour);
  * - `wall`: a 4-cell concrete line two rows towards the enemy, covering the HQ from the enemy side;
  * - `open`: the free lane between HQ and wall plus the cells beside the HQ, so tanks can drive up to it.
  */
-export function getBaseLayout(baseCell = BASE_CELL, size = GRID_SIZE) {
+export function getBaseLayout(baseCell = BASE_CELL, size = GRID_SIZE, options = {}) {
   const { row, col } = baseCell;
+  const cols = options?.footprint?.cols ?? 2;
+  const rows = options?.footprint?.rows ?? 1;
+  const authored = options?.baseDefense === 'authored';
+  const inside = (c) => c.row >= 0 && c.row < size && c.col >= 0 && c.col < size;
+  const cells = [];
+  for (let dr = 0; dr < rows; dr++) {
+    for (let dc = 0; dc < cols; dc++) {
+      cells.push({ row: row + dr, col: col + dc });
+    }
+  }
+  if (authored) {
+    return { cells: cells.filter(inside), wall: [], open: [] };
+  }
   const towardEnemy = row >= size / 2 ? -1 : 1;
   const span = [-1, 0, 1, 2];
-  const inside = (c) => c.row >= 0 && c.row < size && c.col >= 0 && c.col < size;
   return {
-    cells: [0, 1].map((dc) => ({ row, col: col + dc })).filter(inside),
+    cells: cells.filter(inside),
     wall: span.map((dc) => ({ row: row + 2 * towardEnemy, col: col + dc })).filter(inside),
     open: [
       ...span.map((dc) => ({ row: row + towardEnemy, col: col + dc })),
@@ -117,6 +130,9 @@ const CHAR_TO_TILE = {
   T: TileType.WATER_TOWER,
   WATER_TOWER: TileType.WATER_TOWER,
   TOWER: TileType.WATER_TOWER,
+  '=': TileType.BRIDGE,
+  BRIDGE: TileType.BRIDGE,
+  LANDMARK: TileType.LANDMARK,
 };
 
 function parseHexColor(val, fallback = 0x0b1120) {
@@ -161,13 +177,29 @@ function parseMapGrid(mapJson) {
     row: mapJson?.baseCell?.row ?? BASE_CELL.row,
     col: mapJson?.baseCell?.col ?? BASE_CELL.col,
   };
-  const layout = getBaseLayout(baseCell, size);
+  const layout = getBaseLayout(baseCell, size, {
+    footprint: mapJson?.baseFootprint,
+    baseDefense: mapJson?.baseDefense,
+  });
   for (const row of grid) {
     for (let c = 0; c < size; c++) if (row[c] === TileType.BASE) row[c] = TileType.EMPTY;
   }
   for (const { row, col } of layout.open) grid[row][col] = TileType.EMPTY;
   for (const { row, col } of layout.wall) grid[row][col] = TileType.CONCRETE;
   for (const { row, col } of layout.cells) grid[row][col] = TileType.BASE;
+
+  if (Array.isArray(mapJson?.landmarks3d)) {
+    for (const entry of mapJson.landmarks3d) {
+      if (!PLACEABLE_LANDMARKS.includes(entry?.kind)) {
+        throw new Error(`${mapJson.mapId || 'map'}: unsupported landmark kind ${entry?.kind}`);
+      }
+      for (const { row, col } of landmarkBlockedCells(entry)) {
+        if (row >= 0 && row < size && col >= 0 && col < size) {
+          grid[row][col] = TileType.LANDMARK;
+        }
+      }
+    }
+  }
 
   return grid;
 }
@@ -222,6 +254,7 @@ export function normalizeMapDefinition(rawMap, index = 0) {
           TileType.SPAWNER,
           TileType.SAND,
           TileType.ROAD,
+          TileType.BRIDGE,
           TileType.SWAMP,
           TileType.OIL_SLICK,
           TileType.CRATER,
@@ -231,6 +264,27 @@ export function normalizeMapDefinition(rawMap, index = 0) {
     pickupCells.add(key);
     return { type, row, col };
   });
+
+  const landmarks3d = Array.isArray(rawMap.landmarks3d)
+    ? rawMap.landmarks3d.map((item) => ({
+        kind: item.kind,
+        row: Number(item.row),
+        col: Number(item.col),
+      }))
+    : [];
+  const mines = Array.isArray(rawMap.mines)
+    ? rawMap.mines.map((item) => ({
+        row: Number(item.row),
+        col: Number(item.col),
+      }))
+    : [];
+  const mineSigns = Array.isArray(rawMap.mineSigns)
+    ? rawMap.mineSigns.map((item) => ({
+        row: Number(item.row),
+        col: Number(item.col),
+        rotation: Number(item.rotation || 0),
+      }))
+    : [];
 
   return {
     id: rawMap.id ?? index + 1,
@@ -252,6 +306,18 @@ export function normalizeMapDefinition(rawMap, index = 0) {
     fogColor: parseHexColor(envCfg.fogColor ?? rawMap.fogColor, 0x0b1120),
     groundColor: parseHexColor(envCfg.groundColor ?? rawMap.groundColor, 0x162032),
     baseCell: rawMap.baseCell || BASE_CELL,
+    baseFootprint: rawMap.baseFootprint
+      ? {
+          cols: Number(rawMap.baseFootprint.cols ?? 2),
+          rows: Number(rawMap.baseFootprint.rows ?? 1),
+        }
+      : { cols: 2, rows: 1 },
+    baseMaxHp: Math.max(1, Number(rawMap.baseMaxHp ?? 1)),
+    baseModel: rawMap.baseModel || null,
+    baseDefense: rawMap.baseDefense || 'standard',
+    landmarks3d,
+    mines,
+    mineSigns,
     playerSpawnCell: rawMap.playerSpawnCell || {
       row: BASE_CELL.row,
       col: BASE_CELL.col - 3,
@@ -314,4 +380,4 @@ export function normalizeMapDefinition(rawMap, index = 0) {
   };
 }
 
-export const SECTORS = [firstContact, brokenAvenue, civicShelter, railwayCut, outerGate, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, ironCrucible].map(normalizeMapDefinition);
+export const SECTORS = [firstContact, brokenAvenue, civicShelter, railwayCut, outerGate, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, parisLastStand].map(normalizeMapDefinition);

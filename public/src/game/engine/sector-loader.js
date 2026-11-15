@@ -3,7 +3,7 @@ import { ARMOR_PANEL_CATALOG } from '../../sim/catalog.js';
 import { CONTRACT_TYPES, CONTRACTS_CATALOG, LAST_CARGO_CONTRACT, createContractState, stepContractScheduler } from '../../sim/contract.js';
 import { resolveAssembledTank } from '../../sim/hangar.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
-import { createSurvivalState } from '../../sim/survival.js';
+import { buildSurvivalWaveSpec, createSurvivalState } from '../../sim/survival.js';
 import {
   APS,
   HYDRA,
@@ -16,38 +16,56 @@ import { createEncounterState, remainingEncounterEnemies } from '../encounters.j
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout } from '../levels.js';
 import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
+import { landmarkFootprintCenter } from '../terrains/landmarks.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
-import { EnemyClass, GameStatus, TANK_TYPES, TileType, resolveMapRules } from '../types.js';
+import { EnemyClass, GameStatus, TileType, resolveMapRules } from '../types.js';
+
+const BOSS_ESCORT_CLASSES = Object.freeze({
+  [EnemyClass.BOSS_MAMMOTH]: MAMMOTH.ESCORT_CLASSES,
+  [EnemyClass.BOSS_HYDRA]: HYDRA.ESCORT_CLASSES,
+  [EnemyClass.BOSS_INFERNO]: INFERNO.ESCORT_CLASSES,
+  [EnemyClass.BOSS_TITAN]: TITAN.ESCORT_CLASSES,
+});
 
 /** Loads sector maps, initializes grid/player/mode state, and handles grid-world coordinate helpers. */
-/** Collects all enemy and boss classes that may appear in a sector. */
+/** Collects all enemy and boss classes needed at the start of a sector. */
 export function getSectorEnemyClasses(sector) {
   if (!sector) return [];
   if (sector.gameMode === 'survival') {
-    return [
-      ...Object.values(TANK_TYPES),
-      EnemyClass.BOSS_MAMMOTH,
-      EnemyClass.BOSS_HYDRA,
-      EnemyClass.BOSS_INFERNO,
-      EnemyClass.BOSS_TITAN,
-    ];
+    const wave1 = buildSurvivalWaveSpec(1);
+    return [...new Set([
+      ...wave1.roster,
+      ...(wave1.bossClass ? [wave1.bossClass] : []),
+    ])];
   }
-  return [
+  const classes = new Set([
     ...(sector.enemyPool || []),
     ...(sector.fixedSpawns || []).map((sp) => sp.enemyClass),
-    ...(sector.rules?.spawnSectorBossOnClear
-      ? [
-          sector.bossClass,
-          ...(sector.bossSequence
-            ? sector.bossSequence.flat().map((b) => b.enemyClass)
-            : []),
-          ...MAMMOTH.ESCORT_CLASSES,
-          ...HYDRA.ESCORT_CLASSES,
-          ...INFERNO.ESCORT_CLASSES,
-          ...TITAN.ESCORT_CLASSES,
-        ]
-      : []),
-  ];
+  ]);
+  if (sector.rules?.spawnSectorBossOnClear) {
+    const bosses = [
+      ...(sector.bossClass ? [sector.bossClass] : []),
+      ...(sector.bossSequence ? sector.bossSequence.flat().map((b) => b.enemyClass) : []),
+    ];
+    for (const bossClass of bosses) {
+      classes.add(bossClass);
+      for (const escort of BOSS_ESCORT_CLASSES[bossClass] || []) {
+        classes.add(escort);
+      }
+    }
+  }
+  return [...classes];
+}
+
+/** True when a sector uses 3D landmarks (Élysée HQ, Paris monuments, bridges, or mine signs). */
+export function sectorUsesLandmarks(sector) {
+  if (!sector) return false;
+  return Boolean(
+    sector.baseModel ||
+      sector.landmarks3d?.length ||
+      sector.mineSigns?.length ||
+      sector.grid?.some((row) => row.includes(TileType.BRIDGE))
+  );
 }
 
 export class SectorLoaderController {
@@ -72,15 +90,24 @@ export class SectorLoaderController {
 
   getBaseLayout() {
     const { engine } = this;
-    return getBaseLayout(SECTORS[engine.currentSectorIndex]?.baseCell || BASE_CELL);
+    const sector = SECTORS[engine.currentSectorIndex];
+    return getBaseLayout(sector?.baseCell || BASE_CELL, GRID_SIZE, {
+      footprint: sector?.baseFootprint,
+      baseDefense: sector?.baseDefense,
+    });
   }
 
-  /** World centre of the two-cell Allied HQ. */
+  /** World centre of the Allied HQ footprint. */
   getCommandBaseCenter() {
     const { engine } = this;
-    const baseCell = SECTORS[engine.currentSectorIndex]?.baseCell || BASE_CELL;
+    const sector = SECTORS[engine.currentSectorIndex];
+    const baseCell = sector?.baseCell || BASE_CELL;
+    const fp = sector?.baseFootprint || { cols: 2, rows: 1 };
     const pos = this.gridToWorld(baseCell.row, baseCell.col);
-    return { x: pos.x + TILE_SIZE / 2, z: pos.z };
+    return {
+      x: pos.x + ((fp.cols - 1) * TILE_SIZE) / 2,
+      z: pos.z + ((fp.rows - 1) * TILE_SIZE) / 2,
+    };
   }
 
   setBasePerimeterMaterial(targetType) {
@@ -177,6 +204,15 @@ export class SectorLoaderController {
     }
     engine.defenseTurrets = [];
     engine.baseAlive = true;
+    engine.baseMaxHp = sector.baseMaxHp || 1;
+    engine.baseHp = engine.baseMaxHp;
+    engine.baseLandmarkMesh = null;
+    if (sectorUsesLandmarks(sector)) {
+      engine.modelFactory.landmarkModels?.clearLiveGroups?.();
+      engine.modelFactory.landmarkModels?.ensureLoaded?.();
+    } else {
+      engine.modelFactory.landmarkModels?.unload?.();
+    }
     engine.empTimer = 0;
     engine.activeMapRules = sector.rules || resolveMapRules(sector);
     engine.enemyBaseAlive = false;
@@ -231,15 +267,42 @@ export class SectorLoaderController {
           mesh = spawner;
           hp = 6;
         } else if (type === TileType.BASE) {
-          // One hangar model spans both HQ cells; it hangs on the anchor cell.
+          // One HQ model spans all HQ cells; it hangs on the anchor cell.
           const anchor = sector.baseCell || BASE_CELL;
           if (r === anchor.row && c === anchor.col) {
-            const baseBlock = engine.modelFactory.createCommandBaseBlock();
-            baseBlock.position.set(x + TILE_SIZE / 2, 0, z);
-            engine.mapGroup.add(baseBlock);
-            mesh = baseBlock;
+            if (sector.baseModel && engine.modelFactory.landmarkModels) {
+              const center = this.getCommandBaseCenter();
+              const baseBlock = engine.modelFactory.landmarkModels.create(sector.baseModel);
+              baseBlock.position.set(center.x, 0, center.z);
+              engine.mapGroup.add(baseBlock);
+              mesh = baseBlock;
+              engine.baseLandmarkMesh = baseBlock;
+            } else {
+              const baseBlock = engine.modelFactory.createCommandBaseBlock();
+              baseBlock.position.set(x + TILE_SIZE / 2, 0, z);
+              engine.mapGroup.add(baseBlock);
+              mesh = baseBlock;
+            }
           }
-          hp = 1;
+          hp = engine.baseMaxHp || 1;
+        } else if (type === TileType.BRIDGE && engine.modelFactory.landmarkModels) {
+          const isBridge = (rr, cc) =>
+            rr >= 0 &&
+            rr < GRID_SIZE &&
+            cc >= 0 &&
+            cc < GRID_SIZE &&
+            sector.grid[rr][cc] === TileType.BRIDGE;
+          if (!isBridge(r, c - 1)) {
+            const bridgeMesh = engine.modelFactory.landmarkModels.create('BRIDGE_DECK');
+            if (isBridge(r, c + 1)) {
+              bridgeMesh.position.set(x + TILE_SIZE / 2, 0, z);
+              bridgeMesh.scale.set(2, 1, 1);
+            } else {
+              bridgeMesh.position.set(x, 0, z);
+            }
+            engine.mapGroup.add(bridgeMesh);
+            mesh = bridgeMesh;
+          }
         } else if (type === TileType.ENEMY_BASE) {
           const enemyBaseBlock = engine.modelFactory.createEnemyBaseBlock();
           enemyBaseBlock.position.set(x, 0, z);
@@ -268,7 +331,11 @@ export class SectorLoaderController {
           hp = 1;
         } else if (type === TileType.ROAD && engine.modelFactory.createRoadBlock) {
           const isRoad = (rr, cc) =>
-            rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE && sector.grid[rr][cc] === TileType.ROAD;
+            rr >= 0 &&
+            rr < GRID_SIZE &&
+            cc >= 0 &&
+            cc < GRID_SIZE &&
+            (sector.grid[rr][cc] === TileType.ROAD || sector.grid[rr][cc] === TileType.BRIDGE);
           const n = isRoad(r - 1, c);
           const e = isRoad(r, c + 1);
           const s = isRoad(r + 1, c);
@@ -332,8 +399,44 @@ export class SectorLoaderController {
     }
     engine.setupDefenseTurrets();
 
+    if (sector.landmarks3d?.length && engine.modelFactory.landmarkModels) {
+      for (const entry of sector.landmarks3d) {
+        const lmPos = landmarkFootprintCenter(entry.kind, entry.row, entry.col, (rr, cc) =>
+          this.gridToWorld(rr, cc)
+        );
+        const lmMesh = engine.modelFactory.landmarkModels.create(entry.kind);
+        lmMesh.position.set(lmPos.x, 0, lmPos.z);
+        engine.mapGroup.add(lmMesh);
+      }
+    }
+
+    if (sector.mineSigns?.length && engine.modelFactory.landmarkModels) {
+      for (const sign of sector.mineSigns) {
+        const signPos = this.gridToWorld(sign.row, sign.col);
+        const signMesh = engine.modelFactory.landmarkModels.create('MINE_SIGN');
+        signMesh.position.set(signPos.x, 0, signPos.z);
+        signMesh.rotation.y = ((sign.rotation || 0) * Math.PI) / 180;
+        engine.mapGroup.add(signMesh);
+      }
+    }
+
+    if (sector.mines?.length) {
+      for (const m of sector.mines) {
+        const minePos = this.gridToWorld(m.row, m.col);
+        engine.explosions.plantMineAt(minePos.x, minePos.z, {
+          neutral: true,
+          mapMine: true,
+          armTimer: 0,
+          life: Infinity,
+          silent: true,
+        });
+      }
+    }
+
     engine.waterSurfaceMesh = engine.modelFactory.createWaterBlock(
-      engine.grid.map((row) => row.map((cell) => cell.type)),
+      engine.grid.map((row) =>
+        row.map((cell) => (cell.type === TileType.BRIDGE ? TileType.WATER : cell.type))
+      ),
       TileType.WATER
     );
     engine.mapGroup.add(engine.waterSurfaceMesh);
@@ -353,6 +456,8 @@ export class SectorLoaderController {
     }
 
     engine.playerRig = engine.modelFactory.createPlayerTank();
+    engine.defeatCinematicsTimer = 0;
+    engine.playerDeathState = null;
     const pSpawnCell = sector.playerSpawnCell || {
       row: BASE_CELL.row,
       col: BASE_CELL.col - 3,
@@ -479,7 +584,9 @@ export class SectorLoaderController {
       engine.saveRepo.savePlayerSave(engine.playerSave);
     }
 
-    engine.modelFactory.ensureEnemyModels(getSectorEnemyClasses(sector));
+    const sectorEnemyClasses = getSectorEnemyClasses(sector);
+    engine.modelFactory.pruneEnemyModels?.(sectorEnemyClasses);
+    engine.modelFactory.ensureEnemyModels(sectorEnemyClasses);
 
     engine.enemySpawnQueue = Array.isArray(sector.enemyPool)
       ? [...sector.enemyPool]

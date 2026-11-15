@@ -12,6 +12,7 @@ import { EnemyClass } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { TextureGenerator, mulberry32 } from './texture-gen.js';
 import { BrickModels } from '../terrains/brick-models.js';
+import { LandmarkModels } from '../terrains/landmarks.js';
 import { applyBrickFinish } from '../terrains/brick-finish.js';
 import { createWaterSurface } from '../terrains/water.js';
 import { createIceSurface } from '../terrains/ice.js';
@@ -366,6 +367,7 @@ export class ModelFactory extends TextureGenerator {
       this.brickDamageMaterials.set(hp, [side, side, top, side, side, side]);
     }
     this.brickModels = new BrickModels();
+    this.landmarkModels = new LandmarkModels();
     this.useBlenderBricks = !isSoftwareGl;
     this.brickModelsPromise = this.useBlenderBricks
       ? this.brickModels.load()
@@ -442,14 +444,66 @@ export class ModelFactory extends TextureGenerator {
     return Promise.all(promises);
   }
 
-  /** Resolves once the player GLB, brick models, and requested enemy GLBs have settled. */
-  waitForModels(enemyClasses = []) {
+  /** Releases cached GLB geometries/textures/materials for enemy classes not used on the active map. */
+  pruneEnemyModels(keepEnemyClasses = []) {
+    if (!this.glbTankParts || this.glbTankParts.size === 0) return 0;
+    const keepUrls = new Set();
+    for (const enemyClass of keepEnemyClasses) {
+      const url = GLB_TANK_MODELS[enemyClass]?.url;
+      if (url) keepUrls.add(url);
+    }
+
+    const disposePartsList = (meshes) => {
+      if (!Array.isArray(meshes)) return;
+      for (const mesh of meshes) {
+        mesh?.geometry?.dispose?.();
+        const mats = Array.isArray(mesh?.material) ? mesh.material : [mesh?.material];
+        for (const mat of mats) {
+          if (!mat) continue;
+          mat.map?.dispose?.();
+          mat.normalMap?.dispose?.();
+          mat.roughnessMap?.dispose?.();
+          mat.metalnessMap?.dispose?.();
+          mat.dispose?.();
+        }
+      }
+    };
+
+    let pruned = 0;
+    for (const [enemyClass, classParts] of [...this.glbTankParts.entries()]) {
+      const url = GLB_TANK_MODELS[enemyClass]?.url;
+      if (url && keepUrls.has(url)) continue;
+      disposePartsList(classParts?.hull);
+      disposePartsList(classParts?.turret);
+      disposePartsList(classParts?.gun);
+      if (Array.isArray(classParts?.turrets)) {
+        for (const entry of classParts.turrets) {
+          disposePartsList(entry?.turret);
+          disposePartsList(entry?.gun);
+        }
+      }
+      this.glbTankParts.delete(enemyClass);
+      if (url) {
+        this.glbRequestedUrls?.delete(url);
+        this.glbLoadPromises?.delete(url);
+      }
+      pruned += 1;
+    }
+    return pruned;
+  }
+
+  /** Resolves once the player GLB, brick models, requested enemy GLBs, and optional sector landmarks settle. */
+  waitForModels(enemyClasses = [], options = {}) {
     if (this.isSoftwareGl) return Promise.resolve();
-    return Promise.all([
+    const tasks = [
       this.playerGlbPromise,
       this.brickModelsPromise,
       this.ensureEnemyModels(enemyClasses),
-    ]);
+    ];
+    if (options.landmarks && this.landmarkModels?.ensureLoaded) {
+      tasks.push(this.landmarkModels.ensureLoaded());
+    }
+    return Promise.all(tasks);
   }
 
   loadPlayerGlbModel() {

@@ -218,6 +218,63 @@ function renderPausedModal(state, hud, currentSector) {
 
 function renderVictoryModal(state, hud, currentSector, accuracy) {
   const s = hud.lastSettlementSummary;
+  if (hud.gameMode === 'survival' || currentSector.gameMode === 'survival') {
+    const sv = hud.survival;
+    const rec = sv?.recordSummary;
+    const waveReached = rec?.waveReached ?? sv?.wave ?? 7;
+    const timeSec = rec?.timeSec ?? sv?.elapsedSec ?? 420;
+    const baseHp = Math.max(0, hud.baseHp ?? 120);
+    const baseMaxHp = Math.max(1, hud.baseMaxHp ?? 120);
+    const newWaveBadge = rec?.isNewWaveRecord ? '<span class="battle-new-pill">★ NEW</span>' : '';
+    const newKillBadge = rec?.isNewKillRecord ? '<span class="battle-new-pill">★ NEW</span>' : '';
+    const newTimeBadge = rec?.isNewTimeRecord ? '<span class="battle-new-pill">★ NEW</span>' : '';
+    return `
+      <div class="battle-modal-card">
+        <div class="text-emerald-400 font-mono text-xs uppercase tracking-[0.2em] mb-1">
+          PARIS HELD FOR 7:00 // ÉLYSÉE PALACE SECURED
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-white mb-2">
+          PARIS: LAST STAND — VICTORY ACHIEVED
+        </h2>
+        <p class="text-xs font-mono text-slate-400 mb-4">
+          Victory logged to Survival Records · Extract now or continue into endless Overtime waves.
+        </p>
+
+        <div class="grid grid-cols-4 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-4 font-mono">
+          <div>
+            <span class="battle-stat-label">WAVE ${newWaveBadge}</span>
+            <span class="text-lg font-bold text-amber-300 tabular-nums">WAVE ${waveReached}</span>
+          </div>
+          <div>
+            <span class="battle-stat-label">KILLS ${newKillBadge}</span>
+            <span class="text-lg font-bold text-emerald-400 tabular-nums">${hud.kills}</span>
+          </div>
+          <div>
+            <span class="battle-stat-label">TIME ${newTimeBadge}</span>
+            <span class="text-lg font-bold text-sky-300 tabular-nums">${formatSurvivalDuration(timeSec)}</span>
+          </div>
+          <div>
+            <span class="battle-stat-label">HQ INTEGRITY</span>
+            <span class="text-lg font-bold text-emerald-300 tabular-nums">${baseHp}/${baseMaxHp} HP</span>
+          </div>
+        </div>
+
+        ${renderBattleAchievementsSection(state)}
+        ${renderBattleShareBar(state, hud, currentSector, accuracy)}
+
+        <div class="battle-modal-actions">
+          <button
+            data-action="survival-overtime"
+            class="battle-btn-primary"
+          >
+            ${RIVETS_HTML}${ICON_TANK}<span>CONTINUE IN OVERTIME (ENDLESS)</span>${ICON_CHEVRONS}
+          </button>
+          <button class="battle-btn-secondary" data-action="return-survival">${RIVETS_HTML}<span>Extract &amp; records</span></button>
+          <button class="battle-btn-secondary" data-action="start-survival">${RIVETS_HTML}<span>New run</span></button>
+        </div>
+      </div>
+    `;
+  }
   if (hud.gameMode === 'contract' || currentSector.gameMode === 'contract') {
     return `
       <div class="battle-modal-card">
@@ -333,13 +390,15 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
     const newWaveBadge = rec?.isNewWaveRecord ? '<span class="battle-new-pill">★ NEW</span>' : '';
     const newKillBadge = rec?.isNewKillRecord ? '<span class="battle-new-pill">★ NEW</span>' : '';
     const newTimeBadge = rec?.isNewTimeRecord ? '<span class="battle-new-pill">★ NEW</span>' : '';
+    const hqLost = !hud.baseAlive;
+    const wasOvertime = Boolean(sv?.victoryAchieved || rec?.victoryAchieved);
     return `
       <div class="battle-modal-card">
-        <div class="text-amber-400 font-mono text-xs uppercase tracking-[0.2em] mb-1">
-          SURVIVAL RUN CONCLUDED // RECORD LOGGED
+        <div class="${wasOvertime ? 'text-emerald-400' : 'text-amber-400'} font-mono text-xs uppercase tracking-[0.2em] mb-1">
+          ${wasOvertime ? 'OVERTIME RUN CONCLUDED // PARIS VICTORY LOGGED' : hqLost ? 'ÉLYSÉE PALACE HQ DESTROYED // RECORD LOGGED' : 'SURVIVAL RUN CONCLUDED // RECORD LOGGED'}
         </div>
         <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-white mb-2">
-          FALLEN ON WAVE ${waveReached} (${wavesCleared} WAVES CLEARED)
+          ${hqLost ? 'ÉLYSÉE PALACE FELL' : 'FALLEN'} ON WAVE ${waveReached} (${wavesCleared} WAVES CLEARED)
         </h2>
         <p class="text-xs font-mono text-slate-400 mb-4">
           Tier I run · Campaign profile &amp; credits restored intact.
@@ -440,6 +499,7 @@ export function renderStatusModal({ statusModal, state, hud, currentSector, accu
   if (
     hud.status === GameStatus.PLAYING ||
     hud.status === GameStatus.BOSS_INTRO ||
+    (hud.status === GameStatus.GAME_OVER && hud.defeatCinematicsActive) ||
     state.showUpgradeDrawer
   ) {
     setHidden(statusModal, true);

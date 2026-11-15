@@ -22,7 +22,7 @@ import { GameStatus, TileType } from '../types.js';
 import { SECTORS } from '../levels.js';
 import { sound } from '../sound.js';
 import { createMissileVisual } from '../effects/index.js';
-import { markOwned } from '../render/dispose.js';
+import { markMaterialOwned, markOwned } from '../render/dispose.js';
 import { deckClearance } from '../render/models.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { resetBrain } from '../../sim/behavior/index.js';
@@ -480,7 +480,8 @@ export class PlayerController {
     engine.onSand = !canHover && !allTerrain && currentCell?.type === TileType.SAND;
     engine.onSwamp = !canHover && !allTerrain && currentCell?.type === TileType.SWAMP;
     engine.onOilSlick = !canHover && !allTerrain && currentCell?.type === TileType.OIL_SLICK;
-    engine.onRoad = currentCell?.type === TileType.ROAD;
+    engine.onRoad =
+      currentCell?.type === TileType.ROAD || currentCell?.type === TileType.BRIDGE;
     engine.onCrater = !canHover && !allTerrain && currentCell?.type === TileType.CRATER;
     engine.inForest = currentCell?.type === TileType.FOREST && !currentCell?.isBurning;
     engine.inSmoke =
@@ -764,7 +765,9 @@ export class PlayerController {
       TILE_SIZE;
 
     const wasInZone = engine.inBaseRepairZone;
-    engine.inBaseRepairZone = distCells <= BASE_REPAIR.RADIUS_CELLS + 1.0;
+    const sector = SECTORS[engine.currentSectorIndex];
+    const fpBonus = Math.max(0, ((sector?.baseFootprint?.cols || 2) - 2) * 0.5);
+    engine.inBaseRepairZone = distCells <= BASE_REPAIR.RADIUS_CELLS + 1.0 + fpBonus;
 
     if (engine.inBaseRepairZone) {
       let repairedAny = false;
@@ -1090,9 +1093,11 @@ export class PlayerController {
       engine.playerHp = 0;
       engine.status = GameStatus.GAME_OVER;
       engine.wasDefeated = true;
+      engine.defeatCinematicsTimer = 2.8;
       sound.stopEngineLoop();
-      sound.playExplosion(1.8, { x: engine.playerX, z: engine.playerZ });
-      engine.fx.tankDestroyed(engine.playerX, engine.playerZ, { boss: false });
+      sound.playExplosion(2.0, { x: engine.playerX, z: engine.playerZ });
+      this.triggerPlayerCatastrophicDestruction();
+      engine.fx?.tankDestroyed?.(engine.playerX, engine.playerZ, { boss: false, player: true });
       if (engine.survivalState) {
         const campaignSave = engine.campaignSaveRepo?.loadPlayerSave();
         if (campaignSave) {
@@ -1117,7 +1122,197 @@ export class PlayerController {
         engine.syncCampaignCredits();
         engine.saveProgress();
       }
+      engine.setStatusBanner?.('CATASTROPHIC AMMO COOK-OFF — TANK DESTROYED!', 3.2);
       engine.emitHudUpdate();
+    }
+  }
+
+  triggerPlayerCatastrophicDestruction() {
+    const { engine } = this;
+    engine.screenShake = Math.max(engine.screenShake || 0, 1.15);
+    if (engine.explosionLight) {
+      engine.explosionLight.position.set(engine.playerX, 2.8, engine.playerZ);
+      engine.explosionLight.intensity = 9.5;
+    }
+
+    const rig = engine.playerRig;
+    if (rig) {
+      if (rig.muzzleFlash) rig.muzzleFlash.visible = false;
+      if (rig.root?.traverse) {
+        rig.root.traverse((obj) => {
+          if (!obj.isMesh || obj === rig.shadowMesh || obj === rig.muzzleFlash) return;
+          const scorchMat = (mat) => {
+            if (!mat || typeof mat.clone !== 'function') return mat;
+            const cloned = markMaterialOwned(mat.clone());
+            if (cloned.color) cloned.color.multiplyScalar(0.26);
+            if (typeof cloned.roughness === 'number') cloned.roughness = 0.92;
+            if (typeof cloned.metalness === 'number') cloned.metalness = 0.35;
+            if (cloned.emissive) {
+              cloned.emissive.setHex(0x3b1105);
+              cloned.emissiveIntensity = 0.55;
+            }
+            return cloned;
+          };
+          obj.material = Array.isArray(obj.material)
+            ? obj.material.map(scorchMat)
+            : scorchMat(obj.material);
+        });
+      }
+
+      if (rig.hull) {
+        rig.hull.position.y = -0.06;
+        rig.hull.rotation.x = 0.14;
+        rig.hull.rotation.z = -0.11;
+        const ringPit = markOwned(
+          new THREE.Mesh(
+            new THREE.CylinderGeometry(0.46, 0.42, 0.12, 16),
+            new THREE.MeshStandardMaterial({
+              color: 0xff4500,
+              emissive: 0xff3300,
+              emissiveIntensity: 1.8,
+              roughness: 0.4,
+              metalness: 0.2,
+            })
+          )
+        );
+        ringPit.position.set(0, 0.42, 0);
+        rig.hull.add(ringPit);
+        rig.cookOffRingMesh = ringPit;
+      }
+    }
+
+    const angle = Math.random() * Math.PI * 2;
+    const hSpeed = 2.2 + Math.random() * 1.1;
+    engine.playerDeathState = {
+      elapsed: 0,
+      turretVx: Math.cos(angle) * hSpeed,
+      turretVy: 9.5 + Math.random() * 1.8,
+      turretVz: Math.sin(angle) * hSpeed,
+      rotVx: (Math.random() < 0.5 ? 1 : -1) * (6.2 + Math.random() * 2.5),
+      rotVy: (Math.random() - 0.5) * 4.5,
+      rotVz: (Math.random() < 0.5 ? 1 : -1) * (5.4 + Math.random() * 2.5),
+      bounces: 0,
+      turretSettled: false,
+      secondaryBlast1: false,
+      secondaryBlast2: false,
+      smokeAcc: 0,
+    };
+
+    if (engine.fxGroup && Array.isArray(engine.particles)) {
+      for (let i = 0; i < 7; i++) {
+        const plateMesh = markOwned(
+          new THREE.Mesh(
+            new THREE.BoxGeometry(
+              0.22 + Math.random() * 0.24,
+              0.06 + Math.random() * 0.05,
+              0.18 + Math.random() * 0.22
+            ),
+            new THREE.MeshStandardMaterial({
+              color: 0x1f242d,
+              emissive: 0x451204,
+              emissiveIntensity: 0.65,
+              roughness: 0.88,
+              metalness: 0.45,
+            })
+          )
+        );
+        const a = (i / 7) * Math.PI * 2 + Math.random() * 0.5;
+        const spd = 3.2 + Math.random() * 3.8;
+        plateMesh.position.set(
+          engine.playerX + Math.cos(a) * 0.35,
+          0.55 + Math.random() * 0.25,
+          engine.playerZ + Math.sin(a) * 0.35
+        );
+        plateMesh.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+        engine.fxGroup.add(plateMesh);
+        engine.particles.push({
+          mesh: plateMesh,
+          life: 1.8 + Math.random() * 0.9,
+          maxLife: 2.7,
+          vx: Math.cos(a) * spd,
+          vy: 5.5 + Math.random() * 4.2,
+          vz: Math.sin(a) * spd,
+          gravity: 15.5,
+          rotSpeedX: (Math.random() - 0.5) * 14,
+          rotSpeedY: (Math.random() - 0.5) * 14,
+        });
+      }
+    }
+  }
+
+  updatePlayerDeathSequence(dt) {
+    const { engine } = this;
+    const st = engine.playerDeathState;
+    if (!st) return;
+    st.elapsed += dt;
+    st.smokeAcc += dt;
+
+    const rig = engine.playerRig;
+    const turret = rig?.turret;
+    if (rig?.cookOffRingMesh?.material) {
+      rig.cookOffRingMesh.material.emissiveIntensity =
+        1.1 + Math.sin(st.elapsed * 18) * 0.45 + Math.max(0, 1.2 - st.elapsed * 0.4);
+    }
+
+    if (turret && !st.turretSettled) {
+      turret.position.x += st.turretVx * dt;
+      turret.position.z += st.turretVz * dt;
+      turret.position.y += st.turretVy * dt;
+      st.turretVy -= 18.5 * dt;
+
+      turret.rotation.x += st.rotVx * dt;
+      turret.rotation.y += st.rotVy * dt;
+      turret.rotation.z += st.rotVz * dt;
+
+      if (st.smokeAcc >= 0.045) {
+        st.smokeAcc = 0;
+        const tx = engine.playerX + turret.position.x;
+        const ty = Math.max(0.2, turret.position.y);
+        const tz = engine.playerZ + turret.position.z;
+        engine.spawnSparks?.(tx, ty, tz, 0x475569, 2);
+        engine.spawnSparks?.(tx, ty, tz, 0xff6b1a, 3);
+      }
+
+      if (turret.position.y <= 0.24 && st.turretVy < 0) {
+        const impactX = engine.playerX + turret.position.x;
+        const impactZ = engine.playerZ + turret.position.z;
+        if (st.bounces === 0) {
+          turret.position.y = 0.24;
+          st.turretVy = -st.turretVy * 0.34;
+          st.turretVx *= 0.52;
+          st.turretVz *= 0.52;
+          st.rotVx *= 0.45;
+          st.rotVy *= 0.45;
+          st.rotVz *= 0.45;
+          st.bounces = 1;
+          sound.playSteelHit?.({ x: impactX, z: impactZ });
+          engine.screenShake = Math.max(engine.screenShake || 0, 0.42);
+          engine.spawnSparks?.(impactX, 0.25, impactZ, 0xffaa33, 14);
+          engine.fx?.scorch?.(impactX, impactZ, 0.95);
+        } else {
+          turret.position.y = 0.18;
+          st.turretVy = 0;
+          st.turretVx = 0;
+          st.turretVz = 0;
+          st.turretSettled = true;
+          sound.playSteelHit?.({ x: impactX, z: impactZ });
+          engine.spawnSparks?.(impactX, 0.2, impactZ, 0xff8822, 8);
+        }
+      }
+    }
+
+    if (!st.secondaryBlast1 && st.elapsed >= 0.28) {
+      st.secondaryBlast1 = true;
+      sound.playExplosion(1.35, { x: engine.playerX, z: engine.playerZ });
+      engine.screenShake = Math.max(engine.screenShake || 0, 0.6);
+      engine.spawnSparks?.(engine.playerX, 0.7, engine.playerZ, 0xffaa00, 18);
+    }
+
+    if (!st.secondaryBlast2 && st.elapsed >= 0.68) {
+      st.secondaryBlast2 = true;
+      sound.playExplosion(1.5, { x: engine.playerX, z: engine.playerZ });
+      engine.screenShake = Math.max(engine.screenShake || 0, 0.72);
+      engine.spawnSparks?.(engine.playerX, 0.85, engine.playerZ, 0xff5500, 22);
     }
   }
 }

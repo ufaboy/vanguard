@@ -24,6 +24,8 @@ export const NAV_TILE = Object.freeze({
   OIL_SLICK: 15,
   CRATER: 16,
   WATER_TOWER: 17,
+  LANDMARK: 18,
+  BRIDGE: 19,
 });
 
 export function tileTypeAt(grid, row, col) {
@@ -40,6 +42,7 @@ function isPassableTile(type, canCrossWater = false) {
     type === NAV_TILE.SPAWNER ||
     type === NAV_TILE.SAND ||
     type === NAV_TILE.ROAD ||
+    type === NAV_TILE.BRIDGE ||
     type === NAV_TILE.SWAMP ||
     type === NAV_TILE.OIL_SLICK ||
     type === NAV_TILE.CRATER ||
@@ -58,7 +61,10 @@ function isCoverTile(type) {
     type === NAV_TILE.CONCRETE ||
     type === NAV_TILE.BOXES ||
     type === NAV_TILE.BARREL ||
-    type === NAV_TILE.WATER_TOWER
+    type === NAV_TILE.WATER_TOWER ||
+    type === NAV_TILE.LANDMARK ||
+    type === NAV_TILE.BASE ||
+    type === NAV_TILE.ENEMY_BASE
   );
 }
 

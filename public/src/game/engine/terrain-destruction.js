@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { settleMission } from '../../sim/hangar.js';
 import { applySubsystemDamage } from '../../sim/subsystems.js';
+import { recordSurvivalRun } from '../../sim/survival.js';
 import { DURABILITY, ENEMY_VISIBILITY, computeEffectiveDamage } from '../constants.js';
 import { disposeOwned } from '../render/dispose.js';
-import { TILE_SIZE } from '../levels.js';
+import { SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';
 import { GameStatus, TileType, checkMapDefeat, checkMapVictory } from '../types.js';
@@ -49,21 +50,24 @@ export class TerrainDestructionController {
   rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce) {
     const { engine } = this;
     if (!engine.mapGroup || !engine.modelFactory) return;
-    const typeGrid = engine.grid.map((row) => row.map((cell) => cell.type));
     if (rebuildWater) {
+      const waterGrid = engine.grid.map((row) =>
+        row.map((cell) => (cell.type === TileType.BRIDGE ? TileType.WATER : cell.type))
+      );
       if (engine.waterSurfaceMesh) {
         engine.mapGroup.remove(engine.waterSurfaceMesh);
         disposeOwned(engine.waterSurfaceMesh);
       }
-      engine.waterSurfaceMesh = engine.modelFactory.createWaterBlock(typeGrid, TileType.WATER);
+      engine.waterSurfaceMesh = engine.modelFactory.createWaterBlock(waterGrid, TileType.WATER);
       engine.mapGroup.add(engine.waterSurfaceMesh);
     }
     if (rebuildIce) {
+      const iceGrid = engine.grid.map((row) => row.map((cell) => cell.type));
       if (engine.iceSurfaceMesh) {
         engine.mapGroup.remove(engine.iceSurfaceMesh);
         disposeOwned(engine.iceSurfaceMesh);
       }
-      engine.iceSurfaceMesh = engine.modelFactory.createIceBlock(typeGrid, TileType.ICE);
+      engine.iceSurfaceMesh = engine.modelFactory.createIceBlock(iceGrid, TileType.ICE);
       engine.mapGroup.add(engine.iceSurfaceMesh);
     }
   }
@@ -114,15 +118,45 @@ export class TerrainDestructionController {
     engine.emitHudUpdate();
   }
 
+  damageCommandBase(dmg = 1, hitX = null, hitZ = null) {
+    const { engine } = this;
+    if (!engine.baseAlive) return;
+    const maxHp = engine.baseMaxHp || 1;
+    if (maxHp <= 1) {
+      this.destroyCommandBase();
+      return;
+    }
+    engine.baseHp = Math.max(0, (engine.baseHp ?? maxHp) - Math.max(0, dmg));
+    const basePos = engine.sectorLoader.getCommandBaseCenter();
+    const hx = hitX ?? basePos.x;
+    const hz = hitZ ?? basePos.z;
+    sound.playBrickHit({ x: hx, z: hz });
+    engine.fx.masonryHit(hx, 0.9, hz, { concrete: true, heavy: dmg >= 15 });
+    if (engine.baseHp <= 0) {
+      this.destroyCommandBase();
+      return;
+    }
+    engine.emitHudUpdate();
+  }
+
   destroyCommandBase() {
     const { engine } = this;
     if (!engine.baseAlive) return;
     engine.baseAlive = false;
+    engine.baseHp = 0;
     engine.inBaseRepairZone = false;
     const basePos = engine.sectorLoader.getCommandBaseCenter();
     for (const { row, col } of engine.getBaseLayout().cells) {
       const baseCell = engine.grid[row]?.[col];
-      if (baseCell?.type === TileType.BASE) engine.destroyTileCell(baseCell);
+      if (baseCell?.type === TileType.BASE) {
+        if (engine.baseLandmarkMesh && baseCell.mesh === engine.baseLandmarkMesh) {
+          engine.modelFactory.landmarkModels?.setKind(engine.baseLandmarkMesh, 'ELYSEE_RUINED');
+          baseCell.type = TileType.EMPTY;
+          baseCell.hp = 0;
+        } else {
+          engine.destroyTileCell(baseCell);
+        }
+      }
     }
     engine.fx.tankDestroyed(basePos.x, basePos.z, { boss: true, tint: 0xff7a2a });
     sound.playExplosion(1.6);
@@ -133,17 +167,31 @@ export class TerrainDestructionController {
     });
     if (defeatRes.isDefeat) {
       engine.status = GameStatus.GAME_OVER;
+      engine.defeatCinematicsTimer = 2.6;
+      engine.screenShake = Math.max(engine.screenShake || 0, 1.0);
       sound.stopEngineLoop();
       engine.wasDefeated = true;
-      engine.restoreAllComponents();
-      if (engine.activeMissionRun && !engine.activeMissionRun.rewardsCommitted) {
-        engine.lastSettlementSummary = settleMission({
-          playerSave: engine.playerSave,
-          missionRun: engine.activeMissionRun,
-          outcome: 'defeat',
-        });
-        engine.saveRepo.savePlayerSave(engine.playerSave);
-        engine.saveRepo.recordMissionRun(engine.activeMissionRun);
+      if (engine.survivalState) {
+        const campaignSave = engine.campaignSaveRepo?.loadPlayerSave();
+        if (campaignSave) {
+          engine.survivalState.recordSummary = recordSurvivalRun(
+            campaignSave,
+            engine.survivalState,
+            engine.kills
+          );
+          engine.campaignSaveRepo.savePlayerSave(campaignSave);
+        }
+      } else {
+        engine.restoreAllComponents();
+        if (engine.activeMissionRun && !engine.activeMissionRun.rewardsCommitted) {
+          engine.lastSettlementSummary = settleMission({
+            playerSave: engine.playerSave,
+            missionRun: engine.activeMissionRun,
+            outcome: 'defeat',
+          });
+          engine.saveRepo.savePlayerSave(engine.playerSave);
+          engine.saveRepo.recordMissionRun(engine.activeMissionRun);
+        }
       }
       engine.setStatusBanner(defeatRes.banner, 5.0);
     } else {
@@ -163,14 +211,22 @@ export class TerrainDestructionController {
     const cells = engine.getBaseLayout().cells.map(({ row, col }) => engine.grid[row]?.[col]);
     if (!cells.length || cells.some((cell) => !cell)) return;
     const pos = engine.sectorLoader.getCommandBaseCenter();
-    const mesh = engine.modelFactory.createCommandBaseBlock();
-    mesh.position.set(pos.x, 0, pos.z);
-    engine.mapGroup.add(mesh);
+    const sector = SECTORS[engine.currentSectorIndex];
+    let mesh = engine.baseLandmarkMesh;
+    if (mesh && sector?.baseModel && engine.modelFactory.landmarkModels) {
+      engine.modelFactory.landmarkModels.setKind(mesh, sector.baseModel);
+    } else {
+      mesh = engine.modelFactory.createCommandBaseBlock();
+      mesh.position.set(pos.x, 0, pos.z);
+      engine.mapGroup.add(mesh);
+    }
+    const maxHp = engine.baseMaxHp || 1;
     cells.forEach((cell, i) => {
       if (cell.type !== TileType.EMPTY) engine.destroyTileCell(cell);
-      Object.assign(cell, { type: TileType.BASE, hp: 1, maxHp: 1, mesh: i === 0 ? mesh : null });
+      Object.assign(cell, { type: TileType.BASE, hp: maxHp, maxHp, mesh: i === 0 ? mesh : null });
     });
     engine.baseAlive = true;
+    engine.baseHp = maxHp;
     engine.tileBatcher.sync();
     engine.setStatusBanner('ALLIED HQ REBUILT! FIELD REPAIR BAY ONLINE!', 3);
     engine.saveProgress();

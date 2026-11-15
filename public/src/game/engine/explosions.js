@@ -20,20 +20,22 @@ export class ExplosionsController {
     this.engine = engine;
   }
 
-  plantMineAt(x, z) {
+  plantMineAt(x, z, opts = {}) {
     const { engine } = this;
     const mesh = engine.modelFactory.createLandMineMesh();
     mesh.position.set(x, 0, z);
     engine.entityGroup.add(mesh);
-    sound.playMinePlant();
+    if (!opts.silent) sound.playMinePlant();
 
     engine.mines.push({
       id: engine.nextEnemyId++,
       x,
       z,
-      armTimer: LAND_MINE.ARM_SEC,
-      life: LAND_MINE.LIFE_SEC,
-      damage: LAND_MINE.DAMAGE,
+      armTimer: opts.armTimer ?? LAND_MINE.ARM_SEC,
+      life: opts.life ?? LAND_MINE.LIFE_SEC,
+      damage: opts.damage ?? LAND_MINE.DAMAGE,
+      neutral: Boolean(opts.neutral),
+      mapMine: Boolean(opts.mapMine),
       mesh,
     });
   }
@@ -44,7 +46,7 @@ export class ExplosionsController {
       const m = engine.mines[i];
       if (!m) continue;
       if (m.armTimer > 0) m.armTimer -= dt;
-      m.life -= dt;
+      if (Number.isFinite(m.life)) m.life -= dt;
 
       m.mesh.rotation.y = elapsed * 1.5;
 
@@ -54,12 +56,21 @@ export class ExplosionsController {
         continue;
       }
 
-      if (
-        m.armTimer <= 0 &&
-        Math.hypot(engine.playerX - m.x, engine.playerZ - m.z) <= LAND_MINE.TRIGGER_RADIUS
-      ) {
-        engine.detonateMine(i);
-        i = Math.min(i, engine.mines.length);
+      if (m.armTimer <= 0) {
+        const hitPlayer =
+          Math.hypot(engine.playerX - m.x, engine.playerZ - m.z) <= LAND_MINE.TRIGGER_RADIUS;
+        const hitEnemy =
+          m.neutral &&
+          engine.enemies.some(
+            (e) =>
+              e.hp > 0 &&
+              Math.hypot(e.x - m.x, e.z - m.z) <=
+                LAND_MINE.TRIGGER_RADIUS + (e.isBoss ? 0.45 : 0.15)
+          );
+        if (hitPlayer || hitEnemy) {
+          engine.detonateMine(i);
+          i = Math.min(i, engine.mines.length);
+        }
       }
     }
   }
@@ -71,17 +82,37 @@ export class ExplosionsController {
     engine.entityGroup.remove(m.mesh);
     engine.mines.splice(index, 1);
     const blastRadius = LAND_MINE.BLAST_RADIUS_CELLS * TILE_SIZE;
+    const damage = m.damage ?? LAND_MINE.DAMAGE;
     engine.fx?.shockwave?.(m.x, 0.1, m.z, 0.35, blastRadius, 0xff5a14, 0.48);
     engine.detonateExplosionAt(
       m.x,
       m.z,
       blastRadius,
-      m.damage ?? LAND_MINE.DAMAGE,
+      damage,
       false,
       null,
       true,
       LAND_MINE.PENETRATION
     );
+    if (m.neutral) {
+      for (let i = engine.enemies.length - 1; i >= 0; i--) {
+        const e = engine.enemies[i];
+        if (!e || e.hp <= 0) continue;
+        const dist = Math.hypot(e.x - m.x, e.z - m.z);
+        if (dist <= blastRadius + (e.isBoss ? 1.2 : 0.7)) {
+          const edgeRatio = dist > blastRadius * 0.5 ? ARTILLERY.EDGE_DAMAGE_RATIO : 1.0;
+          const eGrid = engine.worldToGrid(e.x, e.z);
+          const craterMult =
+            engine.grid[eGrid.row]?.[eGrid.col]?.type === TileType.CRATER ? 0.7 : 1.0;
+          const eff = computeEffectiveDamage(
+            damage * edgeRatio * craterMult,
+            LAND_MINE.PENETRATION,
+            engine.blastSideArmor(e.stats, e.x, e.z, e.hullAngle, m.x, m.z)
+          );
+          engine.damageEnemy(e, eff, m.x, m.z);
+        }
+      }
+    }
     // Chain-detonate adjacent mines caught in the blast.
     for (let i = engine.mines.length - 1; i >= 0; i--) {
       const other = engine.mines[i];
@@ -224,6 +255,7 @@ export class ExplosionsController {
     let rebuildWater = false;
     let rebuildIce = false;
     let touchedSand = false;
+    let hitCommandBase = false;
 
     for (let r = 0; r < engine.grid.length; r++) {
       const row = engine.grid[r];
@@ -252,11 +284,14 @@ export class ExplosionsController {
         } else if (cell.type === TileType.SPAWNER) {
           engine.destroyTileCell(cell);
         } else if (cell.type === TileType.BASE && !fromPlayer) {
-          engine.terrainDestruction.destroyCommandBase();
+          hitCommandBase = true;
         } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
           engine.damageEnemyBase(cell, 16, pos.x, pos.z);
         }
       }
+    }
+    if (hitCommandBase) {
+      engine.terrainDestruction.damageCommandBase(Math.min(damage || 22, 24), x, z);
     }
 
     if (touchedSand) {
@@ -320,6 +355,7 @@ export class ExplosionsController {
       scale: THREE.MathUtils.clamp(radius / 2.4, 0.75, 1.6),
     });
 
+    let hitCommandBase = false;
     for (let r = 0; r < GRID_SIZE; r++) {
       for (let c = 0; c < GRID_SIZE; c++) {
         const cell = engine.grid[r][c];
@@ -338,13 +374,16 @@ export class ExplosionsController {
             engine.terrainDestruction?.igniteOilSlick?.(cell);
           } else if (cell.type === TileType.CONCRETE) {
             engine.damageTileCell(cell, 6, pos.x, pos.z);
-          } else if (cell.type === TileType.BASE && !fromPlayer) {
-            engine.terrainDestruction.destroyCommandBase();
+          } else if (cell.type === TileType.BASE && !fromPlayer && !isEnvironmental) {
+            hitCommandBase = true;
           } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
             engine.damageEnemyBase(cell, 12, pos.x, pos.z);
           }
         }
       }
+    }
+    if (hitCommandBase) {
+      engine.terrainDestruction.damageCommandBase(Math.min(damage || 18, 22), x, z);
     }
 
     const impactGrid = engine.worldToGrid(x, z);

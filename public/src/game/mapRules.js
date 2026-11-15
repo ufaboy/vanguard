@@ -151,15 +151,15 @@ export const MAP_MODE_CONFIGS = Object.freeze({
 
   [MAP_MODES.SURVIVAL]: Object.freeze({
     id: MAP_MODES.SURVIVAL,
-    code: 'MODE-05 // ENDLESS SURVIVAL',
-    name: 'Endless Survival',
-    shortLabel: 'SURVIVE ENDLESS WAVES',
+    code: 'MODE-05 // SURVIVAL DEFENSE',
+    name: 'Paris: Last Stand',
+    shortLabel: 'DEFEND ÉLYSÉE HQ (7:00)',
     accentHex: '#F97316',
     victoryCondition: VICTORY_CONDITIONS.ENDLESS_SURVIVAL,
-    defeatCondition: DEFEAT_CONDITIONS.PLAYER_DESTROYED,
-    playerBaseRole: PLAYER_BASE_ROLES.REPAIR_BAY_ONLY,
+    defeatCondition: DEFEAT_CONDITIONS.PLAYER_OR_BASE_DESTROYED,
+    playerBaseRole: PLAYER_BASE_ROLES.CRITICAL_HQ_AND_REPAIR,
     defeatOnPlayerDestroyed: true,
-    defeatOnBaseLoss: false,
+    defeatOnBaseLoss: true,
     victoryOnAllEnemiesDestroyed: false,
     victoryOnEnemyBaseDestroyed: false,
     victoryOnContractExtraction: false,
@@ -167,12 +167,13 @@ export const MAP_MODE_CONFIGS = Object.freeze({
     hasEnemyFortifiedBase: false,
     enemyBaseMaxHp: 0,
     description:
-      'Endless wave holdout starting on a stock Tier I tank. Earn session credits to upgrade in the field Garage [U]. Losing the Allied HQ disables repairs and Garage access until a BASE_RESTORE pickup is recovered from supply crates.',
+      'Timed 7-minute fortified capital holdout starting on a stock Tier I tank ($500). Defend the Élysée Palace Command HQ (120 HP) against timed waves every 60s and a 6:00 Sector Boss assault; after securing victory at 7:00, extract or continue into endless Overtime for records.',
     objectiveBanner:
-      'SURVIVAL OBJECTIVE: HOLD THE LINE AGAINST ENDLESS ARMORED WAVES',
-    victoryBanner: 'WAVE CLEARED!',
+      'OBJECTIVE: DEFEND THE ÉLYSÉE PALACE HQ FOR 7:00 AGAINST TIMED ARMORED WAVES',
+    victoryBanner:
+      'ÉLYSÉE PALACE HELD FOR 7:00! PARIS SECURED — EXTRACT OR CONTINUE IN OVERTIME!',
     baseLostBanner:
-      'REPAIR HQ DESTROYED! FIELD REPAIRS & GARAGE OFFLINE — BREAK SUPPLY CRATES FOR BASE RESTORE!',
+      'ÉLYSÉE PALACE HQ DESTROYED! CAPITAL DEFENSE BREACHED!',
   }),
 });
 

@@ -66,7 +66,8 @@ export class EnemyAiController {
       const t = s / steps;
       const col = Math.floor((x0 + dx * t + half) / TILE_SIZE);
       const row = Math.floor((z0 + dz * t + half) / TILE_SIZE);
-      if (engine.grid[row]?.[col]?.type === TileType.CONCRETE) return false;
+      const tType = engine.grid[row]?.[col]?.type;
+      if (tType === TileType.CONCRETE || tType === TileType.LANDMARK) return false;
     }
     return true;
   }
@@ -91,7 +92,13 @@ export class EnemyAiController {
       const cell = engine.grid[row]?.[col];
       if (
         cell &&
-        (cell.type === TileType.BOXES || cell.type === TileType.BRICK || cell.type === TileType.CONCRETE)
+        (cell.type === TileType.BOXES ||
+          cell.type === TileType.BRICK ||
+          cell.type === TileType.CONCRETE ||
+          cell.type === TileType.LANDMARK ||
+          cell.type === TileType.BASE ||
+          cell.type === TileType.ENEMY_BASE ||
+          cell.type === TileType.WATER_TOWER)
       ) {
         return false;
       }
@@ -663,7 +670,9 @@ export class EnemyAiController {
     engine.attackTokens = updateAttackTokens(engine.squadDirector, candidates, dt);
     engine.squadFrame = {
       slots: assignBearingSlots(slotUnits, { x: engine.playerX, z: engine.playerZ }),
-      mineCells: engine.mines.map((m) => engine.worldToGrid(m.x, m.z)),
+      mineCells: engine.mines
+        .filter((m) => !m.mapMine)
+        .map((m) => engine.worldToGrid(m.x, m.z)),
     };
   }
 
@@ -990,7 +999,7 @@ export class EnemyAiController {
         const eCell = engine.grid[eRow]?.[eCol];
         const eAllTerrain = Boolean(e.stats.canHover || e.stats.allTerrain);
         let terrainSpeedMult = 1.0;
-        if (eCell?.type === TileType.ROAD) {
+        if (eCell?.type === TileType.ROAD || eCell?.type === TileType.BRIDGE) {
           terrainSpeedMult = 1.2;
         } else if (!eAllTerrain) {
           if (eCell?.type === TileType.SAND) terrainSpeedMult = 0.78;

@@ -562,9 +562,9 @@ export function parseBattleShareChallenge(searchString = '', pageHint = '') {
     if (parts.length === 0) return null;
     return {
       mode: 'survival',
-      missionId: 'iron_crucible',
+      missionId: 'paris_last_stand',
       title: 'SURVIVAL CHALLENGE',
-      subtitle: 'IRON CRUCIBLE // ENDLESS WAVES',
+      subtitle: 'PARIS: LAST STAND // DEFEND THE ELYSEE PALACE',
       statsText: parts.join(' · '),
       metrics,
       achievements,

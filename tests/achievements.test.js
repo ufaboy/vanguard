@@ -198,7 +198,7 @@ test('buildBattleSharePayload and buildSocialShareLinks use opaque encoded token
       kills: 30,
       survival: { wave: 6, wavesCleared: 5 },
     },
-    currentSector: { name: 'Iron Crucible', gameMode: 'survival' },
+    currentSector: { name: 'Paris: Last Stand', gameMode: 'survival' },
     accuracy: 70,
     earnedAchievements: [{ title: 'Wave Breaker' }],
     origin: '',

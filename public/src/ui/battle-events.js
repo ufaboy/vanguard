@@ -156,11 +156,15 @@ export function setupDelegatedEvents(
       }
       case 'start-survival': {
         const index = SECTORS.findIndex(
-          (sector) => sector.gameMode === 'survival' || sector.mapId === 'survival-iron-crucible'
+          (sector) => sector.gameMode === 'survival' || sector.mapId === 'survival-paris-last-stand'
         );
         if (index >= 0) startSector(index);
         break;
       }
+      case 'survival-overtime':
+        engine?.continueSurvivalOvertime();
+        renderUI(true);
+        break;
       case 'return-survival':
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.survival;

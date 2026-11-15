@@ -8,6 +8,11 @@ const PASSABLE_ENTRY_TILES = new Set([
   TileType.ICE,
   TileType.SPAWNER,
   TileType.SAND,
+  TileType.ROAD,
+  TileType.BRIDGE,
+  TileType.SWAMP,
+  TileType.OIL_SLICK,
+  TileType.CRATER,
 ]);
 
 function getTileType(grid, row, col) {
@@ -44,9 +49,10 @@ function isWorldAreaClear(grid, x, z, radius, canCrossWater, tileSize) {
   return true;
 }
 
-function edgesForCell(cell, width, edges, maxEdgeRow) {
+function edgesForCell(cell, width, height, edges, maxEdgeRow) {
   const matched = [];
   if (edges.includes('north') && cell.row === 0) matched.push('north');
+  if (edges.includes('south') && cell.row === height - 1) matched.push('south');
   if (edges.includes('west') && cell.col === 0 && cell.row <= maxEdgeRow) matched.push('west');
   if (edges.includes('east') && cell.col === width - 1 && cell.row <= maxEdgeRow) matched.push('east');
   return matched;
@@ -69,6 +75,9 @@ function evaluatePerimeterCell(grid, row, col, edge, ctx) {
     if (edge === 'north') {
       entryX = cx + offset;
       entryZ = -halfZ + inset;
+    } else if (edge === 'south') {
+      entryX = cx + offset;
+      entryZ = halfZ - inset;
     } else if (edge === 'west') {
       entryX = -halfX + inset;
       entryZ = cz + offset;
@@ -83,7 +92,7 @@ function evaluatePerimeterCell(grid, row, col, edge, ctx) {
     const occupied = isOccupied ? isOccupied(entryX, entryZ, info) : false;
     const crowded = !occupied && isCrowded ? isCrowded(entryX, entryZ, info) : false;
     const safe = isSafeFromPlayer ? isSafeFromPlayer(entryX, entryZ, info) : true;
-    const isCorner = row <= 1 && (col <= 1 || col >= width - 2);
+    const isCorner = (row <= 1 || row >= height - 2) && (col <= 1 || col >= width - 2);
     const tier = occupied ? 5 : !safe ? 4 : crowded ? 3 : isCorner ? 2 : 1;
     return { ...info, tier };
   }
@@ -92,6 +101,7 @@ function evaluatePerimeterCell(grid, row, col, edge, ctx) {
 
 function hasOpenInwardNeighbor(grid, row, col, edge, canCrossWater) {
   if (edge === 'north') return isPassableTile(grid, row + 1, col, canCrossWater);
+  if (edge === 'south') return isPassableTile(grid, row - 1, col, canCrossWater);
   if (edge === 'west') return isPassableTile(grid, row, col + 1, canCrossWater);
   if (edge === 'east') return isPassableTile(grid, row, col - 1, canCrossWater);
   return false;
@@ -131,7 +141,7 @@ export function findBorderIngressCell(grid, target, canCrossWater = false, optio
 
   while (head < queue.length) {
     const cell = queue[head++];
-    for (const edge of edgesForCell(cell, width, edges, maxEdgeRow)) {
+    for (const edge of edgesForCell(cell, width, height, edges, maxEdgeRow)) {
       const candidate = evaluatePerimeterCell(grid, cell.row, cell.col, edge, evalCtx);
       if (!candidate) continue;
       if (candidate.tier === 1) return candidate;
@@ -159,6 +169,9 @@ export function findBorderIngressCell(grid, target, canCrossWater = false, optio
   const perimeterCells = [];
   if (edges.includes('north')) {
     for (let c = 0; c < width; c++) perimeterCells.push({ row: 0, col: c, edge: 'north' });
+  }
+  if (edges.includes('south')) {
+    for (let c = 0; c < width; c++) perimeterCells.push({ row: height - 1, col: c, edge: 'south' });
   }
   if (edges.includes('west')) {
     for (let r = 0; r <= maxEdgeRow; r++) perimeterCells.push({ row: r, col: 0, edge: 'west' });

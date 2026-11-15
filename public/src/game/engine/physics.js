@@ -176,6 +176,7 @@ export class PhysicsController {
         if (
           cell.type === TileType.BOXES || cell.type === TileType.BRICK ||
           cell.type === TileType.CONCRETE ||
+          cell.type === TileType.LANDMARK ||
           cell.type === TileType.BASE ||
           cell.type === TileType.ENEMY_BASE ||
           cell.type === TileType.HEDGEHOG ||
