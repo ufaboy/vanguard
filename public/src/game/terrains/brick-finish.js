@@ -32,15 +32,13 @@ export function applyBrickFinish(material, hp = 4) {
       }
     `).replace('#include <map_fragment>', `
       #include <map_fragment>
-      // Warm fired clay, muted aged clay and occasional pale mineral deposits.
+      // Warm fired clay and muted aged clay. No pale deposits: they read as white blotches.
       // Keep surviving masonry stable between hits. The atlas identifies broken faces.
       vec3 finishPosition = vBrickWorld;
       float kiln = brickNoise(finishPosition * vec3(1.8, 5.0, 1.8));
       float weather = brickNoise(finishPosition * vec3(0.65, 1.1, 0.65) + 17.0);
       vec3 clayTint = mix(vec3(0.74, 0.68, 0.64), vec3(1.10, 1.03, 0.94), kiln);
       diffuseColor.rgb *= clayTint;
-      float salts = smoothstep(0.66, 0.88, weather) * 0.17;
-      diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.48, 0.43, 0.34), salts);
       float damp = (1.0 - smoothstep(0.04, 0.65, vBrickWorld.y)) * (0.06 + weather * 0.13);
       diffuseColor.rgb *= 1.0 - damp;
       if (brickDamage > 0.0) {
@@ -51,7 +49,7 @@ export function applyBrickFinish(material, hp = 4) {
       }
     `);
   };
-  material.customProgramCacheKey = () => `brick-finish-v3-${damage}`;
+  material.customProgramCacheKey = () => `brick-finish-v4-${damage}`;
   material.roughness = Math.min(1, material.roughness + damage * 0.12);
   material.needsUpdate = true;
   return material;

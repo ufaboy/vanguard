@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { BrickModels } from '../public/src/game/terrains/brick-models.js';
+import { BrickModels, brickBreachYaw, brickEntryOffset, nextBrickBreach } from '../public/src/game/terrains/brick-models.js';
 import { ModelFactory } from '../public/src/game/render/models.js';
 import { TileBatcher } from '../public/src/game/render/tile-batcher.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
@@ -20,13 +20,15 @@ function fixture() {
   return { models, source, batcher };
 }
 
-test('Deployed BRICK asset includes all five states with one shared texture and material', async () => {
+test('Deployed BRICK asset includes every damage state with one shared texture and material', async () => {
   const doc = await new NodeIO().read(fileURLToPath(new URL('../public/models/terrain/brick.glb', import.meta.url)));
   const root = doc.getRoot();
   assert.equal(root.listMaterials().length, 1);
   assert.equal(root.listTextures().length, 1);
-  assert.equal(root.listMeshes().length, 5);
-  assert.deepEqual(root.listNodes().map(node => node.getName()).sort(), [0, 1, 2, 3, 4].map(hp => `BRICK_HP_${hp}`));
+  const names = [0, 1, 2, 3, 4].map(hp => `BRICK_HP_${hp}`)
+    .concat(['C_HP_1', 'C_HP_2', 'C_HP_3', 'L_HP_1', 'L_HP_2', 'O_HP_1', 'O_HP_2'].map(name => `BRICK_${name}`));
+  assert.equal(root.listMeshes().length, names.length);
+  assert.deepEqual(root.listNodes().map(node => node.getName()).sort(), names.sort());
   for (const mesh of root.listMeshes()) {
     assert.equal(mesh.listPrimitives().length, 1);
     assert.ok(mesh.listPrimitives()[0].getIndices().getCount() / 3 < 2400);
@@ -127,5 +129,64 @@ test('Destroyed brick rubble is nonblocking, capped, expires, and uses shared ge
   engine.updateBrickRubble(13); batcher.sync();
   assert.equal(source.children.length, 0);
   assert.equal(engine.brickRubble.length, 0);
+  batcher.reset(); models.dispose();
+});
+
+test('Breach follows the shells: face, corner, two adjacent faces, two opposite faces', () => {
+  // A shell first seen 0.6 inside the -X face, slightly nearer the +Z edge, entered through -X.
+  assert.deepEqual(brickEntryOffset(-0.4, 0.7, 10, 0), { dx: -1, dz: 0.7 });
+  assert.deepEqual(brickEntryOffset(0.2, 0.5, 0, -8), { dx: 0.2, dz: 1 });
+  assert.deepEqual(brickEntryOffset(0.3, 0.3, 0, 0), { dx: 0.3, dz: 0.3 });
+
+  const face = nextBrickBreach(null, -1, 0.2, 3);
+  assert.deepEqual(face, { variant: 'F', turn: 3 });
+  assert.equal(brickBreachYaw(face), -Math.PI / 2);
+  assert.deepEqual(nextBrickBreach(face, -1, -0.9, 2), face, 'same face again keeps the breach');
+  assert.deepEqual(nextBrickBreach(face, 0.1, 1, 3), face, 'no two-face model above state 2');
+  assert.deepEqual(nextBrickBreach(face, 0.1, 1, 2), { variant: 'L', turn: 3 }, '-X then +Z');
+  assert.deepEqual(nextBrickBreach(face, 0.1, -1, 2), { variant: 'L', turn: 2 }, '-X then -Z');
+  assert.deepEqual(nextBrickBreach(face, 1, 0, 1), { variant: 'O', turn: 1 }, '-X then +X');
+  assert.deepEqual(nextBrickBreach({ variant: 'L', turn: 2 }, 1, 0, 1), { variant: 'L', turn: 2 });
+
+  assert.deepEqual(nextBrickBreach(null, 1, 0.8, 3), { variant: 'C', turn: 0 }, '+X/+Z corner');
+  assert.deepEqual(nextBrickBreach(null, 0.8, -1, 3), { variant: 'C', turn: 1 }, '+X/-Z corner');
+  assert.deepEqual(nextBrickBreach(null, -1, -0.8, 3), { variant: 'C', turn: 2 }, '-X/-Z corner');
+  assert.deepEqual(nextBrickBreach(null, -0.8, 1, 3), { variant: 'C', turn: 3 }, '-X/+Z corner');
+  assert.deepEqual(nextBrickBreach(null, 0, 0, 3), { variant: 'F', turn: 0 }, 'a centred hit has no side');
+});
+
+test('Hits from two sides switch a brick tile to its two-face model and repairs reset it', () => {
+  const { models, source, batcher } = fixture();
+  for (const key of ['C3', 'C2', 'C1', 'L2', 'L1', 'O2', 'O1']) models.variants.set(key, new THREE.BoxGeometry(2, 1, 2));
+  const root = new THREE.Group(); root.userData.batchTile = true; root.position.set(10, 0, 20);
+  models.apply(root, 4); source.add(root); batcher.sync();
+  const cell = { row: 3, col: 5, type: TileType.BRICK, hp: 4, mesh: root };
+  const factory = Object.assign(Object.create(ModelFactory.prototype), { brickModels: models, useBlenderBricks: true });
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    modelFactory: factory, mapGroup: source, tileBatcher: batcher, brickRubble: [], blocksDestroyed: 0,
+    gridToWorld: () => ({ x: 10, z: 20 }), fx: { masonryHit() {}, blockDestroyed() {} },
+  });
+  engine.damageTileCell(cell, 1, 9, 20.3); batcher.sync();
+  assert.equal(root.rotation.y, -Math.PI / 2, 'hit from -X opens the -X face');
+  assert.equal(root.children[0].geometry, models.states.get(3));
+  const entry = batcher.records.get(root)[0];
+  const actual = new THREE.Matrix4();
+  entry.batch.mesh.getMatrixAt(entry.slot, actual);
+  assert.deepEqual(actual.elements, root.children[0].matrixWorld.elements);
+
+  engine.damageTileCell(cell, 1, 10.1, 21); batcher.sync();
+  assert.equal(root.children[0].geometry, models.variants.get('L2'), 'second hit from +Z');
+  assert.equal(root.rotation.y, -Math.PI / 2);
+  assert.equal([...batcher.batches.values()].reduce((sum, b) => sum + b.mesh.count, 0), 1);
+
+  factory.updateBrickBlockDamage(root, 4);
+  assert.equal(root.children[0].geometry, models.states.get(4));
+  cell.hp = 4;
+  engine.damageTileCell(cell, 1, 11, 20.8);
+  assert.equal(root.children[0].geometry, models.variants.get('C3'), 'a repaired wall starts a new breach');
+  assert.equal(root.rotation.y, 0);
+
+  engine.damageTileCell(cell, 3, 10, 20);
+  assert.equal(engine.brickRubble[0].mesh.rotation.y, 0, 'rubble lies on the breached side');
   batcher.reset(); models.dispose();
 });

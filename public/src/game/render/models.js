@@ -11,7 +11,7 @@ import { createPowerUpEmblemCanvas, POWERUP_FAMILY } from '../icons.js';
 import { EnemyClass } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { TextureGenerator, mulberry32 } from './texture-gen.js';
-import { BrickModels } from '../terrains/brick-models.js';
+import { BrickModels, brickBreachYaw, nextBrickBreach } from '../terrains/brick-models.js';
 import { LandmarkModels } from '../terrains/landmarks.js';
 import { applyBrickFinish } from '../terrains/brick-finish.js';
 import { createWaterSurface } from '../terrains/water.js';
@@ -1878,13 +1878,18 @@ export class ModelFactory extends TextureGenerator {
     return { group, subMeshes };
   }
 
-  updateBrickBlockDamage(group, hp) {
+  /** `hit`: offset `{ dx, dz }` of the damaging hit from the tile centre; it shapes the breach. */
+  updateBrickBlockDamage(group, hp, hit = null) {
     if (!group) return;
-    group.userData.brickHp = hp;
+    const state = Math.max(0, Math.min(4, Math.ceil(hp)));
+    const data = group.userData;
+    data.brickHp = hp;
+    if (state >= 4) data.brickBreach = null;
+    else if (hit) data.brickBreach = nextBrickBreach(data.brickBreach, hit.dx, hit.dz, state);
+    if (data.brickBreach) group.rotation.y = brickBreachYaw(data.brickBreach);
     if (this.useBlenderBricks && this.brickModels.states.size) {
-      this.brickModels.apply(group, hp);
+      this.brickModels.apply(group, hp, data.brickBreach?.variant);
     } else {
-      const state = Math.max(0, Math.min(4, Math.ceil(hp)));
       group.children.forEach((mesh, index) => {
         mesh.visible = index < state;
         mesh.material = this.brickDamageMaterials.get(state);

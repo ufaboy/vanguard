@@ -275,7 +275,13 @@ export class TerrainDestructionController {
       }
     }
 
-    if (cell.type === TileType.BRICK) engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp);
+    if (cell.type === TileType.BRICK) {
+      const centre = engine.gridToWorld(cell.row, cell.col);
+      engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp, {
+        dx: hitX - centre.x,
+        dz: hitZ - centre.z,
+      });
+    }
     else if (cell.type === TileType.WATER_TOWER) {
       sound.playSteelHit({ x: hitX, z: hitZ });
       engine.fx.armorHit(hitX, 0.85, hitZ, { scale: 0.9, colorHex: 0x38bdf8 });
@@ -309,6 +315,10 @@ export class TerrainDestructionController {
       rubble.userData.batchTile = true;
       engine.modelFactory.brickModels.apply(rubble, 0);
       rubble.position.set(x, 0, z);
+      // Debris stays where the wall was breached; an untouched wall gets a varied scatter.
+      rubble.rotation.y = cell.mesh && cell.hp < 4
+        ? cell.mesh.rotation.y
+        : ((cell.row * 7 + cell.col * 13) % 4) * (Math.PI / 2);
       engine.mapGroup.add(rubble);
       engine.brickRubble.push({ mesh: rubble, life: 12 });
       if (engine.brickRubble.length > 32) engine.mapGroup.remove(engine.brickRubble.shift().mesh);

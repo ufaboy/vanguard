@@ -13,6 +13,7 @@ import {
 import { animateMissileVisual, createProjectileVisual } from '../effects/index.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
+import { brickEntryOffset } from '../terrains/brick-models.js';
 import { EnemyClass, TileType } from '../types.js';
 
 /** Manages projectiles, homing missiles, trails, impact resolution, and laser fadeout. */
@@ -376,7 +377,10 @@ export class ProjectilesController {
             engine.destroyTileCell(cell);
           } else {
             const brickDmg = p.isMissile ? 4 : p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1;
-            engine.damageTileCell(cell, brickDmg, p.x, p.z);
+            // Report the hit where the shell met the wall, so the right face breaks open.
+            const centre = engine.gridToWorld(cell.row, cell.col);
+            const entry = brickEntryOffset(p.x - centre.x, p.z - centre.z, p.vx, p.vz);
+            engine.damageTileCell(cell, brickDmg, centre.x + entry.dx, centre.z + entry.dz);
             engine.removeProjectile(i);
             continue;
           }
