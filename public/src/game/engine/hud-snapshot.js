@@ -107,6 +107,7 @@ export function buildHudSnapshot(engine) {
     aiDebugMode: engine.aiDebugMode,
     playerX: engine.playerX,
     playerZ: engine.playerZ,
+    baseCenter: engine.sectorLoader.getCommandBaseCenter(),
     playerHullAngle: engine.playerHullAngle,
     playerTurretAngle: engine.playerTurretAngle,
     cameraAzimuth: engine.cameraAzimuth,

@@ -11,7 +11,7 @@ const MINIMAP_SKELETON = `
         <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(74, 222, 128, 0.35)" stroke-width="0.9" />
         <line x1="50" y1="2" x2="50" y2="98" stroke="rgba(74, 222, 128, 0.2)" stroke-width="0.6" />
         <line x1="2" y1="50" x2="98" y2="50" stroke="rgba(74, 222, 128, 0.2)" stroke-width="0.6" />
-        <rect x="47" y="88" width="6" height="6" fill="#38bdf8" opacity="0.9" />
+        <rect data-mm="hq" x="47" y="47" width="6" height="6" rx="1" fill="#38bdf8" opacity="0.9" />
         <g data-mm="contract"></g>
         <g data-mm="loot"></g>
         <g data-mm="contacts"></g>
@@ -47,25 +47,46 @@ export function renderNorthUpSensorMinimap(hud) {
   }
   const mm = el.__mm;
 
-  const arenaSpan = GRID_SIZE * TILE_SIZE;
-  const halfArena = arenaSpan / 2;
-  const toPct = (coord) => Math.max(4, Math.min(96, ((coord + halfArena) / arenaSpan) * 100));
+  const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
+  const RADAR_RADIUS = 45;
+  const RADAR_RANGE = 16 * TILE_SIZE;
+  const playerX = hud.playerX || 0;
+  const playerZ = hud.playerZ || 0;
+  const toRadar = (wx, wz) => {
+    const nx = ((wx - playerX) / RADAR_RANGE) * RADAR_RADIUS;
+    const ny = ((wz - playerZ) / RADAR_RANGE) * RADAR_RADIUS;
+    const dist = Math.hypot(nx, ny);
+    if (dist > RADAR_RADIUS) {
+      const scale = RADAR_RADIUS / dist;
+      return { x: 50 + nx * scale, y: 50 + ny * scale, clamped: true };
+    }
+    return { x: 50 + nx, y: 50 + ny, clamped: false };
+  };
   const fmt = (v) => v.toFixed(1);
-  const px = toPct(hud.playerX || 0);
-  const pz = toPct(hud.playerZ || 0);
 
   const hullDeg = ((hud.playerHullAngle || 0) * 180) / Math.PI;
   const turretDeg = ((hud.playerTurretAngle || 0) * 180) / Math.PI;
   const camDeg = ((hud.cameraAzimuth || 0) * 180) / Math.PI;
 
+  if (mm.hq) {
+    const baseCenter = hud.baseCenter || { x: 0, z: (GRID_SIZE / 2 - 1.5) * TILE_SIZE };
+    const hqPos = toRadar(baseCenter.x, baseCenter.z);
+    setAttr(mm.hq, 'x', fmt(hqPos.x - 3));
+    setAttr(mm.hq, 'y', fmt(hqPos.y - 3));
+    const hqOpacity = hud.baseAlive === false ? 0.25 : hqPos.clamped ? 0.65 : 0.9;
+    setAttr(mm.hq, 'opacity', hqOpacity.toFixed(2));
+  }
+
   const contacts = hud.sensorContacts || [];
   const contactNodes = syncPool(mm.contacts, 'circle', contacts.length);
   contacts.forEach((c, i) => {
     const node = contactNodes[i];
-    const opacity = c.active ? 1.0 : Math.max(0.25, 1 - (c.age || 0) / 5.0);
+    const pos = toRadar(c.x, c.z);
+    const baseOpacity = c.active ? 1.0 : Math.max(0.25, 1 - (c.age || 0) / 5.0);
+    const opacity = pos.clamped ? baseOpacity * 0.75 : baseOpacity;
     const fill = c.active ? '#ef4444' : '#f59e0b';
-    setAttr(node, 'cx', fmt(toPct(c.x)));
-    setAttr(node, 'cy', fmt(toPct(c.z)));
+    setAttr(node, 'cx', fmt(pos.x));
+    setAttr(node, 'cy', fmt(pos.y));
     setAttr(node, 'r', c.active ? 3.2 : 2.5);
     setAttr(node, 'fill', fill);
     setAttr(node, 'fill-opacity', opacity.toFixed(2));
@@ -77,8 +98,9 @@ export function renderNorthUpSensorMinimap(hud) {
   const lootNodes = syncPool(mm.loot, 'rect', loot.length);
   loot.forEach((l, i) => {
     const node = lootNodes[i];
-    setAttr(node, 'x', fmt(toPct(l.x) - 1.8));
-    setAttr(node, 'y', fmt(toPct(l.z) - 1.8));
+    const pos = toRadar(l.x, l.z);
+    setAttr(node, 'x', fmt(pos.x - 1.8));
+    setAttr(node, 'y', fmt(pos.y - 1.8));
     setAttr(node, 'width', 3.6);
     setAttr(node, 'height', 3.6);
     setAttr(node, 'fill', '#fbbf24');
@@ -86,17 +108,17 @@ export function renderNorthUpSensorMinimap(hud) {
 
   if (mm.contract) {
     if (hud.contract?.containers?.length) {
-      const cellToPct = (cell) => Math.max(3, Math.min(97, ((cell + 0.5) / GRID_SIZE) * 100));
+      const cellToWorld = (cell) => (cell + 0.5) * TILE_SIZE - halfArena;
       const isSabotage = Boolean(hud.contract.isSabotage);
       const pad = hud.contract.deliveryPad;
-      const padX = (pad.minCol / GRID_SIZE) * 100;
-      const padY = (pad.minRow / GRID_SIZE) * 100;
-      const padW = ((pad.maxCol - pad.minCol + 1) / GRID_SIZE) * 100;
-      const padH = ((pad.maxRow - pad.minRow + 1) / GRID_SIZE) * 100;
+      const padCenterX = ((pad.minCol + pad.maxCol + 1) * 0.5) * TILE_SIZE - halfArena;
+      const padCenterZ = ((pad.minRow + pad.maxRow + 1) * 0.5) * TILE_SIZE - halfArena;
+      const padPos = toRadar(padCenterX, padCenterZ);
+      const padW = (((pad.maxCol - pad.minCol + 1) * TILE_SIZE) / RADAR_RANGE) * RADAR_RADIUS;
+      const padH = (((pad.maxRow - pad.minRow + 1) * TILE_SIZE) / RADAR_RANGE) * RADAR_RADIUS;
       const cargoMarks = hud.contract.containers
         .map((c) => {
-          const cx = cellToPct(c.col);
-          const cy = cellToPct(c.row);
+          const pos = toRadar(cellToWorld(c.col), cellToWorld(c.row));
           const color =
             c.status === 'delivered'
               ? '#10b981'
@@ -107,19 +129,19 @@ export function renderNorthUpSensorMinimap(hud) {
               : isSabotage
               ? '#a855f7'
               : '#38bdf8';
-          return `<rect x="${(cx - 2.6).toFixed(1)}" y="${(cy - 2.6).toFixed(1)}" width="5.2" height="5.2" rx="0.8" fill="${color}" stroke="#0b0f17" stroke-width="0.7" />`;
+          return `<rect x="${(pos.x - 2.6).toFixed(1)}" y="${(pos.y - 2.6).toFixed(1)}" width="5.2" height="5.2" rx="0.8" fill="${color}" stroke="#0b0f17" stroke-width="0.7" />`;
         })
         .join('');
       setHtml(
         mm.contract,
-        `<rect x="${padX.toFixed(1)}" y="${padY.toFixed(1)}" width="${padW.toFixed(1)}" height="${padH.toFixed(1)}" fill="#10b981" fill-opacity="0.28" stroke="#34d399" stroke-width="0.8" />${cargoMarks}`
+        `<rect x="${(padPos.x - padW / 2).toFixed(1)}" y="${(padPos.y - padH / 2).toFixed(1)}" width="${padW.toFixed(1)}" height="${padH.toFixed(1)}" fill="#10b981" fill-opacity="0.28" stroke="#34d399" stroke-width="0.8" />${cargoMarks}`
       );
     } else {
       setHtml(mm.contract, '');
     }
   }
 
-  setAttr(mm.player, 'transform', `translate(${fmt(px)}, ${fmt(pz)})`);
+  setAttr(mm.player, 'transform', 'translate(50, 50)');
   setAttr(mm.camera, 'x2', fmt(Math.sin(hud.cameraAzimuth || 0) * 12));
   setAttr(mm.camera, 'y2', fmt(Math.cos(hud.cameraAzimuth || 0) * 12));
   setAttr(mm.hull, 'transform', `rotate(${fmt(-hullDeg)})`);
