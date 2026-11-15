@@ -14,7 +14,7 @@
 /audio/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
-/favicon.svg
+/favicon.ico
   Cache-Control: public, max-age=604800, stale-while-revalidate=2592000
 
 /src/*

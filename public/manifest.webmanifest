@@ -1,0 +1,38 @@
+{
+  "name": "BATTLE TANK — 3D Tactical Tank Assault",
+  "short_name": "BATTLE TANK",
+  "description": "3D isometric tactical tank assault game inspired by Battle City. Command the modular VANGUARD tank across destructible arenas.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0B1120",
+  "theme_color": "#0B1120",
+  "categories": ["games", "action", "strategy"],
+  "icons": [
+    {
+      "src": "./images/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "./images/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "./images/icon-mask.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./images/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}

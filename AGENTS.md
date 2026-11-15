@@ -47,6 +47,11 @@
 9. **Target Platform & Viewport Orientation (Desktop & Landscape Tablets)**:
    - The game UI, HUD, tactical 36×36 isometric arena, and cinematic operations screens are designed exclusively for **Desktop displays and Tablets in Landscape orientation** (16:9 or wider aspect ratio recommended).
    - Mobile phones and portrait orientations are strictly non-target configurations. Layouts, interactive controls, and visual styling must optimize for horizontal widescreen viewing.
+10. **Windows PowerShell & UTF-8 File Safety**:
+   - Never use PowerShell file cmdlets (`Get-Content`, `Set-Content`, `Out-File`, or `>` / `>>` redirection) to read, modify, or rewrite repository files — Windows PowerShell 5.1 defaults to the system ANSI/UTF-16 codepage and corrupts UTF-8 characters (e.g., `—` → `â€”`) or adds UTF-8 BOMs.
+   - Always edit files using dedicated file-editing tools (`edit_file` / `write_file`) or Node.js (`fs.readFileSync(..., 'utf8')` / `fs.writeFileSync(..., 'utf8')`).
+   - When running inline Node.js scripts or passing multi-line text to CLI tools (e.g., `gh`) from PowerShell, always pipe a single-quoted here-string (`@' ... '@ | node --input-type=module -`) and use separate lines instead of `&&` (unsupported in PowerShell 5.1).
+   - After any bulk edit across multiple files, verify `git diff --stat` and inspect a sample `git diff` to ensure no unrelated characters or encodings were altered.
 
 ---
 
