@@ -3189,7 +3189,14 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   gap: 6px;
 }
 
-/* Bottom-Left Tank Damage Silhouette */
+/* Bottom-Left Tank Damage Silhouette & Hull HP */
+.hud-bottom-left {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+}
+
 .hud-silhouette-card {
   display: flex;
   align-items: center;
@@ -4190,7 +4197,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   }
 }
 
-#game-shell.has-touch-controls .hud-silhouette-card {
+#game-shell.has-touch-controls .hud-bottom-left {
   position: fixed;
   left: 18px;
   bottom: 158px;

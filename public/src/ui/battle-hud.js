@@ -23,7 +23,7 @@ export function renderBattlefieldHud({
   const modifiersStrip = document.getElementById('modifiers-strip');
   const bottomHud = document.getElementById('bottom-hud');
 
-  // 1. Top-Left Telemetry (HULL HP, TURRET & Compact Sector Strip)
+  // 1. Top-Left Telemetry (Compact Sector Strip)
   const turretAzimuthDeg =
     ((Math.round((-(hud.playerTurretAngle || 0) * 180) / Math.PI + 180) % 360) + 360) % 360;
 
@@ -31,14 +31,6 @@ export function renderBattlefieldHud({
     const enemyCitadelHtml = hud.enemyBaseAlive
       ? `<span>CITADEL <b class="text-red-400">${hud.enemyBaseHp}/${hud.enemyBaseMaxHp}</b></span>`
       : '';
-
-    const activeHpSegs = isOverhealed
-      ? 8
-      : Math.max(0, Math.min(8, Math.ceil((hpPercent / 100) * 8)));
-    const hpSegsHtml = Array.from(
-      { length: 8 },
-      (_, idx) => `<span class="${idx < activeHpSegs ? 'is-on' : ''}"></span>`
-    ).join('');
 
     const isCampaignSector =
       currentSector.gameMode !== 'contract' &&
@@ -49,23 +41,6 @@ export function renderBattlefieldHud({
       : `${currentSector.code} · ${currentSector.name}`;
 
     setHtml(topTelemetry, `
-      <div class="hud-top-row">
-        <div class="hud-card hud-hp-card${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}">
-          <div class="hud-icon-box" aria-hidden="true">
-            <svg viewBox="0 0 36 22" width="32" height="20" fill="none">
-              <path d="M5 12h24l3 4v3H3v-3l2-4z" fill="#4ade80" fill-opacity="0.25" stroke="#4ade80" stroke-width="1.4"/>
-              <path d="M11 7h11l3 5H9l2-5z" fill="#4ade80" fill-opacity="0.45" stroke="#86efac" stroke-width="1.3"/>
-              <path d="M22 9h12" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div>
-            <span class="hud-label">HULL HP</span>
-            <div class="hud-hp-segs" aria-hidden="true">${hpSegsHtml}</div>
-            <div class="hud-hp-val">${Math.ceil(hud.playerHp)} <small>/ ${hud.playerMaxHp}</small></div>
-          </div>
-        </div>
-      </div>
-
       <div class="hud-card hud-sector-strip">
         <strong>${sectorTitle}</strong>
         <span>HOSTILES <b class="text-emerald-400">${hud.enemiesRemaining}/${hud.totalEnemiesInSector}</b></span>
@@ -99,31 +74,9 @@ export function renderBattlefieldHud({
     );
   }
 
-  // 2. Top-Right APS Badge & Compact Utility Controls
+  // 2. Top-Right Compact Utility Controls
   if (topControls) {
-    const apsTotal = hud.apsTotal ?? 0;
-    const apsMax = hud.apsMaxAmmo ?? 0;
-    const apsReady = apsTotal > 0 && !(hud.jammedTimer > 0);
-    const apsStatusText = hud.jammedTimer > 0
-      ? 'JAMMED'
-      : apsMax <= 0
-      ? 'NO APS'
-      : apsReady
-      ? `READY (${apsTotal}/${apsMax})`
-      : 'DEPLETED';
-
     setHtml(topControls, `
-      <div class="hud-card hud-aps-badge${apsReady ? '' : ' is-offline'}">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
-          <path d="M12 3l7 3v5c0 4.8-3 8.6-7 10-4-1.4-7-5.2-7-10V6l7-3z" fill="${apsReady ? 'rgba(74, 222, 128, 0.2)' : 'rgba(100, 116, 139, 0.15)'}" stroke="${apsReady ? '#4ade80' : '#64748b'}" stroke-width="1.6"/>
-          <path d="M9 12l2 2 4-4" stroke="${apsReady ? '#86efac' : '#64748b'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div>
-          <span class="hud-label">APS</span>
-          <div class="hud-aps-status">${apsStatusText}</div>
-        </div>
-      </div>
-
       <div class="hud-util-row">
         <button
           data-action="toggle-upgrades"
@@ -140,11 +93,15 @@ export function renderBattlefieldHud({
 
         <button
           data-action="cycle-camera"
-          class="flex items-center gap-1 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
+          class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
           title="Cycle Camera Angle [C]"
+          aria-label="Cycle Camera Angle [C]"
         >
-          <span class="text-amber-400">⌖</span>
-          <span class="hidden lg:inline">${cameraLabels[state.cameraPreset]}</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+            <circle cx="12" cy="13" r="3"/>
+          </svg>
+          <span class="hidden sm:inline">${cameraLabels[state.cameraPreset]} [C]</span>
         </button>
 
         <button
@@ -337,13 +294,59 @@ export function renderBattlefieldHud({
 
       const canFireMissile = hud.missileAmmo > 0 && hud.missileCooldown <= 0;
 
+      const apsTotal = hud.apsTotal ?? 0;
+      const apsMax = hud.apsMaxAmmo ?? 0;
+      const apsJammed = hud.jammedTimer > 0;
+      const apsReady = apsTotal > 0 && !apsJammed;
+      const apsValueText = apsJammed
+        ? 'JAMMED'
+        : apsMax <= 0
+        ? 'OFF'
+        : `${apsTotal}/${apsMax}`;
+      const apsTileClass = apsJammed
+        ? 'border-purple-500/60 bg-purple-950/60 text-purple-300'
+        : apsReady
+        ? 'border-emerald-500/60 bg-emerald-500/10 text-emerald-300'
+        : 'border-slate-800 bg-slate-900/80 text-slate-500';
+      const apsStroke = apsJammed ? '#c084fc' : apsReady ? '#4ade80' : '#64748b';
+      const apsFill = apsJammed
+        ? 'rgba(192, 132, 252, 0.18)'
+        : apsReady
+        ? 'rgba(74, 222, 128, 0.18)'
+        : 'rgba(100, 116, 139, 0.15)';
+
       if (!bottomHud.__sections) {
         bottomHud.innerHTML =
           '<div style="display: contents"></div><div class="hud-bottom-center"></div>';
         bottomHud.__sections = Array.from(bottomHud.children);
       }
       const [silhouetteSection, centerSection] = bottomHud.__sections;
-      setHtml(silhouetteSection, renderTankSilhouette(hud));
+      const activeHpSegs = isOverhealed
+        ? 8
+        : Math.max(0, Math.min(8, Math.ceil((hpPercent / 100) * 8)));
+      const hpSegsHtml = Array.from(
+        { length: 8 },
+        (_, idx) => `<span class="${idx < activeHpSegs ? 'is-on' : ''}"></span>`
+      ).join('');
+      setHtml(silhouetteSection, `
+        <div class="hud-bottom-left">
+          ${renderTankSilhouette(hud)}
+          <div class="hud-card hud-hp-card${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}">
+            <div class="hud-icon-box" aria-hidden="true">
+              <svg viewBox="0 0 36 22" width="32" height="20" fill="none">
+                <path d="M5 12h24l3 4v3H3v-3l2-4z" fill="#4ade80" fill-opacity="0.25" stroke="#4ade80" stroke-width="1.4"/>
+                <path d="M11 7h11l3 5H9l2-5z" fill="#4ade80" fill-opacity="0.45" stroke="#86efac" stroke-width="1.3"/>
+                <path d="M22 9h12" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <span class="hud-label">HULL HP</span>
+              <div class="hud-hp-segs" aria-hidden="true">${hpSegsHtml}</div>
+              <div class="hud-hp-val">${Math.ceil(hud.playerHp)} <small>/ ${hud.playerMaxHp}</small></div>
+            </div>
+          </div>
+        </div>
+      `);
 
       setHtml(centerSection, `
         <div class="flex flex-col items-center gap-1.5">
@@ -404,6 +407,20 @@ export function renderBattlefieldHud({
                   <div class="font-bold">${hud.missileAmmo}/${hud.missileMaxAmmo ?? getMaxMissileAmmo(upgrades.frame)}</div>
                 </div>
               </button>
+
+              <div
+                class="px-2 py-1 rounded border font-mono text-[11px] uppercase tracking-wider flex items-center gap-1 select-none ${apsTileClass}"
+                title="Active Protection System (Automatic)"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
+                  <path d="M12 3l7 3v5c0 4.8-3 8.6-7 10-4-1.4-7-5.2-7-10V6l7-3z" fill="${apsFill}" stroke="${apsStroke}" stroke-width="1.6"/>
+                  <path d="M9 12l2 2 4-4" stroke="${apsStroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="text-left">
+                  <div class="text-[8px] text-slate-400">AUTO APS</div>
+                  <div class="font-bold">${apsValueText}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
