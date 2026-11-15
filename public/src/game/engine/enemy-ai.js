@@ -45,7 +45,7 @@ function moveTowardsAngle(current, target, maxStep) {
 
 function getEnemyHullTurnRate(e) {
   const moveSpeed = e.stats?.moveSpeed ?? 2.07;
-  return Math.max(1.05, Math.min(5.5, 1.3 * Math.pow(moveSpeed / 1.77, 2.2)));
+  return Math.max(1.155, Math.min(6.05, 1.43 * Math.pow(moveSpeed / 1.77, 2.2)));
 }
 
 export class EnemyAiController {
