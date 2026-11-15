@@ -220,6 +220,10 @@ export class TerrainDestructionController {
     }
 
     if (cell.type === TileType.BRICK) engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp);
+    else if (cell.type === TileType.WATER_TOWER) {
+      sound.playSteelHit({ x: hitX, z: hitZ });
+      engine.fx.armorHit(hitX, 0.85, hitZ, { scale: 0.9, colorHex: 0x38bdf8 });
+    }
     engine.tileBatcher.markDirty(cell.mesh);
 
     if (cell.hp <= 0) {
@@ -232,6 +236,10 @@ export class TerrainDestructionController {
     if (!cell || cell.type === TileType.EMPTY) return;
     if (cell.type === TileType.BARREL) {
       engine.explodeBarrel(cell, true);
+      return;
+    }
+    if (cell.type === TileType.WATER_TOWER) {
+      this.ruptureWaterTower(cell);
       return;
     }
     const { x, z } = engine.gridToWorld(cell.row, cell.col);
@@ -302,6 +310,7 @@ export class TerrainDestructionController {
     cell.type = TileType.EMPTY;
     cell.hp = 0;
     engine.blocksDestroyed++;
+    this.convertCellToCrater(cell);
 
     sound.playEnvironmentalExplosion({ x, z });
     engine.screenShake = Math.max(engine.screenShake, 0.75);
@@ -373,6 +382,10 @@ export class TerrainDestructionController {
           engine.destroyTileCell(neighbor);
         } else if (neighbor.type === TileType.BARREL && !neighbor._exploding) {
           chainBarrels.push(neighbor);
+        } else if (neighbor.type === TileType.WATER_TOWER) {
+          engine.damageTileCell(neighbor, 2, nPos.x, nPos.z, fromPlayer);
+        } else if (neighbor.type === TileType.OIL_SLICK) {
+          this.igniteOilSlick(neighbor);
         }
       }
     }
@@ -404,6 +417,196 @@ export class TerrainDestructionController {
       } else {
         engine.explodeBarrel(cell, event.fromPlayer);
       }
+    }
+  }
+
+  /** Converts passable dry ground into a dynamic blast crater. */
+  convertCellToCrater(cell) {
+    const { engine } = this;
+    if (!cell) return;
+    if (
+      cell.type !== TileType.EMPTY &&
+      cell.type !== TileType.SAND &&
+      cell.type !== TileType.ROAD
+    ) {
+      return;
+    }
+    if (cell.mesh) {
+      engine.mapGroup?.remove(cell.mesh);
+      cell.mesh = null;
+    }
+    cell.type = TileType.CRATER;
+    cell.hp = 0;
+    cell.isBurning = false;
+    if (engine.modelFactory?.createCraterBlock && engine.mapGroup) {
+      const pos = engine.gridToWorld(cell.row, cell.col);
+      const craterMesh = engine.modelFactory.createCraterBlock(pos.x, pos.z);
+      engine.mapGroup.add(craterMesh);
+      cell.mesh = craterMesh;
+    }
+  }
+
+  /** Converts passable ground into deep swamp/mud (used by Water Tower bursts). */
+  convertCellToSwamp(cell) {
+    const { engine } = this;
+    if (!cell) return;
+    if (
+      cell.type !== TileType.EMPTY &&
+      cell.type !== TileType.SAND &&
+      cell.type !== TileType.ROAD &&
+      cell.type !== TileType.CRATER &&
+      cell.type !== TileType.OIL_SLICK
+    ) {
+      return;
+    }
+    this.extinguishOilCell(cell);
+    if (cell.mesh) {
+      engine.mapGroup?.remove(cell.mesh);
+      cell.mesh = null;
+    }
+    cell.type = TileType.SWAMP;
+    cell.hp = 0;
+    if (engine.modelFactory?.createSwampBlock && engine.mapGroup) {
+      const pos = engine.gridToWorld(cell.row, cell.col);
+      const swampMesh = engine.modelFactory.createSwampBlock(pos.x, pos.z);
+      engine.mapGroup.add(swampMesh);
+      cell.mesh = swampMesh;
+    }
+  }
+
+  /** Ignites an OIL_SLICK cell so it burns for 7 seconds with fire damage and smoke. */
+  igniteOilSlick(cell) {
+    const { engine } = this;
+    if (!cell || cell.type !== TileType.OIL_SLICK || cell.isBurning) return;
+    cell.isBurning = true;
+    cell.burnTimer = 7.0;
+    cell.burnFxCooldown = 0;
+    engine.burningOilCells ||= [];
+    if (!engine.burningOilCells.includes(cell)) {
+      engine.burningOilCells.push(cell);
+    }
+    const pos = engine.gridToWorld(cell.row, cell.col);
+    engine.fx?.explosion?.(pos.x, 0.25, pos.z, { scale: 0.75, boss: false, tint: 0xff6a00 });
+  }
+
+  extinguishOilCell(cell) {
+    const { engine } = this;
+    if (!cell?.isBurning) return;
+    cell.isBurning = false;
+    cell.burnTimer = 0;
+    if (engine.burningOilCells?.length) {
+      const idx = engine.burningOilCells.indexOf(cell);
+      if (idx >= 0) engine.burningOilCells.splice(idx, 1);
+    }
+  }
+
+  /** Updates burning oil slick cells: fire/smoke VFX, periodic fire damage, and burnout. */
+  updateBurningOil(dt) {
+    const { engine } = this;
+    if (
+      engine.isDisposed ||
+      engine.isHangarPaused ||
+      engine.isAdPaused ||
+      engine.status !== GameStatus.PLAYING ||
+      !engine.burningOilCells?.length
+    ) {
+      return;
+    }
+
+    for (let i = engine.burningOilCells.length - 1; i >= 0; i--) {
+      const cell = engine.burningOilCells[i];
+      if (!cell || cell.type !== TileType.OIL_SLICK || !cell.isBurning) {
+        engine.burningOilCells.splice(i, 1);
+        continue;
+      }
+
+      cell.burnTimer -= dt;
+      cell.burnFxCooldown = (cell.burnFxCooldown || 0) - dt;
+      const pos = engine.gridToWorld(cell.row, cell.col);
+
+      if (cell.burnFxCooldown <= 0) {
+        cell.burnFxCooldown = 0.22;
+        engine.fx?.sparks?.(pos.x, 0.2, pos.z, 0xff5500, 2, { speed: 1.1, up: 1.5 });
+      }
+
+      const halfCell = TILE_SIZE * 0.52;
+      if (
+        engine.playerHp > DURABILITY.ZERO_HP &&
+        Math.abs(engine.playerX - pos.x) <= halfCell &&
+        Math.abs(engine.playerZ - pos.z) <= halfCell
+      ) {
+        engine.damagePlayer(4.0 * dt, { zone: 'hull', aspect: 'front' });
+      }
+
+      for (let ei = engine.enemies.length - 1; ei >= 0; ei--) {
+        const enemy = engine.enemies[ei];
+        if (!enemy || enemy.hp <= 0) continue;
+        if (Math.abs(enemy.x - pos.x) <= halfCell && Math.abs(enemy.z - pos.z) <= halfCell) {
+          engine.damageEnemy(enemy, 4.0 * dt, pos.x, pos.z);
+        }
+      }
+
+      if (cell.burnTimer <= 0) {
+        cell.isBurning = false;
+        engine.burningOilCells.splice(i, 1);
+        if (cell.mesh) {
+          engine.mapGroup?.remove(cell.mesh);
+          cell.mesh = null;
+        }
+        cell.type = TileType.EMPTY;
+        engine.fx?.scorch?.(pos.x, pos.z, 1.5);
+      }
+    }
+  }
+
+  /** Destroys a WATER_TOWER, flooding nearby cells into swamp and extinguishing nearby fires. */
+  ruptureWaterTower(cell) {
+    const { engine } = this;
+    if (!cell || cell.type !== TileType.WATER_TOWER) return;
+    const { x, z } = engine.gridToWorld(cell.row, cell.col);
+
+    if (cell.mesh) {
+      engine.mapGroup?.remove(cell.mesh);
+      cell.mesh = null;
+    }
+    cell.type = TileType.EMPTY;
+    cell.hp = 0;
+    engine.blocksDestroyed++;
+
+    sound.playExplosion(1.1, { x, z });
+    engine.screenShake = Math.max(engine.screenShake, 0.45);
+    engine.fx?.shockwave?.(x, 0.15, z, 0.4, 5.4, 0x0ea5e9, 0.45);
+    engine.fx?.sparks?.(x, 0.9, z, 0x38bdf8, 34, { speed: 3.2, up: 2.2 });
+
+    this.convertCellToSwamp(cell);
+
+    for (let dr = -2; dr <= 2; dr++) {
+      for (let dc = -2; dc <= 2; dc++) {
+        const neighbor = engine.grid[cell.row + dr]?.[cell.col + dc];
+        if (!neighbor) continue;
+        const distCells = Math.hypot(dr, dc);
+
+        if (distCells <= 2.5) {
+          if (neighbor.type === TileType.FOREST && neighbor.isBurning) {
+            neighbor.isBurning = false;
+            if (engine.burningForests?.length) {
+              const fIdx = engine.burningForests.findIndex((bf) => bf.cell === neighbor);
+              if (fIdx >= 0) engine.burningForests.splice(fIdx, 1);
+            }
+          }
+          if (neighbor.type === TileType.OIL_SLICK && neighbor.isBurning) {
+            this.extinguishOilCell(neighbor);
+          }
+        }
+
+        if (distCells <= 1.5) {
+          this.convertCellToSwamp(neighbor);
+        }
+      }
+    }
+
+    if (engine.tileBatcher) {
+      engine.tileBatcher.sync();
     }
   }
 }

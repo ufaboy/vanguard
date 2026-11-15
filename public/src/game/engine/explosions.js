@@ -332,6 +332,10 @@ export class ExplosionsController {
             engine.destroyTileCell(cell);
           } else if (cell.type === TileType.BARREL) {
             engine.explodeBarrel(cell, fromPlayer);
+          } else if (cell.type === TileType.WATER_TOWER) {
+            engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
+          } else if (cell.type === TileType.OIL_SLICK) {
+            engine.terrainDestruction?.igniteOilSlick?.(cell);
           } else if (cell.type === TileType.CONCRETE) {
             engine.damageTileCell(cell, 6, pos.x, pos.z);
           } else if (cell.type === TileType.BASE && !fromPlayer) {
@@ -343,6 +347,12 @@ export class ExplosionsController {
       }
     }
 
+    const impactGrid = engine.worldToGrid(x, z);
+    const impactCell = engine.grid[impactGrid.row]?.[impactGrid.col];
+    if (impactCell && radius >= TILE_SIZE * 1.1) {
+      engine.terrainDestruction?.convertCellToCrater?.(impactCell);
+    }
+
     if (fromPlayer) {
       for (let i = engine.enemies.length - 1; i >= 0; i--) {
         const e = engine.enemies[i];
@@ -350,8 +360,10 @@ export class ExplosionsController {
         if (dist <= radius + (e.isBoss ? 1.2 : 0.7)) {
           const edgeRatio =
             dist > radius * 0.5 ? ARTILLERY.EDGE_DAMAGE_RATIO : 1.0;
+          const eGrid = engine.worldToGrid(e.x, e.z);
+          const craterMult = engine.grid[eGrid.row]?.[eGrid.col]?.type === TileType.CRATER ? 0.7 : 1.0;
           const eff = computeEffectiveDamage(
-            damage * edgeRatio,
+            damage * edgeRatio * craterMult,
             penetration,
             engine.blastSideArmor(e.stats, e.x, e.z, e.hullAngle, x, z)
           );
@@ -363,8 +375,10 @@ export class ExplosionsController {
       if (dist <= radius + 0.65) {
         const edgeRatio =
           dist > radius * 0.5 ? ARTILLERY.EDGE_DAMAGE_RATIO : 1.0;
+        const pGrid = engine.worldToGrid(engine.playerX, engine.playerZ);
+        const craterMult = engine.grid[pGrid.row]?.[pGrid.col]?.type === TileType.CRATER ? 0.7 : 1.0;
         const eff = computeEffectiveDamage(
-          damage * edgeRatio,
+          damage * edgeRatio * craterMult,
           penetration,
           engine.blastSideArmor(
             engine.playerStats,

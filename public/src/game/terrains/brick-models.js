@@ -13,7 +13,8 @@ export class BrickModels {
   }
 
   async load() {
-    const gltf = await new GLTFLoader().loadAsync('./models/terrain/brick.glb');
+    const brickUrl = new URL('../../../models/terrain/brick.glb', import.meta.url).href;
+    const gltf = await new GLTFLoader().loadAsync(brickUrl);
     gltf.scene.updateMatrixWorld(true);
     gltf.scene.traverse(node => {
       if (!node.isMesh) return;

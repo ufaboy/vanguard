@@ -200,6 +200,7 @@ export class TankGameEngine {
     this.lasers = [];
     this.hazardZones = [];
     this.burningForests = [];
+    this.burningOilCells = [];
     this.enemySpawner.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
     this.particles = [];
@@ -897,6 +898,7 @@ export class TankGameEngine {
       this.updatePowerUps(dt, elapsed);
       this.playerController.updateSmokeAndLoot(dt);
       this.updateBarrelExplosions(dt);
+      this.terrainDestruction.updateBurningOil(dt);
       this.updateBrickRubble(dt);
       this.forestFire.update(dt, elapsed);
     } else if (this.playerRig) {

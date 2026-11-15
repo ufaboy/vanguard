@@ -184,9 +184,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "dirt",
@@ -202,7 +202,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -216,9 +216,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -234,7 +234,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "dirt",
@@ -286,126 +286,6 @@
         "width": 3,
         "surface": "gravel",
         "marking": "none"
-      },
-      {
-        "id": "west-track",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            33,
-            14
-          ],
-          [
-            29,
-            12
-          ],
-          [
-            15,
-            11
-          ],
-          [
-            9,
-            11
-          ],
-          [
-            4,
-            6
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "east-track",
-        "points": [
-          [
-            33,
-            20
-          ],
-          [
-            30,
-            25
-          ],
-          [
-            27,
-            32
-          ],
-          [
-            10,
-            32
-          ],
-          [
-            4,
-            33
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "north-link",
-        "points": [
-          [
-            7,
-            7
-          ],
-          [
-            7,
-            21
-          ],
-          [
-            7,
-            33
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
       }
     ],
     "landmarks": [
@@ -436,8 +316,8 @@
       {
         "id": "edge-mark-0",
         "kind": "loading",
-        "row": 10,
-        "col": 3,
+        "row": 9,
+        "col": 0,
         "size": 1.8,
         "rotation": 0
       },
@@ -445,25 +325,47 @@
         "id": "edge-mark-1",
         "kind": "parking",
         "row": 25,
-        "col": 3,
+        "col": 1,
         "size": 1.8,
         "rotation": 90
       },
       {
         "id": "edge-mark-2",
         "kind": "parking",
-        "row": 12,
-        "col": 36,
+        "row": 11,
+        "col": 37,
         "size": 1.8,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "crosswalk",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 2,
         "rotation": 90
+      },
+      {
+        "id": "m6-wt-haz-8-30",
+        "kind": "hazard_zone",
+        "row": 8,
+        "col": 30,
+        "size": 1.3
+      },
+      {
+        "id": "m6-helipad-hq",
+        "kind": "helipad",
+        "row": 35,
+        "col": 15,
+        "size": 1.8
+      },
+      {
+        "id": "m6-chev-n",
+        "kind": "chevron",
+        "row": 25,
+        "col": 18,
+        "size": 1.2,
+        "rotation": 0
       }
     ],
     "exclusions": [
@@ -728,44 +630,44 @@
   ],
   "layout": [
     "FFFFFF......BBB..........FFFFFFF..FFFFFF",
-    "FFFFF....................BBFFFFFF..FFFFF",
-    ".........F...................F........FF",
+    "FFFFF....M.T..M....M..L.MBBFFFFFF.MFFFFF",
+    "MM.......F...................F........FM",
     "WW......FFFF.............FFFFFFF........",
     "WW......FFFFF...........BBFFFFFF........",
-    "WW......FFFFF...........BBFFFFFF........",
+    "WW......FFFFF...........BBFFFFFF......MM",
     "FF...FFFFFFFFBBB........BBQ..F..........",
     "FF....FFFFFFFBCB................F.....FF",
-    "CC....FFF...FBBB.QBB...........FFF....FF",
+    "CC....FFF...FBBB.QBB..MM..MM..TFFF....FM",
     ".C.....FF........FBB.........BB...F...FF",
     ".C..............FFF..........BB.........",
-    "......BBB......FFFFF..................WW",
+    "MM....BBB......FFFFF..................WW",
     "W.....BCB......FFFFF........CQ..F.....FF",
     "F.....BBB.....FFFFFFF.......C..FFF......",
-    "FF.............FFFFF..BB....B.FFFFF...FF",
+    "MF........K...LFFFFF..BB....B.FFFFF...FM",
     "...............FFFFF..BB....B.FFFFF.....",
     "F........CQ.................B.FFFFF.....",
-    ".C....F..C.................QCFFFFFFF..CC",
+    "MC....F..C............K....QCFFFFFFF..CC",
     "......F..C..................CFFFFFFF..CC",
     "WW....F..C..................CFFFFFFF..F.",
-    ".C...FFF.C..................C.FFFFF...F.",
+    "MC...FFF.C....K.............C.FFFFF...FM",
     ".C...FFF.C..................C.FFFFF...WF",
     ".....FFF.C..................C.FFFFF...FF",
-    "C....FFF.B.....Q..WWWWW.....C.FFFFF...F.",
+    "CM...FFF.B.....Q..WWWWW.....C.FFFFF...FM",
     ".....FFF.B.....BBBWWWWW.......FFFFF...F.",
     ".....FFF.B.....BBB.WWW..BBB....FFF......",
-    "....FFFFFC..........W...BBB.....F.......",
+    "MM..FFFFFC..........W...BBB.....F.....MM",
     "B....FFF.C.................F..........FW",
     "BF...FFF.C...............FFFFF........FC",
-    ".....FFF.Q..............FFFFFFF........F",
+    "MM...FFF.QL.............FFFFFFF.......MM",
     ".....FFF.FFFF........BBBFFFFFFF.........",
     "F.....F.FFFFFFF.....QBCBFFFFFFFF......FF",
-    "BB.....FFFFFFFFBB....BBBFFFFFFF.........",
+    "BB.....FFFFFFFFBB....BBBFFFFFFF.......MM",
     "BB...BBBFFFFFFFBB.......FFFFFFF.........",
     "B....BBB.FFFFF...........FFFFF..F......B",
-    ".....BBB...F...............F..FFFFF.....",
+    "MM...BBB...F...............F..FFFFF...MM",
     "CC...........................FFFFFFF...F",
     "BB................CCCC........FFFFF.....",
-    "................................F.......",
+    "....K....KT...K.........K....K..F.K.....",
     "FFFFFF.............HH...........FFFFFFFF"
   ]
 }

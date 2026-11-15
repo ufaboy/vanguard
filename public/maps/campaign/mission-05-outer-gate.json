@@ -194,9 +194,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "pavers",
@@ -212,7 +212,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -226,9 +226,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -244,7 +244,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "pavers",
@@ -256,182 +256,13 @@
         ]
       }
     ],
-    "paths": [
-      {
-        "id": "toll-road",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            33,
-            19
-          ],
-          [
-            28,
-            18
-          ],
-          [
-            26,
-            19
-          ],
-          [
-            15,
-            19
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "west-service-road",
-        "points": [
-          [
-            33,
-            19
-          ],
-          [
-            33,
-            12
-          ],
-          [
-            30,
-            12
-          ],
-          [
-            30,
-            10
-          ],
-          [
-            24,
-            11
-          ],
-          [
-            13,
-            12
-          ],
-          [
-            3,
-            12
-          ],
-          [
-            3,
-            18
-          ],
-          [
-            7,
-            18
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      },
-      {
-        "id": "east-service-road",
-        "points": [
-          [
-            35,
-            26
-          ],
-          [
-            32,
-            31
-          ],
-          [
-            15,
-            31
-          ],
-          [
-            7,
-            31
-          ],
-          [
-            3,
-            30
-          ],
-          [
-            3,
-            20
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      },
-      {
-        "id": "battery-approach",
-        "points": [
-          [
-            27,
-            30
-          ],
-          [
-            26,
-            26
-          ],
-          [
-            16,
-            26
-          ],
-          [
-            12,
-            27
-          ]
-        ],
-        "width": 2.8,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "dashed"
-      }
-    ],
+    "paths": [],
     "landmarks": [
       {
         "id": "toll-crosswalk",
         "kind": "crosswalk",
-        "row": 26,
-        "col": 18,
+        "row": 25,
+        "col": 19,
         "size": 3
       },
       {
@@ -482,8 +313,8 @@
       {
         "id": "edge-mark-0",
         "kind": "manhole",
-        "row": 10,
-        "col": 3,
+        "row": 9,
+        "col": 0,
         "size": 1,
         "rotation": 0
       },
@@ -491,7 +322,7 @@
         "id": "edge-mark-1",
         "kind": "crosswalk",
         "row": 25,
-        "col": 3,
+        "col": 1,
         "size": 2,
         "rotation": 90
       },
@@ -499,17 +330,53 @@
         "id": "edge-mark-2",
         "kind": "parking",
         "row": 12,
-        "col": 36,
+        "col": 38,
         "size": 1.8,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "manhole",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 1,
         "rotation": 90
+      },
+      {
+        "id": "m5-wt-haz-17-10",
+        "kind": "hazard_zone",
+        "row": 17,
+        "col": 10,
+        "size": 1.3
+      },
+      {
+        "id": "m5-helipad-hq",
+        "kind": "helipad",
+        "row": 33,
+        "col": 17,
+        "size": 1.8
+      },
+      {
+        "id": "m5-drain-w",
+        "kind": "drain_grate",
+        "row": 20,
+        "col": 1,
+        "size": 1
+      },
+      {
+        "id": "m5-drain-e",
+        "kind": "drain_grate",
+        "row": 19,
+        "col": 37,
+        "size": 1
+      },
+      {
+        "id": "m5-chev-s",
+        "kind": "chevron",
+        "row": 28,
+        "col": 21,
+        "size": 1.2,
+        "rotation": 0
       }
     ],
     "exclusions": [
@@ -746,34 +613,34 @@
     "STANDARD"
   ],
   "layout": [
-    "FFFF...BBBB...............FFFF...BBB....",
-    ".......BBBB......................BBB....",
+    "FFFF...BBBB.T.............FFFF...BBB....",
+    ".....K.BBBB......................BBB....",
     "BB.......................FFFF...........",
     "BB...BBBBB...............FFFF...BBB.....",
     ".....BCCCB......................BBB...CC",
     ".....BCCCB.....CC...CCCCCCCCCC..BBB.....",
     ".....BBBBB.....C.............C........X.",
     ".B...FFF.......C......CCC....C........XB",
-    ".B...FFF.......C......CEC....C........X.",
-    ".....BBBB......C......CCC....C...BB...FF",
+    ".B...FFF....FF.C......CEC....C........X.",
+    ".....BBBB..FFF.C......CCC....C...BB...FF",
     "BB...BBBB......C.....BCCCB...C...BB.....",
-    "BB...BBBB......C.....BBBBB...C...BB.....",
+    "BB...BBBB.....KC.....BBBBB...C...BB.....",
     "BB...BBBB......C.............C...BB.....",
     "BB.............C.............C..........",
-    "XX.............CCCBBBCCCCCBBBC..........",
+    "XX....K........CCCBBBCCCCCBBBC..........",
     ".....BBBBB............................XX",
     "XX...BCCCB.FF......BB.................BB",
-    "XX...BCCCB.FF......BB...........BBB...BB",
+    "XX...BCCCBTFF.....KBB...........BBB...BB",
     "BB...BCCCB.FF......BB...........BBB.....",
     "BB...BCCCB.FF......BB...........BBB.....",
-    "C....BBBBB...BBBBB.....BBBBB....BCB...B.",
-    "XX...BBBBB...BBBBB.....BBBBB....BCB...B.",
-    "XX...BBBBB...BBBBB.....BBBBB....BCB...CC",
-    "BX.....Q.....BCCCB.....BBBBB...QBCB...CC",
-    ".............BCCCB....QBBBBB....BBB.....",
-    ".....BBBB....BBBBB..............BBB.....",
-    ".F...BBBB.......Q...BBB.........FFFF..BB",
-    ".C...BBBB..C........BBB....Q....FFFF....",
+    "C....BBBBB...BBBBB.R...BBBBB....BCB...B.",
+    "XX...BBBBB...BBBBB.R...BBBBB....BCB...B.",
+    "XX...BBBBB...BBBBB.R...BBBBB....BCB...CC",
+    "BX.....Q.....BCCCB.R...BBBBB...QBCB...CC",
+    ".............BCCCB.R..QBBBBB....BBB.....",
+    ".....BBBB....BBBBB.R............BBB.....",
+    ".F...BBBB.......Q..RBBB.........FFFF..BB",
+    ".C...BBBB..C.......RBBB....Q....FFFF....",
     "BB...BBBB..B.............BBBBB..FFFF..BB",
     "BB.........C.QBBBBBBB....BCCCB........FF",
     "........Q.....BBBBBBB....BCCCBQ.........",
@@ -784,7 +651,7 @@
     ".............BBB...............BBBB...BB",
     ".............BBB...............BBBB....X",
     "CC................CCCC..BB............BX",
-    "........................BB..............",
+    "......K.T...............BB...L...K......",
     "....FF.............HH.............FF...."
   ]
 }

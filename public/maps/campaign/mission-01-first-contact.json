@@ -29,45 +29,45 @@
     "credits": 250
   },
   "layout": [
-    "FFFF.........BBBB........BB......FF.....",
-    "FFFF....BBB..BCCB........BB..BBB.FF.....",
+    "FFFF........TBBBB........BB......FF.....",
+    "FFFF.K..BBB..BCCB........BB..BBB.FF.....",
     "B............BCCB........CCB...B.......X",
     "B.......BB...............CCB...B..BB....",
-    "BB..B...BB...BB..........CCB...B..BB....",
-    "....B.........BBBBBBB...BBBBB..B........",
-    ".F............BCCCCCB.................BB",
-    ".B............BCCCCCB....DD....BB.....BB",
-    "FF..FF........BBBBBBB..........BB.FF..FF",
-    "FF..FF..BBBB............BBBBBB........FF",
-    "..........BB....................BB......",
-    "FF.........B.............BB.....BB......",
-    "FF...BB....B..BBBBBB.....CC.............",
-    "FF...BB....B..BCCCCB.....CC...........B.",
-    "...........B..BCCCCB...............F..B.",
-    "BB...BBBBBB...BBBBBB...............FF...",
-    "....B........................BB....FF.BB",
-    "B...B.......X........X.......BB.......FF",
-    "BB..B.......X........X.......BB.......F.",
-    "....B.......X........X.......BB........F",
-    "....B...BB....BB.......BBB...BCB..BB..BB",
-    ".F..B...BB....BB.......BBB...BCB..BB...C",
-    "XX..B...BB....BB.......BBB..QBCB..BB....",
-    ".F......BB........BB..QBCB...BCC..BB....",
-    "............Q..........BCB...BCC........",
-    "....BQ.....BB..........BCB...BBBBBB...B.",
-    "FF..B......BB..........BBB........QB...B",
-    "CB................B.D.B.....BB.....B...X",
-    "FF..FF..BBBBB..QBBB...B.....BB.....B..B.",
-    "BB..FF.....BB...BBBBBBCBBB............B.",
-    "...........BB.......QBCCCB..............",
-    "CC..B......BB........BCCCB.......BB....F",
-    "CC..BFF....BB..Q..BBBCCCCB.......BB....X",
-    "X....FF....BBBBBBB...BBBCCBBBBB...B...CC",
-    "X......B................BBBBBBB...B.....",
-    ".......B..........................B.....",
-    "FF..BB.B.............................FFF",
-    "....BB..BBBBBBB...CCCC...............FFF",
-    ".............B..........BBBBBBBBBB......",
+    "BB..B...BB...BB.......R..CCB...B..BB....",
+    "....B.........BBBBBBB.R.BBBBB..B........",
+    ".F............BCCCCCB.R..DD...........BB",
+    ".B............BCCCCCB.RRRRRRRRRBB.....BB",
+    "FF..FF........BBBBBBB.R...L...RBB.FF..FF",
+    "FF..FF..BBBB..........R.BBBBBBR.......FF",
+    "..........BBF........FR.......R.BB......",
+    "FF.........BFF....K..FR..BB...R.BB......",
+    "FF...BB....BFFBBBBBB.FR..CC...R.........",
+    "FF...BB....B..BCCCCB.FR..CC...R.......B.",
+    "..........KB..BCCCCB..R.......R....F..B.",
+    "BB...BBBBBB...BBBBBB..RRRRRRRRR....FF...",
+    "....B.................RRRRRRRBB....FF.BB",
+    "B...B.......X........XKFF.FFFBB.......FF",
+    "BB..B.FF....X........XR......BB.......F.",
+    "....BFFF....X........XR......BB........F",
+    "....B.F.BB....BB.....RRBBB...BCB..BB..BB",
+    ".F..B...BB....BB.....R.BBB...BCB..BB...C",
+    "XX..B...BB....BB.....R.BBB..QBCB..BB....",
+    ".F......BB.Q......BB.RQBCB...BCC..BB....",
+    ".........RRRRRRRRRRRRR.BCB...BCC........",
+    "....BQ...R.BB.R......R.BCB...BBBBBB...B.",
+    "FF..B....R.BB.R........BBB........QB...B",
+    "CB.......R....R...B.D.B.....BB.RR..B...X",
+    "FF..FF..BRBBB.RQBBB...B.....BB.RR..B..B.",
+    "BB..FFT..R.BB.R.BBBBBBCBBB.....RR.....B.",
+    ".........R.BB.R.....QBCCCB.....RR.......",
+    "CC..B....R.BB.R....R.BCCCB.....RRBB....F",
+    "CC..BFF..R.BB.RQ..BRBCCCCB.....RRBB....X",
+    "X....FF..R.BBBRBBB.R.BBBCCBBBBBRR.B...CC",
+    "X......B.RRRRRRRRRRRRRRRBBBBBBBRR.B.....",
+    ".......B.RRRRRRRRRRRRRRRRRRRRRRRR.B.....",
+    "FF..BB.B.FFFF..........FFFF.FFF......FFF",
+    "....BB..BBBB......CCCC...............FFF",
+    "......K.T....B..........BBBBBBBBBB......",
     ".....FF............HH..............FF..."
   ],
   "enemyPool": [
@@ -374,9 +374,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "pavers",
@@ -392,7 +392,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -406,9 +406,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -424,7 +424,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "pavers",
@@ -438,232 +438,20 @@
     ],
     "paths": [
       {
-        "id": "street-0",
+        "id": "hq-apron",
         "points": [
           [
             36,
-            19
-          ],
-          [
-            31,
-            19
-          ],
-          [
-            31,
-            14
-          ],
-          [
-            25,
-            14
-          ],
-          [
-            25,
-            21
-          ],
-          [
-            15,
-            21
-          ],
-          [
-            15,
-            30
-          ],
-          [
-            7,
-            30
-          ],
-          [
-            7,
-            22
-          ],
-          [
-            3,
-            22
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "street-1",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            35,
-            9
-          ],
-          [
-            30,
-            9
-          ],
-          [
-            30,
-            6
-          ],
-          [
-            17,
-            6
-          ],
-          [
-            17,
-            12
-          ],
-          [
-            7,
-            12
-          ],
-          [
-            7,
-            6
-          ],
-          [
-            3,
-            6
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "street-2",
-        "points": [
-          [
-            36,
-            19
+            17
           ],
           [
             36,
-            32
-          ],
-          [
-            27,
-            32
-          ],
-          [
-            27,
-            27
-          ],
-          [
-            15,
-            27
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      },
-      {
-        "id": "street-3",
-        "points": [
-          [
-            10,
-            12
-          ],
-          [
-            10,
-            21
-          ],
-          [
-            15,
-            21
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      },
-      {
-        "id": "street-4",
-        "points": [
-          [
-            17,
-            12
-          ],
-          [
-            17,
-            21
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      },
-      {
-        "id": "street-5",
-        "points": [
-          [
-            3,
-            6
-          ],
-          [
-            3,
             22
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      },
-      {
-        "id": "street-6",
-        "points": [
-          [
-            7,
-            30
-          ],
-          [
-            3,
-            30
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
           ]
         ],
         "width": 2,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "dashed"
+        "surface": "concrete",
+        "marking": "none"
       }
     ],
     "landmarks": [
@@ -694,7 +482,7 @@
       {
         "id": "district-3",
         "kind": "label",
-        "row": 30,
+        "row": 29,
         "col": 30,
         "text": "WORKSHOP COURT",
         "size": 3
@@ -710,14 +498,15 @@
       {
         "id": "crossing",
         "kind": "crosswalk",
-        "row": 17,
-        "col": 21,
-        "size": 2.5
+        "row": 15,
+        "col": 25,
+        "size": 2.2,
+        "rotation": 0
       },
       {
         "id": "workshop-bay",
         "kind": "loading",
-        "row": 30,
+        "row": 29,
         "col": 30,
         "size": 2
       },
@@ -729,36 +518,40 @@
         "size": 1
       },
       {
-        "id": "edge-mark-0",
-        "kind": "parking",
-        "row": 10,
-        "col": 3,
-        "size": 1.8,
-        "rotation": 0
+        "id": "m1-wt-haz-29-6",
+        "kind": "hazard_zone",
+        "row": 29,
+        "col": 6,
+        "size": 1.3
       },
       {
-        "id": "edge-mark-1",
-        "kind": "crosswalk",
+        "id": "m1-helipad-hq",
+        "kind": "helipad",
+        "row": 37,
+        "col": 16,
+        "size": 1.8
+      },
+      {
+        "id": "m1-drain-w",
+        "kind": "drain_grate",
         "row": 25,
-        "col": 3,
-        "size": 2,
-        "rotation": 90
+        "col": 9,
+        "size": 1
       },
       {
-        "id": "edge-mark-2",
-        "kind": "manhole",
-        "row": 12,
-        "col": 36,
-        "size": 1,
+        "id": "m1-drain-e",
+        "kind": "drain_grate",
+        "row": 34,
+        "col": 31,
+        "size": 1
+      },
+      {
+        "id": "m1-chev-s",
+        "kind": "chevron",
+        "row": 32,
+        "col": 19,
+        "size": 1.2,
         "rotation": 0
-      },
-      {
-        "id": "edge-mark-3",
-        "kind": "crosswalk",
-        "row": 28,
-        "col": 36,
-        "size": 2,
-        "rotation": 90
       }
     ],
     "exclusions": []

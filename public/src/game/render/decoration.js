@@ -16,7 +16,17 @@ export const DECORATION_SURFACES = Object.freeze({
   dirt: '#695a43', gravel: '#66665b', sand: '#ae956c', snow: '#b5bfbd',
 });
 const DECORATION_DETAILS = Object.freeze(['cracks', 'patches', 'oil', 'leaves', 'rubble', 'tracks', 'weeds']);
-const DECORATION_LANDMARKS = Object.freeze(['crosswalk', 'parking', 'manhole', 'loading', 'label']);
+const DECORATION_LANDMARKS = Object.freeze([
+  'crosswalk',
+  'parking',
+  'manhole',
+  'loading',
+  'label',
+  'helipad',
+  'hazard_zone',
+  'chevron',
+  'drain_grate',
+]);
 const has = (catalog, key) => Object.hasOwn(catalog, key);
 const fail = message => { throw new Error(`Invalid decoration: ${message}`); };
 
@@ -63,7 +73,7 @@ export function normalizeDecoration(rawMap) {
     if (!Number.isFinite(item.width) || item.width <= 0 || item.width > 8) fail('path width must be in (0,8] cells');
     if (!has(DECORATION_SURFACES,item.surface)) fail('unknown path surface');
     const marking = item.marking ?? 'none';
-    if (!['none','dashed','edges'].includes(marking)) fail('unknown path marking');
+    if (!['none','dashed','edges','railway'].includes(marking)) fail('unknown path marking');
     return {id:item.id,points:item.points.map(p=>[...p]),width:item.width,surface:item.surface,marking};
   });
   const landmarks = list('landmarks').map(item => {

@@ -233,9 +233,13 @@ export function renderCodex(state, selectedItem) {
     .join('');
 
   let deployActionHtml = '';
+  const canDeployToArena = Boolean(
+    state.hud &&
+      !SECTORS[state.hud.sectorId]?.encounters?.length &&
+      state.hud.status !== GameStatus.MENU
+  );
   if (
-    !SECTORS[state.hud.sectorId]?.encounters?.length &&
-    state.hud.status !== GameStatus.MENU &&
+    canDeployToArena &&
     selectedItem.previewType === 'ENEMY_TANK' &&
     !selectedItem.isBoss &&
     selectedItem.enemyClass
@@ -250,8 +254,7 @@ export function renderCodex(state, selectedItem) {
       </button>
     `;
   } else if (
-    !SECTORS[state.hud.sectorId]?.encounters?.length &&
-    state.hud.status !== GameStatus.MENU &&
+    canDeployToArena &&
     selectedItem.previewType === 'POWERUP' &&
     selectedItem.powerupType
   ) {

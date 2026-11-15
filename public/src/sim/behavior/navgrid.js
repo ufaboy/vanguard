@@ -19,6 +19,11 @@ export const NAV_TILE = Object.freeze({
   BARREL: 10,
   SAND: 11,
   BOXES: 12,
+  ROAD: 13,
+  SWAMP: 14,
+  OIL_SLICK: 15,
+  CRATER: 16,
+  WATER_TOWER: 17,
 });
 
 export function tileTypeAt(grid, row, col) {
@@ -34,6 +39,10 @@ function isPassableTile(type, canCrossWater = false) {
     type === NAV_TILE.ICE ||
     type === NAV_TILE.SPAWNER ||
     type === NAV_TILE.SAND ||
+    type === NAV_TILE.ROAD ||
+    type === NAV_TILE.SWAMP ||
+    type === NAV_TILE.OIL_SLICK ||
+    type === NAV_TILE.CRATER ||
     (canCrossWater && type === NAV_TILE.WATER)
   );
 }
@@ -48,16 +57,22 @@ function isCoverTile(type) {
     type === NAV_TILE.BRICK ||
     type === NAV_TILE.CONCRETE ||
     type === NAV_TILE.BOXES ||
-    type === NAV_TILE.BARREL
+    type === NAV_TILE.BARREL ||
+    type === NAV_TILE.WATER_TOWER
   );
 }
 
 function isBreachableTile(type) {
-  return type === NAV_TILE.BOXES || type === NAV_TILE.BRICK || type === NAV_TILE.CONCRETE;
+  return (
+    type === NAV_TILE.BOXES ||
+    type === NAV_TILE.BRICK ||
+    type === NAV_TILE.CONCRETE ||
+    type === NAV_TILE.WATER_TOWER
+  );
 }
 
 function isBossCrushableTile(type) {
-  return type === NAV_TILE.BRICK || type === NAV_TILE.BOXES;
+  return type === NAV_TILE.BRICK || type === NAV_TILE.BOXES || type === NAV_TILE.WATER_TOWER;
 }
 
 /** True for obstacles a boss cannot crush or cross (out-of-bounds, concrete, bases, hedgehogs, uncrossable water). */

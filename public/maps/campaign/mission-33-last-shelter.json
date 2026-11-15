@@ -212,9 +212,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "pavers",
@@ -230,7 +230,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "concrete",
@@ -244,9 +244,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "concrete",
@@ -262,7 +262,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "pavers",
@@ -274,128 +274,7 @@
         ]
       }
     ],
-    "paths": [
-      {
-        "id": "central-civic-avenue-path",
-        "surface": "asphalt",
-        "width": 4,
-        "marking": "dashed",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            28,
-            19
-          ],
-          [
-            15,
-            19
-          ],
-          [
-            5,
-            19
-          ]
-        ]
-      },
-      {
-        "id": "west-residential-lane",
-        "surface": "asphalt",
-        "width": 3,
-        "marking": "edges",
-        "points": [
-          [
-            35,
-            15
-          ],
-          [
-            29,
-            6
-          ],
-          [
-            15,
-            6
-          ],
-          [
-            7,
-            6
-          ],
-          [
-            3,
-            13
-          ]
-        ]
-      },
-      {
-        "id": "east-clinic-lane",
-        "surface": "asphalt",
-        "width": 3,
-        "marking": "edges",
-        "points": [
-          [
-            35,
-            23
-          ],
-          [
-            29,
-            33
-          ],
-          [
-            15,
-            33
-          ],
-          [
-            7,
-            33
-          ],
-          [
-            3,
-            25
-          ]
-        ]
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      }
-    ],
+    "paths": [],
     "landmarks": [
       {
         "id": "shelter-front-crosswalk",
@@ -408,7 +287,7 @@
       {
         "id": "mid-avenue-crosswalk",
         "kind": "crosswalk",
-        "row": 15,
+        "row": 14,
         "col": 19,
         "size": 3,
         "rotation": 0
@@ -465,33 +344,69 @@
         "id": "edge-mark-0",
         "kind": "manhole",
         "row": 10,
-        "col": 3,
+        "col": 1,
         "size": 1,
         "rotation": 0
       },
       {
         "id": "edge-mark-1",
         "kind": "crosswalk",
-        "row": 25,
-        "col": 3,
+        "row": 20,
+        "col": 6,
         "size": 2,
         "rotation": 90
       },
       {
         "id": "edge-mark-2",
         "kind": "loading",
-        "row": 12,
-        "col": 36,
+        "row": 11,
+        "col": 37,
         "size": 1.8,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "manhole",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 1,
         "rotation": 90
+      },
+      {
+        "id": "m33-wt-haz-7-9",
+        "kind": "hazard_zone",
+        "row": 7,
+        "col": 9,
+        "size": 1.3
+      },
+      {
+        "id": "m33-helipad-hq",
+        "kind": "helipad",
+        "row": 34,
+        "col": 14,
+        "size": 1.8
+      },
+      {
+        "id": "m33-chev-main",
+        "kind": "chevron",
+        "row": 24,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
+      },
+      {
+        "id": "m33-drain-w",
+        "kind": "drain_grate",
+        "row": 18,
+        "col": 0,
+        "size": 1
+      },
+      {
+        "id": "m33-drain-e",
+        "kind": "drain_grate",
+        "row": 19,
+        "col": 38,
+        "size": 1
       }
     ]
   },
@@ -744,35 +659,35 @@
   ],
   "layout": [
     ".....FF.....BB............BB.....F......",
-    "....FFF.....BB............BB.....FF.....",
+    "....FFF..L.KBBT..K.....K..BB.K.L.FF.....",
     ".B....................................C.",
     ".B.....BB.CC........FF........CCC.BB..BB",
     "BB.CC..BB.CC..................CC..BB.CCC",
     "...CC.......F...BB....BB...F.......CCCCC",
     "B......BB.C.....CC....CC......CBB.....BB",
-    "FF.....BB..CC..............CC..BB.....BB",
+    "FF.....BBT.CC..............CC..BB.....BB",
     "FF..F......CC...BB....BB...CC......FF...",
     "BB.FF..BB.......CC....CC.......BB...F...",
-    ".......BB..CC.B............CC..BB.....B.",
-    ".X..CC..C..CC.B.C......C...CC..C..CC..FF",
-    ".F..CC.BB.......C......C.......BB.CC.FFF",
-    "CC.....BB..CC...C......C...CC..BB....FFF",
-    "...F.......CC...C.....QC...CC.......FFFF",
+    ".....K.BB..CC.B..K.R.......CCK.BB.....B.",
+    ".X..CCR.C..CC.B.C..R...C...CC..C..CC..FF",
+    ".F..CCRBB.......C..R...C.......BB.CC.FFF",
+    "CC....RBB..CC...C..R...C...CC..BB....FFF",
+    "...F.......CC...C..R..QC...CC.......FFFF",
     ".X...BB.CC.Q....C......C...Q..CCC.BB....",
-    "FF...BB.CC......BBBBBBBB......CC..BB...C",
-    ".F.........CC....Q.........CC..FQ......C",
-    ".F.........CC..............CC..F........",
-    ".F.........CC..............CC..F........",
-    "CC..CC.BB..CC..C......C....CC..BB.CC..B.",
-    "B...CC.BB..CC..C......C....CC..BB.CC....",
-    "FF..CC.BB..CC..C......C....CC..BB.CC..BB",
-    "FF..CC.BB..Q...C......C....Q...BB.CC..BB",
-    "XX.....BB..CC..C......C...CC...BB..Q....",
-    "...F.......CC..............CC..F....F...",
-    ".....BB.B.CCC...BB....BB...CC.B.B.BB....",
-    "B....BB.B.CC....CC....CC....C.B.B.BB..FF",
-    "FFF........CC..............CC.........F.",
-    "....CC.BB..CC..BB....BB....CC..BB.CC..CC",
+    "FF...BB.CC......BBBBBBBB.....KCC..BB...C",
+    ".F....R....CC....Q.........CC..FQ......C",
+    ".F....R....CC......R.......CC..F........",
+    ".F....R....CC......R.......CC..F........",
+    "CC..CCRBB..CC..C...R..C....CC..BB.CC..B.",
+    "B...CCRBB..CC..C...R..C....CC..BB.CC....",
+    "FF..CCRBB..CC..C...R..C....CC..BB.CC..BB",
+    "FF..CC.BB..Q...C...R..C....Q...BB.CC..BB",
+    "XX....RBB..CC..C...R..C...CC...BB..Q....",
+    "...F..R....CC..............CC..F....F...",
+    ".....BR.B.CCC...BB....BB...CC.B.B.BB....",
+    "B....BR.B.CC....CC....CC....C.B.BRBB..FF",
+    "FFF...R....CC..............CC....R....F.",
+    "....CCRBB..CC..BB....BB....CC..BBRCC..CC",
     "....CC.BB......CC....CC........BB.CC....",
     ".......BB..CC..............CC..BB..F..CC",
     "B..F.......CC...CCCCCCCC...CC.....FFF...",
@@ -781,7 +696,7 @@
     "...........F................F...F.......",
     "BB..CC.BB.......C......C.......BB.CC.FFF",
     "BB..CC.BB..FF...C.CCCC.C...FF...B.CC....",
-    "...........FF...C......C...FF...........",
+    ".....K..T..FF...C......C...FFK..........",
     "......F.........C..HH..C.......F........"
   ],
   "powerups": [

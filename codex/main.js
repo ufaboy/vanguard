@@ -61,7 +61,7 @@ const camera = new THREE.OrthographicCamera(
 camera.position.set(10, 11, 10);
 camera.lookAt(0, 0.45, 0);
 
-const modelFactory = new ModelFactory(false);
+const modelFactory = new ModelFactory(renderer, false);
 const fx = new FxSystem({ lowQuality: false, light: explosionLight });
 const codexGroup = new THREE.Group();
 const codexStageGroup = new THREE.Group();
@@ -69,6 +69,9 @@ const codexFxGroup = new THREE.Group();
 autoDisposeOwned(codexStageGroup);
 autoDisposeOwned(codexFxGroup);
 scene.add(codexGroup);
+
+let lastTime = performance.now();
+let elapsed = 0;
 
 // Minimal host adapter matching the contract expected by CodexStage.
 const host = {
@@ -214,15 +217,12 @@ codexModal.addEventListener('click', (e) => {
   }
 });
 
-let lastTime = performance.now();
-let elapsed = 0;
-
 function tick(now) {
   const dt = Math.min(0.05, Math.max(0, (now - lastTime) / 1000));
   lastTime = now;
   elapsed += dt;
   stage.update(dt, elapsed);
-  fx.update(dt);
+  fx.update(dt, camera, renderer);
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
 }

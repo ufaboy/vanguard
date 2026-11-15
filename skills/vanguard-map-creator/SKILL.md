@@ -56,7 +56,17 @@ When reviewing the map, identify its HQ safe zone, count crates inside and outsi
 
 ## Author gameplay and decoration together
 
-Keep collision and surface rules in the existing gameplay map representation. Author a few purposeful surface zones, paths, and landmarks; derive small details with a stable seed and placement rules. A road is visual author intent, not a second collision map or an enemy route. Empty space alone cannot distinguish asphalt, a courtyard, or a parking lot.
+Keep collision and surface rules in the existing gameplay map representation. Author a few purposeful surface zones, paths, and landmarks; derive small details with a stable unique `decoration.seed` per map so perimeter buildings and props vary naturally across sectors. A 2D decoration path is visual author intent, not a second collision map or an enemy route. Empty space alone cannot distinguish asphalt, a courtyard, or a parking lot.
+
+### Road Hierarchy, District Architecture & Natural Vegetation
+- **Connected 3D `ROAD` (`R`) Network**: Build roads in `layout` as a coherent, connected street network—never leave isolated 1–2 tile `R` stubs or let `BRICK` (`B`), `CONCRETE` (`C`), `BOXES` (`D`), `BARREL` (`Q`), or `HEDGEHOG` (`X`) interrupt the middle of a drivable road. Place crates, barrels, and barricades on adjacent yards or roadsides instead.
+- **Mix Road Widths (2-Lane Avenues + 1-Lane Streets)**: Combine wide 2-tile-wide main avenues/boulevards (the engine automatically renders outer curbs and a shared lane divider between parallel `R` lanes) with narrower 1-tile-wide district streets and service alleys connecting courtyards, depots, and HQ approaches.
+- **No Conflicting 2D Dashed Roads**: Do not draw 2D `decoration.paths` with `marking: "dashed"` on top of or across `R` streets and solid walls. Use 2D `paths` (`marking: "none"`) only for clean open aprons/plazas (such as `hq-apron`) where no solid tiles interfere.
+- **District Landmarks & Clearance**:
+  - `helipad` requires a completely clear `3×3` pad (`.` or `P` only, no `R` or walls).
+  - `hazard_zone` must sit on or beside an actual hazard (`T`, `Q`, `L`, `D`, or `X`).
+  - `crosswalk` belongs on drivable streets (`R` or clear lanes); `label`, `loading`, `manhole`, `drain_grate`, and `chevron` must never sit under solid obstacles.
+- **Natural Urban & Tactical Vegetation (`FOREST` / `F`)**: Avoid placing `FOREST` solely as uniform `2×2` corner blocks. Include narrow linear boulevard tree belts (`1` cell wide along avenues with crossing gaps) and irregular pocket parks (`5–8` cells in organic L- or cluster shapes) inside city blocks without blocking roads or spawn points.
 
 Use four visual layers: surface treatment, static texture details, sparse small 3D dressing, and event-driven battle traces. Prefer the first two for the initial pass. Make damage, vegetation, stains, and debris spatially plausible. Leave firing lanes, mines, terrain boundaries, targets, and pickup silhouettes legible from the gameplay camera.
 
@@ -66,13 +76,14 @@ If the requested appearance needs missing renderer support, implement the smalle
 
 ## Verify and iterate
 
-Use the read-only helper for initial geometry and encounter checks:
+Use the read-only helpers for initial geometry, encounter, and layout-decoration consistency checks:
 
 ```text
 node <skill-directory>/scripts/inspect-map.mjs <project-root> <map-json-path>
+node <skill-directory>/scripts/audit-map.mjs <map-json-path>
 ```
 
-Paths may be absolute; a relative map path is resolved from the project root. The helper checks the current 36×36 string layout and finite authored encounter format. Its output is evidence, not certification: it cannot prove tank-physics clearance, runtime support for decoration, fair combat, or fun. For new schemas, extend meaningful project tests rather than weakening failures blindly.
+Paths may be absolute; a relative map path is resolved from the project root. `inspect-map.mjs` checks the current 40×40 string layout (`gridSize: 40`) and finite authored encounter format; `audit-map.mjs` verifies zero isolated `ROAD` stubs, zero blocked roads or 2D paths, and valid landmark clearance (`0 issue(s)` required). Their output is evidence, not certification: it cannot prove tank-physics clearance, runtime support for decoration, fair combat, or fun. For new schemas, extend meaningful project tests rather than weakening failures blindly.
 
 Check graph connectivity, real tank turning clearance, spawn occupancy/exclusion, roster accounting, failed-spawn retries, live limits, patrol destinations, objective rules, and appropriate boss reserves. For new playable missions, test UI selection, locked/available/completed states, stable mission IDs, saved unlocks, replay/restart/abort, rewards, and generic mission labels. Avoid legacy map fallbacks or hardcoded previous-mission totals.
 

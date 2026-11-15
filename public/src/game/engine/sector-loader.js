@@ -165,6 +165,7 @@ export class SectorLoaderController {
     engine.lasers = [];
     engine.hazardZones = [];
     engine.burningForests = [];
+    engine.burningOilCells = [];
     engine.particles = [];
     engine.powerUps = [];
     engine.boxPowerUpPool = new BoxPowerUpPool();
@@ -265,6 +266,35 @@ export class SectorLoaderController {
           engine.mapGroup.add(barrel);
           mesh = barrel;
           hp = 1;
+        } else if (type === TileType.ROAD && engine.modelFactory.createRoadBlock) {
+          const isRoad = (rr, cc) =>
+            rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE && sector.grid[rr][cc] === TileType.ROAD;
+          const n = isRoad(r - 1, c);
+          const e = isRoad(r, c + 1);
+          const s = isRoad(r + 1, c);
+          const w = isRoad(r, c - 1);
+          const roadMask = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
+          const doubleLaneMask =
+            (n && e && w && !s && (isRoad(r - 1, c + 1) || isRoad(r - 1, c - 1)) ? 1 : 0) |
+            (e && n && s && !w && (isRoad(r - 1, c + 1) || isRoad(r + 1, c + 1)) ? 2 : 0) |
+            (s && e && w && !n && (isRoad(r + 1, c + 1) || isRoad(r + 1, c - 1)) ? 4 : 0) |
+            (w && n && s && !e && (isRoad(r - 1, c - 1) || isRoad(r + 1, c - 1)) ? 8 : 0);
+          mesh = engine.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask);
+          engine.mapGroup.add(mesh);
+        } else if (type === TileType.SWAMP && engine.modelFactory.createSwampBlock) {
+          mesh = engine.modelFactory.createSwampBlock(x, z);
+          engine.mapGroup.add(mesh);
+        } else if (type === TileType.OIL_SLICK && engine.modelFactory.createOilSlickBlock) {
+          mesh = engine.modelFactory.createOilSlickBlock(x, z);
+          engine.mapGroup.add(mesh);
+        } else if (type === TileType.CRATER && engine.modelFactory.createCraterBlock) {
+          mesh = engine.modelFactory.createCraterBlock(x, z);
+          engine.mapGroup.add(mesh);
+        } else if (type === TileType.WATER_TOWER && engine.modelFactory.createWaterTowerBlock) {
+          mesh = engine.modelFactory.createWaterTowerBlock();
+          mesh.position.set(x, 0, z);
+          engine.mapGroup.add(mesh);
+          hp = 2;
         }
 
         rowCells.push({
@@ -312,6 +342,15 @@ export class SectorLoaderController {
       TileType.ICE
     );
     engine.mapGroup.add(engine.iceSurfaceMesh);
+
+    if (engine.modelFactory.createThemePerimeterProps) {
+      const themeProps = engine.modelFactory.createThemePerimeterProps(
+        sector.decoration?.theme || sector.theme || 'urban',
+        (GRID_SIZE * TILE_SIZE) / 2,
+        sector.decoration?.seed ?? sector.id ?? 1
+      );
+      engine.mapGroup.add(themeProps);
+    }
 
     engine.playerRig = engine.modelFactory.createPlayerTank();
     const pSpawnCell = sector.playerSpawnCell || {

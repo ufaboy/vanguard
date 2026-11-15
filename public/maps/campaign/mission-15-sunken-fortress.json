@@ -218,9 +218,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "sand",
@@ -236,7 +236,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -250,9 +250,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -268,7 +268,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "sand",
@@ -280,124 +280,7 @@
         ]
       }
     ],
-    "paths": [
-      {
-        "id": "west-perimeter-route",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            32,
-            9
-          ],
-          [
-            23,
-            9
-          ],
-          [
-            11,
-            9
-          ],
-          [
-            11,
-            16
-          ]
-        ],
-        "width": 2.6,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "direct-basin-breach-road",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            27,
-            19
-          ],
-          [
-            17,
-            19
-          ],
-          [
-            13,
-            19
-          ]
-        ],
-        "width": 2.8,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "east-perimeter-route",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            32,
-            30
-          ],
-          [
-            23,
-            30
-          ],
-          [
-            14,
-            26
-          ]
-        ],
-        "width": 2.6,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
-            3
-          ],
-          [
-            20,
-            3
-          ],
-          [
-            35,
-            3
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      }
-    ],
+    "paths": [],
     "landmarks": [
       {
         "id": "west-rim-label",
@@ -427,7 +310,7 @@
         "id": "edge-mark-0",
         "kind": "manhole",
         "row": 10,
-        "col": 3,
+        "col": 1,
         "size": 1,
         "rotation": 0
       },
@@ -435,25 +318,40 @@
         "id": "edge-mark-1",
         "kind": "crosswalk",
         "row": 25,
-        "col": 3,
+        "col": 1,
         "size": 2,
         "rotation": 90
       },
       {
         "id": "edge-mark-2",
         "kind": "loading",
-        "row": 12,
-        "col": 36,
+        "row": 11,
+        "col": 37,
         "size": 1.8,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "crosswalk",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 2,
         "rotation": 90
+      },
+      {
+        "id": "m15-helipad-hq",
+        "kind": "helipad",
+        "row": 34,
+        "col": 17,
+        "size": 1.8
+      },
+      {
+        "id": "m15-chev-main",
+        "kind": "chevron",
+        "row": 25,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
       }
     ],
     "exclusions": [
@@ -722,7 +620,7 @@
   ],
   "layout": [
     ".....BBB.....BBB.........BB......BBB....",
-    ".............BBB.........BB.............",
+    "....K.....K..BBBK.....K..BB.K.....K.....",
     ".C...BB....CC...BB....CC...BB....BB...BB",
     ".....BC....CC...BB....CC...BC....BB...CC",
     "...........BB...CC.........BC.........CC",
@@ -730,36 +628,36 @@
     "BB....CC........CC.CECBB........CCB...B.",
     ".....BBB..CCC......CCCCCC..CCC.........B",
     "CC........CCB..CCCCCCCCCB..CCB..BBB....B",
-    "CC...CC....CB.CCCCCCCCCCC.......CCB.....",
+    "CC...CC....CB.CCCCCCCCCCC.......CCB...K.",
     ".....CC.......CCC.....CCC..CC.........F.",
     ".........CCC.......CCC.CC..CC...CCC.....",
-    "C....BB..CCB...........CC.......CCB...B.",
-    "CB...BC..CCB..CC..BB....B..CC...CCB...B.",
-    "BB.......CCB..CC........B..CC...........",
-    ".....CC.......CC..CC....B.......BBB.....",
+    "CR...BB..CCB...........CC.......CCB...B.",
+    "CR...BC..CCB..CC..BB....B..CC...CCB...B.",
+    "BR.......CCB..CC........B..CC...........",
+    ".R...CC.......CC..CC....B.......BBB...K.",
     "CC...CC..CCC..CCCCBBBCCCC..CC...BBB...B.",
     "CC.......CCB.CC...........CCB.....Q....X",
     "BB.......CCB.CC...........CCB.........CC",
     "BB.......CCB.CC...........CCB.........XC",
     "C....BB......C..CC...CCC..CCB...CCC.....",
-    "CC...BB......C..CC...CCC..CCB...CCC....B",
+    "CC...BB......C..CC...CCC..CCB...CCC...KB",
     "BB...BB......C..CC...CCC..CCB...CCC....B",
     "BB...BC...CCQC..CB...CCB........CCB....F",
-    ".......Q..CC.B..........QCCC............",
+    ".......Q..CC.B..........QCCC..........K.",
     ".....CCC..CB.B...CC..CC..CCB....BB......",
     ".....CCB.....B...CCQ.CC........QBC....X.",
     "CC........CC.C...........CCC....BB....X.",
     "CC...BB...CC.C..CCC..CC..CCB..........XC",
     ".F...BCQ........CCB..CB......CC..BB...BC",
-    ".........CCC...Q.....CB..CC..CC..BC.....",
+    ".........CCC...Q.....CB..CC..CC..BC...K.",
     ".....CC..CCB..CC..BB.....CC...........BB",
     ".....CB.......CC..BB..CC.....CCC......CC",
-    "BB.......BB...........CC.....CCB..BB...B",
+    "BB.......BB...........CC.....CCB..BB..KB",
     "BB...CC..BC...CC......BB..CC......BB..BB",
     ".....CC.......CC..........CC...BB.....BB",
-    "..........BB...................BB.......",
+    "..........BB...................BB.....K.",
     "......BB..BB......CCCC....BB...........B",
-    ".........................BBB............",
+    "....K.....KTL............BBBK.....K.....",
     ".....BBBB..........HH....BBB....BBBB...."
   ]
 }

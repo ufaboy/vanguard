@@ -316,6 +316,7 @@ export class ProjectilesController {
           [
             TileType.BOXES,
             TileType.BARREL,
+            TileType.WATER_TOWER,
             TileType.BRICK,
             TileType.CONCRETE,
             TileType.BASE,
@@ -358,6 +359,14 @@ export class ProjectilesController {
           engine.explodeBarrel(cell, p.fromPlayer);
           engine.removeProjectile(i);
           continue;
+        } else if (cell.type === TileType.WATER_TOWER) {
+          if (p.isMissile) engine.detonateMissile(p);
+          const wtDmg = p.isMissile || p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1;
+          engine.damageTileCell(cell, wtDmg, p.x, p.z, p.fromPlayer);
+          engine.removeProjectile(i);
+          continue;
+        } else if (cell.type === TileType.OIL_SLICK && p.isFlame) {
+          engine.terrainDestruction.igniteOilSlick(cell);
         } else if (p.isFlame && cell.type === TileType.FOREST) {
           engine.destroyTileCell(cell);
         } else if (cell.type === TileType.BRICK) {

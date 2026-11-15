@@ -88,44 +88,44 @@
   },
   "layout": [
     "........................................",
-    "....BB....BB......BBBB......BB....BB....",
+    "....BB....BB...TK.BBBBK.....BBL...BB....",
     "....BB.G..BB...G..BBBB..G...BB..G.BB..C.",
     "C.......................................",
     "BB....BBBB..CC....BBBB....CC..BBBB......",
     ".C....BBBB..CC..D......D..CC..BBBB....CC",
-    "....FF.....Q..............Q.......FF..C.",
-    "....FF..BBBB....CCCCCCCC....BBBB..FF..C.",
-    "........BBBB..D.......Q..D..BBBB........",
-    "CC.............Q........................",
-    "....WWWW....BBBB........BBBB....WWWW..BB",
-    ".F..WWWW....BBBB...FF...BBBB....WWWW..CC",
-    "CF..WWWW...........FF....Q......WWWW....",
-    "............CC............CC..........B.",
-    "......FF...QCC....BBBB....CC....FF....B.",
-    ".B....FF..........BBBBQ.........FF......",
-    "BB........BBBB..D......D..BBBB.........F",
-    "C.........BBBB............BBBB........CC",
-    "CX........BBBB............BBBB........CC",
-    "..........BBBB............BBBB.........X",
+    "....FF..R..Q..............Q.......FF..C.",
+    "....FF..RBBB....CCCCCCCC....BBBB..FF..C.",
+    "......T.RBBB..D....R..Q..DL.BBBB........",
+    "CC......R......Q...R....................",
+    "....WWWW.R..BBBB...R....BBBB....WWWW..BB",
+    ".F..WWWW.R..BBBB..LFF.M.BBBB..FFWWWW..CC",
+    "CF..WWWW.R.........FF....Q...FFFWWWW....",
+    ".........R..CC.....R......CC..........B.",
+    "......FF.RKQCC....BRBBK...CC..M.FF....B.",
+    ".B....FF.R........BRBBQ.........FF......",
+    "BB.......RBBBB..D..R...D..BBBB.........F",
+    "C........RBBBB.....R......BBBB........CC",
+    "CX........BBBB.....R......BBBB........CC",
+    "..........BBBB.....R......BBBB.........X",
     ".F..WWWW........CCCCCCCC........WWWW....",
-    "X...WWWW........CCCCCCCC........WWWW...X",
-    "C...WWWW........CCCCCCCC........WWWW..XX",
-    "C...WWWW........Q...............WWWW..BB",
-    "....WWWW....FF............FF....WWWW....",
-    "............FF....BBBB....FF............",
-    "CC....BBBB........BBBB........BBBB....BB",
-    "X.....BBBB..CC............CC..BBBB....F.",
-    "............CC..D......D..CC..........BB",
-    "BB....................................B.",
-    "....FF....BBBB............BBBB....FF....",
-    "X...FF....BBBB............BBBB....FF....",
-    "X...............CC....CC..............XX",
-    "XX....BBBB......CC....CC......BBBB....XX",
+    "X...WWWW...R....CCCCCCCC........WWWW...X",
+    "C...WWWW...R....CCCCCCCC........WWWW..XX",
+    "C...WWWW...R....Q..R............WWWW..BB",
+    "....WWWW....FF.....R......FF....WWWW....",
+    "............FF....BRBB....FF............",
+    "CC....BBBBK.......BRBB........BBBB....BB",
+    "X.....BBBB..CC.....R......CC..BBBB....F.",
+    ".R..........CC..D..R...D..CC..........BB",
+    "BR.................R..................B.",
+    ".R..FF....BBBB.....R......BBBB....FF....",
+    "X...FF....BBBBR....R......BBBB....FF....",
+    "X.............R.CC.R..CC..............XX",
+    "XX....BBBB....R.CC....CC......BBBB....XX",
     "CX....BBBB..D..............D..BBBB....X.",
     "CB......................................",
     "............BBBB........BBBB...........C",
     "............BBBB.CCCCCC.BBBB...........C",
-    "........................................",
+    "....K....TK.L...............K.....K.....",
     "...................HH..................."
   ],
   "decoration": {
@@ -183,9 +183,9 @@
       {
         "id": "edge-west-north",
         "bounds": [
-          1,
           0,
-          18,
+          0,
+          19,
           3
         ],
         "surface": "concrete",
@@ -201,7 +201,7 @@
         "bounds": [
           20,
           0,
-          38,
+          39,
           3
         ],
         "surface": "gravel",
@@ -215,9 +215,9 @@
       {
         "id": "edge-east-north",
         "bounds": [
-          1,
+          0,
           36,
-          18,
+          19,
           39
         ],
         "surface": "gravel",
@@ -233,7 +233,7 @@
         "bounds": [
           20,
           36,
-          38,
+          39,
           39
         ],
         "surface": "concrete",
@@ -247,104 +247,20 @@
     ],
     "paths": [
       {
-        "id": "west-assault-lane",
+        "id": "iron-crucible-rail-spur",
         "points": [
           [
-            3,
-            8
-          ],
-          [
-            16,
-            9
-          ],
-          [
-            35,
-            15
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "center-crucible-spine",
-        "points": [
-          [
-            3,
-            19
-          ],
-          [
-            22,
-            19
-          ],
-          [
-            36,
-            19
-          ]
-        ],
-        "width": 3,
-        "surface": "concrete",
-        "marking": "edges"
-      },
-      {
-        "id": "east-assault-lane",
-        "points": [
-          [
-            3,
-            31
-          ],
-          [
-            16,
-            30
-          ],
-          [
-            35,
-            24
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "dashed"
-      },
-      {
-        "id": "edge-west-road",
-        "points": [
-          [
-            4,
+            1,
             3
           ],
           [
-            20,
-            3
-          ],
-          [
-            35,
+            38,
             3
           ]
         ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "edge-east-road",
-        "points": [
-          [
-            4,
-            36
-          ],
-          [
-            20,
-            36
-          ],
-          [
-            35,
-            36
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
+        "width": 1.4,
+        "surface": "gravel",
+        "marking": "railway"
       }
     ],
     "landmarks": [
@@ -384,7 +300,7 @@
         "id": "edge-mark-0",
         "kind": "loading",
         "row": 10,
-        "col": 3,
+        "col": 1,
         "size": 1.8,
         "rotation": 0
       },
@@ -392,7 +308,7 @@
         "id": "edge-mark-1",
         "kind": "manhole",
         "row": 25,
-        "col": 3,
+        "col": 1,
         "size": 1,
         "rotation": 90
       },
@@ -400,17 +316,46 @@
         "id": "edge-mark-2",
         "kind": "crosswalk",
         "row": 12,
-        "col": 36,
+        "col": 38,
         "size": 2,
         "rotation": 0
       },
       {
         "id": "edge-mark-3",
         "kind": "loading",
-        "row": 28,
-        "col": 36,
+        "row": 27,
+        "col": 37,
         "size": 1.8,
         "rotation": 90
+      },
+      {
+        "id": "iron-crucible-wt-haz-8-6",
+        "kind": "hazard_zone",
+        "row": 8,
+        "col": 6,
+        "size": 1.3
+      },
+      {
+        "id": "iron-crucible-helipad-hq",
+        "kind": "helipad",
+        "row": 35,
+        "col": 17,
+        "size": 1.8
+      },
+      {
+        "id": "iron-crucible-chev-main",
+        "kind": "chevron",
+        "row": 23,
+        "col": 18,
+        "size": 1.2,
+        "rotation": 0
+      },
+      {
+        "id": "iron-crucible-drain-w",
+        "kind": "drain_grate",
+        "row": 19,
+        "col": 1,
+        "size": 1
       }
     ],
     "exclusions": [
