@@ -17,6 +17,7 @@ import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout } from '../leve
 import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
 import { landmarkFootprintCenter } from '../terrains/landmarks.js';
+import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
 import { EnemyClass, GameStatus, TileType, resolveMapRules } from '../types.js';
 
@@ -160,15 +161,17 @@ export class SectorLoaderController {
 
     engine.scene.background = new THREE.Color(sector.fogColor);
     engine.scene.fog = new THREE.FogExp2(sector.fogColor, 0.012);
+    const lowQuality = engine.isSoftwareGl || engine.quality === 'low';
     engine.urbanGroundTexture?.dispose();
     engine.urbanGroundTexture = (sector.theme === 'urban' || sector.decoration)
       ? createUrbanGroundTexture(sector, {
-          lowQuality: engine.isSoftwareGl || engine.quality === 'low',
+          lowQuality,
           maxTextureSize: engine.renderer.capabilities.maxTextureSize,
         })
       : null;
     if (engine.legacyGroundDecal) engine.legacyGroundDecal.visible = !sector.decoration;
     engine.groundMesh.material.map = engine.urbanGroundTexture || engine.modelFactory.groundTex;
+    updateGroundSurfaceFinish(engine.groundMesh.material, { lowQuality });
     engine.groundMesh.material.needsUpdate = true;
 
     engine.clearGroup(engine.mapGroup);

@@ -1,4 +1,5 @@
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
+import { applyGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { normalizeComponentDamage, effectiveUpgradeTiers } from '../../sim/component-damage.js';
 /** Core Three.js WebGL game loop, combat physics, and simulation. */
 
@@ -524,11 +525,11 @@ export class TankGameEngine {
 
   setupStaticEnvironment() {
     const arenaSpan = GRID_SIZE * TILE_SIZE;
-    const groundMat = new THREE.MeshStandardMaterial({
+    const groundMat = applyGroundSurfaceFinish(new THREE.MeshStandardMaterial({
       map: this.modelFactory.groundTex,
       roughness: 0.85,
       metalness: 0.1,
-    });
+    }));
     this.groundMesh = new THREE.Mesh(
       new THREE.PlaneGeometry(arenaSpan, arenaSpan),
       groundMat

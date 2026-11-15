@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { normalizeDecoration, buildDecorationPlan, decorationCellAllowed } from '../public/src/game/render/decoration.js';
 import { normalizeMapDefinition, SECTORS } from '../public/src/game/levels.js';
 import { paintDecoration, createUrbanGroundTexture } from '../public/src/game/terrains/urban-ground.js';
+import { applyGroundSurfaceFinish, updateGroundSurfaceFinish } from '../public/src/game/terrains/ground-finish.js';
 import map from '../public/maps/campaign/mission-01-first-contact.json' with { type: 'json' };
 
 // Record clip regions and canvas ownership without a DOM/WebGL dependency.
@@ -54,7 +55,7 @@ test('Texture size respects software quality and GPU limits; texture can release
   globalThis.document={createElement:()=>({getContext:()=>recordingContext().ctx})};
   try {
     const sector=normalizeMapDefinition(map);
-    for(const [options,size] of [[{},1024],[{lowQuality:true},512],[{maxTextureSize:256},256]]){
+    for(const [options,size] of [[{},1024],[{lowQuality:true},512],[{maxTextureSize:256},256],[{maxTextureSize:4096},2048],[{lowQuality:true,maxTextureSize:4096},512]]){
       const texture=createUrbanGroundTexture(sector,options);
       assert.equal(texture.image.width,size);assert.equal(texture.image.height,size);
       let disposed=false;texture.addEventListener('dispose',()=>{disposed=true;});texture.dispose();assert.ok(disposed);
@@ -72,4 +73,24 @@ test('Legacy city metadata adapts without changing gameplay and explicit empty d
   const decorated=normalizeMapDefinition(map),plain=normalizeMapDefinition({...map,decoration:undefined});
   assert.deepEqual(decorated.grid,plain.grid);assert.deepEqual(decorated.encounters,plain.encounters);
   assert.deepEqual(decorated.enemyPool,plain.enemyPool);
+});
+
+test('Ground surface finish injects world-space shader hooks and updates quality strength',()=>{
+  const mat={userData:{}};
+  applyGroundSurfaceFinish(mat);
+  assert.equal(mat.userData.groundFinishApplied,true);
+  assert.equal(mat.userData.groundFinishUniforms.uDetailStrength.value,1.0);
+  const shader={
+    uniforms:{},
+    vertexShader:'#include <common>\n#include <worldpos_vertex>',
+    fragmentShader:'#include <common>\n#include <map_fragment>\n#include <roughnessmap_fragment>',
+  };
+  mat.onBeforeCompile(shader);
+  assert.ok(shader.vertexShader.includes('vGroundWorld'));
+  assert.ok(shader.fragmentShader.includes('gsNoise'));
+  assert.ok(shader.fragmentShader.includes('roughnessFactor'));
+  updateGroundSurfaceFinish(mat,{lowQuality:true});
+  assert.equal(mat.userData.groundFinishUniforms.uDetailStrength.value,0.35);
+  updateGroundSurfaceFinish(mat,{lowQuality:false});
+  assert.equal(mat.userData.groundFinishUniforms.uDetailStrength.value,1.0);
 });
