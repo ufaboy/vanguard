@@ -4,23 +4,25 @@
  */
 
 function getTier(ratio, status, hasFault) {
-  if (status === 'destroyed' || ratio <= 0.25) return 'crit';
-  if (status === 'damaged' || ratio < 0.7 || hasFault) return 'warn';
+  if (hasFault) return 'crit';
+  if (status === 'destroyed' || status === 'damaged' || ratio < 0.7) return 'warn';
   return 'ok';
 }
 
 function subsystemTier(sub, hasFault = false) {
-  if (!sub) return hasFault ? 'warn' : 'ok';
+  if (hasFault) return 'crit';
+  if (!sub) return 'ok';
   const ratio = sub.hp / Math.max(1, sub.maxHp || 100);
-  return getTier(ratio, sub.status, hasFault);
+  return getTier(ratio, sub.status, false);
 }
 
 function panelTier(panel, defaultMax, hasFault = false) {
-  if (!panel) return hasFault ? 'warn' : 'ok';
-  if (panel.destroyed) return 'crit';
+  if (hasFault) return 'crit';
+  if (!panel) return 'ok';
+  if (panel.destroyed) return 'warn';
   const max = panel.maxIntegrity || defaultMax;
   const ratio = panel.integrity / Math.max(1, max);
-  return getTier(ratio, null, hasFault);
+  return getTier(ratio, null, false);
 }
 
 function worstTier(a, b) {
