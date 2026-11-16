@@ -59,6 +59,12 @@
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.18.3 // LLM DISCOVERABILITY &amp; 404 PAGE</span>
+            <strong>Added <code>llms.txt</code> &amp; Dedicated <code>404.html</code></strong>
+            <p>Added <code>public/llms.txt</code> with structured game documentation and canonical links for AI crawlers and LLMs, and added a themed <code>public/404.html</code> so missing routes (including <code>/.well-known/ard.json</code>) return a proper HTTP <code>404</code> instead of falling back to <code>index.html</code>.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.18.2 // SEO CLEAN URLS &amp; GUIDE LAYOUT FIX</span>
             <strong>Clean Internal Links, Local Clean URLs &amp; Compact Guide Cards</strong>
             <p>Updated all internal navigation and footer links to canonical clean URLs without <code>.html</code> (while preserving <code>.html</code> links in itch.io builds), enabled <code>cleanUrls</code> in <code>public/serve.json</code> for local dev, and fixed scrollable guide page centering, padding, hero banner height, and compact 3-column card sizing.</p>

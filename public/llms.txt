@@ -1,0 +1,34 @@
+# BATTLE TANK — 3D Tactical Tank Assault
+
+> BATTLE TANK (https://battletank.online/) is a free 3D isometric tactical tank combat browser game inspired by Battle City, built with Three.js and Vanilla JavaScript. Players command the modular VANGUARD tank across destructible arenas, upgrade five core component tracks across five tiers, and fight coordinated AI enemy squads and Sector Bosses.
+
+## Overview
+
+- **Genre**: 3D Isometric Tactical Tank Shooter / Action
+- **Platform**: Desktop & Landscape Tablet Web Browsers (WebGL, Three.js, zero-install)
+- **Playable URL**: [Play BATTLE TANK](https://battletank.online/)
+- **Key Mechanics**:
+  - **Destructible Tactical Arenas**: Multi-material grids featuring destructible brick walls, reinforced concrete, stealth forest canopies, water hazards, low-friction ice, enemy spawner pads, and the Command Base HQ.
+  - **5-Track x 5-Tier Modular Tank Engineering**: Upgrade Cannon (`Mk1`–`Mk5`), Chassis (`CH1`–`CH5`), Hull Frame (`F1`–`F5`), Engine (`E1`–`E5`), and Armor (`A1`–`A5`), with live 3D visual upgrades and physics-based mass, power-to-weight speed, directional armor, and penetration calculations.
+  - **Optional Tactical Modules**: 4-Corner Active Protection System (`APS`), Turret Homing ATGM Launcher, Emergency Auto-Repair Kit, and specialized enemy modules.
+  - **Tactical Enemy AI**: 12 distinct enemy classes (`SCOUT`, `STANDARD`, `HOWITZER`, `ARMOR`, `SAPPER`, `HOVER`, `KAMIKAZE`, `FLAMETHROWER`, `JAMMER`, `ENGINEER`, `STRIKER`, `STEALTH`) plus Sector Bosses, coordinated by a Squad Director with role-based movement and attack tokens.
+
+## Game Modes
+
+- [Campaign](https://battletank.online/campaign): Multi-region tactical campaign culminating in Sector Boss battles.
+- [Survival](https://battletank.online/survival): Endless wave-based survival mode with escalating enemy compositions.
+- [Tactical Contracts](https://battletank.online/contracts): High-stakes standalone special operations and challenge missions.
+
+## Guides & Reference
+
+- [How to Play](https://battletank.online/how-to-play): Controls, HUD breakdown, combat rules, and survival tips.
+- [Walkthrough](https://battletank.online/walkthrough): Sector-by-sector tactical strategies and boss counterplay.
+- [Enemy Database](https://battletank.online/enemies): Profiles, behaviors, and weaknesses for all enemy tank classes and bosses.
+- [Arsenal & Upgrades](https://battletank.online/arsenal): Complete breakdown of cannons, chassis, frames, engines, armor tiers, and optional modules.
+
+## Project & Support
+
+- [Changelog](https://battletank.online/changelog): Release history and balance updates.
+- [About](https://battletank.online/about): Project overview, technology stack, and design philosophy.
+- [Contact](https://battletank.online/contact): Feedback and support channels.
+- [Privacy Policy](https://battletank.online/privacy-policy): Privacy and data handling policy.
