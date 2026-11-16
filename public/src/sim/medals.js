@@ -261,12 +261,11 @@ export const MEDAL_CATALOG = Object.freeze([
     name: 'David vs Goliath',
     grade: 'vanguard',
     category: 'Challenge',
-    description: 'Win a mission using the stock Cannon Mk1 and no optional modules equipped.',
-    evaluate: ({ isVictory, upgrades, equippedModules }) => {
+    description: 'Win a mission using the stock Cannon Mk1 without firing ATGM missiles.',
+    evaluate: ({ isVictory, upgrades, tracker }) => {
       if (!isVictory) return false;
       const cannonTier = Number(upgrades?.cannon) || 1;
-      const moduleCount = Array.isArray(equippedModules) ? equippedModules.length : 0;
-      return cannonTier === 1 && moduleCount === 0;
+      return cannonTier === 1 && !tracker.missileFired;
     },
   }),
 ]);
@@ -303,6 +302,7 @@ export function createBattleMedalTracker() {
       titanRailHitsTaken: 0,
       titanOverloadRearKill: false,
       playerDamageTaken: 0,
+      missileFired: false,
       killsByClass: {},
       killsByClassTotal: 0,
     };
@@ -329,6 +329,10 @@ export function createBattleMedalTracker() {
 
     recordApsIntercept() {
       state.apsIntercepts += 1;
+    },
+
+    recordPlayerMissileFired() {
+      state.missileFired = true;
     },
 
     recordPlayerDamage({ amount = 0, sourceWeapon = null } = {}) {

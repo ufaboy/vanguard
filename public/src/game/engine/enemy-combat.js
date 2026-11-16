@@ -653,6 +653,7 @@ export class EnemyCombatController {
   /** Lobs one shell at `target`; flight time comes from the tank's `artillery.flightSec`. */
   triggerEnemyArtilleryBarrage(e, target) {
     const { engine } = this;
+    e.howitzerBarrages = (e.howitzerBarrages || 0) + 1;
     sound.playCannonShot(true, 5, e);
     notifyBrainFired(e.brain);
     const { x: tx, z: tz } = target;
@@ -856,7 +857,7 @@ export class EnemyCombatController {
         kamikazeChargingClose: enemy.enemyClass === 'KAMIKAZE' && distToPlayer <= TILE_SIZE * 5.5,
         howitzerBarrages: enemy.howitzerBarrages || 0,
         stealthCamouflaged: enemy.enemyClass === 'STEALTH' && Math.hypot(enemy.vx || 0, enemy.vz || 0) < 0.05,
-        jammerPulsing: enemy.enemyClass === 'JAMMER' && (engine.jammerActiveTimer || 0) > 0,
+        jammerPulsing: enemy.enemyClass === 'JAMMER' && (engine.jammedTimer || 0) > 0,
         bossOverloaded: Boolean(enemy.titanOverload),
       });
       const unitClass = String(enemy.enemyClass || 'hostile').toUpperCase();

@@ -100,20 +100,21 @@ test('Gold and Vanguard medals evaluate HQ, Last Stand, Twin Thunder, Bosses, an
   assert.ok(ids.includes('exploit_the_gap'));
   assert.ok(ids.includes('david_vs_goliath'));
 
-  // Taking railgun or MLRS hits blocks Titan Breaker / Hydra Dodger / Untouchable
+  // Taking railgun or MLRS hits blocks Titan Breaker / Hydra Dodger / Untouchable; firing ATGM blocks David vs Goliath
   tracker.recordPlayerDamage({ amount: 15, sourceWeapon: 'HYDRA_MLRS' });
   tracker.recordPlayerDamage({ amount: 30, sourceWeapon: 'TITAN_RAIL' });
+  tracker.recordPlayerMissileFired();
   const evalWithHits = evaluateMissionMedals({
     trackerState: tracker.snapshot(),
     hud: { blocksDestroyed: 10, baseHp: 100, baseMaxHp: 100 },
     upgrades: { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 },
-    equippedModules: [],
     isVictory: true,
   });
   const hitIds = evalWithHits.earnedMedals.map((m) => m.id);
   assert.ok(!hitIds.includes('hydra_dodger'));
   assert.ok(!hitIds.includes('titan_breaker'));
   assert.ok(!hitIds.includes('untouchable'));
+  assert.ok(!hitIds.includes('david_vs_goliath'));
 });
 
 test('Rank progression enforces XP thresholds, repeat medal XP reduction, and Gold/Vanguard gates', () => {

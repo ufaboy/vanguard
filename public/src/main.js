@@ -296,7 +296,6 @@ function initApp() {
           trackerState: snapshot.medalTrackerState,
           hud: snapshot,
           upgrades: state.upgrades,
-          equippedModules: engine?.equippedOptionalModules || [],
           isVictory,
           existingMedals: playerSave?.medals || {},
         });

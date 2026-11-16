@@ -359,6 +359,7 @@ export class PlayerController {
     if (engine.missileAmmo <= 0 || engine.missileCooldown > 0) return;
 
     engine.missileAmmo--;
+    engine.medalTracker?.recordPlayerMissileFired();
     engine.playerSave.missileAmmo = engine.missileAmmo;
     engine.saveRepo.savePlayerSave(engine.playerSave);
     engine.missileCooldown = MISSILE.COOLDOWN;
