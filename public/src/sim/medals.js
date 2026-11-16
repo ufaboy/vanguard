@@ -270,7 +270,7 @@ export const MEDAL_CATALOG = Object.freeze([
   }),
 ]);
 
-export const MEDAL_BY_ID = Object.freeze(
+const MEDAL_BY_ID = Object.freeze(
   Object.fromEntries(MEDAL_CATALOG.map((medal) => [medal.id, medal])),
 );
 
@@ -487,7 +487,7 @@ export function evaluateMissionMedals({
 /**
  * Counts how many unique medals of Gold+ and Vanguard grades a player has unlocked.
  */
-export function countMedalGrades(medalsMap = {}) {
+function countMedalGrades(medalsMap = {}) {
   let goldPlus = 0;
   let vanguard = 0;
   let totalUnlocked = 0;
