@@ -1576,6 +1576,69 @@ export class FxSystem {
     }
   }
 
+  /** One frame of burning oil slick: wide rolling flames, thick soot smoke, and rising embers. */
+  oilFire(x, z, intensity = 1) {
+    const s = Math.max(0.25, Math.min(1.1, intensity));
+    const tongues = Math.random() < 0.7 ? 2 : 1;
+    for (let i = 0; i < tongues; i++) {
+      this.point('glow', {
+        x: x + rand(-0.72, 0.72),
+        y: rand(0.06, 0.24),
+        z: z + rand(-0.72, 0.72),
+        vx: rand(-0.35, 0.35),
+        vy: rand(0.85, 1.85) * (0.65 + 0.35 * s),
+        vz: rand(-0.35, 0.35),
+        drag: 1.8,
+        life: rand(0.28, 0.48),
+        size: rand(0.38, 0.62) * (0.6 + 0.4 * s),
+        size1: rand(0.85, 1.28) * (0.55 + 0.45 * s),
+        tex: FxTex.FIRE,
+        ramp: RAMP_FIRE,
+        heat: 0.85 + 0.45 * s,
+        rotV: rand(-3.0, 3.0),
+      });
+    }
+    if (Math.random() < 0.55 * s) {
+      this.point('smoke', {
+        x: x + rand(-0.55, 0.55),
+        y: rand(0.35, 0.55),
+        z: z + rand(-0.55, 0.55),
+        vx: rand(-0.18, 0.42),
+        vy: rand(1.2, 2.1) * (0.7 + 0.3 * s),
+        vz: rand(-0.18, 0.3),
+        drag: 0.75,
+        gravity: -0.18,
+        life: rand(1.4, 2.3),
+        size: rand(0.45, 0.72) * (0.65 + 0.35 * s),
+        size1: rand(1.6, 2.4) * (0.65 + 0.35 * s),
+        color: [0.075, 0.07, 0.065],
+        alpha: 0.72 * (0.4 + 0.6 * s),
+        tex: FxTex.SMOKE,
+        ramp: RAMP_HOT_SMOKE,
+        fadeIn: 0.16,
+        rotV: rand(-0.8, 0.8),
+      });
+    }
+    if (Math.random() < 0.28 * s) {
+      const ex = x + rand(-0.6, 0.6);
+      const ez = z + rand(-0.6, 0.6);
+      this.streak({
+        x: ex,
+        y: 0.18,
+        z: ez,
+        vx: rand(-0.6, 0.6),
+        vy: rand(1.8, 3.4),
+        vz: rand(-0.6, 0.6),
+        drag: 1.4,
+        gravity: 2.2,
+        life: rand(0.22, 0.42),
+        width: 0.055,
+        length: 0.2,
+        color: [1.0, rand(0.45, 0.75), 0.12],
+      });
+    }
+  }
+
   /** Falling-shell smoke ribbon and glint for artillery / MLRS rounds. */
   shellSmokeTrail(x, y, z, warm = true) {
     this.point('smoke', {
