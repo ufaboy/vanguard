@@ -185,6 +185,7 @@ export class PowerupsController {
         rig.crateGroup.rotation.y = elapsed * 1.1;
         rig.crateGroup.position.y = Math.sin(elapsed * 3.0) * 0.08;
         if (Math.hypot(engine.playerX - drop.x, engine.playerZ - drop.z) <= 1.45) {
+          if (!this.isAirDropUseful(drop.config)) continue;
           this.applyAirDrop(drop.config);
           engine.entityGroup.remove(rig.root);
           disposeOwned(rig.root);
@@ -192,6 +193,15 @@ export class PowerupsController {
         }
       }
     }
+  }
+
+  isAirDropUseful(config) {
+    const { engine } = this;
+    const needsShells = (Number(config.shells) || 0) > 0 && engine.cannonAmmo < engine.getPlayerMaxCannonAmmo();
+    const curAps = engine.apsAmmo.reduce((sum, r) => sum + r, 0);
+    const needsAps = (Number(config.aps) || 0) > 0 && curAps < engine.getPlayerMaxApsAmmo();
+    const needsMissiles = (Number(config.missiles) || 0) > 0 && engine.missileAmmo < engine.getPlayerMaxMissileAmmo();
+    return needsShells || needsAps || needsMissiles;
   }
 
   applyAirDrop(config) {
