@@ -3242,6 +3242,136 @@ export class ModelFactory extends TextureGenerator {
     return mats;
   }
 
+  loadAirDropGlbModel() {
+    if (this.isSoftwareGl || this.glbAirDropRequested || this.glbAirDropParts) return;
+    this.glbAirDropRequested = true;
+    getTankGltfLoader(this.renderer).load(
+      resolvePublicUrl('./models/air_drop.glb'),
+      (gltf) => {
+        gltf.scene.updateMatrixWorld(true);
+        const parts = { crate: [], chute: [] };
+        const chuteNode = gltf.scene.getObjectByName('AirDropChute');
+        gltf.scene.traverse((node) => {
+          if (!node.isMesh) return;
+          const mesh = node.clone();
+          node.matrixWorld.decompose(mesh.position, mesh.quaternion, mesh.scale);
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+          let inChute = false;
+          for (let cur = node; cur; cur = cur.parent) {
+            if (cur === chuteNode || cur.name === 'AirDropChute') {
+              inChute = true;
+              break;
+            }
+          }
+          if (inChute) parts.chute.push(mesh);
+          else parts.crate.push(mesh);
+        });
+        this.glbAirDropParts = parts;
+        const pending = this.pendingAirDropRigs || [];
+        pending.forEach((rig) => this.applyGlbAirDropModel(rig));
+        this.pendingAirDropRigs = [];
+      },
+      undefined,
+      (err) => {
+        this.pendingAirDropRigs = [];
+        console.warn('Air drop GLB unavailable, using procedural rig.', err);
+      }
+    );
+  }
+
+  applyGlbAirDropModel(rig) {
+    const parts = this.glbAirDropParts;
+    if (!parts || !rig?.crateGroup || !rig?.chuteGroup) return;
+    const clearChildren = (grp) => {
+      while (grp.children.length > 0) {
+        const ch = grp.children[0];
+        if (ch === rig.chuteGroup) break;
+        grp.remove(ch);
+        disposeOwned(ch);
+      }
+    };
+    // Remove fallback crate children while keeping chuteGroup
+    for (let i = rig.crateGroup.children.length - 1; i >= 0; i--) {
+      const ch = rig.crateGroup.children[i];
+      if (ch === rig.chuteGroup) continue;
+      rig.crateGroup.remove(ch);
+      disposeOwned(ch);
+    }
+    clearChildren(rig.chuteGroup);
+
+    for (const src of parts.crate) {
+      const clone = src.clone();
+      clone.geometry = src.geometry?.clone() || src.geometry;
+      clone.material = Array.isArray(src.material)
+        ? src.material.map((material) => material.clone())
+        : src.material?.clone() || src.material;
+      markOwned(clone);
+      rig.crateGroup.add(clone);
+    }
+    for (const src of parts.chute) {
+      const clone = src.clone();
+      clone.geometry = src.geometry?.clone() || src.geometry;
+      clone.material = Array.isArray(src.material)
+        ? src.material.map((material) => material.clone())
+        : src.material?.clone() || src.material;
+      markOwned(clone);
+      rig.chuteGroup.add(clone);
+    }
+  }
+
+  createAirDropRig() {
+    const root = new THREE.Group();
+
+    // Ground landing zone marker (stays at y = 0.05 while the crate descends)
+    const ringGeo = new THREE.RingGeometry(0.95, 1.18, 40);
+    ringGeo.rotateX(-Math.PI / 2);
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b,
+      transparent: true,
+      opacity: 0.82,
+      depthWrite: false,
+    });
+    const landingRing = new THREE.Mesh(ringGeo, ringMat);
+    landingRing.position.y = 0.05;
+    root.add(landingRing);
+
+    const crateGroup = new THREE.Group();
+    root.add(crateGroup);
+
+    const chuteGroup = new THREE.Group();
+    crateGroup.add(chuteGroup);
+
+    const rig = { root, landingRing, crateGroup, chuteGroup };
+
+    if (this.glbAirDropParts) {
+      this.applyGlbAirDropModel(rig);
+      markOwned(landingRing);
+      return rig;
+    }
+
+    // Minimal procedural fallback while air_drop.glb loads (or in software GL mode)
+    const crateMat = new THREE.MeshStandardMaterial({ color: 0x3b4d36, roughness: 0.7, metalness: 0.25 });
+    const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.15, 1.5), crateMat);
+    body.position.y = 0.65;
+    body.castShadow = true;
+    crateGroup.add(body);
+
+    const canopyGeo = new THREE.SphereGeometry(2.1, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.48);
+    const canopyMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.8, side: THREE.DoubleSide });
+    const canopy = new THREE.Mesh(canopyGeo, canopyMat);
+    canopy.position.y = 3.6;
+    chuteGroup.add(canopy);
+
+    markOwned(root);
+    if (!this.isSoftwareGl) {
+      this.pendingAirDropRigs ||= [];
+      this.pendingAirDropRigs.push(rig);
+      this.loadAirDropGlbModel();
+    }
+    return rig;
+  }
+
   createPowerUpMesh(type) {
     const group = new THREE.Group();
     const mats = this.getPowerUpMaterials(type);

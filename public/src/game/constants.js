@@ -117,10 +117,10 @@ export const ENEMY_KILL_CREDITS = Object.freeze({
   [EnemyClass.ARMOR]: 150, // Heavy breakthrough siege tank bounty
   [EnemyClass.JAMMER]: 150, // Electronic warfare ECM tank bounty
   [EnemyClass.STEALTH]: 150, // Camouflaged ambush tank bounty
-  [EnemyClass.BOSS_MAMMOTH]: 500, // Sector 01 Boss (Mammoth Dreadnought) defeat reward
-  [EnemyClass.BOSS_HYDRA]: 750, // Sector 02 Boss (Hydra MLRS Cruiser) defeat reward
-  [EnemyClass.BOSS_INFERNO]: 850, // Thermobaric Siege Leviathan (Cerberus-T) defeat reward
-  [EnemyClass.BOSS_TITAN]: 1000, // Sector 03 Boss (Titan Rail Fortress) defeat reward
+  [EnemyClass.BOSS_MAMMOTH]: 1500, // Sector 01 Boss (Mammoth Dreadnought) defeat reward
+  [EnemyClass.BOSS_HYDRA]: 2200, // Sector 02 Boss (Hydra MLRS Cruiser) defeat reward
+  [EnemyClass.BOSS_INFERNO]: 2800, // Thermobaric Siege Leviathan (Cerberus-T) defeat reward
+  [EnemyClass.BOSS_TITAN]: 4000, // Sector 03 Boss (Titan Rail Fortress) defeat reward
 });
 
 export const TRACK_UPGRADE_COSTS = Object.freeze({

@@ -446,6 +446,12 @@ export class CodexStage {
         0
       );
       e.codexStageGroup.add(e.codexTankRig.root);
+    } else if (effectType === 'AIR_DROP') {
+      const rig = e.modelFactory.createAirDropRig();
+      rig.root.position.set(0, 0, 0);
+      rig.crateGroup.position.y = 6.5;
+      e.codexStageGroup.add(rig.root);
+      e.codexAirDrop = { rig, altitude: 6.5, landed: false };
     }
   }
 
@@ -453,6 +459,15 @@ export class CodexStage {
     const e = this.engine;
     if (!e.codexOpen || !e.codexItem) return;
     e.codexDemoTimer = 0.01;
+    if (e.codexItem.effectType === 'AIR_DROP' && e.codexAirDrop) {
+      e.codexAirDrop.altitude = 6.5;
+      e.codexAirDrop.landed = false;
+      e.codexAirDrop.rig.crateGroup.position.y = 6.5;
+      e.codexAirDrop.rig.crateGroup.rotation.set(0, 0, 0);
+      e.codexAirDrop.rig.chuteGroup.visible = true;
+      sound.playPowerUp();
+      return;
+    }
     if (e.codexItem.turretType === 'MLRS') {
       sound.playMissileLaunch();
     } else {
@@ -817,6 +832,24 @@ export class CodexStage {
           e.codexFx.segment(-1.2, 1.45, 0, 1.05, 1.0, 0, [0.3, 1, 0.6], 0.1, 0.45, 0.9);
           e.codexFx.shockwave(-1.2, 0.05, 0, 0.4, 2.8, 0x34d399, 0.8, 0.6);
           e.codexFx.repair(1.05, 0.9, 0, 6);
+        }
+      } else if (fx === 'AIR_DROP' && e.codexAirDrop) {
+        const drop = e.codexAirDrop;
+        if (!drop.landed) {
+          drop.altitude = Math.max(0, drop.altitude - 2.6 * dt);
+          drop.rig.crateGroup.position.y = drop.altitude;
+          drop.rig.crateGroup.rotation.z = Math.sin(elapsed * 2.4) * 0.12;
+          drop.rig.landingRing.scale.setScalar(1 + Math.sin(elapsed * 5.0) * 0.08);
+          if (drop.altitude <= 0) {
+            drop.landed = true;
+            drop.rig.crateGroup.position.y = 0;
+            drop.rig.crateGroup.rotation.z = 0;
+            drop.rig.chuteGroup.visible = false;
+            sound.playPowerUp();
+          }
+        } else {
+          drop.rig.crateGroup.rotation.y = elapsed * 1.1;
+          drop.rig.crateGroup.position.y = Math.sin(elapsed * 3.0) * 0.08;
         }
       }
     }
