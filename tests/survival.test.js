@@ -132,10 +132,11 @@ test('Paris LandmarkModels procedural fallback and footprint helpers cover all l
   assert.deepEqual(center, { x: 39, z: 37 });
 
   const models = new LandmarkModels();
-  for (const kind of [...PLACEABLE_LANDMARKS, 'ELYSEE', 'ELYSEE_RUINED', 'BRIDGE_DECK', 'MINE_SIGN']) {
+  for (const kind of [...PLACEABLE_LANDMARKS, 'ELYSEE', 'ELYSEE_RUINED', 'MINE_SIGN']) {
     const group = models.create(kind);
     assert.ok(group && group.children.length > 0, `${kind} should create a populated 3D group`);
   }
+  assert.ok(models.createBridge(2, 2).children.length > 0, 'bridge should create a populated 3D group');
   assert.equal(models.getMaterials().stone.userData?.landmarkFinishApplied, true);
 });
 

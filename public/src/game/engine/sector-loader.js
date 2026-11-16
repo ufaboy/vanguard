@@ -295,14 +295,26 @@ export class SectorLoaderController {
             cc >= 0 &&
             cc < GRID_SIZE &&
             sector.grid[rr][cc] === TileType.BRIDGE;
-          if (!isBridge(r, c - 1)) {
-            const bridgeMesh = engine.modelFactory.landmarkModels.create('BRIDGE_DECK');
-            if (isBridge(r, c + 1)) {
-              bridgeMesh.position.set(x + TILE_SIZE / 2, 0, z);
-              bridgeMesh.scale.set(2, 1, 1);
-            } else {
-              bridgeMesh.position.set(x, 0, z);
-            }
+          // One bridge per rectangular run of bridge cells, anchored on its top-left cell.
+          if (!isBridge(r, c - 1) && !isBridge(r - 1, c)) {
+            let cols = 1;
+            while (isBridge(r, c + cols)) cols++;
+            let rows = 1;
+            while (isBridge(r + rows, c)) rows++;
+            // The bridge spans across the water: water flanking the east / west
+            // edges means a north-south crossing, and vice versa.
+            const isWater = (rr, cc) =>
+              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE && sector.grid[rr][cc] === TileType.WATER;
+            let waterEW = 0;
+            for (let dr = 0; dr < rows; dr++) waterEW += isWater(r + dr, c - 1) + isWater(r + dr, c + cols);
+            let waterNS = 0;
+            for (let dc = 0; dc < cols; dc++) waterNS += isWater(r - 1, c + dc) + isWater(r + rows, c + dc);
+            const spanNS = waterEW > waterNS || (waterEW === waterNS && rows >= cols);
+            const bridgeMesh = spanNS
+              ? engine.modelFactory.landmarkModels.createBridge(rows, cols)
+              : engine.modelFactory.landmarkModels.createBridge(cols, rows);
+            if (!spanNS) bridgeMesh.rotation.y = Math.PI / 2;
+            bridgeMesh.position.set(x + ((cols - 1) * TILE_SIZE) / 2, 0, z + ((rows - 1) * TILE_SIZE) / 2);
             engine.mapGroup.add(bridgeMesh);
             mesh = bridgeMesh;
           }

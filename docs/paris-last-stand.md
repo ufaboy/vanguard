@@ -67,9 +67,10 @@ Wave schedule (draft):
   a wall by the navgrid / minimap. Artillery shells still land (they arc over).
 - **`TileType.BRIDGE`** (layout char `=`): passable ground for every tank, shells
   fly over it; the continuous water surface is rendered underneath it (it counts
-  as water for the water mesh only), and a `BRIDGE_DECK` model is placed on it,
-  rotated by the bridge axis (axis derived from neighbouring bridge cells: N-S if
-  the bridge cells run along rows).
+  as water for the water mesh only), and one procedural stone bridge
+  (`LandmarkModels.createBridge`) covers each rectangular run of bridge cells. It
+  spans across the water: water flanking the run's east / west edges gives a
+  north-south crossing, and vice versa.
 - **`mines`**: permanent (no lifetime), visible, armed from the start. They detonate
   under the player **and under enemies** (blast damages every tank in radius,
   chain-detonates neighbours). Enemy AI is NOT given map-mine positions (they are
@@ -92,7 +93,6 @@ authored in the orientation below.
 | `LOUVRE_PYRAMID` | 2 × 2 | all 4 | glass-and-steel pyramid on a plaza with small triangular pools | 4 |
 | `SACRE_COEUR` | 3 × 2 | all 6 | white travertine basilica, central dome + small domes, faces **south** | 8 |
 | `CONCORDE_OBELISK` | 1 × 1 | (0,0) | Luxor obelisk with gilded tip on a pedestal | 7 |
-| `BRIDGE_DECK` | 1 × 1 | — | stone arch bridge segment, deck along **N-S**, balustrades on E and W edges, lamp posts | 1.2 |
 | `MINE_SIGN` | small prop | — | red/white triangular "DANGER — MINES" sign on a post | 1.4 |
 
 Reference placements (the map may adjust positions, never footprints):

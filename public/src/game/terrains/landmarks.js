@@ -28,7 +28,6 @@ const LANDMARK_SPECS = Object.freeze({
   LOUVRE_PYRAMID: Object.freeze({ cols: 2, rows: 2, blocked: ALL(2, 2), height: 4 }),
   SACRE_COEUR: Object.freeze({ cols: 3, rows: 2, blocked: ALL(3, 2), height: 8 }),
   CONCORDE_OBELISK: Object.freeze({ cols: 1, rows: 1, blocked: [[0, 0]], height: 7 }),
-  BRIDGE_DECK: Object.freeze({ cols: 1, rows: 1, blocked: [], height: 1.2 }),
   MINE_SIGN: Object.freeze({ cols: 1, rows: 1, blocked: [], height: 1.4 }),
 });
 
@@ -268,6 +267,89 @@ export class LandmarkModels {
     return group;
   }
 
+  /**
+   * Procedural stone river bridge sized to its grid footprint. The span runs along
+   * local +Z (`spanCells` long), the roadway is `widthCells` wide along X; rotate the
+   * group by PI/2 for an east-west crossing. Origin is the footprint centre.
+   */
+  createBridge(spanCells, widthCells) {
+    const cell = 2.0;
+    const m = this.getMaterials();
+    const group = new THREE.Group();
+    group.userData.landmarkKind = 'BRIDGE';
+    const add = (geo, mat, x, y, z) => {
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+      return mesh;
+    };
+    const box = (w, h, d, mat, x, y, z) => add(new THREE.BoxGeometry(w, h, d), mat, x, y, z);
+
+    const width = widthCells * cell;
+    const length = spanCells * cell + 0.5; // laps onto both banks
+    const halfW = width / 2;
+    const halfL = length / 2;
+    const deckTop = 0.08;
+
+    // Roadway slab with darker asphalt strip and a stone kerb band each side.
+    box(width + 0.2, 0.42, length, m.darkStone, 0, deckTop - 0.21, 0);
+    box(width - 0.7, 0.02, length, m.asphalt, 0, deckTop + 0.01, 0);
+    const dashes = Math.max(2, Math.round(length / 0.9));
+    for (let i = 0; i < dashes; i++) {
+      const z = -halfL + (length * (i + 0.5)) / dashes;
+      box(0.08, 0.01, 0.45, m.roadPaint, 0, deckTop + 0.025, z);
+    }
+    // Spandrel fascia: a thick cornice band under the parapets reads as the bridge body.
+    for (const sx of [-1, 1]) {
+      box(0.16, 0.16, length + 0.1, m.stone, sx * (halfW + 0.12), deckTop - 0.02, 0);
+      box(0.1, 0.5, length - 0.2, m.darkStone, sx * (halfW + 0.08), deckTop - 0.36, 0);
+    }
+
+    // Balustrade parapets along both sides: plinth, balusters, coping rail.
+    const parapetX = halfW - 0.13;
+    const balusterGeo = new THREE.CylinderGeometry(0.035, 0.05, 0.26, 6);
+    for (const sx of [-1, 1]) {
+      const px = sx * parapetX;
+      box(0.24, 0.08, length - 0.3, m.stone, px, deckTop + 0.04, 0);
+      box(0.28, 0.07, length - 0.3, m.whiteStone, px, deckTop + 0.39, 0);
+      const count = Math.max(4, Math.round((length - 1.0) / 0.22));
+      for (let i = 0; i < count; i++) {
+        const z = -halfL + 0.5 + ((length - 1.0) * (i + 0.5)) / count;
+        add(balusterGeo, m.whiteStone, px, deckTop + 0.21, z);
+      }
+      // Square piers at both ends and above each river pier, topped by lamps.
+      const pierZs = [-halfL + 0.25, halfL - 0.25];
+      for (let s = 1; s < spanCells; s++) pierZs.push(-spanCells + s * cell);
+      for (const z of pierZs) {
+        box(0.34, 0.5, 0.34, m.stone, px, deckTop + 0.25, z);
+        box(0.4, 0.06, 0.4, m.whiteStone, px, deckTop + 0.53, z);
+      }
+      for (const z of [-halfL + 0.25, halfL - 0.25]) {
+        add(new THREE.CylinderGeometry(0.035, 0.05, 0.75, 8), m.slate, px, deckTop + 0.93, z);
+        add(new THREE.CylinderGeometry(0.11, 0.07, 0.16, 6), m.gold, px, deckTop + 1.36, z);
+        add(new THREE.ConeGeometry(0.13, 0.12, 6), m.slate, px, deckTop + 1.5, z);
+      }
+    }
+
+    // River piers with pointed cutwaters poking out upstream and downstream.
+    const cutwater = new THREE.CylinderGeometry(0.42, 0.42, 0.7, 4);
+    for (let s = 1; s < spanCells; s++) {
+      const z = -spanCells + s * cell;
+      box(width + 0.3, 0.7, 0.7, m.darkStone, 0, -0.35, z);
+      for (const sx of [-1, 1]) {
+        add(cutwater, m.darkStone, sx * (halfW + 0.15), -0.3, z).scale.set(1, 1, 0.83);
+        box(0.5, 0.06, 0.5, m.stone, sx * (halfW + 0.15), 0.06, z).rotation.y = Math.PI / 4;
+      }
+    }
+    // Abutments where the bridge meets each bank.
+    for (const sz of [-1, 1]) {
+      box(width + 0.5, 0.6, 0.45, m.stone, 0, -0.22, sz * (halfL - 0.05));
+    }
+    return group;
+  }
+
   /** Swaps an existing landmark group (e.g. ELYSEE -> ELYSEE_RUINED when HQ falls). */
   setKind(group, kind) {
     if (!group) return;
@@ -376,6 +458,8 @@ export class LandmarkModels {
         roughness: 0.5,
       }),
       blue: new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.55 }),
+      asphalt: new THREE.MeshStandardMaterial({ color: 0x4a4f58, roughness: 0.92, metalness: 0.02 }),
+      roadPaint: new THREE.MeshStandardMaterial({ color: 0xe0b23a, roughness: 0.7 }),
     };
     return this.fallbackMats;
   }
@@ -471,14 +555,6 @@ export class LandmarkModels {
         addBox(0.88, 1.25, 0.88, m.stone, 0, 1.18, 0);
         addCyl(0.26, 0.44, 4.3, 4, m.granite, 0, 3.95, 0).rotation.y = Math.PI / 4;
         addCyl(0.01, 0.26, 0.85, 4, m.gold, 0, 6.52, 0).rotation.y = Math.PI / 4;
-        break;
-      }
-      case 'BRIDGE_DECK': {
-        addBox(2.0, 0.12, 2.0, m.darkStone, 0, 0.02, 0);
-        addBox(0.22, 0.48, 2.0, m.stone, -0.89, 0.30, 0);
-        addBox(0.22, 0.48, 2.0, m.stone, 0.89, 0.30, 0);
-        addCyl(0.06, 0.06, 0.45, 8, m.gold, -0.89, 0.76, 0);
-        addCyl(0.06, 0.06, 0.45, 8, m.gold, 0.89, 0.76, 0);
         break;
       }
       case 'MINE_SIGN': {
