@@ -9,7 +9,7 @@
   "gridSize": 40,
   "tileSize": 2,
   "playerSpawnCell": {
-    "row": 21,
+    "row": 22,
     "col": 19
   },
   "baseCell": {
@@ -71,65 +71,217 @@
     }
   ],
   "mines": [
-    { "row": 5, "col": 11 },
-    { "row": 5, "col": 14 },
-    { "row": 6, "col": 22 },
-    { "row": 6, "col": 34 },
-    { "row": 10, "col": 5 },
-    { "row": 10, "col": 15 },
-    { "row": 10, "col": 24 },
-    { "row": 10, "col": 35 },
-    { "row": 13, "col": 9 },
-    { "row": 13, "col": 13 },
-    { "row": 13, "col": 26 },
-    { "row": 13, "col": 31 },
-    { "row": 16, "col": 5 },
-    { "row": 16, "col": 11 },
-    { "row": 16, "col": 28 },
-    { "row": 16, "col": 34 },
-    { "row": 20, "col": 5 },
-    { "row": 20, "col": 34 },
-    { "row": 24, "col": 8 },
-    { "row": 24, "col": 17 },
-    { "row": 24, "col": 22 },
-    { "row": 24, "col": 34 },
-    { "row": 25, "col": 6 },
-    { "row": 25, "col": 14 },
-    { "row": 25, "col": 21 },
-    { "row": 30, "col": 9 },
-    { "row": 30, "col": 15 },
-    { "row": 30, "col": 24 },
-    { "row": 31, "col": 34 },
-    { "row": 34, "col": 15 },
-    { "row": 34, "col": 24 },
-    { "row": 35, "col": 29 }
+    {
+      "row": 5,
+      "col": 11
+    },
+    {
+      "row": 5,
+      "col": 14
+    },
+    {
+      "row": 6,
+      "col": 22
+    },
+    {
+      "row": 6,
+      "col": 34
+    },
+    {
+      "row": 10,
+      "col": 5
+    },
+    {
+      "row": 4,
+      "col": 15
+    },
+    {
+      "row": 4,
+      "col": 24
+    },
+    {
+      "row": 10,
+      "col": 35
+    },
+    {
+      "row": 13,
+      "col": 9
+    },
+    {
+      "row": 8,
+      "col": 10
+    },
+    {
+      "row": 8,
+      "col": 29
+    },
+    {
+      "row": 13,
+      "col": 31
+    },
+    {
+      "row": 16,
+      "col": 5
+    },
+    {
+      "row": 14,
+      "col": 2
+    },
+    {
+      "row": 14,
+      "col": 37
+    },
+    {
+      "row": 16,
+      "col": 34
+    },
+    {
+      "row": 20,
+      "col": 5
+    },
+    {
+      "row": 20,
+      "col": 34
+    },
+    {
+      "row": 24,
+      "col": 8
+    },
+    {
+      "row": 3,
+      "col": 15
+    },
+    {
+      "row": 3,
+      "col": 24
+    },
+    {
+      "row": 24,
+      "col": 34
+    },
+    {
+      "row": 25,
+      "col": 6
+    },
+    {
+      "row": 36,
+      "col": 14
+    },
+    {
+      "row": 35,
+      "col": 11
+    },
+    {
+      "row": 30,
+      "col": 9
+    },
+    {
+      "row": 30,
+      "col": 15
+    },
+    {
+      "row": 30,
+      "col": 24
+    },
+    {
+      "row": 31,
+      "col": 34
+    },
+    {
+      "row": 34,
+      "col": 15
+    },
+    {
+      "row": 34,
+      "col": 24
+    },
+    {
+      "row": 35,
+      "col": 29
+    }
   ],
   "mineSigns": [
-    { "row": 5, "col": 10, "rotation": 0.4 },
-    { "row": 6, "col": 21, "rotation": -0.3 },
-    { "row": 10, "col": 14, "rotation": 0.2 },
-    { "row": 10, "col": 25, "rotation": -0.2 },
-    { "row": 13, "col": 8, "rotation": 0.0 },
-    { "row": 13, "col": 30, "rotation": 0.0 },
-    { "row": 16, "col": 10, "rotation": 0.5 },
-    { "row": 16, "col": 29, "rotation": -0.5 },
-    { "row": 24, "col": 14, "rotation": 0.0 },
-    { "row": 24, "col": 25, "rotation": 0.0 },
-    { "row": 25, "col": 5, "rotation": 0.3 },
-    { "row": 30, "col": 14, "rotation": 3.14 },
-    { "row": 30, "col": 25, "rotation": 3.14 },
-    { "row": 34, "col": 16, "rotation": 3.14 }
+    {
+      "row": 5,
+      "col": 10,
+      "rotation": 0.4
+    },
+    {
+      "row": 6,
+      "col": 21,
+      "rotation": -0.3
+    },
+    {
+      "row": 10,
+      "col": 14,
+      "rotation": 0.2
+    },
+    {
+      "row": 10,
+      "col": 25,
+      "rotation": -0.2
+    },
+    {
+      "row": 13,
+      "col": 8,
+      "rotation": 0
+    },
+    {
+      "row": 13,
+      "col": 30,
+      "rotation": 0
+    },
+    {
+      "row": 16,
+      "col": 10,
+      "rotation": 0.5
+    },
+    {
+      "row": 16,
+      "col": 29,
+      "rotation": -0.5
+    },
+    {
+      "row": 24,
+      "col": 14,
+      "rotation": 0
+    },
+    {
+      "row": 24,
+      "col": 25,
+      "rotation": 0
+    },
+    {
+      "row": 25,
+      "col": 5,
+      "rotation": 0.3
+    },
+    {
+      "row": 30,
+      "col": 14,
+      "rotation": 3.14
+    },
+    {
+      "row": 30,
+      "col": 25,
+      "rotation": 3.14
+    },
+    {
+      "row": 34,
+      "col": 16,
+      "rotation": 3.14
+    }
   ],
   "powerups": [
     {
       "type": "REPAIR",
-      "row": 16,
+      "row": 15,
       "col": 19
     },
     {
       "type": "APS",
       "row": 22,
-      "col": 19
+      "col": 18
     },
     {
       "type": "MISSILE",
@@ -176,28 +328,28 @@
   "layout": [
     "......RR...........RR...........RR......",
     "....B.RR.B.......B.RR.B.......B.RR.B....",
-    "...X..RG..X.....X..RG..X.....X..RG..X...",
+    "...X..RR..X.....X..RR..X.....X..RR..X...",
     "......RR....BB.....RR....BBB....RR......",
     "....FFRR..K.BB..Q..RR..F.BBB.F..RR..FF..",
     "..C.FFRR...........RR..F.....F..RR..FF.C",
     "RRR...RR....XX..D..RR..D.XX.....RR...RRR",
-    "..G...BRB..........RR...........RR...G..",
+    "......BRB..........RR...........RR......",
     "RRR...BRB...BB.....RR....BB.....RR...RRR",
     "......RRR...BB.RRRRRRRRR.BB..RRRRR......",
     "....X..RRRRR...RR..CC..RR....RR..R..X...",
     "...BB....RRRRRRRR..CC..RRRRRRRR..R..BB..",
     "...BB..F....RR.....Q......RR....FR..BB..",
     "......FF..D.RR.XX......XX.RR.D..FF......",
-    "....X.....B.RR.BB.RRRR.BB.RR.B.....X....",
-    "......CC..B.RR....RRRR....RR.B..CC......",
-    "....X.CC....RRRRRRRRRRRRRRRR....CC.X....",
-    ".........BB.RRRR.B.RR.B.RRRR.BB.........",
-    "RRR...X..BC.RR..B.HHHH.B..RR.CB..X...RRR",
-    "..G......BC.RR..B.HHHH.B..RR.CB......G..",
-    "RRR...X..BB.RRRR...RR...RRRR.BB..X...RRR",
-    ".........B..RR..RRRRRRRR..RR.BB.........",
-    "....X.CC....BC..B.RRRR.B..FF.BB.CC.X....",
-    "......CC.Q..RR....RRRR....FF..Q.CC......",
+    "....X.....B.RRCCCCC..CCCCCRR.B.....X....",
+    "......CC..B.RRC....RR....CRR.B..CC......",
+    "....X.CC....RRC...CCCCCC.CRR....CC.X....",
+    ".........BB.RRC.C......C.CRR.BB.........",
+    "RRR...X..BC.RRR.C.HHHH.C.RRR.CB..X...RRR",
+    ".........BC.RRR.C.HHHH.C.RRR.CB.........",
+    "RRR...X..BB.RRC.C......C.CRR.BB..X...RRR",
+    ".........B..RRC.CCCCCC...CRR.BB.........",
+    "....X.CC....BCC....RR....CFF.BB.CC.X....",
+    "......CC.Q..RRCCCCC..CCCCCFF..Q.CC......",
     "....X....D..RR.XX.RRRR.XX.RR..D....X....",
     "...BB..XX...RR....RRRR....RR....XX..BB..",
     "......RRRRRRRRRRRRRRRRRRRR==WWWW==RRRR..",
@@ -206,12 +358,12 @@
     "......RRRRRRRRRRRRRRRRRRRR==WWWW==RRRR..",
     "...BB..XX...RR....RRRR....RR....XX..BB..",
     "....X....D..RR.XX.RRRR.XX.RR..D....X....",
-    "..G...FF.Q..RR....RRRR....RR..Q.FF...G..",
+    "......FF.Q..RR....RRRR....RR..Q.FF......",
     "RRR...BRB...BB....RRRR....BB....RR...RRR",
     "......RRR...BB.RRRRRRRRR.BB..RRRRR......",
     "....F.BRB......RR..CC..RR....RR..F......",
     "...FF.RRR.K....RR..CC..RR.K..RR..FF.....",
-    "...X..RG..X.....X..RG..X.....X..RG..X...",
+    "...X..RR..X.....X..RR..X.....X..RR..X...",
     "....B.RR.B.......B.RR.B.......B.RR.B....",
     "......RR...........RR...........RR......"
   ],
@@ -222,42 +374,86 @@
     "zones": [
       {
         "id": "elysee-courtyard-zone",
-        "bounds": [15, 14, 24, 25],
+        "bounds": [
+          15,
+          14,
+          24,
+          25
+        ],
         "surface": "pavers",
         "density": 0.3,
-        "details": ["patches", "cracks"]
+        "details": [
+          "patches",
+          "cracks"
+        ]
       },
       {
         "id": "etoile-concorde-west",
-        "bounds": [4, 3, 25, 13],
+        "bounds": [
+          4,
+          3,
+          25,
+          13
+        ],
         "surface": "pavers",
         "density": 0.28,
-        "details": ["tracks", "cracks", "rubble"]
+        "details": [
+          "tracks",
+          "cracks",
+          "rubble"
+        ]
       },
       {
         "id": "louvre-montmartre-east",
-        "bounds": [2, 24, 25, 36],
+        "bounds": [
+          2,
+          24,
+          25,
+          36
+        ],
         "surface": "concrete",
         "density": 0.3,
-        "details": ["patches", "cracks", "rubble"]
+        "details": [
+          "patches",
+          "cracks",
+          "rubble"
+        ]
       },
       {
         "id": "left-bank-south",
-        "bounds": [30, 3, 38, 36],
+        "bounds": [
+          30,
+          3,
+          38,
+          36
+        ],
         "surface": "gravel",
         "density": 0.32,
-        "details": ["tracks", "rubble", "cracks"]
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
       }
     ],
     "paths": [
       {
         "id": "champs-elysees-axis",
         "points": [
-          [9, 7],
-          [16, 15],
-          [16, 24]
+          [
+            9,
+            7
+          ],
+          [
+            16,
+            15
+          ],
+          [
+            16,
+            24
+          ]
         ],
-        "width": 2.0,
+        "width": 2,
         "surface": "pavers",
         "marking": "dashed"
       }
@@ -338,7 +534,12 @@
     "exclusions": [
       {
         "id": "clear-elysee-hq",
-        "bounds": [17, 17, 21, 22]
+        "bounds": [
+          17,
+          17,
+          21,
+          22
+        ]
       }
     ]
   }

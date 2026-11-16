@@ -44,10 +44,15 @@ test('Survival mode rules and SECTORS registration for Paris: Last Stand', () =>
 test('buildSurvivalWaveSpec produces deterministic waves, Wave 7 finale boss, and Overtime boss rotation', () => {
   const w1 = buildSurvivalWaveSpec(1);
   assert.equal(w1.wave, 1);
+  assert.equal(w1.attackEdge, 'north');
+  assert.equal(buildSurvivalWaveSpec(2).attackEdge, 'east');
+  assert.equal(buildSurvivalWaveSpec(3).attackEdge, 'south');
+  assert.equal(buildSurvivalWaveSpec(4).attackEdge, 'west');
   assert.equal(w1.isBossWave, false);
   assert.equal(w1.totalHostiles, w1.roster.length);
 
   const w5 = buildSurvivalWaveSpec(5);
+  assert.equal(w5.attackEdge, 'north');
   assert.equal(w5.isBossWave, false);
 
   const w7 = buildSurvivalWaveSpec(7);

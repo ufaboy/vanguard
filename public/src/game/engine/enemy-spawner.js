@@ -7,6 +7,7 @@ import {
 } from '../../sim/behavior/index.js';
 import { ARMOR_PANEL_CATALOG, HULL_CATALOG, TURRET_CATALOG } from '../../sim/catalog.js';
 import { SeededRng } from '../../sim/rng.js';
+import { getSurvivalWaveEdge } from '../../sim/survival.js';
 import { equipAbilities } from '../abilities/index.js';
 import { analyticsManager } from '../../app/analyticsManager.js';
 import { findBorderIngressCell } from '../campaign-navigation.js';
@@ -29,6 +30,29 @@ import {
   TileType,
   checkMapVictory,
 } from '../types.js';
+
+const SURVIVAL_EDGE_ENTRIES = Object.freeze({
+  north: [
+    { row: 2, col: 7 },
+    { row: 2, col: 20 },
+    { row: 2, col: 33 },
+  ],
+  east: [
+    { row: 7, col: 37 },
+    { row: 19, col: 37 },
+    { row: 32, col: 37 },
+  ],
+  south: [
+    { row: 37, col: 33 },
+    { row: 37, col: 20 },
+    { row: 37, col: 7 },
+  ],
+  west: [
+    { row: 32, col: 2 },
+    { row: 19, col: 2 },
+    { row: 7, col: 2 },
+  ],
+});
 
 /** Manages enemy/boss spawning, border ingress, wave/encounter scheduling, and enemy factory setup. */
 export class EnemySpawnerController {
@@ -85,12 +109,18 @@ export class EnemySpawnerController {
         .filter((pos) => !engine.enemies.some((e) => Math.hypot(e.x - pos.x, e.z - pos.z) < 1.8));
       return pickSafePosition(freePositions);
     }
-    const fallbackEntries = [
-      { row: 2, col: 5 },
-      { row: 2, col: 13 },
-      { row: 2, col: 22 },
-      { row: 2, col: 30 },
-    ];
+    const survivalEdge = engine.survivalState
+      ? engine.survivalState.waveSpec?.attackEdge ||
+        getSurvivalWaveEdge(engine.survivalState.wave)
+      : null;
+    const fallbackEntries = survivalEdge
+      ? SURVIVAL_EDGE_ENTRIES[survivalEdge] || SURVIVAL_EDGE_ENTRIES.north
+      : [
+          { row: 2, col: 5 },
+          { row: 2, col: 13 },
+          { row: 2, col: 22 },
+          { row: 2, col: 30 },
+        ];
     const freeFallbacks = fallbackEntries
       .map((entry) => engine.gridToWorld(entry.row, entry.col))
       .filter((pos) => !engine.enemies.some((e) => Math.hypot(e.x - pos.x, e.z - pos.z) < 1.8));
@@ -148,48 +178,58 @@ export class EnemySpawnerController {
     };
 
     const allEdges = Boolean(engine.survivalState);
-    const ingress = findBorderIngressCell(engine.grid, targetCell, waterAllowed, {
-      radius,
-      tileSize: TILE_SIZE,
-      ...(allEdges
-        ? {
-            edges: ['north', 'west', 'east', 'south'],
-            maxEdgeRow: GRID_SIZE - 1,
-            maxSearchRow: GRID_SIZE - 1,
-          }
-        : {}),
-      isOccupied: (wx, wz, info) => {
-        const { spawnPos } = toSpawnCoords(info.edge, wx, wz);
-        return engine.enemies.some((e) => {
-          const minSep = radius + (e.isBoss ? 1.12 : 0.72) + 0.65;
-          return (
-            Math.hypot(e.x - wx, e.z - wz) < minSep ||
-            Math.hypot(e.x - spawnPos.x, e.z - spawnPos.z) < minSep
+    const waveEdge = allEdges
+      ? engine.survivalState.waveSpec?.attackEdge ||
+        getSurvivalWaveEdge(engine.survivalState.wave)
+      : null;
+    const findIngressForEdges = (edges) =>
+      findBorderIngressCell(engine.grid, targetCell, waterAllowed, {
+        radius,
+        tileSize: TILE_SIZE,
+        ...(edges
+          ? {
+              edges,
+              maxEdgeRow: GRID_SIZE - 1,
+              maxSearchRow: GRID_SIZE - 1,
+            }
+          : {}),
+        isOccupied: (wx, wz, info) => {
+          const { spawnPos } = toSpawnCoords(info.edge, wx, wz);
+          return engine.enemies.some((e) => {
+            const minSep = radius + (e.isBoss ? 1.12 : 0.72) + 0.65;
+            return (
+              Math.hypot(e.x - wx, e.z - wz) < minSep ||
+              Math.hypot(e.x - spawnPos.x, e.z - spawnPos.z) < minSep
+            );
+          });
+        },
+        isCrowded: (wx, wz, info) => {
+          const { spawnPos } = toSpawnCoords(info.edge, wx, wz);
+          return engine.enemies.some(
+            (e) =>
+              Math.hypot(e.x - wx, e.z - wz) < 4.6 ||
+              Math.hypot(e.x - spawnPos.x, e.z - spawnPos.z) < 4.6
           );
-        });
-      },
-      isCrowded: (wx, wz, info) => {
-        const { spawnPos } = toSpawnCoords(info.edge, wx, wz);
-        return engine.enemies.some(
-          (e) =>
-            Math.hypot(e.x - wx, e.z - wz) < 4.6 ||
-            Math.hypot(e.x - spawnPos.x, e.z - spawnPos.z) < 4.6
-        );
-      },
-      isSafeFromPlayer: (wx, wz) => {
-        if (engine.playerX === undefined || engine.playerZ === undefined) return true;
-        const d = Math.hypot(engine.playerX - wx, engine.playerZ - wz);
-        if (d < minPlayerDist) return false;
-        if (
-          losAvoidDist > 0 &&
-          d < losAvoidDist &&
-          engine.hasLineOfSight?.(engine.playerX, engine.playerZ, wx, wz)
-        ) {
-          return false;
-        }
-        return true;
-      },
-    });
+        },
+        isSafeFromPlayer: (wx, wz) => {
+          if (engine.playerX === undefined || engine.playerZ === undefined) return true;
+          const d = Math.hypot(engine.playerX - wx, engine.playerZ - wz);
+          if (d < minPlayerDist) return false;
+          if (
+            losAvoidDist > 0 &&
+            d < losAvoidDist &&
+            engine.hasLineOfSight?.(engine.playerX, engine.playerZ, wx, wz)
+          ) {
+            return false;
+          }
+          return true;
+        },
+      });
+
+    const ingress = allEdges
+      ? findIngressForEdges([waveEdge]) ||
+        findIngressForEdges(['north', 'east', 'south', 'west'])
+      : findIngressForEdges(null);
 
     if (!ingress) return null;
     return {

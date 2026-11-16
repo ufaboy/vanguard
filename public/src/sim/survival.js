@@ -317,6 +317,14 @@ const ENDLESS_CYCLE_POOL = Object.freeze([
 /**
  * Boss waves occur on Wave 7 (the 6:00 Finale) and then every 5th wave in Overtime (10, 15, 20, 25...).
  */
+const SURVIVAL_WAVE_EDGES = Object.freeze(['north', 'east', 'south', 'west']);
+
+/** Returns the clockwise cardinal border edge for a 1-based Survival wave. */
+export function getSurvivalWaveEdge(waveNumber = 1) {
+  const wave = Math.max(1, Math.floor(waveNumber));
+  return SURVIVAL_WAVE_EDGES[(wave - 1) % SURVIVAL_WAVE_EDGES.length];
+}
+
 function isSurvivalBossWave(waveNumber = 1) {
   const wave = Math.max(1, Math.floor(waveNumber));
   return wave === SURVIVAL_CONFIG.FINALE_WAVE || (wave >= 10 && wave % 5 === 0);
@@ -325,6 +333,7 @@ function isSurvivalBossWave(waveNumber = 1) {
 /** Builds the deterministic wave specification for a 1-based Survival wave number. */
 export function buildSurvivalWaveSpec(waveNumber = 1) {
   const wave = Math.max(1, Math.floor(waveNumber));
+  const attackEdge = getSurvivalWaveEdge(wave);
   const isBossWave = isSurvivalBossWave(wave);
   const maxConcurrentEnemies = Math.min(9, 4 + Math.floor(wave / 2));
   const maxAttackers = wave <= 2 ? 2 : wave <= 6 ? 3 : wave <= 14 ? 4 : 5;
@@ -346,6 +355,7 @@ export function buildSurvivalWaveSpec(waveNumber = 1) {
     }
     return {
       wave,
+      attackEdge,
       title: bossEntry.title,
       isBossWave: true,
       bossClass: bossEntry.bossClass,
@@ -364,6 +374,7 @@ export function buildSurvivalWaveSpec(waveNumber = 1) {
     const preset = WAVE_PRESETS[wave];
     return {
       wave,
+      attackEdge,
       title: preset.title,
       isBossWave: false,
       bossClass: null,
@@ -387,6 +398,7 @@ export function buildSurvivalWaveSpec(waveNumber = 1) {
   }
   return {
     wave,
+    attackEdge,
     title: `OVERTIME ASSAULT // ECHELON ${wave}`,
     isBossWave: false,
     bossClass: null,
@@ -519,6 +531,7 @@ export function buildSurvivalHudSnapshot(
   const waveDuration = survivalState.waveDuration || SURVIVAL_CONFIG.WAVE_INTERVAL_SEC;
   return {
     wave: survivalState.wave,
+    attackEdge: spec?.attackEdge || getSurvivalWaveEdge(survivalState.wave),
     wavesCleared: survivalState.wavesCleared,
     phase: survivalState.phase,
     title: spec?.title || `WAVE ${survivalState.wave}`,
@@ -540,6 +553,7 @@ export function buildSurvivalHudSnapshot(
     totalWaveHostiles: spec?.totalHostiles || 1,
     waveRewardCredits: spec?.waveRewardCredits || 300,
     nextWaveNumber: nextSpec?.wave || survivalState.wave + 1,
+    nextWaveEdge: nextSpec?.attackEdge || getSurvivalWaveEdge((survivalState.wave || 1) + 1),
     nextWaveTitle: nextSpec?.title || '',
     nextWaveIsBoss: Boolean(nextSpec?.isBossWave),
     nextWaveBossName: nextSpec?.bossName || null,

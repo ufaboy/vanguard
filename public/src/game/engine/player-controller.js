@@ -811,11 +811,17 @@ export class PlayerController {
         }
       }
 
+      const isSurvival = Boolean(engine.survivalState);
       const maxCannon = engine.getPlayerMaxCannonAmmo();
-      const baseRearmCap = Math.min(maxCannon, CANNON_AMMO.BASE_REARM_CAP);
+      const baseRearmCap = isSurvival
+        ? maxCannon
+        : Math.min(maxCannon, CANNON_AMMO.BASE_REARM_CAP);
+      const rearmInterval = isSurvival
+        ? CANNON_AMMO.BASE_REARM_INTERVAL_SEC * 0.5
+        : CANNON_AMMO.BASE_REARM_INTERVAL_SEC;
       if (engine.cannonAmmo < baseRearmCap) {
         engine.cannonBaseRearmTimer += dt;
-        if (engine.cannonBaseRearmTimer >= CANNON_AMMO.BASE_REARM_INTERVAL_SEC) {
+        if (engine.cannonBaseRearmTimer >= rearmInterval) {
           engine.cannonBaseRearmTimer = 0;
           engine.cannonAmmo = Math.min(baseRearmCap, engine.cannonAmmo + 1);
           engine.spawnSparks(engine.playerX, 0.7, engine.playerZ, 0xf59e0b, 2);
