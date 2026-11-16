@@ -13,8 +13,15 @@ import {
 import { animateMissileVisual, createProjectileVisual } from '../effects/index.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
-import { brickEntryOffset } from '../terrains/brick-models.js';
+import { breachEntryOffset } from '../terrains/breach-models.js';
 import { EnemyClass, TileType } from '../types.js';
+
+/** Where shell `p` met the wall of `cell`, so the hit is reported on the face it struck. */
+function wallEntryPoint(engine, cell, p) {
+  const centre = engine.gridToWorld(cell.row, cell.col);
+  const entry = breachEntryOffset(p.x - centre.x, p.z - centre.z, p.vx, p.vz);
+  return { x: centre.x + entry.dx, z: centre.z + entry.dz };
+}
 
 /** Manages projectiles, homing missiles, trails, impact resolution, and laser fadeout. */
 export class ProjectilesController {
@@ -377,10 +384,8 @@ export class ProjectilesController {
             engine.destroyTileCell(cell);
           } else {
             const brickDmg = p.isMissile ? 4 : p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1;
-            // Report the hit where the shell met the wall, so the right face breaks open.
-            const centre = engine.gridToWorld(cell.row, cell.col);
-            const entry = brickEntryOffset(p.x - centre.x, p.z - centre.z, p.vx, p.vz);
-            engine.damageTileCell(cell, brickDmg, centre.x + entry.dx, centre.z + entry.dz);
+            const entry = wallEntryPoint(engine, cell, p);
+            engine.damageTileCell(cell, brickDmg, entry.x, entry.z);
             engine.removeProjectile(i);
             continue;
           }
@@ -391,7 +396,8 @@ export class ProjectilesController {
             : p.isMissile || p.bulletPower === BULLET_POWER.HEAVY
             ? 4
             : 1;
-          engine.damageTileCell(cell, concreteDmg, p.x, p.z);
+          const entry = wallEntryPoint(engine, cell, p);
+          engine.damageTileCell(cell, concreteDmg, entry.x, entry.z);
           engine.removeProjectile(i);
           continue;
         } else if (cell.type === TileType.LANDMARK) {

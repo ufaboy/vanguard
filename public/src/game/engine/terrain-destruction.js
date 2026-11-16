@@ -7,6 +7,7 @@ import { disposeOwned } from '../render/dispose.js';
 import { SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';
+import { breachPointToward } from '../terrains/breach-models.js';
 import { GameStatus, TileType, checkMapDefeat, checkMapVictory } from '../types.js';
 
 /** Manages terrain cell destruction, HQ/enemy base destruction & restoration, rubble, and barrel chains. */
@@ -263,7 +264,8 @@ export class TerrainDestructionController {
         engine.modelFactory.updateConcreteBlockDamage(
           cell.mesh,
           cell.hp,
-          cell.maxHp || 16
+          cell.maxHp || 16,
+          this.hitOffset(cell, hitX, hitZ)
         );
       }
     } else {
@@ -276,11 +278,7 @@ export class TerrainDestructionController {
     }
 
     if (cell.type === TileType.BRICK) {
-      const centre = engine.gridToWorld(cell.row, cell.col);
-      engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp, {
-        dx: hitX - centre.x,
-        dz: hitZ - centre.z,
-      });
+      engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp, this.hitOffset(cell, hitX, hitZ));
     }
     else if (cell.type === TileType.WATER_TOWER) {
       sound.playSteelHit({ x: hitX, z: hitZ });
@@ -291,6 +289,12 @@ export class TerrainDestructionController {
     if (cell.hp <= 0) {
       engine.destroyTileCell(cell);
     }
+  }
+
+  /** Offset of a hit from the centre of `cell`: it tells the tile model which face to breach. */
+  hitOffset(cell, hitX, hitZ) {
+    const centre = this.engine.gridToWorld(cell.row, cell.col);
+    return { dx: hitX - centre.x, dz: hitZ - centre.z };
   }
 
   destroyTileCell(cell) {
@@ -306,17 +310,18 @@ export class TerrainDestructionController {
     }
     const { x, z } = engine.gridToWorld(cell.row, cell.col);
 
-    if (
-      cell.type === TileType.BRICK &&
-      engine.modelFactory.useBlenderBricks &&
-      engine.modelFactory.brickModels.states.size
-    ) {
+    const factory = engine.modelFactory;
+    const rubbleModels =
+      cell.type === TileType.BRICK && factory.useBlenderBricks ? factory.brickModels
+        : cell.type === TileType.CONCRETE && factory.useBlenderConcrete ? factory.concreteModels
+          : null;
+    if (rubbleModels?.states.size) {
       const rubble = new THREE.Group();
       rubble.userData.batchTile = true;
-      engine.modelFactory.brickModels.apply(rubble, 0);
+      rubbleModels.apply(rubble, 0);
       rubble.position.set(x, 0, z);
       // Debris stays where the wall was breached; an untouched wall gets a varied scatter.
-      rubble.rotation.y = cell.mesh && cell.hp < 4
+      rubble.rotation.y = cell.mesh?.userData.breach
         ? cell.mesh.rotation.y
         : ((cell.row * 7 + cell.col * 13) % 4) * (Math.PI / 2);
       engine.mapGroup.add(rubble);
@@ -443,7 +448,8 @@ export class TerrainDestructionController {
         } else if (neighbor.type === TileType.BRICK) {
           engine.destroyTileCell(neighbor);
         } else if (neighbor.type === TileType.CONCRETE) {
-          engine.damageTileCell(neighbor, 6, nPos.x, nPos.z);
+          const hit = breachPointToward(nPos.x, nPos.z, x, z);
+          engine.damageTileCell(neighbor, 6, hit.x, hit.z);
         } else if (neighbor.type === TileType.FOREST) {
           engine.destroyTileCell(neighbor);
         } else if (neighbor.type === TileType.BARREL && !neighbor._exploding) {

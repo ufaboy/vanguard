@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { BrickModels, brickBreachYaw, brickEntryOffset, nextBrickBreach } from '../public/src/game/terrains/brick-models.js';
+import { BrickModels } from '../public/src/game/terrains/brick-models.js';
+import { breachEntryOffset, breachPointToward, breachYaw, nextBreach } from '../public/src/game/terrains/breach-models.js';
 import { ModelFactory } from '../public/src/game/render/models.js';
 import { TileBatcher } from '../public/src/game/render/tile-batcher.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
@@ -134,25 +135,31 @@ test('Destroyed brick rubble is nonblocking, capped, expires, and uses shared ge
 
 test('Breach follows the shells: face, corner, two adjacent faces, two opposite faces', () => {
   // A shell first seen 0.6 inside the -X face, slightly nearer the +Z edge, entered through -X.
-  assert.deepEqual(brickEntryOffset(-0.4, 0.7, 10, 0), { dx: -1, dz: 0.7 });
-  assert.deepEqual(brickEntryOffset(0.2, 0.5, 0, -8), { dx: 0.2, dz: 1 });
-  assert.deepEqual(brickEntryOffset(0.3, 0.3, 0, 0), { dx: 0.3, dz: 0.3 });
+  assert.deepEqual(breachEntryOffset(-0.4, 0.7, 10, 0), { dx: -1, dz: 0.7 });
+  assert.deepEqual(breachEntryOffset(0.2, 0.5, 0, -8), { dx: 0.2, dz: 1 });
+  assert.deepEqual(breachEntryOffset(0.3, 0.3, 0, 0), { dx: 0.3, dz: 0.3 });
 
-  const face = nextBrickBreach(null, -1, 0.2, 3);
+  const face = nextBreach(null, -1, 0.2, 3);
   assert.deepEqual(face, { variant: 'F', turn: 3 });
-  assert.equal(brickBreachYaw(face), -Math.PI / 2);
-  assert.deepEqual(nextBrickBreach(face, -1, -0.9, 2), face, 'same face again keeps the breach');
-  assert.deepEqual(nextBrickBreach(face, 0.1, 1, 3), face, 'no two-face model above state 2');
-  assert.deepEqual(nextBrickBreach(face, 0.1, 1, 2), { variant: 'L', turn: 3 }, '-X then +Z');
-  assert.deepEqual(nextBrickBreach(face, 0.1, -1, 2), { variant: 'L', turn: 2 }, '-X then -Z');
-  assert.deepEqual(nextBrickBreach(face, 1, 0, 1), { variant: 'O', turn: 1 }, '-X then +X');
-  assert.deepEqual(nextBrickBreach({ variant: 'L', turn: 2 }, 1, 0, 1), { variant: 'L', turn: 2 });
+  assert.equal(breachYaw(face), -Math.PI / 2);
+  assert.deepEqual(nextBreach(face, -1, -0.9, 2), face, 'same face again keeps the breach');
+  const pending = nextBreach(face, 0.1, 1, 3);
+  assert.deepEqual(pending, { variant: 'F', turn: 3, other: 0 }, 'no two-face model above state 2: the face is remembered');
+  assert.deepEqual(nextBreach(pending, -1, 0, 2), { variant: 'L', turn: 3 }, 'and used once the state allows it');
+  assert.deepEqual(nextBreach(pending, 0, 0, 2), { variant: 'L', turn: 3 }, 'even by a centred hit');
+  assert.deepEqual(breachPointToward(10, 20, 14, 20.5), { x: 11, z: 20.125 }, 'a blast to the +X side');
+  assert.deepEqual(breachPointToward(10, 20, 8, 22), { x: 9, z: 21 }, 'a diagonal blast hits the corner');
+  assert.deepEqual(breachPointToward(10, 20, 10, 20), { x: 10, z: 20 });
+  assert.deepEqual(nextBreach(face, 0.1, 1, 2), { variant: 'L', turn: 3 }, '-X then +Z');
+  assert.deepEqual(nextBreach(face, 0.1, -1, 2), { variant: 'L', turn: 2 }, '-X then -Z');
+  assert.deepEqual(nextBreach(face, 1, 0, 1), { variant: 'O', turn: 1 }, '-X then +X');
+  assert.deepEqual(nextBreach({ variant: 'L', turn: 2 }, 1, 0, 1), { variant: 'L', turn: 2 });
 
-  assert.deepEqual(nextBrickBreach(null, 1, 0.8, 3), { variant: 'C', turn: 0 }, '+X/+Z corner');
-  assert.deepEqual(nextBrickBreach(null, 0.8, -1, 3), { variant: 'C', turn: 1 }, '+X/-Z corner');
-  assert.deepEqual(nextBrickBreach(null, -1, -0.8, 3), { variant: 'C', turn: 2 }, '-X/-Z corner');
-  assert.deepEqual(nextBrickBreach(null, -0.8, 1, 3), { variant: 'C', turn: 3 }, '-X/+Z corner');
-  assert.deepEqual(nextBrickBreach(null, 0, 0, 3), { variant: 'F', turn: 0 }, 'a centred hit has no side');
+  assert.deepEqual(nextBreach(null, 1, 0.8, 3), { variant: 'C', turn: 0 }, '+X/+Z corner');
+  assert.deepEqual(nextBreach(null, 0.8, -1, 3), { variant: 'C', turn: 1 }, '+X/-Z corner');
+  assert.deepEqual(nextBreach(null, -1, -0.8, 3), { variant: 'C', turn: 2 }, '-X/-Z corner');
+  assert.deepEqual(nextBreach(null, -0.8, 1, 3), { variant: 'C', turn: 3 }, '-X/+Z corner');
+  assert.deepEqual(nextBreach(null, 0, 0, 3), { variant: 'F', turn: 0 }, 'a centred hit has no side');
 });
 
 test('Hits from two sides switch a brick tile to its two-face model and repairs reset it', () => {

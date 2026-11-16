@@ -11,7 +11,9 @@ import { createPowerUpEmblemCanvas, POWERUP_FAMILY } from '../icons.js';
 import { EnemyClass } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { TextureGenerator, mulberry32 } from './texture-gen.js';
-import { BrickModels, brickBreachYaw, nextBrickBreach } from '../terrains/brick-models.js';
+import { breachYaw, nextBreach } from '../terrains/breach-models.js';
+import { BrickModels } from '../terrains/brick-models.js';
+import { ConcreteModels, concreteDamageState } from '../terrains/concrete-models.js';
 import { LandmarkModels } from '../terrains/landmarks.js';
 import { applyBrickFinish } from '../terrains/brick-finish.js';
 import { createWaterSurface } from '../terrains/water.js';
@@ -370,15 +372,12 @@ export class ModelFactory extends TextureGenerator {
     this.landmarkModels = new LandmarkModels();
     this.useBlenderBricks = !isSoftwareGl;
     this.brickModelsPromise = this.useBlenderBricks
-      ? this.brickModels.load()
-          .then(ready => {
-            if (ready) this.onBrickModelsReady?.();
-            return Boolean(ready);
-          })
-          .catch(error => {
-            console.warn('BRICK models unavailable; using procedural fallback.', error);
-            return false;
-          })
+      ? this.loadTileModels(this.brickModels, () => this.onBrickModelsReady?.())
+      : Promise.resolve(false);
+    this.concreteModels = new ConcreteModels();
+    this.useBlenderConcrete = !isSoftwareGl;
+    this.concreteModelsPromise = this.useBlenderConcrete
+      ? this.loadTileModels(this.concreteModels, () => this.onConcreteModelsReady?.())
       : Promise.resolve(false);
     this.concreteTex = this.generated('createConcreteTextures');
     this.groundTex = this.generated('createGroundTexture');
@@ -492,12 +491,26 @@ export class ModelFactory extends TextureGenerator {
     return pruned;
   }
 
-  /** Resolves once the player GLB, brick models, requested enemy GLBs, and optional sector landmarks settle. */
+  /** Loads Blender tile models; tiles keep their procedural version if the asset is unavailable. */
+  loadTileModels(models, onReady) {
+    return models.load()
+      .then(ready => {
+        if (ready) onReady();
+        return Boolean(ready);
+      })
+      .catch(error => {
+        console.warn(`${models.prefix} models unavailable; using procedural fallback.`, error);
+        return false;
+      });
+  }
+
+  /** Resolves once the player GLB, brick and concrete models, requested enemy GLBs, and optional sector landmarks settle. */
   waitForModels(enemyClasses = [], options = {}) {
     if (this.isSoftwareGl) return Promise.resolve();
     const tasks = [
       this.playerGlbPromise,
       this.brickModelsPromise,
+      this.concreteModelsPromise,
       this.ensureEnemyModels(enemyClasses),
     ];
     if (options.landmarks && this.landmarkModels?.ensureLoaded) {
@@ -1884,11 +1897,11 @@ export class ModelFactory extends TextureGenerator {
     const state = Math.max(0, Math.min(4, Math.ceil(hp)));
     const data = group.userData;
     data.brickHp = hp;
-    if (state >= 4) data.brickBreach = null;
-    else if (hit) data.brickBreach = nextBrickBreach(data.brickBreach, hit.dx, hit.dz, state);
-    if (data.brickBreach) group.rotation.y = brickBreachYaw(data.brickBreach);
+    if (state >= 4) data.breach = null;
+    else if (hit) data.breach = nextBreach(data.breach, hit.dx, hit.dz, state);
+    if (data.breach) group.rotation.y = breachYaw(data.breach);
     if (this.useBlenderBricks && this.brickModels.states.size) {
-      this.brickModels.apply(group, hp, data.brickBreach?.variant);
+      this.brickModels.apply(group, hp, data.breach?.variant);
     } else {
       group.children.forEach((mesh, index) => {
         mesh.visible = index < state;
@@ -1992,6 +2005,10 @@ export class ModelFactory extends TextureGenerator {
 
   createConcreteBlock() {
     const group = new THREE.Group();
+    if (this.useBlenderConcrete && this.concreteModels.apply(group, 4)) {
+      Object.assign(group.userData, { batchTile: true, isConcreteBlock: true });
+      return group;
+    }
     const mats = this.getConcreteMaterials();
     const concreteSideMat = mats.side;
     const concreteTopMat = mats.top;
@@ -2091,11 +2108,33 @@ export class ModelFactory extends TextureGenerator {
     return group;
   }
 
-  updateConcreteBlockDamage(blockGroup, hp, maxHp = 16) {
+  /** `hit`: offset `{ dx, dz }` of the damaging hit from the tile centre; it shapes the breach. */
+  updateConcreteBlockDamage(blockGroup, hp, maxHp = 16, hit = null) {
     if (!blockGroup?.userData?.isConcreteBlock) return;
-    const { slabMesh, capMesh, crackGroup, rebarGroup, concreteMat } =
-      blockGroup.userData;
+    const data = blockGroup.userData;
     const ratio = Math.max(0, Math.min(1, hp / Math.max(1, maxHp)));
+    const state = concreteDamageState(hp, maxHp);
+    data.concreteHp = hp;
+    data.concreteMaxHp = maxHp;
+    if (state >= 4) data.breach = null;
+    else if (hit) data.breach = nextBreach(data.breach, hit.dx, hit.dz, state);
+    if (data.breach) blockGroup.rotation.y = breachYaw(data.breach);
+    const shade = Math.round(145 + ratio * 58);
+
+    if (this.useBlenderConcrete && this.concreteModels.states.size) {
+      if (data.slabMesh) {
+        // A procedural block upgrading in place: release its per-block slab materials.
+        disposeOwned(blockGroup);
+        data.slabMesh = data.capMesh = data.crackGroup = data.rebarGroup = data.concreteMat = null;
+      }
+      // The block darkens with every hit; model states only change a few times.
+      if (ratio < 1) data.modelMaterial ||= markMaterialOwned(this.concreteModels.material.clone());
+      data.modelMaterial?.color.setRGB(shade / 255, (shade + 8) / 255, (shade + 18) / 255, THREE.SRGBColorSpace);
+      this.concreteModels.apply(blockGroup, state, data.breach?.variant, data.modelMaterial);
+      return;
+    }
+
+    const { slabMesh, capMesh, crackGroup, rebarGroup, concreteMat } = data;
 
     if (crackGroup) {
       crackGroup.visible = ratio < 0.95;
@@ -2112,7 +2151,6 @@ export class ModelFactory extends TextureGenerator {
       slabMesh.position.y = 0.74 * heightScale;
     }
     if (concreteMat) {
-      const shade = Math.round(145 + ratio * 58);
       this.ownConcreteSlabMaterials(blockGroup)
         .color.setRGB(shade / 255, (shade + 8) / 255, (shade + 18) / 255, THREE.SRGBColorSpace);
     }

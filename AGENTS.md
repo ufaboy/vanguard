@@ -62,7 +62,7 @@
 ### Key Gameplay Features
 - **36×36 Destructible Isometric Arena**:
   - 4× expanded tactical grid (`GRID_SIZE = 36`, `TILE_SIZE = 2`, 1,296 cells per sector).
-  - Terrain types: Destructible Brick (4 sub-blocks per cell, 4 HP), Hard-to-Destroy Reinforced Concrete (`CONCRETE`, 16 HP with progressive cracking and exposed steel rebar), Stealth Forest Canopy, Impassable Water (crossable with the `CH4` All-Terrain or `CH5` Grav-Hover chassis), Low-Friction Ice, Enemy Spawner Pads, and the Command Base HQ.
+  - Terrain types: Destructible Brick (4 sub-blocks per cell, 4 HP), Hard-to-Destroy Reinforced Concrete (`CONCRETE`, 16 HP; craters open on the faces that were hit and expose the steel rebar), Stealth Forest Canopy, Impassable Water (crossable with the `CH4` All-Terrain or `CH5` Grav-Hover chassis), Low-Friction Ice, Enemy Spawner Pads, and the Command Base HQ.
 - **Modular Tank Engineering & Physics (`src/game/constants.js`)**:
   - Dynamic calculation of **Total Mass**, **Engine Power-to-Weight Ratio**, **Move Speed**, **Armor Reduction (%)**, **Armor Penetration (%)**, and **Effective Damage**:
     $$\text{EffectiveArmor} = \text{Armor} \times \left(1 - \frac{\text{Penetration}}{100}\right), \quad \text{FinalDamage} = \text{Damage} \times \left(1 - \frac{\text{EffectiveArmor}}{100}\right)$$
@@ -153,7 +153,9 @@ All files directly required to run and deploy the game reside inside `/public` (
             │   ├── water.js              # Water surface + wet bank
             │   ├── ice.js                # Frozen surface with fractures and frosted edges
             │   ├── sand.js               # World-aligned dune shading, wind ripples, runtime sand patch masks
-            │   ├── brick-models.js       # Blender BRICK tile model: 5 damage states (BRICK_HP_0..4) from models/terrain/brick.glb
+            │   ├── breach-models.js      # Shared Blender tile damage models: breach variants (face / corner / two faces) picked from where hits came from
+            │   ├── brick-models.js       # Blender BRICK tile model: damage states and breach variants from models/terrain/brick.glb
+            │   ├── concrete-models.js    # Blender CONCRETE tile model: damage states and breach variants from models/terrain/concrete.glb
             │   ├── urban-ground.js       # Baked ground texture with decoration and sand zones
             │   ├── enemy-stronghold.js   # ENEMY_BASE model: tiered concrete fortress (bastions, lit gate, spire + reactor crystal), merged per material
             │   └── mountains.js          # Non-colliding rocky perimeter outside the arena

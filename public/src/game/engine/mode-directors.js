@@ -4,6 +4,7 @@ import { DURABILITY } from '../constants.js';
 import { GameStatus, TileType } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
+import { breachPointToward } from '../terrains/breach-models.js';
 import { createSquadDirector } from '../../sim/behavior/index.js';
 import {
   CARGO_STATUS,
@@ -418,7 +419,8 @@ export class ContractDirector {
         if (neighbor.type === TileType.BRICK || neighbor.type === TileType.FOREST) {
           e.destroyTileCell(neighbor);
         } else if (neighbor.type === TileType.CONCRETE) {
-          e.damageTileCell(neighbor, 6, nPos.x, nPos.z);
+          const hit = breachPointToward(nPos.x, nPos.z, x, z);
+          e.damageTileCell(neighbor, 6, hit.x, hit.z);
         } else if (neighbor.type === TileType.BARREL && !neighbor._exploding) {
           e.explodeBarrel(neighbor, true);
         }

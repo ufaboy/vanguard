@@ -289,6 +289,15 @@ export class TankGameEngine {
     this.camera.lookAt(0, 0, 0);
 
     this.modelFactory = new ModelFactory(this.renderer, this.isSoftwareGl, options.pregenerated);
+    this.modelFactory.onConcreteModelsReady = () => {
+      if (this.isDisposed) return;
+      this.mapGroup.traverse(node => {
+        if (!node.userData.isConcreteBlock) return;
+        const { concreteHp = 1, concreteMaxHp = 1 } = node.userData;
+        this.modelFactory.updateConcreteBlockDamage(node, concreteHp, concreteMaxHp);
+        this.tileBatcher.markDirty(node);
+      });
+    };
     this.modelFactory.onBrickModelsReady = () => {
       if (this.isDisposed) return;
       this.mapGroup.traverse(node => {

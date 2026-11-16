@@ -12,6 +12,7 @@ import { markOwned } from '../render/dispose.js';
 import { createProjectileVisual } from '../effects/index.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
+import { breachPointToward } from '../terrains/breach-models.js';
 import { TileType } from '../types.js';
 
 /** Manages land mines, artillery hazard zones, and area-of-effect explosions. */
@@ -373,7 +374,8 @@ export class ExplosionsController {
           } else if (cell.type === TileType.OIL_SLICK) {
             engine.terrainDestruction?.igniteOilSlick?.(cell);
           } else if (cell.type === TileType.CONCRETE) {
-            engine.damageTileCell(cell, 6, pos.x, pos.z);
+            const hit = breachPointToward(pos.x, pos.z, x, z);
+            engine.damageTileCell(cell, 6, hit.x, hit.z);
           } else if (cell.type === TileType.BASE && !fromPlayer && !isEnvironmental) {
             hitCommandBase = true;
           } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
