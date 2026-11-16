@@ -158,8 +158,16 @@ export class PowerupsController {
     engine.airDrops ||= [];
     engine.airDropElapsed = (engine.airDropElapsed || 0) + dt;
     if (queue) {
+      const totalPool = Math.max(1, engine.initialVanguardCount || engine.vanguardRemainingToSpawn || 1);
+      const activeNonBoss = (engine.enemies || []).filter((u) => !u.isBoss).length;
+      const remaining = (engine.vanguardRemainingToSpawn || 0) + activeNonBoss;
+      const progress = engine.initialVanguardCount > 0 ? 1 - remaining / totalPool : 0;
+
       for (const entry of queue) {
-        if (!entry.triggered && engine.airDropElapsed >= entry.delaySec) {
+        if (entry.triggered) continue;
+        const timeReady = engine.airDropElapsed >= (entry.delaySec || 0);
+        const progressReady = entry.progress == null || progress >= entry.progress;
+        if (timeReady && progressReady) {
           entry.triggered = true;
           this.spawnAirDrop(entry);
         }

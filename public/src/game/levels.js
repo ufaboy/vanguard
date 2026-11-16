@@ -384,14 +384,19 @@ export function normalizeMapDefinition(rawMap, index = 0) {
         : [];
       const normalized = rawList
         .filter((d) => d && d.enabled !== false)
-        .map((d, idx) => ({
-          delaySec: Math.max(0, Number(d.delaySec ?? d.atSec ?? d.firstDropSec ?? (idx + 1) * 30) || 0),
-          shells: Math.max(0, Math.min(100, Number(d.shells ?? 100) || 0)),
-          aps: Math.max(0, Math.min(100, Number(d.aps ?? 100) || 0)),
-          missiles: Math.max(0, Math.min(100, Number(d.missiles ?? 100) || 0)),
-          spawnCell: d.spawnCell || null,
-        }))
-        .sort((a, b) => a.delaySec - b.delaySec);
+        .map((d, idx) => {
+          const hasProgress = d.progress !== undefined && d.progress !== null && Number.isFinite(Number(d.progress));
+          const defaultDelay = hasProgress ? 0 : (idx + 1) * 30;
+          return {
+            delaySec: Math.max(0, Number(d.delaySec ?? d.atSec ?? d.firstDropSec ?? defaultDelay) || 0),
+            progress: hasProgress ? Math.max(0, Math.min(1, Number(d.progress))) : null,
+            shells: Math.max(0, Math.min(100, Number(d.shells ?? 100) || 0)),
+            aps: Math.max(0, Math.min(100, Number(d.aps ?? 100) || 0)),
+            missiles: Math.max(0, Math.min(100, Number(d.missiles ?? 100) || 0)),
+            spawnCell: d.spawnCell || null,
+          };
+        })
+        .sort((a, b) => ((a.progress ?? 0) - (b.progress ?? 0)) || (a.delaySec - b.delaySec));
       return normalized.length > 0 ? normalized : null;
     })(),
     grid,

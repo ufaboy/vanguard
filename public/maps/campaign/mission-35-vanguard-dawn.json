@@ -87,19 +87,31 @@
   },
   "airDrop": [
     {
-      "delaySec": 22,
+      "delaySec": 10,
       "shells": 50,
       "aps": 12,
       "missiles": 6
     },
     {
-      "delaySec": 57,
+      "progress": 0.14,
       "shells": 50,
       "aps": 12,
       "missiles": 6
     },
     {
-      "delaySec": 92,
+      "progress": 0.34,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6
+    },
+    {
+      "progress": 0.54,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6
+    },
+    {
+      "progress": 0.74,
       "shells": 50,
       "aps": 12,
       "missiles": 6
