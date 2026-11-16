@@ -84,14 +84,20 @@ export class PowerupsController {
 
     let dropPos = null;
     if (config.spawnCell && Number.isInteger(config.spawnCell.row) && Number.isInteger(config.spawnCell.col)) {
-      dropPos = engine.gridToWorld(config.spawnCell.row, config.spawnCell.col);
+      const { row, col } = config.spawnCell;
+      const cell = row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE
+        ? engine.grid?.[row]?.[col]
+        : null;
+      if (cell && this.isAirDropLandingCell(cell)) {
+        dropPos = engine.gridToWorld(row, col);
+      }
     }
     for (let attempt = 0; !dropPos && attempt < 35; attempt++) {
       const r = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
       const c = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
       const cell = engine.grid?.[r]?.[c];
       if (!cell) continue;
-      if (cell.type === TileType.EMPTY || cell.type === TileType.ICE || cell.type === TileType.ROAD || cell.type === TileType.SAND) {
+      if (this.isAirDropLandingCell(cell)) {
         const pos = engine.gridToWorld(r, c);
         const dist = Math.hypot(pos.x - engine.playerX, pos.z - engine.playerZ);
         if (dist >= 4 * TILE_SIZE && dist <= 14 * TILE_SIZE) {
@@ -104,7 +110,21 @@ export class PowerupsController {
       }
     }
     if (!dropPos) {
-      dropPos = { x: engine.playerX, z: engine.playerZ };
+      let nearestPos = null;
+      let nearestDistance = Infinity;
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const cell = engine.grid?.[r]?.[c];
+          if (!cell || !this.isAirDropLandingCell(cell)) continue;
+          const pos = engine.gridToWorld(r, c);
+          const distance = Math.hypot(pos.x - engine.playerX, pos.z - engine.playerZ);
+          if (distance >= 2 * TILE_SIZE && distance < nearestDistance) {
+            nearestPos = pos;
+            nearestDistance = distance;
+          }
+        }
+      }
+      dropPos = nearestPos || { x: engine.playerX, z: engine.playerZ };
     }
 
     const rig = engine.modelFactory.createAirDropRig();
@@ -124,6 +144,10 @@ export class PowerupsController {
     engine.airDrops.push(drop);
     engine.setStatusBanner('ALLIED AIR DROP INBOUND — SECURE THE PARACHUTE CRATE!', 3.0);
     return drop;
+  }
+
+  isAirDropLandingCell(cell) {
+    return [TileType.EMPTY, TileType.ICE, TileType.ROAD, TileType.SAND].includes(cell?.type);
   }
 
   updateAirDrops(dt, elapsed) {

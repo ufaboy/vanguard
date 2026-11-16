@@ -3302,11 +3302,19 @@ export class ModelFactory extends TextureGenerator {
 
     for (const src of parts.crate) {
       const clone = src.clone();
+      clone.geometry = src.geometry?.clone() || src.geometry;
+      clone.material = Array.isArray(src.material)
+        ? src.material.map((material) => material.clone())
+        : src.material?.clone() || src.material;
       markOwned(clone);
       rig.crateGroup.add(clone);
     }
     for (const src of parts.chute) {
       const clone = src.clone();
+      clone.geometry = src.geometry?.clone() || src.geometry;
+      clone.material = Array.isArray(src.material)
+        ? src.material.map((material) => material.clone())
+        : src.material?.clone() || src.material;
       markOwned(clone);
       rig.chuteGroup.add(clone);
     }
