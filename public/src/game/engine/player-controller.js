@@ -931,6 +931,7 @@ export class PlayerController {
 
     engine.apsRearmTimer = APS.REARM_TIME;
     engine.syncApsVisuals();
+    engine.medalTracker?.recordApsIntercept();
     sound.playApsIntercept({ x: threatX, z: threatZ });
 
     const toX = threatX - engine.playerX;
@@ -997,6 +998,7 @@ export class PlayerController {
         engine.playerMaxFireCooldown = interCooldown;
         engine.playerSalvoShot = 1;
         engine.playerSalvoResetTimer = engine.playerStats.fireCooldown || 0.88;
+        engine._currentSalvoId = (engine._currentSalvoId || 0) + 1;
       }
 
       engine.playerRecoil = 0.07;
@@ -1032,6 +1034,8 @@ export class PlayerController {
         worldSpeed,
         isHeavy
       );
+      const spawned = engine.projectiles?.[engine.projectiles.length - 1];
+      if (spawned) spawned.salvoId = engine._currentSalvoId || 1;
       engine.playerController.firePlayerMuzzleFx(shotX, shotZ, dirX, dirZ, isHeavy);
     } else {
       const fullCooldown = engine.playerStats.fireCooldown || 1.25;
@@ -1068,10 +1072,11 @@ export class PlayerController {
     });
   }
 
-  damagePlayer(dmg, componentHit = null) {
+  damagePlayer(dmg, componentHit = null, sourceWeapon = null) {
     const engine = this.engine;
     if (!(dmg > 0) || engine.playerHp <= 0) return;
     engine.playerHp -= dmg;
+    engine.medalTracker?.recordPlayerDamage({ amount: dmg, sourceWeapon });
     if (componentHit) engine.tryDamageComponent(dmg, componentHit);
     engine.screenShake = Math.max(engine.screenShake, 0.4);
     sound.playArmorHit({ x: engine.playerX, z: engine.playerZ });

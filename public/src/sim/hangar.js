@@ -19,6 +19,8 @@ export function createInitialPlayerSave() {
     unlockedMissions: ['mission_01', 'mission_02', 'mission_03'],
     completedMissions: {},
     achievements: {},
+    medals: {},
+    serviceXp: 0,
     stats: {
       totalKills: 0,
       totalBattles: 0,

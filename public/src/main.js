@@ -45,6 +45,11 @@ import {
   recordUnlockedAchievements,
   updateCareerStats,
 } from './sim/index.js';
+import {
+  evaluateMissionMedals,
+  getRankProgress,
+  recordMedalsAndRank,
+} from './sim/medals.js';
 
 const INITIAL_STATS = computeTankStats({
   gun: CANNONS.CANNON_Mk1,
@@ -286,6 +291,27 @@ function initApp() {
         state.battleAchievements = earned;
         state.achievementBonusCredits = totalBonusCredits;
         state.shareFeedback = '';
+
+        const medalEval = evaluateMissionMedals({
+          trackerState: snapshot.medalTrackerState,
+          hud: snapshot,
+          upgrades: state.upgrades,
+          equippedModules: engine?.equippedOptionalModules || [],
+          isVictory,
+          existingMedals: playerSave?.medals || {},
+        });
+        state.battleMedals = medalEval.earnedMedals;
+        state.battleServiceXp = medalEval;
+        if (playerSave) {
+          const rankRec = recordMedalsAndRank(playerSave, medalEval);
+          state.rankSummary = {
+            ...getRankProgress(playerSave),
+            promoted: rankRec.promoted,
+            previousRank: rankRec.previousRank,
+          };
+        } else {
+          state.rankSummary = null;
+        }
         if (playerSave) {
           if (earned.length > 0) {
             recordUnlockedAchievements(playerSave, earned);
@@ -344,6 +370,9 @@ function initApp() {
       ) {
         state.battleAchievements = [];
         state.achievementBonusCredits = 0;
+        state.battleMedals = [];
+        state.battleServiceXp = null;
+        state.rankSummary = null;
         state.shareFeedback = '';
       }
       renderUI(

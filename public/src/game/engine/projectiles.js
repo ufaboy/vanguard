@@ -441,6 +441,7 @@ export class ProjectilesController {
             mineTriggerDist
           ) {
             engine.detonateMine(m);
+            engine.medalTracker?.recordMineShot();
             hitMine = true;
             if (!p.isMissile) break;
           }
@@ -535,7 +536,11 @@ export class ProjectilesController {
                 : aspectStr === 'left' || aspectStr === 'right'
                 ? 1.15
                 : 1.0;
-              engine.damageEnemy(enemy, legacyScaleDmg * aspectBonus);
+              engine.medalTracker?.recordEnemyHit();
+              engine.damageEnemy(enemy, legacyScaleDmg * aspectBonus, {
+                aspect: aspectStr,
+                salvoId: p.salvoId ?? null,
+              });
               if (p.isMissile) {
                 engine.detonateMissile(p);
               } else {
@@ -637,7 +642,11 @@ export class ProjectilesController {
               p.penetration,
               engine.playerStats.armorByAspect[aspectStr] ?? engine.playerStats.armor
             );
-            engine.damagePlayer(effDamage, p.isFlame ? null : { zone: hitZone, aspect: aspectStr });
+            engine.damagePlayer(
+              effDamage,
+              p.isFlame ? null : { zone: hitZone, aspect: aspectStr },
+              p.sourceWeapon || (p.isRail ? 'TITAN_RAIL' : null)
+            );
             if (p.isFlame) {
               engine.fx.flameJet(p.x, 0.8, p.z, p.vx * 0.3, p.vz * 0.3, 1);
             } else if (p.isMissile) {

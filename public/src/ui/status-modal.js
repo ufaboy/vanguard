@@ -124,6 +124,82 @@ function renderBattleAchievementsSection(state) {
   `;
 }
 
+function renderBattleMedalsAndRankSection(state) {
+  const medals = Array.isArray(state.battleMedals) ? state.battleMedals : [];
+  const xpInfo = state.battleServiceXp;
+  const rank = state.rankSummary;
+  const topMedals = medals.slice(0, 4);
+
+  const medalCaseBtn = `
+    <button
+      type="button"
+      data-action="open-medals"
+      class="battle-share-btn"
+    >
+      🎖️ MEDAL CASE
+    </button>
+  `;
+
+  const rankHtml = rank
+    ? `
+      <div class="battle-rank-row">
+        <div class="battle-rank-left">
+          <span class="battle-rank-insignia">${rank.currentRank.insignia}</span>
+          <div>
+            <div class="battle-rank-title-line">
+              <strong>${rank.currentRank.title}</strong>
+              ${rank.promoted ? `<span class="battle-promoted-pill">RANK UP!</span>` : ''}
+            </div>
+            <span class="battle-rank-xp">
+              ${xpInfo ? `+${xpInfo.totalXp} Service XP` : `${rank.serviceXp} XP`}
+              ${rank.nextRank ? ` • ${rank.serviceXp} / ${rank.nextRank.minXp} XP to ${rank.nextRank.title}` : ' • MAX RANK'}
+            </span>
+          </div>
+        </div>
+        <div class="battle-rank-bar-track">
+          <div class="battle-rank-bar-fill" style="width: ${rank.xpProgressPct}%"></div>
+        </div>
+      </div>
+    `
+    : '';
+
+  const medalsHtml =
+    topMedals.length > 0
+      ? `
+        <div class="battle-medals-grid">
+          ${topMedals
+            .map(
+              (m) => `
+            <div class="battle-medal-chip" style="--medal-color: ${m.color};">
+              <div class="battle-medal-chip-top">
+                <span class="battle-medal-grade">${m.gradeLabel.toUpperCase()}</span>
+                <span class="battle-medal-xp">${m.isNew ? 'NEW ' : ''}+${m.xpAwarded} XP</span>
+              </div>
+              <strong class="battle-medal-name">${m.name}</strong>
+              <span class="battle-medal-desc">${m.description}</span>
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+      `
+      : `<p class="battle-ach-desc">No tactical medals awarded this sortie.</p>`;
+
+  return `
+    <div class="battle-ach-box battle-medals-box">
+      <div class="battle-ach-header">
+        <div class="battle-ach-header-left">
+          <span class="battle-ach-kicker">SERVICE MEDALS (${medals.length})</span>
+          ${xpInfo?.medalXp > 0 ? `<span class="battle-ach-bonus">+${xpInfo.medalXp} MEDAL XP</span>` : ''}
+        </div>
+        ${medalCaseBtn}
+      </div>
+      ${rankHtml}
+      ${medalsHtml}
+    </div>
+  `;
+}
+
 const RIVETS_HTML = `<span class="btn-rivet top-left" aria-hidden="true"></span><span class="btn-rivet top-right" aria-hidden="true"></span><span class="btn-rivet bottom-left" aria-hidden="true"></span><span class="btn-rivet bottom-right" aria-hidden="true"></span>`;
 const ICON_TANK = `<svg viewBox="0 0 48 22" fill="currentColor" aria-hidden="true"><path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>`;
 const ICON_CHEVRONS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>`;
@@ -259,7 +335,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
           </div>
         </div>
 
-        ${renderBattleAchievementsSection(state)}
+        ${renderBattleMedalsAndRankSection(state)}
         ${renderBattleShareBar(state, hud, currentSector, accuracy)}
 
         <div class="battle-modal-actions">
@@ -303,7 +379,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
             <span class="text-lg font-bold text-emerald-300 tabular-nums">+$ ${s?.totalObjectiveCredits ?? 0}</span>
           </div>
         </div>
-        ${renderBattleAchievementsSection(state)}
+        ${renderBattleMedalsAndRankSection(state)}
         ${renderBattleShareBar(state, hud, currentSector, accuracy)}
         ${renderRewardedAdSlot(state)}
 
@@ -359,7 +435,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
           <span class="text-lg font-bold text-sky-400 tabular-nums">${accuracy}%</span>
         </div>
       </div>
-      ${renderBattleAchievementsSection(state)}
+      ${renderBattleMedalsAndRankSection(state)}
       ${renderBattleShareBar(state, hud, currentSector, accuracy)}
       ${renderRewardedAdSlot(state)}
 
@@ -423,7 +499,7 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
           </div>
         </div>
 
-        ${renderBattleAchievementsSection(state)}
+        ${renderBattleMedalsAndRankSection(state)}
         ${renderBattleShareBar(state, hud, currentSector, accuracy)}
 
         <div class="battle-modal-actions">
@@ -476,7 +552,7 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
           <span class="text-lg font-bold text-emerald-400 tabular-nums">${hud.kills}</span>
         </div>
       </div>
-      ${renderBattleAchievementsSection(state)}
+      ${renderBattleMedalsAndRankSection(state)}
       ${renderBattleShareBar(state, hud, currentSector, accuracy)}
       ${renderRewardedAdSlot(state)}
 

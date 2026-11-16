@@ -804,7 +804,7 @@ export class EnemyCombatController {
     return crushed;
   }
 
-  damageEnemy(enemy, dmg) {
+  damageEnemy(enemy, dmg, hitMeta = null) {
     const { engine } = this;
     if (!enemy || enemy.hp <= DURABILITY.ZERO_HP) return;
     if (enemy.isBoss && enemy.phaseShieldTimer > 0) {
@@ -840,6 +840,25 @@ export class EnemyCombatController {
       engine.sensorContacts.delete(enemy.id);
       engine.entityGroup.remove(enemy.rig.root);
       engine.kills++;
+      const playerGrid = engine.worldToGrid?.(engine.playerX, engine.playerZ);
+      const playerCell = playerGrid ? engine.grid?.[playerGrid.row]?.[playerGrid.col] : null;
+      const playerInWater = playerCell?.type === TileType.WATER;
+      const playerHpRatio = engine.playerMaxHp > 0 ? engine.playerHp / engine.playerMaxHp : 1;
+      const distToPlayer = Math.hypot((enemy.x ?? 0) - (engine.playerX ?? 0), (enemy.z ?? 0) - (engine.playerZ ?? 0));
+      engine.medalTracker?.recordEnemyKill({
+        enemyClass: enemy.enemyClass,
+        aspect: hitMeta?.aspect || 'front',
+        playerHpRatio,
+        playerInWater,
+        salvoId: hitMeta?.salvoId ?? null,
+        minesPlaced: enemy.minesPlaced || 0,
+        engineerActing: Boolean(enemy.isRepairing || enemy.isBuilding || (enemy.specialCooldown || 0) > 0),
+        kamikazeChargingClose: enemy.enemyClass === 'KAMIKAZE' && distToPlayer <= TILE_SIZE * 5.5,
+        howitzerBarrages: enemy.howitzerBarrages || 0,
+        stealthCamouflaged: enemy.enemyClass === 'STEALTH' && Math.hypot(enemy.vx || 0, enemy.vz || 0) < 0.05,
+        jammerPulsing: enemy.enemyClass === 'JAMMER' && (engine.jammerActiveTimer || 0) > 0,
+        bossOverloaded: Boolean(enemy.titanOverload),
+      });
       const unitClass = String(enemy.enemyClass || 'hostile').toUpperCase();
       const unitName =
         enemy.name ||

@@ -337,6 +337,9 @@ export class TerrainDestructionController {
     const wasBoxes = cell.type === TileType.BOXES;
     const wasConcrete = cell.type === TileType.CONCRETE;
     const wasForest = cell.type === TileType.FOREST;
+    if (wasConcrete) {
+      engine.medalTracker?.recordConcreteDestroyed();
+    }
     cell.type = TileType.EMPTY;
     engine._spawnerCells = null;
     cell.hp = 0;
