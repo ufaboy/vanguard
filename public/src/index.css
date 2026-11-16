@@ -85,6 +85,7 @@ html, body {
 .top-64 { top: 16rem; }
 .bottom-0\.5 { bottom: 0.125rem; }
 .bottom-4 { bottom: 1rem; }
+.bottom-24 { bottom: 6rem; }
 .bottom-28 { bottom: 7rem; }
 .left-1 { left: 0.25rem; }
 .left-4 { left: 1rem; }
@@ -212,6 +213,7 @@ html, body {
 .bg-\[\#0B0F17\]\/95 { background-color: rgba(11, 15, 23, 0.95); }
 .bg-black\/75 { background-color: rgba(0, 0, 0, 0.78); }
 .bg-slate-950 { background-color: #020617; }
+.bg-slate-950\/95 { background-color: rgba(2, 6, 23, 0.95); }
 .bg-slate-900 { background-color: #0f172a; }
 .bg-slate-900\/80 { background-color: rgba(15, 23, 42, 0.85); }
 .bg-slate-900\/90 { background-color: rgba(15, 23, 42, 0.92); }

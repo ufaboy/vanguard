@@ -128,7 +128,7 @@ export function renderContractHud(hud) {
         actionEl,
         `
           <div class="flex flex-wrap items-center gap-2.5">
-            <div class="bg-slate-950/95 border border-teal-400/80 px-3.5 py-2 rounded shadow-2xl flex items-center gap-2.5 font-mono text-xs text-teal-100">
+            <div class="bg-[#0B0F17]/95 border border-teal-400/80 px-3.5 py-2 rounded shadow-2xl flex items-center gap-2.5 font-mono text-xs text-teal-100">
               ${renderContractProgressRingSvg(ratio, '#2dd4bf', `${Math.ceil(sv.waveTimer)}s`)}
               <div>
                 <div class="font-bold text-xs uppercase text-white">NEXT: WAVE ${sv.nextWaveNumber} — ${sv.nextWaveTitle}</div>
