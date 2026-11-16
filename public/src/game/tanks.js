@@ -109,7 +109,7 @@ export const TANK_CONFIGS = Object.freeze({
     ]),
     name: 'Recon Light Tank "Viper"',
     role: 'Fast Flanking Recon',
-    base: tankBase({ sightRadius: 26.0, radioAlertRadius: 28.0 }),
+    base: tankBase({ mass: 11, sightRadius: 26.0, radioAlertRadius: 28.0 }),
     description:
       'High-speed reconnaissance vehicle built on an ultra-light CH_SCOUT suspension, F1 monocoque frame, E3 V12 engine, and unarmored A0 hull (12 HP, 0% armor). Armed with a rapid-fire 30mm AUTOCANNON to strip APS charges and chew through brick cover, plus 26m recon optics and a 28m radio relay.',
     loadoutSummary: 'AUTOCANNON · CH_SCOUT · F1 · E3 · A0',

@@ -22,7 +22,7 @@ export class ConcreteModels extends BreachModels {
    * per-tile tinted clones of the material share an instanced batch.
    */
   prepareMaterials() {
-    this.material.color.setHex(0xcbd3dd);
+    this.material.color.setHex(0x8c96a3);
     this.material.userData.batchKey = 'concrete-model';
     super.prepareMaterials();
   }

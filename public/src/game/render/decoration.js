@@ -98,7 +98,7 @@ export function normalizeDecoration(rawMap) {
 
 export function decorationCellAllowed(sector,row,col,details=false) {
   const tile=sector.grid[row]?.[col];
-  if (tile!==TileType.EMPTY && (details || tile!==TileType.BRICK)) return false;
+  if (tile!==TileType.EMPTY && (details || (tile!==TileType.BRICK && tile!==TileType.BARREL))) return false;
   return !sector.decoration.exclusions.some(({bounds:[r0,c0,r1,c1]})=>row>=r0&&row<=r1&&col>=c0&&col<=c1);
 }
 function randomFor(seed,id) {

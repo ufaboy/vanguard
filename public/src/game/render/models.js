@@ -2543,23 +2543,10 @@ export class ModelFactory extends TextureGenerator {
         roughness: 0.5,
         metalness: 0.8,
       });
-      const baseMat = new THREE.MeshStandardMaterial({
-        color: 0x1f2937,
-        roughness: 0.8,
-        metalness: 0.2,
-      });
-      this.barrelMats = { bodyMat, hazardStripeMat, rimMat, baseMat };
+      this.barrelMats = { bodyMat, hazardStripeMat, rimMat };
     }
 
-    const { bodyMat, hazardStripeMat, rimMat, baseMat } = this.barrelMats;
-
-    const pallet = new THREE.Mesh(
-      this.sharedGeometry('BoxGeometry', 1.45, 0.06, 1.45),
-      baseMat
-    );
-    pallet.position.y = 0.03;
-    pallet.receiveShadow = true;
-    group.add(pallet);
+    const { bodyMat, hazardStripeMat, rimMat } = this.barrelMats;
 
     const drumGeo = this.sharedGeometry('CylinderGeometry', 0.28, 0.28, 0.68, 14);
     const stripeGeo = this.sharedGeometry('CylinderGeometry', 0.286, 0.286, 0.18, 14);
@@ -2574,7 +2561,7 @@ export class ModelFactory extends TextureGenerator {
 
     for (const d of drums) {
       const drumGroup = new THREE.Group();
-      drumGroup.position.set(d.x, 0.06, d.z);
+      drumGroup.position.set(d.x, 0, d.z);
       drumGroup.rotation.y = d.rot;
 
       const drum = new THREE.Mesh(drumGeo, bodyMat);
