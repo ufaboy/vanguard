@@ -19,6 +19,18 @@ const EXCLUDED_ROOT_FILES = new Set([
   'sitemap.xml',
 ]);
 
+function restoreHtmlLinksForItch(html, htmlPages) {
+  return html.replace(/href="\.\/([a-z0-9-]*)([?#][^"]*)?"/gi, (match, slug, suffix = '') => {
+    if (!slug) {
+      return `href="./index.html${suffix}"`;
+    }
+    if (htmlPages.has(`${slug}.html`)) {
+      return `href="./${slug}.html${suffix}"`;
+    }
+    return match;
+  });
+}
+
 function stripAdsAndAnalytics(html) {
   return html
     .replace(/^\s*<meta\s+name="google-adsense-account"[^>]*>\s*\r?\n?/gim, '')
@@ -97,11 +109,12 @@ fs.cpSync(PUBLIC_DIR, OUT_DIR, {
   },
 });
 
-for (const entry of fs.readdirSync(OUT_DIR)) {
-  if (!entry.endsWith('.html')) continue;
+const outHtmlPages = new Set(fs.readdirSync(OUT_DIR).filter((entry) => entry.endsWith('.html')));
+for (const entry of outHtmlPages) {
   const htmlPath = path.join(OUT_DIR, entry);
   let html = fs.readFileSync(htmlPath, 'utf8');
   html = stripAdsAndAnalytics(html);
+  html = restoreHtmlLinksForItch(html, outHtmlPages);
   if (entry === 'privacy-policy.html') {
     html = sanitizeItchPrivacyPolicy(html);
   }

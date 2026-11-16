@@ -4238,7 +4238,11 @@ body.scrollable-page {
   overflow-x: clip;
 }
 
-.menu-content,
+.menu-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .menu-card,
 .armored-mode-plate,
 .home-briefing-card,
@@ -4246,6 +4250,59 @@ body.scrollable-page {
   min-width: 0;
   max-width: 100%;
   overflow-wrap: anywhere;
+}
+
+/* Compact, centered layout for standalone guide & info pages */
+body.scrollable-page .menu-page > .menu-content:not(.command-home-content) {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 28px 52px;
+  box-sizing: border-box;
+}
+
+body.scrollable-page .menu-content:not(.command-home-content) .menu-lead {
+  margin: 10px 0 22px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+body.scrollable-page .menu-content:not(.command-home-content) figure.menu-card {
+  max-width: 760px;
+  padding: 12px !important;
+}
+
+body.scrollable-page .menu-content:not(.command-home-content) figure.menu-card img {
+  max-height: 260px;
+  object-fit: cover;
+}
+
+body.scrollable-page .menu-content:not(.command-home-content) .menu-grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+body.scrollable-page .menu-content:not(.command-home-content) .menu-card {
+  padding: 16px 18px;
+  border-radius: 6px;
+}
+
+body.scrollable-page .menu-content:not(.command-home-content) .menu-card > img {
+  max-height: 148px;
+  object-fit: cover;
+  margin-bottom: 10px !important;
+}
+
+body.scrollable-page .menu-content:not(.command-home-content) .menu-card strong {
+  font-size: 17px;
+  line-height: 1.3;
+  margin-top: 8px;
+}
+
+body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin-top: 8px;
 }
 
 @media (max-width: 1180px), (max-height: 820px) {
