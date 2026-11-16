@@ -828,7 +828,9 @@ export class EnemySpawnerController {
       return;
     }
     const totalPool = Math.max(1, engine.initialVanguardCount || engine.vanguardRemainingToSpawn || 1);
-    const progress = 1 - engine.vanguardRemainingToSpawn / totalPool;
+    const activeNonBoss = engine.enemies.filter((u) => !u.isBoss).length;
+    const remaining = engine.vanguardRemainingToSpawn + activeNonBoss;
+    const progress = 1 - remaining / totalPool;
     const threshold = (nextStage + 1) / (sector.bossSequence.length + 1);
     if (
       progress >= threshold ||

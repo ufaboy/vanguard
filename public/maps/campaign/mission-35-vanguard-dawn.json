@@ -126,7 +126,9 @@
           "row": 3,
           "col": 15
         }
-      },
+      }
+    ],
+    [
       {
         "enemyClass": "BOSS_INFERNO",
         "name": "CERBERUS-T",

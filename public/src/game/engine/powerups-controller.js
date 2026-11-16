@@ -182,8 +182,6 @@ export class PowerupsController {
           sound.playPowerUp();
         }
       } else {
-        rig.crateGroup.rotation.y = elapsed * 1.1;
-        rig.crateGroup.position.y = Math.sin(elapsed * 3.0) * 0.08;
         if (Math.hypot(engine.playerX - drop.x, engine.playerZ - drop.z) <= 1.45) {
           if (!this.isAirDropUseful(drop.config)) continue;
           this.applyAirDrop(drop.config);

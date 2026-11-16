@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { BOSS_APS, FLAME_STREAM, HYDRA, INFERNO, MAMMOTH, TITAN, TILE_SIZE, computeTankStats } from '../public/src/game/constants.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
+import { EnemySpawnerController } from '../public/src/game/engine/enemy-spawner.js';
 import { SECTORS } from '../public/src/game/levels.js';
 import { EnemyClass, TileType } from '../public/src/game/types.js';
 import { MAP_MODES, MAP_MODE_CONFIGS } from '../public/src/game/mapRules.js';
@@ -411,18 +412,19 @@ test('Mission 35 bossSequence escalates through all 4 bosses before victory', ()
   assert.deepEqual(game.enemies.map((e) => e.enemyClass), [EnemyClass.BOSS_MAMMOTH]);
   assert.equal(game.bossSpawned, false);
 
-  // Killing Mammoth spawns Stage 1: BOSS_HYDRA + BOSS_INFERNO together
+  // Killing Mammoth spawns Stage 1: BOSS_HYDRA
   game.damageEnemy(game.enemies[0], 50);
-  assert.deepEqual(game.enemies.map((e) => e.enemyClass), [EnemyClass.BOSS_HYDRA, EnemyClass.BOSS_INFERNO]);
+  assert.deepEqual(game.enemies.map((e) => e.enemyClass), [EnemyClass.BOSS_HYDRA]);
   assert.equal(game.victories.length, 0);
   assert.equal(game.bossSpawned, false);
 
-  // Killing Hydra alone does not advance yet while Inferno lives
+  // Killing Hydra advances to Stage 2: BOSS_INFERNO
   game.damageEnemy(game.enemies[0], 50);
   assert.deepEqual(game.enemies.map((e) => e.enemyClass), [EnemyClass.BOSS_INFERNO]);
   assert.equal(game.victories.length, 0);
+  assert.equal(game.bossSpawned, false);
 
-  // Killing Inferno advances to Final Stage 2: BOSS_TITAN
+  // Killing Inferno advances to Final Stage 3: BOSS_TITAN
   game.damageEnemy(game.enemies[0], 50);
   assert.deepEqual(game.enemies.map((e) => e.enemyClass), [EnemyClass.BOSS_TITAN]);
   assert.equal(game.bossSpawned, true);
@@ -433,6 +435,31 @@ test('Mission 35 bossSequence escalates through all 4 bosses before victory', ()
   game.enemies[0].titanOverload = true;
   game.damageEnemy(game.enemies[0], 50);
   assert.equal(game.victories.length, 1);
+});
+
+test('stepBossSequenceSpawning counts destroyed enemies rather than merely spawned ones', () => {
+  const spawnedStages = [];
+  const game = fakeBossEngine(
+    Array.from({ length: 8 }, (_, idx) => ({ id: idx + 1, isBoss: false }))
+  );
+  game.initialVanguardCount = 29;
+  game.vanguardRemainingToSpawn = 21; // 8 spawned, 0 destroyed
+  game.bossSequenceStarted = false;
+  game.bossStageIndex = 0;
+  game.activeMapRules = { spawnSectorBossOnClear: true };
+  const spawner = new EnemySpawnerController(game);
+  spawner.spawnBossStage = (stageIdx) => {
+    spawnedStages.push(stageIdx);
+    return true;
+  };
+
+  spawner.stepBossSequenceSpawning(SECTORS[34]);
+  assert.deepEqual(spawnedStages, [], 'no boss should spawn when 8 enemies are only spawned and still alive');
+
+  // Destroy 8 enemies (still 21 remaining to spawn, 0 alive non-boss) -> 8/29 = 27.6% >= 20%
+  game.enemies.length = 0;
+  spawner.stepBossSequenceSpawning(SECTORS[34]);
+  assert.deepEqual(spawnedStages, [0], 'Stage 0 spawns once 20% of the enemy pool is destroyed');
 });
 
 test('deploySmokeCloud breaks enemy locks, blocks LOS/spotters, and prevents damage counter-alerts', () => {

@@ -847,9 +847,6 @@ export class CodexStage {
             drop.rig.chuteGroup.visible = false;
             sound.playPowerUp();
           }
-        } else {
-          drop.rig.crateGroup.rotation.y = elapsed * 1.1;
-          drop.rig.crateGroup.position.y = Math.sin(elapsed * 3.0) * 0.08;
         }
       }
     }
