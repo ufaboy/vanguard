@@ -710,99 +710,139 @@ body[data-page="contract"] .menu-page {
 /* Operational Mode Cards Strip (Bottom Deck) */
 .command-modes-deck {
   position: absolute;
-  left: 20px;
-  right: 20px;
-  bottom: 20px;
+  left: 24px;
+  right: 24px;
+  bottom: 22px;
   z-index: 6;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .armored-mode-plate {
+  --plate-accent: #f59e0b;
+  --plate-accent-glow: rgba(245, 158, 11, 0.22);
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: linear-gradient(180deg, #151f2b 0%, #0d151f 100%);
-  border: 1px solid #233246;
-  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+  gap: 14px;
+  padding: 14px 16px 14px 18px;
+  background: linear-gradient(135deg, rgba(17, 25, 38, 0.95) 0%, rgba(10, 15, 23, 0.97) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
   text-decoration: none;
-  color: #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all 0.15s ease;
+  color: #f1f5f9;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
   user-select: none;
 }
-.armored-mode-plate:hover {
-  background: linear-gradient(180deg, #1e2c3d 0%, #121c2a 100%);
-  border-color: #f59e0b;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65), 0 0 0 2px rgba(245, 158, 11, 0.22), 0 0 14px rgba(245, 158, 11, 0.2);
+
+.armored-mode-plate::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--plate-accent);
+  opacity: 0.78;
+  transition: opacity 0.18s ease, box-shadow 0.18s ease;
 }
 
-.plate-rivet {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #475569;
-  border: 1px solid #1e293b;
+.armored-mode-plate.is-campaign {
+  --plate-accent: #f59e0b;
+  --plate-accent-glow: rgba(245, 158, 11, 0.24);
 }
-.plate-rivet.tl { top: 4px; left: 4px; }
-.plate-rivet.tr { top: 4px; right: 4px; }
+.armored-mode-plate.is-survival {
+  --plate-accent: #2ec5f0;
+  --plate-accent-glow: rgba(46, 197, 240, 0.24);
+}
+.armored-mode-plate.is-contracts {
+  --plate-accent: #f97316;
+  --plate-accent-glow: rgba(249, 115, 22, 0.24);
+}
+
+.armored-mode-plate:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, rgba(24, 36, 54, 0.97) 0%, rgba(13, 20, 31, 0.98) 100%);
+  border-color: var(--plate-accent);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.65), 0 0 18px var(--plate-accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.armored-mode-plate:hover::before {
+  opacity: 1;
+  box-shadow: 0 0 10px var(--plate-accent);
+}
 
 .plate-index {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
   font-family: var(--font-mono, monospace);
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1;
-  color: #475569;
-  transition: color 0.15s ease;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--plate-accent);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 4px;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 .armored-mode-plate:hover .plate-index {
-  color: #f59e0b;
+  background: var(--plate-accent);
+  border-color: var(--plate-accent);
+  color: #090d14;
 }
 
 .plate-content {
   flex: 1;
   min-width: 0;
 }
-.plate-content small {
-  display: block;
-  font-family: var(--font-mono, monospace);
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: #f59e0b;
-  margin-bottom: 2px;
-}
 .plate-content strong {
   display: block;
-  font-family: var(--font-mono, monospace);
-  font-size: 13.5px;
+  font-family: var(--font-display, sans-serif);
+  font-size: 16px;
   font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: #f8fafc;
-  letter-spacing: 0.04em;
+  line-height: 1.15;
 }
-.plate-content p {
-  font-size: 10.5px;
-  line-height: 1.35;
+.plate-content small {
+  display: block;
+  margin-top: 3px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: #94a3b8;
-  margin: 2px 0 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .plate-arrow {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
   font-family: var(--font-mono, monospace);
-  font-size: 16px;
-  color: #64748b;
-  transition: color 0.15s ease, transform 0.15s ease;
+  font-size: 15px;
+  font-weight: 700;
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.65);
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
 }
 .armored-mode-plate:hover .plate-arrow {
-  color: #f59e0b;
-  transform: translateX(2px);
+  color: var(--plate-accent);
+  border-color: var(--plate-accent);
+  background: rgba(15, 23, 42, 0.95);
+  transform: translateX(3px);
 }
 
 /* Clean Editorial Tactical Overview (Below-the-fold SEO Section, No Card Boxes) */
