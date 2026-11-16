@@ -47,6 +47,7 @@ export const mineLayer = Object.freeze({
     const activeSapperMines = game.mines.filter((m) => !m.mapMine).length;
     if (activeSapperMines < MINE_LAYER.MAP_LIMIT) {
       tank.minesRemaining--;
+      tank.minesPlaced = (tank.minesPlaced || 0) + 1;
       const planned = {
         x: tank.x - Math.sin(tank.hullAngle) * MINE_LAYER.DROP_OFFSET,
         z: tank.z - Math.cos(tank.hullAngle) * MINE_LAYER.DROP_OFFSET,

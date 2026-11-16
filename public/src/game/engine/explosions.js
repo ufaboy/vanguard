@@ -236,7 +236,10 @@ export class ExplosionsController {
           hz.radius,
           hz.damage,
           hz.fromPlayer,
-          { zone: 'turret', aspect: 'front' }
+          { zone: 'turret', aspect: 'front' },
+          false,
+          0,
+          hz.sourceWeapon || null
         );
         engine.hazardZones.splice(i, 1);
       }
@@ -343,7 +346,8 @@ export class ExplosionsController {
     fromPlayer,
     componentHit = null,
     isEnvironmental = false,
-    penetration = 0
+    penetration = 0,
+    sourceWeapon = null
   ) {
     const { engine } = this;
     if (isEnvironmental) {
@@ -430,7 +434,7 @@ export class ExplosionsController {
             z
           )
         );
-        engine.damagePlayer(eff, componentHit);
+        engine.damagePlayer(eff, componentHit, sourceWeapon);
       }
     }
   }

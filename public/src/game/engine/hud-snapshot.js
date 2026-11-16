@@ -196,6 +196,7 @@ export function buildHudSnapshot(engine) {
     blocksDestroyed: engine.blocksDestroyed,
     shotsFired: engine.shotsFired,
     shotsHit: engine.shotsHit,
+    medalTrackerState: engine.medalTracker?.snapshot() || null,
     statusMessage: engine.statusMessage,
   };
 }

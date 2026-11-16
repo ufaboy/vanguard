@@ -2,11 +2,13 @@ import { CAMERA_LABELS, FPS_CAP_OPTIONS, TOUCH_CONTROLS_MODES, loadPreferences, 
 import { renderSettings } from '../pages/settings.js';
 import { sound } from '../game/sound.js';
 import { attachAchievementsModal } from '../ui/achievements-modal.js';
+import { attachMedalsModal } from '../ui/medals-modal.js';
 import { analyticsManager } from './analyticsManager.js';
 
 /** Attaches a lightweight Settings modal handler to any page root. */
 export function attachSettingsModal(root, onSettingsChange = null) {
   attachAchievementsModal(root);
+  attachMedalsModal(root);
   const prefs = loadPreferences();
   let modal = document.getElementById('settings-modal');
   if (!modal) {

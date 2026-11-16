@@ -1,6 +1,7 @@
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
 import { applyGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { normalizeComponentDamage, effectiveUpgradeTiers } from '../../sim/component-damage.js';
+import { createBattleMedalTracker } from '../../sim/medals.js';
 /** Core Three.js WebGL game loop, combat physics, and simulation. */
 
 import { isCampaignMissionUnlocked } from '../campaign.js';
@@ -225,6 +226,7 @@ export class TankGameEngine {
     this.blocksDestroyed = 0;
     this.shotsFired = 0;
     this.shotsHit = 0;
+    this.medalTracker = createBattleMedalTracker();
     this.hudSyncAccumulator = 0;
 
     this.profileSave.loadSavedProgress();
@@ -730,6 +732,7 @@ export class TankGameEngine {
     this.blocksDestroyed = 0;
     this.shotsFired = 0;
     this.shotsHit = 0;
+    this.medalTracker = createBattleMedalTracker();
     this.loadSector(this.currentSectorIndex, true);
   }
 
@@ -1173,8 +1176,8 @@ export class TankGameEngine {
     this.explosions.detonateThermobaricAt(x, z, radius, damage, fromPlayer);
   }
 
-  detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit = null, isEnvironmental = false, penetration = 0) {
-    this.explosions.detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit, isEnvironmental, penetration);
+  detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit = null, isEnvironmental = false, penetration = 0, sourceWeapon = null) {
+    this.explosions.detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit, isEnvironmental, penetration, sourceWeapon);
   }
 
   /** Armour of the hull side facing a blast centre (armour always works per side). */
@@ -1245,9 +1248,9 @@ export class TankGameEngine {
     this.terrainDestruction.updateBarrelExplosions(dt);
   }
 
-  damageEnemy(enemy, dmg) { this.enemyCombat.damageEnemy(enemy, dmg); }
+  damageEnemy(enemy, dmg, hitMeta = null) { this.enemyCombat.damageEnemy(enemy, dmg, hitMeta); }
 
-  damagePlayer(dmg, componentHit = null) { this.playerController.damagePlayer(dmg, componentHit); }
+  damagePlayer(dmg, componentHit = null, sourceWeapon = null) { this.playerController.damagePlayer(dmg, componentHit, sourceWeapon); }
 
   updatePowerUps(dt, elapsed) {
     this.powerupsController.updatePowerUps(dt, elapsed);
