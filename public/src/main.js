@@ -201,6 +201,7 @@ function initApp() {
       <div id="canvas-mount" class="fixed inset-0 w-full h-full cursor-crosshair"></div>
       <header id="top-telemetry" class="fixed top-4 left-4 z-20 flex flex-wrap items-center gap-3 bg-[#0B0F17]/95 border border-slate-700/70 px-4 py-2.5 rounded shadow-lg"></header>
       <div id="top-controls" class="fixed top-4 right-4 z-20 flex items-center gap-2"></div>
+      <div id="top-compass" class="hidden fixed left-1/2 -translate-x-1/2 z-20 pointer-events-none"></div>
       <div id="sensor-minimap" class="fixed top-16 right-4 z-20 bg-[#0B0F17]/95 border border-slate-700/80 rounded p-2 shadow-2xl"></div>
       <div id="contract-hud" class="hidden fixed top-20 left-4 z-20 flex flex-col gap-2 max-w-[min(560px,92vw)]"></div>
       <div id="contract-action-bar" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center"></div>

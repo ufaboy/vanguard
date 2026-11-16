@@ -10,6 +10,7 @@
  * for every enemy (GUNNER).
  */
 
+import { normalizeAngleSigned } from '../ai.js';
 import { missAngle } from './actions.js';
 
 export const GUNNER = Object.freeze({
@@ -22,13 +23,6 @@ export const GUNNER = Object.freeze({
   /** Extra random reload delay added to the cannon cooldown (seconds, max). */
   RELOAD_JITTER: 0.25,
 });
-
-function normalizeAngle(angle) {
-  let a = angle;
-  while (a > Math.PI) a -= Math.PI * 2;
-  while (a < -Math.PI) a += Math.PI * 2;
-  return a;
-}
 
 /** No-lead aim point: the target's current position, nothing else. */
 export function computeAimPoint(target) {
@@ -96,8 +90,8 @@ export function stepGunner(g, { dt, shooter, target, targetKey = 'target', visib
   const dist = Math.hypot(aim.x - shooter.x, aim.z - shooter.z);
   const shot = g.shot && g.shot.targetKey === targetKey ? g.shot : null;
   const offset = shot && !shot.hit ? missAngle(dist, targetRadius, shot.sign) : 0;
-  const desiredTurretAngle = normalizeAngle(Math.atan2(aim.x - shooter.x, aim.z - shooter.z) + offset);
-  const misalignment = Math.abs(normalizeAngle(desiredTurretAngle - shooter.turretAngle));
+  const desiredTurretAngle = normalizeAngleSigned(Math.atan2(aim.x - shooter.x, aim.z - shooter.z) + offset);
+  const misalignment = Math.abs(normalizeAngleSigned(desiredTurretAngle - shooter.turretAngle));
   const aligned = misalignment <= GUNNER.ALIGN_TOLERANCE;
   const reacted = !react || g.contactTime >= GUNNER.REACTION_SEC;
   return { desiredTurretAngle, aligned, reacted, canFire: Boolean(visible && aligned && reacted && shot) };

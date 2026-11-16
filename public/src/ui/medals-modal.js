@@ -151,21 +151,24 @@ export function attachMedalsModal(root) {
     }
   });
 
-  modal.addEventListener('click', (event) => {
-    if (event.target === modal || event.target.closest('[data-action="close-medals"]')) {
-      closeModal();
-      return;
-    }
-    const filterBtn = event.target.closest('[data-action="filter-medals"]');
-    if (filterBtn) {
-      activeFilter = filterBtn.dataset.grade || 'all';
-      renderModal();
-    }
-  });
+  if (modal.dataset.bound !== '1') {
+    modal.dataset.bound = '1';
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal || event.target.closest('[data-action="close-medals"]')) {
+        closeModal();
+        return;
+      }
+      const filterBtn = event.target.closest('[data-action="filter-medals"]');
+      if (filterBtn) {
+        activeFilter = filterBtn.dataset.grade || 'all';
+        renderModal();
+      }
+    });
 
-  window.addEventListener('keydown', (event) => {
-    if (event.code === 'Escape' && !modal.classList.contains('hidden')) {
-      closeModal();
-    }
-  });
+    window.addEventListener('keydown', (event) => {
+      if (event.code === 'Escape' && !modal.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+  }
 }
