@@ -607,6 +607,12 @@ export class SectorLoaderController {
       ? [...sector.enemyPool]
       : [];
     engine.vanguardRemainingToSpawn = engine.enemySpawnQueue.length;
+    engine.initialVanguardCount = engine.vanguardRemainingToSpawn;
+    engine.airDrops = [];
+    engine.airDropQueue = Array.isArray(sector.airDrop)
+      ? sector.airDrop.map((entry) => ({ ...entry, triggered: false }))
+      : [];
+    engine.airDropElapsed = 0;
     engine.spawnPoolCursor = 0;
     engine.spawnerRoundRobinIdx = 0;
     engine.bossSpawned = false;
@@ -678,6 +684,7 @@ export class SectorLoaderController {
       }
       engine.encounterState = createEncounterState(sector.encounters, count);
       engine.vanguardRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
+      engine.initialVanguardCount = engine.vanguardRemainingToSpawn + count;
       engine.enemySpawnQueue = [];
     } else {
       if (Array.isArray(sector.fixedSpawns)) {

@@ -879,6 +879,7 @@ export class EnemyCombatController {
       sound.playExplosion(enemy.isBoss ? 2.0 : 1.7, { x: enemy.x, z: enemy.z });
       engine.checkAndIgniteForestOnEnemyKill(enemy);
       if (enemy.isBoss) {
+        engine.powerupsController?.dropBossPowerUps?.(enemy.x, enemy.z);
         analyticsManager.trackEvent('boss_defeated', {
           boss_id: enemy.enemyClass,
           sector_id: engine.currentSectorIndex,
@@ -909,16 +910,23 @@ export class EnemyCombatController {
           Array.isArray(sector?.bossSequence) &&
           engine.bossStageIndex + 1 < sector.bossSequence.length &&
           !engine.enemies.some((u) => u.isBoss);
-        if (hasPendingBossStage) {
+        if (hasPendingBossStage && engine.vanguardRemainingToSpawn === 0 && engine.enemies.length === 0) {
           engine.enemySpawner.spawnBossStage(engine.bossStageIndex + 1);
           engine.saveProgress();
           return;
         }
+        const allSequenceStagesDone =
+          !Array.isArray(sector?.bossSequence) ||
+          sector.bossSequence.length === 0 ||
+          (engine.bossSequenceStarted && engine.bossStageIndex + 1 >= sector.bossSequence.length);
         const victoryRes = checkMapVictory(engine.activeMapRules, {
           enemyBaseDestroyed: !engine.enemyBaseAlive,
           vanguardRemainingToSpawn: engine.vanguardRemainingToSpawn,
           activeEnemiesCount: engine.enemies.length,
-          bossDefeated: engine.bossSpawned && !engine.enemies.some((u) => u.isBoss),
+          bossDefeated:
+            allSequenceStagesDone &&
+            engine.bossSpawned &&
+            !engine.enemies.some((u) => u.isBoss),
         });
         if (victoryRes.isVictory) {
           engine.triggerMissionVictory(

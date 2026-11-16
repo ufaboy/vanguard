@@ -85,6 +85,26 @@
   "completionReward": {
     "credits": 1500
   },
+  "airDrop": [
+    {
+      "delaySec": 22,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6
+    },
+    {
+      "delaySec": 57,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6
+    },
+    {
+      "delaySec": 92,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6
+    }
+  ],
   "bossSequence": [
     [
       {

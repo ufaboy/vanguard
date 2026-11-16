@@ -8,8 +8,9 @@ import {
   POWERUP_MAX_ON_MAP,
   POWERUP_TYPES,
 } from '../constants.js';
-import { GRID_SIZE } from '../levels.js';
+import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { isUsefulPowerUp } from '../powerup-drops.js';
+import { disposeOwned } from '../render/dispose.js';
 import { sound } from '../sound.js';
 import { TileType } from '../types.js';
 
@@ -54,6 +55,164 @@ export class PowerupsController {
     };
     engine.powerUps.push(item);
     return item;
+  }
+
+  /** Drops 3 combat power-ups around a defeated boss wreck. */
+  dropBossPowerUps(x, z) {
+    const { engine } = this;
+    if (!engine.modelFactory?.createPowerUpMesh || !engine.entityGroup) return;
+    const dropTypes = [POWERUP.AMMO, POWERUP.REPAIR, POWERUP.APS];
+    const radius = 1.85;
+    for (let i = 0; i < dropTypes.length; i++) {
+      const angle = (Math.PI * 2 * i) / dropTypes.length + 0.4;
+      let px = x + Math.cos(angle) * radius;
+      let pz = z + Math.sin(angle) * radius;
+      const g = engine.worldToGrid?.(px, pz);
+      const cell = g ? engine.grid?.[g.row]?.[g.col] : null;
+      if (!cell || (cell.type !== TileType.EMPTY && cell.type !== TileType.ICE && cell.type !== TileType.SAND && cell.type !== TileType.ROAD && cell.type !== TileType.CRATER)) {
+        px = x;
+        pz = z;
+      }
+      engine.createPowerUpEntity(dropTypes[i], px, pz);
+    }
+  }
+
+  /** Spawns a parachute air-drop supply crate at its configured cell or a passable cell near the combat zone. */
+  spawnAirDrop(config) {
+    const { engine } = this;
+    if (!config || !engine.modelFactory?.createAirDropRig) return null;
+
+    let dropPos = null;
+    if (config.spawnCell && Number.isInteger(config.spawnCell.row) && Number.isInteger(config.spawnCell.col)) {
+      dropPos = engine.gridToWorld(config.spawnCell.row, config.spawnCell.col);
+    }
+    for (let attempt = 0; !dropPos && attempt < 35; attempt++) {
+      const r = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
+      const c = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
+      const cell = engine.grid?.[r]?.[c];
+      if (!cell) continue;
+      if (cell.type === TileType.EMPTY || cell.type === TileType.ICE || cell.type === TileType.ROAD || cell.type === TileType.SAND) {
+        const pos = engine.gridToWorld(r, c);
+        const dist = Math.hypot(pos.x - engine.playerX, pos.z - engine.playerZ);
+        if (dist >= 4 * TILE_SIZE && dist <= 14 * TILE_SIZE) {
+          dropPos = pos;
+          break;
+        }
+        if (!dropPos && dist >= 2 * TILE_SIZE) {
+          dropPos = pos;
+        }
+      }
+    }
+    if (!dropPos) {
+      dropPos = { x: engine.playerX, z: engine.playerZ };
+    }
+
+    const rig = engine.modelFactory.createAirDropRig();
+    rig.root.position.set(dropPos.x, 0, dropPos.z);
+    rig.crateGroup.position.y = 18;
+    engine.entityGroup.add(rig.root);
+
+    const drop = {
+      x: dropPos.x,
+      z: dropPos.z,
+      altitude: 18,
+      landed: false,
+      config,
+      rig,
+    };
+    engine.airDrops ||= [];
+    engine.airDrops.push(drop);
+    engine.setStatusBanner('ALLIED AIR DROP INBOUND — SECURE THE PARACHUTE CRATE!', 3.0);
+    return drop;
+  }
+
+  updateAirDrops(dt, elapsed) {
+    const { engine } = this;
+    const queue = engine.airDropQueue;
+    if ((!queue || queue.length === 0) && (!engine.airDrops || engine.airDrops.length === 0)) return;
+
+    engine.airDrops ||= [];
+    engine.airDropElapsed = (engine.airDropElapsed || 0) + dt;
+    if (queue) {
+      for (const entry of queue) {
+        if (!entry.triggered && engine.airDropElapsed >= entry.delaySec) {
+          entry.triggered = true;
+          this.spawnAirDrop(entry);
+        }
+      }
+    }
+
+    for (let i = engine.airDrops.length - 1; i >= 0; i--) {
+      const drop = engine.airDrops[i];
+      const { rig } = drop;
+      if (!drop.landed) {
+        drop.altitude = Math.max(0, drop.altitude - 5.2 * dt);
+        rig.crateGroup.position.y = drop.altitude;
+        rig.crateGroup.rotation.z = Math.sin(elapsed * 2.4) * 0.12;
+        rig.landingRing.scale.setScalar(1 + Math.sin(elapsed * 5.0) * 0.08);
+        if (drop.altitude <= 0) {
+          drop.landed = true;
+          rig.crateGroup.position.y = 0;
+          rig.crateGroup.rotation.z = 0;
+          rig.chuteGroup.visible = false;
+          sound.playPowerUp();
+        }
+      } else {
+        rig.crateGroup.rotation.y = elapsed * 1.1;
+        rig.crateGroup.position.y = Math.sin(elapsed * 3.0) * 0.08;
+        if (Math.hypot(engine.playerX - drop.x, engine.playerZ - drop.z) <= 1.45) {
+          this.applyAirDrop(drop.config);
+          engine.entityGroup.remove(rig.root);
+          disposeOwned(rig.root);
+          engine.airDrops.splice(i, 1);
+        }
+      }
+    }
+  }
+
+  applyAirDrop(config) {
+    const { engine } = this;
+    sound.playPowerUp();
+    const parts = [];
+    const resolvePctAmount = (maxVal, rawPct) => {
+      const pct = Math.max(0, Math.min(100, Number(rawPct) || 0));
+      if (pct <= 0 || maxVal <= 0) return 0;
+      if (pct >= 100) return maxVal;
+      return Math.max(1, Math.round((maxVal * pct) / 100));
+    };
+
+    const maxShells = engine.getPlayerMaxCannonAmmo();
+    const addShells = resolvePctAmount(maxShells, config.shells);
+    if (addShells > 0) {
+      engine.cannonAmmo = Math.min(maxShells, engine.cannonAmmo + addShells);
+      parts.push(`SHELLS ${engine.cannonAmmo}/${maxShells}`);
+    }
+
+    const maxAps = engine.getPlayerMaxApsAmmo();
+    const addAps = resolvePctAmount(maxAps, config.aps);
+    if (addAps > 0) {
+      engine.addApsRounds(addAps);
+      const nextAps = engine.apsAmmo.reduce((sum, r) => sum + r, 0);
+      parts.push(`APS ${nextAps}/${maxAps}`);
+    }
+
+    const maxMissiles = engine.getPlayerMaxMissileAmmo();
+    const addMissiles = resolvePctAmount(maxMissiles, config.missiles);
+    if (addMissiles > 0) {
+      engine.missileAmmo = Math.min(maxMissiles, engine.missileAmmo + addMissiles);
+      parts.push(`ATGM ${engine.missileAmmo}/${maxMissiles}`);
+    }
+
+    if (engine.playerSave) {
+      engine.playerSave.missileAmmo = engine.missileAmmo;
+      engine.saveRepo?.savePlayerSave?.(engine.playerSave);
+    }
+    engine.recomputePlayerStats(true);
+    engine.setStatusBanner(
+      parts.length ? `AIR DROP SECURED: ${parts.join(' · ')}` : 'AIR DROP SECURED',
+      3.2
+    );
+    engine.emitHudUpdate();
   }
 
   updatePowerUps(dt, elapsed) {

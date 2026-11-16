@@ -766,6 +766,7 @@ export class EnemySpawnerController {
         (label) => engine.setStatusBanner(label, 4)
       );
       engine.vanguardRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
+      this.stepBossSequenceSpawning(sector);
       if (engine.vanguardRemainingToSpawn === 0 && engine.enemies.length === 0) {
         if (engine.activeMapRules?.spawnSectorBossOnClear !== false && !engine.bossSpawned) {
           engine.spawnSectorBoss();
@@ -784,6 +785,8 @@ export class EnemySpawnerController {
     const sector = SECTORS[engine.currentSectorIndex];
     const maxConcurrent = sector?.maxConcurrentEnemies ?? 8;
     const spawnInterval = sector?.spawnIntervalSec ?? 2.6;
+
+    this.stepBossSequenceSpawning(sector);
 
     if (engine.vanguardRemainingToSpawn > 0 && spawners.length > 0) {
       if (engine.enemies.length < maxConcurrent) {
@@ -807,6 +810,31 @@ export class EnemySpawnerController {
           engine.triggerMissionVictory(victoryRes.banner);
         }
       }
+    }
+  }
+
+  /** Distributes bossSequence stages evenly across the mission's enemy pool. */
+  stepBossSequenceSpawning(sector) {
+    const { engine } = this;
+    if (
+      !Array.isArray(sector?.bossSequence) ||
+      sector.bossSequence.length === 0 ||
+      engine.activeMapRules?.spawnSectorBossOnClear === false
+    ) {
+      return;
+    }
+    const nextStage = engine.bossSequenceStarted ? (engine.bossStageIndex || 0) + 1 : 0;
+    if (nextStage >= sector.bossSequence.length || engine.enemies.some((u) => u.isBoss)) {
+      return;
+    }
+    const totalPool = Math.max(1, engine.initialVanguardCount || engine.vanguardRemainingToSpawn || 1);
+    const progress = 1 - engine.vanguardRemainingToSpawn / totalPool;
+    const threshold = (nextStage + 1) / (sector.bossSequence.length + 1);
+    if (
+      progress >= threshold ||
+      (engine.vanguardRemainingToSpawn === 0 && engine.enemies.length === 0)
+    ) {
+      this.spawnBossStage(nextStage);
     }
   }
 }
