@@ -1,0 +1,168 @@
+/* Standalone 3D Codex Studio styles (restored from pre-43116ce index.css) */
+
+.font-display { font-family: var(--font-display); }
+.w-2\.5 { width: 0.625rem; }
+.h-2\.5 { height: 0.625rem; }
+.rounded-xs { border-radius: 2px; }
+.justify-end { justify-content: flex-end; }
+.text-teal-400 { color: #2dd4bf; }
+.text-teal-300 { color: #5eead4; }
+.bg-slate-800 { background-color: #1e293b; }
+.bg-slate-900 { background-color: #0f172a; }
+.border-slate-700\/70 { border-color: rgba(51, 65, 85, 0.7); }
+
+.codex-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+  padding: 1rem;
+}
+
+.codex-header, .codex-footer, .codex-sidebar, .codex-inspector {
+  pointer-events: auto;
+  background-color: rgba(11, 15, 23, 0.95);
+  border: 1px solid rgba(51, 65, 85, 0.8);
+  border-radius: 0.375rem;
+}
+
+.codex-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+.codex-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.codex-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background-color: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.codex-tab.active {
+  color: #f8fafc;
+  border-color: #2dd4bf;
+  background-color: rgba(20, 184, 166, 0.16);
+}
+
+.codex-body {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.75rem 0;
+  min-height: 0;
+  pointer-events: none;
+}
+
+.codex-sidebar {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.codex-sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.codex-item-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  text-align: left;
+  background-color: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.codex-item-btn.active {
+  border-color: #fbbf24;
+  background-color: rgba(245, 158, 11, 0.14);
+}
+
+.codex-inspector {
+  width: 360px;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.codex-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+
+.codex-spec-card {
+  padding: 0.5rem;
+  background-color: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 0.25rem;
+}
+
+.codex-tier-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 0.25rem;
+}
+
+.codex-tier-btn {
+  padding: 0.25rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  background-color: #020617;
+  border: 1px solid #334155;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.codex-tier-btn.active {
+  color: #020617;
+  background-color: #fbbf24;
+  border-color: #fbbf24;
+}
+
+.codex-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+}

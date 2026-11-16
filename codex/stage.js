@@ -820,6 +820,15 @@ export class CodexStage {
         }
       }
     }
+
+    if (item?.surfaceType === 'OIL_SLICK') {
+      e.codexOilFxCooldown = (e.codexOilFxCooldown || 0) - dt;
+      if (e.codexOilFxCooldown <= 0) {
+        e.codexOilFxCooldown = 0.075;
+        e.codexFx.oilFire?.(-1.05, -1.05, 1.0);
+        e.codexFx.oilFire?.(1.05, 1.05, 0.9);
+      }
+    }
   }
 
   launchMissile() {
