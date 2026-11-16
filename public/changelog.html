@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -48,7 +48,7 @@
       }
     </script>
   </head>
-  <body data-page="changelog" class="bg-[#0B1120] text-slate-100 antialiased selection:bg-amber-500 selection:text-slate-950 scrollable-page">
+  <body data-page="changelog" class="bg-[#0B1120] text-slate-100 scrollable-page">
     <div id="root"><!-- prerender:start -->
 <main class="menu-page">
       <div class="menu-content">
@@ -58,6 +58,12 @@
         </p>
 
         <div class="menu-grid" style="margin-top:24px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.18.4 // CSS &amp; MARKUP CLEANUP</span>
+            <strong>Removed Unused CSS Rules &amp; Legacy HTML Classes</strong>
+            <p>Cleaned up unused Tailwind utility classes and legacy component styles across <code>public/src/index.css</code> (384 lines removed) and <code>public/*.html</code>, and updated <code>404.html</code> to use the native <code>menu-page</code> design system.</p>
+          </article>
+
           <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.18.3 // LLM DISCOVERABILITY &amp; 404 PAGE</span>
             <strong>Added <code>llms.txt</code> &amp; Dedicated <code>404.html</code></strong>
