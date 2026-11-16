@@ -386,8 +386,13 @@ export function createBattleMedalTracker() {
         state.lastStandKills += 1;
       }
       if (salvoId != null) {
+        for (const [key, entry] of state.salvoHistory.entries()) {
+          if (nowMs - entry.timeMs > 1200) {
+            state.salvoHistory.delete(key);
+          }
+        }
         const prev = state.salvoHistory.get(salvoId);
-        if (prev && nowMs - prev.timeMs <= 1200) {
+        if (prev) {
           prev.count += 1;
           if (prev.count >= 2) {
             state.twinThunderTriggered = true;

@@ -112,6 +112,27 @@ export class FxSystem {
     this.timers.length = 0;
   }
 
+  dispose() {
+    this.clear();
+    this.smoke.points.geometry.dispose();
+    this.smoke.points.material.dispose();
+    this.glow.points.geometry.dispose();
+    this.glow.points.material.dispose();
+    this.streaks.mesh.geometry.dispose();
+    this.streaks.mesh.material.dispose();
+    if (this.rings.length > 0) {
+      this.rings[0].mesh.geometry.dispose();
+      for (const r of this.rings) r.mat.dispose();
+      this.rings.length = 0;
+    }
+    if (this.decals.length > 0) {
+      this.decals[0].mesh.geometry.dispose();
+      for (const d of this.decals) d.mat.dispose();
+      this.decals.length = 0;
+    }
+    this.root.clear();
+  }
+
   /** Run `fn` after `delay` seconds of effect time (cleared with the system). */
   schedule(delay, fn) {
     this.timers.push({ t: delay, fn });

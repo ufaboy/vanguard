@@ -50,6 +50,14 @@ export class TouchControlsOverlay {
 
   bindEvents() {
     if (!this.container) return;
+    this._abortCtrl?.abort();
+    this._abortCtrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const opt = this._abortCtrl ? { signal: this._abortCtrl.signal } : undefined;
+
+    const releaseJoystick = (e) => {
+      if (e.pointerId !== this.joystickPointerId) return;
+      this.resetJoystick();
+    };
 
     if (this.joystickEl) {
       this.joystickEl.addEventListener('pointerdown', (e) => {
@@ -69,21 +77,23 @@ export class TouchControlsOverlay {
         };
         this.joystickEl.classList.add('is-active');
         this.updateJoystick(e.clientX, e.clientY);
-      });
+      }, opt);
 
       this.joystickEl.addEventListener('pointermove', (e) => {
         if (e.pointerId !== this.joystickPointerId) return;
         e.preventDefault();
         this.updateJoystick(e.clientX, e.clientY);
-      });
+      }, opt);
 
-      const releaseJoystick = (e) => {
-        if (e.pointerId !== this.joystickPointerId) return;
-        this.resetJoystick();
-      };
-      this.joystickEl.addEventListener('pointerup', releaseJoystick);
-      this.joystickEl.addEventListener('pointercancel', releaseJoystick);
+      this.joystickEl.addEventListener('pointerup', releaseJoystick, opt);
+      this.joystickEl.addEventListener('pointercancel', releaseJoystick, opt);
+      this.joystickEl.addEventListener('lostpointercapture', releaseJoystick, opt);
     }
+
+    const releaseFire = (e) => {
+      if (e.pointerId !== this.firePointerId) return;
+      this.resetFire();
+    };
 
     if (this.fireBtn) {
       this.fireBtn.addEventListener('pointerdown', (e) => {
@@ -100,14 +110,20 @@ export class TouchControlsOverlay {
         this.fireBtn.classList.add('is-active');
         engine.isMouseDown = true;
         engine.tryPlayerFire();
-      });
+      }, opt);
 
-      const releaseFire = (e) => {
-        if (e.pointerId !== this.firePointerId) return;
-        this.resetFire();
+      this.fireBtn.addEventListener('pointerup', releaseFire, opt);
+      this.fireBtn.addEventListener('pointercancel', releaseFire, opt);
+      this.fireBtn.addEventListener('lostpointercapture', releaseFire, opt);
+    }
+
+    if (typeof window !== 'undefined') {
+      const releaseAny = (e) => {
+        releaseJoystick(e);
+        releaseFire(e);
       };
-      this.fireBtn.addEventListener('pointerup', releaseFire);
-      this.fireBtn.addEventListener('pointercancel', releaseFire);
+      window.addEventListener('pointerup', releaseAny, opt);
+      window.addEventListener('pointercancel', releaseAny, opt);
     }
 
     if (this.waveBtn) {
@@ -116,8 +132,15 @@ export class TouchControlsOverlay {
         e.stopPropagation();
         const engine = this.getEngine?.();
         engine?.callNextSurvivalWave?.();
-      });
+      }, opt);
     }
+  }
+
+  destroy() {
+    this._abortCtrl?.abort();
+    this._abortCtrl = null;
+    this.resetJoystick();
+    this.resetFire();
   }
 
   updateJoystick(clientX, clientY) {

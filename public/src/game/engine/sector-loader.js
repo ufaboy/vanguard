@@ -181,6 +181,7 @@ export class SectorLoaderController {
     engine.fx.clear();
 
     engine.enemySpawner.clearPendingTimeouts();
+    engine.modelFactory?.clearPendingRigs?.();
     engine.pendingBarrelExplosions = [];
     engine.enemies = [];
     engine.brickRubble = [];

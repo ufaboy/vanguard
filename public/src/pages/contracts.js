@@ -31,12 +31,5 @@ if (root) {
       });
     }
   });
-
-  root.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-action="start-contract"]');
-    if (!btn) return;
-    const contractId = btn.dataset.contract || 'contract-last-cargo';
-    location.href = battlefieldUrl({ mode: 'contract', id: contractId });
-  });
 }
 

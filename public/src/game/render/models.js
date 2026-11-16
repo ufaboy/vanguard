@@ -923,6 +923,7 @@ export class ModelFactory extends TextureGenerator {
     root.add(hpBarBg);
     root.add(hpBarFill);
 
+    markOwned(root);
     const rig = {
       root,
       hull,
@@ -2184,6 +2185,46 @@ export class ModelFactory extends TextureGenerator {
       this.geometryCache.set(key, geometry);
     }
     return geometry;
+  }
+
+  clearPendingRigs() {
+    this.pendingPlayerRigs.length = 0;
+    this.pendingEnemyRigs.clear();
+    this.pendingTurretRigs?.clear?.();
+  }
+
+  dispose() {
+    this.clearPendingRigs();
+    if (this.geometryCache) {
+      for (const geo of this.geometryCache.values()) geo?.dispose?.();
+      this.geometryCache.clear();
+    }
+    this.craterRimGeo?.dispose?.();
+    if (this.craterMats) {
+      for (const mat of Object.values(this.craterMats)) mat?.dispose?.();
+    }
+    const disposeTexBag = (bag) => {
+      if (!bag) return;
+      if (bag.isTexture) {
+        bag.dispose();
+      } else if (typeof bag === 'object') {
+        for (const val of Object.values(bag)) {
+          if (val?.isTexture) val.dispose();
+        }
+      }
+    };
+    disposeTexBag(this.brickTex);
+    disposeTexBag(this.concreteTex);
+    disposeTexBag(this.groundTex);
+    disposeTexBag(this.iceTex);
+    disposeTexBag(this.waterTex);
+    disposeTexBag(this.shadowTex);
+    disposeTexBag(this.tankArmorTex);
+    disposeTexBag(this.trackTreadTex);
+    if (this.powerUpTexCache) {
+      for (const tex of this.powerUpTexCache.values()) tex?.dispose?.();
+      this.powerUpTexCache.clear();
+    }
   }
 
   getForestMaterials() {

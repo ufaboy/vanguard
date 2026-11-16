@@ -23,7 +23,7 @@ const UI_ONLY_ACTIONS = new Set([
   'copy-share-link',
   'share-battle',
   'download-share-card',
-  'open-achievements',
+  'open-medals',
 ]);
 
 async function copyTextToClipboard(text) {
@@ -211,52 +211,6 @@ export function setupDelegatedEvents(
           break;
         }
         state.menuPage = 'home';
-        renderUI(true);
-        break;
-      case 'codex-trigger-demo':
-        engine?.triggerCodexDemo();
-        break;
-      case 'codex-set-upgrade': {
-        const track = btn.getAttribute('data-track');
-        const val = btn.getAttribute('data-val');
-        if (track) {
-          if (track === 'aps' || track === 'missile') {
-            state.codexPreviewUpgrades[track] = !state.codexPreviewUpgrades[track];
-          } else {
-            state.codexPreviewUpgrades[track] = Number(val);
-          }
-          engine?.updateCodexPreviewUpgrades(state.codexPreviewUpgrades);
-          sound.playPowerUp();
-          renderUI(true);
-        }
-        break;
-      }
-      case 'codex-preset-max':
-        state.codexPreviewUpgrades = {
-          cannon: 5,
-          chassis: 5,
-          frame: 5,
-          engine: 5,
-          armor: 5,
-          aps: true,
-          missile: true,
-        };
-        engine?.updateCodexPreviewUpgrades(state.codexPreviewUpgrades);
-        sound.playPowerUp();
-        renderUI(true);
-        break;
-      case 'codex-preset-stock':
-        state.codexPreviewUpgrades = {
-          cannon: 1,
-          chassis: 1,
-          frame: 1,
-          engine: 1,
-          armor: 1,
-          aps: true,
-          missile: true,
-        };
-        engine?.updateCodexPreviewUpgrades(state.codexPreviewUpgrades);
-        sound.playPowerUp();
         renderUI(true);
         break;
       case 'cycle-camera':

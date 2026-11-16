@@ -1334,7 +1334,10 @@ export class TankGameEngine {
     this.isDisposed = true;
     this.hangarStage?.dispose();
     this.modelFactory.brickModels.dispose();
+    this.modelFactory.concreteModels?.dispose?.();
     this.modelFactory.landmarkModels?.dispose?.();
+    this.modelFactory?.dispose?.();
+    this.tileBatcher?.reset?.();
     this.enemySpawner.clearPendingTimeouts();
     this.pendingBarrelExplosions = [];
     this._aiDebugOverlay?.clear();
@@ -1361,7 +1364,29 @@ export class TankGameEngine {
     this.clearGroup(this.mapGroup);
     this.clearGroup(this.entityGroup);
     this.clearGroup(this.fxGroup);
-    this.fx?.clear();
+    this.fx?.dispose?.();
+    if (this.groundMesh) {
+      this.scene.remove(this.groundMesh);
+      this.groundMesh.geometry?.dispose?.();
+      this.groundMesh.material?.dispose?.();
+      this.groundMesh = null;
+    }
+    if (this.legacyGroundDecal) {
+      this.scene.remove(this.legacyGroundDecal);
+      this.legacyGroundDecal.geometry?.dispose?.();
+      this.legacyGroundDecal.material?.map?.dispose?.();
+      this.legacyGroundDecal.material?.dispose?.();
+      this.legacyGroundDecal = null;
+    }
+    if (this.aimReticle) {
+      this.scene.remove(this.aimReticle);
+      this.aimReticle.traverse((node) => {
+        node.geometry?.dispose?.();
+        if (Array.isArray(node.material)) node.material.forEach((m) => m?.dispose?.());
+        else node.material?.dispose?.();
+      });
+      this.aimReticle = null;
+    }
 
     this._envTexture?.dispose();
     this._envTexture = null;

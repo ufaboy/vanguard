@@ -247,7 +247,6 @@ html, body {
 .text-center { text-align: center; }
 .tabular-nums { font-variant-numeric: tabular-nums; }
 .leading-tight { line-height: 1.25; }
-.leading-relaxed { line-height: 1.625; }
 .tracking-wider { letter-spacing: 0.05em; }
 .tracking-\[0\.12em\] { letter-spacing: 0.12em; }
 .tracking-\[0\.2em\] { letter-spacing: 0.2em; }
@@ -909,18 +908,10 @@ body[data-page="contract"] .menu-page {
 }
 
 /* Persistent core-component condition, distinct from temporary subsystem faults. */
-.component-condition { display:flex; align-items:center; gap:6px; flex-shrink:0; font:9px/1.5 monospace; color:#94a3b8; }
-.component-condition svg { width:58px; height:76px; flex-shrink:0; }
-.condition-part { fill:#253b43; stroke:#75a39e; stroke-width:1.5; }
-.condition-part.is-damaged { fill:#7f1d1d; stroke:#f87171; }
-.condition-legend { display:grid; gap:1px; min-width:69px; }
-.condition-legend span { display:flex; gap:3px; justify-content:space-between; }
-.condition-legend .is-damaged { color:#f87171; font-weight:700; }
 .component-repair { background:#29171c; border:1px solid #a94450; border-radius:4px; padding:8px 10px; color:#fecaca; }
 .garage-repair-row { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:11.5px; }
 .component-repair button { flex-shrink:0; background:#7f1d1d; border:1px solid #f87171; border-radius:3px; color:#fff; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer; }
 .component-repair button:disabled { opacity:.5; cursor:not-allowed; }
-@media(max-width:600px) { .component-condition { gap:3px; } .component-condition svg { width:45px; height:62px; } .condition-legend { font-size:8px; min-width:59px; } }
 
 /* Simplified horizontal ammunition & charge rows inside the Garage sidebar. */
 .garage-supplies{flex-shrink:0;margin-top:auto;padding-top:10px;border-top:1px solid #2b3837}
@@ -3339,70 +3330,6 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   color: #6ee7b7;
   font-size: 10px;
   font-weight: 700;
-  white-space: nowrap;
-}
-
-.battle-ach-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  max-height: 164px;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-@media (max-width: 600px) {
-  .battle-ach-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.battle-ach-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 9px 11px;
-  border-radius: 5px;
-  border: 1px solid rgba(52, 211, 153, 0.35);
-  background: rgba(6, 78, 59, 0.18);
-  min-width: 0;
-}
-
-.battle-ach-card.is-rare {
-  border-color: rgba(56, 189, 248, 0.45);
-  background: rgba(12, 74, 110, 0.22);
-}
-
-.battle-ach-card.is-epic {
-  border-color: rgba(251, 191, 36, 0.55);
-  background: rgba(120, 53, 15, 0.22);
-}
-
-.battle-ach-icon {
-  font-size: 18px;
-  line-height: 1;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.battle-ach-body {
-  min-width: 0;
-  flex: 1;
-}
-
-.battle-ach-top {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.battle-ach-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #f8fafc;
   white-space: nowrap;
 }
 

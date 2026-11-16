@@ -11,7 +11,7 @@ import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { deckClearance } from '../render/models.js';
 import { inContactRange, updateAbilities } from '../abilities/index.js';
-import { normalizeAngleSigned } from '../../sim/ai.js';
+import { normalizeAngleSigned, stepAngleTowards } from '../../sim/ai.js';
 import {
   ACTION_KIND,
   ACTION_TUNING,
@@ -36,12 +36,6 @@ import {
 const HUNTER_ZIGZAG_RAD = 0.45;
 const HULL_FLANK_ANGLE_THRESHOLD_RAD = 0.45;
 const HULL_HOLD_REACTION_DELAY_SEC = 0.32;
-
-function moveTowardsAngle(current, target, maxStep) {
-  const diff = normalizeAngleSigned(target - current);
-  if (Math.abs(diff) <= maxStep) return target;
-  return current + Math.sign(diff) * maxStep;
-}
 
 function getEnemyHullTurnRate(e) {
   const moveSpeed = e.stats?.moveSpeed ?? 2.07;
@@ -1027,7 +1021,7 @@ export class EnemyAiController {
         } else if (Math.hypot(e.targetDirX, e.targetDirZ) > 0.05) {
           e.hullHoldReactTimer = null;
           const desiredHull = Math.atan2(e.targetDirX, e.targetDirZ);
-          e.hullAngle = moveTowardsAngle(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+          e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
         } else if (e.brainHolding && canSeePlayer) {
           const desiredHull = Math.atan2(toPlayerX, toPlayerZ);
           const angleDiff = Math.abs(normalizeAngleSigned(desiredHull - e.hullAngle));
@@ -1038,11 +1032,11 @@ export class EnemyAiController {
             if (e.hullHoldReactTimer > 0) {
               e.hullHoldReactTimer = Math.max(0, e.hullHoldReactTimer - dt);
             } else {
-              e.hullAngle = moveTowardsAngle(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+              e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
             }
           } else {
             e.hullHoldReactTimer = null;
-            e.hullAngle = moveTowardsAngle(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+            e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
           }
         } else {
           e.hullHoldReactTimer = null;

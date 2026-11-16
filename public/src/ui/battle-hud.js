@@ -348,6 +348,25 @@ export function renderBattlefieldHud({
         </div>
       `);
 
+      const reloadText = cannonAmmo <= 0 ? 'EMPTY' : reloadReady ? 'READY' : `${reloadRemaining.toFixed(1)} s`;
+      const staticKey = `${hud.cannonName}|${cannonAmmo}|${cannonMax}|${rkLabel}|${smokeLabel}|${canFireMissile}|${hud.missileAmmo}|${hud.missileMaxAmmo ?? ''}|${apsValueText}|${apsTileClass}`;
+
+      if (centerSection.__staticKey === staticKey) {
+        const segsEl = centerSection.querySelector('.hud-reload-segs');
+        const timeEl = centerSection.querySelector('.hud-reload-time');
+        if (segsEl && timeEl) {
+          segsEl.className = `hud-reload-segs${reloadReady ? ' is-ready' : ''}`;
+          for (let idx = 0; idx < segsEl.children.length; idx += 1) {
+            segsEl.children[idx].className = idx < filledReloadSegs ? 'is-filled' : '';
+          }
+          if (timeEl.textContent !== reloadText) {
+            timeEl.textContent = reloadText;
+          }
+          return;
+        }
+      }
+      centerSection.__staticKey = staticKey;
+
       setHtml(centerSection, `
         <div class="flex flex-col items-center gap-1.5">
           <div class="flex flex-wrap items-center justify-center gap-2">
@@ -365,7 +384,7 @@ export function renderBattlefieldHud({
                 <span class="hud-label">RELOAD</span>
                 <div class="hud-reload-row">
                   <div class="hud-reload-segs${reloadReady ? ' is-ready' : ''}" aria-hidden="true">${reloadSegsHtml}</div>
-                  <span class="hud-reload-time">${cannonAmmo <= 0 ? 'EMPTY' : reloadReady ? 'READY' : `${reloadRemaining.toFixed(1)} s`}</span>
+                  <span class="hud-reload-time">${reloadText}</span>
                 </div>
               </div>
             </div>
