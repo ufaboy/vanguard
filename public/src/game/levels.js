@@ -376,6 +376,24 @@ export function normalizeMapDefinition(rawMap, index = 0) {
           }))
         )
       : null,
+    airDrop: (() => {
+      const rawList = Array.isArray(rawMap.airDrop)
+        ? rawMap.airDrop
+        : rawMap.airDrop && typeof rawMap.airDrop === 'object' && rawMap.airDrop.enabled !== false
+        ? [rawMap.airDrop]
+        : [];
+      const normalized = rawList
+        .filter((d) => d && d.enabled !== false)
+        .map((d, idx) => ({
+          delaySec: Math.max(0, Number(d.delaySec ?? d.atSec ?? d.firstDropSec ?? (idx + 1) * 30) || 0),
+          shells: Math.max(0, Math.min(100, Number(d.shells ?? 100) || 0)),
+          aps: Math.max(0, Math.min(100, Number(d.aps ?? 100) || 0)),
+          missiles: Math.max(0, Math.min(100, Number(d.missiles ?? 100) || 0)),
+          spawnCell: d.spawnCell || null,
+        }))
+        .sort((a, b) => a.delaySec - b.delaySec);
+      return normalized.length > 0 ? normalized : null;
+    })(),
     grid,
   };
 }

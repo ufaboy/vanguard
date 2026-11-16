@@ -918,6 +918,7 @@ export class TankGameEngine {
       this.updateLasers(dt);
       this.explosions.updateHazardZones(dt, elapsed);
       this.updatePowerUps(dt, elapsed);
+      this.powerupsController.updateAirDrops(dt, elapsed);
       this.playerController.updateSmokeAndLoot(dt);
       this.updateBarrelExplosions(dt);
       this.terrainDestruction.updateBurningOil(dt);

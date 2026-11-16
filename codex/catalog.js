@@ -306,6 +306,22 @@ export const CODEX_ITEMS = Object.freeze([
   }),
 
   Object.freeze({
+    id: 'fx_airdrop',
+    category: 'EFFECTS',
+    code: 'FX-AIR-DROP',
+    name: 'Allied Parachute Air Drop',
+    badge: 'Configurable Resupply Crate',
+    accentHex: '#F59E0B',
+    effectType: 'AIR_DROP',
+    summary:
+      'Parachute-deployed tactical supply crate that descends onto a marked landing zone. Configurable per sector: on Sector 35 it restores 100% of cannon shells, APS charges, and ATGM missiles.',
+    specs: [
+      { label: 'SECTOR 35 PAYLOAD', value: 'Full Shells · Full APS · Full ATGM' },
+      { label: 'DROP CADENCE', value: 'First drop at 22s, then every 35s' },
+    ],
+  }),
+
+  Object.freeze({
     id: 'fx_repair',
     category: 'EFFECTS',
     code: 'FX-NANITE-REPAIR',

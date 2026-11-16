@@ -600,8 +600,13 @@ export class TerrainDestructionController {
       const pos = engine.gridToWorld(cell.row, cell.col);
 
       if (cell.burnFxCooldown <= 0) {
-        cell.burnFxCooldown = 0.22;
-        engine.fx?.sparks?.(pos.x, 0.2, pos.z, 0xff5500, 2, { speed: 1.1, up: 1.5 });
+        cell.burnFxCooldown = 0.075;
+        const intensity = Math.min(1, Math.max(0.25, cell.burnTimer / 2.0));
+        if (engine.fx?.oilFire) {
+          engine.fx.oilFire(pos.x, pos.z, intensity);
+        } else {
+          engine.fx?.sparks?.(pos.x, 0.2, pos.z, 0xff5500, 2, { speed: 1.1, up: 1.5 });
+        }
       }
 
       const halfCell = TILE_SIZE * 0.52;

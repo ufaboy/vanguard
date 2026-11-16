@@ -16,7 +16,8 @@ test('Campaign finales load the intended bosses and preserve legacy nested confi
     SECTORS[34].bossSequence.map(stage => stage.map(entry => entry.enemyClass)),
     [
       [EnemyClass.BOSS_MAMMOTH],
-      [EnemyClass.BOSS_HYDRA, EnemyClass.BOSS_INFERNO],
+      [EnemyClass.BOSS_HYDRA],
+      [EnemyClass.BOSS_INFERNO],
       [EnemyClass.BOSS_TITAN],
     ]
   );
