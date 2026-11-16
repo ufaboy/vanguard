@@ -1786,6 +1786,39 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   color: #fcd34d;
 }
 
+.settings-modal-body .menu-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.settings-modal-body .menu-actions .menu-secondary {
+  min-width: 96px;
+}
+
+.settings-modal-body .menu-reset-btn {
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+.settings-modal-body .menu-reset-btn:hover {
+  border-color: #ef4444;
+  background: #2b1318;
+  color: #fecaca;
+}
+
+.settings-modal-body .menu-reset-confirm {
+  border-color: #ef4444;
+  background: #991b1b;
+  color: #ffffff;
+}
+
+.settings-modal-body .menu-reset-confirm:hover {
+  border-color: #f87171;
+  background: #b91c1c;
+  color: #ffffff;
+}
+
 /* ==========================================================================
    ARMORED SURVIVAL HERO SCREEN (HOLD THE LINE)
    ========================================================================== */

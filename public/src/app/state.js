@@ -99,3 +99,25 @@ export function loadPlayerSave() {
   return new SaveRepository().loadPlayerSave();
 }
 
+const PROGRESS_STORAGE_KEYS = Object.freeze([
+  'iron_vanguard_player_save_v1',
+  'iron_vanguard_survival_save_v1',
+  'iron_vanguard_contract_save_v1',
+  'iron_vanguard_upgrades_v3',
+  'iron_vanguard_survival_upgrades_v1',
+  'iron_vanguard_contract_upgrades_v1',
+  'iron_vanguard_highscore',
+]);
+
+/** Clears all campaign, survival, contract, upgrade, and medal progress while preserving user preferences. */
+export function resetAllProgress() {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    for (const key of PROGRESS_STORAGE_KEYS) {
+      localStorage.removeItem(key);
+    }
+  } catch {
+    // ignore storage errors
+  }
+}
+

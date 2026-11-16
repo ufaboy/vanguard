@@ -1,4 +1,4 @@
-import { CAMERA_LABELS, FPS_CAP_OPTIONS, TOUCH_CONTROLS_MODES, loadPreferences, savePreferences } from './state.js';
+import { CAMERA_LABELS, FPS_CAP_OPTIONS, TOUCH_CONTROLS_MODES, loadPreferences, savePreferences, resetAllProgress } from './state.js';
 import { renderSettings } from '../pages/settings.js';
 import { sound } from '../game/sound.js';
 import { attachAchievementsModal } from '../ui/achievements-modal.js';
@@ -19,6 +19,8 @@ export function attachSettingsModal(root, onSettingsChange = null) {
     document.body.appendChild(modal);
   }
 
+  let confirmReset = false;
+
   function renderModal() {
     modal.innerHTML = `
       <div class="settings-modal-panel">
@@ -34,18 +36,20 @@ export function attachSettingsModal(root, onSettingsChange = null) {
           <button type="button" class="menu-secondary" data-action="close-settings">Close [ESC]</button>
         </div>
         <div class="settings-modal-body">
-          ${renderSettings(prefs, CAMERA_LABELS)}
+          ${renderSettings({ ...prefs, confirmReset }, CAMERA_LABELS)}
         </div>
       </div>
     `;
   }
 
   function openModal() {
+    confirmReset = false;
     renderModal();
     modal.classList.remove('hidden');
   }
 
   function closeModal() {
+    confirmReset = false;
     modal.classList.add('hidden');
   }
 
@@ -95,6 +99,20 @@ export function attachSettingsModal(root, onSettingsChange = null) {
         TOUCH_CONTROLS_MODES[(TOUCH_CONTROLS_MODES.indexOf(prefs.touchControlsMode) + 1) % TOUCH_CONTROLS_MODES.length];
       settingName = 'touch_controls';
       settingValue = prefs.touchControlsMode;
+    } else if (action === 'request-reset-progress') {
+      confirmReset = true;
+      renderModal();
+      return;
+    } else if (action === 'cancel-reset-progress') {
+      confirmReset = false;
+      renderModal();
+      return;
+    } else if (action === 'confirm-reset-progress') {
+      resetAllProgress();
+      analyticsManager.trackEvent('progress_reset');
+      closeModal();
+      window.location.reload();
+      return;
     } else {
       return;
     }

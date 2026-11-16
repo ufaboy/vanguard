@@ -18,5 +18,9 @@ export function renderSettings(state, cameraLabels) {
       `<button class="menu-secondary" data-action="cycle-camera">${cameraLabels[state.cameraPreset]} ↻</button>`),
     settingRow('Tablet touch controls', 'On-screen virtual joystick and fire buttons for landscape tablets. Auto enables on touch devices.',
       `<button class="menu-secondary" data-action="cycle-touch-controls">Touch: ${TOUCH_MODE_LABELS[state.touchControlsMode] || 'Auto'} ↻</button>`),
+    settingRow('Reset progress', 'Clears campaign missions, credits, tank upgrades, survival records, and medals on this device. Preferences are kept.',
+      state.confirmReset
+        ? `<div class="menu-actions"><button class="menu-secondary menu-reset-confirm" data-action="confirm-reset-progress">Confirm Reset</button><button class="menu-secondary" data-action="cancel-reset-progress">Cancel</button></div>`
+        : `<button class="menu-secondary menu-reset-btn" data-action="request-reset-progress">Reset Progress</button>`),
   ].join('')}`;
 }
