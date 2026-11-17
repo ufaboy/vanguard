@@ -107,3 +107,20 @@ test('Player cannon line matches the documented damage, penetration and reload',
   assert.equal(CANNONS.CANNON_Mk5.interBarrelCooldown, 0.2);
   assert.equal(CANNONS.CANNON_Mk5.barrels, 2);
 });
+
+test('CH4 crosses water with speed penalty while CH5 crosses water without penalty', () => {
+  const ch3 = computeTankStats({ ...loadout, chassis: 'CH3' }, PLAYER_TANK_CONFIG.base);
+  const ch4 = computeTankStats({ ...loadout, chassis: 'CH4' }, PLAYER_TANK_CONFIG.base);
+  const ch5 = computeTankStats({ ...loadout, chassis: 'CH5' }, PLAYER_TANK_CONFIG.base);
+
+  assert.equal(ch3.canCrossWater, false);
+  assert.equal(ch3.waterSpeedMultiplier, 0);
+
+  assert.equal(ch4.canCrossWater, true);
+  assert.equal(ch4.canHover, false);
+  assert.equal(ch4.waterSpeedMultiplier, 0.6);
+
+  assert.equal(ch5.canCrossWater, true);
+  assert.equal(ch5.canHover, true);
+  assert.equal(ch5.waterSpeedMultiplier, 1.0);
+});

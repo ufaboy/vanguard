@@ -231,6 +231,11 @@ export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
   const canHover = Boolean(chassis.canHover || frame.canHover);
   const canCrossWater = Boolean(chassis.canCrossWater || frame.canCrossWater);
   const allTerrain = Boolean(chassis.allTerrain || frame.allTerrain);
+  const waterSpeedMultiplier = canHover
+    ? 1.0
+    : canCrossWater
+      ? Math.min(1.0, Math.max(0.1, Number(chassis.waterSpeedMultiplier) || 1.0))
+      : 0;
   const sizeBlocks = Math.max(chassis.sizeBlocks || 1, frame.sizeBlocks || 1);
 
   // 5. Sight and radio come from the base; modules (e.g. a radar) may add to them.
@@ -259,6 +264,7 @@ export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
     directionalArmor,
     canHover,
     canCrossWater,
+    waterSpeedMultiplier,
     allTerrain,
     sizeBlocks,
     sightRadius,

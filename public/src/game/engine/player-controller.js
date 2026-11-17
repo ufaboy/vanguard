@@ -481,6 +481,7 @@ export class PlayerController {
       engine.terrainDestruction?.clearRubbleCell?.(currentCell);
     }
     engine.onRubble = currentCell?.type === TileType.RUBBLE;
+    engine.onWater = currentCell?.type === TileType.WATER;
     engine.onIce = !canHover && !allTerrain && currentCell?.type === TileType.ICE;
     engine.onSand = !canHover && !allTerrain && currentCell?.type === TileType.SAND;
     engine.onSwamp = !canHover && !allTerrain && currentCell?.type === TileType.SWAMP;
@@ -493,9 +494,20 @@ export class PlayerController {
       engine.isPointInSmoke(engine.playerX, engine.playerZ) ||
       (currentCell?.type === TileType.OIL_SLICK && Boolean(currentCell?.isBurning));
 
+    const waterSpeedMult = engine.onWater && !canHover
+      ? (engine.playerStats.canCrossWater ? (engine.playerStats.waterSpeedMultiplier || 1.0) : 0.6)
+      : 1.0;
+
     const authoredMission = SECTORS[engine.currentSectorIndex];
     const terrainSample = sampleMissionTerrain(authoredMission, engine.playerX, engine.playerZ);
-    engine.currentSurface = engine.onRoad
+    engine.currentSurface = engine.onWater
+      ? {
+          ...TERRAIN_SURFACES.dirt,
+          id: 'water',
+          label: 'Deep Water',
+          speedMultiplier: waterSpeedMult,
+        }
+      : engine.onRoad
       ? {
           ...TERRAIN_SURFACES.asphalt,
           id: 'road',
@@ -553,7 +565,13 @@ export class PlayerController {
     const hpRatio = engine.playerHp / engine.playerMaxHp;
     const lowHpMult = hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
     const rawSurfMult = engine.currentSurface?.speedMultiplier || 1.0;
-    const surfMult = engine.onRubble ? 0.45 : allTerrain ? Math.max(1.0, rawSurfMult) : rawSurfMult;
+    const surfMult = engine.onRubble
+      ? 0.45
+      : engine.onWater && !canHover
+        ? waterSpeedMult
+        : allTerrain
+          ? Math.max(1.0, rawSurfMult)
+          : rawSurfMult;
     const maxSpeed =
       engine.playerStats.moveSpeed *
       TILE_SIZE *

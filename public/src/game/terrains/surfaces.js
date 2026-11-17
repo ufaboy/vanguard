@@ -171,10 +171,11 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByHover: true,
     blocksProjectiles: false,
     description:
-      'Deep water moat that blocks standard tracked chassis (CH1–CH3). Shells and missiles fly freely across water. Can be crossed directly with the CH4 All-Terrain or CH5 Grav-Hover chassis.',
+      'Deep water moat that blocks standard tracked chassis (CH1–CH3). Shells and missiles fly freely across water. Crossable at reduced speed (60%) with CH4 All-Terrain or at full speed with CH5 Grav-Hover.',
     specs: Object.freeze([
       Object.freeze({ label: 'TRACKED CHASSIS (CH1–CH3)', value: 'Impassable (Blocks movement)' }),
-      Object.freeze({ label: 'ALL-TERRAIN CHASSIS (CH4 / CH5)', value: 'Freely crossable (Amphibious)' }),
+      Object.freeze({ label: 'CH4 ALL-TERRAIN', value: 'Crossable at 60% speed (Wading)' }),
+      Object.freeze({ label: 'CH5 GRAV-HOVER', value: 'Full-speed crossing (Hover)' }),
       Object.freeze({ label: 'PROJECTILES', value: 'Unobstructed line of fire' }),
     ]),
   }),

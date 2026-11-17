@@ -168,7 +168,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
         <div class="hangar-comparison">
           <div class="hangar-stat-row hangar-stat-heading"><span>STAT</span><span>NOW</span><span>AFTER</span></div>
           ${comparison}
-          ${track.key === 'chassis' ? `<div class="hangar-capability">${after.canCrossWater ? '✓ Water crossing' : 'Land traversal'} · ${after.allTerrain ? 'All-terrain traction' : 'Standard traction'}</div>` : ''}
+          ${track.key === 'chassis' ? `<div class="hangar-capability">${after.canCrossWater ? (after.canHover || after.waterSpeedMultiplier >= 1 ? '✓ Water crossing (full speed)' : `✓ Water crossing (${Math.round(after.waterSpeedMultiplier * 100)}% speed)`) : 'Land traversal'} · ${after.allTerrain ? 'All-terrain traction' : 'Standard traction'}</div>` : ''}
         </div>
 
         <div class="hangar-purchase">

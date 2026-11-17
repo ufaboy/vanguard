@@ -1006,6 +1006,8 @@ export class EnemyAiController {
           terrainSpeedMult = 0.45;
         } else if (eCell?.type === TileType.ROAD || eCell?.type === TileType.BRIDGE) {
           terrainSpeedMult = 1.2;
+        } else if (eCell?.type === TileType.WATER && !e.stats.canHover) {
+          terrainSpeedMult = e.stats.waterSpeedMultiplier || 0.6;
         } else if (!eAllTerrain) {
           if (eCell?.type === TileType.SAND) terrainSpeedMult = 0.78;
           else if (eCell?.type === TileType.SWAMP) terrainSpeedMult = 0.58;
