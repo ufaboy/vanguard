@@ -875,6 +875,7 @@ export class TankGameEngine {
     const elapsed = this.clock.getElapsed();
     if (this.isHangarOpen) {
       this.hangarStage.update(dt, this.effectiveUpgrades, this.missileAmmo, this.apsAmmo, elapsed);
+      this.tickHangarBaseMaintenance(dt);
       return;
     }
 
@@ -901,6 +902,7 @@ export class TankGameEngine {
     }
 
     if (this.isHangarPaused || this.isAdPaused) {
+      this.tickHangarBaseMaintenance(dt);
       if (this.playerRig) {
         this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;
         this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
@@ -964,6 +966,19 @@ export class TankGameEngine {
     if (this.hudSyncAccumulator >= hudInterval) {
       this.hudSyncAccumulator = 0;
       this.emitHudUpdate();
+    }
+  }
+
+  tickHangarBaseMaintenance(dt) {
+    if (!this.isHangarPaused || this.isAdPaused || this.status !== GameStatus.PLAYING) return;
+    const repairedAny = this.playerController?.updateBaseMaintenance?.(dt);
+    if (repairedAny) {
+      this.hudSyncAccumulator += dt;
+      const hudInterval = this.quality === 'low' ? 0.2 : 0.12;
+      if (this.hudSyncAccumulator >= hudInterval) {
+        this.hudSyncAccumulator = 0;
+        this.emitHudUpdate();
+      }
     }
   }
 

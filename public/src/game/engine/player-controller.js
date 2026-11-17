@@ -850,7 +850,9 @@ export class PlayerController {
           engine.spawnSparks(engine.playerX, 0.7, engine.playerZ, 0x10b981, 2);
         }
       }
+      return repairedAny;
     }
+    return false;
   }
 
   updateApsInterception() {

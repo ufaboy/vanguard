@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { renderHangar, hangarStats } from '../public/src/hangar-ui.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
+import { PlayerController } from '../public/src/game/engine/player-controller.js';
 import { GameStatus } from '../public/src/game/types.js';
-import { getMaxApsAmmo, getMaxMissileAmmo } from '../public/src/game/constants.js';
+import { BASE_REPAIR, CANNON_AMMO, getMaxApsAmmo, getMaxMissileAmmo } from '../public/src/game/constants.js';
 import { isUsefulPowerUp } from '../public/src/game/powerup-drops.js';
 import { POWERUP } from '../public/src/game/powerups.js';
 
@@ -150,4 +151,64 @@ test('APS and Missile max ammo scale with purchased Frame tier (1..5) and ignore
     assert.ok(html.includes('APS capacity'));
     assert.ok(html.includes('Missile capacity'));
   }
+});
+
+test('Base hull repair and cannon rearming continue at normal pace while hangar is open', () => {
+  let hudUpdates = 0;
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    status: GameStatus.PLAYING,
+    baseAlive: true,
+    inBaseRepairZone: true,
+    currentSectorIndex: 0,
+    playerX: 0,
+    playerZ: 0,
+    playerHp: 10,
+    playerMaxHp: 22,
+    cannonAmmo: 3,
+    cannonBaseRearmTimer: 0,
+    baseRepairSparkTimer: 0,
+    hudSyncAccumulator: 0,
+    quality: 'high',
+    hangarStage: { update() {} },
+    getPlayerMaxCannonAmmo: () => 15,
+    spawnSparks() {},
+    setStatusBanner() {},
+    emitHudUpdate() { hudUpdates++; },
+    setInspectMode() {},
+    updateParticles() {},
+    fx: { update() {} },
+    clock: { getElapsed: () => 1 },
+    updatePlayer() { throw Error('Battlefield must not update in hangar'); },
+  });
+  Object.defineProperty(engine, 'sectorLoader', {
+    value: { getCommandBaseCenter: () => ({ x: 0, z: 0 }) },
+  });
+  Object.defineProperty(engine, 'inputCamera', {
+    value: { updateCamera() {} },
+  });
+  Object.defineProperty(engine, 'playerController', {
+    value: new PlayerController(engine),
+  });
+
+  assert.equal(engine.setHangarOpen(true), true);
+  assert.equal(engine.isHangarPaused, true);
+
+  // Step through one full rearm interval in 0.5s increments
+  const step = 0.5;
+  const steps = Math.ceil(CANNON_AMMO.BASE_REARM_INTERVAL_SEC / step);
+  for (let i = 0; i < steps; i++) {
+    engine.update(step);
+  }
+
+  const elapsed = steps * step;
+  assert.equal(engine.playerHp, Math.min(22, 10 + BASE_REPAIR.RATE * elapsed));
+  assert.equal(engine.cannonAmmo, 4);
+  assert.ok(hudUpdates >= 1);
+
+  // Rearming still caps at BASE_REARM_CAP (5) in campaign mode
+  for (let i = 0; i < steps * 3; i++) {
+    engine.update(step);
+  }
+  assert.equal(engine.cannonAmmo, CANNON_AMMO.BASE_REARM_CAP);
+  assert.equal(engine.playerHp, 22);
 });
