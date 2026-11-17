@@ -61,7 +61,7 @@ export class EnemyAiController {
       const col = Math.floor((x0 + dx * t + half) / TILE_SIZE);
       const row = Math.floor((z0 + dz * t + half) / TILE_SIZE);
       const tType = engine.grid[row]?.[col]?.type;
-      if (tType === TileType.CONCRETE || tType === TileType.LANDMARK) return false;
+      if (tType === TileType.CONCRETE || tType === TileType.HOUSE_2 || tType === TileType.LANDMARK) return false;
     }
     return true;
   }
@@ -89,6 +89,8 @@ export class EnemyAiController {
         (cell.type === TileType.BOXES ||
           cell.type === TileType.BRICK ||
           cell.type === TileType.CONCRETE ||
+          cell.type === TileType.HOUSE_1 ||
+          cell.type === TileType.HOUSE_2 ||
           cell.type === TileType.LANDMARK ||
           cell.type === TileType.BASE ||
           cell.type === TileType.ENEMY_BASE ||
@@ -479,8 +481,12 @@ export class EnemyAiController {
     const p = engine.gridToWorld(waypoint.row, waypoint.col);
     const cell = engine.grid[waypoint.row]?.[waypoint.col];
     const shouldBreach = e.isBoss
-      ? cell?.type === TileType.CONCRETE
-      : cell?.type === TileType.BOXES || cell?.type === TileType.BRICK || cell?.type === TileType.CONCRETE;
+      ? cell?.type === TileType.CONCRETE || cell?.type === TileType.HOUSE_2
+      : cell?.type === TileType.BOXES ||
+        cell?.type === TileType.BRICK ||
+        cell?.type === TileType.CONCRETE ||
+        cell?.type === TileType.HOUSE_1 ||
+        cell?.type === TileType.HOUSE_2;
     if (cell && shouldBreach && cell.hp > 0) {
       e.breachTarget = { row: waypoint.row, col: waypoint.col, x: p.x, z: p.z };
       e.targetDirX = 0;
@@ -1117,7 +1123,11 @@ export class EnemyAiController {
             const aheadCell = engine.grid[aheadGrid.row]?.[aheadGrid.col];
             if (
               aheadCell &&
-              (aheadCell.type === TileType.BOXES || aheadCell.type === TileType.BRICK || aheadCell.type === TileType.CONCRETE) &&
+              (aheadCell.type === TileType.BOXES ||
+                aheadCell.type === TileType.BRICK ||
+                aheadCell.type === TileType.CONCRETE ||
+                aheadCell.type === TileType.HOUSE_1 ||
+                aheadCell.type === TileType.HOUSE_2) &&
               aheadCell.hp > 0
             ) {
               const cellCenter = engine.gridToWorld(aheadGrid.row, aheadGrid.col);

@@ -245,6 +245,19 @@ export class SectorLoaderController {
         const building = !supply ? buildingLayout.get(`${r},${c}`) || null : null;
 
         if (type === TileType.BRICK) {
+          hp = 4;
+          const brick = engine.modelFactory.createBrickBlock();
+          brick.group.position.set(x, 0, z);
+          engine.mapGroup.add(brick.group);
+          mesh = brick.group;
+          subMeshes = brick.subMeshes;
+        } else if (type === TileType.CONCRETE) {
+          hp = 16;
+          const concrete = engine.modelFactory.createConcreteBlock();
+          concrete.position.set(x, 0, z);
+          engine.mapGroup.add(concrete);
+          mesh = concrete;
+        } else if (type === TileType.HOUSE_1 || type === TileType.HOUSE_2) {
           if (building) {
             hp = BUILDING_MAX_HP[building.kind];
             const built = engine.modelFactory.createBuildingBlock(
@@ -254,29 +267,6 @@ export class SectorLoaderController {
             engine.mapGroup.add(built.group);
             mesh = built.group;
             subMeshes = built.subMeshes;
-          } else {
-            hp = 4;
-            const brick = engine.modelFactory.createBrickBlock();
-            brick.group.position.set(x, 0, z);
-            engine.mapGroup.add(brick.group);
-            mesh = brick.group;
-            subMeshes = brick.subMeshes;
-          }
-        } else if (type === TileType.CONCRETE) {
-          if (building) {
-            hp = BUILDING_MAX_HP[building.kind];
-            const built = engine.modelFactory.createBuildingBlock(
-              building.kind, building.part, building.yaw, hp, hp, building.style
-            );
-            built.group.position.set(x, 0, z);
-            engine.mapGroup.add(built.group);
-            mesh = built.group;
-          } else {
-            hp = 16;
-            const concrete = engine.modelFactory.createConcreteBlock();
-            concrete.position.set(x, 0, z);
-            engine.mapGroup.add(concrete);
-            mesh = concrete;
           }
         } else if (type === TileType.FOREST) {
           const forest = engine.modelFactory.createForestBlock();

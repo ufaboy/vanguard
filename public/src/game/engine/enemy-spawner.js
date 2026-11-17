@@ -334,6 +334,8 @@ export class EnemySpawnerController {
         cell.type === TileType.BOXES ||
         cell.type === TileType.BRICK ||
         cell.type === TileType.CONCRETE ||
+        cell.type === TileType.HOUSE_1 ||
+        cell.type === TileType.HOUSE_2 ||
         cell.type === TileType.HEDGEHOG
       ) {
         engine.destroyTileCell(cell);

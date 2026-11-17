@@ -134,7 +134,11 @@ export class EnemyCombatController {
       const solid =
         cell &&
         cell.hp > 0 &&
-        (cell.type === TileType.BOXES || cell.type === TileType.BRICK || cell.type === TileType.CONCRETE);
+        (cell.type === TileType.BOXES ||
+          cell.type === TileType.BRICK ||
+          cell.type === TileType.CONCRETE ||
+          cell.type === TileType.HOUSE_1 ||
+          cell.type === TileType.HOUSE_2);
       if (!solid) e.breachTarget = null;
     }
     if (e.armed === false) {
@@ -474,7 +478,9 @@ export class EnemyCombatController {
           cell.type === TileType.FOREST ||
           cell.type === TileType.BOXES ||
           cell.type === TileType.BRICK ||
-          cell.type === TileType.CONCRETE
+          cell.type === TileType.CONCRETE ||
+          cell.type === TileType.HOUSE_1 ||
+          cell.type === TileType.HOUSE_2
         ) {
           const pos = engine.gridToWorld(r, c);
           const dx = pos.x - e.x;

@@ -24,6 +24,8 @@ export const TileType = Object.freeze({
   LANDMARK: 18,
   BRIDGE: 19,
   RUBBLE: 20,
+  HOUSE_1: 21,
+  HOUSE_2: 22,
 });
 
 export const SURFACE_TYPES = Object.freeze({
@@ -45,6 +47,8 @@ export const SURFACE_TYPES = Object.freeze({
   OIL_SLICK: 'OIL_SLICK',
   CRATER: 'CRATER',
   RUBBLE: 'RUBBLE',
+  HOUSE_1: 'HOUSE_1',
+  HOUSE_2: 'HOUSE_2',
   WATER_TOWER: 'WATER_TOWER',
   LANDMARK: 'LANDMARK',
   BRIDGE: 'BRIDGE',
@@ -629,6 +633,48 @@ export const SURFACE_CONFIGS = Object.freeze({
       Object.freeze({ label: 'TRACTION', value: '45% speed (all chassis; Boss immune)' }),
       Object.freeze({ label: 'CLEARANCE', value: 'Cleared by Dozer Blade or HE blast' }),
       Object.freeze({ label: 'BALLISTICS', value: 'Clear line of fire' }),
+    ]),
+  }),
+
+  [SURFACE_TYPES.HOUSE_1]: Object.freeze({
+    id: 'tile_house_1',
+    surfaceType: SURFACE_TYPES.HOUSE_1,
+    tileId: TileType.HOUSE_1,
+    code: 'TILE-HOUSE-1',
+    name: '1-Story Residential House',
+    role: 'Destructible Urban Building (5 Stages)',
+    accentHex: '#D97706',
+    destructible: true,
+    maxHP: 25,
+    passableByTracks: false,
+    passableByHover: false,
+    blocksProjectiles: true,
+    description:
+      'Single-story urban house with pitched roof and 5 destruction stages. First Cannon Mk1 hit (or 5 Autocannon hits) strips the facade; collapses into persistent RUBBLE.',
+    specs: Object.freeze([
+      Object.freeze({ label: 'DURABILITY', value: '25 HP (5 stages)' }),
+      Object.freeze({ label: 'AFTERMATH', value: 'Collapses into RUBBLE' }),
+    ]),
+  }),
+
+  [SURFACE_TYPES.HOUSE_2]: Object.freeze({
+    id: 'tile_house_2',
+    surfaceType: SURFACE_TYPES.HOUSE_2,
+    tileId: TileType.HOUSE_2,
+    code: 'TILE-HOUSE-2',
+    name: '2-Story Concrete Building',
+    role: 'Heavy Urban Building (7 Stages)',
+    accentHex: '#64748B',
+    destructible: true,
+    maxHP: 70,
+    passableByTracks: false,
+    passableByHover: false,
+    blocksProjectiles: true,
+    description:
+      'Two-story reinforced concrete building with 7 destruction stages. Collapses into persistent RUBBLE.',
+    specs: Object.freeze([
+      Object.freeze({ label: 'DURABILITY', value: '70 HP (7 stages)' }),
+      Object.freeze({ label: 'AFTERMATH', value: 'Collapses into RUBBLE' }),
     ]),
   }),
 });

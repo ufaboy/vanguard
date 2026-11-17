@@ -6,14 +6,14 @@ import { BUILDING_MAX_HP, buildingDamageState } from '../public/src/game/terrain
 import { TileType } from '../public/src/game/terrains/surfaces.js';
 import { isPassableCell, NAV_TILE } from '../public/src/sim/behavior/navgrid.js';
 
-test('computeBuildingLayout leaves 1-tile-thick walls as standard blocks', () => {
+test('computeBuildingLayout leaves BRICK and CONCRETE blocks untouched even in 2x2 clusters', () => {
   const E = TileType.EMPTY;
   const B = TileType.BRICK;
   const C = TileType.CONCRETE;
   const grid = [
-    [E, B, E, C, E],
-    [B, B, B, C, E],
-    [E, B, E, C, C],
+    [E, B, B, C, C],
+    [B, B, B, C, C],
+    [E, B, E, E, E],
     [E, E, E, E, E],
     [E, E, E, E, E],
   ];
@@ -21,13 +21,13 @@ test('computeBuildingLayout leaves 1-tile-thick walls as standard blocks', () =>
   assert.equal(layout.size, 0);
 });
 
-test('computeBuildingLayout turns 2x2 BRICK into 4 outward-facing house1 corners sharing one style', () => {
+test('computeBuildingLayout turns 2x2 HOUSE_1 into 4 outward-facing house1 corners sharing one style', () => {
   const E = TileType.EMPTY;
-  const B = TileType.BRICK;
+  const H1 = TileType.HOUSE_1;
   const grid = [
     [E, E, E, E],
-    [E, B, B, E],
-    [E, B, B, E],
+    [E, H1, H1, E],
+    [E, H1, H1, E],
     [E, E, E, E],
   ];
   const layout = computeBuildingLayout(grid);
@@ -40,14 +40,14 @@ test('computeBuildingLayout turns 2x2 BRICK into 4 outward-facing house1 corners
   assert.deepEqual(layout.get('2,1'), { kind: 'house1', part: 'corner', yaw: -Math.PI / 2, style });
 });
 
-test('computeBuildingLayout turns 3x3 CONCRETE into corners, edges, and core of house2', () => {
+test('computeBuildingLayout turns 3x3 HOUSE_2 into corners, edges, and core of house2', () => {
   const E = TileType.EMPTY;
-  const C = TileType.CONCRETE;
+  const H2 = TileType.HOUSE_2;
   const grid = [
     [E, E, E, E, E],
-    [E, C, C, C, E],
-    [E, C, C, C, E],
-    [E, C, C, C, E],
+    [E, H2, H2, H2, E],
+    [E, H2, H2, H2, E],
+    [E, H2, H2, H2, E],
     [E, E, E, E, E],
   ];
   const layout = computeBuildingLayout(grid);
@@ -63,21 +63,23 @@ test('computeBuildingLayout turns 3x3 CONCRETE into corners, edges, and core of 
 });
 
 test('buildingDamageState maps house1 (5 stages) and house2 (7 stages)', () => {
-  // house1: 25 HP intact (5); CANNON_Mk1 (5 dmg) or 5x AUTOCANNON (1 dmg) -> state 4, then 3..1, then 0
   assert.deepEqual(
     [25, 20, 15, 10, 5, 0].map((hp) => buildingDamageState(hp, BUILDING_MAX_HP.house1, 'house1')),
     [5, 4, 3, 2, 1, 0]
   );
   assert.equal(buildingDamageState(24, BUILDING_MAX_HP.house1, 'house1'), 4);
 
-  // house2: 70 HP intact (7), then 6..1 standing damage stages, then 0 rubble
   assert.deepEqual(
     [70, 65, 55, 45, 30, 15, 5, 0].map((hp) => buildingDamageState(hp, BUILDING_MAX_HP.house2, 'house2')),
     [7, 6, 5, 4, 3, 2, 1, 0]
   );
 });
 
-test('TileType.RUBBLE mirrors NAV_TILE.RUBBLE and is passable', () => {
+test('TileType.RUBBLE mirrors NAV_TILE.RUBBLE and is passable; HOUSE_1/HOUSE_2 mirror and block', () => {
   assert.equal(NAV_TILE.RUBBLE, TileType.RUBBLE);
+  assert.equal(NAV_TILE.HOUSE_1, TileType.HOUSE_1);
+  assert.equal(NAV_TILE.HOUSE_2, TileType.HOUSE_2);
   assert.equal(isPassableCell([[TileType.RUBBLE]], 0, 0, false), true);
+  assert.equal(isPassableCell([[TileType.HOUSE_1]], 0, 0, true), false);
+  assert.equal(isPassableCell([[TileType.HOUSE_2]], 0, 0, true), false);
 });

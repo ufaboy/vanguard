@@ -21,6 +21,7 @@ export class TerrainDestructionController {
     const { engine } = this;
     if (!cell || cell.type !== TileType.RUBBLE) return false;
     if (cell.mesh) {
+      disposeOwned(cell.mesh);
       engine.mapGroup?.remove(cell.mesh);
       cell.mesh = null;
     }
@@ -49,6 +50,8 @@ export class TerrainDestructionController {
     if (
       cell.type === TileType.BRICK ||
       cell.type === TileType.CONCRETE ||
+      cell.type === TileType.HOUSE_1 ||
+      cell.type === TileType.HOUSE_2 ||
       cell.type === TileType.FOREST
     ) {
       engine.blocksDestroyed = (engine.blocksDestroyed || 0) + 1;
@@ -274,20 +277,26 @@ export class TerrainDestructionController {
     }
     cell.hp -= dmg;
 
-    if (cell.type === TileType.CONCRETE) {
+    if (cell.type === TileType.HOUSE_1 || cell.type === TileType.HOUSE_2) {
+      sound.playBrickHit({ x: hitX, z: hitZ });
+      engine.fx.masonryHit(hitX, 0.78, hitZ, { concrete: cell.type === TileType.HOUSE_2, heavy: dmg >= 5 });
+      if (cell.mesh) {
+        engine.modelFactory.updateBuildingBlockDamage(
+          cell.mesh,
+          cell.hp,
+          cell.maxHp || (cell.type === TileType.HOUSE_2 ? 70 : 25)
+        );
+      }
+    } else if (cell.type === TileType.CONCRETE) {
       sound.playBrickHit({ x: hitX, z: hitZ });
       engine.fx.masonryHit(hitX, 0.78, hitZ, { concrete: true, heavy: dmg >= 4 });
       if (cell.mesh) {
-        if (cell.mesh.userData?.building) {
-          engine.modelFactory.updateBuildingBlockDamage(cell.mesh, cell.hp, cell.maxHp || 16);
-        } else {
-          engine.modelFactory.updateConcreteBlockDamage(
-            cell.mesh,
-            cell.hp,
-            cell.maxHp || 16,
-            this.hitOffset(cell, hitX, hitZ)
-          );
-        }
+        engine.modelFactory.updateConcreteBlockDamage(
+          cell.mesh,
+          cell.hp,
+          cell.maxHp || 16,
+          this.hitOffset(cell, hitX, hitZ)
+        );
       }
     } else {
       sound.playBrickHit({ x: hitX, z: hitZ });
@@ -299,11 +308,7 @@ export class TerrainDestructionController {
     }
 
     if (cell.type === TileType.BRICK) {
-      if (cell.mesh?.userData?.building) {
-        engine.modelFactory.updateBuildingBlockDamage(cell.mesh, cell.hp, cell.maxHp || 4);
-      } else {
-        engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp, this.hitOffset(cell, hitX, hitZ));
-      }
+      engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp, this.hitOffset(cell, hitX, hitZ));
     }
     else if (cell.type === TileType.WATER_TOWER) {
       sound.playSteelHit({ x: hitX, z: hitZ });

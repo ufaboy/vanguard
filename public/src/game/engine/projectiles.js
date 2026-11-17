@@ -367,6 +367,8 @@ export class ProjectilesController {
             TileType.WATER_TOWER,
             TileType.BRICK,
             TileType.CONCRETE,
+            TileType.HOUSE_1,
+            TileType.HOUSE_2,
             TileType.LANDMARK,
             TileType.BASE,
             TileType.ENEMY_BASE,
@@ -420,13 +422,10 @@ export class ProjectilesController {
           engine.destroyTileCell(cell);
         } else if (cell.type === TileType.BRICK) {
           if (p.isMissile) engine.detonateMissile(p);
-          if (p.pierceBricks && !cell.mesh?.userData?.building) {
+          if (p.pierceBricks) {
             engine.destroyTileCell(cell);
           } else {
-            const isBuilding = Boolean(cell.mesh?.userData?.building);
-            const brickDmg = isBuilding
-              ? (p.isMissile ? 25 : p.weaponId === 'AUTOCANNON' ? 1 : p.bulletPower === BULLET_POWER.HEAVY ? 12 : 5)
-              : (p.isMissile ? 4 : p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1);
+            const brickDmg = p.isMissile ? 4 : p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1;
             const entry = wallEntryPoint(engine, cell, p);
             engine.damageTileCell(cell, brickDmg, entry.x, entry.z);
             engine.removeProjectile(i);
@@ -434,12 +433,28 @@ export class ProjectilesController {
           }
         } else if (cell.type === TileType.CONCRETE) {
           if (p.isMissile) engine.detonateMissile(p);
-          const isBuilding = Boolean(cell.mesh?.userData?.building);
-          const concreteDmg = isBuilding
-            ? (p.isFlame ? 0.5 : p.isMissile ? 25 : p.weaponId === 'AUTOCANNON' ? 1 : p.bulletPower === BULLET_POWER.HEAVY ? 12 : 5)
-            : (p.isFlame ? 0.35 : p.isMissile || p.bulletPower === BULLET_POWER.HEAVY ? 4 : 1);
+          const concreteDmg = p.isFlame
+            ? 0.35
+            : p.isMissile || p.bulletPower === BULLET_POWER.HEAVY
+            ? 4
+            : 1;
           const entry = wallEntryPoint(engine, cell, p);
           engine.damageTileCell(cell, concreteDmg, entry.x, entry.z);
+          engine.removeProjectile(i);
+          continue;
+        } else if (cell.type === TileType.HOUSE_1 || cell.type === TileType.HOUSE_2) {
+          if (p.isMissile) engine.detonateMissile(p);
+          const buildingDmg = p.isFlame
+            ? 0.5
+            : p.isMissile
+            ? 25
+            : p.weaponId === 'AUTOCANNON'
+            ? 1
+            : p.bulletPower === BULLET_POWER.HEAVY
+            ? 12
+            : 5;
+          const entry = wallEntryPoint(engine, cell, p);
+          engine.damageTileCell(cell, buildingDmg, entry.x, entry.z);
           engine.removeProjectile(i);
           continue;
         } else if (cell.type === TileType.LANDMARK) {
