@@ -26,6 +26,9 @@ export const NAV_TILE = Object.freeze({
   WATER_TOWER: 17,
   LANDMARK: 18,
   BRIDGE: 19,
+  RUBBLE: 20,
+  HOUSE_1: 21,
+  HOUSE_2: 22,
 });
 
 export function tileTypeAt(grid, row, col) {
@@ -46,6 +49,7 @@ function isPassableTile(type, canCrossWater = false) {
     type === NAV_TILE.SWAMP ||
     type === NAV_TILE.OIL_SLICK ||
     type === NAV_TILE.CRATER ||
+    type === NAV_TILE.RUBBLE ||
     (canCrossWater && type === NAV_TILE.WATER)
   );
 }
@@ -59,6 +63,8 @@ function isCoverTile(type) {
   return (
     type === NAV_TILE.BRICK ||
     type === NAV_TILE.CONCRETE ||
+    type === NAV_TILE.HOUSE_1 ||
+    type === NAV_TILE.HOUSE_2 ||
     type === NAV_TILE.BOXES ||
     type === NAV_TILE.BARREL ||
     type === NAV_TILE.WATER_TOWER ||
@@ -73,6 +79,8 @@ function isBreachableTile(type) {
     type === NAV_TILE.BOXES ||
     type === NAV_TILE.BRICK ||
     type === NAV_TILE.CONCRETE ||
+    type === NAV_TILE.HOUSE_1 ||
+    type === NAV_TILE.HOUSE_2 ||
     type === NAV_TILE.WATER_TOWER
   );
 }

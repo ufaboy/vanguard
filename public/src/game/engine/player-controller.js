@@ -477,6 +477,10 @@ export class PlayerController {
       engine.playerX, engine.playerZ, TANK_HIT_RADIUS.PLAYER, false
     )) engine.componentWaterEgress = false;
     const canCrossWater = engine.playerStats.canCrossWater || engine.componentWaterEgress;
+    if (currentCell?.type === TileType.RUBBLE && engine.playerLoadout?.optionalEquipment?.includes('DOZER_BLADE')) {
+      engine.terrainDestruction?.clearRubbleCell?.(currentCell);
+    }
+    engine.onRubble = currentCell?.type === TileType.RUBBLE;
     engine.onIce = !canHover && !allTerrain && currentCell?.type === TileType.ICE;
     engine.onSand = !canHover && !allTerrain && currentCell?.type === TileType.SAND;
     engine.onSwamp = !canHover && !allTerrain && currentCell?.type === TileType.SWAMP;
@@ -549,7 +553,7 @@ export class PlayerController {
     const hpRatio = engine.playerHp / engine.playerMaxHp;
     const lowHpMult = hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
     const rawSurfMult = engine.currentSurface?.speedMultiplier || 1.0;
-    const surfMult = allTerrain ? Math.max(1.0, rawSurfMult) : rawSurfMult;
+    const surfMult = engine.onRubble ? 0.45 : allTerrain ? Math.max(1.0, rawSurfMult) : rawSurfMult;
     const maxSpeed =
       engine.playerStats.moveSpeed *
       TILE_SIZE *

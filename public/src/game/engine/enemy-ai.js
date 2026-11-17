@@ -61,7 +61,7 @@ export class EnemyAiController {
       const col = Math.floor((x0 + dx * t + half) / TILE_SIZE);
       const row = Math.floor((z0 + dz * t + half) / TILE_SIZE);
       const tType = engine.grid[row]?.[col]?.type;
-      if (tType === TileType.CONCRETE || tType === TileType.LANDMARK) return false;
+      if (tType === TileType.CONCRETE || tType === TileType.HOUSE_2 || tType === TileType.LANDMARK) return false;
     }
     return true;
   }
@@ -89,6 +89,8 @@ export class EnemyAiController {
         (cell.type === TileType.BOXES ||
           cell.type === TileType.BRICK ||
           cell.type === TileType.CONCRETE ||
+          cell.type === TileType.HOUSE_1 ||
+          cell.type === TileType.HOUSE_2 ||
           cell.type === TileType.LANDMARK ||
           cell.type === TileType.BASE ||
           cell.type === TileType.ENEMY_BASE ||
@@ -479,8 +481,12 @@ export class EnemyAiController {
     const p = engine.gridToWorld(waypoint.row, waypoint.col);
     const cell = engine.grid[waypoint.row]?.[waypoint.col];
     const shouldBreach = e.isBoss
-      ? cell?.type === TileType.CONCRETE
-      : cell?.type === TileType.BOXES || cell?.type === TileType.BRICK || cell?.type === TileType.CONCRETE;
+      ? cell?.type === TileType.CONCRETE || cell?.type === TileType.HOUSE_2
+      : cell?.type === TileType.BOXES ||
+        cell?.type === TileType.BRICK ||
+        cell?.type === TileType.CONCRETE ||
+        cell?.type === TileType.HOUSE_1 ||
+        cell?.type === TileType.HOUSE_2;
     if (cell && shouldBreach && cell.hp > 0) {
       e.breachTarget = { row: waypoint.row, col: waypoint.col, x: p.x, z: p.z };
       e.targetDirX = 0;
@@ -991,9 +997,14 @@ export class EnemyAiController {
           !e.isBoss && hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
         const { row: eRow, col: eCol } = engine.worldToGrid(e.x, e.z);
         const eCell = engine.grid[eRow]?.[eCol];
+        if (eCell?.type === TileType.RUBBLE && e.loadout?.optionalEquipment?.includes('DOZER_BLADE')) {
+          engine.terrainDestruction?.clearRubbleCell?.(eCell);
+        }
         const eAllTerrain = Boolean(e.stats.canHover || e.stats.allTerrain);
         let terrainSpeedMult = 1.0;
-        if (eCell?.type === TileType.ROAD || eCell?.type === TileType.BRIDGE) {
+        if (eCell?.type === TileType.RUBBLE && !e.isBoss) {
+          terrainSpeedMult = 0.45;
+        } else if (eCell?.type === TileType.ROAD || eCell?.type === TileType.BRIDGE) {
           terrainSpeedMult = 1.2;
         } else if (!eAllTerrain) {
           if (eCell?.type === TileType.SAND) terrainSpeedMult = 0.78;
@@ -1112,7 +1123,11 @@ export class EnemyAiController {
             const aheadCell = engine.grid[aheadGrid.row]?.[aheadGrid.col];
             if (
               aheadCell &&
-              (aheadCell.type === TileType.BOXES || aheadCell.type === TileType.BRICK || aheadCell.type === TileType.CONCRETE) &&
+              (aheadCell.type === TileType.BOXES ||
+                aheadCell.type === TileType.BRICK ||
+                aheadCell.type === TileType.CONCRETE ||
+                aheadCell.type === TileType.HOUSE_1 ||
+                aheadCell.type === TileType.HOUSE_2) &&
               aheadCell.hp > 0
             ) {
               const cellCenter = engine.gridToWorld(aheadGrid.row, aheadGrid.col);

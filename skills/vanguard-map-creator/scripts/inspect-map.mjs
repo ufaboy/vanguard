@@ -12,13 +12,13 @@ export async function inspectMap(projectRoot, mapPath) {
   const size = map.gridSize ?? 40;
   check(size === 40, 'Expected the current 40x40 map contract; review the helper for other formats.');
   check((map.tileSize ?? 2) === 2, 'Expected two world units per tile.');
-  const validGrid = Array.isArray(map.layout) && map.layout.length === size && map.layout.every(row => typeof row === 'string' && row.length === size && /^[.BCFWIGHESXZDOQNRMLKT_ ]+$/.test(row));
+  const validGrid = Array.isArray(map.layout) && map.layout.length === size && map.layout.every(row => typeof row === 'string' && row.length === size && /^[.BCFWIGHESXZDOQNRMLKTAP=_ ]+$/.test(row));
   check(validGrid, 'Layout must contain 40 equal-width rows using known tile tokens.');
   if (!validGrid) return { mapId: map.mapId, errors, warnings };
   const inside = c => c && Number.isInteger(c.row) && Number.isInteger(c.col) && c.row >= 0 && c.col >= 0 && c.row < size && c.col < size;
   const key = c => `${c.row},${c.col}`;
-  const passable = c => inside(c) && '.FIGNRMLK_ '.includes(map.layout[c.row][c.col]);
-  const breachable = c => inside(c) && '.FIGNRMLK_ BCEHQT'.includes(map.layout[c.row][c.col]);
+  const passable = c => inside(c) && '.FIGNRMLK_ ='.includes(map.layout[c.row][c.col]);
+  const breachable = c => inside(c) && '.FIGNRMLK_ BCEHQTAP='.includes(map.layout[c.row][c.col]);
   check(passable(map.playerSpawnCell), 'Player spawn must be an open stock-track cell.');
   check(inside(map.baseCell) && map.layout[map.baseCell.row].slice(map.baseCell.col, map.baseCell.col + 2) === 'HH', 'baseCell and its right neighbour must be the two H tiles.');
   const reached = new Set();

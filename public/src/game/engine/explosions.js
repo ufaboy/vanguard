@@ -274,8 +274,11 @@ export class ExplosionsController {
           cell.type === TileType.FOREST ||
           cell.type === TileType.BRICK ||
           cell.type === TileType.CONCRETE ||
+          cell.type === TileType.HOUSE_1 ||
+          cell.type === TileType.HOUSE_2 ||
           cell.type === TileType.ICE ||
-          cell.type === TileType.WATER
+          cell.type === TileType.WATER ||
+          cell.type === TileType.RUBBLE
         ) {
           if (cell.type === TileType.WATER) rebuildWater = true;
           if (cell.type === TileType.ICE) rebuildIce = true;
@@ -369,6 +372,8 @@ export class ExplosionsController {
         if (Math.hypot(pos.x - x, pos.z - z) <= radius + 0.5) {
           if (cell.type === TileType.BOXES) {
             engine.damageTileCell(cell, 1, pos.x, pos.z, fromPlayer);
+          } else if (cell.type === TileType.RUBBLE) {
+            engine.terrainDestruction?.clearRubbleCell?.(cell);
           } else if (cell.type === TileType.BRICK || cell.type === TileType.SPAWNER) {
             engine.destroyTileCell(cell);
           } else if (cell.type === TileType.BARREL) {
@@ -380,6 +385,9 @@ export class ExplosionsController {
           } else if (cell.type === TileType.CONCRETE) {
             const hit = breachPointToward(pos.x, pos.z, x, z);
             engine.damageTileCell(cell, 6, hit.x, hit.z);
+          } else if (cell.type === TileType.HOUSE_1 || cell.type === TileType.HOUSE_2) {
+            const hit = breachPointToward(pos.x, pos.z, x, z);
+            engine.damageTileCell(cell, 15, hit.x, hit.z);
           } else if (cell.type === TileType.BASE && !fromPlayer && !isEnvironmental) {
             hitCommandBase = true;
           } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {

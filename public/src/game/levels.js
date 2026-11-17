@@ -132,6 +132,10 @@ const CHAR_TO_TILE = {
   TOWER: TileType.WATER_TOWER,
   '=': TileType.BRIDGE,
   BRIDGE: TileType.BRIDGE,
+  A: TileType.HOUSE_1,
+  HOUSE_1: TileType.HOUSE_1,
+  P: TileType.HOUSE_2,
+  HOUSE_2: TileType.HOUSE_2,
   LANDMARK: TileType.LANDMARK,
 };
 
