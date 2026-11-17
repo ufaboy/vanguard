@@ -991,9 +991,14 @@ export class EnemyAiController {
           !e.isBoss && hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
         const { row: eRow, col: eCol } = engine.worldToGrid(e.x, e.z);
         const eCell = engine.grid[eRow]?.[eCol];
+        if (eCell?.type === TileType.RUBBLE && e.loadout?.optionalEquipment?.includes('DOZER_BLADE')) {
+          engine.terrainDestruction?.clearRubbleCell?.(eCell);
+        }
         const eAllTerrain = Boolean(e.stats.canHover || e.stats.allTerrain);
         let terrainSpeedMult = 1.0;
-        if (eCell?.type === TileType.ROAD || eCell?.type === TileType.BRIDGE) {
+        if (eCell?.type === TileType.RUBBLE && !e.isBoss) {
+          terrainSpeedMult = 0.45;
+        } else if (eCell?.type === TileType.ROAD || eCell?.type === TileType.BRIDGE) {
           terrainSpeedMult = 1.2;
         } else if (!eAllTerrain) {
           if (eCell?.type === TileType.SAND) terrainSpeedMult = 0.78;

@@ -26,6 +26,7 @@ export const NAV_TILE = Object.freeze({
   WATER_TOWER: 17,
   LANDMARK: 18,
   BRIDGE: 19,
+  RUBBLE: 20,
 });
 
 export function tileTypeAt(grid, row, col) {
@@ -46,6 +47,7 @@ function isPassableTile(type, canCrossWater = false) {
     type === NAV_TILE.SWAMP ||
     type === NAV_TILE.OIL_SLICK ||
     type === NAV_TILE.CRATER ||
+    type === NAV_TILE.RUBBLE ||
     (canCrossWater && type === NAV_TILE.WATER)
   );
 }

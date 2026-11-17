@@ -16,6 +16,41 @@ import { sound } from '../sound.js';
 import { breachEntryOffset } from '../terrains/breach-models.js';
 import { EnemyClass, TileType } from '../types.js';
 
+const MISSILE_CRUISE_Y = 4.4;
+const MISSILE_IMPACT_Y = 0.85;
+const MISSILE_CLIMB_DIST = 3.2;
+const MISSILE_DIVE_DIST = 4.8;
+
+/** Computes lofted cruise altitude (above 2-story buildings) and steep terminal dive for player missiles. */
+function updatePlayerMissileAltitude(p, targetX, targetZ, hasTarget, dt) {
+  const prevY = p.flightY ?? 1.35;
+  const climbT = Math.min(1, (p.traveled || 0) / MISSILE_CLIMB_DIST);
+  const climbSmooth = climbT * climbT * (3 - 2 * climbT);
+  let targetY = 1.35 + (MISSILE_CRUISE_Y - 1.35) * climbSmooth;
+
+  if (hasTarget && climbT >= 0.35) {
+    const dist = Math.hypot(targetX - p.x, targetZ - p.z);
+    if (dist < MISSILE_DIVE_DIST) {
+      const diveT = Math.max(0, Math.min(1, (MISSILE_DIVE_DIST - dist) / (MISSILE_DIVE_DIST - 0.65)));
+      const diveSmooth = diveT * diveT;
+      targetY = targetY + (MISSILE_IMPACT_Y - targetY) * diveSmooth;
+    }
+  }
+
+  const maxStep = Math.max(0.05, (p.speed || 14) * dt * 1.4);
+  const nextY = THREE.MathUtils.clamp(targetY, prevY - maxStep, prevY + maxStep);
+  const dy = nextY - prevY;
+  const ds = Math.max(0.01, (p.speed || 14) * dt);
+  const targetPitch = THREE.MathUtils.clamp(Math.atan2(-dy, ds), -0.85, 1.1);
+  p.pitch = THREE.MathUtils.lerp(p.pitch ?? 0, targetPitch, Math.min(1, dt * 14));
+  p.flightY = nextY;
+  if (p.mesh) {
+    p.mesh.rotation.order = 'YXZ';
+    p.mesh.rotation.x = p.pitch;
+  }
+  return nextY;
+}
+
 /** Where shell `p` met the wall of `cell`, so the hit is reported on the face it struck. */
 function wallEntryPoint(engine, cell, p) {
   const centre = engine.gridToWorld(cell.row, cell.col);
@@ -197,6 +232,9 @@ export class ProjectilesController {
         continue;
       }
 
+      let missileTargetX = engine.aimWorld?.x ?? p.x;
+      let missileTargetZ = engine.aimWorld?.z ?? p.z;
+      let hasMissileTarget = false;
       if (p.isMissile) {
         if (p.soundHandle) {
           sound.updateMissileLoop(p.soundHandle, { x: p.x, z: p.z });
@@ -213,20 +251,20 @@ export class ProjectilesController {
               nearest = e;
             }
           }
-          let targetX = engine.aimWorld?.x ?? p.x;
-          let targetZ = engine.aimWorld?.z ?? p.z;
           if (nearest) {
-            targetX = nearest.x;
-            targetZ = nearest.z;
+            missileTargetX = nearest.x;
+            missileTargetZ = nearest.z;
+            hasMissileTarget = true;
           } else if (engine.enemyBaseAlive) {
             const basePos = engine.getEnemyBaseCenter();
             if (basePos) {
-              targetX = basePos.x;
-              targetZ = basePos.z;
+              missileTargetX = basePos.x;
+              missileTargetZ = basePos.z;
+              hasMissileTarget = true;
             }
           }
           const curAngle = Math.atan2(p.vx, p.vz);
-          const targetAngle = Math.atan2(targetX - p.x, targetZ - p.z);
+          const targetAngle = Math.atan2(missileTargetX - p.x, missileTargetZ - p.z);
           const nextAngle = engine.lerpAngle(
             curAngle,
             targetAngle,
@@ -261,7 +299,9 @@ export class ProjectilesController {
       p.x += p.vx * dt;
       p.z += p.vz * dt;
       p.traveled = (p.traveled || 0) + Math.hypot(p.x - prevX, p.z - prevZ);
-      const flightY = p.isMissile ? (p.fromPlayer ? 1.35 : 0.9) : p.isFlame ? 0.72 : 0.75;
+      const flightY = p.isMissile
+        ? (p.fromPlayer ? updatePlayerMissileAltitude(p, missileTargetX, missileTargetZ, hasMissileTarget, dt) : 0.9)
+        : p.isFlame ? 0.72 : 0.75;
       p.mesh.position.set(p.x, flightY, p.z);
       engine.emitProjectileTrail(p, prevX, prevZ, flightY);
 
@@ -380,10 +420,13 @@ export class ProjectilesController {
           engine.destroyTileCell(cell);
         } else if (cell.type === TileType.BRICK) {
           if (p.isMissile) engine.detonateMissile(p);
-          if (p.pierceBricks) {
+          if (p.pierceBricks && !cell.mesh?.userData?.building) {
             engine.destroyTileCell(cell);
           } else {
-            const brickDmg = p.isMissile ? 4 : p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1;
+            const isBuilding = Boolean(cell.mesh?.userData?.building);
+            const brickDmg = isBuilding
+              ? (p.isMissile ? 25 : p.weaponId === 'AUTOCANNON' ? 1 : p.bulletPower === BULLET_POWER.HEAVY ? 12 : 5)
+              : (p.isMissile ? 4 : p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1);
             const entry = wallEntryPoint(engine, cell, p);
             engine.damageTileCell(cell, brickDmg, entry.x, entry.z);
             engine.removeProjectile(i);
@@ -391,11 +434,10 @@ export class ProjectilesController {
           }
         } else if (cell.type === TileType.CONCRETE) {
           if (p.isMissile) engine.detonateMissile(p);
-          const concreteDmg = p.isFlame
-            ? 0.35
-            : p.isMissile || p.bulletPower === BULLET_POWER.HEAVY
-            ? 4
-            : 1;
+          const isBuilding = Boolean(cell.mesh?.userData?.building);
+          const concreteDmg = isBuilding
+            ? (p.isFlame ? 0.5 : p.isMissile ? 25 : p.weaponId === 'AUTOCANNON' ? 1 : p.bulletPower === BULLET_POWER.HEAVY ? 12 : 5)
+            : (p.isFlame ? 0.35 : p.isMissile || p.bulletPower === BULLET_POWER.HEAVY ? 4 : 1);
           const entry = wallEntryPoint(engine, cell, p);
           engine.damageTileCell(cell, concreteDmg, entry.x, entry.z);
           engine.removeProjectile(i);

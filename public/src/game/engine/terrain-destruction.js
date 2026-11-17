@@ -16,6 +16,23 @@ export class TerrainDestructionController {
     this.engine = engine;
   }
 
+  /** Clears persistent building rubble into passable flat ground (Dozer Blade or heavy HE blast). */
+  clearRubbleCell(cell) {
+    const { engine } = this;
+    if (!cell || cell.type !== TileType.RUBBLE) return false;
+    if (cell.mesh) {
+      engine.mapGroup?.remove(cell.mesh);
+      cell.mesh = null;
+    }
+    cell.type = TileType.EMPTY;
+    cell.hp = 0;
+    cell.maxHp = 0;
+    const pos = engine.gridToWorld(cell.row, cell.col);
+    engine.fx?.masonryHit?.(pos.x, 0.25, pos.z, { concrete: true, heavy: false });
+    engine.tileBatcher?.sync();
+    return true;
+  }
+
   /** Converts a terrain/obstacle cell (FOREST, BRICK, CONCRETE, ICE, WATER) into scorched SAND. */
   convertCellToSand(cell) {
     const { engine } = this;
@@ -261,12 +278,16 @@ export class TerrainDestructionController {
       sound.playBrickHit({ x: hitX, z: hitZ });
       engine.fx.masonryHit(hitX, 0.78, hitZ, { concrete: true, heavy: dmg >= 4 });
       if (cell.mesh) {
-        engine.modelFactory.updateConcreteBlockDamage(
-          cell.mesh,
-          cell.hp,
-          cell.maxHp || 16,
-          this.hitOffset(cell, hitX, hitZ)
-        );
+        if (cell.mesh.userData?.building) {
+          engine.modelFactory.updateBuildingBlockDamage(cell.mesh, cell.hp, cell.maxHp || 16);
+        } else {
+          engine.modelFactory.updateConcreteBlockDamage(
+            cell.mesh,
+            cell.hp,
+            cell.maxHp || 16,
+            this.hitOffset(cell, hitX, hitZ)
+          );
+        }
       }
     } else {
       sound.playBrickHit({ x: hitX, z: hitZ });
@@ -278,7 +299,11 @@ export class TerrainDestructionController {
     }
 
     if (cell.type === TileType.BRICK) {
-      engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp, this.hitOffset(cell, hitX, hitZ));
+      if (cell.mesh?.userData?.building) {
+        engine.modelFactory.updateBuildingBlockDamage(cell.mesh, cell.hp, cell.maxHp || 4);
+      } else {
+        engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp, this.hitOffset(cell, hitX, hitZ));
+      }
     }
     else if (cell.type === TileType.WATER_TOWER) {
       sound.playSteelHit({ x: hitX, z: hitZ });
@@ -311,23 +336,8 @@ export class TerrainDestructionController {
     const { x, z } = engine.gridToWorld(cell.row, cell.col);
 
     const factory = engine.modelFactory;
-    const rubbleModels =
-      cell.type === TileType.BRICK && factory.useBlenderBricks ? factory.brickModels
-        : cell.type === TileType.CONCRETE && factory.useBlenderConcrete ? factory.concreteModels
-          : null;
-    if (rubbleModels?.states.size) {
-      const rubble = new THREE.Group();
-      rubble.userData.batchTile = true;
-      rubbleModels.apply(rubble, 0);
-      rubble.position.set(x, 0, z);
-      // Debris stays where the wall was breached; an untouched wall gets a varied scatter.
-      rubble.rotation.y = cell.mesh?.userData.breach
-        ? cell.mesh.rotation.y
-        : ((cell.row * 7 + cell.col * 13) % 4) * (Math.PI / 2);
-      engine.mapGroup.add(rubble);
-      engine.brickRubble.push({ mesh: rubble, life: 12 });
-      if (engine.brickRubble.length > 32) engine.mapGroup.remove(engine.brickRubble.shift().mesh);
-    }
+    const prevMesh = cell.mesh;
+    const buildingInfo = prevMesh?.userData?.building;
     if (cell.mesh) {
       engine.mapGroup.remove(cell.mesh);
       cell.mesh = null;
@@ -340,9 +350,42 @@ export class TerrainDestructionController {
     if (wasConcrete) {
       engine.medalTracker?.recordConcreteDestroyed();
     }
-    cell.type = TileType.EMPTY;
+
+    if (buildingInfo) {
+      // Destroyed buildings collapse into persistent concrete rubble (passable with severe speed penalty).
+      cell.type = TileType.RUBBLE;
+      cell.hp = 1;
+      cell.maxHp = 1;
+      if (factory?.createRubbleBlock && engine.mapGroup) {
+        const rubble = factory.createRubbleBlock(buildingInfo.kind);
+        rubble.position.set(x, 0, z);
+        rubble.rotation.y = ((cell.row * 7 + cell.col * 13) % 4) * (Math.PI / 2);
+        engine.mapGroup.add(rubble);
+        cell.mesh = rubble;
+        engine.tileBatcher?.markDirty(rubble);
+      }
+    } else {
+      const rubbleModels =
+        cell.type === TileType.BRICK && factory.useBlenderBricks ? factory.brickModels
+          : cell.type === TileType.CONCRETE && factory.useBlenderConcrete ? factory.concreteModels
+            : null;
+      if (rubbleModels?.states.size) {
+        const rubble = new THREE.Group();
+        rubble.userData.batchTile = true;
+        rubbleModels.apply(rubble, 0);
+        rubble.position.set(x, 0, z);
+        // Debris stays where the wall was breached; an untouched wall gets a varied scatter.
+        rubble.rotation.y = prevMesh?.userData?.breach
+          ? prevMesh.rotation.y
+          : ((cell.row * 7 + cell.col * 13) % 4) * (Math.PI / 2);
+        engine.mapGroup.add(rubble);
+        engine.brickRubble.push({ mesh: rubble, life: 12 });
+        if (engine.brickRubble.length > 32) engine.mapGroup.remove(engine.brickRubble.shift().mesh);
+      }
+      cell.type = TileType.EMPTY;
+      cell.hp = 0;
+    }
     engine._spawnerCells = null;
-    cell.hp = 0;
     engine.blocksDestroyed++;
 
     engine.fx.blockDestroyed(

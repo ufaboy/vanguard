@@ -303,10 +303,19 @@ export class TankGameEngine {
     this.modelFactory.onBrickModelsReady = () => {
       if (this.isDisposed) return;
       this.mapGroup.traverse(node => {
-        if (node.userData.brickHp !== undefined) {
+        if (node.userData.brickHp !== undefined && !node.userData.building) {
           this.modelFactory.updateBrickBlockDamage(node, node.userData.brickHp);
           this.tileBatcher.markDirty(node);
         }
+      });
+    };
+    this.modelFactory.onBuildingModelsReady = () => {
+      if (this.isDisposed) return;
+      this.mapGroup.traverse(node => {
+        const b = node.userData.building;
+        if (!b) return;
+        this.modelFactory.updateBuildingBlockDamage(node, b.hp, b.maxHp);
+        this.tileBatcher.markDirty(node);
       });
     };
     this.setupLighting();
@@ -1336,6 +1345,7 @@ export class TankGameEngine {
     this.hangarStage?.dispose();
     this.modelFactory.brickModels.dispose();
     this.modelFactory.concreteModels?.dispose?.();
+    this.modelFactory.buildingModels?.dispose?.();
     this.modelFactory.landmarkModels?.dispose?.();
     this.modelFactory?.dispose?.();
     this.tileBatcher?.reset?.();

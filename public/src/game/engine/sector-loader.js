@@ -16,6 +16,8 @@ import { createEncounterState, remainingEncounterEnemies } from '../encounters.j
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout } from '../levels.js';
 import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
+import { computeBuildingLayout } from '../terrains/building-layout.js';
+import { BUILDING_MAX_HP } from '../terrains/building-models.js';
 import { landmarkFootprintCenter } from '../terrains/landmarks.js';
 import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
@@ -230,6 +232,7 @@ export class SectorLoaderController {
     engine.componentWaterEgress = false;
 
     engine._spawnerCells = null;
+    const buildingLayout = computeBuildingLayout(sector.grid);
     for (let r = 0; r < GRID_SIZE; r++) {
       const rowCells = [];
       for (let c = 0; c < GRID_SIZE; c++) {
@@ -239,20 +242,42 @@ export class SectorLoaderController {
         let mesh = null;
         let subMeshes;
         let hp = 1;
+        const building = !supply ? buildingLayout.get(`${r},${c}`) || null : null;
 
         if (type === TileType.BRICK) {
-          const brick = engine.modelFactory.createBrickBlock();
-          brick.group.position.set(x, 0, z);
-          engine.mapGroup.add(brick.group);
-          mesh = brick.group;
-          subMeshes = brick.subMeshes;
-          hp = 4;
+          if (building) {
+            hp = BUILDING_MAX_HP[building.kind];
+            const built = engine.modelFactory.createBuildingBlock(
+              building.kind, building.part, building.yaw, hp, hp, building.style
+            );
+            built.group.position.set(x, 0, z);
+            engine.mapGroup.add(built.group);
+            mesh = built.group;
+            subMeshes = built.subMeshes;
+          } else {
+            hp = 4;
+            const brick = engine.modelFactory.createBrickBlock();
+            brick.group.position.set(x, 0, z);
+            engine.mapGroup.add(brick.group);
+            mesh = brick.group;
+            subMeshes = brick.subMeshes;
+          }
         } else if (type === TileType.CONCRETE) {
-          const concrete = engine.modelFactory.createConcreteBlock();
-          concrete.position.set(x, 0, z);
-          engine.mapGroup.add(concrete);
-          mesh = concrete;
-          hp = 16;
+          if (building) {
+            hp = BUILDING_MAX_HP[building.kind];
+            const built = engine.modelFactory.createBuildingBlock(
+              building.kind, building.part, building.yaw, hp, hp, building.style
+            );
+            built.group.position.set(x, 0, z);
+            engine.mapGroup.add(built.group);
+            mesh = built.group;
+          } else {
+            hp = 16;
+            const concrete = engine.modelFactory.createConcreteBlock();
+            concrete.position.set(x, 0, z);
+            engine.mapGroup.add(concrete);
+            mesh = concrete;
+          }
         } else if (type === TileType.FOREST) {
           const forest = engine.modelFactory.createForestBlock();
           forest.position.set(x, 0, z);

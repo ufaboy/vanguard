@@ -13,6 +13,7 @@ import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { TextureGenerator, mulberry32 } from './texture-gen.js';
 import { breachYaw, nextBreach } from '../terrains/breach-models.js';
 import { BrickModels } from '../terrains/brick-models.js';
+import { BuildingModels, buildingDamageState } from '../terrains/building-models.js';
 import { ConcreteModels, concreteDamageState } from '../terrains/concrete-models.js';
 import { LandmarkModels } from '../terrains/landmarks.js';
 import { applyBrickFinish } from '../terrains/brick-finish.js';
@@ -379,6 +380,11 @@ export class ModelFactory extends TextureGenerator {
     this.concreteModelsPromise = this.useBlenderConcrete
       ? this.loadTileModels(this.concreteModels, () => this.onConcreteModelsReady?.())
       : Promise.resolve(false);
+    this.buildingModels = new BuildingModels();
+    this.useBlenderBuildings = !isSoftwareGl;
+    this.buildingModelsPromise = this.useBlenderBuildings
+      ? this.loadTileModels(this.buildingModels, () => this.onBuildingModelsReady?.())
+      : Promise.resolve(false);
     this.concreteTex = this.generated('createConcreteTextures');
     this.groundTex = this.generated('createGroundTexture');
     this.iceTex = this.generated('createIceTextures');
@@ -511,6 +517,7 @@ export class ModelFactory extends TextureGenerator {
       this.playerGlbPromise,
       this.brickModelsPromise,
       this.concreteModelsPromise,
+      this.buildingModelsPromise,
       this.ensureEnemyModels(enemyClasses),
     ];
     if (options.landmarks && this.landmarkModels?.ensureLoaded) {
@@ -1860,6 +1867,69 @@ export class ModelFactory extends TextureGenerator {
   createEnemyBaseBlock() {
     const group = buildEnemyStronghold(this.getEnemyBaseMaterials(), () => this.animTime || 0);
     return markOwned(group, { materials: false });
+  }
+
+  /** Creates a 1-story (house1) or 2-story (house2) modular building tile. */
+  createBuildingBlock(kind, part, yaw, hp, maxHp, style = 0) {
+    const state = buildingDamageState(hp, maxHp, kind);
+    let group;
+    let subMeshes;
+    if (this.useBlenderBuildings && this.buildingModels.ready) {
+      group = new THREE.Group();
+      this.buildingModels.apply(group, kind, part, state, style);
+    } else if (kind === 'house2') {
+      group = this.createConcreteBlock();
+    } else {
+      const brick = this.createBrickBlock();
+      group = brick.group;
+      subMeshes = brick.subMeshes;
+    }
+    group.rotation.y = yaw;
+    group.userData.batchTile = true;
+    group.userData.building = { kind, part, yaw, style, hp, maxHp };
+    return { group, subMeshes };
+  }
+
+  /** Creates persistent concrete rubble for a destroyed building cell. */
+  createRubbleBlock(kind = 'house1') {
+    const group = new THREE.Group();
+    group.userData.batchTile = true;
+    if (this.useBlenderBuildings && this.buildingModels.ready) {
+      this.buildingModels.apply(group, kind, 'core', 0, 0);
+    } else {
+      const mat = markMaterialOwned(new THREE.MeshStandardMaterial({ color: 0x6e6963, roughness: 0.94 }));
+      const geo = this.sharedGeometry('BoxGeometry', 1.6, 0.18, 1.6);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.y = 0.09;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+    }
+    return group;
+  }
+
+  /** Updates a modular building tile to match its current HP. */
+  updateBuildingBlockDamage(group, hp, maxHp) {
+    const info = group?.userData?.building;
+    if (!info) return;
+    info.hp = hp;
+    info.maxHp = maxHp;
+    const state = buildingDamageState(hp, maxHp, info.kind);
+    if (this.useBlenderBuildings && this.buildingModels.ready) {
+      if (group.userData.slabMesh || group.userData.brickHp !== undefined) {
+        disposeOwned(group);
+        group.userData.slabMesh = group.userData.capMesh = group.userData.crackGroup = group.userData.rebarGroup = group.userData.concreteMat = null;
+        delete group.userData.brickHp;
+        delete group.userData.isConcreteBlock;
+      }
+      group.rotation.y = info.yaw;
+      this.buildingModels.apply(group, info.kind, info.part, state, info.style || 0);
+      return;
+    }
+    if (info.kind === 'house2') {
+      this.updateConcreteBlockDamage(group, hp, maxHp);
+    } else {
+      this.updateBrickBlockDamage(group, (hp / Math.max(1, maxHp)) * 4);
+    }
   }
 
   createBrickBlock() {
