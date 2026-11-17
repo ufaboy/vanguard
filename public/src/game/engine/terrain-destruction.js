@@ -446,8 +446,9 @@ export class TerrainDestructionController {
     const pointBlankRadius = 1.2 * TILE_SIZE;
     const maxDamage = 41;
 
-    for (let i = engine.enemies.length - 1; i >= 0; i--) {
-      const enemy = engine.enemies[i];
+    const targets = [...engine.enemies];
+    for (let i = targets.length - 1; i >= 0; i--) {
+      const enemy = targets[i];
       if (!enemy || enemy.hp <= 0) continue;
       const dist = Math.hypot(enemy.x - x, enemy.z - z);
       if (dist <= blastRadius) {
@@ -666,8 +667,9 @@ export class TerrainDestructionController {
         engine.damagePlayer(4.0 * dt, { zone: 'hull', aspect: 'front' });
       }
 
-      for (let ei = engine.enemies.length - 1; ei >= 0; ei--) {
-        const enemy = engine.enemies[ei];
+      const targets = [...engine.enemies];
+      for (let ei = targets.length - 1; ei >= 0; ei--) {
+        const enemy = targets[ei];
         if (!enemy || enemy.hp <= 0) continue;
         if (Math.abs(enemy.x - pos.x) <= halfCell && Math.abs(enemy.z - pos.z) <= halfCell) {
           engine.damageEnemy(enemy, 4.0 * dt, pos.x, pos.z);

@@ -792,8 +792,10 @@ export class EnemyAiController {
     engine.playerSpottedByEnemies = false;
     engine.updateSquadDirector(dt, spottedLastFrame);
 
-    for (let i = engine.enemies.length - 1; i >= 0; i--) {
-      const e = engine.enemies[i];
+    const enemiesSnapshot = [...engine.enemies];
+    for (let i = enemiesSnapshot.length - 1; i >= 0; i--) {
+      const e = enemiesSnapshot[i];
+      if (!e || e.hp <= 0 || !engine.enemies.includes(e)) continue;
       if (e.phaseShieldTimer > 0) {
         e.phaseShieldTimer = Math.max(0, e.phaseShieldTimer - dt);
         engine.bossCombat.syncPhaseShieldVisual(e, elapsed);
@@ -928,6 +930,7 @@ export class EnemyAiController {
       }
 
       if (inContactRange(e, distToPlayer) && engine.enemyCombat.spendContactEnemy(e)) continue;
+      if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
 
       // Seconds since the last hit (take_cover)
       e.sinceHit = e.prevHp !== undefined && e.hp < e.prevHp ? 0 : (e.sinceHit ?? Infinity) + dt;
@@ -990,6 +993,7 @@ export class EnemyAiController {
             toPlayerZ,
             distToPlayer,
           });
+          if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
         }
 
         const hpRatio = e.hp / e.maxHp;
@@ -1076,6 +1080,7 @@ export class EnemyAiController {
 
         if (isTryingToMove) {
           engine.enemyCombat.crushBoxObstacles(nextX, e.z, radius, false);
+          if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
           if (e.isBoss) engine.crushBossObstacles(nextX, e.z, radius);
         }
         let blocked = false;
@@ -1091,6 +1096,7 @@ export class EnemyAiController {
 
         if (isTryingToMove) {
           engine.enemyCombat.crushBoxObstacles(e.x, nextZ, radius, false);
+          if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
           if (e.isBoss) engine.crushBossObstacles(e.x, nextZ, radius);
         }
         if (
@@ -1187,6 +1193,7 @@ export class EnemyAiController {
       // Special slot & gunnery remain active even while crossing the border onto the arena.
       const brainActive = Boolean(!e.entryTarget && e.brain && e.brain.tactic !== 'idle');
       updateAbilities(e, engine, { brainActive, canSeePlayer });
+      if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
 
       engine.updateEnemyGunnery(e, dt, {
         canSeePlayer,
@@ -1198,6 +1205,7 @@ export class EnemyAiController {
         toPlayerX,
         toPlayerZ,
       });
+      if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
 
       const enemyHoverY = e.stats.canHover
         ? 0.05 + Math.sin(elapsed * 4.0 + e.id) * 0.012
@@ -1216,6 +1224,7 @@ export class EnemyAiController {
     engine.resolveEnemyCollisions();
     for (let i = 0; i < engine.enemies.length; i++) {
       const e = engine.enemies[i];
+      if (!e?.rig?.root) continue;
       e.rig.root.position.x = e.x;
       e.rig.root.position.z = e.z;
     }

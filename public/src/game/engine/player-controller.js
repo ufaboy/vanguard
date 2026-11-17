@@ -677,9 +677,10 @@ export class PlayerController {
       engine.playerVz = 0;
     }
 
-    for (let i = engine.enemies.length - 1; i >= 0; i--) {
-      const e = engine.enemies[i];
-      if (!e) continue;
+    const enemiesSnapshot = [...engine.enemies];
+    for (let i = enemiesSnapshot.length - 1; i >= 0; i--) {
+      const e = enemiesSnapshot[i];
+      if (!e || e.hp <= 0 || !engine.enemies.includes(e)) continue;
       const eRadius = e.isBoss ? 1.12 : 0.72;
       const minDist = radius + eRadius;
       const dxE = engine.playerX - e.x;

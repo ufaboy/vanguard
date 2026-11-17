@@ -196,3 +196,57 @@ test('Land mines deal full shaped-charge epicenter damage over 2.25 cells and ch
   assert.equal(blasts[0].penetration, LAND_MINE.PENETRATION);
   assert.ok(LAND_MINE.TRIGGER_RADIUS < blasts[0].radius * 0.5, 'triggering stays inside full-damage epicenter');
 });
+
+test('updateEnemies does not crash when an action removes multiple enemies in one iteration', async () => {
+  const { EnemyAiController } = await import('../public/src/game/engine/enemy-ai.js');
+  const e0 = {
+    id: 1,
+    x: 0,
+    z: 0,
+    hp: 20,
+    maxHp: 20,
+    phaseShieldTimer: 0,
+    stats: { moveSpeed: 2, canHover: false },
+    rig: { root: { position: { set() {} } }, hull: { rotation: {} }, barrelPivot: { position: {}, rotation: {} }, turret: { rotation: {} } },
+  };
+  const e1 = {
+    id: 2,
+    x: 0.5,
+    z: 0,
+    hp: 20,
+    maxHp: 20,
+    phaseShieldTimer: 0,
+    contactAbility: {
+      contactRange: 2.0,
+      onContact(_tank, game) {
+        // Simulate a contact blast setting off a barrel that kills both e0 and e1
+        e0.hp = 0;
+        e1.hp = 0;
+        game.enemies.length = 0;
+        return true;
+      },
+    },
+    stats: { moveSpeed: 2, canHover: false },
+    rig: { root: { position: { set() {} } }, hull: { rotation: {} }, barrelPivot: { position: {}, rotation: {} }, turret: { rotation: {} } },
+  };
+
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    empTimer: 0,
+    playerX: 0,
+    playerZ: 0,
+    inForest: false,
+    inSmoke: false,
+    enemies: [e0, e1],
+    sensorContacts: new Map(),
+    entityGroup: { remove() {} },
+    updateSquadDirector() {},
+    hasLineOfSight: () => true,
+    broadcastPlayerLocationFrom() {},
+    clearInfernoDashBeam() {},
+    checkAndIgniteForestOnEnemyKill() {},
+    resolveEnemyCollisions() {},
+    updateAiDebugOverlay() {},
+  });
+  assert.doesNotThrow(() => engine.updateEnemies(0.016, 1.0));
+  assert.equal(engine.enemies.length, 0);
+});

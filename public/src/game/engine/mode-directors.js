@@ -388,8 +388,9 @@ export class ContractDirector {
     const blastRadius = CONTRACT_TIMING.BLAST_RADIUS_CELLS * TILE_SIZE;
     const maxDamage = 42;
 
-    for (let i = e.enemies.length - 1; i >= 0; i--) {
-      const enemy = e.enemies[i];
+    const targets = [...e.enemies];
+    for (let i = targets.length - 1; i >= 0; i--) {
+      const enemy = targets[i];
       if (!enemy || enemy.hp <= 0) continue;
       const dist = Math.hypot(enemy.x - x, enemy.z - z);
       if (dist <= blastRadius) {

@@ -96,8 +96,9 @@ export class ExplosionsController {
       LAND_MINE.PENETRATION
     );
     if (m.neutral) {
-      for (let i = engine.enemies.length - 1; i >= 0; i--) {
-        const e = engine.enemies[i];
+      const targets = [...engine.enemies];
+      for (let i = targets.length - 1; i >= 0; i--) {
+        const e = targets[i];
         if (!e || e.hp <= 0) continue;
         const dist = Math.hypot(e.x - m.x, e.z - m.z);
         if (dist <= blastRadius + (e.isBoss ? 1.2 : 0.7)) {
@@ -307,8 +308,10 @@ export class ExplosionsController {
     }
 
     if (fromPlayer) {
-      for (let i = engine.enemies.length - 1; i >= 0; i--) {
-        const e = engine.enemies[i];
+      const targets = [...engine.enemies];
+      for (let i = targets.length - 1; i >= 0; i--) {
+        const e = targets[i];
+        if (!e || e.hp <= 0) continue;
         const dist = Math.hypot(e.x - x, e.z - z);
         if (dist <= radius + (e.isBoss ? 1.2 : 0.7)) {
           const edgeRatio = dist > radius * 0.5 ? INFERNO.EDGE_DAMAGE_RATIO : 1.0;
@@ -407,8 +410,10 @@ export class ExplosionsController {
     }
 
     if (fromPlayer) {
-      for (let i = engine.enemies.length - 1; i >= 0; i--) {
-        const e = engine.enemies[i];
+      const targets = [...engine.enemies];
+      for (let i = targets.length - 1; i >= 0; i--) {
+        const e = targets[i];
+        if (!e || e.hp <= 0) continue;
         const dist = Math.hypot(e.x - x, e.z - z);
         if (dist <= radius + (e.isBoss ? 1.2 : 0.7)) {
           const edgeRatio =

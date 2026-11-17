@@ -44,6 +44,32 @@ class SoundManager {
     this.engineGain = null;
     this.engineFilter = null;
     this.engineActive = false;
+    this._unlocked = false;
+
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      const unlock = () => {
+        if (this._unlocked) return;
+        this._unlocked = true;
+        window.removeEventListener('pointerdown', unlock, true);
+        window.removeEventListener('keydown', unlock, true);
+        if (this._enabled && !this.paused && (this.engineActive || this.ctx)) {
+          this.ensureContext();
+          if (this.engineActive && !this.engineSource && this.buffers?.engine_loop) {
+            this.startEngineLoop();
+          }
+        }
+      };
+      window.addEventListener('pointerdown', unlock, true);
+      window.addEventListener('keydown', unlock, true);
+    }
+  }
+
+  hasUserGesture() {
+    if (this._unlocked) return true;
+    if (typeof navigator !== 'undefined' && navigator.userActivation) {
+      return Boolean(navigator.userActivation.hasBeenActive);
+    }
+    return true;
   }
 
   get enabled() {
@@ -79,7 +105,7 @@ class SoundManager {
       }
       if (!active && this.ctx.state === 'running') {
         this.ctx.suspend?.().catch(() => {});
-      } else if (active && this.ctx.state === 'suspended') {
+      } else if (active && this.ctx.state === 'suspended' && this.hasUserGesture()) {
         this.ctx.resume?.().catch(() => {});
       }
     }
@@ -128,7 +154,7 @@ class SoundManager {
   }
 
   ensureContext() {
-    if (!this._enabled || this.paused || typeof window === 'undefined') return null;
+    if (!this._enabled || this.paused || typeof window === 'undefined' || !this.hasUserGesture()) return null;
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
