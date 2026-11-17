@@ -2601,7 +2601,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 #contract-hud {
   position: fixed;
-  top: 102px;
+  top: 108px;
   left: 16px;
   bottom: auto;
   right: auto;
@@ -2718,9 +2718,9 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 .hud-hp-card {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 7px 12px;
-  min-width: 215px;
+  gap: 12px;
+  padding: 9px 14px;
+  min-width: 236px;
   border-left: 2px solid #22c55e;
 }
 
@@ -2736,18 +2736,39 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 28px;
+  width: 36px;
+  height: 30px;
   flex: 0 0 auto;
+}
+
+.hud-hp-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hud-hp-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hud-hp-pct {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
 }
 
 .hud-label {
   display: block;
   font-family: var(--font-mono, monospace);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  color: #94a3b8;
+  letter-spacing: 0.12em;
+  color: #cbd5e1;
   text-transform: uppercase;
   line-height: 1.1;
 }
@@ -2755,10 +2776,10 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 .hud-hp-segs {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  gap: 2px;
-  width: 130px;
-  height: 8px;
-  margin: 4px 0 3px;
+  gap: 3px;
+  width: 152px;
+  height: 11px;
+  margin: 5px 0 4px;
 }
 
 .hud-hp-segs span {
@@ -2787,7 +2808,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 .hud-hp-val {
   font-family: var(--font-mono, monospace);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 800;
   color: #f8fafc;
   font-variant-numeric: tabular-nums;
@@ -2795,7 +2816,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 }
 
 .hud-hp-val small {
-  font-size: 11px;
+  font-size: 12px;
   color: #94a3b8;
   font-weight: 600;
 }
@@ -2803,18 +2824,93 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 .hud-sector-strip {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 3px;
-  padding: 6px 10px;
+  gap: 0;
+  min-width: 236px;
+  padding: 8px 12px 9px;
+  border-left: 2px solid #fbbf24;
   font-family: var(--font-mono, monospace);
-  font-size: 10px;
   color: #cbd5e1;
   width: fit-content;
 }
 
+.hud-sector-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-bottom: 5px;
+  margin-bottom: 7px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.hud-sector-pip {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  background: #fbbf24;
+  transform: rotate(45deg);
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.55);
+}
+
 .hud-sector-strip strong {
+  font-size: 12px;
+  font-weight: 800;
   color: #fbbf24;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.hud-sector-metrics {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.hud-sector-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.hud-sector-stat + .hud-sector-stat {
+  border-left: 1px solid rgba(51, 65, 85, 0.75);
+  padding-left: 12px;
+}
+
+.hud-sector-val {
+  font-family: var(--font-mono, monospace);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.hud-sector-val small {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-left: 1px;
+}
+
+.hud-sector-bar {
+  width: 100%;
+  min-width: 64px;
+  height: 3px;
+  margin-top: 4px;
+  background: rgba(30, 41, 59, 0.9);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.hud-sector-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.2s ease;
 }
 
 /* Top-Center Compass */
@@ -3031,45 +3127,50 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 .hud-weapon-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 14px;
+  gap: 14px;
+  min-height: 62px;
+  box-sizing: border-box;
+  padding: 9px 15px;
 }
 
 .hud-ammo-block {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding-right: 12px;
+  gap: 9px;
+  padding-right: 14px;
   border-right: 1px solid #334155;
 }
 
 .hud-ammo-val {
   font-family: var(--font-mono, monospace);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: #f8fafc;
   font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+  line-height: 1.1;
 }
 
 .hud-ammo-val small {
   font-size: 12px;
   color: #94a3b8;
+  font-weight: 600;
 }
 
 .hud-reload-block {
-  min-width: 170px;
+  min-width: 184px;
 }
 
 .hud-reload-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 9px;
+  margin-top: 5px;
 }
 
 .hud-reload-segs {
   display: grid;
-  grid-template-columns: repeat(8, 12px);
+  grid-template-columns: repeat(8, 13px);
   gap: 3px;
   height: 11px;
 }
@@ -3095,18 +3196,173 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 .hud-reload-time {
   font-family: var(--font-mono, monospace);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   color: #e2e8f0;
   font-variant-numeric: tabular-nums;
-  min-width: 38px;
+  min-width: 46px;
+}
+
+.hud-reload-time.is-ready {
+  color: #4ade80;
+}
+
+.hud-reload-time.is-charging {
+  color: #fbbf24;
+}
+
+.hud-reload-time.is-empty {
+  color: #f87171;
 }
 
 .hud-modules-card {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(84px, 1fr));
+  align-items: stretch;
+  gap: 6px;
+  min-height: 62px;
+  box-sizing: border-box;
+  padding: 6px 8px;
+}
+
+.hud-mod-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+  padding: 5px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(71, 85, 105, 0.7);
+  background: rgba(15, 23, 42, 0.92);
+  color: #e2e8f0;
+  font-family: var(--font-mono, monospace);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.hud-mod-tile.is-passive {
+  cursor: default;
+  user-select: none;
+}
+
+.hud-mod-tile:disabled {
+  cursor: not-allowed;
+}
+
+.hud-mod-tile.tone-emerald.is-ready {
+  background: rgba(6, 78, 59, 0.42);
+  border-color: rgba(52, 211, 153, 0.65);
+  color: #6ee7b7;
+}
+
+.hud-mod-tile.tone-emerald.is-ready:not(.is-passive):hover {
+  background: rgba(6, 95, 70, 0.6);
+}
+
+.hud-mod-tile.tone-sky.is-ready {
+  background: rgba(12, 74, 110, 0.45);
+  border-color: rgba(56, 189, 248, 0.65);
+  color: #7dd3fc;
+}
+
+.hud-mod-tile.tone-sky.is-ready:hover {
+  background: rgba(7, 89, 133, 0.62);
+}
+
+.hud-mod-tile.tone-amber.is-ready {
+  background: rgba(120, 53, 15, 0.42);
+  border-color: rgba(251, 191, 36, 0.72);
+  color: #fde68a;
+}
+
+.hud-mod-tile.tone-amber.is-ready:hover {
+  background: rgba(146, 64, 14, 0.58);
+}
+
+.hud-mod-tile.is-cooldown {
+  background: rgba(30, 41, 59, 0.92);
+  border-color: rgba(245, 158, 11, 0.55);
+  color: #fbbf24;
+}
+
+.hud-mod-tile.is-channeling {
+  background: rgba(17, 94, 89, 0.55);
+  border-color: #2dd4bf;
+  color: #5eead4;
+}
+
+.hud-mod-tile.is-jammed {
+  background: rgba(88, 28, 135, 0.48);
+  border-color: rgba(192, 132, 252, 0.75);
+  color: #d8b4fe;
+}
+
+.hud-mod-tile.is-empty {
+  background: rgba(15, 23, 42, 0.84);
+  border-color: rgba(51, 65, 85, 0.75);
+  color: #94a3b8;
+}
+
+.hud-mod-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.hud-mod-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 4px;
+  border-radius: 2px;
+  background: rgba(2, 6, 23, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  font-size: 9px;
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1.1;
+}
+
+.hud-mod-key.is-auto {
+  border-color: rgba(148, 163, 184, 0.35);
+  color: #cbd5e1;
+  letter-spacing: 0.04em;
+}
+
+.hud-mod-name {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #e2e8f0;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.hud-mod-tile.is-empty .hud-mod-name {
+  color: #94a3b8;
+}
+
+.hud-mod-val-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
+}
+
+.hud-mod-val {
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.hud-mod-val small {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
 }
 
 /* Bottom-Right Circular Tactical Radar */
