@@ -72,6 +72,7 @@ test('Concrete breaks open toward the hits, darkens per hit and stays in one bat
   const tinted = root.children[0].material;
   assert.notEqual(tinted, models.material, 'a damaged block owns its tint');
   const first = tinted.color.r;
+  assert.ok(first < models.material.color.r, 'first hit is darker than intact concrete');
 
   engine.damageTileCell(cell, 1, 10.1, 19); batcher.sync();
   assert.equal(root.children[0].geometry, models.states.get(3), 'still the one-face model above state 2');

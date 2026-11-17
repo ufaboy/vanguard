@@ -2041,7 +2041,7 @@ export class ModelFactory extends TextureGenerator {
       map: tex.side,
       bumpMap: bump(tex.sideBump),
       bumpScale: 1.4,
-      color: 0xcbd5e1,
+      color: 0x8c96a3,
       roughness: 0.9,
       metalness: 0.04,
     });
@@ -2057,7 +2057,7 @@ export class ModelFactory extends TextureGenerator {
       map: tex.top,
       bumpMap: bump(tex.topBump),
       bumpScale: 1.2,
-      color: 0xb8c2ce,
+      color: 0x7e8895,
       roughness: 0.82,
       metalness: 0.06,
     });
@@ -2190,7 +2190,8 @@ export class ModelFactory extends TextureGenerator {
     if (state >= 4) data.breach = null;
     else if (hit) data.breach = nextBreach(data.breach, hit.dx, hit.dz, state);
     if (data.breach) blockGroup.rotation.y = breachYaw(data.breach);
-    const shade = Math.round(145 + ratio * 58);
+    // Intact concrete is 0x8c96a3 (140, 150, 163); each hit darkens down from that baseline.
+    const shade = Math.round(104 + ratio * 36);
 
     if (this.useBlenderConcrete && this.concreteModels.states.size) {
       if (data.slabMesh) {
@@ -2200,7 +2201,7 @@ export class ModelFactory extends TextureGenerator {
       }
       // The block darkens with every hit; model states only change a few times.
       if (ratio < 1) data.modelMaterial ||= markMaterialOwned(this.concreteModels.material.clone());
-      data.modelMaterial?.color.setRGB(shade / 255, (shade + 8) / 255, (shade + 18) / 255, THREE.SRGBColorSpace);
+      data.modelMaterial?.color.setRGB(shade / 255, (shade + 10) / 255, (shade + 23) / 255, THREE.SRGBColorSpace);
       this.concreteModels.apply(blockGroup, state, data.breach?.variant, data.modelMaterial);
       return;
     }
@@ -2223,7 +2224,7 @@ export class ModelFactory extends TextureGenerator {
     }
     if (concreteMat) {
       this.ownConcreteSlabMaterials(blockGroup)
-        .color.setRGB(shade / 255, (shade + 8) / 255, (shade + 18) / 255, THREE.SRGBColorSpace);
+        .color.setRGB(shade / 255, (shade + 10) / 255, (shade + 23) / 255, THREE.SRGBColorSpace);
     }
   }
 

@@ -59,6 +59,12 @@
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.22.5 // CONCRETE DAMAGE TINT FIX</span>
+            <strong>Darkened Concrete Damage Ramp Matching Intact Concrete Tint</strong>
+            <p>Aligned the per-hit damage darkening ramp in <code>updateConcreteBlockDamage</code> and procedural concrete materials with the intact <code>CONCRETE</code> base color (<code>0x8c96a3</code>) so damaged concrete blocks progressively darken on hit instead of jumping to a legacy lighter shade.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.22.4 // ENEMY UPDATE LOOP CRASH FIX &amp; AUDIO AUTOPLAY GUARD</span>
             <strong>Multi-Kill Enemy Iteration Fix &amp; User-Gesture AudioContext Unlock</strong>
             <p>Fixed a runtime freeze in <code>EnemyAiController.updateEnemies</code> and explosion/hazard damage loops when a barrel detonation or contact warhead eliminated multiple enemies during a single iteration. Deferred <code>AudioContext</code> initialization until the first user gesture on the page to prevent browser autoplay console warnings while automatically starting the diesel engine loop on first input.</p>
