@@ -1,6 +1,6 @@
 /**
  * Layered terrain entity model:
- * - Surface (flat ground per cell: GROUND, ROAD, WATER, ICE, SAND, STONE, GRASS, SWAMP, OIL_SLICK, MOUNTAIN)
+ * - Surface (flat ground per cell: GROUND, ROAD, WATER, ICE, SAND, STONE, GRASS, SWAMP, OIL_SLICK)
  * - Decoration (slot: FOREST, CRATER, HEDGEHOG, BARREL, BOXES; overlays: ROAD_MARKING, SCORCH, TRACK_MARK)
  * - Facility (single/multi-cell: HOUSE_1, HOUSE_2, RUBBLE, WATER_TOWER, BRIDGE, LANDMARK, TURRET_*, BASE, ENEMY_BASE)
  * - Wall (slot: BRICK, CONCRETE)
@@ -18,7 +18,6 @@ const SURFACE_TILE_SET = new Set([
   TileType.GRASS,
   TileType.SWAMP,
   TileType.OIL_SLICK,
-  TileType.MOUNTAIN,
 ]);
 
 const WALL_TILE_SET = new Set([
@@ -89,17 +88,9 @@ function isDecorationType(tileType) {
   return DECORATION_TILE_SET.has(tileType);
 }
 
-/** True when `cell` hosts a facility, locking its underlying `surface` against type changes. */
-export function isSurfaceLocked(cell) {
-  if (!cell) return false;
-  const obj = cell.object ?? (isFacilityType(cell.type) ? cell.type : null);
-  return obj != null && isFacilityType(obj);
-}
-
 /** Hard compatibility check: can `objectType` be placed on `surfaceType`? */
 export function canPlaceOnSurface(objectType, surfaceType) {
   if (objectType == null || objectType === TileType.EMPTY) return true;
-  if (surfaceType === TileType.MOUNTAIN) return false;
   if (objectType === TileType.BRIDGE) return surfaceType === TileType.WATER;
   if (isFacilityType(objectType)) return FACILITY_SURFACES.has(surfaceType);
   if (objectType === TileType.FOREST) return FOREST_SURFACES.has(surfaceType);
@@ -169,7 +160,6 @@ const TILE_TYPE_TO_CONFIG = Object.freeze({
   [TileType.HOUSE_2]: SURFACE_CONFIGS[SURFACE_TYPES.HOUSE_2],
   [TileType.STONE]: SURFACE_CONFIGS[SURFACE_TYPES.STONE],
   [TileType.GRASS]: SURFACE_CONFIGS[SURFACE_TYPES.GRASS],
-  [TileType.MOUNTAIN]: SURFACE_CONFIGS[SURFACE_TYPES.MOUNTAIN],
 });
 
 /** Catalog config for a numeric TileType, or null for unknown types. */
@@ -191,13 +181,16 @@ export function isTilePassable(tileType, canCrossWater = false) {
 const MOVEMENT_FIELDS = Object.freeze(['speedMultiplier', 'accelMultiplier', 'turnMultiplier', 'brakeMultiplier']);
 
 function hasMovement(cfg) {
-  return Boolean(cfg) && MOVEMENT_FIELDS.some((field) => typeof cfg[field] === 'number');
+  return (
+    Boolean(cfg) &&
+    (MOVEMENT_FIELDS.some((field) => typeof cfg[field] === 'number') || typeof cfg.maxSpeedCells === 'number')
+  );
 }
 
 /**
  * Whether a layer's traction applies to this chassis:
- * - all-terrain and hover chassis keep paved bonuses (speed > 1) but ignore penalties,
- *   except layers flagged `affectsAllTerrain` (RUBBLE);
+ * - all-terrain and hover chassis keep paved bonuses (speed > 1) but ignore penalties (slowdowns and
+ *   speed caps), except layers flagged `affectsAllTerrain` (RUBBLE);
  * - bosses ignore RUBBLE; enemies ignore `playerOnlyTraction` layers (ICE).
  */
 function movementApplies(cfg, tileType, chassis) {
@@ -209,30 +202,23 @@ function movementApplies(cfg, tileType, chassis) {
   return true;
 }
 
+const movementCache = new Map();
+
 /**
- * Combines the surface and object layers of a cell:
- * - Passability: the surface must be passable AND the object must be passable (BRIDGE overrides WATER).
- * - Movement: every layer whose traction applies (see movementApplies) multiplies its speed / accel /
- *   turn / brake multipliers onto the others, so a CRATER on a ROAD keeps part of the road bonus.
- *   `movement` is null when no layer changes traction; callers then use their own default ground.
- * - Projectiles / concealment are combined across both layers.
- * `chassis`: { allTerrain, canHover, canCrossWater, isBoss, isEnemy }.
+ * Traction of a cell's surface and object layers for one chassis, or null when no layer changes it
+ * (callers then use their own default ground). Every applicable layer (see movementApplies) multiplies
+ * its speed / accel / turn / brake multipliers onto the others, so a CRATER on a ROAD keeps part of the
+ * road bonus; `maxSpeedCells` (STONE) caps the top speed in cells per second, the lowest cap wins.
+ * `chassis`: { allTerrain, canHover, isBoss, isEnemy }. Results are cached and frozen.
  */
-export function combineCellProperties(surfaceType = TileType.EMPTY, objectType = null, chassis = {}) {
-  const sCfg = tileConfig(surfaceType) || SURFACE_CONFIGS[SURFACE_TYPES.EMPTY];
+export function combineCellMovement(surfaceType = TileType.EMPTY, objectType = null, chassis = {}) {
+  const flags =
+    (chassis.allTerrain ? 1 : 0) | (chassis.canHover ? 2 : 0) | (chassis.isBoss ? 4 : 0) | (chassis.isEnemy ? 8 : 0);
+  const key = `${surfaceType}|${objectType ?? ''}|${flags}`;
+  if (movementCache.has(key)) return movementCache.get(key);
+
+  const sCfg = tileConfig(surfaceType);
   const oCfg = objectType != null ? tileConfig(objectType) : null;
-  const isHover = Boolean(chassis.canHover);
-
-  const surfacePassable = isHover
-    ? sCfg.passableByHover !== false
-    : isTilePassable(surfaceType, Boolean(chassis.canCrossWater || chassis.allTerrain));
-  const objectPassable = !oCfg
-    ? objectType == null
-    : isHover
-      ? oCfg.passableByHover !== false
-      : oCfg.passableByTracks !== false;
-  const passable = objectType === TileType.BRIDGE ? true : surfacePassable && objectPassable;
-
   let movement = null;
   for (const [cfg, tileType] of [[sCfg, surfaceType], [oCfg, objectType]]) {
     if (!movementApplies(cfg, tileType, chassis)) continue;
@@ -240,32 +226,26 @@ export function combineCellProperties(surfaceType = TileType.EMPTY, objectType =
     for (const field of MOVEMENT_FIELDS) {
       if (typeof cfg[field] === 'number') movement[field] = (movement[field] ?? 1) * cfg[field];
     }
+    if (typeof cfg.maxSpeedCells === 'number') {
+      movement.maxSpeedCells = Math.min(movement.maxSpeedCells ?? Infinity, cfg.maxSpeedCells);
+    }
     // The top-most layer that changes traction names the surface on the HUD.
     movement.id = cfg.surfaceType.toLowerCase();
     movement.label = cfg.hudLabel || cfg.name;
     movement.lowTraction ||= Boolean(cfg.lowTraction);
     movement.affectsAllTerrain ||= Boolean(cfg.affectsAllTerrain);
   }
-
-  return {
-    passable,
-    movement,
-    speedMultiplier: movement?.speedMultiplier ?? 1.0,
-    accelMultiplier: movement?.accelMultiplier ?? 1.0,
-    turnMultiplier: movement?.turnMultiplier ?? 1.0,
-    brakeMultiplier: movement?.brakeMultiplier ?? 1.0,
-    blocksProjectiles: Boolean(sCfg.blocksProjectiles || oCfg?.blocksProjectiles),
-    providesConcealment: Boolean(sCfg.providesConcealment || oCfg?.providesConcealment),
-    splashDamageMult: oCfg?.splashDamageMult ?? sCfg.splashDamageMult ?? 1.0,
-  };
+  const result = movement && Object.freeze(movement);
+  movementCache.set(key, result);
+  return result;
 }
 
-/** combineCellProperties for a grid cell (layered, or a legacy cell that only has `type`). */
-export function combineCellTerrain(cell, chassis = {}) {
-  if (!cell) return combineCellProperties(TileType.EMPTY, null, chassis);
+/** combineCellMovement for a grid cell (layered, or a legacy cell that only has `type`). */
+export function cellMovement(cell, chassis = {}) {
+  if (!cell) return combineCellMovement(TileType.EMPTY, null, chassis);
   const type = cell.type ?? TileType.EMPTY;
   const surface = cell.surface ?? (isSurfaceType(type) ? type : TileType.EMPTY);
   const object =
     cell.object !== undefined ? cell.object : !isSurfaceType(type) && type !== TileType.EMPTY ? type : null;
-  return combineCellProperties(surface, object, chassis);
+  return combineCellMovement(surface, object, chassis);
 }

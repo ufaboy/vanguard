@@ -8,8 +8,27 @@ import { SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';
 import { breachPointToward } from '../terrains/breach-models.js';
-import { canPlaceOnSurface, isSurfaceLocked, isSurfaceType, setCellObject, syncCellType } from '../terrains/layers.js';
+import { canPlaceOnSurface, setCellObject, syncCellType } from '../terrains/layers.js';
 import { GameStatus, TileType, checkMapDefeat, checkMapVictory } from '../types.js';
+
+/** Facilities a sand conversion (thermobaric blast, boss dozer) must never erase. */
+const SAND_PROOF_OBJECTS = new Set([
+  TileType.BASE,
+  TileType.ENEMY_BASE,
+  TileType.LANDMARK,
+  TileType.BRIDGE,
+  TileType.WATER_TOWER,
+]);
+
+/** Surfaces a water-tower flood turns into SWAMP. Ice and water keep their sector-wide meshes. */
+const FLOODABLE_SURFACES = new Set([
+  TileType.EMPTY,
+  TileType.SAND,
+  TileType.ROAD,
+  TileType.GRASS,
+  TileType.STONE,
+  TileType.OIL_SLICK,
+]);
 
 /** Manages terrain cell destruction, HQ/enemy base destruction & restoration, rubble, and barrel chains. */
 export class TerrainDestructionController {
@@ -36,11 +55,16 @@ export class TerrainDestructionController {
     return true;
   }
 
-  /** Converts a terrain/obstacle cell (FOREST, BRICK, CONCRETE, ICE, WATER) into scorched SAND. */
+  /**
+   * Converts a terrain/obstacle cell (FOREST, BRICK, CONCRETE, HOUSE, RUBBLE, ICE, WATER) into scorched SAND.
+   * The object goes with it, so houses and rubble burn away too; bases, landmarks, bridges and towers stay.
+   */
   convertCellToSand(cell) {
     const { engine } = this;
-    if (!cell || (cell.surface === TileType.SAND && cell.object == null)) return;
-    if (isSurfaceLocked(cell)) return;
+    if (!cell) return;
+    syncCellType(cell);
+    if (cell.surface === TileType.SAND && cell.object == null) return;
+    if (SAND_PROOF_OBJECTS.has(cell.object)) return;
     if (cell.type === TileType.FOREST && engine.burningForests?.length) {
       const idx = engine.burningForests.findIndex((bf) => bf.cell === cell);
       if (idx >= 0) engine.burningForests.splice(idx, 1);
@@ -582,10 +606,7 @@ export class TerrainDestructionController {
     const { engine } = this;
     if (!cell) return;
     syncCellType(cell);
-    if (isSurfaceLocked(cell) || !isSurfaceType(cell.surface)) {
-      return;
-    }
-    if (cell.surface === TileType.WATER || cell.surface === TileType.MOUNTAIN) {
+    if (!FLOODABLE_SURFACES.has(cell.surface)) {
       return;
     }
     if (cell.object != null && cell.object !== TileType.CRATER) {

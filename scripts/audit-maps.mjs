@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inspectMap } from '../skills/vanguard-map-creator/scripts/inspect-map.mjs';
+import { effectiveLayout } from '../skills/vanguard-map-creator/scripts/layered-layout.mjs';
 import { normalizeMapDefinition } from '../public/src/game/levels.js';
 
 // Read-only audit: JSON output goes to stdout; no campaign files are modified.
@@ -9,6 +10,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const directory = path.join(root, 'public/maps/campaign');
 const files = (await fs.readdir(directory)).filter(name => /^mission-.*\.json$/.test(name)).sort();
 const maps = await Promise.all(files.map(async file => JSON.parse(await fs.readFile(path.join(directory, file), 'utf8'))));
+// One token per cell: the object when present, otherwise the surface (see layered-layout.mjs).
+const layouts = maps.map(effectiveLayout);
 
 function largestSquare(layout, allowed) {
   const dp = Array.from({ length: 41 }, () => Array(41).fill(0));
@@ -28,13 +31,10 @@ for (let i = 0; i < maps.length; i++) {
   const validation = await inspectMap(root, path.join(directory, files[i]));
   const spawnCells = [...runtime.entrances, ...runtime.fixedSpawns,
     ...runtime.encounters.flatMap(group => group.initialCells || [])];
-  map.layout.forEach((row, r) => [...row].forEach((tile, c) => {
-    if (tile === 'G') spawnCells.push({ row: r, col: c });
-  }));
   if (runtime.rules.spawnSectorBossOnClear) spawnCells.push(runtime.bossSpawnCell);
   results.push({ file: files[i], ...validation,
-    emptySquare: largestSquare(map.layout, '.'),
-    traversableSquareWithoutHardCover: largestSquare(map.layout, '.FIG'),
+    emptySquare: largestSquare(layouts[i], '.'),
+    traversableSquareWithoutHardCover: largestSquare(layouts[i], '.FIV^'),
     spawnsOutsideNorth: spawnCells.filter(cell => cell.row < 0 || cell.row > 13),
     runtimeBoss: runtime.rules.spawnSectorBossOnClear ? runtime.bossClass : null,
     authoredBoss: map.boss?.enemyClass || null,
@@ -46,10 +46,10 @@ const pairs = [];
 for (let a = 0; a < maps.length; a++) for (let b = a + 1; b < maps.length; b++) {
   let intersection = 0, union = 0, differentTiles = 0;
   for (let r = 0; r < 40; r++) for (let c = 0; c < 40; c++) {
-    differentTiles += maps[a].layout[r][c] !== maps[b].layout[r][c];
+    differentTiles += layouts[a][r][c] !== layouts[b][r][c];
     if (r === 0 || r === 39 || c === 0 || c === 39) continue;
-    const x = 'BC'.includes(maps[a].layout[r][c]);
-    const y = 'BC'.includes(maps[b].layout[r][c]);
+    const x = 'BC'.includes(layouts[a][r][c]);
+    const y = 'BC'.includes(layouts[b][r][c]);
     intersection += x && y;
     union += x || y;
   }

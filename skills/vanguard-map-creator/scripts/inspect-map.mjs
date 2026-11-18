@@ -19,10 +19,8 @@ export async function inspectMap(projectRoot, mapPath) {
     && map.objectLayout.length === size
     && map.surfaceLayout.every(row => typeof row === 'string' && row.length === size && /^[GRWISNVML^_. ]+$/.test(row))
     && map.objectLayout.every(row => typeof row === 'string' && row.length === size && /^[.BCFXDOQKT=UAPHE_ ]+$/.test(row));
-  const validLegacy = Array.isArray(map.layout) && map.layout.length === size && map.layout.every(row => typeof row === 'string' && row.length === size && /^[.BCFWIGHESXZDOQNRMLKTAP=_ ]+$/.test(row));
-  const validGrid = hasLayered ? validLayered : validLegacy;
-  check(validGrid, 'Layout must contain 40 equal-width rows using known tile tokens.');
-  if (!validGrid) return { mapId: map.mapId, errors, warnings };
+  check(validLayered, 'surfaceLayout and objectLayout must each contain 40 equal-width rows using known tile tokens.');
+  if (!validLayered) return { mapId: map.mapId, errors, warnings };
   const effectiveLayout = flattenLayout(map);
   const inside = c => c && Number.isInteger(c.row) && Number.isInteger(c.col) && c.row >= 0 && c.col >= 0 && c.row < size && c.col < size;
   const key = c => `${c.row},${c.col}`;

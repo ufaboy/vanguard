@@ -23,7 +23,7 @@ import { SECTORS } from '../levels.js';
 import { sound } from '../sound.js';
 import { createMissileVisual } from '../effects/index.js';
 import { markMaterialOwned, markOwned } from '../render/dispose.js';
-import { combineCellTerrain } from '../terrains/layers.js';
+import { cellMovement } from '../terrains/layers.js';
 import { deckClearance } from '../render/models.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { resetBrain } from '../../sim/behavior/index.js';
@@ -485,7 +485,7 @@ export class PlayerController {
     engine.onIce = !canHover && !allTerrain && currentCell?.type === TileType.ICE;
     engine.onSand = !canHover && !allTerrain && currentCell?.type === TileType.SAND;
     // Traction of the cell's surface and object layers (SURFACE_CONFIGS), e.g. a crater on a road.
-    const tileMove = combineCellTerrain(currentCell, { allTerrain, canHover }).movement;
+    const tileMove = cellMovement(currentCell, { allTerrain, canHover });
     engine.inForest = currentCell?.type === TileType.FOREST && !currentCell?.isBurning;
     engine.inSmoke =
       engine.isPointInSmoke(engine.playerX, engine.playerZ) ||
@@ -529,12 +529,12 @@ export class PlayerController {
       : allTerrain && !tileMove?.affectsAllTerrain
         ? Math.max(1.0, rawSurfMult)
         : rawSurfMult;
-    const maxSpeed =
-      engine.playerStats.moveSpeed *
-      TILE_SIZE *
-      lowHpMult *
-      surfMult *
-      subMods.speedMultiplier;
+    // Rough ground (STONE) caps the top speed in cells per second instead of scaling it.
+    const terrainSpeedCap = (tileMove?.maxSpeedCells ?? Infinity) * TILE_SIZE;
+    const maxSpeed = Math.min(
+      terrainSpeedCap,
+      engine.playerStats.moveSpeed * TILE_SIZE * lowHpMult * surfMult * subMods.speedMultiplier
+    );
 
     if (hpRatio < DURABILITY.LOW_RATIO && Math.random() < 0.25) {
       engine.spawnSparks(engine.playerX, 0.65, engine.playerZ, 0x475569, 1);

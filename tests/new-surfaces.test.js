@@ -16,10 +16,9 @@ import { TerrainDestructionController } from '../public/src/game/engine/terrain-
 import { ForestFireController } from '../public/src/game/terrains/forest-fire.js';
 import {
   canPlaceOnSurface,
-  combineCellProperties,
-  combineCellTerrain,
+  cellMovement,
+  combineCellMovement,
   isTilePassable,
-  isSurfaceLocked,
   setCellObject,
   setCellSurface,
 } from '../public/src/game/terrains/layers.js';
@@ -272,7 +271,7 @@ test('burning FOREST spreads to adjacent FOREST and OIL_SLICK and damages adjace
   assert.equal(house.hp, 22);
 });
 
-test('layered terrain compatibility, facility surface lock, and physics combination', () => {
+test('layered terrain placement compatibility', () => {
   assert.equal(canPlaceOnSurface(TileType.BRIDGE, TileType.WATER), true);
   assert.equal(canPlaceOnSurface(TileType.BRIDGE, TileType.EMPTY), false);
   assert.equal(canPlaceOnSurface(TileType.HOUSE_1, TileType.EMPTY), true);
@@ -280,14 +279,9 @@ test('layered terrain compatibility, facility surface lock, and physics combinat
   assert.equal(canPlaceOnSurface(TileType.BARREL, TileType.OIL_SLICK), true);
   assert.equal(canPlaceOnSurface(TileType.FOREST, TileType.GRASS), true);
   assert.equal(canPlaceOnSurface(TileType.FOREST, TileType.ROAD), false);
-
-  const facilityCell = { surface: TileType.EMPTY, object: TileType.HOUSE_1, type: TileType.HOUSE_1 };
-  assert.equal(isSurfaceLocked(facilityCell), true);
-
-  const roadCrater = combineCellProperties(TileType.ROAD, TileType.CRATER, {});
-  assert.equal(roadCrater.passable, true);
-  assert.ok(roadCrater.speedMultiplier > 1.0 && roadCrater.speedMultiplier < 1.2);
 });
+
+const speedOf = (movement) => movement?.speedMultiplier ?? 1.0;
 
 test('single-layer traction matches the pre-layer movement tuning for player and enemies', () => {
   // [tile, player {speed, accel, turn, brake}, enemy speed] as hardcoded before the layer rework.
@@ -301,34 +295,52 @@ test('single-layer traction matches the pre-layer movement tuning for player and
     [TileType.SAND, [0.78, 0.75, 0.82, 0.85], 0.78],
   ];
   for (const [tile, [speed, accel, turn, brake], enemySpeed] of table) {
-    const player = combineCellTerrain({ type: tile }, {});
+    const player = cellMovement({ type: tile }, {});
     assert.equal(player.speedMultiplier, speed, `player speed on ${tile}`);
     assert.equal(player.accelMultiplier, accel, `player accel on ${tile}`);
     assert.equal(player.turnMultiplier, turn, `player turn on ${tile}`);
     assert.equal(player.brakeMultiplier, brake, `player brake on ${tile}`);
-    assert.equal(combineCellTerrain({ type: tile }, { isEnemy: true }).speedMultiplier, enemySpeed, `enemy speed on ${tile}`);
+    assert.equal(speedOf(cellMovement({ type: tile }, { isEnemy: true })), enemySpeed, `enemy speed on ${tile}`);
   }
-  assert.equal(combineCellTerrain({ type: TileType.ICE }, {}).movement.lowTraction, true);
-  assert.equal(combineCellTerrain({ type: TileType.OIL_SLICK }, {}).movement.lowTraction, true);
-  assert.equal(combineCellTerrain({ type: TileType.GRASS }, {}).movement, null);
-  assert.equal(combineCellTerrain({ type: TileType.FOREST }, {}).movement, null);
+  assert.equal(cellMovement({ type: TileType.ICE }, {}).lowTraction, true);
+  assert.equal(cellMovement({ type: TileType.OIL_SLICK }, {}).lowTraction, true);
+  assert.equal(cellMovement({ type: TileType.GRASS }, {}), null);
+  assert.equal(cellMovement({ type: TileType.FOREST }, {}), null);
 
   // All-terrain chassis ignore penalties but keep the paved bonus; rubble slows every chassis except bosses.
-  assert.equal(combineCellTerrain({ type: TileType.SAND }, { allTerrain: true }).movement, null);
-  assert.equal(combineCellTerrain({ type: TileType.ROAD }, { canHover: true }).speedMultiplier, 1.2);
-  assert.equal(combineCellTerrain({ type: TileType.RUBBLE }, { allTerrain: true }).speedMultiplier, 0.45);
-  assert.equal(combineCellTerrain({ type: TileType.RUBBLE }, { isEnemy: true, isBoss: true }).speedMultiplier, 1.0);
+  assert.equal(cellMovement({ type: TileType.SAND }, { allTerrain: true }), null);
+  assert.equal(speedOf(cellMovement({ type: TileType.ROAD }, { canHover: true })), 1.2);
+  assert.equal(speedOf(cellMovement({ type: TileType.RUBBLE }, { allTerrain: true })), 0.45);
+  assert.equal(speedOf(cellMovement({ type: TileType.RUBBLE }, { isEnemy: true, isBoss: true })), 1.0);
+
+  // Results are cached and frozen, so callers must copy before changing them.
+  assert.equal(combineCellMovement(TileType.ROAD, null, {}), combineCellMovement(TileType.ROAD, null, {}));
+  assert.ok(Object.isFrozen(combineCellMovement(TileType.ROAD, null, {})));
+});
+
+test('STONE caps top speed at 1.5 cells/s instead of scaling it; all-terrain and hover ignore the cap', () => {
+  const stone = cellMovement({ type: TileType.STONE }, {});
+  assert.equal(stone.maxSpeedCells, 1.5);
+  assert.equal(stone.speedMultiplier, undefined);
+  assert.equal(stone.label, 'Rocky Ground');
+  assert.equal(cellMovement({ type: TileType.STONE }, { isEnemy: true }).maxSpeedCells, 1.5);
+  assert.equal(cellMovement({ type: TileType.STONE }, { allTerrain: true }), null);
+  assert.equal(cellMovement({ type: TileType.STONE }, { canHover: true }), null);
+  // A crater on stone keeps the cap and adds its own slowdown.
+  const crater = cellMovement({ type: TileType.CRATER, surface: TileType.STONE, object: TileType.CRATER }, {});
+  assert.equal(crater.maxSpeedCells, 1.5);
+  assert.equal(crater.speedMultiplier, 0.85);
 });
 
 test('layered traction multiplies surface and object, e.g. a crater on a road or on sand', () => {
-  const roadCrater = combineCellTerrain({ type: TileType.CRATER, surface: TileType.ROAD, object: TileType.CRATER }, {});
+  const roadCrater = cellMovement({ type: TileType.CRATER, surface: TileType.ROAD, object: TileType.CRATER }, {});
   assert.ok(Math.abs(roadCrater.speedMultiplier - 1.2 * 0.85) < 1e-9);
-  assert.equal(roadCrater.movement.label, 'Blast Crater');
-  const sandCrater = combineCellTerrain({ type: TileType.CRATER, surface: TileType.SAND, object: TileType.CRATER }, {});
+  assert.equal(roadCrater.label, 'Blast Crater');
+  const sandCrater = cellMovement({ type: TileType.CRATER, surface: TileType.SAND, object: TileType.CRATER }, {});
   assert.ok(Math.abs(sandCrater.speedMultiplier - 0.78 * 0.85) < 1e-9);
   // All-terrain keeps only the road bonus under a crater.
   assert.equal(
-    combineCellTerrain({ type: TileType.CRATER, surface: TileType.ROAD, object: TileType.CRATER }, { allTerrain: true }).speedMultiplier,
+    speedOf(cellMovement({ type: TileType.CRATER, surface: TileType.ROAD, object: TileType.CRATER }, { allTerrain: true })),
     1.2
   );
 });
@@ -342,8 +354,37 @@ test('isTilePassable matches the former hand-written passability lists', () => {
     assert.equal(isTilePassable(type), driveable.includes(type), `passability of ${type}`);
   }
   assert.equal(isTilePassable(TileType.WATER, true), true);
-  assert.equal(isTilePassable(TileType.MOUNTAIN, true), false);
   assert.equal(isTilePassable(undefined), false);
+});
+
+test('sand conversion (thermobaric) burns houses and rubble away but spares bridges and towers', () => {
+  const grid = createMockGrid(3, 3);
+  for (const row of grid) for (const cell of row) Object.assign(cell, { surface: TileType.EMPTY, object: null });
+  const engine = createMockEngine(grid);
+  const house = Object.assign(grid[0][0], { type: TileType.HOUSE_1, object: TileType.HOUSE_1, hp: 25 });
+  const rubble = Object.assign(grid[0][1], { type: TileType.RUBBLE, object: TileType.RUBBLE, hp: 1 });
+  const bridge = Object.assign(grid[0][2], { type: TileType.BRIDGE, surface: TileType.WATER, object: TileType.BRIDGE });
+  const tower = Object.assign(grid[1][0], { type: TileType.WATER_TOWER, object: TileType.WATER_TOWER, hp: 2 });
+  for (const cell of [house, rubble, bridge, tower]) engine.terrainDestruction.convertCellToSand(cell);
+  assert.equal(house.type, TileType.SAND);
+  assert.equal(rubble.type, TileType.SAND);
+  assert.equal(bridge.type, TileType.BRIDGE);
+  assert.equal(tower.type, TileType.WATER_TOWER);
+});
+
+test('water-tower flood leaves ICE and WATER alone and floods ground, road and grass', () => {
+  const grid = createMockGrid(2, 3);
+  for (const row of grid) for (const cell of row) Object.assign(cell, { surface: TileType.EMPTY, object: null });
+  const engine = createMockEngine(grid);
+  const ice = Object.assign(grid[0][0], { type: TileType.ICE, surface: TileType.ICE });
+  const water = Object.assign(grid[0][1], { type: TileType.WATER, surface: TileType.WATER });
+  const grass = Object.assign(grid[0][2], { type: TileType.GRASS, surface: TileType.GRASS });
+  const road = Object.assign(grid[1][0], { type: TileType.ROAD, surface: TileType.ROAD });
+  for (const cell of [ice, water, grass, road]) engine.terrainDestruction.convertCellToSwamp(cell);
+  assert.equal(ice.type, TileType.ICE);
+  assert.equal(water.type, TileType.WATER);
+  assert.equal(grass.type, TileType.SWAMP);
+  assert.equal(road.type, TileType.SWAMP);
 });
 
 test('ruptureWaterTower floods 1.5-cell radius to SWAMP and extinguishes fires within 2.5 cells', () => {

@@ -43,7 +43,6 @@ import { resolveMapRules } from './mapRules.js';
 import { normalizeDecoration } from './render/decoration.js';
 import { POWERUP, POWERUP_TYPES, POWERUP_MAX_ON_MAP } from './powerups.js';
 import { PLACEABLE_LANDMARKS, landmarkBlockedCells } from './terrains/landmarks.js';
-import { isSurfaceType } from './terrains/layers.js';
 
 export const GRID_SIZE = 40;
 export const TILE_SIZE = 2.0;
@@ -84,65 +83,6 @@ export function getBaseLayout(baseCell = BASE_CELL, size = GRID_SIZE, options = 
     ].filter(inside),
   };
 }
-
-const CHAR_TO_TILE = {
-  '.': TileType.EMPTY,
-  _: TileType.EMPTY,
-  ' ': TileType.EMPTY,
-  EMPTY: TileType.EMPTY,
-  B: TileType.BRICK,
-  BRICK: TileType.BRICK,
-  C: TileType.CONCRETE,
-  CONCRETE: TileType.CONCRETE,
-  S: TileType.CONCRETE,
-  STEEL: TileType.CONCRETE,
-  F: TileType.FOREST,
-  FOREST: TileType.FOREST,
-  W: TileType.WATER,
-  WATER: TileType.WATER,
-  I: TileType.ICE,
-  ICE: TileType.ICE,
-  H: TileType.BASE,
-  BASE: TileType.BASE,
-  E: TileType.ENEMY_BASE,
-  ENEMY_BASE: TileType.ENEMY_BASE,
-  X: TileType.HEDGEHOG,
-  Z: TileType.HEDGEHOG,
-  HEDGEHOG: TileType.HEDGEHOG,
-  D: TileType.BARREL,
-  O: TileType.BARREL,
-  BARREL: TileType.BARREL,
-  Q: TileType.BOXES,
-  BOXES: TileType.BOXES,
-  N: TileType.SAND,
-  S: TileType.SAND,
-  SAND: TileType.SAND,
-  R: TileType.ROAD,
-  ROAD: TileType.ROAD,
-  M: TileType.SWAMP,
-  SWAMP: TileType.SWAMP,
-  MUD: TileType.SWAMP,
-  L: TileType.OIL_SLICK,
-  OIL: TileType.OIL_SLICK,
-  OIL_SLICK: TileType.OIL_SLICK,
-  K: TileType.CRATER,
-  CRATER: TileType.CRATER,
-  T: TileType.WATER_TOWER,
-  WATER_TOWER: TileType.WATER_TOWER,
-  TOWER: TileType.WATER_TOWER,
-  '=': TileType.BRIDGE,
-  BRIDGE: TileType.BRIDGE,
-  U: TileType.RUBBLE,
-  RUBBLE: TileType.RUBBLE,
-  A: TileType.HOUSE_1,
-  HOUSE_1: TileType.HOUSE_1,
-  P: TileType.HOUSE_2,
-  HOUSE_2: TileType.HOUSE_2,
-  V: TileType.GRASS,
-  GRASS: TileType.GRASS,
-  STONE: TileType.STONE,
-  LANDMARK: TileType.LANDMARK,
-};
 
 const SURFACE_CHAR_TO_TILE = {
   '.': TileType.EMPTY,
@@ -193,58 +133,33 @@ function parseHexColor(val, fallback = 0x0b1120) {
 }
 
 /**
- * Parses a JSON map's layered `surfaceLayout` + `objectLayout` (or legacy single `layout` / `grid`)
- * into `{ grid, surfaceGrid, objectGrid }`.
+ * Parses a JSON map's `surfaceLayout` + `objectLayout` into `{ grid, surfaceGrid, objectGrid }`.
+ * A map without layouts is an empty arena; the retired single-layer `layout` / `grid` format is rejected.
  */
 function parseMapGrids(mapJson) {
+  if (mapJson?.layout !== undefined || mapJson?.grid !== undefined) {
+    throw new Error(
+      `${mapJson?.mapId || 'map'}: the single-layer layout format is no longer supported; use surfaceLayout + objectLayout`
+    );
+  }
   const size = mapJson?.gridSize || GRID_SIZE;
   const surfaceGrid = Array.from({ length: size }, () => Array(size).fill(TileType.EMPTY));
   const objectGrid = Array.from({ length: size }, () => Array(size).fill(null));
-  const hasLayered = Array.isArray(mapJson?.surfaceLayout) || Array.isArray(mapJson?.objectLayout);
-
-  if (hasLayered) {
-    const rawSurface = mapJson?.surfaceLayout || [];
-    const rawObject = mapJson?.objectLayout || [];
-    for (let r = 0; r < size; r++) {
-      const sRow = rawSurface[r];
-      const oRow = rawObject[r];
-      for (let c = 0; c < size; c++) {
-        if (sRow) {
-          const tok = typeof sRow === 'string' ? sRow[c] : sRow[c];
-          if (typeof tok === 'number') surfaceGrid[r][c] = tok;
-          else if (typeof tok === 'string') {
-            surfaceGrid[r][c] = SURFACE_CHAR_TO_TILE[tok] ?? SURFACE_CHAR_TO_TILE[tok.toUpperCase()] ?? TileType.EMPTY;
-          }
-        }
-        if (oRow) {
-          const tok = typeof oRow === 'string' ? oRow[c] : oRow[c];
-          if (typeof tok === 'number') objectGrid[r][c] = tok === TileType.EMPTY ? null : tok;
-          else if (typeof tok === 'string') {
-            const mapped = OBJECT_CHAR_TO_TILE[tok] ?? OBJECT_CHAR_TO_TILE[tok.toUpperCase()];
-            objectGrid[r][c] = mapped ?? null;
-          }
-        }
+  const rawSurface = mapJson?.surfaceLayout || [];
+  const rawObject = mapJson?.objectLayout || [];
+  for (let r = 0; r < size; r++) {
+    const sRow = rawSurface[r];
+    const oRow = rawObject[r];
+    for (let c = 0; c < size; c++) {
+      const sTok = sRow?.[c];
+      if (typeof sTok === 'number') surfaceGrid[r][c] = sTok;
+      else if (typeof sTok === 'string') {
+        surfaceGrid[r][c] = SURFACE_CHAR_TO_TILE[sTok] ?? SURFACE_CHAR_TO_TILE[sTok.toUpperCase()] ?? TileType.EMPTY;
       }
-    }
-  } else {
-    const rawLayout = mapJson?.layout || mapJson?.grid || [];
-    for (let r = 0; r < size; r++) {
-      const rowData = rawLayout[r];
-      if (!rowData) continue;
-      for (let c = 0; c < size; c++) {
-        const cellToken = typeof rowData === 'string' ? rowData[c] : rowData[c];
-        let tile = TileType.EMPTY;
-        if (typeof cellToken === 'number') {
-          tile = cellToken;
-        } else if (typeof cellToken === 'string') {
-          tile = CHAR_TO_TILE[cellToken] ?? CHAR_TO_TILE[cellToken.toUpperCase()] ?? TileType.EMPTY;
-        }
-        if (isSurfaceType(tile)) {
-          surfaceGrid[r][c] = tile;
-        } else {
-          surfaceGrid[r][c] = TileType.EMPTY;
-          objectGrid[r][c] = tile;
-        }
+      const oTok = oRow?.[c];
+      if (typeof oTok === 'number') objectGrid[r][c] = oTok === TileType.EMPTY ? null : oTok;
+      else if (typeof oTok === 'string') {
+        objectGrid[r][c] = OBJECT_CHAR_TO_TILE[oTok] ?? OBJECT_CHAR_TO_TILE[oTok.toUpperCase()] ?? null;
       }
     }
   }

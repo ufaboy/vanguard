@@ -33,7 +33,6 @@ export const NAV_TILE = Object.freeze({
   HOUSE_2: 22,
   STONE: 23,
   GRASS: 24,
-  MOUNTAIN: 25,
 });
 
 export function tileTypeAt(grid, row, col) {

@@ -1,7 +1,9 @@
 // Flattens a map into one character per cell: the object token when the cell holds one,
-// otherwise the surface token (`G` ground reads as `.`). Legacy single `layout` maps pass through.
+// otherwise the surface token (`G` ground reads as `.`).
 export function effectiveLayout(map) {
-  if (!Array.isArray(map.surfaceLayout) || !Array.isArray(map.objectLayout)) return map.layout;
+  if (!Array.isArray(map.surfaceLayout) || !Array.isArray(map.objectLayout)) {
+    throw new Error(`${map.mapId || 'map'}: surfaceLayout and objectLayout are required`);
+  }
   return map.surfaceLayout.map((sRow, r) => {
     const oRow = map.objectLayout[r] || '';
     let out = '';

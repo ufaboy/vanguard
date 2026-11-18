@@ -27,7 +27,6 @@ export const TileType = Object.freeze({
   HOUSE_2: 22,
   STONE: 23,
   GRASS: 24,
-  MOUNTAIN: 25,
 });
 
 export const SURFACE_TYPES = Object.freeze({
@@ -55,7 +54,6 @@ export const SURFACE_TYPES = Object.freeze({
   BRIDGE: 'BRIDGE',
   STONE: 'STONE',
   GRASS: 'GRASS',
-  MOUNTAIN: 'MOUNTAIN',
   TURRET_CANNON: 'TURRET_CANNON',
   TURRET_HOWITZER: 'TURRET_HOWITZER',
   TURRET_MLRS: 'TURRET_MLRS',
@@ -220,22 +218,21 @@ export const SURFACE_CONFIGS = Object.freeze({
     surfaceType: SURFACE_TYPES.STONE,
     tileId: TileType.STONE,
     code: 'TILE-STONE',
-    name: 'Compacted Rock & Stone Ground',
-    role: 'Solid Rocky Surface',
+    name: 'Broken Rock & Boulder Field',
+    role: 'Slow Rocky Surface',
     accentHex: '#9CA3AF',
     destructible: false,
     maxHP: 0,
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
-    acceleration: 23.0,
-    brakingDrag: 15.0,
+    maxSpeedCells: 1.5,
+    hudLabel: 'Rocky Ground',
     description:
-      'Flat exposed bedrock and compacted gravel offering firm track grip (acceleration 23.0, braking drag 15.0) and a solid foundation for walls, decorations, and facilities.',
+      'Broken bedrock and loose boulders. Tracked hulls crawl across it at no more than 1.5 cells per second, however powerful the engine; CH4 All-Terrain and CH5 Grav-Hover chassis keep full speed. A solid foundation for walls, decorations, and facilities.',
     specs: Object.freeze([
       Object.freeze({ label: 'PASSABILITY', value: 'All tracked & hover vehicles' }),
-      Object.freeze({ label: 'ACCELERATION', value: '23.0 cells/s²' }),
-      Object.freeze({ label: 'BRAKING DRAG', value: '15.0 cells/s²' }),
+      Object.freeze({ label: 'TOP SPEED', value: 'Capped at 1.5 cells/s (CH4 / CH5 / Hover immune)' }),
     ]),
   }),
 
@@ -252,36 +249,12 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
-    acceleration: 21.0,
-    brakingDrag: 13.5,
     description:
       'Natural grass and soil turf supporting woodland trees, fortifications, and field facilities with standard off-road traction.',
     specs: Object.freeze([
       Object.freeze({ label: 'PASSABILITY', value: 'All tracked & hover vehicles' }),
-      Object.freeze({ label: 'ACCELERATION', value: '21.0 cells/s²' }),
+      Object.freeze({ label: 'TRACTION', value: 'Standard ground' }),
       Object.freeze({ label: 'ECOLOGY', value: 'Supports FOREST canopy decoration' }),
-    ]),
-  }),
-
-  [SURFACE_TYPES.MOUNTAIN]: Object.freeze({
-    id: 'tile_mountain',
-    surfaceType: SURFACE_TYPES.MOUNTAIN,
-    tileId: TileType.MOUNTAIN,
-    code: 'TILE-MOUNTAIN',
-    name: 'Perimeter Mountain Ridge',
-    role: 'Immutable Off-Arena Boundary',
-    accentHex: '#64748B',
-    destructible: false,
-    maxHP: 0,
-    passableByTracks: false,
-    passableByHover: false,
-    blocksProjectiles: true,
-    offArenaOnly: true,
-    description:
-      'Impassable mountain ridge framing the outer perimeter beyond the combat arena. Cannot be modified or traversed.',
-    specs: Object.freeze([
-      Object.freeze({ label: 'PLACEMENT', value: 'Off-arena perimeter only' }),
-      Object.freeze({ label: 'DURABILITY', value: 'Immutable boundary' }),
     ]),
   }),
 
