@@ -604,13 +604,37 @@ export class TerrainDestructionController {
     if (!cell || cell.type !== TileType.OIL_SLICK || cell.isBurning) return;
     cell.isBurning = true;
     cell.burnTimer = 7.0;
+    cell.burnElapsed = 0;
     cell.burnFxCooldown = 0;
+    cell.hasSpreadFire = false;
     engine.burningOilCells ||= [];
     if (!engine.burningOilCells.includes(cell)) {
       engine.burningOilCells.push(cell);
     }
     const pos = engine.gridToWorld(cell.row, cell.col);
-    engine.fx?.explosion?.(pos.x, 0.25, pos.z, { scale: 0.75, boss: false, tint: 0xff6a00 });
+    sound.playFlamethrower?.({ x: pos.x, z: pos.z });
+    engine.modelFactory?.updateOilSlickBurn?.(cell.mesh, true, 1.0, 0);
+    engine.fx?.explosion?.(pos.x, 0.25, pos.z, { scale: 0.9, boss: false, tint: 0xff5a00 });
+    engine.fx?.shockwave?.(pos.x, 0.08, pos.z, 0.22, 2.3, 0xff6a00, 0.3, 0.72);
+    engine.fx?.oilFire?.(pos.x, pos.z, 1.1);
+  }
+
+  /** Ignites any OIL_SLICK cells within `radius` world units of (x, z). */
+  igniteOilAt(x, z, radius = TILE_SIZE * 0.9) {
+    const { engine } = this;
+    if (!engine.grid?.length) return;
+    for (let r = 0; r < engine.grid.length; r++) {
+      const row = engine.grid[r];
+      if (!row) continue;
+      for (let c = 0; c < row.length; c++) {
+        const cell = row[c];
+        if (!cell || cell.type !== TileType.OIL_SLICK || cell.isBurning) continue;
+        const pos = engine.gridToWorld(r, c);
+        if (Math.hypot(pos.x - x, pos.z - z) <= radius + 0.5) {
+          this.igniteOilSlick(cell);
+        }
+      }
+    }
   }
 
   extinguishOilCell(cell) {
@@ -618,6 +642,7 @@ export class TerrainDestructionController {
     if (!cell?.isBurning) return;
     cell.isBurning = false;
     cell.burnTimer = 0;
+    engine.modelFactory?.updateOilSlickBurn?.(cell.mesh, false, 0, 0);
     if (engine.burningOilCells?.length) {
       const idx = engine.burningOilCells.indexOf(cell);
       if (idx >= 0) engine.burningOilCells.splice(idx, 1);
@@ -645,16 +670,35 @@ export class TerrainDestructionController {
       }
 
       cell.burnTimer -= dt;
+      cell.burnElapsed = (cell.burnElapsed || 0) + dt;
       cell.burnFxCooldown = (cell.burnFxCooldown || 0) - dt;
       const pos = engine.gridToWorld(cell.row, cell.col);
+      const intensity = Math.min(1.05, Math.max(0.28, cell.burnTimer / 1.8));
+
+      engine.modelFactory?.updateOilSlickBurn?.(cell.mesh, true, intensity, cell.burnElapsed);
+
+      // Chain-ignite contiguous adjacent oil slick cells after a brief flashover delay
+      if (!cell.hasSpreadFire && cell.burnElapsed >= 0.32) {
+        cell.hasSpreadFire = true;
+        const neighbors = [
+          engine.grid?.[cell.row - 1]?.[cell.col],
+          engine.grid?.[cell.row + 1]?.[cell.col],
+          engine.grid?.[cell.row]?.[cell.col - 1],
+          engine.grid?.[cell.row]?.[cell.col + 1],
+        ];
+        for (const nb of neighbors) {
+          if (nb && nb.type === TileType.OIL_SLICK && !nb.isBurning) {
+            this.igniteOilSlick(nb);
+          }
+        }
+      }
 
       if (cell.burnFxCooldown <= 0) {
-        cell.burnFxCooldown = 0.075;
-        const intensity = Math.min(1, Math.max(0.25, cell.burnTimer / 2.0));
+        cell.burnFxCooldown = 0.038;
         if (engine.fx?.oilFire) {
           engine.fx.oilFire(pos.x, pos.z, intensity);
         } else {
-          engine.fx?.sparks?.(pos.x, 0.2, pos.z, 0xff5500, 2, { speed: 1.1, up: 1.5 });
+          engine.fx?.sparks?.(pos.x, 0.2, pos.z, 0xff5500, 4, { speed: 1.5, up: 1.8 });
         }
       }
 
@@ -664,7 +708,10 @@ export class TerrainDestructionController {
         Math.abs(engine.playerX - pos.x) <= halfCell &&
         Math.abs(engine.playerZ - pos.z) <= halfCell
       ) {
-        engine.damagePlayer(4.0 * dt, { zone: 'hull', aspect: 'front' });
+        engine.damagePlayer(4.0 * dt, null, 'fire');
+        if (Math.random() < 0.28) {
+          engine.fx?.sparks?.(engine.playerX, 0.55, engine.playerZ, 0xff6a00, 3, { speed: 1.7, up: 1.8 });
+        }
       }
 
       const targets = [...engine.enemies];
@@ -672,7 +719,10 @@ export class TerrainDestructionController {
         const enemy = targets[ei];
         if (!enemy || enemy.hp <= 0) continue;
         if (Math.abs(enemy.x - pos.x) <= halfCell && Math.abs(enemy.z - pos.z) <= halfCell) {
-          engine.damageEnemy(enemy, 4.0 * dt, pos.x, pos.z);
+          engine.damageEnemy(enemy, 4.0 * dt);
+          if (Math.random() < 0.24) {
+            engine.fx?.sparks?.(enemy.x, 0.55, enemy.z, 0xff6a00, 2, { speed: 1.6, up: 1.7 });
+          }
         }
       }
 
@@ -680,11 +730,12 @@ export class TerrainDestructionController {
         cell.isBurning = false;
         engine.burningOilCells.splice(i, 1);
         if (cell.mesh) {
+          engine.modelFactory?.updateOilSlickBurn?.(cell.mesh, false, 0, 0);
           engine.mapGroup?.remove(cell.mesh);
           cell.mesh = null;
         }
         cell.type = TileType.EMPTY;
-        engine.fx?.scorch?.(pos.x, pos.z, 1.5);
+        engine.fx?.scorch?.(pos.x, pos.z, 2.1);
       }
     }
   }

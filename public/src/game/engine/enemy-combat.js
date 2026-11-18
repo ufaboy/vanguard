@@ -885,6 +885,7 @@ export class EnemyCombatController {
       engine.fx.tankDestroyed(enemy.x, enemy.z, { boss: enemy.isBoss });
       sound.playExplosion(enemy.isBoss ? 2.0 : 1.7, { x: enemy.x, z: enemy.z });
       engine.checkAndIgniteForestOnEnemyKill(enemy);
+      engine.terrainDestruction?.igniteOilAt?.(enemy.x, enemy.z, enemy.isBoss ? 2.6 : 1.8);
       if (enemy.isBoss) {
         engine.powerupsController?.dropBossPowerUps?.(enemy.x, enemy.z);
         analyticsManager.trackEvent('boss_defeated', {

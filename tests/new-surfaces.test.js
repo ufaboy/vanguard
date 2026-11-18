@@ -152,6 +152,48 @@ test('OIL_SLICK ignites, deals fire damage over time, and burns out to EMPTY', (
   assert.equal(engine.burningOilCells.length, 0);
 });
 
+test('burning OIL_SLICK animates 3D burn rig and chain-ignites adjacent OIL_SLICK cells', () => {
+  const grid = createMockGrid(3, 3);
+  const oilA = grid[1][1];
+  const oilB = grid[1][2];
+  oilA.type = TileType.OIL_SLICK;
+  oilA.mesh = {};
+  oilB.type = TileType.OIL_SLICK;
+  oilB.mesh = {};
+
+  const burnUpdates = [];
+  const engine = createMockEngine(grid);
+  engine.modelFactory.updateOilSlickBurn = (mesh, isBurning, intensity, elapsed) => {
+    burnUpdates.push({ mesh, isBurning, intensity, elapsed });
+  };
+
+  engine.terrainDestruction.igniteOilSlick(oilA);
+  assert.equal(oilA.isBurning, true);
+  assert.equal(oilB.isBurning, false);
+  assert.equal(burnUpdates.length, 1);
+  assert.equal(burnUpdates[0].isBurning, true);
+
+  // After 0.35s flashover delay, adjacent oil slick cell ignites automatically
+  engine.terrainDestruction.updateBurningOil(0.35);
+  assert.equal(oilB.isBurning, true);
+  assert.equal(engine.burningOilCells.length, 2);
+});
+
+test('igniteOilAt ignites OIL_SLICK cells within blast/explosion radius', () => {
+  const grid = createMockGrid(5, 5);
+  const nearOil = grid[2][2];
+  const farOil = grid[4][4];
+  nearOil.type = TileType.OIL_SLICK;
+  farOil.type = TileType.OIL_SLICK;
+
+  const engine = createMockEngine(grid);
+  const nearPos = engine.gridToWorld(2, 2);
+  engine.terrainDestruction.igniteOilAt(nearPos.x + 0.4, nearPos.z, 1.8);
+
+  assert.equal(nearOil.isBurning, true);
+  assert.equal(farOil.isBurning, false);
+});
+
 test('ruptureWaterTower floods 1.5-cell radius to SWAMP and extinguishes fires within 2.5 cells', () => {
   const grid = createMockGrid(7, 7);
   const tower = grid[3][3];

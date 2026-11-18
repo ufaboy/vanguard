@@ -1597,66 +1597,168 @@ export class FxSystem {
     }
   }
 
-  /** One frame of burning oil slick: wide rolling flames, thick soot smoke, and rising embers. */
+  /** One frame of burning oil slick: searing napalm pool glow, roaring flame tongues, crackling oil sparks, and billowing black petroleum smoke. */
   oilFire(x, z, intensity = 1) {
-    const s = Math.max(0.25, Math.min(1.1, intensity));
-    const tongues = Math.random() < 0.7 ? 2 : 1;
-    for (let i = 0; i < tongues; i++) {
+    const s = Math.max(0.28, Math.min(1.15, intensity));
+
+    // 1. Searing low pool-bed radiance hugging the burning crude oil surface
+    this.point('glow', {
+      x: x + rand(-0.36, 0.36),
+      y: rand(0.05, 0.14),
+      z: z + rand(-0.36, 0.36),
+      vx: rand(-0.18, 0.18),
+      vy: rand(0.25, 0.65),
+      vz: rand(-0.18, 0.18),
+      drag: 2.2,
+      floor: 0.04,
+      life: rand(0.18, 0.32),
+      size: rand(0.85, 1.28) * (0.65 + 0.35 * s),
+      size1: rand(1.25, 1.75) * (0.65 + 0.35 * s),
+      tex: FxTex.GLOW,
+      color: [1.38, 0.56, 0.1],
+      alpha: 0.72 * s,
+    });
+
+    // 2. White-hot / golden-amber inner flame core tongues rooted at the puddle surface
+    const coreTongues = Math.random() < 0.65 * s ? 2 : 1;
+    for (let i = 0; i < coreTongues; i++) {
+      const cx = rand(-0.54, 0.54);
+      const cz = rand(-0.54, 0.54);
       this.point('glow', {
-        x: x + rand(-0.72, 0.72),
-        y: rand(0.06, 0.24),
-        z: z + rand(-0.72, 0.72),
-        vx: rand(-0.35, 0.35),
-        vy: rand(0.85, 1.85) * (0.65 + 0.35 * s),
-        vz: rand(-0.35, 0.35),
-        drag: 1.8,
-        life: rand(0.28, 0.48),
-        size: rand(0.38, 0.62) * (0.6 + 0.4 * s),
-        size1: rand(0.85, 1.28) * (0.55 + 0.45 * s),
+        x: x + cx,
+        y: rand(0.06, 0.16),
+        z: z + cz,
+        vx: -cx * 0.45 + rand(-0.24, 0.24),
+        vy: rand(1.35, 2.35) * (0.7 + 0.3 * s),
+        vz: -cz * 0.45 + rand(-0.24, 0.24),
+        drag: 1.65,
+        floor: 0.04,
+        life: rand(0.24, 0.42),
+        size: rand(0.46, 0.74) * (0.65 + 0.35 * s),
+        size1: rand(0.96, 1.42) * (0.65 + 0.35 * s),
         tex: FxTex.FIRE,
         ramp: RAMP_FIRE,
-        heat: 0.85 + 0.45 * s,
-        rotV: rand(-3.0, 3.0),
+        color: [1.85, 1.55, 0.95],
+        heat: rand(0.46, 0.68),
+        alpha: 0.98,
+        rotV: rand(-3.8, 3.8),
       });
     }
-    if (Math.random() < 0.55 * s) {
-      this.point('smoke', {
+
+    // 3. Roaring crimson-orange outer flame tongues pulled inward by convective updraft
+    const outerTongues = Math.random() < 0.75 * s ? 2 : 1;
+    for (let i = 0; i < outerTongues; i++) {
+      const ox = rand(-0.75, 0.75);
+      const oz = rand(-0.75, 0.75);
+      this.point('glow', {
+        x: x + ox,
+        y: rand(0.08, 0.24),
+        z: z + oz,
+        vx: -ox * 0.58 + rand(-0.32, 0.32),
+        vy: rand(1.65, 2.95) * (0.7 + 0.3 * s),
+        vz: -oz * 0.58 + rand(-0.32, 0.32),
+        drag: 1.5,
+        floor: 0.05,
+        life: rand(0.32, 0.54),
+        size: rand(0.55, 0.88) * (0.65 + 0.35 * s),
+        size1: rand(1.18, 1.74) * (0.65 + 0.35 * s),
+        tex: FxTex.FIRE,
+        ramp: RAMP_FIRE,
+        color: [1.62, 0.94, 0.4],
+        heat: rand(0.76, 1.02),
+        alpha: 0.94,
+        rotV: rand(-4.4, 4.4),
+      });
+    }
+
+    // 4. Crackling boiling-oil spark streaks & rising glowing cinders
+    if (Math.random() < 0.65 * s) {
+      const sparkCount = Math.random() < 0.4 * s ? 2 : 1;
+      for (let i = 0; i < sparkCount; i++) {
+        const ex = x + rand(-0.66, 0.66);
+        const ez = z + rand(-0.66, 0.66);
+        this.streak({
+          x: ex,
+          y: rand(0.08, 0.18),
+          z: ez,
+          vx: rand(-1.45, 1.45),
+          vy: rand(2.3, 4.7),
+          vz: rand(-1.45, 1.45),
+          drag: 1.3,
+          gravity: 3.2,
+          life: rand(0.22, 0.44),
+          width: 0.066,
+          len: 0.044,
+          color: [1.0, rand(0.65, 0.96), 0.22],
+        });
+      }
+    }
+    if (Math.random() < 0.48 * s) {
+      this.point('glow', {
         x: x + rand(-0.55, 0.55),
-        y: rand(0.35, 0.55),
+        y: rand(0.18, 0.42),
         z: z + rand(-0.55, 0.55),
-        vx: rand(-0.18, 0.42),
-        vy: rand(1.2, 2.1) * (0.7 + 0.3 * s),
-        vz: rand(-0.18, 0.3),
-        drag: 0.75,
-        gravity: -0.18,
-        life: rand(1.4, 2.3),
-        size: rand(0.45, 0.72) * (0.65 + 0.35 * s),
-        size1: rand(1.6, 2.4) * (0.65 + 0.35 * s),
-        color: [0.075, 0.07, 0.065],
-        alpha: 0.72 * (0.4 + 0.6 * s),
+        vx: rand(-0.65, 0.65),
+        vy: rand(2.1, 3.6),
+        vz: rand(-0.65, 0.65),
+        drag: 0.9,
+        floor: 0.05,
+        life: rand(0.45, 0.88),
+        size: rand(0.14, 0.24),
+        size1: 0.04,
+        tex: FxTex.SPARK,
+        color: [1.6, 0.82, 0.2],
+        alpha: 0.95,
+      });
+    }
+
+    // 5. Under-lit hot smoke & towering pitch-black crude-oil soot plume above the flames
+    if (Math.random() < 0.68 * s) {
+      this.point('smoke', {
+        x: x + rand(-0.52, 0.52),
+        y: rand(0.68, 0.95),
+        z: z + rand(-0.52, 0.52),
+        vx: rand(-0.18, 0.44),
+        vy: rand(1.45, 2.35) * (0.72 + 0.28 * s),
+        vz: rand(-0.18, 0.34),
+        drag: 0.68,
+        gravity: -0.2,
+        life: rand(1.35, 2.15),
+        size: rand(0.54, 0.84) * (0.65 + 0.35 * s),
+        size1: rand(1.75, 2.55) * (0.65 + 0.35 * s),
+        color: [0.052, 0.046, 0.042],
+        alpha: 0.78 * (0.45 + 0.55 * s),
         tex: FxTex.SMOKE,
         ramp: RAMP_HOT_SMOKE,
-        fadeIn: 0.16,
-        rotV: rand(-0.8, 0.8),
+        fadeIn: 0.14,
+        rotV: rand(-1.0, 1.0),
       });
     }
-    if (Math.random() < 0.28 * s) {
-      const ex = x + rand(-0.6, 0.6);
-      const ez = z + rand(-0.6, 0.6);
-      this.streak({
-        x: ex,
-        y: 0.18,
-        z: ez,
-        vx: rand(-0.6, 0.6),
-        vy: rand(1.8, 3.4),
-        vz: rand(-0.6, 0.6),
-        drag: 1.4,
-        gravity: 2.2,
-        life: rand(0.22, 0.42),
-        width: 0.055,
-        length: 0.2,
-        color: [1.0, rand(0.45, 0.75), 0.12],
+    if (Math.random() < 0.54 * s) {
+      this.point('smoke', {
+        x: x + rand(-0.46, 0.46),
+        y: rand(1.02, 1.38),
+        z: z + rand(-0.46, 0.46),
+        vx: rand(-0.14, 0.48),
+        vy: rand(1.6, 2.65) * (0.75 + 0.25 * s),
+        vz: rand(-0.14, 0.36),
+        drag: 0.58,
+        gravity: -0.22,
+        life: rand(1.7, 2.7),
+        size: rand(0.66, 0.96) * (0.65 + 0.35 * s),
+        size1: rand(2.15, 3.15) * (0.65 + 0.35 * s),
+        color: [0.032, 0.03, 0.028],
+        alpha: 0.84 * (0.45 + 0.55 * s),
+        tex: FxTex.SMOKE,
+        ramp: RAMP_SMOKE,
+        fadeIn: 0.18,
+        rotV: rand(-0.85, 0.85),
       });
+    }
+
+    // 6. Dynamic flickering firelight pulse on surrounding terrain & armor
+    if (Math.random() < 0.24 * s) {
+      this.flash(x, 0.55, z, Math.random() < 0.5 ? 0xff5500 : 0xff8818, (1.85 + Math.random() * 1.15) * s);
     }
   }
 

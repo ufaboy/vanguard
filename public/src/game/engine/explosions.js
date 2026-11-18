@@ -287,6 +287,8 @@ export class ExplosionsController {
           touchedSand = true;
         } else if (cell.type === TileType.BARREL) {
           engine.explodeBarrel(cell, fromPlayer);
+        } else if (cell.type === TileType.OIL_SLICK) {
+          engine.terrainDestruction?.igniteOilSlick?.(cell);
         } else if (cell.type === TileType.BOXES) {
           engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
         } else if (cell.type === TileType.SPAWNER) {

@@ -290,6 +290,11 @@ export class CodexStage {
           block = e.modelFactory.createSwampBlock(pos.x, pos.z);
         } else if (item.surfaceType === 'OIL_SLICK') {
           block = e.modelFactory.createOilSlickBlock(pos.x, pos.z);
+          if (idx === 0 || idx === 3) {
+            block.userData.codexBurning = true;
+            block.userData.codexBurnIntensity = idx === 0 ? 1.0 : 0.92;
+            e.modelFactory.updateOilSlickBurn?.(block, true, block.userData.codexBurnIntensity, 0);
+          }
         } else if (item.surfaceType === 'CRATER') {
           if (idx === 0) {
             const crater = e.modelFactory.createCraterBlock(0, 0);
@@ -942,11 +947,21 @@ export class CodexStage {
     }
 
     if (item?.surfaceType === 'OIL_SLICK') {
+      for (const child of e.codexStageGroup.children) {
+        if (child.userData?.codexBurning) {
+          e.modelFactory.updateOilSlickBurn?.(
+            child,
+            true,
+            child.userData.codexBurnIntensity || 1.0,
+            elapsed
+          );
+        }
+      }
       e.codexOilFxCooldown = (e.codexOilFxCooldown || 0) - dt;
       if (e.codexOilFxCooldown <= 0) {
-        e.codexOilFxCooldown = 0.075;
-        e.codexFx.oilFire?.(-1.05, -1.05, 1.0);
-        e.codexFx.oilFire?.(1.05, 1.05, 0.9);
+        e.codexOilFxCooldown = 0.038;
+        e.codexFx.oilFire?.(-1.05, -1.05, 1.05);
+        e.codexFx.oilFire?.(1.05, 1.05, 0.95);
       }
     }
   }

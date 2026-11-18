@@ -2924,28 +2924,53 @@ export class ModelFactory extends TextureGenerator {
     return markOwned(group, { materials: false });
   }
 
-  /** Seamless glossy crude oil slick patch at world (x, z). */
+  /** Seamless glossy crude oil slick patch at world (x, z) with a 3D burning inferno rig. */
   createOilSlickBlock(x = 0, z = 0) {
     if (!this.oilPatchMats) {
       const c = document.createElement('canvas');
       c.width = 256;
       c.height = 256;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#0c0e12';
+      ctx.fillStyle = '#050609';
       ctx.fillRect(0, 0, 256, 256);
       let seed = 4242;
       const rand = () => {
         seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
         return seed / 4294967296;
       };
-      for (let i = 0; i < 24; i++) {
+      // Deep viscous tar swirls and iridescent hydrocarbon sheen
+      for (let i = 0; i < 32; i++) {
         const px = rand() * 256;
         const py = rand() * 256;
-        const r = 16 + rand() * 28;
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(58, 36, 22, 0.35)' : 'rgba(34, 30, 54, 0.4)';
+        const r = 16 + rand() * 34;
+        const grad = ctx.createRadialGradient(px, py, 2, px, py, r);
+        if (i % 3 === 0) {
+          grad.addColorStop(0, 'rgba(72, 42, 18, 0.42)');
+          grad.addColorStop(0.6, 'rgba(32, 20, 12, 0.24)');
+        } else if (i % 3 === 1) {
+          grad.addColorStop(0, 'rgba(24, 54, 78, 0.38)');
+          grad.addColorStop(0.6, 'rgba(38, 28, 64, 0.25)');
+        } else {
+          grad.addColorStop(0, 'rgba(14, 16, 22, 0.75)');
+          grad.addColorStop(0.6, 'rgba(8, 10, 14, 0.35)');
+        }
+        grad.addColorStop(1, 'rgba(5, 6, 9, 0)');
+        ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(px, py, r, 0, Math.PI * 2);
         ctx.fill();
+      }
+      // Glossy petroleum contour bands
+      for (let i = 0; i < 14; i++) {
+        const px = rand() * 256;
+        const py = rand() * 256;
+        const rx = 18 + rand() * 36;
+        const ry = 10 + rand() * 22;
+        ctx.strokeStyle = i % 2 === 0 ? 'rgba(96, 68, 38, 0.26)' : 'rgba(56, 88, 112, 0.24)';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.ellipse(px, py, rx, ry, rand() * Math.PI, 0.2, Math.PI * 1.35);
+        ctx.stroke();
       }
       const oilTex = this.configureColorTexture(new THREE.CanvasTexture(c));
       oilTex.wrapS = THREE.RepeatWrapping;
@@ -2959,12 +2984,159 @@ export class ModelFactory extends TextureGenerator {
           alphaMap: mask,
           transparent: true,
           depthWrite: false,
-          roughness: 0.14,
-          metalness: 0.72,
+          roughness: 0.08,
+          metalness: 0.82,
           polygonOffset: true,
           polygonOffsetFactor: -2,
           polygonOffsetUnits: -2,
         });
+      });
+    }
+
+    if (!this.oilFireBedMat) {
+      // 1. Incandescent boiling napalm / magma fire-bed texture
+      const bedCanvas = document.createElement('canvas');
+      bedCanvas.width = 256;
+      bedCanvas.height = 256;
+      const bctx = bedCanvas.getContext('2d');
+      bctx.clearRect(0, 0, 256, 256);
+
+      const cx = 128;
+      const cy = 128;
+      const baseGrad = bctx.createRadialGradient(cx, cy, 6, cx, cy, 122);
+      baseGrad.addColorStop(0, 'rgba(255, 245, 190, 0.98)');
+      baseGrad.addColorStop(0.26, 'rgba(255, 175, 35, 0.92)');
+      baseGrad.addColorStop(0.55, 'rgba(255, 78, 10, 0.82)');
+      baseGrad.addColorStop(0.8, 'rgba(185, 20, 4, 0.45)');
+      baseGrad.addColorStop(1, 'rgba(80, 5, 0, 0)');
+      bctx.fillStyle = baseGrad;
+      bctx.fillRect(0, 0, 256, 256);
+
+      let fSeed = 918273;
+      const fRand = () => {
+        fSeed = (Math.imul(fSeed, 1664525) + 1013904223) >>> 0;
+        return fSeed / 4294967296;
+      };
+      // Boiling fiery pockets & white-hot magma fissures
+      for (let i = 0; i < 36; i++) {
+        const ang = fRand() * Math.PI * 2;
+        const dist = Math.sqrt(fRand()) * 84;
+        const px = cx + Math.cos(ang) * dist;
+        const py = cy + Math.sin(ang) * dist;
+        const r = 10 + fRand() * 24;
+        const g = bctx.createRadialGradient(px, py, 0, px, py, r);
+        if (i % 3 === 0) {
+          g.addColorStop(0, 'rgba(255, 252, 225, 0.95)');
+          g.addColorStop(0.45, 'rgba(255, 196, 55, 0.7)');
+        } else {
+          g.addColorStop(0, 'rgba(255, 140, 20, 0.88)');
+          g.addColorStop(0.55, 'rgba(235, 45, 8, 0.5)');
+        }
+        g.addColorStop(1, 'rgba(200, 20, 0, 0)');
+        bctx.fillStyle = g;
+        bctx.beginPath();
+        bctx.arc(px, py, r, 0, Math.PI * 2);
+        bctx.fill();
+      }
+
+      const bedTex = this.configureColorTexture(new THREE.CanvasTexture(bedCanvas));
+      this.oilFireBedMat = new THREE.MeshBasicMaterial({
+        map: bedTex,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -3,
+        polygonOffsetUnits: -3,
+      });
+
+      // 2. 3D Volumetric multi-tongue flame sheet texture
+      const flameCanvas = document.createElement('canvas');
+      flameCanvas.width = 256;
+      flameCanvas.height = 256;
+      const fctx = flameCanvas.getContext('2d');
+      fctx.clearRect(0, 0, 256, 256);
+
+      const drawFlameTongue = (tx, baseW, topY, lean) => {
+        // Outer crimson-orange roaring envelope
+        const outerG = fctx.createLinearGradient(tx, 252, tx + lean, topY);
+        outerG.addColorStop(0, 'rgba(255, 110, 15, 0.95)');
+        outerG.addColorStop(0.35, 'rgba(255, 82, 10, 0.92)');
+        outerG.addColorStop(0.72, 'rgba(235, 32, 6, 0.65)');
+        outerG.addColorStop(1, 'rgba(160, 10, 0, 0)');
+        fctx.fillStyle = outerG;
+        fctx.beginPath();
+        fctx.moveTo(tx - baseW, 254);
+        fctx.quadraticCurveTo(tx - baseW * 0.85 + lean * 0.3, (254 + topY) * 0.52, tx + lean, topY);
+        fctx.quadraticCurveTo(tx + baseW * 0.85 + lean * 0.3, (254 + topY) * 0.52, tx + baseW, 254);
+        fctx.closePath();
+        fctx.fill();
+
+        // Mid golden-amber flame body
+        const midTop = topY + (254 - topY) * 0.18;
+        const midG = fctx.createLinearGradient(tx, 252, tx + lean * 0.8, midTop);
+        midG.addColorStop(0, 'rgba(255, 230, 110, 0.98)');
+        midG.addColorStop(0.45, 'rgba(255, 165, 30, 0.92)');
+        midG.addColorStop(0.85, 'rgba(255, 75, 12, 0.45)');
+        midG.addColorStop(1, 'rgba(255, 50, 0, 0)');
+        fctx.fillStyle = midG;
+        fctx.beginPath();
+        fctx.moveTo(tx - baseW * 0.65, 254);
+        fctx.quadraticCurveTo(tx - baseW * 0.5 + lean * 0.25, (254 + midTop) * 0.55, tx + lean * 0.8, midTop);
+        fctx.quadraticCurveTo(tx + baseW * 0.5 + lean * 0.25, (254 + midTop) * 0.55, tx + baseW * 0.65, 254);
+        fctx.closePath();
+        fctx.fill();
+
+        // Inner white-hot core tongue
+        const coreTop = topY + (254 - topY) * 0.44;
+        const coreG = fctx.createLinearGradient(tx, 254, tx + lean * 0.5, coreTop);
+        coreG.addColorStop(0, 'rgba(255, 255, 240, 1)');
+        coreG.addColorStop(0.55, 'rgba(255, 238, 155, 0.9)');
+        coreG.addColorStop(1, 'rgba(255, 180, 40, 0)');
+        fctx.fillStyle = coreG;
+        fctx.beginPath();
+        fctx.moveTo(tx - baseW * 0.36, 254);
+        fctx.quadraticCurveTo(tx - baseW * 0.24, (254 + coreTop) * 0.58, tx + lean * 0.5, coreTop);
+        fctx.quadraticCurveTo(tx + baseW * 0.24, (254 + coreTop) * 0.58, tx + baseW * 0.36, 254);
+        fctx.closePath();
+        fctx.fill();
+      };
+
+      drawFlameTongue(72, 46, 42, -10);
+      drawFlameTongue(184, 44, 48, 12);
+      drawFlameTongue(128, 62, 14, 4);
+
+      const flameTex = this.configureColorTexture(new THREE.CanvasTexture(flameCanvas));
+      this.oilFlameSheetMat = new THREE.MeshBasicMaterial({
+        map: flameTex,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
+        side: THREE.DoubleSide,
+      });
+
+      // 3. Boiling bubble ring texture
+      const ringCanvas = document.createElement('canvas');
+      ringCanvas.width = 128;
+      ringCanvas.height = 128;
+      const rctx = ringCanvas.getContext('2d');
+      const rg = rctx.createRadialGradient(64, 64, 10, 64, 64, 60);
+      rg.addColorStop(0, 'rgba(255, 120, 10, 0)');
+      rg.addColorStop(0.55, 'rgba(255, 140, 20, 0.25)');
+      rg.addColorStop(0.82, 'rgba(255, 235, 140, 0.95)');
+      rg.addColorStop(0.94, 'rgba(255, 90, 10, 0.6)');
+      rg.addColorStop(1, 'rgba(200, 20, 0, 0)');
+      rctx.fillStyle = rg;
+      rctx.fillRect(0, 0, 128, 128);
+      const ringTex = this.configureColorTexture(new THREE.CanvasTexture(ringCanvas));
+      this.oilBoilRingMat = new THREE.MeshBasicMaterial({
+        map: ringTex,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
       });
     }
 
@@ -2984,10 +3156,107 @@ export class ModelFactory extends TextureGenerator {
     floor.position.y = 0.015;
     floor.receiveShadow = true;
 
+    // 3D Burning Inferno Rig (activated when the oil slick ignites)
+    const burnGroup = new THREE.Group();
+    burnGroup.visible = false;
+
+    const bedSpan = TILE_SIZE * 1.18;
+    const fireBed = new THREE.Mesh(new THREE.PlaneGeometry(bedSpan, bedSpan), this.oilFireBedMat);
+    fireBed.rotation.x = -Math.PI / 2;
+    fireBed.position.y = 0.024;
+    burnGroup.add(fireBed);
+
+    const fireWave = new THREE.Mesh(new THREE.PlaneGeometry(bedSpan * 0.84, bedSpan * 0.84), this.oilFireBedMat);
+    fireWave.rotation.x = -Math.PI / 2;
+    fireWave.rotation.z = 1.1;
+    fireWave.position.y = 0.03;
+    burnGroup.add(fireWave);
+
+    const tongueSpecs = [
+      { x: 0.0, z: 0.0, yaw: 0.25, w: 1.45, h: 1.15, phase: 0.0 },
+      { x: 0.0, z: 0.0, yaw: 1.82, w: 1.38, h: 1.08, phase: 1.4 },
+      { x: -0.38, z: -0.32, yaw: 0.78, w: 1.05, h: 0.88, phase: 2.3 },
+      { x: 0.4, z: -0.28, yaw: 2.15, w: 1.02, h: 0.84, phase: 3.6 },
+      { x: -0.32, z: 0.38, yaw: 1.35, w: 1.08, h: 0.9, phase: 4.8 },
+      { x: 0.36, z: 0.34, yaw: 2.72, w: 1.0, h: 0.82, phase: 5.7 },
+    ];
+    const flameTongues = tongueSpecs.map((spec) => {
+      const tGeo = new THREE.PlaneGeometry(1, 1);
+      tGeo.translate(0, 0.48, 0);
+      const mesh = new THREE.Mesh(tGeo, this.oilFlameSheetMat);
+      mesh.position.set(spec.x, 0.02, spec.z);
+      mesh.rotation.y = spec.yaw;
+      mesh.scale.set(spec.w, spec.h, 1);
+      burnGroup.add(mesh);
+      return { mesh, ...spec };
+    });
+
+    const boilSpecs = [
+      { x: -0.28, z: 0.18, phase: 0.0 },
+      { x: 0.32, z: -0.22, phase: 0.35 },
+      { x: 0.05, z: 0.34, phase: 0.68 },
+    ];
+    const boilRings = boilSpecs.map((spec) => {
+      const rMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.75), this.oilBoilRingMat);
+      rMesh.rotation.x = -Math.PI / 2;
+      rMesh.position.set(spec.x, 0.034, spec.z);
+      burnGroup.add(rMesh);
+      return { mesh: rMesh, ...spec };
+    });
+
     const group = new THREE.Group();
     group.position.set(x, 0, z);
     group.add(floor);
+    group.add(burnGroup);
+    group.userData.burnRig = {
+      burnGroup,
+      fireBed,
+      fireWave,
+      flameTongues,
+      boilRings,
+      phaseOffset: (cellHash % 100) * 0.0628,
+    };
     return markOwned(group, { materials: false });
+  }
+
+  /** Dynamically animates the 3D burning oil slick fire-bed, boiling rings, and flame crown. */
+  updateOilSlickBurn(mesh, isBurning, intensity = 1, time = 0) {
+    const rig = mesh?.userData?.burnRig;
+    if (!rig) return;
+    if (!isBurning || intensity <= 0.01) {
+      rig.burnGroup.visible = false;
+      return;
+    }
+    rig.burnGroup.visible = true;
+    const s = Math.max(0.25, Math.min(1.15, intensity));
+    const t = time + rig.phaseOffset;
+
+    const pulseA = 1 + Math.sin(t * 11.5) * 0.07 + Math.cos(t * 19.0) * 0.04;
+    const pulseB = 1 + Math.cos(t * 14.2) * 0.09 + Math.sin(t * 23.5) * 0.05;
+    rig.fireBed.scale.setScalar((0.72 + 0.28 * s) * pulseA);
+    rig.fireBed.rotation.z = t * 0.35;
+    rig.fireWave.scale.setScalar((0.68 + 0.32 * s) * pulseB);
+    rig.fireWave.rotation.z = -t * 0.55 + 1.1;
+
+    for (const tongue of rig.flameTongues) {
+      const p = t * 13.0 + tongue.phase;
+      const stretchY = 0.78 + 0.26 * Math.sin(p) + 0.14 * Math.cos(p * 1.65);
+      const stretchX = 0.88 + 0.15 * Math.cos(p * 0.85);
+      tongue.mesh.scale.set(
+        tongue.w * stretchX * (0.65 + 0.35 * s),
+        tongue.h * stretchY * (0.55 + 0.45 * s),
+        1
+      );
+      tongue.mesh.rotation.z = Math.sin(p * 0.7) * 0.12;
+      tongue.mesh.rotation.x = Math.cos(p * 0.55) * 0.09;
+    }
+
+    for (const ring of rig.boilRings) {
+      const cycle = (t * 1.45 + ring.phase) % 1;
+      const ringScale = (0.22 + cycle * 0.78) * (0.6 + 0.4 * s);
+      ring.mesh.scale.setScalar(ringScale);
+      ring.mesh.rotation.z = t * 1.2 + ring.phase * 6.28;
+    }
   }
 
   /** Naturalistic blast crater with scorch rays, radial cracks, and jagged dirt rim. */

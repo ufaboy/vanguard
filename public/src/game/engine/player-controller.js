@@ -1104,8 +1104,10 @@ export class PlayerController {
     engine.playerHp -= dmg;
     engine.medalTracker?.recordPlayerDamage({ amount: dmg, sourceWeapon });
     if (componentHit) engine.tryDamageComponent(dmg, componentHit);
-    engine.screenShake = Math.max(engine.screenShake, 0.4);
-    sound.playArmorHit({ x: engine.playerX, z: engine.playerZ });
+    if (sourceWeapon !== 'fire') {
+      engine.screenShake = Math.max(engine.screenShake, 0.4);
+      sound.playArmorHit({ x: engine.playerX, z: engine.playerZ });
+    }
 
     const triggerThreshold = engine.playerMaxHp * REPAIR_KIT.TRIGGER_RATIO;
     if (
@@ -1135,6 +1137,7 @@ export class PlayerController {
       sound.playExplosion(2.0, { x: engine.playerX, z: engine.playerZ });
       this.triggerPlayerCatastrophicDestruction();
       engine.fx?.tankDestroyed?.(engine.playerX, engine.playerZ, { boss: false, player: true });
+      engine.terrainDestruction?.igniteOilAt?.(engine.playerX, engine.playerZ, 1.8);
       if (engine.survivalState) {
         const campaignSave = engine.campaignSaveRepo?.loadPlayerSave();
         if (campaignSave) {

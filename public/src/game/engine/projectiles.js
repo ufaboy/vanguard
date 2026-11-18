@@ -610,6 +610,7 @@ export class ProjectilesController {
           }
         }
         if (hitEnemy) {
+          engine.terrainDestruction?.igniteOilAt?.(p.x, p.z, 1.25);
           engine.removeProjectile(i);
           continue;
         }
@@ -713,6 +714,7 @@ export class ProjectilesController {
             }
           }
 
+          engine.terrainDestruction?.igniteOilAt?.(p.x, p.z, 1.25);
           engine.removeProjectile(i);
           continue;
         }

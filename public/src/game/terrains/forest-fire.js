@@ -129,6 +129,20 @@ export class ForestFireController {
         e.fx.flash(bf.x, 0.5, bf.z, 0xff5500, 1.8);
       }
 
+      if (!bf.spreadOil && progress >= 0.05) {
+        bf.spreadOil = true;
+        const r = bf.cell?.row;
+        const c = bf.cell?.col;
+        if (r != null && c != null) {
+          for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+            const nb = e.grid?.[r + dr]?.[c + dc];
+            if (nb && nb.type === TileType.OIL_SLICK && !nb.isBurning) {
+              e.terrainDestruction?.igniteOilSlick?.(nb);
+            }
+          }
+        }
+      }
+
       if (bf.cell.mesh) {
         const hScale = Math.max(0.12, 1 - progress * 0.75);
         const wScale = Math.max(0.3, 1 - progress * 0.45);
