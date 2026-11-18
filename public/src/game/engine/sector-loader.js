@@ -20,7 +20,7 @@ import { computeBuildingLayout } from '../terrains/building-layout.js';
 import { BUILDING_MAX_HP } from '../terrains/building-models.js';
 import { landmarkFootprintCenter } from '../terrains/landmarks.js';
 import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
-import { isSurfaceType } from '../terrains/layers.js';
+import { isSurfaceType, setCellObject } from '../terrains/layers.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
 import { EnemyClass, GameStatus, TileType, resolveMapRules } from '../types.js';
 
@@ -128,7 +128,7 @@ export class SectorLoaderController {
         const concrete = engine.modelFactory.createConcreteBlock();
         concrete.position.set(x, 0, z);
         engine.mapGroup.add(concrete);
-        cell.type = TileType.CONCRETE;
+        setCellObject(cell, TileType.CONCRETE);
         cell.hp = 16;
         cell.maxHp = 16;
         cell.mesh = concrete;
@@ -137,7 +137,7 @@ export class SectorLoaderController {
         const brick = engine.modelFactory.createBrickBlock();
         brick.group.position.set(x, 0, z);
         engine.mapGroup.add(brick.group);
-        cell.type = TileType.BRICK;
+        setCellObject(cell, TileType.BRICK);
         cell.hp = 4;
         cell.maxHp = 4;
         cell.mesh = brick.group;
@@ -434,7 +434,7 @@ export class SectorLoaderController {
         const enemyBaseBlock = engine.modelFactory.createEnemyBaseBlock();
         enemyBaseBlock.position.set(x, 0, z);
         engine.mapGroup.add(enemyBaseBlock);
-        cell.type = TileType.ENEMY_BASE;
+        setCellObject(cell, TileType.ENEMY_BASE);
         cell.hp = engine.enemyBaseMaxHp;
         cell.maxHp = engine.enemyBaseMaxHp;
         cell.mesh = enemyBaseBlock;
@@ -648,6 +648,7 @@ export class SectorLoaderController {
     engine.enemyBaseClearAirDropTriggered = false;
     engine.spawnPoolCursor = 0;
     engine.spawnerRoundRobinIdx = 0;
+    engine.sectorEntrances = Array.isArray(sector.entrances) ? sector.entrances : [];
     engine.bossSpawned = false;
     engine.bossSequenceStarted = false;
     engine.bossStageIndex = 0;

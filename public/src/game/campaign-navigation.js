@@ -1,20 +1,7 @@
 /** Campaign sector waypoint navigation and path computation. */
 
 import { TileType } from './types.js';
-
-const PASSABLE_ENTRY_TILES = new Set([
-  TileType.EMPTY,
-  TileType.FOREST,
-  TileType.ICE,
-  TileType.SAND,
-  TileType.ROAD,
-  TileType.STONE,
-  TileType.GRASS,
-  TileType.BRIDGE,
-  TileType.SWAMP,
-  TileType.OIL_SLICK,
-  TileType.CRATER,
-]);
+import { isTilePassable } from './terrains/layers.js';
 
 function getTileType(grid, row, col) {
   const value = grid[row]?.[col];
@@ -26,7 +13,8 @@ function isPassableTile(grid, row, col, canCrossWater) {
     return false;
   }
   const type = getTileType(grid, row, col);
-  return PASSABLE_ENTRY_TILES.has(type) || (canCrossWater && type === TileType.WATER);
+  // Entry routes avoid rubble: it is driveable but slows the column to 45 %.
+  return type !== TileType.RUBBLE && isTilePassable(type, canCrossWater);
 }
 
 function isWorldAreaClear(grid, x, z, radius, canCrossWater, tileSize) {

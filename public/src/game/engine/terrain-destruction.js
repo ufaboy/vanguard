@@ -8,7 +8,7 @@ import { SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';
 import { breachPointToward } from '../terrains/breach-models.js';
-import { canPlaceOnSurface, isSurfaceLocked, isSurfaceType, syncCellType } from '../terrains/layers.js';
+import { canPlaceOnSurface, isSurfaceLocked, isSurfaceType, setCellObject, syncCellType } from '../terrains/layers.js';
 import { GameStatus, TileType, checkMapDefeat, checkMapVictory } from '../types.js';
 
 /** Manages terrain cell destruction, HQ/enemy base destruction & restoration, rubble, and barrel chains. */
@@ -182,7 +182,7 @@ export class TerrainDestructionController {
       if (baseCell?.type === TileType.BASE) {
         if (engine.baseLandmarkMesh && baseCell.mesh === engine.baseLandmarkMesh) {
           engine.modelFactory.landmarkModels?.setKind(engine.baseLandmarkMesh, 'ELYSEE_RUINED');
-          baseCell.type = TileType.EMPTY;
+          setCellObject(baseCell, null);
           baseCell.hp = 0;
         } else {
           engine.destroyTileCell(baseCell);
@@ -254,7 +254,8 @@ export class TerrainDestructionController {
     const maxHp = engine.baseMaxHp || 1;
     cells.forEach((cell, i) => {
       if (cell.type !== TileType.EMPTY) engine.destroyTileCell(cell);
-      Object.assign(cell, { type: TileType.BASE, hp: maxHp, maxHp, mesh: i === 0 ? mesh : null });
+      setCellObject(cell, TileType.BASE);
+      Object.assign(cell, { hp: maxHp, maxHp, mesh: i === 0 ? mesh : null });
     });
     engine.baseAlive = true;
     engine.baseHp = maxHp;
@@ -432,7 +433,7 @@ export class TerrainDestructionController {
       engine.mapGroup.remove(cell.mesh);
       cell.mesh = null;
     }
-    cell.type = TileType.EMPTY;
+    setCellObject(cell, null);
     cell.hp = 0;
     engine.blocksDestroyed++;
     this.convertCellToCrater(cell);
@@ -555,10 +556,15 @@ export class TerrainDestructionController {
     if (cell.object != null || !canPlaceOnSurface(TileType.CRATER, cell.surface)) {
       return;
     }
-    if (cell.mesh) {
-      engine.mapGroup?.remove(cell.mesh);
-      cell.mesh = null;
+    // The ruined HQ landmark stays on its (now passable) cells until the base is rebuilt.
+    if (cell.mesh && cell.mesh === engine.baseLandmarkMesh) {
+      return;
     }
+    // The crater decal sits on top of the surface patch (road, grass, sand), which stays in place.
+    if (cell.mesh && cell.mesh !== cell.surfaceMesh) {
+      engine.mapGroup?.remove(cell.mesh);
+    }
+    cell.mesh = null;
     cell.object = TileType.CRATER;
     syncCellType(cell);
     cell.hp = 0;

@@ -110,20 +110,6 @@ export function canPlaceOnSurface(objectType, surfaceType) {
   return false;
 }
 
-/** Validates that every cell in a multi-cell `footprint` has an allowed surface and empty object slot. */
-export function canPlaceMultiCell(grid, footprint, objectType) {
-  if (!Array.isArray(footprint) || footprint.length === 0) return false;
-  for (const { row, col } of footprint) {
-    const cell = grid?.[row]?.[col];
-    if (!cell) return false;
-    const surface = cell.surface ?? (isSurfaceType(cell.type) ? cell.type : TileType.EMPTY);
-    const existingObj = cell.object ?? (!isSurfaceType(cell.type) ? cell.type : null);
-    if (existingObj != null) return false;
-    if (!canPlaceOnSurface(objectType, surface)) return false;
-  }
-  return true;
-}
-
 /** Synchronizes `cell.type` with `cell.object ?? cell.surface` so legacy consumers see the active top layer. */
 export function syncCellType(cell) {
   if (!cell) return cell;
@@ -137,42 +123,25 @@ export function syncCellType(cell) {
   return cell;
 }
 
-/** Explicit transformation table for environmental & combat state transitions. */
-export const TRANSFORMATION_RULES = Object.freeze({
-  FOREST_BURNOUT: Object.freeze({
-    fromObject: TileType.FOREST,
-    toSurface: TileType.SAND,
-    toObject: null,
-  }),
-  OIL_BURNOUT: Object.freeze({
-    fromSurface: TileType.OIL_SLICK,
-    toSurface: TileType.EMPTY,
-  }),
-  HEAVY_BLAST_CRATER: Object.freeze({
-    allowedSurfaces: DRY_SOLID_SURFACES,
-    requiresEmptySlot: true,
-    toObject: TileType.CRATER,
-  }),
-  BUILDING_COLLAPSE: Object.freeze({
-    fromObjects: [TileType.HOUSE_1, TileType.HOUSE_2],
-    toObject: TileType.RUBBLE,
-    preservesSurface: true,
-  }),
-  RUBBLE_CLEAR: Object.freeze({
-    fromObject: TileType.RUBBLE,
-    toObject: null,
-  }),
-  WATER_TOWER_FLOOD: Object.freeze({
-    fromObject: TileType.WATER_TOWER,
-    toObject: null,
-    floodSurface: TileType.SWAMP,
-    respectsFacilityLock: true,
-  }),
-  THERMOBARIC_BLAST: Object.freeze({
-    toSurface: TileType.SAND,
-    respectsFacilityLock: true,
-  }),
-});
+/**
+ * Puts `objectType` into the cell's object slot (`null` / `EMPTY` clears it) and refreshes `cell.type`.
+ * Runtime code must change a cell's top layer through this setter: writing `cell.type` directly leaves
+ * `cell.object` stale, and the next `syncCellType` would restore the old object.
+ */
+export function setCellObject(cell, objectType) {
+  if (!cell) return cell;
+  syncCellType(cell);
+  cell.object = objectType == null || objectType === TileType.EMPTY ? null : objectType;
+  return syncCellType(cell);
+}
+
+/** Replaces the cell's flat surface with `surfaceType` and refreshes `cell.type`. */
+export function setCellSurface(cell, surfaceType) {
+  if (!cell) return cell;
+  syncCellType(cell);
+  cell.surface = surfaceType ?? TileType.EMPTY;
+  return syncCellType(cell);
+}
 
 /** Maps numeric TileType to its SURFACE_CONFIGS entry. */
 const TILE_TYPE_TO_CONFIG = Object.freeze({
@@ -203,59 +172,100 @@ const TILE_TYPE_TO_CONFIG = Object.freeze({
   [TileType.MOUNTAIN]: SURFACE_CONFIGS[SURFACE_TYPES.MOUNTAIN],
 });
 
+/** Catalog config for a numeric TileType, or null for unknown types. */
+function tileConfig(tileType) {
+  return TILE_TYPE_TO_CONFIG[tileType] || null;
+}
+
 /**
- * Combines surface and slot-object configs for a cell:
- * - Passability: surface must be passable AND object must be passable (BRIDGE overrides WATER).
- * - Speed/traction: surface sets base traction (ignored by CH4/CH5/hover); object multiplies on top.
- * - Projectiles/LOS/Concealment: combined across both layers.
+ * True when tracked tanks can drive onto a tile of this top-layer type (`cell.type`).
+ * WATER also counts when `canCrossWater` (CH4 / CH5 / amphibious hulls). Unknown types block.
+ */
+export function isTilePassable(tileType, canCrossWater = false) {
+  const cfg = tileConfig(tileType);
+  if (!cfg) return false;
+  if (cfg.passableByTracks) return true;
+  return canCrossWater && tileType === TileType.WATER;
+}
+
+const MOVEMENT_FIELDS = Object.freeze(['speedMultiplier', 'accelMultiplier', 'turnMultiplier', 'brakeMultiplier']);
+
+function hasMovement(cfg) {
+  return Boolean(cfg) && MOVEMENT_FIELDS.some((field) => typeof cfg[field] === 'number');
+}
+
+/**
+ * Whether a layer's traction applies to this chassis:
+ * - all-terrain and hover chassis keep paved bonuses (speed > 1) but ignore penalties,
+ *   except layers flagged `affectsAllTerrain` (RUBBLE);
+ * - bosses ignore RUBBLE; enemies ignore `playerOnlyTraction` layers (ICE).
+ */
+function movementApplies(cfg, tileType, chassis) {
+  if (!hasMovement(cfg)) return false;
+  if (chassis.isEnemy && cfg.playerOnlyTraction) return false;
+  if (chassis.isBoss && tileType === TileType.RUBBLE) return false;
+  if (cfg.affectsAllTerrain) return true;
+  if (chassis.allTerrain || chassis.canHover) return cfg.speedMultiplier > 1;
+  return true;
+}
+
+/**
+ * Combines the surface and object layers of a cell:
+ * - Passability: the surface must be passable AND the object must be passable (BRIDGE overrides WATER).
+ * - Movement: every layer whose traction applies (see movementApplies) multiplies its speed / accel /
+ *   turn / brake multipliers onto the others, so a CRATER on a ROAD keeps part of the road bonus.
+ *   `movement` is null when no layer changes traction; callers then use their own default ground.
+ * - Projectiles / concealment are combined across both layers.
+ * `chassis`: { allTerrain, canHover, canCrossWater, isBoss, isEnemy }.
  */
 export function combineCellProperties(surfaceType = TileType.EMPTY, objectType = null, chassis = {}) {
-  const sCfg = TILE_TYPE_TO_CONFIG[surfaceType] || SURFACE_CONFIGS[SURFACE_TYPES.EMPTY];
-  const oCfg = objectType != null ? TILE_TYPE_TO_CONFIG[objectType] : null;
-  const isAllTerrain = Boolean(chassis.allTerrain || chassis.canHover);
+  const sCfg = tileConfig(surfaceType) || SURFACE_CONFIGS[SURFACE_TYPES.EMPTY];
+  const oCfg = objectType != null ? tileConfig(objectType) : null;
   const isHover = Boolean(chassis.canHover);
-  const isBoss = Boolean(chassis.isBoss);
 
   const surfacePassable = isHover
     ? sCfg.passableByHover !== false
-    : isAllTerrain && surfaceType === TileType.WATER
-      ? true
-      : sCfg.passableByTracks !== false;
+    : isTilePassable(surfaceType, Boolean(chassis.canCrossWater || chassis.allTerrain));
   const objectPassable = !oCfg
-    ? true
+    ? objectType == null
     : isHover
       ? oCfg.passableByHover !== false
       : oCfg.passableByTracks !== false;
-
   const passable = objectType === TileType.BRIDGE ? true : surfacePassable && objectPassable;
 
-  let speedMultiplier = 1.0;
-  let accelMultiplier = 1.0;
-  let turnMultiplier = 1.0;
-
-  if (!isAllTerrain) {
-    if (typeof sCfg.speedMultiplier === 'number') speedMultiplier *= sCfg.speedMultiplier;
-    if (typeof sCfg.accelMultiplier === 'number') accelMultiplier *= sCfg.accelMultiplier;
-    if (typeof sCfg.turnMultiplier === 'number') turnMultiplier *= sCfg.turnMultiplier;
-  } else if (surfaceType === TileType.ROAD) {
-    speedMultiplier *= sCfg.speedMultiplier ?? 1.2;
-    accelMultiplier *= sCfg.accelMultiplier ?? 1.25;
-  }
-
-  if (oCfg) {
-    if (!isBoss || objectType !== TileType.RUBBLE) {
-      if (typeof oCfg.speedMultiplier === 'number') speedMultiplier *= oCfg.speedMultiplier;
-      if (typeof oCfg.accelMultiplier === 'number') accelMultiplier *= oCfg.accelMultiplier;
+  let movement = null;
+  for (const [cfg, tileType] of [[sCfg, surfaceType], [oCfg, objectType]]) {
+    if (!movementApplies(cfg, tileType, chassis)) continue;
+    movement ||= { id: '', label: '', lowTraction: false, affectsAllTerrain: false };
+    for (const field of MOVEMENT_FIELDS) {
+      if (typeof cfg[field] === 'number') movement[field] = (movement[field] ?? 1) * cfg[field];
     }
+    // The top-most layer that changes traction names the surface on the HUD.
+    movement.id = cfg.surfaceType.toLowerCase();
+    movement.label = cfg.hudLabel || cfg.name;
+    movement.lowTraction ||= Boolean(cfg.lowTraction);
+    movement.affectsAllTerrain ||= Boolean(cfg.affectsAllTerrain);
   }
 
   return {
     passable,
-    speedMultiplier,
-    accelMultiplier,
-    turnMultiplier,
+    movement,
+    speedMultiplier: movement?.speedMultiplier ?? 1.0,
+    accelMultiplier: movement?.accelMultiplier ?? 1.0,
+    turnMultiplier: movement?.turnMultiplier ?? 1.0,
+    brakeMultiplier: movement?.brakeMultiplier ?? 1.0,
     blocksProjectiles: Boolean(sCfg.blocksProjectiles || oCfg?.blocksProjectiles),
     providesConcealment: Boolean(sCfg.providesConcealment || oCfg?.providesConcealment),
     splashDamageMult: oCfg?.splashDamageMult ?? sCfg.splashDamageMult ?? 1.0,
   };
+}
+
+/** combineCellProperties for a grid cell (layered, or a legacy cell that only has `type`). */
+export function combineCellTerrain(cell, chassis = {}) {
+  if (!cell) return combineCellProperties(TileType.EMPTY, null, chassis);
+  const type = cell.type ?? TileType.EMPTY;
+  const surface = cell.surface ?? (isSurfaceType(type) ? type : TileType.EMPTY);
+  const object =
+    cell.object !== undefined ? cell.object : !isSurfaceType(type) && type !== TileType.EMPTY ? type : null;
+  return combineCellProperties(surface, object, chassis);
 }

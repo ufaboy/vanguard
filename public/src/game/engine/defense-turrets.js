@@ -8,6 +8,7 @@ import {
   DEFENSE_TURRET_TYPES,
 } from '../constants.js';
 import { TileType } from '../types.js';
+import { setCellObject, setCellSurface } from '../terrains/layers.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { normalizeAngleSigned } from '../../sim/ai.js';
@@ -274,11 +275,17 @@ export class DefenseTurretsController {
       engine.mapGroup.remove(cell.mesh);
       cell.mesh = null;
     }
-    cell.type = TileType.SAND;
+    if (cell.surfaceMesh) {
+      engine.mapGroup.remove(cell.surfaceMesh);
+      cell.surfaceMesh = null;
+    }
+    setCellObject(cell, null);
+    setCellSurface(cell, TileType.SAND);
     cell.hp = 0;
     const sandMesh = engine.modelFactory.createSandBlock(turret.x, turret.z);
     engine.mapGroup.add(sandMesh);
     cell.mesh = sandMesh;
+    cell.surfaceMesh = sandMesh;
     engine.tileBatcher?.sync();
   }
 }

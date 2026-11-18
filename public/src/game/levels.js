@@ -141,7 +141,6 @@ const CHAR_TO_TILE = {
   V: TileType.GRASS,
   GRASS: TileType.GRASS,
   STONE: TileType.STONE,
-  MOUNTAIN: TileType.MOUNTAIN,
   LANDMARK: TileType.LANDMARK,
 };
 
@@ -155,7 +154,7 @@ const SURFACE_CHAR_TO_TILE = {
   I: TileType.ICE,
   S: TileType.SAND,
   N: TileType.SAND,
-  K: TileType.STONE,
+  '^': TileType.STONE,
   V: TileType.GRASS,
   M: TileType.SWAMP,
   L: TileType.OIL_SLICK,

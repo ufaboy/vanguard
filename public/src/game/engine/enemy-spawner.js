@@ -60,11 +60,6 @@ export class EnemySpawnerController {
     this.engine = engine;
   }
 
-  /** Returns configured sector entrances or empty list (legacy SPAWNER tiles removed). */
-  getSpawnerCells() {
-    return [];
-  }
-
   getSpawnPosition() {
     const { engine } = this;
     const safeMinDist = 14.0;
@@ -91,7 +86,7 @@ export class EnemySpawnerController {
       return farthest;
     };
 
-    const configuredEntrances = engine.activeMap?.entrances;
+    const configuredEntrances = engine.sectorEntrances;
     if (Array.isArray(configuredEntrances) && configuredEntrances.length > 0) {
       const freePositions = configuredEntrances
         .map((entry) => engine.gridToWorld(entry.row, entry.col))
@@ -772,14 +767,13 @@ export class EnemySpawnerController {
       }
       return;
     }
-    const spawners = engine.getSpawnerCells();
     const sector = SECTORS[engine.currentSectorIndex];
     const maxConcurrent = sector?.maxConcurrentEnemies ?? 8;
     const spawnInterval = sector?.spawnIntervalSec ?? 2.6;
 
     this.stepBossSequenceSpawning(sector);
 
-    if (engine.vanguardRemainingToSpawn > 0 && spawners.length > 0) {
+    if (engine.vanguardRemainingToSpawn > 0) {
       if (engine.enemies.length < maxConcurrent) {
         engine.spawnTimer -= dt;
         if (engine.spawnTimer <= 0) {

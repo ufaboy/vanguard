@@ -62,7 +62,7 @@
 ### Key Gameplay Features
 - **36×36 Destructible Isometric Arena**:
   - 4× expanded tactical grid (`GRID_SIZE = 36`, `TILE_SIZE = 2`, 1,296 cells per sector).
-  - Terrain types: Destructible Brick (4 sub-blocks per cell, 4 HP), Hard-to-Destroy Reinforced Concrete (`CONCRETE`, 16 HP; craters open on the faces that were hit and expose the steel rebar), Stealth Forest Canopy, Impassable Water (crossable with the `CH4` All-Terrain or `CH5` Grav-Hover chassis), Low-Friction Ice, Enemy Spawner Pads, and the Command Base HQ.
+  - Terrain types: Destructible Brick (4 sub-blocks per cell, 4 HP), Hard-to-Destroy Reinforced Concrete (`CONCRETE`, 16 HP; craters open on the faces that were hit and expose the steel rebar), Stealth Forest Canopy, Impassable Water (crossable with the `CH4` All-Terrain or `CH5` Grav-Hover chassis), Low-Friction Ice, and the Command Base HQ. Enemies enter through each map's `enemies.entrances` (there are no spawner pads).
 - **Modular Tank Engineering & Physics (`src/game/constants.js`)**:
   - Dynamic calculation of **Total Mass**, **Engine Power-to-Weight Ratio**, **Move Speed**, **Armor Reduction (%)**, **Armor Penetration (%)**, and **Effective Damage**:
     $$\text{EffectiveArmor} = \text{Armor} \times \left(1 - \frac{\text{Penetration}}{100}\right), \quad \text{FinalDamage} = \text{Damage} \times \left(1 - \frac{\text{EffectiveArmor}}{100}\right)$$
@@ -90,7 +90,12 @@
   - **No-lead rule**: enemies never lead their shots. The Gunner (`gunner.js`, `computeAimPoint`) only reads the target's current position; do not add target velocity to enemy aiming. Homing missiles and artillery striking the current position are not leading.
   - Hits-to-kill and directional durability depend on the current tank base, equipped components, hit aspect and cannon. Compute them from `computeTankStats` and the combat damage functions. Historical numeric expectations in tests or documentation may lag user tuning; never revert current stats just to match an old snapshot.
 - **Surfaces & Obstacles Catalog (`src/game/terrains/surfaces.js` — `TileType`, `SURFACE_TYPES`, `SURFACE_CONFIGS`)**:
-  - Dedicated specs and descriptions for `EMPTY`, `BRICK`, `CONCRETE`, `FOREST`, `WATER`, `ICE`, `SPAWNER`, and `BASE`.
+  - Dedicated specs and descriptions for every tile type (`EMPTY`, `ROAD`, `GRASS`, `STONE`, `SAND`, `WATER`, `ICE`, `SWAMP`, `OIL_SLICK`, `BRICK`, `CONCRETE`, `FOREST`, `BASE`, ...).
+- **Layered Terrain (`src/game/terrains/layers.js`)**:
+  - Every cell has a flat `surface` (`EMPTY`/ground, `ROAD`, `GRASS`, `STONE`, `SAND`, `WATER`, `ICE`, `SWAMP`, `OIL_SLICK`; `MOUNTAIN` is off-arena only) and an optional `object` (decoration, facility or wall). `cell.type` is the top layer (`object ?? surface`) and is what gameplay code reads.
+  - Change a cell at runtime only through `setCellObject` / `setCellSurface`; never write `cell.type` directly, or the next `syncCellType` restores the stale layer.
+  - `SURFACE_CONFIGS` is the single source for driving rules: `isTilePassable` (collision, A* navigation, entry routes) reads `passableByTracks`, and `combineCellTerrain` / `combineCellProperties` multiply the speed / accel / turn / brake multipliers of both layers for player and enemy movement (a crater on a road keeps part of the road bonus). All-terrain and hover chassis keep bonuses but ignore penalties, except `affectsAllTerrain` (rubble); `playerOnlyTraction` (ice) does not slow enemies. Water speed stays per chassis in the movement code. Tune terrain traction in the catalog, not in the controllers.
+  - Maps use `surfaceLayout` (`G`/`.` ground, `R` road, `W` water, `I` ice, `S`/`N` sand, `^` stone, `V` grass, `M` swamp, `L` oil) plus `objectLayout` (`B` brick, `C` concrete, `F` forest, `X`/`Z` hedgehog, `D`/`O` barrel, `Q` boxes, `K` crater, `T` water tower, `=` bridge, `U` rubble, `A`/`P` houses, `H` HQ, `E` enemy base). `canPlaceOnSurface` defines which objects may stand on which surfaces.
 - **5 Tactical Field Power-Ups (`src/game/powerups.js` — `POWERUP` & `POWERUP_TYPES`)**:
   - `REPAIR`, `EMP`, `BASE_RESTORE`, `APS`, and `MISSILE`. Field Power-Ups are strictly situational combat abilities.
   - **BOX Supply Rules**: Tanks award credits; fully opened BOX caches roll `BOX_POWERUP_DROP_CHANCE` (currently 33%). Successful drops draw from the match's shuffled pool without replacement; exhausted pools reshuffle without adjacent repeats. Pickups stay at the cache location until collected or the mission ends. `BASE_RESTORE` has priority while HQ is destroyed and no reconstruction pickup is pending; emergency priority may override the bag cycle. Legacy map pickup types do not predetermine BOX contents.
@@ -149,6 +154,7 @@ All files directly required to run and deploy the game reside inside `/public` (
             │   └── upgrades.js
             ├── terrains/       # Terrain & surface modules
             │   ├── surfaces.js           # Dedicated catalog: characteristics & descriptions of all surfaces/obstacles
+            │   ├── layers.js             # Surface / object cell layers, placement rules and layer setters
             │   ├── continuous-surface.js # Shared contour builder for continuous water / ice patches
             │   ├── water.js              # Water surface + wet bank
             │   ├── ice.js                # Frozen surface with fractures and frosted edges

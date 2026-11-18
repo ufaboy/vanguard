@@ -244,7 +244,7 @@ test('getSpawnPosition avoids entrances camped by the player when safer entrance
   const engine = Object.assign(Object.create(TankGameEngine.prototype), {
     enemies: [],
     spawnerRoundRobinIdx: 0,
-    activeMap: { entrances },
+    sectorEntrances: entrances,
     gridToWorld: (row, col) => ({ x: (col - 17.5) * 2, z: (row - 17.5) * 2 }),
   });
   const camped = engine.gridToWorld(1, 4);

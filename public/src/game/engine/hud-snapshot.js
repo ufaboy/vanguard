@@ -14,7 +14,6 @@ import { buildSurvivalHudSnapshot } from '../../sim/survival.js';
 export function buildHudSnapshot(engine) {
   const sector = SECTORS[engine.currentSectorIndex];
   const boss = engine.enemies.find((e) => e.isBoss);
-  const spawnersRemaining = engine.getSpawnerCells().length;
 
   const cannonSpec =
     PLAYER_UPGRADES[UPGRADE.CANNON][(engine.effectiveUpgrades.cannon || 1) - 1];
@@ -159,7 +158,6 @@ export function buildHudSnapshot(engine) {
             ? sector.bossSequence.reduce((s, st) => s + st.length, 0)
             : 1
           : 0),
-    spawnersRemaining,
     minesActive: engine.mines.length,
     bossActive: Boolean(boss),
     bossName:

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { effectiveLayout } from './layered-layout.mjs';
 
 const SOLID_BLOCKS = new Set(['B', 'C', 'W', 'H', 'X', 'D', 'T', 'Q', 'E']);
-const PASSABLE_ROAD_BASE = new Set(['.', 'R', 'K', 'L', 'M', 'I', 'S', 'P']);
+const PASSABLE_ROAD_BASE = new Set(['.', 'R', 'K', 'L', 'M', 'I', 'S', 'P', '^']);
 
 function getCell(layout, r, c) {
   if (r < 0 || r >= layout.length || c < 0 || c >= layout[r].length) return null;
@@ -51,7 +52,7 @@ function traceSegmentCells(r0, c0, r1, c1) {
 
 export function auditMap(filePath) {
   const map = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  const layout = map.layout;
+  const layout = effectiveLayout(map);
   const N = layout.length;
   const issues = [];
   const breachCells = new Set();

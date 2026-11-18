@@ -144,7 +144,6 @@ const state = {
     baseAlive: true,
     enemiesRemaining: 10,
     totalEnemiesInSector: 10,
-    spawnersRemaining: 3,
     minesActive: 0,
     bossActive: false,
     bossName: '',

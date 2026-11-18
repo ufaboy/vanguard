@@ -33,6 +33,27 @@ const SAND_PATCH_VARIANTS = 6;
 const SAND_PATCH_CELL_FRACTION = 0.6;
 const SAND_PATTERN_CELLS = 4;
 
+/** Samples a material's colour map in world XZ (one texture repeat per SAND_PATTERN_CELLS tiles); works instanced. */
+function applyWorldSurfaceUv(material) {
+  const span = (TILE_SIZE * SAND_PATTERN_CELLS).toFixed(3);
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <uv_vertex>',
+      `#include <uv_vertex>
+      #ifdef USE_MAP
+        vec4 surfaceWorld = vec4(position, 1.0);
+        #ifdef USE_INSTANCING
+          surfaceWorld = instanceMatrix * surfaceWorld;
+        #endif
+        surfaceWorld = modelMatrix * surfaceWorld;
+        vMapUv = (mapTransform * vec3(surfaceWorld.x / ${span}, surfaceWorld.z / ${span}, 1.0)).xy;
+      #endif`
+    );
+  };
+  material.customProgramCacheKey = () => `world-surface-uv-${span}`;
+  return material;
+}
+
 const HYDRA_GLB_MODEL = Object.freeze({
   url: './models/tank_boss_hydra.glb',
   scale: 0.28,
@@ -1136,14 +1157,6 @@ export class ModelFactory extends TextureGenerator {
       water.color.offset.y = (water.color.offset.y + dt * 0.02) % 1;
       water.normal.offset.x = (water.normal.offset.x - dt * 0.03) % 1;
       water.normal.offset.y = (water.normal.offset.y + dt * 0.045) % 1;
-    }
-    const sp = this.spawnerMats;
-    if (sp) {
-      sp.glowTex.rotation = (sp.glowTex.rotation + dt * 0.6) % (Math.PI * 2);
-      sp.coreTex.rotation = sp.glowTex.rotation;
-      const pulse = 0.5 + 0.5 * Math.sin(this.animTime * 3.2);
-      sp.coreTop.emissiveIntensity = 0.9 + pulse * 0.9;
-      sp.coreSide.emissiveIntensity = 0.6 + pulse * 0.6;
     }
     if (this.hqMats) {
       const r = this.hqMats.repairTex;
@@ -2392,20 +2405,22 @@ export class ModelFactory extends TextureGenerator {
     return group;
   }
 
-  /** Helper to create a world-UV-aligned seamless surface patch mesh at world (x, z). */
+  /**
+   * Seamless surface patch at world (x, z). All patches share one plane geometry and a few mask
+   * materials, so the TileBatcher draws them as instances; the colour map is sampled in world space
+   * (see applyWorldSurfaceUv), which keeps neighbouring patches seamless.
+   */
   createSeamlessSurfacePatch(x, z, mats, y = 0.011) {
-    const span = TILE_SIZE / SAND_PATCH_CELL_FRACTION;
-    const geometry = new THREE.PlaneGeometry(span, span);
-    geometry.setAttribute('uv1', geometry.attributes.uv.clone());
-    const pos = geometry.attributes.position;
-    const uv = geometry.attributes.uv;
-    const patternSpan = TILE_SIZE * SAND_PATTERN_CELLS;
-    for (let i = 0; i < pos.count; i++) {
-      uv.setXY(i, (x + pos.getX(i)) / patternSpan, (z - pos.getY(i)) / patternSpan);
+    if (!this.surfacePatchGeometry) {
+      const span = TILE_SIZE / SAND_PATCH_CELL_FRACTION;
+      const geometry = new THREE.PlaneGeometry(span, span);
+      geometry.setAttribute('uv1', geometry.attributes.uv.clone());
+      geometry.userData.batchGeometryKey = 'surface-patch';
+      this.surfacePatchGeometry = geometry;
     }
 
     const cellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
-    const floor = new THREE.Mesh(geometry, mats[cellHash % SAND_PATCH_VARIANTS]);
+    const floor = new THREE.Mesh(this.surfacePatchGeometry, mats[cellHash % SAND_PATCH_VARIANTS]);
     floor.rotation.x = -Math.PI / 2;
     floor.position.y = y;
     floor.receiveShadow = true;
@@ -2413,7 +2428,8 @@ export class ModelFactory extends TextureGenerator {
     const group = new THREE.Group();
     group.position.set(x, 0, z);
     group.add(floor);
-    return markOwned(group, { materials: false });
+    group.userData.batchTile = true;
+    return group;
   }
 
   /** Seamless natural grass & meadow turf surface patch at world (x, z). */
@@ -2452,7 +2468,7 @@ export class ModelFactory extends TextureGenerator {
       this.grassPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
         const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
         mask.channel = 1;
-        return new THREE.MeshStandardMaterial({
+        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
           map: grassTex,
           alphaMap: mask,
           transparent: true,
@@ -2462,7 +2478,7 @@ export class ModelFactory extends TextureGenerator {
           polygonOffset: true,
           polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
-        });
+        }));
       });
     }
     return this.createSeamlessSurfacePatch(x, z, this.grassPatchMats, 0.01);
@@ -2508,7 +2524,7 @@ export class ModelFactory extends TextureGenerator {
       this.stonePatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
         const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
         mask.channel = 1;
-        return new THREE.MeshStandardMaterial({
+        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
           map: stoneTex,
           alphaMap: mask,
           transparent: true,
@@ -2518,7 +2534,7 @@ export class ModelFactory extends TextureGenerator {
           polygonOffset: true,
           polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
-        });
+        }));
       });
     }
     return this.createSeamlessSurfacePatch(x, z, this.stonePatchMats, 0.011);

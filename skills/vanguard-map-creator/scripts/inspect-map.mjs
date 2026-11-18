@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { effectiveLayout as flattenLayout } from './layered-layout.mjs';
 
 // Read-only checks for the currently authored Vanguard JSON format.
 export async function inspectMap(projectRoot, mapPath) {
@@ -16,28 +17,17 @@ export async function inspectMap(projectRoot, mapPath) {
   const validLayered = hasLayered
     && map.surfaceLayout.length === size
     && map.objectLayout.length === size
-    && map.surfaceLayout.every(row => typeof row === 'string' && row.length === size && /^[GRWISNVMLK_. ]+$/.test(row))
+    && map.surfaceLayout.every(row => typeof row === 'string' && row.length === size && /^[GRWISNVML^_. ]+$/.test(row))
     && map.objectLayout.every(row => typeof row === 'string' && row.length === size && /^[.BCFXDOQKT=UAPHE_ ]+$/.test(row));
   const validLegacy = Array.isArray(map.layout) && map.layout.length === size && map.layout.every(row => typeof row === 'string' && row.length === size && /^[.BCFWIGHESXZDOQNRMLKTAP=_ ]+$/.test(row));
   const validGrid = hasLayered ? validLayered : validLegacy;
   check(validGrid, 'Layout must contain 40 equal-width rows using known tile tokens.');
   if (!validGrid) return { mapId: map.mapId, errors, warnings };
-  const effectiveLayout = hasLayered
-    ? map.surfaceLayout.map((sRow, r) => {
-        const oRow = map.objectLayout[r];
-        let out = '';
-        for (let c = 0; c < size; c++) {
-          const obj = oRow[c];
-          const surf = sRow[c];
-          out += obj !== '.' && obj !== '_' && obj !== ' ' ? obj : (surf === 'G' ? '.' : surf);
-        }
-        return out;
-      })
-    : map.layout;
+  const effectiveLayout = flattenLayout(map);
   const inside = c => c && Number.isInteger(c.row) && Number.isInteger(c.col) && c.row >= 0 && c.col >= 0 && c.row < size && c.col < size;
   const key = c => `${c.row},${c.col}`;
-  const passable = c => inside(c) && '.FIVSNRMLK_ ='.includes(effectiveLayout[c.row][c.col]);
-  const breachable = c => inside(c) && '.FIVSNRMLK_ BCEHQTAP='.includes(effectiveLayout[c.row][c.col]);
+  const passable = c => inside(c) && '.FIVSNRMLK^_ ='.includes(effectiveLayout[c.row][c.col]);
+  const breachable = c => inside(c) && '.FIVSNRMLK^_ BCEHQTAP='.includes(effectiveLayout[c.row][c.col]);
   check(passable(map.playerSpawnCell), 'Player spawn must be an open stock-track cell.');
   check(inside(map.baseCell) && effectiveLayout[map.baseCell.row].slice(map.baseCell.col, map.baseCell.col + 2) === 'HH', 'baseCell and its right neighbour must be the two H tiles.');
   const reached = new Set();

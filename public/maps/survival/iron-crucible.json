@@ -87,18 +87,22 @@
     },
     "entrances": [
       {
+        "id": "west",
         "row": 2,
         "col": 7
       },
       {
+        "id": "center-west",
         "row": 2,
         "col": 15
       },
       {
+        "id": "center-east",
         "row": 2,
         "col": 24
       },
       {
+        "id": "east",
         "row": 2,
         "col": 32
       }

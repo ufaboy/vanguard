@@ -650,11 +650,6 @@ export class TankGameEngine {
     return (this._enemyAi ||= new EnemyAiController(this));
   }
 
-  /** Spawner cells, cached until a cell changes type (see invalidateSpawnerCache). */
-  getSpawnerCells() {
-    return this.enemySpawner.getSpawnerCells();
-  }
-
   getSpawnPosition() {
     return this.enemySpawner.getSpawnPosition();
   }
