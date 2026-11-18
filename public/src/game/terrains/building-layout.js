@@ -1,7 +1,9 @@
 /**
- * Explicit urban building layout: renders TileType.HOUSE_1 ('1') and TileType.HOUSE_2 ('2')
+ * Explicit building layout: renders TileType.HOUSE_1 ('A') and TileType.HOUSE_2 ('P')
  * as 1-story and 2-story modular buildings with outward-facing corner/edge/core sections
- * and deterministic per-cluster facade/roof styles (0..7).
+ * and deterministic per-cluster facade/roof styles:
+ * - Iteration 1 (styles 0..7): 8 residential styles per tier
+ * - Iteration 2 (styles 8..11): 4 industrial / warehouse / office styles per tier
  * TileType.BRICK ('B') and TileType.CONCRETE ('C') always remain standard blocks.
  */
 
@@ -12,14 +14,47 @@ const BUILDING_KINDS = Object.freeze({
   [TileType.HOUSE_2]: 'house2',
 });
 
-export const BUILDING_STYLE_COUNT = 8;
+export const RESIDENTIAL_STYLE_COUNT = 8;
+export const INDUSTRIAL_STYLE_COUNT = 4;
+export const BUILDING_STYLE_COUNT = RESIDENTIAL_STYLE_COUNT + INDUSTRIAL_STYLE_COUNT;
+
+/**
+ * Share of Iteration 2 (industrial / warehouse / office, styles 8..11) buildings per map theme:
+ * - urban:      100% Iteration 1 /   0% Iteration 2
+ * - forest:      50% Iteration 1 /  50% Iteration 2
+ * - desert:      25% Iteration 1 /  75% Iteration 2
+ * - coast:       75% Iteration 1 /  25% Iteration 2
+ * - alpine:      50% Iteration 1 /  50% Iteration 2
+ * - industrial:  25% Iteration 1 /  75% Iteration 2
+ * - capital:     75% Iteration 1 /  25% Iteration 2
+ */
+export const THEME_ITERATION2_SHARE = Object.freeze({
+  urban: 0,
+  forest: 0.5,
+  desert: 0.75,
+  coast: 0.25,
+  alpine: 0.5,
+  industrial: 0.75,
+  capital: 0.25,
+});
+
+function isIteration2Cluster(clusterIdx, iter2Share) {
+  if (iter2Share <= 0) return false;
+  if (iter2Share >= 1) return true;
+  const slot = clusterIdx & 3;
+  if (iter2Share === 0.25) return slot === 3;
+  if (iter2Share === 0.5) return (slot & 1) === 1;
+  if (iter2Share === 0.75) return slot !== 3;
+  return (clusterIdx * iter2Share) % 1 >= 1 - iter2Share;
+}
 
 /**
  * Computes modular building assignments for explicit HOUSE_1 and HOUSE_2 cells.
  * @param {number[][]} rawGrid 2D grid of TileType values
+ * @param {string} [theme='urban'] Sector environment theme
  * @returns {Map<string, { kind: 'house1'|'house2', part: 'corner'|'edge'|'core', yaw: number, style: number }>}
  */
-export function computeBuildingLayout(rawGrid) {
+export function computeBuildingLayout(rawGrid, theme = 'urban') {
   const layout = new Map();
   if (!Array.isArray(rawGrid) || !rawGrid.length) return layout;
 
@@ -27,15 +62,25 @@ export function computeBuildingLayout(rawGrid) {
   const cols = rawGrid[0]?.length || 0;
   if (!cols) return layout;
 
+  const normalizedTheme = String(theme || 'urban').toLowerCase();
+  const iter2Share = THEME_ITERATION2_SHARE[normalizedTheme] ?? 0;
+
   const isSameKind = (r, c, t) => r >= 0 && r < rows && c >= 0 && c < cols && rawGrid[r][c] === t;
 
-  // Assign one cohesive style (0..7) per connected building cluster.
+  // Assign one cohesive style (0..7 for Iteration 1, 8..11 for Iteration 2) per connected building cluster.
   const clusterStyle = Array.from({ length: rows }, () => new Int8Array(cols).fill(-1));
+  let clusterIdx = 0;
+  let iter1Count = 0;
+  let iter2Count = 0;
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const t = rawGrid[r][c];
       if (!BUILDING_KINDS[t] || clusterStyle[r][c] >= 0) continue;
-      const style = ((r * 7 + c * 13 + t * 3) >>> 0) % BUILDING_STYLE_COUNT;
+      const hash = (r * 7 + c * 13 + t * 3) >>> 0;
+      const useIter2 = isIteration2Cluster(clusterIdx++, iter2Share);
+      const style = useIter2
+        ? RESIDENTIAL_STYLE_COUNT + ((hash + iter2Count++) % INDUSTRIAL_STYLE_COUNT)
+        : (hash + iter1Count++) % RESIDENTIAL_STYLE_COUNT;
       const queue = [[r, c]];
       clusterStyle[r][c] = style;
       while (queue.length) {

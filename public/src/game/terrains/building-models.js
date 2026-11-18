@@ -1,6 +1,7 @@
 /**
  * Blender 1-story (5 damage stages) and 2-story (7 damage stages) modular building models.
- * Intact state uses 8 distinct facade/roof styles per tier; damaged states share inner concrete geometry.
+ * Intact state uses 12 distinct facade/roof styles per tier (0..7 residential, 8..11 industrial/warehouse/office);
+ * damaged states share inner concrete geometry.
  */
 
 import * as THREE from 'three';
@@ -32,7 +33,7 @@ export function buildingDamageState(hp, maxHp = 25, kind = 'house1') {
 export class BuildingModels {
   constructor() {
     this.url = new URL('../../../models/terrain/buildings.glb', import.meta.url).href;
-    /** Geometries keyed by `house1_s{0..7}_{part}_5`, `house1_{part}_{1..4}`, `house1_0`, etc. */
+    /** Geometries keyed by `house1_s{0..11}_{part}_5`, `house1_r{0..7}_{part}_{3..4}`, `house1_{part}_{1..2}`, `house1_0`, etc. */
     this.geometries = new Map();
     this.material = null;
     this.disposed = false;
@@ -69,27 +70,29 @@ export class BuildingModels {
       this.dispose();
       return false;
     }
-    if (this.geometries.size < 98 || !this.material) {
+    if (this.geometries.size < 146 || !this.material) {
       this.dispose();
-      throw new Error(`Incomplete building model states (${this.geometries.size}/98).`);
+      throw new Error(`Incomplete building model states (${this.geometries.size}/146).`);
     }
     this.material.userData.batchKey = 'buildings-atlas';
     return true;
   }
 
   /**
-   * Applies the requested building module, style (0..7 for intact), and destruction state to `group`.
+   * Applies the requested building module, style (0..11 for intact), and destruction state to `group`.
    */
   apply(group, kind, part, state, style = 0, materialOverride = null) {
     const maxState = kind === 'house2' ? 7 : 5;
     const s = Math.max(0, Math.min(maxState, Math.round(state)));
+    const normalizedStyle = ((style % 12) + 12) % 12;
+    const rStyle = normalizedStyle >= 8 ? 4 + (normalizedStyle - 8) : normalizedStyle & 3;
     const key =
       s === 0
         ? `${kind}_0`
         : s === maxState
-          ? `${kind}_s${style & 7}_${part}_${s}`
+          ? `${kind}_s${normalizedStyle}_${part}_${s}`
           : kind === 'house1' && (s === 4 || s === 3)
-            ? `${kind}_r${style & 3}_${part}_${s}`
+            ? `${kind}_r${rStyle}_${part}_${s}`
             : `${kind}_${part}_${s}`;
     const geometry = this.geometries.get(key);
     const material = materialOverride || this.material;

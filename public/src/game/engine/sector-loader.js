@@ -232,7 +232,7 @@ export class SectorLoaderController {
     engine.componentWaterEgress = false;
 
     engine._spawnerCells = null;
-    const buildingLayout = computeBuildingLayout(sector.grid);
+    const buildingLayout = computeBuildingLayout(sector.grid, sector.theme);
     for (let r = 0; r < GRID_SIZE; r++) {
       const rowCells = [];
       for (let c = 0; c < GRID_SIZE; c++) {

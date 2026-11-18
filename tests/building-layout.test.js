@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { BUILDING_STYLE_COUNT, computeBuildingLayout } from '../public/src/game/terrains/building-layout.js';
+import {
+  BUILDING_STYLE_COUNT,
+  INDUSTRIAL_STYLE_COUNT,
+  RESIDENTIAL_STYLE_COUNT,
+  THEME_ITERATION2_SHARE,
+  computeBuildingLayout,
+} from '../public/src/game/terrains/building-layout.js';
 import { BUILDING_MAX_HP, buildingDamageState } from '../public/src/game/terrains/building-models.js';
 import { TileType } from '../public/src/game/terrains/surfaces.js';
 import { isPassableCell, NAV_TILE } from '../public/src/sim/behavior/navgrid.js';
@@ -33,7 +39,7 @@ test('computeBuildingLayout turns 2x2 HOUSE_1 into 4 outward-facing house1 corne
   const layout = computeBuildingLayout(grid);
   assert.equal(layout.size, 4);
   const style = layout.get('1,1').style;
-  assert.ok(Number.isInteger(style) && style >= 0 && style < BUILDING_STYLE_COUNT);
+  assert.ok(Number.isInteger(style) && style >= 0 && style < RESIDENTIAL_STYLE_COUNT);
   assert.deepEqual(layout.get('1,1'), { kind: 'house1', part: 'corner', yaw: Math.PI, style });
   assert.deepEqual(layout.get('1,2'), { kind: 'house1', part: 'corner', yaw: Math.PI / 2, style });
   assert.deepEqual(layout.get('2,2'), { kind: 'house1', part: 'corner', yaw: 0, style });
@@ -60,6 +66,39 @@ test('computeBuildingLayout turns 3x3 HOUSE_2 into corners, edges, and core of h
   assert.deepEqual(layout.get('3,2'), { kind: 'house2', part: 'edge', yaw: 0, style });
   assert.deepEqual(layout.get('2,1'), { kind: 'house2', part: 'edge', yaw: -Math.PI / 2, style });
   assert.deepEqual(layout.get('2,2'), { kind: 'house2', part: 'core', yaw: 0, style });
+});
+
+test('computeBuildingLayout enforces Iteration 1 (0..7) vs Iteration 2 (8..11) theme proportions', () => {
+  assert.equal(RESIDENTIAL_STYLE_COUNT, 8);
+  assert.equal(INDUSTRIAL_STYLE_COUNT, 4);
+  assert.equal(BUILDING_STYLE_COUNT, 12);
+
+  const E = TileType.EMPTY;
+  const H1 = TileType.HOUSE_1;
+  const H2 = TileType.HOUSE_2;
+  // 8 separate 2x2 building clusters (4 of HOUSE_1, 4 of HOUSE_2)
+  const grid = Array.from({ length: 12 }, () => Array(24).fill(E));
+  const anchors = [
+    [1, 1, H1], [1, 4, H2], [1, 7, H1], [1, 10, H2],
+    [5, 1, H1], [5, 4, H2], [5, 7, H1], [5, 10, H2],
+  ];
+  for (const [r, c, t] of anchors) {
+    grid[r][c] = grid[r + 1][c] = grid[r][c + 1] = grid[r + 1][c + 1] = t;
+  }
+
+  for (const [theme, expectedIter2Share] of Object.entries(THEME_ITERATION2_SHARE)) {
+    const layout = computeBuildingLayout(grid, theme);
+    let iter1 = 0;
+    let iter2 = 0;
+    for (const [r, c] of anchors) {
+      const { style } = layout.get(`${r},${c}`);
+      assert.ok(style >= 0 && style < BUILDING_STYLE_COUNT);
+      if (style < RESIDENTIAL_STYLE_COUNT) iter1++;
+      else iter2++;
+    }
+    assert.equal(iter2 / anchors.length, expectedIter2Share, `theme=${theme}`);
+    assert.equal(iter1 + iter2, anchors.length);
+  }
 });
 
 test('buildingDamageState maps house1 (5 stages) and house2 (7 stages)', () => {
