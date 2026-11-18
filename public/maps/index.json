@@ -18,7 +18,6 @@
     "F": "FOREST (Stealth canopy concealment)",
     "W": "WATER (Impassable water channel unless Hover Chassis CH4/CH5 is active)",
     "I": "ICE (Low-friction drift surface)",
-    "G": "SPAWNER (Enemy reinforcement teleporter pad)",
     "H": "BASE (Allied Field Repair Base)",
     "E": "ENEMY_BASE (Fortified Enemy Stronghold Core, 48 HP)",
     "X": "HEDGEHOG (Anti-tank Czech hedgehog: impassable to tanks, projectiles fly over freely)",

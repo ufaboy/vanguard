@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { TileType } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
+import { syncCellType } from './layers.js';
 
 export class ForestFireController {
   constructor(engine) {
@@ -206,11 +207,18 @@ export class ForestFireController {
           e.mapGroup.remove(bf.cell.mesh);
           bf.cell.mesh = null;
         }
+        if (bf.cell.surfaceMesh) {
+          e.mapGroup.remove(bf.cell.surfaceMesh);
+          bf.cell.surfaceMesh = null;
+        }
 
-        bf.cell.type = TileType.SAND;
+        bf.cell.object = null;
+        bf.cell.surface = TileType.SAND;
+        syncCellType(bf.cell);
 
         const sandMesh = e.modelFactory.createSandBlock(bf.x, bf.z);
         e.mapGroup.add(sandMesh);
+        bf.cell.surfaceMesh = sandMesh;
         bf.cell.mesh = sandMesh;
 
         e.fx.blockDestroyed(bf.x, bf.z, 'forest');

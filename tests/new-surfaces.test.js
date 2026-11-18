@@ -14,6 +14,13 @@ import {
 } from '../public/src/sim/behavior/navgrid.js';
 import { TerrainDestructionController } from '../public/src/game/engine/terrain-destruction.js';
 import { ForestFireController } from '../public/src/game/terrains/forest-fire.js';
+import {
+  canPlaceOnSurface,
+  canPlaceMultiCell,
+  combineCellProperties,
+  isSurfaceLocked,
+  TRANSFORMATION_RULES,
+} from '../public/src/game/terrains/layers.js';
 import { GameStatus } from '../public/src/game/types.js';
 import { TILE_SIZE } from '../public/src/game/levels.js';
 
@@ -261,6 +268,31 @@ test('burning FOREST spreads to adjacent FOREST and OIL_SLICK and damages adjace
   assert.equal(forestB.isBurning, true);
   assert.equal(engine.burningForests.length, 2);
   assert.equal(house.hp, 22);
+});
+
+test('layered terrain compatibility, multi-cell rules, facility surface lock, and physics combination', () => {
+  assert.equal(canPlaceOnSurface(TileType.BRIDGE, TileType.WATER), true);
+  assert.equal(canPlaceOnSurface(TileType.BRIDGE, TileType.EMPTY), false);
+  assert.equal(canPlaceOnSurface(TileType.HOUSE_1, TileType.EMPTY), true);
+  assert.equal(canPlaceOnSurface(TileType.HOUSE_1, TileType.WATER), false);
+  assert.equal(canPlaceOnSurface(TileType.BARREL, TileType.OIL_SLICK), true);
+  assert.equal(canPlaceOnSurface(TileType.FOREST, TileType.GRASS), true);
+  assert.equal(canPlaceOnSurface(TileType.FOREST, TileType.ROAD), false);
+
+  const grid = createMockGrid(4, 4);
+  grid[1][1].surface = TileType.EMPTY;
+  grid[1][2].surface = TileType.EMPTY;
+  assert.equal(canPlaceMultiCell(grid, [{ row: 1, col: 1 }, { row: 1, col: 2 }], TileType.HOUSE_1), true);
+  grid[1][2].surface = TileType.WATER;
+  assert.equal(canPlaceMultiCell(grid, [{ row: 1, col: 1 }, { row: 1, col: 2 }], TileType.HOUSE_1), false);
+
+  const facilityCell = { surface: TileType.EMPTY, object: TileType.HOUSE_1, type: TileType.HOUSE_1 };
+  assert.equal(isSurfaceLocked(facilityCell), true);
+  assert.equal(TRANSFORMATION_RULES.BUILDING_COLLAPSE.toObject, TileType.RUBBLE);
+
+  const roadCrater = combineCellProperties(TileType.ROAD, TileType.CRATER, {});
+  assert.equal(roadCrater.passable, true);
+  assert.ok(roadCrater.speedMultiplier > 1.0 && roadCrater.speedMultiplier < 1.2);
 });
 
 test('ruptureWaterTower floods 1.5-cell radius to SWAMP and extinguishes fires within 2.5 cells', () => {

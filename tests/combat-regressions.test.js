@@ -236,16 +236,15 @@ test('Entering enemies engage gunnery during border ingress and clear entryTarge
   assert.equal(enemy.entryTarget, null);
 });
 
-test('getSpawnPosition avoids spawners camped by the player when safer spawners exist', () => {
-  const spawners = [
-    { row: 1, col: 4, type: 6 },
-    { row: 1, col: 30, type: 6 },
+test('getSpawnPosition avoids entrances camped by the player when safer entrances exist', () => {
+  const entrances = [
+    { row: 1, col: 4 },
+    { row: 1, col: 30 },
   ];
   const engine = Object.assign(Object.create(TankGameEngine.prototype), {
     enemies: [],
     spawnerRoundRobinIdx: 0,
-    _spawnerCells: spawners,
-    getSpawnerCells: () => spawners,
+    activeMap: { entrances },
     gridToWorld: (row, col) => ({ x: (col - 17.5) * 2, z: (row - 17.5) * 2 }),
   });
   const camped = engine.gridToWorld(1, 4);

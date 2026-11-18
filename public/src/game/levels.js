@@ -43,6 +43,7 @@ import { resolveMapRules } from './mapRules.js';
 import { normalizeDecoration } from './render/decoration.js';
 import { POWERUP, POWERUP_TYPES, POWERUP_MAX_ON_MAP } from './powerups.js';
 import { PLACEABLE_LANDMARKS, landmarkBlockedCells } from './terrains/landmarks.js';
+import { isSurfaceType } from './terrains/layers.js';
 
 export const GRID_SIZE = 40;
 export const TILE_SIZE = 2.0;
@@ -101,8 +102,6 @@ const CHAR_TO_TILE = {
   WATER: TileType.WATER,
   I: TileType.ICE,
   ICE: TileType.ICE,
-  G: TileType.SPAWNER,
-  SPAWNER: TileType.SPAWNER,
   H: TileType.BASE,
   BASE: TileType.BASE,
   E: TileType.ENEMY_BASE,
@@ -116,6 +115,7 @@ const CHAR_TO_TILE = {
   Q: TileType.BOXES,
   BOXES: TileType.BOXES,
   N: TileType.SAND,
+  S: TileType.SAND,
   SAND: TileType.SAND,
   R: TileType.ROAD,
   ROAD: TileType.ROAD,
@@ -132,11 +132,55 @@ const CHAR_TO_TILE = {
   TOWER: TileType.WATER_TOWER,
   '=': TileType.BRIDGE,
   BRIDGE: TileType.BRIDGE,
+  U: TileType.RUBBLE,
+  RUBBLE: TileType.RUBBLE,
   A: TileType.HOUSE_1,
   HOUSE_1: TileType.HOUSE_1,
   P: TileType.HOUSE_2,
   HOUSE_2: TileType.HOUSE_2,
+  V: TileType.GRASS,
+  GRASS: TileType.GRASS,
+  STONE: TileType.STONE,
+  MOUNTAIN: TileType.MOUNTAIN,
   LANDMARK: TileType.LANDMARK,
+};
+
+const SURFACE_CHAR_TO_TILE = {
+  '.': TileType.EMPTY,
+  _: TileType.EMPTY,
+  ' ': TileType.EMPTY,
+  G: TileType.EMPTY,
+  R: TileType.ROAD,
+  W: TileType.WATER,
+  I: TileType.ICE,
+  S: TileType.SAND,
+  N: TileType.SAND,
+  K: TileType.STONE,
+  V: TileType.GRASS,
+  M: TileType.SWAMP,
+  L: TileType.OIL_SLICK,
+};
+
+const OBJECT_CHAR_TO_TILE = {
+  '.': null,
+  _: null,
+  ' ': null,
+  B: TileType.BRICK,
+  C: TileType.CONCRETE,
+  F: TileType.FOREST,
+  X: TileType.HEDGEHOG,
+  Z: TileType.HEDGEHOG,
+  D: TileType.BARREL,
+  O: TileType.BARREL,
+  Q: TileType.BOXES,
+  K: TileType.CRATER,
+  T: TileType.WATER_TOWER,
+  '=': TileType.BRIDGE,
+  U: TileType.RUBBLE,
+  A: TileType.HOUSE_1,
+  P: TileType.HOUSE_2,
+  H: TileType.BASE,
+  E: TileType.ENEMY_BASE,
 };
 
 function parseHexColor(val, fallback = 0x0b1120) {
@@ -149,30 +193,59 @@ function parseHexColor(val, fallback = 0x0b1120) {
   return fallback;
 }
 
-/** Parses a JSON map's `layout` (array of 36 strings of length 36) or `grid` (2D array). */
-function parseMapGrid(mapJson) {
+/**
+ * Parses a JSON map's layered `surfaceLayout` + `objectLayout` (or legacy single `layout` / `grid`)
+ * into `{ grid, surfaceGrid, objectGrid }`.
+ */
+function parseMapGrids(mapJson) {
   const size = mapJson?.gridSize || GRID_SIZE;
-  const rawLayout = mapJson?.layout || mapJson?.grid || [];
+  const surfaceGrid = Array.from({ length: size }, () => Array(size).fill(TileType.EMPTY));
+  const objectGrid = Array.from({ length: size }, () => Array(size).fill(null));
+  const hasLayered = Array.isArray(mapJson?.surfaceLayout) || Array.isArray(mapJson?.objectLayout);
 
-  const grid = Array.from({ length: size }, () =>
-    Array(size).fill(TileType.EMPTY)
-  );
-
-  for (let r = 0; r < size; r++) {
-    const rowData = rawLayout[r];
-    if (!rowData) continue;
-
-    for (let c = 0; c < size; c++) {
-      const cellToken =
-        typeof rowData === 'string' ? rowData[c] : rowData[c];
-      if (typeof cellToken === 'number') {
-        grid[r][c] = cellToken;
-      } else if (typeof cellToken === 'string') {
-        const mapped =
-          CHAR_TO_TILE[cellToken] ??
-          CHAR_TO_TILE[cellToken.toUpperCase()] ??
-          TileType.EMPTY;
-        grid[r][c] = mapped;
+  if (hasLayered) {
+    const rawSurface = mapJson?.surfaceLayout || [];
+    const rawObject = mapJson?.objectLayout || [];
+    for (let r = 0; r < size; r++) {
+      const sRow = rawSurface[r];
+      const oRow = rawObject[r];
+      for (let c = 0; c < size; c++) {
+        if (sRow) {
+          const tok = typeof sRow === 'string' ? sRow[c] : sRow[c];
+          if (typeof tok === 'number') surfaceGrid[r][c] = tok;
+          else if (typeof tok === 'string') {
+            surfaceGrid[r][c] = SURFACE_CHAR_TO_TILE[tok] ?? SURFACE_CHAR_TO_TILE[tok.toUpperCase()] ?? TileType.EMPTY;
+          }
+        }
+        if (oRow) {
+          const tok = typeof oRow === 'string' ? oRow[c] : oRow[c];
+          if (typeof tok === 'number') objectGrid[r][c] = tok === TileType.EMPTY ? null : tok;
+          else if (typeof tok === 'string') {
+            const mapped = OBJECT_CHAR_TO_TILE[tok] ?? OBJECT_CHAR_TO_TILE[tok.toUpperCase()];
+            objectGrid[r][c] = mapped ?? null;
+          }
+        }
+      }
+    }
+  } else {
+    const rawLayout = mapJson?.layout || mapJson?.grid || [];
+    for (let r = 0; r < size; r++) {
+      const rowData = rawLayout[r];
+      if (!rowData) continue;
+      for (let c = 0; c < size; c++) {
+        const cellToken = typeof rowData === 'string' ? rowData[c] : rowData[c];
+        let tile = TileType.EMPTY;
+        if (typeof cellToken === 'number') {
+          tile = cellToken;
+        } else if (typeof cellToken === 'string') {
+          tile = CHAR_TO_TILE[cellToken] ?? CHAR_TO_TILE[cellToken.toUpperCase()] ?? TileType.EMPTY;
+        }
+        if (isSurfaceType(tile)) {
+          surfaceGrid[r][c] = tile;
+        } else {
+          surfaceGrid[r][c] = TileType.EMPTY;
+          objectGrid[r][c] = tile;
+        }
       }
     }
   }
@@ -185,12 +258,23 @@ function parseMapGrid(mapJson) {
     footprint: mapJson?.baseFootprint,
     baseDefense: mapJson?.baseDefense,
   });
-  for (const row of grid) {
-    for (let c = 0; c < size; c++) if (row[c] === TileType.BASE) row[c] = TileType.EMPTY;
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (objectGrid[r][c] === TileType.BASE) objectGrid[r][c] = null;
+    }
   }
-  for (const { row, col } of layout.open) grid[row][col] = TileType.EMPTY;
-  for (const { row, col } of layout.wall) grid[row][col] = TileType.CONCRETE;
-  for (const { row, col } of layout.cells) grid[row][col] = TileType.BASE;
+  for (const { row, col } of layout.open) {
+    surfaceGrid[row][col] = TileType.EMPTY;
+    objectGrid[row][col] = null;
+  }
+  for (const { row, col } of layout.wall) {
+    surfaceGrid[row][col] = TileType.EMPTY;
+    objectGrid[row][col] = TileType.CONCRETE;
+  }
+  for (const { row, col } of layout.cells) {
+    surfaceGrid[row][col] = TileType.EMPTY;
+    objectGrid[row][col] = TileType.BASE;
+  }
 
   if (Array.isArray(mapJson?.landmarks3d)) {
     for (const entry of mapJson.landmarks3d) {
@@ -199,13 +283,17 @@ function parseMapGrid(mapJson) {
       }
       for (const { row, col } of landmarkBlockedCells(entry)) {
         if (row >= 0 && row < size && col >= 0 && col < size) {
-          grid[row][col] = TileType.LANDMARK;
+          surfaceGrid[row][col] = TileType.EMPTY;
+          objectGrid[row][col] = TileType.LANDMARK;
         }
       }
     }
   }
 
-  return grid;
+  const grid = Array.from({ length: size }, (_, r) =>
+    Array.from({ length: size }, (__, c) => objectGrid[r][c] ?? surfaceGrid[r][c])
+  );
+  return { grid, surfaceGrid, objectGrid };
 }
 
 /** Normalizes a raw JSON map object from `/public/maps/*.json` into the runtime Sector format. */
@@ -241,7 +329,7 @@ export function normalizeMapDefinition(rawMap, index = 0) {
 
   const rules = resolveMapRules(rawMap);
   const decoration = normalizeDecoration(rawMap);
-  const grid = parseMapGrid(rawMap);
+  const { grid, surfaceGrid, objectGrid } = parseMapGrids(rawMap);
   const pickupCells = new Set();
   if (rawMap.powerups !== undefined && (!Array.isArray(rawMap.powerups) || rawMap.powerups.length > POWERUP_MAX_ON_MAP)) {
     throw new Error(`${rawMap.mapId}: invalid authored powerup collection`);
@@ -255,9 +343,10 @@ export function normalizeMapDefinition(rawMap, index = 0) {
           TileType.EMPTY,
           TileType.FOREST,
           TileType.ICE,
-          TileType.SPAWNER,
           TileType.SAND,
           TileType.ROAD,
+          TileType.STONE,
+          TileType.GRASS,
           TileType.BRIDGE,
           TileType.SWAMP,
           TileType.OIL_SLICK,
@@ -404,6 +493,8 @@ export function normalizeMapDefinition(rawMap, index = 0) {
       return normalized.length > 0 ? normalized : null;
     })(),
     grid,
+    surfaceGrid,
+    objectGrid,
   };
 }
 

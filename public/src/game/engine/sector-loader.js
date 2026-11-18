@@ -20,6 +20,7 @@ import { computeBuildingLayout } from '../terrains/building-layout.js';
 import { BUILDING_MAX_HP } from '../terrains/building-models.js';
 import { landmarkFootprintCenter } from '../terrains/landmarks.js';
 import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
+import { isSurfaceType } from '../terrains/layers.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
 import { EnemyClass, GameStatus, TileType, resolveMapRules } from '../types.js';
 
@@ -128,7 +129,6 @@ export class SectorLoaderController {
         concrete.position.set(x, 0, z);
         engine.mapGroup.add(concrete);
         cell.type = TileType.CONCRETE;
-        engine._spawnerCells = null;
         cell.hp = 16;
         cell.maxHp = 16;
         cell.mesh = concrete;
@@ -138,7 +138,6 @@ export class SectorLoaderController {
         brick.group.position.set(x, 0, z);
         engine.mapGroup.add(brick.group);
         cell.type = TileType.BRICK;
-        engine._spawnerCells = null;
         cell.hp = 4;
         cell.maxHp = 4;
         cell.mesh = brick.group;
@@ -231,18 +230,60 @@ export class SectorLoaderController {
     engine.grid = [];
     engine.componentWaterEgress = false;
 
-    engine._spawnerCells = null;
     const buildingLayout = computeBuildingLayout(sector.grid, sector.theme);
     for (let r = 0; r < GRID_SIZE; r++) {
       const rowCells = [];
       for (let c = 0; c < GRID_SIZE; c++) {
         const supply = sector.powerups?.find((item) => item.row === r && item.col === c);
-        const type = supply ? TileType.BOXES : sector.grid[r][c];
+        const rawCell = sector.grid[r][c];
+        const surface = sector.surfaceGrid?.[r]?.[c] ?? (isSurfaceType(rawCell) ? rawCell : TileType.EMPTY);
+        const object = supply
+          ? TileType.BOXES
+          : sector.objectGrid?.[r]?.[c] ?? (!isSurfaceType(rawCell) && rawCell !== TileType.EMPTY ? rawCell : null);
+        const type = object ?? surface;
         const { x, z } = this.gridToWorld(r, c);
         let mesh = null;
+        let surfaceMesh = null;
         let subMeshes;
         let hp = 1;
         const building = !supply ? buildingLayout.get(`${r},${c}`) || null : null;
+
+        // Render flat surface layer underneath any placed object
+        if (surface === TileType.ROAD && engine.modelFactory.createRoadBlock) {
+          const isRoad = (rr, cc) => {
+            if (rr < 0 || rr >= GRID_SIZE || cc < 0 || cc >= GRID_SIZE) return false;
+            const s = sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
+            const o = sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
+            return s === TileType.ROAD || o === TileType.BRIDGE;
+          };
+          const n = isRoad(r - 1, c);
+          const e = isRoad(r, c + 1);
+          const s = isRoad(r + 1, c);
+          const w = isRoad(r, c - 1);
+          const roadMask = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
+          const doubleLaneMask =
+            (n && e && w && !s && (isRoad(r - 1, c + 1) || isRoad(r - 1, c - 1)) ? 1 : 0) |
+            (e && n && s && !w && (isRoad(r - 1, c + 1) || isRoad(r + 1, c + 1)) ? 2 : 0) |
+            (s && e && w && !n && (isRoad(r + 1, c + 1) || isRoad(r + 1, c - 1)) ? 4 : 0) |
+            (w && n && s && !e && (isRoad(r - 1, c - 1) || isRoad(r + 1, c - 1)) ? 8 : 0);
+          surfaceMesh = engine.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask);
+          engine.mapGroup.add(surfaceMesh);
+        } else if (surface === TileType.SAND && engine.modelFactory.createSandBlock) {
+          surfaceMesh = engine.modelFactory.createSandBlock(x, z);
+          engine.mapGroup.add(surfaceMesh);
+        } else if (surface === TileType.GRASS && engine.modelFactory.createGrassBlock) {
+          surfaceMesh = engine.modelFactory.createGrassBlock(x, z);
+          engine.mapGroup.add(surfaceMesh);
+        } else if (surface === TileType.STONE && engine.modelFactory.createStoneBlock) {
+          surfaceMesh = engine.modelFactory.createStoneBlock(x, z);
+          engine.mapGroup.add(surfaceMesh);
+        } else if (surface === TileType.SWAMP && engine.modelFactory.createSwampBlock) {
+          surfaceMesh = engine.modelFactory.createSwampBlock(x, z);
+          engine.mapGroup.add(surfaceMesh);
+        } else if (surface === TileType.OIL_SLICK && engine.modelFactory.createOilSlickBlock) {
+          surfaceMesh = engine.modelFactory.createOilSlickBlock(x, z);
+          engine.mapGroup.add(surfaceMesh);
+        }
 
         if (type === TileType.BRICK) {
           hp = 4;
@@ -279,12 +320,6 @@ export class SectorLoaderController {
         } else if (type === TileType.ICE) {
           // Ice is rendered as one continuous sector surface below.
           mesh = null;
-        } else if (type === TileType.SPAWNER) {
-          const spawner = engine.modelFactory.createSpawnerPad();
-          spawner.position.set(x, 0, z);
-          engine.mapGroup.add(spawner);
-          mesh = spawner;
-          hp = 6;
         } else if (type === TileType.BASE) {
           // One HQ model spans all HQ cells; it hangs on the anchor cell.
           const anchor = sector.baseCell || BASE_CELL;
@@ -360,31 +395,6 @@ export class SectorLoaderController {
           engine.mapGroup.add(barrel);
           mesh = barrel;
           hp = 1;
-        } else if (type === TileType.ROAD && engine.modelFactory.createRoadBlock) {
-          const isRoad = (rr, cc) =>
-            rr >= 0 &&
-            rr < GRID_SIZE &&
-            cc >= 0 &&
-            cc < GRID_SIZE &&
-            (sector.grid[rr][cc] === TileType.ROAD || sector.grid[rr][cc] === TileType.BRIDGE);
-          const n = isRoad(r - 1, c);
-          const e = isRoad(r, c + 1);
-          const s = isRoad(r + 1, c);
-          const w = isRoad(r, c - 1);
-          const roadMask = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
-          const doubleLaneMask =
-            (n && e && w && !s && (isRoad(r - 1, c + 1) || isRoad(r - 1, c - 1)) ? 1 : 0) |
-            (e && n && s && !w && (isRoad(r - 1, c + 1) || isRoad(r + 1, c + 1)) ? 2 : 0) |
-            (s && e && w && !n && (isRoad(r + 1, c + 1) || isRoad(r + 1, c - 1)) ? 4 : 0) |
-            (w && n && s && !e && (isRoad(r - 1, c - 1) || isRoad(r + 1, c - 1)) ? 8 : 0);
-          mesh = engine.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask);
-          engine.mapGroup.add(mesh);
-        } else if (type === TileType.SWAMP && engine.modelFactory.createSwampBlock) {
-          mesh = engine.modelFactory.createSwampBlock(x, z);
-          engine.mapGroup.add(mesh);
-        } else if (type === TileType.OIL_SLICK && engine.modelFactory.createOilSlickBlock) {
-          mesh = engine.modelFactory.createOilSlickBlock(x, z);
-          engine.mapGroup.add(mesh);
         } else if (type === TileType.CRATER && engine.modelFactory.createCraterBlock) {
           mesh = engine.modelFactory.createCraterBlock(x, z);
           engine.mapGroup.add(mesh);
@@ -395,13 +405,20 @@ export class SectorLoaderController {
           hp = 2;
         }
 
+        if (!mesh && surfaceMesh) {
+          mesh = surfaceMesh;
+        }
+
         rowCells.push({
           row: r,
           col: c,
+          surface,
+          object,
           type,
           hp,
           maxHp: hp,
           mesh,
+          surfaceMesh,
           subMeshes,
         });
       }
@@ -418,7 +435,6 @@ export class SectorLoaderController {
         enemyBaseBlock.position.set(x, 0, z);
         engine.mapGroup.add(enemyBaseBlock);
         cell.type = TileType.ENEMY_BASE;
-        engine._spawnerCells = null;
         cell.hp = engine.enemyBaseMaxHp;
         cell.maxHp = engine.enemyBaseMaxHp;
         cell.mesh = enemyBaseBlock;

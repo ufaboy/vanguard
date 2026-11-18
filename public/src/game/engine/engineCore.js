@@ -194,7 +194,6 @@ export class TankGameEngine {
     this.grid = [];
     this.componentWaterEgress = false;
 
-    this._spawnerCells = null;
     this.mapGroup = new THREE.Group();
     this.tileBatcher = new TileBatcher(this.mapGroup);
     this.sceneOccluded = false;

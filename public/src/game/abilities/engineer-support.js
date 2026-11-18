@@ -81,7 +81,6 @@ function fortify(tank, game) {
       brick.group.position.set(pos.x, 0, pos.z);
       game.mapGroup.add(brick.group);
       cell.type = TileType.BRICK;
-      game._spawnerCells = null;
       cell.hp = ENGINEER_SUPPORT.BRICK_HP;
       cell.maxHp = ENGINEER_SUPPORT.BRICK_HP;
       cell.mesh = brick.group;

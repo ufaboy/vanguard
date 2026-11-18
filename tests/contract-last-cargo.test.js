@@ -86,7 +86,18 @@ test('Last Cargo 40x40 map passes inspectMap and satisfies CH1 + CH5 reachabilit
   assert.deepEqual(report.errors, [], `inspectMap errors: ${report.errors.join('; ')}`);
   assert.equal(report.openCells, report.reachableCells);
 
-  const rows = rawMap.layout;
+  const rows = Array.isArray(rawMap.surfaceLayout) && Array.isArray(rawMap.objectLayout)
+    ? rawMap.surfaceLayout.map((sRow, r) => {
+        const oRow = rawMap.objectLayout[r];
+        let out = '';
+        for (let c = 0; c < sRow.length; c++) {
+          const obj = oRow[c];
+          const surf = sRow[c];
+          out += obj !== '.' && obj !== '_' && obj !== ' ' ? obj : (surf === 'G' ? '.' : surf);
+        }
+        return out;
+      })
+    : rawMap.layout;
   assert.equal(rows.length, 40);
   for (const r of rows) assert.equal(r.length, 40);
 

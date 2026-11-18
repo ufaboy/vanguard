@@ -12,7 +12,6 @@ export const NAV_TILE = Object.freeze({
   FOREST: 3,
   WATER: 4,
   ICE: 5,
-  SPAWNER: 6,
   BASE: 7,
   ENEMY_BASE: 8,
   HEDGEHOG: 9,
@@ -29,6 +28,9 @@ export const NAV_TILE = Object.freeze({
   RUBBLE: 20,
   HOUSE_1: 21,
   HOUSE_2: 22,
+  STONE: 23,
+  GRASS: 24,
+  MOUNTAIN: 25,
 });
 
 export function tileTypeAt(grid, row, col) {
@@ -42,9 +44,10 @@ function isPassableTile(type, canCrossWater = false) {
     type === NAV_TILE.EMPTY ||
     type === NAV_TILE.FOREST ||
     type === NAV_TILE.ICE ||
-    type === NAV_TILE.SPAWNER ||
     type === NAV_TILE.SAND ||
     type === NAV_TILE.ROAD ||
+    type === NAV_TILE.STONE ||
+    type === NAV_TILE.GRASS ||
     type === NAV_TILE.BRIDGE ||
     type === NAV_TILE.SWAMP ||
     type === NAV_TILE.OIL_SLICK ||
