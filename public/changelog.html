@@ -78,6 +78,12 @@
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.24.1 // BURNING OIL SPREAD TO FOREST &amp; BUILDING DAMAGE</span>
+            <strong>Burning Oil Slicks Ignite Adjacent Forests &amp; Damage Neighboring Buildings</strong>
+            <p>Updated <code>TerrainDestructionController.updateBurningOil</code> so burning <code>OIL_SLICK</code> tiles ignite orthogonally adjacent <code>FOREST</code> cells after flashover and deal periodic fire damage (4 HP/s) to neighboring <code>HOUSE_1</code> and <code>HOUSE_2</code> buildings.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.24.0 // VOLATILE OIL SLICK INFERNO, IGNITION &amp; MAP DISTRIBUTION</span>
             <strong>3D Burning Oil Slick Inferno, Full Ignition Triggers &amp; Map-Wide Oil Placement</strong>
             <p>Overhauled burning <code>OIL_SLICK</code> visuals with a 3D animated fire-bed, 6 flickering flame tongues, boiling oil rings, and multi-layered fire, spark, and black smoke particles (<code>models.js</code>, <code>fx-system.js</code>, and 3D Codex). Added chain ignition across adjacent oil tiles, ignition from destroyed tanks, thermobaric blasts, burning forests, and tank-hitting shells, fixed per-frame fire DoT screen-shake/audio spam, and placed 290 new <code>OIL_SLICK</code> tiles across all 39 campaign, contract, and survival maps.</p>

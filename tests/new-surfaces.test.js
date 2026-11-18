@@ -194,6 +194,40 @@ test('igniteOilAt ignites OIL_SLICK cells within blast/explosion radius', () => 
   assert.equal(farOil.isBurning, false);
 });
 
+test('burning OIL_SLICK ignites adjacent FOREST and periodically damages adjacent HOUSE_1 and HOUSE_2', () => {
+  const grid = createMockGrid(5, 5);
+  const oil = grid[2][2];
+  const forest = grid[2][1];
+  const house1 = grid[2][3];
+  const house2 = grid[1][2];
+
+  oil.type = TileType.OIL_SLICK;
+  forest.type = TileType.FOREST;
+  house1.type = TileType.HOUSE_1;
+  house1.hp = 25;
+  house1.maxHp = 25;
+  house2.type = TileType.HOUSE_2;
+  house2.hp = 70;
+  house2.maxHp = 70;
+
+  const startedForests = [];
+  const engine = createMockEngine(grid);
+  engine.forestFire = {
+    startBurning(cell) {
+      cell.isBurning = true;
+      startedForests.push(cell);
+    },
+  };
+
+  engine.terrainDestruction.igniteOilSlick(oil);
+  engine.terrainDestruction.updateBurningOil(0.8);
+
+  assert.equal(forest.isBurning, true);
+  assert.equal(startedForests.length, 1);
+  assert.equal(house1.hp, 21);
+  assert.equal(house2.hp, 66);
+});
+
 test('ruptureWaterTower floods 1.5-cell radius to SWAMP and extinguishes fires within 2.5 cells', () => {
   const grid = createMockGrid(7, 7);
   const tower = grid[3][3];

@@ -606,6 +606,7 @@ export class TerrainDestructionController {
     cell.burnTimer = 7.0;
     cell.burnElapsed = 0;
     cell.burnFxCooldown = 0;
+    cell.houseBurnCooldown = 0.7;
     cell.hasSpreadFire = false;
     engine.burningOilCells ||= [];
     if (!engine.burningOilCells.includes(cell)) {
@@ -677,7 +678,7 @@ export class TerrainDestructionController {
 
       engine.modelFactory?.updateOilSlickBurn?.(cell.mesh, true, intensity, cell.burnElapsed);
 
-      // Chain-ignite contiguous adjacent oil slick cells after a brief flashover delay
+      // Chain-ignite contiguous adjacent oil slick and forest cells after a brief flashover delay
       if (!cell.hasSpreadFire && cell.burnElapsed >= 0.32) {
         cell.hasSpreadFire = true;
         const neighbors = [
@@ -687,9 +688,32 @@ export class TerrainDestructionController {
           engine.grid?.[cell.row]?.[cell.col + 1],
         ];
         for (const nb of neighbors) {
-          if (nb && nb.type === TileType.OIL_SLICK && !nb.isBurning) {
+          if (!nb) continue;
+          if (nb.type === TileType.OIL_SLICK && !nb.isBurning) {
             this.igniteOilSlick(nb);
+          } else if (nb.type === TileType.FOREST && !nb.isBurning) {
+            const nbPos = engine.gridToWorld(nb.row, nb.col);
+            engine.forestFire?.startBurning?.(nb, nbPos.x, nbPos.z);
           }
+        }
+      }
+
+      // Periodically damage adjacent HOUSE_1 / HOUSE_2 cells caught in the oil fire
+      cell.houseBurnCooldown = (cell.houseBurnCooldown ?? 0.7) - dt;
+      if (cell.houseBurnCooldown <= 0) {
+        cell.houseBurnCooldown += 1.0;
+        const neighbors = [
+          engine.grid?.[cell.row - 1]?.[cell.col],
+          engine.grid?.[cell.row + 1]?.[cell.col],
+          engine.grid?.[cell.row]?.[cell.col - 1],
+          engine.grid?.[cell.row]?.[cell.col + 1],
+        ];
+        for (const nb of neighbors) {
+          if (!nb || (nb.type !== TileType.HOUSE_1 && nb.type !== TileType.HOUSE_2) || nb.hp <= 0) {
+            continue;
+          }
+          const nbPos = engine.gridToWorld(nb.row, nb.col);
+          engine.damageTileCell?.(nb, 4, nbPos.x, nbPos.z, false);
         }
       }
 
