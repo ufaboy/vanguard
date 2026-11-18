@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { TOUCH_CONTROLS_MODES, isMobileOrTabletDevice, loadPreferences } from '../public/src/app/state.js';
-import { TouchControlsOverlay } from '../public/src/ui/touch-controls.js';
+import { TouchControlsOverlay, isTouchCapable } from '../public/src/ui/touch-controls.js';
 
 function createMockElement() {
   const listeners = new Map();
@@ -89,6 +89,17 @@ test('isMobileOrTabletDevice defaults graphicsQuality to low on Android tablets'
     });
     assert.equal(isMobileOrTabletDevice(), true);
     assert.equal(loadPreferences().graphicsQuality, 'low');
+
+    globalThis.window = { innerWidth: 1400, innerHeight: 960, matchMedia: () => ({ matches: true }) };
+    assert.equal(isMobileOrTabletDevice(), false);
+    assert.equal(isTouchCapable(), false);
+
+    globalThis.window = { innerWidth: 1280, innerHeight: 800, matchMedia: () => ({ matches: false }) };
+    Object.defineProperty(globalThis, 'navigator', {
+      configurable: true,
+      value: { userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', maxTouchPoints: 10 },
+    });
+    assert.equal(isTouchCapable(), false);
   } finally {
     globalThis.window = origWindow;
     if (origNavigator !== undefined) {

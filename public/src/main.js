@@ -39,7 +39,11 @@ import { renderContractHud } from './ui/contract-hud.js';
 import { renderBattlefieldHud } from './ui/battle-hud.js';
 import { renderBattlefieldLoaderHtml, renderStatusModal } from './ui/status-modal.js';
 import { setupDelegatedEvents } from './ui/battle-events.js';
-import { TouchControlsOverlay, isTouchCapable } from './ui/touch-controls.js';
+import {
+  MAX_TABLET_VIEWPORT_WIDTH,
+  TouchControlsOverlay,
+  isTouchCapable,
+} from './ui/touch-controls.js';
 import {
   evaluateBattleAchievements,
   recordUnlockedAchievements,
@@ -229,8 +233,24 @@ function initApp() {
   window.addEventListener(
     'pointerdown',
     (e) => {
-      if (e.pointerType === 'touch' && !touchDetected) {
+      const withinTabletWidth =
+        !Number.isFinite(window.innerWidth) || window.innerWidth <= MAX_TABLET_VIEWPORT_WIDTH;
+      if (e.pointerType === 'touch' && withinTabletWidth && !touchDetected) {
         touchDetected = true;
+        renderUI();
+      } else if (e.pointerType === 'mouse' && touchDetected) {
+        touchDetected = false;
+        renderUI();
+      }
+    },
+    { passive: true }
+  );
+  window.addEventListener(
+    'resize',
+    () => {
+      const nextTouch = isTouchCapable();
+      if (nextTouch !== touchDetected) {
+        touchDetected = nextTouch;
         renderUI();
       }
     },

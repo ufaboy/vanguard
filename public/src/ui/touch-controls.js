@@ -1,12 +1,20 @@
 /** On-screen virtual joystick and combat action buttons for landscape tablet play. */
 
+export const MAX_TABLET_VIEWPORT_WIDTH = 1366;
+
 export function isTouchCapable() {
   if (typeof window === 'undefined') return false;
-  return (
+  const width = Number(window.innerWidth);
+  if (Number.isFinite(width) && width > MAX_TABLET_VIEWPORT_WIDTH) {
+    return false;
+  }
+  const coarse = Boolean(window.matchMedia?.('(pointer: coarse)')?.matches);
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
+  const mobileUa = /Android|iPad|iPhone|iPod|Tablet/i.test(ua);
+  const hasTouch =
     'ontouchstart' in window ||
-    (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ||
-    Boolean(window.matchMedia?.('(pointer: coarse)')?.matches)
-  );
+    (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+  return mobileUa || (coarse && hasTouch);
 }
 
 const JOYSTICK_MAX_RADIUS = 42;

@@ -45,6 +45,8 @@ export function loadUpgrades() {
 
 export function isMobileOrTabletDevice() {
   if (typeof window === 'undefined') return false;
+  const width = Number(window.innerWidth);
+  if (Number.isFinite(width) && width > 1366) return false;
   const coarse = Boolean(window.matchMedia?.('(pointer: coarse)')?.matches);
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent || '' : '';
   const mobileUa = /Android|iPad|iPhone|iPod|Tablet/i.test(ua);

@@ -78,6 +78,12 @@
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.23.8 // TABLET TOUCH CONTROLS AUTO-DETECTION REFINEMENT</span>
+            <strong>Prevent Tablet Touch Controls from Auto-Activating on Desktop Resolutions &amp; Mouse Input</strong>
+            <p>Refined <code>isTouchCapable()</code> and <code>isMobileOrTabletDevice()</code> to exclude desktop viewports wider than 1366px and desktop touch/stylus laptops with a fine primary pointer, and updated <code>main.js</code> to sync touch controls on viewport resize and hide them on mouse interaction in <code>auto</code> mode.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.23.7 // PRODUCTION HOSTNAME GATE FOR GTM &amp; ADSENSE</span>
             <strong>Gate Google Tag Manager &amp; AdSense Script Loading to Production Domain Only</strong>
             <p>Restricted Google Tag Manager (<code>gtm.js</code>) and Google AdSense (<code>adsbygoogle.js</code>) script loading across all HTML pages strictly to the production hostname (<code>battletank.online</code>), preventing analytics and ad requests on preview deployments and localhost, and simplified the Itch.io build script in <code>scripts/build-itch.mjs</code>.</p>
