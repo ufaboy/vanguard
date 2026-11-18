@@ -526,3 +526,58 @@ test('catastrophic player destruction pops off the 3D turret, bounces it, and tr
   assert.equal(engine.playerDeathState.secondaryBlast2, true);
   assert.ok(Math.abs(turretGroup.position.y - 0.18) < 1e-6);
 });
+
+test('ForestFireController destroys an enemy whose HP reaches zero in burning forest instead of leaving an immortal frozen wreck on sand', () => {
+  const cell = { row: 5, col: 5, type: TileType.FOREST, isBurning: true, mesh: null };
+  const enemy = {
+    id: 1,
+    enemyClass: 'STANDARD',
+    name: 'Standard',
+    isBoss: false,
+    hp: 0.05,
+    maxHp: 20,
+    x: 0,
+    z: 0,
+    rig: { root: {} },
+  };
+
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    grid: Array.from({ length: 10 }, () => Array.from({ length: 10 }, () => ({ type: TileType.EMPTY }))),
+    enemies: [enemy],
+    burningForests: [{ cell, x: 0, z: 0, timer: 0.02, maxTimer: 10.0 }],
+    playerX: 50,
+    playerZ: 50,
+    kills: 0,
+    screenShake: 0,
+    vanguardRemainingToSpawn: 0,
+    bossSpawned: true,
+    enemyBaseAlive: true,
+    activeMapRules: { victoryOnEnemyBaseDestroyed: true, spawnSectorBossOnClear: false },
+    priorityTargetId: null,
+    sensorContacts: new Map(),
+    entityGroup: { remove() {} },
+    mapGroup: { add() {}, remove() {} },
+    modelFactory: { createSandBlock: () => ({}) },
+    playerSave: { credits: 0 },
+    saveRepo: { savePlayerSave() {} },
+    fx: {
+      flameJet() {},
+      point() {},
+      flash() {},
+      tankDestroyed() {},
+      blockDestroyed() {},
+    },
+    worldToGrid: () => ({ row: 5, col: 5 }),
+    clearInfernoDashBeam() {},
+    syncCampaignCredits() {},
+    setStatusBanner() {},
+    checkAndIgniteForestOnEnemyKill() {},
+    saveProgress() {},
+  });
+
+  engine.forestFire.update(0.05, 1.0);
+
+  assert.equal(cell.type, TileType.SAND, 'Burned-out forest cell turns into SAND');
+  assert.equal(engine.enemies.length, 0, 'Enemy killed by burning forest must be removed from engine.enemies');
+  assert.equal(engine.kills, 1, 'Enemy kill should be recorded');
+});

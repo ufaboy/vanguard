@@ -813,7 +813,8 @@ export class EnemyCombatController {
 
   damageEnemy(enemy, dmg, hitMeta = null) {
     const { engine } = this;
-    if (!enemy || enemy.hp <= DURABILITY.ZERO_HP) return;
+    if (!enemy) return;
+    if (enemy.hp <= DURABILITY.ZERO_HP && !engine.enemies.includes(enemy)) return;
     if (enemy.isBoss && enemy.phaseShieldTimer > 0) {
       sound.playSteelHit({ x: enemy.x, z: enemy.z });
       engine.spawnSparks?.(enemy.x, 1.0, enemy.z, 0x38bdf8, 8);

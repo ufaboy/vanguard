@@ -142,13 +142,13 @@ export class ForestFireController {
           e.spawnSparks(e.playerX, 0.8, e.playerZ, 0xff7700, 3);
         }
       }
-      for (const enemy of e.enemies) {
+      const targets = [...e.enemies];
+      for (let ei = targets.length - 1; ei >= 0; ei--) {
+        const enemy = targets[ei];
+        if (!enemy || enemy.hp <= 0) continue;
         const distE = Math.hypot(enemy.x - bf.x, enemy.z - bf.z);
         if (distE < 1.15) {
-          enemy.hp -= 2.5 * dt;
-          if (enemy.hp <= 0.0001) {
-            e.damageEnemy(enemy, 1);
-          }
+          e.damageEnemy(enemy, 2.5 * dt);
         }
       }
 

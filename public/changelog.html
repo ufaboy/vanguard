@@ -59,6 +59,12 @@
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.23.3 // BURNING FOREST ENEMY KILL FIX</span>
+            <strong>Fix Enemy Tank Freezing &amp; Becoming Invulnerable When Killed by Burning Forest</strong>
+            <p>Fixed a bug in <code>ForestFireController.update</code> where direct subtraction from <code>enemy.hp</code> before calling <code>damageEnemy</code> caused enemies killed by burning forest to hit the <code>enemy.hp &lt;= DURABILITY.ZERO_HP</code> early return in <code>damageEnemy</code>, leaving an immobile, invulnerable wreck on the burned-out <code>SAND</code> tile.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.23.2 // ENEMY HQ SIEGE RESUPPLY AIR DROP</span>
             <strong>Automatic Air Drop Near Enemy HQ After All Enemy Tanks Are Cleared</strong>
             <p>On maps with a fortified Enemy Base (<code>ENEMY_BASE</code>), eliminating all enemy tanks while the Enemy HQ is still standing now automatically dispatches a parachute resupply Air Drop onto a passable cell 2–6 tiles from the Enemy HQ so the player can finish demolishing the stronghold without driving back to the Allied Base.</p>
