@@ -946,6 +946,7 @@ export class EnemyCombatController {
                 : `${unitName.toUpperCase()} DESTROYED! ELIMINATE REMAINING ESCORT!`;
             engine.setStatusBanner(msg, 3.2);
           }
+          engine.powerupsController?.checkEnemyBaseClearAirDrop?.();
           engine.saveProgress();
         }
       }

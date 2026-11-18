@@ -172,3 +172,71 @@ test('STRIKER / enemy missile detonates and deals 4 damage when colliding with a
   assert.equal(engine.projectiles.length, 0, 'Missile should be consumed on impact');
 });
 
+test('Spawns an Air Drop near the Enemy HQ when all enemy tanks are destroyed while Enemy HQ is still alive', () => {
+  const grid = Array.from({ length: 40 }, (_, row) =>
+    Array.from({ length: 40 }, (__, col) => ({
+      row,
+      col,
+      type: TileType.EMPTY,
+      hp: 0,
+      maxHp: 0,
+    }))
+  );
+  const ebCell = { row: 5, col: 20 };
+  grid[ebCell.row][ebCell.col] = { row: ebCell.row, col: ebCell.col, type: TileType.ENEMY_BASE, hp: 48, maxHp: 48 };
+  // Surround enemy base with 1-cell concrete perimeter
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      if (dr === 0 && dc === 0) continue;
+      grid[ebCell.row + dr][ebCell.col + dc].type = TileType.CONCRETE;
+    }
+  }
+
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    grid,
+    enemies: [{ id: 1 }],
+    vanguardRemainingToSpawn: 0,
+    enemyBaseAlive: true,
+    _enemyBaseCell: ebCell,
+    activeMapRules: {
+      hasEnemyFortifiedBase: true,
+      enemyBaseCell: ebCell,
+      spawnSectorBossOnClear: false,
+    },
+    airDrops: [],
+    airDropQueue: [],
+    entityGroup: { add() {}, remove() {} },
+    modelFactory: {
+      createAirDropRig: () => ({
+        root: { position: { set() {} } },
+        crateGroup: { position: { y: 0 }, rotation: { z: 0 } },
+        landingRing: { scale: { setScalar() {} } },
+        chuteGroup: { visible: true },
+      }),
+    },
+    gridToWorld: (r, c) => ({ x: (c - 19.5) * 2, z: (r - 19.5) * 2 }),
+    setStatusBanner() {},
+  });
+
+  // While 1 enemy tank is still alive, no air drop is triggered
+  engine.powerupsController.updateAirDrops(0.016, 1.0);
+  assert.equal(engine.airDrops.length, 0);
+
+  // Once all enemy tanks are eliminated and Enemy HQ is still alive, an Air Drop spawns near Enemy HQ
+  engine.enemies = [];
+  engine.powerupsController.updateAirDrops(0.016, 1.1);
+  assert.equal(engine.airDrops.length, 1);
+
+  const drop = engine.airDrops[0];
+  assert.ok(drop.config.spawnCell, 'Air Drop should have a resolved spawnCell near Enemy HQ');
+  const distCells = Math.hypot(
+    drop.config.spawnCell.row - ebCell.row,
+    drop.config.spawnCell.col - ebCell.col
+  );
+  assert.ok(distCells >= 2.0 && distCells <= 6.0, `Expected Air Drop 2..6 cells from Enemy HQ, got ${distCells}`);
+
+  // Does not spawn duplicate Air Drops on subsequent frames
+  engine.powerupsController.updateAirDrops(0.016, 1.2);
+  assert.equal(engine.airDrops.length, 1);
+});
+

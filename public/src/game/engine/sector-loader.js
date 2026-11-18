@@ -629,6 +629,7 @@ export class SectorLoaderController {
       ? sector.airDrop.map((entry) => ({ ...entry, triggered: false }))
       : [];
     engine.airDropElapsed = 0;
+    engine.enemyBaseClearAirDropTriggered = false;
     engine.spawnPoolCursor = 0;
     engine.spawnerRoundRobinIdx = 0;
     engine.bossSpawned = false;

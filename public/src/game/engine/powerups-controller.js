@@ -147,11 +147,71 @@ export class PowerupsController {
   }
 
   isAirDropLandingCell(cell) {
-    return [TileType.EMPTY, TileType.ICE, TileType.ROAD, TileType.SAND].includes(cell?.type);
+    return [TileType.EMPTY, TileType.ICE, TileType.ROAD, TileType.SAND, TileType.RUBBLE, TileType.CRATER].includes(cell?.type);
+  }
+
+  /** Finds a passable landing cell near the Enemy HQ (2–6 cells away, preferring the approach side). */
+  findAirDropCellNearEnemyBase() {
+    const { engine } = this;
+    const ebCell = engine._enemyBaseCell || engine.activeMapRules?.enemyBaseCell;
+    if (!ebCell || !engine.grid?.length) return null;
+
+    const size = engine.grid.length || GRID_SIZE;
+    const mid = (size - 1) / 2;
+    let bestInBand = null;
+    let bestBandScore = Infinity;
+    let bestFallback = null;
+    let bestFallbackDist = Infinity;
+
+    for (let r = 1; r < size - 1; r++) {
+      for (let c = 1; c < size - 1; c++) {
+        const cell = engine.grid[r]?.[c];
+        if (!cell || !this.isAirDropLandingCell(cell) || cell.defenseTurret?.alive) continue;
+        const dist = Math.hypot(r - ebCell.row, c - ebCell.col);
+        if (dist < 1.5) continue;
+        if (dist >= 2.0 && dist <= 6.0) {
+          const centerBias = (Math.abs(r - mid) + Math.abs(c - mid)) * 0.08;
+          const score = Math.abs(dist - 3.2) + centerBias;
+          if (score < bestBandScore) {
+            bestBandScore = score;
+            bestInBand = { row: r, col: c };
+          }
+        } else if (dist < bestFallbackDist) {
+          bestFallbackDist = dist;
+          bestFallback = { row: r, col: c };
+        }
+      }
+    }
+    return bestInBand || bestFallback;
+  }
+
+  /**
+   * On maps with an Enemy HQ, spawns a resupply Air Drop near the Enemy HQ once all enemy
+   * tanks are eliminated while the Enemy HQ is still standing.
+   */
+  checkEnemyBaseClearAirDrop() {
+    const { engine } = this;
+    if (engine.enemyBaseClearAirDropTriggered) return null;
+    if (!engine.enemyBaseAlive) return null;
+    const hasEnemyBase = Boolean(engine._enemyBaseCell || engine.activeMapRules?.hasEnemyFortifiedBase);
+    if (!hasEnemyBase) return null;
+    if ((engine.enemies?.length || 0) > 0) return null;
+    if ((engine.vanguardRemainingToSpawn || 0) > 0) return null;
+    if (engine.activeMapRules?.spawnSectorBossOnClear && !engine.bossSpawned) return null;
+
+    engine.enemyBaseClearAirDropTriggered = true;
+    const spawnCell = this.findAirDropCellNearEnemyBase();
+    return this.spawnAirDrop({
+      shells: 50,
+      aps: 12,
+      missiles: 6,
+      spawnCell,
+    });
   }
 
   updateAirDrops(dt, elapsed) {
     const { engine } = this;
+    this.checkEnemyBaseClearAirDrop();
     const queue = engine.airDropQueue;
     if ((!queue || queue.length === 0) && (!engine.airDrops || engine.airDrops.length === 0)) return;
 
