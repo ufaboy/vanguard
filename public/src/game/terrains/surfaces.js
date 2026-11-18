@@ -642,8 +642,8 @@ export const SURFACE_CONFIGS = Object.freeze({
     surfaceType: SURFACE_TYPES.HOUSE_1,
     tileId: TileType.HOUSE_1,
     code: 'TILE-HOUSE-1',
-    name: '1-Story Residential House',
-    role: 'Destructible Urban Building (5 Stages)',
+    name: '1-Story Modular Building',
+    role: '12 Styles (8 Residential · 4 Industrial/Office) · 5 Stages',
     accentHex: '#D97706',
     destructible: true,
     maxHP: 25,
@@ -651,10 +651,12 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByHover: false,
     blocksProjectiles: true,
     description:
-      'Single-story urban house with pitched roof and 5 destruction stages. First Cannon Mk1 hit (or 5 Autocannon hits) strips the facade; collapses into persistent RUBBLE.',
+      'Single-story multi-tile modular building with 12 distinct architectural styles (8 residential pitched-roof houses + 4 windowless corrugated warehouses, sawtooth brick factories, barrel-arch supply depots, and windowed site offices) and 5 progressive destruction stages. Direct cannon fire strips the facade and roof down to exposed rafters/trusses before collapsing into persistent RUBBLE.',
     specs: Object.freeze([
-      Object.freeze({ label: 'DURABILITY', value: '25 HP (5 stages)' }),
-      Object.freeze({ label: 'AFTERMATH', value: 'Collapses into RUBBLE' }),
+      Object.freeze({ label: 'DURABILITY', value: '25 HP per cell (5 stages)' }),
+      Object.freeze({ label: 'STYLES (ITER 1 / 2)', value: '8 Residential · 4 Industrial/Office' }),
+      Object.freeze({ label: 'BALLISTICS', value: 'Blocks shells; player ATGMs loft over' }),
+      Object.freeze({ label: 'AFTERMATH', value: 'Collapses into persistent RUBBLE' }),
     ]),
   }),
 
@@ -663,8 +665,8 @@ export const SURFACE_CONFIGS = Object.freeze({
     surfaceType: SURFACE_TYPES.HOUSE_2,
     tileId: TileType.HOUSE_2,
     code: 'TILE-HOUSE-2',
-    name: '2-Story Concrete Building',
-    role: 'Heavy Urban Building (7 Stages)',
+    name: '2-Story Modular Building',
+    role: '12 Styles (8 Residential · 4 Industrial/Office) · 7 Stages',
     accentHex: '#64748B',
     destructible: true,
     maxHP: 70,
@@ -672,10 +674,12 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByHover: false,
     blocksProjectiles: true,
     description:
-      'Two-story reinforced concrete building with 7 destruction stages. Collapses into persistent RUBBLE.',
+      'Two-story reinforced concrete, industrial, warehouse, and office building with 12 distinct styles (8 urban residential blocks + 4 glass-curtain offices, windowless heavy industrial plants, brutalist administrative buildings, and windowless high-bay logistics hubs) and 7 progressive destruction stages. Collapses into persistent RUBBLE.',
     specs: Object.freeze([
-      Object.freeze({ label: 'DURABILITY', value: '70 HP (7 stages)' }),
-      Object.freeze({ label: 'AFTERMATH', value: 'Collapses into RUBBLE' }),
+      Object.freeze({ label: 'DURABILITY', value: '70 HP per cell (7 stages)' }),
+      Object.freeze({ label: 'STYLES (ITER 1 / 2)', value: '8 Residential · 4 Industrial/Office' }),
+      Object.freeze({ label: 'BALLISTICS', value: 'Blocks shells & missiles while 2F stands' }),
+      Object.freeze({ label: 'AFTERMATH', value: 'Collapses into persistent RUBBLE' }),
     ]),
   }),
 });
@@ -684,6 +688,9 @@ export const SURFACE_CONFIGS = Object.freeze({
 export const SURFACE_CATALOG = Object.freeze([
   SURFACE_CONFIGS[SURFACE_TYPES.BRICK],
   SURFACE_CONFIGS[SURFACE_TYPES.CONCRETE],
+  SURFACE_CONFIGS[SURFACE_TYPES.HOUSE_1],
+  SURFACE_CONFIGS[SURFACE_TYPES.HOUSE_2],
+  SURFACE_CONFIGS[SURFACE_TYPES.RUBBLE],
   SURFACE_CONFIGS[SURFACE_TYPES.HEDGEHOG],
   SURFACE_CONFIGS[SURFACE_TYPES.BARREL],
   SURFACE_CONFIGS[SURFACE_TYPES.WATER_TOWER],

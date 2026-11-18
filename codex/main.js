@@ -135,7 +135,27 @@ const state = {
   codexSelectedId: initialItem.id,
   codexAutoRotate: true,
   codexPreviewUpgrades: { ...host.codexPreviewUpgrades },
+  codexBuildingStyle: 0,
+  codexBuildingStage: initialItem.surfaceType === 'HOUSE_2' ? 7 : 5,
 };
+
+host.codexBuildingStyle = state.codexBuildingStyle;
+host.codexBuildingStage = state.codexBuildingStage;
+host.onBuildingPreviewChange = (b) => {
+  state.codexBuildingStyle = b.style;
+  state.codexBuildingStage = b.stage;
+  renderUi();
+};
+
+const refreshCurrentSurfaceIfReady = () => {
+  const cur = getSelectedItem();
+  if (cur?.category === 'SURFACES') {
+    stage.loadShowcaseItem(cur);
+  }
+};
+modelFactory.onBuildingModelsReady = refreshCurrentSurfaceIfReady;
+modelFactory.onBrickModelsReady = refreshCurrentSurfaceIfReady;
+modelFactory.onConcreteModelsReady = refreshCurrentSurfaceIfReady;
 
 function getSelectedItem() {
   return (
@@ -190,13 +210,27 @@ codexModal.addEventListener('click', (e) => {
     if (item) {
       state.codexCategory = item.category;
       state.codexSelectedId = item.id;
+      if (item.surfaceType === 'HOUSE_1' || item.surfaceType === 'HOUSE_2') {
+        state.codexBuildingStage = item.surfaceType === 'HOUSE_2' ? 7 : 5;
+        host.codexBuildingStage = state.codexBuildingStage;
+      }
       stage.loadShowcaseItem(item);
       renderUi();
     }
+  } else if (action === 'codex-set-building-style') {
+    const style = Number(btn.dataset.style) || 0;
+    state.codexBuildingStyle = style;
+    stage.setBuildingPreview({ style });
+    renderUi();
+  } else if (action === 'codex-set-building-stage') {
+    const stageVal = Number(btn.dataset.stage);
+    state.codexBuildingStage = stageVal;
+    stage.setBuildingPreview({ stage: stageVal });
+    renderUi();
   } else if (action === 'codex-set-upgrade') {
     const track = btn.dataset.track;
-    const rawVal = btn.dataset.level;
-    const val = rawVal === 'true' ? true : rawVal === 'false' ? false : Number(rawVal);
+    const rawVal = btn.dataset.val ?? btn.dataset.level;
+    const val = rawVal === 'true' ? true : rawVal === 'false' ? false : track === 'aps' || track === 'missile' ? !state.codexPreviewUpgrades[track] : Number(rawVal);
     state.codexPreviewUpgrades = { ...state.codexPreviewUpgrades, [track]: val };
     stage.updatePreviewUpgrades(state.codexPreviewUpgrades);
     renderUi();
@@ -213,6 +247,13 @@ codexModal.addEventListener('click', (e) => {
     host.codexAutoRotate = state.codexAutoRotate;
     renderUi();
   } else if (action === 'codex-trigger-demo') {
+    stage.triggerDemo();
+  }
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && !e.target.closest('button, input, textarea')) {
+    e.preventDefault();
     stage.triggerDemo();
   }
 });

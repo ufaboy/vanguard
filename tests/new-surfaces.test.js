@@ -86,7 +86,7 @@ function createMockEngine(grid) {
 }
 
 test('New surface types exist in TileType, SURFACE_CONFIGS, and SURFACE_CATALOG', () => {
-  for (const key of ['ROAD', 'SWAMP', 'OIL_SLICK', 'CRATER', 'WATER_TOWER']) {
+  for (const key of ['ROAD', 'SWAMP', 'OIL_SLICK', 'CRATER', 'WATER_TOWER', 'HOUSE_1', 'HOUSE_2', 'RUBBLE']) {
     assert.ok(TileType[key] !== undefined, `TileType.${key} should be defined`);
     assert.equal(NAV_TILE[key], TileType[key], `NAV_TILE.${key} must mirror TileType.${key}`);
     const cfg = SURFACE_CONFIGS[SURFACE_TYPES[key]];

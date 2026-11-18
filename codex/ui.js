@@ -183,6 +183,69 @@ export function renderCodex(state, selectedItem) {
     `;
   }
 
+  if (selectedItem.surfaceType === 'HOUSE_1' || selectedItem.surfaceType === 'HOUSE_2') {
+    const isH2 = selectedItem.surfaceType === 'HOUSE_2';
+    const maxStage = isH2 ? 7 : 5;
+    const curStyle = Number.isInteger(state.codexBuildingStyle) ? state.codexBuildingStyle : 0;
+    const curStage = Number.isInteger(state.codexBuildingStage)
+      ? Math.max(0, Math.min(maxStage, state.codexBuildingStage))
+      : maxStage;
+
+    const iter1Btns = Array.from({ length: 8 }, (_, idx) => `
+      <button
+        data-action="codex-set-building-style"
+        data-style="${idx}"
+        class="codex-tier-btn ${curStyle === idx ? 'active' : ''}"
+        title="Residential Style #${idx + 1}"
+      >
+        R${idx + 1}
+      </button>
+    `).join('');
+
+    const iter2Labels = isH2
+      ? ['I9 OFFICE', 'I10 PLANT', 'I11 ADMIN', 'I12 DEPOT']
+      : ['I9 WAREHOUSE', 'I10 FACTORY', 'I11 DEPOT', 'I12 OFFICE'];
+    const iter2Btns = [8, 9, 10, 11].map((idx, i) => `
+      <button
+        data-action="codex-set-building-style"
+        data-style="${idx}"
+        class="codex-tier-btn py-1 px-1.5 ${curStyle === idx ? 'active' : ''}"
+      >
+        ${iter2Labels[i]}
+      </button>
+    `).join('');
+
+    const stageBtns = Array.from({ length: maxStage + 1 }, (_, i) => maxStage - i)
+      .map((st) => `
+        <button
+          data-action="codex-set-building-stage"
+          data-stage="${st}"
+          class="codex-tier-btn ${curStage === st ? 'active' : ''}"
+          title="${st === maxStage ? 'Intact' : st === 0 ? 'Collapsed Rubble' : `Damage Stage ${st}`}"
+        >
+          ${st === 0 ? 'RUBBLE' : `${st}/${maxStage}`}
+        </button>
+      `)
+      .join('');
+
+    configuratorHtml = `
+      <div class="mt-3 pt-3 border-t border-slate-800">
+        <div class="font-mono text-[10px] uppercase tracking-wider text-amber-400 font-bold mb-1.5">
+          ITERATION 1 — RESIDENTIAL STYLES (1–8):
+        </div>
+        <div class="grid grid-cols-8 gap-1 mb-2.5">${iter1Btns}</div>
+        <div class="font-mono text-[10px] uppercase tracking-wider text-teal-400 font-bold mb-1.5">
+          ITERATION 2 — INDUSTRIAL / WAREHOUSE / OFFICE (9–12):
+        </div>
+        <div class="grid grid-cols-2 gap-1 mb-2.5">${iter2Btns}</div>
+        <div class="font-mono text-[10px] uppercase tracking-wider text-slate-300 font-bold mb-1.5">
+          DESTRUCTION STAGE (OR PRESS SPACE TO BLAST):
+        </div>
+        <div class="flex flex-wrap gap-1">${stageBtns}</div>
+      </div>
+    `;
+  }
+
   if (selectedItem.category === 'POWERUPS') {
     const allPowerupItems = CODEX_ITEMS.filter(
       (i) => i.category === 'POWERUPS'

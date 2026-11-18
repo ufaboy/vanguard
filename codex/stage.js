@@ -157,6 +157,7 @@ export class CodexStage {
     e._codexFx?.clear();
     e.codexMines = null;
     e.codexMissile = null;
+    e.codexBuilding = null;
     e.codexArcPrev = 0;
     e.codexTankRig = null;
     e.codexSecondaryRig = null;
@@ -191,6 +192,34 @@ export class CodexStage {
         if (rig.hpBarFill) rig.hpBarFill.visible = false;
         e.codexStageGroup.add(rig.root);
         e.codexTankRig = rig;
+        return;
+      }
+      if (item.surfaceType === 'HOUSE_1' || item.surfaceType === 'HOUSE_2') {
+        const kind = item.surfaceType === 'HOUSE_2' ? 'house2' : 'house1';
+        const maxStage = kind === 'house2' ? 7 : 5;
+        const maxHp = kind === 'house2' ? 70 : 25;
+        const style = Number.isInteger(e.codexBuildingStyle) ? e.codexBuildingStyle : 0;
+        const stage = Number.isInteger(e.codexBuildingStage)
+          ? Math.max(0, Math.min(maxStage, e.codexBuildingStage))
+          : maxStage;
+        e.codexBuildingStyle = style;
+        e.codexBuildingStage = stage;
+        this.rebuildBuildingShowcase(kind, style, stage, maxStage, maxHp);
+        return;
+      }
+      if (item.surfaceType === 'RUBBLE') {
+        const rubbleOffsets = [
+          { x: -1.0, z: -1.0, rot: 0, kind: 'house1' },
+          { x: 1.0, z: -1.0, rot: Math.PI / 2, kind: 'house2' },
+          { x: -1.0, z: 1.0, rot: -Math.PI / 2, kind: 'house2' },
+          { x: 1.0, z: 1.0, rot: Math.PI, kind: 'house1' },
+        ];
+        for (const r of rubbleOffsets) {
+          const rubble = e.modelFactory.createRubbleBlock(r.kind);
+          rubble.position.set(r.x, 0, r.z);
+          rubble.rotation.y = r.rot;
+          e.codexStageGroup.add(rubble);
+        }
         return;
       }
       const offsets = [
@@ -455,10 +484,71 @@ export class CodexStage {
     }
   }
 
+  rebuildBuildingShowcase(kind, style, stage, maxStage, maxHp) {
+    const e = this.engine;
+    e.clearGroup(e.codexStageGroup);
+    const corners = [
+      { x: -0.95, z: -0.95, yaw: Math.PI },
+      { x: 0.95, z: -0.95, yaw: Math.PI / 2 },
+      { x: 0.95, z: 0.95, yaw: 0 },
+      { x: -0.95, z: 0.95, yaw: -Math.PI / 2 },
+    ];
+    const hp = stage >= maxStage
+      ? maxHp
+      : stage <= 0
+        ? 0
+        : Math.max(1, Math.round((stage / (maxStage - 1)) * (maxHp - 1)));
+    const root = new THREE.Group();
+    root.scale.setScalar(0.95);
+    for (const c of corners) {
+      if (stage <= 0) {
+        const rubble = e.modelFactory.createRubbleBlock(kind);
+        rubble.position.set(c.x, 0, c.z);
+        rubble.rotation.y = c.yaw;
+        root.add(rubble);
+      } else {
+        const built = e.modelFactory.createBuildingBlock(kind, 'corner', c.yaw, hp, maxHp, style);
+        built.group.position.set(c.x, 0, c.z);
+        root.add(built.group);
+      }
+    }
+    e.codexStageGroup.add(root);
+    e.codexBuilding = { kind, style, stage, maxStage, maxHp };
+  }
+
+  setBuildingPreview({ style, stage } = {}) {
+    const e = this.engine;
+    const b = e.codexBuilding;
+    if (!b) return;
+    if (Number.isInteger(style)) {
+      b.style = ((style % 12) + 12) % 12;
+      e.codexBuildingStyle = b.style;
+    }
+    if (Number.isInteger(stage)) {
+      b.stage = Math.max(0, Math.min(b.maxStage, stage));
+      e.codexBuildingStage = b.stage;
+    }
+    this.rebuildBuildingShowcase(b.kind, b.style, b.stage, b.maxStage, b.maxHp);
+  }
+
   triggerDemo() {
     const e = this.engine;
     if (!e.codexOpen || !e.codexItem) return;
     e.codexDemoTimer = 0.01;
+    if (e.codexBuilding && (e.codexItem.surfaceType === 'HOUSE_1' || e.codexItem.surfaceType === 'HOUSE_2')) {
+      const b = e.codexBuilding;
+      const nextStage = b.stage <= 0 ? b.maxStage : b.stage - 1;
+      this.setBuildingPreview({ stage: nextStage });
+      if (nextStage === 0) {
+        sound.playExplosion(1.1);
+        e.codexFx.explosion(0, 0.35, 0, { scale: 1.15, scorchLife: 2.5 });
+      } else {
+        sound.playBrickHit({ x: 0, z: 0 });
+        e.codexFx.masonryHit(0, 1.0, 0, { concrete: b.kind === 'house2', heavy: true });
+      }
+      e.onBuildingPreviewChange?.(b);
+      return;
+    }
     if (e.codexItem.effectType === 'AIR_DROP' && e.codexAirDrop) {
       e.codexAirDrop.altitude = 6.5;
       e.codexAirDrop.landed = false;
