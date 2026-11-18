@@ -43,6 +43,46 @@ if (!isPreview) {
   }
 }
 
+/** Date (YYYY-MM-DD) of the last commit that touched `relPath`, or null if git has no record. */
+function lastCommitDate(relPath) {
+  const res = spawnSync('git', ['log', '-1', '--format=%cs', '--', relPath], { encoding: 'utf8', env });
+  const date = res.status === 0 ? res.stdout.trim() : '';
+  return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
+}
+
+/** Maps a sitemap URL to the HTML file in public/ that serves it. */
+function sitemapUrlToFile(loc) {
+  const pathname = new URL(loc).pathname.replace(/\/$/, '');
+  return pathname ? `public${pathname}.html` : 'public/index.html';
+}
+
+/**
+ * Rewrites the staged copy so search engines see fresh metadata:
+ * each sitemap <lastmod> becomes the last commit date of its page, and the
+ * home page JSON-LD softwareVersion follows package.json.
+ */
+function refreshSeoMetadata(dir) {
+  const sitemapPath = path.join(dir, 'sitemap.xml');
+  if (fs.existsSync(sitemapPath)) {
+    const xml = fs.readFileSync(sitemapPath, 'utf8').replace(
+      /(<loc>([^<]+)<\/loc>\s*<lastmod>)[^<]*(<\/lastmod>)/g,
+      (match, head, loc, tail) => {
+        const date = lastCommitDate(sitemapUrlToFile(loc));
+        return date ? `${head}${date}${tail}` : match;
+      },
+    );
+    fs.writeFileSync(sitemapPath, xml, 'utf8');
+  }
+
+  const { version } = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
+  const homePath = path.join(dir, 'index.html');
+  if (version && fs.existsSync(homePath)) {
+    const html = fs.readFileSync(homePath, 'utf8')
+      .replace(/("softwareVersion":\s*")[^"]*(")/, `$1${version}$2`);
+    fs.writeFileSync(homePath, html, 'utf8');
+  }
+}
+
 runCheck('npm', ['run', 'lint'], 'lint');
 runCheck('npm', ['test'], 'tests');
 
@@ -51,6 +91,7 @@ const stagingDir = fs.mkdtempSync(path.join(os.tmpdir(), 'battle-tank-deploy-'))
 let exitCode = 1;
 try {
   fs.cpSync(publicDir, stagingDir, { recursive: true });
+  refreshSeoMetadata(stagingDir);
 
   const args = [
     'wrangler',
