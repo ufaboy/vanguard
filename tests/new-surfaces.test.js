@@ -13,6 +13,7 @@ import {
   isBossHardSolid,
 } from '../public/src/sim/behavior/navgrid.js';
 import { TerrainDestructionController } from '../public/src/game/engine/terrain-destruction.js';
+import { ForestFireController } from '../public/src/game/terrains/forest-fire.js';
 import { GameStatus } from '../public/src/game/types.js';
 import { TILE_SIZE } from '../public/src/game/levels.js';
 
@@ -226,6 +227,40 @@ test('burning OIL_SLICK ignites adjacent FOREST and periodically damages adjacen
   assert.equal(startedForests.length, 1);
   assert.equal(house1.hp, 21);
   assert.equal(house2.hp, 66);
+});
+
+test('burning FOREST spreads to adjacent FOREST and OIL_SLICK and damages adjacent HOUSE_1', () => {
+  const grid = createMockGrid(5, 5);
+  const forestA = grid[2][2];
+  const forestB = grid[2][1];
+  const oil = grid[2][3];
+  const house = grid[1][2];
+
+  forestA.type = TileType.FOREST;
+  forestB.type = TileType.FOREST;
+  oil.type = TileType.OIL_SLICK;
+  house.type = TileType.HOUSE_1;
+  house.hp = 25;
+  house.maxHp = 25;
+
+  const engine = createMockEngine(grid);
+  engine.fx.flameJet = () => {};
+  engine.fx.point = () => {};
+  engine.fx.flash = () => {};
+  const forestFire = new ForestFireController(engine);
+  const posA = engine.gridToWorld(2, 2);
+
+  forestFire.startBurning(forestA, posA.x, posA.z);
+  // After 0.6s: oil ignites, forestB has not caught fire yet (threshold 2.2s)
+  forestFire.update(0.6, 0.6);
+  assert.equal(oil.isBurning, true);
+  assert.equal(forestB.isBurning, false);
+
+  // After 2.3s total: forestB catches fire and house takes fire damage
+  forestFire.update(1.7, 2.3);
+  assert.equal(forestB.isBurning, true);
+  assert.equal(engine.burningForests.length, 2);
+  assert.equal(house.hp, 22);
 });
 
 test('ruptureWaterTower floods 1.5-cell radius to SWAMP and extinguishes fires within 2.5 cells', () => {
