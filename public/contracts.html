@@ -48,11 +48,12 @@
       }
     </script>
   </head>
-  <body data-page="contracts" class="text-slate-100 overflow-hidden">
+  <body data-page="contracts" class="text-slate-100 scrollable-page">
     <div id="root"><!-- prerender:start -->
 <main class="menu-page">
       <div class="menu-content campaign-content">
-        
+        <h1 class="sr-only" tabindex="-1">Tactical contracts</h1>
+
     <div class="contracts-hero-view">
       <section class="contracts-hero-board" aria-label="Tactical contracts board">
         <span class="board-rivet top-left" aria-hidden="true"></span>
@@ -219,8 +220,56 @@
         </div>
       </section>
     </div>
-  
+
       </div>
+
+      <section class="menu-content page-briefing" aria-labelledby="contracts-briefing-title">
+        <h2 id="contracts-briefing-title">Contracts Briefing: Special Operations for Veteran Crews</h2>
+        <p class="menu-lead">Contracts are standalone special operations with their own objectives, separate from the Campaign map. Instead of clearing every hostile, you slip into a heavily defended 40×40 sector, complete a task under fire and get out alive. They are tuned for a late-game tank with Tier III–V components, and every credit you earn goes straight into your main profile for Garage upgrades.</p>
+
+        <div class="menu-guide">
+          <section>
+            <h3>Contract 01 — Last Cargo</h3>
+            <p>A logistics raid on an industrial river terminal. Drive up to a sealed data container, stop within range and hold <strong>E</strong> for two seconds to load it, then haul it back to the southern delivery pad and sit still while it unloads. Two of the three containers are required; the third sits deeper in enemy lines and is an optional high-risk run. Expect 8–12 minutes with no global timer.</p>
+            <h3>Contract 02 — Blackout Protocol</h3>
+            <p>A sabotage raid on an armored communications and ECM array. Plant timed demolition charges with <strong>E</strong> on at least two of three radar relays, then get out of the three-cell blast zone before the eight-second fuse goes off. The garrison includes stealth tanks, jammers and a quick-reaction breacher force, which makes it the hardest operation in the game. Expect 7–11 minutes.</p>
+          </section>
+          <section>
+            <h3>How contract payouts work</h3>
+            <ul>
+              <li><strong>$1,500</strong> for every container delivered or relay destroyed, paid the moment it happens.</li>
+              <li><strong>$3,000</strong> completion bonus when you extract after at least two objectives.</li>
+              <li><strong>$2,500</strong> extra for completing all three objectives — up to <strong>$10,000</strong> per run.</li>
+              <li>Credits for objectives already completed and for destroyed tanks are kept even if you are defeated or abort; only the completion bonus is lost.</li>
+            </ul>
+            <h3>Extraction</h3>
+            <p>Once two objectives are done, drive onto the southern pad and start the three-second extraction countdown. You can keep fighting on the pad, but driving off it cancels the countdown.</p>
+          </section>
+        </div>
+
+        <h2 class="briefing-heading">Tactics for a clean run</h2>
+        <div class="menu-grid">
+          <article class="menu-card">
+            <strong>Enemies react to you</strong>
+            <p>Reinforcements arrive in small packets from warned gates as you trigger alarms, load cargo or arm charges. Watch the gate warnings and clear each packet before it can join the next one.</p>
+          </article>
+          <article class="menu-card">
+            <strong>Bring the right tank</strong>
+            <p>A high-tier cannon helps you break through armor fast, and the APS module shrugs off missile strikers. An All-Terrain or Grav-Hover chassis opens shortcuts across the river terminal's water channels.</p>
+          </article>
+          <article class="menu-card">
+            <strong>Know when to leave</strong>
+            <p>The third objective is worth $4,000 together with its bonus, but it is also the most dangerous one. If your hull is low, extracting with two objectives still pays $6,000.</p>
+          </article>
+        </div>
+
+        <div class="menu-actions">
+          <a class="menu-primary" href="./battlefield?mode=contract&amp;id=contract-last-cargo">Deploy: Last Cargo →</a>
+          <a class="menu-secondary" href="./battlefield?mode=contract&amp;id=contract-blackout-protocol">Deploy: Blackout Protocol</a>
+          <a class="menu-secondary" href="./arsenal">Tank Arsenal &amp; Upgrades</a>
+          <a class="menu-secondary" href="./enemies">Enemy &amp; Boss Guide</a>
+        </div>
+      </section>
 
       <footer class="armored-footer">
         <div class="armored-footer-bracket" aria-hidden="true">

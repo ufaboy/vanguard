@@ -4606,3 +4606,36 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
   color: #94a3b8;
   line-height: 1.3;
 }
+
+/* Full-screen mode pages (Campaign / Survival / Contracts): the hero keeps the first
+   viewport, and a readable briefing with the mode's rules scrolls in below it. */
+body.scrollable-page[data-page="campaign"] .menu-page,
+body.scrollable-page[data-page="survival"] .menu-page,
+body.scrollable-page[data-page="contracts"] .menu-page {
+  height: auto;
+  overflow: visible;
+}
+
+body.scrollable-page[data-page="campaign"] .menu-page > .campaign-content,
+body.scrollable-page[data-page="survival"] .menu-page > .campaign-content,
+body.scrollable-page[data-page="contracts"] .menu-page > .campaign-content {
+  flex: 0 0 auto;
+  height: 100vh;
+  height: 100dvh;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.page-briefing h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 8px 0 0; }
+.page-briefing h3 { font-size: 17px; font-weight: 800; margin: 0; color: #e3f7ad; }
+.page-briefing .menu-guide { margin-top: 8px; }
+.page-briefing .menu-guide h3:not(:first-child) { margin-top: 22px; }
+.page-briefing .briefing-heading { margin-top: 40px; }
+.page-briefing .menu-grid { margin-top: 16px; }
+.page-briefing .menu-card { cursor: default; }
+.page-briefing .menu-card:hover { border-color: #3b4948; background: #131e24; }
+.page-briefing .menu-actions { margin-top: 28px; }
+.page-briefing ol, .page-briefing ul { color: #acbcbd; font-size: 14px; line-height: 1.7; margin: 10px 0 0; padding-left: 20px; }
+.home-about { padding: 30px 8px 36px; margin-block: 0; }
+.home-about > h2 { margin: 0 0 6px; }

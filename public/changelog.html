@@ -59,6 +59,12 @@
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.23.4 // HOME, CAMPAIGN, CONTRACTS &amp; SURVIVAL BRIEFING SECTIONS</span>
+            <strong>Scrollable Mode Briefings &amp; Overview Sections on Home, Campaign, Contracts &amp; Survival Pages</strong>
+            <p>Added scrollable mode overview and rules briefings to <code>index.html</code>, <code>campaign.html</code>, <code>contracts.html</code>, and <code>survival.html</code> along with responsive <code>.page-briefing</code> layout rules in <code>src/index.css</code>.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.23.3 // BURNING FOREST ENEMY KILL FIX</span>
             <strong>Fix Enemy Tank Freezing &amp; Becoming Invulnerable When Killed by Burning Forest</strong>
             <p>Fixed a bug in <code>ForestFireController.update</code> where direct subtraction from <code>enemy.hp</code> before calling <code>damageEnemy</code> caused enemies killed by burning forest to hit the <code>enemy.hp &lt;= DURABILITY.ZERO_HP</code> early return in <code>damageEnemy</code>, leaving an immobile, invulnerable wreck on the burned-out <code>SAND</code> tile.</p>
