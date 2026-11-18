@@ -78,6 +78,12 @@
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.25.1 // FOREST GROUND ZONE DECORATION FIX</span>
+            <strong>Paint Zone Surfaces Under FOREST &amp; Decoration Tiles on GROUND</strong>
+            <p>Fixed <code>decorationCellAllowed</code> and <code>paintDecoration</code> in <code>decoration.js</code> and <code>urban-ground.js</code> to check <code>surfaceGrid</code> instead of the top-layer <code>grid</code>, preventing light-gray unmasked squares from appearing beneath <code>FOREST</code> clusters inside asphalt, concrete, and gravel decoration zones.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.25.0 // LAYERED TERRAIN, SURFACE &amp; OBJECT ARCHITECTURE</span>
             <strong>Separated Surface, Decoration, Facility &amp; Wall Layers, Removed SPAWNER &amp; Migrated All Maps</strong>
             <p>Reworked arena cells into explicit <code>surface</code> (<code>GROUND</code>, <code>ROAD</code>, <code>GRASS</code>, <code>STONE</code>, <code>SAND</code>, <code>WATER</code>, <code>ICE</code>, <code>SWAMP</code>, <code>OIL_SLICK</code>) and primary object (<code>decoration</code>, <code>facility</code>, <code>wall</code>) layers with placement compatibility checks (<code>layers.js</code>, <code>surfaces.js</code>). New <code>STONE</code> rocky ground caps tracked hulls at 1.5 cells/s (CH4 / CH5 / hover immune). Removed hardcoded soil decals under <code>FOREST</code> trees (grass and stone patches are instanced), completely removed legacy <code>SPAWNER</code> pads (enemies enter through each map's <code>enemies.entrances</code>), enabled wave-like forest fire spread, and migrated all 39 maps to dual <code>surfaceLayout</code> + <code>objectLayout</code> grids. Tank traction now combines both layers from the surface catalog for the player and enemies (a crater on a road keeps part of the road bonus); craters keep the road or grass beneath them, and exploded barrels no longer leave invisible obstacles.</p>

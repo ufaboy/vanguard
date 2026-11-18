@@ -447,7 +447,7 @@ export function paintDecoration(ctx, sector, options = {}, size = 1024) {
   const clipCells = (details) => {
     ctx.beginPath();
     for (let row = 0; row < gridSize; row++) for (let col = 0; col < gridSize; col++) {
-      if (plan ? decorationCellAllowed(sector, row, col, details) : sector.grid[row][col] === TileType.EMPTY) {
+      if (plan ? decorationCellAllowed(sector, row, col, details) : (sector.surfaceGrid?.[row]?.[col] ?? sector.grid[row][col]) === TileType.EMPTY) {
         ctx.rect(col * unit, row * unit, unit, unit);
       }
     }
