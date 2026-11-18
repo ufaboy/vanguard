@@ -32,10 +32,9 @@ function restoreHtmlLinksForItch(html, htmlPages) {
 }
 
 function stripAdsAndAnalytics(html) {
+  // The inline dataLayer block also holds the domain-gated GTM / AdSense loader, so removing it drops both.
   return html
     .replace(/^\s*<meta\s+name="google-adsense-account"[^>]*>\s*\r?\n?/gim, '')
-    .replace(/^\s*<script[^>]*pagead2\.googlesyndication\.com[^>]*><\/script>\s*\r?\n?/gim, '')
-    .replace(/^\s*<script[^>]*googletagmanager\.com\/gtm\.js[^>]*><\/script>\s*\r?\n?/gim, '')
     .replace(/^\s*<script>\s*\r?\n\s*window\.dataLayer\s*=\s*window\.dataLayer\s*\|\|\s*\[\];[\s\S]*?<\/script>\s*\r?\n?/gim, '');
 }
 

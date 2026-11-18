@@ -7,8 +7,6 @@
     <meta name="description" content="Latest updates, balance patches, new bosses, and engineering improvements for BATTLE TANK 3D browser tank game." />
     <meta name="theme-color" content="#0B1120" />
     <meta name="google-adsense-account" content="ca-pub-3217305527287787">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3217305527287787" crossorigin="anonymous"></script>
-    <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-TB78X2F4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -20,6 +18,20 @@
         else if (internalFlag === '0') localStorage.removeItem('bt_internal_traffic');
         if (localStorage.getItem('bt_internal_traffic') === '1') gtag('set', { traffic_type: 'internal' });
       } catch (e) {}
+      // Google Analytics (GTM) and AdSense load only on the production domain,
+      // never on *.pages.dev deployments or localhost.
+      if (/^(www\.)?battletank\.online$/.test(location.hostname)) {
+        [
+          'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3217305527287787',
+          'https://www.googletagmanager.com/gtm.js?id=GTM-TB78X2F4',
+        ].forEach(function (src) {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = src;
+          if (src.indexOf('googlesyndication') !== -1) s.crossOrigin = 'anonymous';
+          document.head.appendChild(s);
+        });
+      }
     </script>
     <link rel="canonical" href="https://battletank.online/changelog" />
     <link rel="icon" type="image/svg+xml" href="./images/icon.svg" />
@@ -65,6 +77,12 @@
         </p>
 
         <div class="menu-grid" style="margin-top:24px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.23.7 // PRODUCTION HOSTNAME GATE FOR GTM &amp; ADSENSE</span>
+            <strong>Gate Google Tag Manager &amp; AdSense Script Loading to Production Domain Only</strong>
+            <p>Restricted Google Tag Manager (<code>gtm.js</code>) and Google AdSense (<code>adsbygoogle.js</code>) script loading across all HTML pages strictly to the production hostname (<code>battletank.online</code>), preventing analytics and ad requests on preview deployments and localhost, and simplified the Itch.io build script in <code>scripts/build-itch.mjs</code>.</p>
+          </article>
+
           <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.23.6 // ANALYTICS TELEMETRY, INTERNAL TRAFFIC FLAG &amp; FPS SAMPLING</span>
             <strong>Refined GA4 Telemetry, Internal Traffic Filter, Average FPS Sampling &amp; Campaign Progress Property</strong>
