@@ -194,7 +194,6 @@ export class TankGameEngine {
     this.grid = [];
     this.componentWaterEgress = false;
 
-    this._spawnerCells = null;
     this.mapGroup = new THREE.Group();
     this.tileBatcher = new TileBatcher(this.mapGroup);
     this.sceneOccluded = false;
@@ -649,11 +648,6 @@ export class TankGameEngine {
 
   get enemyAi() {
     return (this._enemyAi ||= new EnemyAiController(this));
-  }
-
-  /** Spawner cells, cached until a cell changes type (see invalidateSpawnerCache). */
-  getSpawnerCells() {
-    return this.enemySpawner.getSpawnerCells();
   }
 
   getSpawnPosition() {

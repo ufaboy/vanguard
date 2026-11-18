@@ -5,6 +5,7 @@ import { GameStatus, TileType } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { breachPointToward } from '../terrains/breach-models.js';
+import { setCellObject } from '../terrains/layers.js';
 import { createSquadDirector } from '../../sim/behavior/index.js';
 import {
   CARGO_STATUS,
@@ -118,7 +119,7 @@ export class SurvivalDirector {
       const mesh = e.modelFactory.createBoxesBlock();
       mesh.position.set(x, 0, z);
       e.mapGroup.add(mesh);
-      cell.type = TileType.BOXES;
+      setCellObject(cell, TileType.BOXES);
       cell.hp = 2;
       cell.maxHp = 2;
       cell.mesh = mesh;
@@ -138,7 +139,7 @@ export class SurvivalDirector {
       const barrel = e.modelFactory.createBarrelBlock();
       barrel.position.set(x, 0, z);
       e.mapGroup.add(barrel);
-      cell.type = TileType.BARREL;
+      setCellObject(cell, TileType.BARREL);
       cell.hp = 1;
       cell.maxHp = 1;
       cell.mesh = barrel;

@@ -463,11 +463,6 @@ export class ProjectilesController {
           engine.fx.masonryHit(p.x, 0.85, p.z, { concrete: true, heavy: false });
           engine.removeProjectile(i);
           continue;
-        } else if (cell.type === TileType.SPAWNER && p.fromPlayer) {
-          if (p.isMissile) engine.detonateMissile(p);
-          engine.damageTileCell(cell, 1, p.x, p.z);
-          engine.removeProjectile(i);
-          continue;
         } else if (cell.type === TileType.BASE) {
           if (p.isMissile) engine.detonateMissile(p);
           if (p.fromPlayer) {

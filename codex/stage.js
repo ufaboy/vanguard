@@ -245,6 +245,8 @@ export class CodexStage {
             e.modelFactory.updateConcreteBlockDamage(block, 6, 16);
           }
         } else if (item.surfaceType === 'FOREST') {
+          const grass = e.modelFactory.createGrassBlock?.(pos.x, pos.z);
+          if (grass) e.codexStageGroup.add(grass);
           block = e.modelFactory.createForestBlock();
         } else if (item.surfaceType === 'WATER') {
           if (idx === 0) e.codexStageGroup.add(e.modelFactory.createWaterBlock([[1, 1], [1, 1]]));
@@ -286,6 +288,10 @@ export class CodexStage {
         } else if (item.surfaceType === 'ROAD') {
           const roadMasks = [6, 12, 3, 9];
           block = e.modelFactory.createRoadBlock(pos.x, pos.z, roadMasks[idx], 0);
+        } else if (item.surfaceType === 'GRASS') {
+          block = e.modelFactory.createGrassBlock(pos.x, pos.z);
+        } else if (item.surfaceType === 'STONE') {
+          block = e.modelFactory.createStoneBlock(pos.x, pos.z);
         } else if (item.surfaceType === 'SWAMP') {
           block = e.modelFactory.createSwampBlock(pos.x, pos.z);
         } else if (item.surfaceType === 'OIL_SLICK') {

@@ -9,6 +9,7 @@
 
 import { sound } from '../sound.js';
 import { TileType } from '../terrains/surfaces.js';
+import { setCellObject } from '../terrains/layers.js';
 import { GRID_SIZE } from '../levels.js';
 import { rollTankSpecial } from '../../sim/behavior/actions.js';
 
@@ -80,8 +81,7 @@ function fortify(tank, game) {
       const brick = game.modelFactory.createBrickBlock();
       brick.group.position.set(pos.x, 0, pos.z);
       game.mapGroup.add(brick.group);
-      cell.type = TileType.BRICK;
-      game._spawnerCells = null;
+      setCellObject(cell, TileType.BRICK);
       cell.hp = ENGINEER_SUPPORT.BRICK_HP;
       cell.maxHp = ENGINEER_SUPPORT.BRICK_HP;
       cell.mesh = brick.group;

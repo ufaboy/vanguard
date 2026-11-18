@@ -84,59 +84,42 @@ export function getBaseLayout(baseCell = BASE_CELL, size = GRID_SIZE, options = 
   };
 }
 
-const CHAR_TO_TILE = {
+const SURFACE_CHAR_TO_TILE = {
   '.': TileType.EMPTY,
   _: TileType.EMPTY,
   ' ': TileType.EMPTY,
-  EMPTY: TileType.EMPTY,
-  B: TileType.BRICK,
-  BRICK: TileType.BRICK,
-  C: TileType.CONCRETE,
-  CONCRETE: TileType.CONCRETE,
-  S: TileType.CONCRETE,
-  STEEL: TileType.CONCRETE,
-  F: TileType.FOREST,
-  FOREST: TileType.FOREST,
+  G: TileType.EMPTY,
+  R: TileType.ROAD,
   W: TileType.WATER,
-  WATER: TileType.WATER,
   I: TileType.ICE,
-  ICE: TileType.ICE,
-  G: TileType.SPAWNER,
-  SPAWNER: TileType.SPAWNER,
-  H: TileType.BASE,
-  BASE: TileType.BASE,
-  E: TileType.ENEMY_BASE,
-  ENEMY_BASE: TileType.ENEMY_BASE,
+  S: TileType.SAND,
+  N: TileType.SAND,
+  '^': TileType.STONE,
+  V: TileType.GRASS,
+  M: TileType.SWAMP,
+  L: TileType.OIL_SLICK,
+};
+
+const OBJECT_CHAR_TO_TILE = {
+  '.': null,
+  _: null,
+  ' ': null,
+  B: TileType.BRICK,
+  C: TileType.CONCRETE,
+  F: TileType.FOREST,
   X: TileType.HEDGEHOG,
   Z: TileType.HEDGEHOG,
-  HEDGEHOG: TileType.HEDGEHOG,
   D: TileType.BARREL,
   O: TileType.BARREL,
-  BARREL: TileType.BARREL,
   Q: TileType.BOXES,
-  BOXES: TileType.BOXES,
-  N: TileType.SAND,
-  SAND: TileType.SAND,
-  R: TileType.ROAD,
-  ROAD: TileType.ROAD,
-  M: TileType.SWAMP,
-  SWAMP: TileType.SWAMP,
-  MUD: TileType.SWAMP,
-  L: TileType.OIL_SLICK,
-  OIL: TileType.OIL_SLICK,
-  OIL_SLICK: TileType.OIL_SLICK,
   K: TileType.CRATER,
-  CRATER: TileType.CRATER,
   T: TileType.WATER_TOWER,
-  WATER_TOWER: TileType.WATER_TOWER,
-  TOWER: TileType.WATER_TOWER,
   '=': TileType.BRIDGE,
-  BRIDGE: TileType.BRIDGE,
+  U: TileType.RUBBLE,
   A: TileType.HOUSE_1,
-  HOUSE_1: TileType.HOUSE_1,
   P: TileType.HOUSE_2,
-  HOUSE_2: TileType.HOUSE_2,
-  LANDMARK: TileType.LANDMARK,
+  H: TileType.BASE,
+  E: TileType.ENEMY_BASE,
 };
 
 function parseHexColor(val, fallback = 0x0b1120) {
@@ -149,30 +132,34 @@ function parseHexColor(val, fallback = 0x0b1120) {
   return fallback;
 }
 
-/** Parses a JSON map's `layout` (array of 36 strings of length 36) or `grid` (2D array). */
-function parseMapGrid(mapJson) {
+/**
+ * Parses a JSON map's `surfaceLayout` + `objectLayout` into `{ grid, surfaceGrid, objectGrid }`.
+ * A map without layouts is an empty arena; the retired single-layer `layout` / `grid` format is rejected.
+ */
+function parseMapGrids(mapJson) {
+  if (mapJson?.layout !== undefined || mapJson?.grid !== undefined) {
+    throw new Error(
+      `${mapJson?.mapId || 'map'}: the single-layer layout format is no longer supported; use surfaceLayout + objectLayout`
+    );
+  }
   const size = mapJson?.gridSize || GRID_SIZE;
-  const rawLayout = mapJson?.layout || mapJson?.grid || [];
-
-  const grid = Array.from({ length: size }, () =>
-    Array(size).fill(TileType.EMPTY)
-  );
-
+  const surfaceGrid = Array.from({ length: size }, () => Array(size).fill(TileType.EMPTY));
+  const objectGrid = Array.from({ length: size }, () => Array(size).fill(null));
+  const rawSurface = mapJson?.surfaceLayout || [];
+  const rawObject = mapJson?.objectLayout || [];
   for (let r = 0; r < size; r++) {
-    const rowData = rawLayout[r];
-    if (!rowData) continue;
-
+    const sRow = rawSurface[r];
+    const oRow = rawObject[r];
     for (let c = 0; c < size; c++) {
-      const cellToken =
-        typeof rowData === 'string' ? rowData[c] : rowData[c];
-      if (typeof cellToken === 'number') {
-        grid[r][c] = cellToken;
-      } else if (typeof cellToken === 'string') {
-        const mapped =
-          CHAR_TO_TILE[cellToken] ??
-          CHAR_TO_TILE[cellToken.toUpperCase()] ??
-          TileType.EMPTY;
-        grid[r][c] = mapped;
+      const sTok = sRow?.[c];
+      if (typeof sTok === 'number') surfaceGrid[r][c] = sTok;
+      else if (typeof sTok === 'string') {
+        surfaceGrid[r][c] = SURFACE_CHAR_TO_TILE[sTok] ?? SURFACE_CHAR_TO_TILE[sTok.toUpperCase()] ?? TileType.EMPTY;
+      }
+      const oTok = oRow?.[c];
+      if (typeof oTok === 'number') objectGrid[r][c] = oTok === TileType.EMPTY ? null : oTok;
+      else if (typeof oTok === 'string') {
+        objectGrid[r][c] = OBJECT_CHAR_TO_TILE[oTok] ?? OBJECT_CHAR_TO_TILE[oTok.toUpperCase()] ?? null;
       }
     }
   }
@@ -185,12 +172,23 @@ function parseMapGrid(mapJson) {
     footprint: mapJson?.baseFootprint,
     baseDefense: mapJson?.baseDefense,
   });
-  for (const row of grid) {
-    for (let c = 0; c < size; c++) if (row[c] === TileType.BASE) row[c] = TileType.EMPTY;
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (objectGrid[r][c] === TileType.BASE) objectGrid[r][c] = null;
+    }
   }
-  for (const { row, col } of layout.open) grid[row][col] = TileType.EMPTY;
-  for (const { row, col } of layout.wall) grid[row][col] = TileType.CONCRETE;
-  for (const { row, col } of layout.cells) grid[row][col] = TileType.BASE;
+  for (const { row, col } of layout.open) {
+    surfaceGrid[row][col] = TileType.EMPTY;
+    objectGrid[row][col] = null;
+  }
+  for (const { row, col } of layout.wall) {
+    surfaceGrid[row][col] = TileType.EMPTY;
+    objectGrid[row][col] = TileType.CONCRETE;
+  }
+  for (const { row, col } of layout.cells) {
+    surfaceGrid[row][col] = TileType.EMPTY;
+    objectGrid[row][col] = TileType.BASE;
+  }
 
   if (Array.isArray(mapJson?.landmarks3d)) {
     for (const entry of mapJson.landmarks3d) {
@@ -199,13 +197,17 @@ function parseMapGrid(mapJson) {
       }
       for (const { row, col } of landmarkBlockedCells(entry)) {
         if (row >= 0 && row < size && col >= 0 && col < size) {
-          grid[row][col] = TileType.LANDMARK;
+          surfaceGrid[row][col] = TileType.EMPTY;
+          objectGrid[row][col] = TileType.LANDMARK;
         }
       }
     }
   }
 
-  return grid;
+  const grid = Array.from({ length: size }, (_, r) =>
+    Array.from({ length: size }, (__, c) => objectGrid[r][c] ?? surfaceGrid[r][c])
+  );
+  return { grid, surfaceGrid, objectGrid };
 }
 
 /** Normalizes a raw JSON map object from `/public/maps/*.json` into the runtime Sector format. */
@@ -241,7 +243,7 @@ export function normalizeMapDefinition(rawMap, index = 0) {
 
   const rules = resolveMapRules(rawMap);
   const decoration = normalizeDecoration(rawMap);
-  const grid = parseMapGrid(rawMap);
+  const { grid, surfaceGrid, objectGrid } = parseMapGrids(rawMap);
   const pickupCells = new Set();
   if (rawMap.powerups !== undefined && (!Array.isArray(rawMap.powerups) || rawMap.powerups.length > POWERUP_MAX_ON_MAP)) {
     throw new Error(`${rawMap.mapId}: invalid authored powerup collection`);
@@ -255,9 +257,10 @@ export function normalizeMapDefinition(rawMap, index = 0) {
           TileType.EMPTY,
           TileType.FOREST,
           TileType.ICE,
-          TileType.SPAWNER,
           TileType.SAND,
           TileType.ROAD,
+          TileType.STONE,
+          TileType.GRASS,
           TileType.BRIDGE,
           TileType.SWAMP,
           TileType.OIL_SLICK,
@@ -404,6 +407,8 @@ export function normalizeMapDefinition(rawMap, index = 0) {
       return normalized.length > 0 ? normalized : null;
     })(),
     grid,
+    surfaceGrid,
+    objectGrid,
   };
 }
 

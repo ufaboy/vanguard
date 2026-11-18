@@ -37,12 +37,21 @@ test('Every authored map has reachable deployment, pickups and useful brick shor
   for (const i of [32, 33, 34]) assert.equal(SECTORS[i].powerups.length, 6);
 });
 
+test('Map normalization rejects the retired single-layer layout format', () => {
+  assert.throws(() => normalizeMapDefinition({ mapId: 'old', layout: Array(40).fill('.'.repeat(40)) }), /single-layer layout/);
+  assert.throws(() => normalizeMapDefinition({ mapId: 'old', grid: [[0]] }), /single-layer layout/);
+});
+
 test('Map normalization rejects blocked, duplicate and unknown authored supplies', () => {
-  const map = { layout: Array(40).fill('.'.repeat(40)), powerups: [{ type: 'REPAIR', row: 4, col: 5 }] };
+  const map = {
+    surfaceLayout: Array(40).fill('G'.repeat(40)),
+    objectLayout: Array(40).fill('.'.repeat(40)),
+    powerups: [{ type: 'REPAIR', row: 4, col: 5 }],
+  };
   assert.equal(normalizeMapDefinition(map).powerups[0].type, POWERUP.REPAIR);
   assert.throws(() => normalizeMapDefinition({ ...map, powerups: [...map.powerups, ...map.powerups] }), /invalid or blocked/);
   assert.throws(() => normalizeMapDefinition({ ...map, powerups: [{ type: 'UNKNOWN', row: 4, col: 5 }] }), /invalid or blocked/);
-  map.layout[4] = 'C'.repeat(40);
+  map.objectLayout[4] = 'C'.repeat(40);
   assert.throws(() => normalizeMapDefinition(map), /invalid or blocked/);
 });
 

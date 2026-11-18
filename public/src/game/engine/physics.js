@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
-import { TileType } from '../types.js';
+import { isTilePassable } from '../terrains/layers.js';
 
 /** Handles tank-wall/tank-tank collisions and basic rig/angle kinematics. */
 export class PhysicsController {
@@ -173,21 +173,7 @@ export class PhysicsController {
       for (let c = minCol; c <= maxCol; c++) {
         const cell = engine.grid[r]?.[c];
         if (!cell) continue;
-        if (
-          cell.type === TileType.BOXES || cell.type === TileType.BRICK ||
-          cell.type === TileType.CONCRETE ||
-          cell.type === TileType.HOUSE_1 ||
-          cell.type === TileType.HOUSE_2 ||
-          cell.type === TileType.LANDMARK ||
-          cell.type === TileType.BASE ||
-          cell.type === TileType.ENEMY_BASE ||
-          cell.type === TileType.HEDGEHOG ||
-          cell.type === TileType.BARREL ||
-          cell.type === TileType.WATER_TOWER ||
-          (cell.type === TileType.WATER && !canCrossWater)
-        ) {
-          return true;
-        }
+        if (!isTilePassable(cell.type, canCrossWater)) return true;
       }
     }
 

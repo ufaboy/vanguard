@@ -23,6 +23,7 @@ import { SECTORS } from '../levels.js';
 import { sound } from '../sound.js';
 import { createMissileVisual } from '../effects/index.js';
 import { markMaterialOwned, markOwned } from '../render/dispose.js';
+import { cellMovement } from '../terrains/layers.js';
 import { deckClearance } from '../render/models.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { resetBrain } from '../../sim/behavior/index.js';
@@ -480,15 +481,11 @@ export class PlayerController {
     if (currentCell?.type === TileType.RUBBLE && engine.playerLoadout?.optionalEquipment?.includes('DOZER_BLADE')) {
       engine.terrainDestruction?.clearRubbleCell?.(currentCell);
     }
-    engine.onRubble = currentCell?.type === TileType.RUBBLE;
     engine.onWater = currentCell?.type === TileType.WATER;
     engine.onIce = !canHover && !allTerrain && currentCell?.type === TileType.ICE;
     engine.onSand = !canHover && !allTerrain && currentCell?.type === TileType.SAND;
-    engine.onSwamp = !canHover && !allTerrain && currentCell?.type === TileType.SWAMP;
-    engine.onOilSlick = !canHover && !allTerrain && currentCell?.type === TileType.OIL_SLICK;
-    engine.onRoad =
-      currentCell?.type === TileType.ROAD || currentCell?.type === TileType.BRIDGE;
-    engine.onCrater = !canHover && !allTerrain && currentCell?.type === TileType.CRATER;
+    // Traction of the cell's surface and object layers (SURFACE_CONFIGS), e.g. a crater on a road.
+    const tileMove = cellMovement(currentCell, { allTerrain, canHover });
     engine.inForest = currentCell?.type === TileType.FOREST && !currentCell?.isBurning;
     engine.inSmoke =
       engine.isPointInSmoke(engine.playerX, engine.playerZ) ||
@@ -507,46 +504,8 @@ export class PlayerController {
           label: 'Deep Water',
           speedMultiplier: waterSpeedMult,
         }
-      : engine.onRoad
-      ? {
-          ...TERRAIN_SURFACES.asphalt,
-          id: 'road',
-          label: 'Military Highway',
-          speedMultiplier: 1.2,
-          accelMultiplier: 1.25,
-          brakeMultiplier: 1.15,
-        }
-      : engine.onSwamp
-      ? {
-          ...TERRAIN_SURFACES.mud,
-          id: 'swamp',
-          label: 'Deep Swamp',
-          speedMultiplier: 0.58,
-          accelMultiplier: 0.55,
-          turnMultiplier: 0.65,
-          brakeMultiplier: 0.85,
-        }
-      : engine.onOilSlick
-      ? {
-          ...TERRAIN_SURFACES.sand,
-          id: 'oil_slick',
-          label: 'Oil Slick',
-          speedMultiplier: 0.9,
-          accelMultiplier: 0.23,
-          brakeMultiplier: 0.1,
-        }
-      : engine.onCrater
-      ? {
-          ...TERRAIN_SURFACES.dirt,
-          id: 'crater',
-          label: 'Blast Crater',
-          speedMultiplier: 0.85,
-          accelMultiplier: 0.85,
-        }
-      : engine.onIce
-      ? { ...TERRAIN_SURFACES.sand, label: 'Low-Friction Ice', speedMultiplier: 0.85 }
-      : engine.onSand
-      ? { ...TERRAIN_SURFACES.sand, label: 'Scorched Sand', speedMultiplier: 0.78 }
+      : tileMove
+      ? { ...terrainSample.surface, ...tileMove }
       : terrainSample.surface;
 
     let inFwd = Number(engine.touchMoveY) || 0;
@@ -565,19 +524,17 @@ export class PlayerController {
     const hpRatio = engine.playerHp / engine.playerMaxHp;
     const lowHpMult = hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
     const rawSurfMult = engine.currentSurface?.speedMultiplier || 1.0;
-    const surfMult = engine.onRubble
-      ? 0.45
-      : engine.onWater && !canHover
-        ? waterSpeedMult
-        : allTerrain
-          ? Math.max(1.0, rawSurfMult)
-          : rawSurfMult;
-    const maxSpeed =
-      engine.playerStats.moveSpeed *
-      TILE_SIZE *
-      lowHpMult *
-      surfMult *
-      subMods.speedMultiplier;
+    const surfMult = engine.onWater && !canHover
+      ? waterSpeedMult
+      : allTerrain && !tileMove?.affectsAllTerrain
+        ? Math.max(1.0, rawSurfMult)
+        : rawSurfMult;
+    // Rough ground (STONE) caps the top speed in cells per second instead of scaling it.
+    const terrainSpeedCap = (tileMove?.maxSpeedCells ?? Infinity) * TILE_SIZE;
+    const maxSpeed = Math.min(
+      terrainSpeedCap,
+      engine.playerStats.moveSpeed * TILE_SIZE * lowHpMult * surfMult * subMods.speedMultiplier
+    );
 
     if (hpRatio < DURABILITY.LOW_RATIO && Math.random() < 0.25) {
       engine.spawnSparks(engine.playerX, 0.65, engine.playerZ, 0x475569, 1);
@@ -585,7 +542,7 @@ export class PlayerController {
 
     const surfAccel = engine.currentSurface?.accelMultiplier || 1.0;
     const surfBrake = engine.currentSurface?.brakeMultiplier || 1.0;
-    const lowTraction = engine.onIce || engine.onOilSlick;
+    const lowTraction = Boolean(tileMove?.lowTraction);
     const accel = (lowTraction ? 4.5 : 22.0) * (allTerrain ? Math.max(1.0, surfAccel) : surfAccel);
     const drag = (lowTraction ? 1.8 : 20.0) * (allTerrain ? Math.max(1.0, surfBrake) : surfBrake);
 

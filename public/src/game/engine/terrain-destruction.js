@@ -8,7 +8,27 @@ import { SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';
 import { breachPointToward } from '../terrains/breach-models.js';
+import { canPlaceOnSurface, setCellObject, syncCellType } from '../terrains/layers.js';
 import { GameStatus, TileType, checkMapDefeat, checkMapVictory } from '../types.js';
+
+/** Facilities a sand conversion (thermobaric blast, boss dozer) must never erase. */
+const SAND_PROOF_OBJECTS = new Set([
+  TileType.BASE,
+  TileType.ENEMY_BASE,
+  TileType.LANDMARK,
+  TileType.BRIDGE,
+  TileType.WATER_TOWER,
+]);
+
+/** Surfaces a water-tower flood turns into SWAMP. Ice and water keep their sector-wide meshes. */
+const FLOODABLE_SURFACES = new Set([
+  TileType.EMPTY,
+  TileType.SAND,
+  TileType.ROAD,
+  TileType.GRASS,
+  TileType.STONE,
+  TileType.OIL_SLICK,
+]);
 
 /** Manages terrain cell destruction, HQ/enemy base destruction & restoration, rubble, and barrel chains. */
 export class TerrainDestructionController {
@@ -25,7 +45,8 @@ export class TerrainDestructionController {
       engine.mapGroup?.remove(cell.mesh);
       cell.mesh = null;
     }
-    cell.type = TileType.EMPTY;
+    cell.object = null;
+    syncCellType(cell);
     cell.hp = 0;
     cell.maxHp = 0;
     const pos = engine.gridToWorld(cell.row, cell.col);
@@ -34,10 +55,16 @@ export class TerrainDestructionController {
     return true;
   }
 
-  /** Converts a terrain/obstacle cell (FOREST, BRICK, CONCRETE, ICE, WATER) into scorched SAND. */
+  /**
+   * Converts a terrain/obstacle cell (FOREST, BRICK, CONCRETE, HOUSE, RUBBLE, ICE, WATER) into scorched SAND.
+   * The object goes with it, so houses and rubble burn away too; bases, landmarks, bridges and towers stay.
+   */
   convertCellToSand(cell) {
     const { engine } = this;
-    if (!cell || cell.type === TileType.SAND) return;
+    if (!cell) return;
+    syncCellType(cell);
+    if (cell.surface === TileType.SAND && cell.object == null) return;
+    if (SAND_PROOF_OBJECTS.has(cell.object)) return;
     if (cell.type === TileType.FOREST && engine.burningForests?.length) {
       const idx = engine.burningForests.findIndex((bf) => bf.cell === cell);
       if (idx >= 0) engine.burningForests.splice(idx, 1);
@@ -46,6 +73,10 @@ export class TerrainDestructionController {
     if (cell.mesh) {
       engine.mapGroup?.remove(cell.mesh);
       cell.mesh = null;
+    }
+    if (cell.surfaceMesh) {
+      engine.mapGroup?.remove(cell.surfaceMesh);
+      cell.surfaceMesh = null;
     }
     if (
       cell.type === TileType.BRICK ||
@@ -56,13 +87,16 @@ export class TerrainDestructionController {
     ) {
       engine.blocksDestroyed = (engine.blocksDestroyed || 0) + 1;
     }
-    cell.type = TileType.SAND;
+    cell.object = null;
+    cell.surface = TileType.SAND;
+    syncCellType(cell);
     cell.hp = 0;
     cell.subMeshes = undefined;
     if (engine.modelFactory?.createSandBlock && engine.mapGroup) {
       const pos = engine.gridToWorld(cell.row, cell.col);
       const sandMesh = engine.modelFactory.createSandBlock(pos.x, pos.z);
       engine.mapGroup.add(sandMesh);
+      cell.surfaceMesh = sandMesh;
       cell.mesh = sandMesh;
     }
   }
@@ -172,7 +206,7 @@ export class TerrainDestructionController {
       if (baseCell?.type === TileType.BASE) {
         if (engine.baseLandmarkMesh && baseCell.mesh === engine.baseLandmarkMesh) {
           engine.modelFactory.landmarkModels?.setKind(engine.baseLandmarkMesh, 'ELYSEE_RUINED');
-          baseCell.type = TileType.EMPTY;
+          setCellObject(baseCell, null);
           baseCell.hp = 0;
         } else {
           engine.destroyTileCell(baseCell);
@@ -244,7 +278,8 @@ export class TerrainDestructionController {
     const maxHp = engine.baseMaxHp || 1;
     cells.forEach((cell, i) => {
       if (cell.type !== TileType.EMPTY) engine.destroyTileCell(cell);
-      Object.assign(cell, { type: TileType.BASE, hp: maxHp, maxHp, mesh: i === 0 ? mesh : null });
+      setCellObject(cell, TileType.BASE);
+      Object.assign(cell, { hp: maxHp, maxHp, mesh: i === 0 ? mesh : null });
     });
     engine.baseAlive = true;
     engine.baseHp = maxHp;
@@ -300,11 +335,7 @@ export class TerrainDestructionController {
       }
     } else {
       sound.playBrickHit({ x: hitX, z: hitZ });
-      if (cell.type === TileType.SPAWNER) {
-        engine.fx.armorHit(hitX, 0.6, hitZ, { scale: 0.8, colorHex: 0xff5a3a });
-      } else {
-        engine.fx.masonryHit(hitX, 0.7, hitZ, { concrete: false, heavy: dmg >= 2 });
-      }
+      engine.fx.masonryHit(hitX, 0.7, hitZ, { concrete: false, heavy: dmg >= 2 });
     }
 
     if (cell.type === TileType.BRICK) {
@@ -348,7 +379,6 @@ export class TerrainDestructionController {
       cell.mesh = null;
     }
 
-    const wasSpawner = cell.type === TileType.SPAWNER;
     const wasBoxes = cell.type === TileType.BOXES;
     const wasConcrete = cell.type === TileType.CONCRETE;
     const wasForest = cell.type === TileType.FOREST;
@@ -358,7 +388,8 @@ export class TerrainDestructionController {
 
     if (buildingInfo) {
       // Destroyed buildings collapse into persistent concrete rubble (passable with severe speed penalty).
-      cell.type = TileType.RUBBLE;
+      cell.object = TileType.RUBBLE;
+      syncCellType(cell);
       cell.hp = 1;
       cell.maxHp = 1;
       if (factory?.createRubbleBlock && engine.mapGroup) {
@@ -387,21 +418,18 @@ export class TerrainDestructionController {
         engine.brickRubble.push({ mesh: rubble, life: 12 });
         if (engine.brickRubble.length > 32) engine.mapGroup.remove(engine.brickRubble.shift().mesh);
       }
-      cell.type = TileType.EMPTY;
+      cell.object = null;
+      syncCellType(cell);
       cell.hp = 0;
     }
-    engine._spawnerCells = null;
     engine.blocksDestroyed++;
 
     engine.fx.blockDestroyed(
       x,
       z,
-      wasBoxes ? 'boxes' : wasSpawner ? 'spawner' : wasConcrete ? 'concrete' : wasForest ? 'forest' : 'brick'
+      wasBoxes ? 'boxes' : wasConcrete ? 'concrete' : wasForest ? 'forest' : 'brick'
     );
 
-    if (wasSpawner) {
-      sound.playExplosion(1.1, { x, z });
-    }
     if (engine.tileBatcher) {
       engine.tileBatcher.sync();
     }
@@ -429,7 +457,7 @@ export class TerrainDestructionController {
       engine.mapGroup.remove(cell.mesh);
       cell.mesh = null;
     }
-    cell.type = TileType.EMPTY;
+    setCellObject(cell, null);
     cell.hp = 0;
     engine.blocksDestroyed++;
     this.convertCellToCrater(cell);
@@ -544,22 +572,25 @@ export class TerrainDestructionController {
     }
   }
 
-  /** Converts passable dry ground into a dynamic blast crater. */
+  /** Converts passable dry ground into a dynamic blast crater decoration (preserving underlying surface). */
   convertCellToCrater(cell) {
     const { engine } = this;
     if (!cell) return;
-    if (
-      cell.type !== TileType.EMPTY &&
-      cell.type !== TileType.SAND &&
-      cell.type !== TileType.ROAD
-    ) {
+    syncCellType(cell);
+    if (cell.object != null || !canPlaceOnSurface(TileType.CRATER, cell.surface)) {
       return;
     }
-    if (cell.mesh) {
-      engine.mapGroup?.remove(cell.mesh);
-      cell.mesh = null;
+    // The ruined HQ landmark stays on its (now passable) cells until the base is rebuilt.
+    if (cell.mesh && cell.mesh === engine.baseLandmarkMesh) {
+      return;
     }
-    cell.type = TileType.CRATER;
+    // The crater decal sits on top of the surface patch (road, grass, sand), which stays in place.
+    if (cell.mesh && cell.mesh !== cell.surfaceMesh) {
+      engine.mapGroup?.remove(cell.mesh);
+    }
+    cell.mesh = null;
+    cell.object = TileType.CRATER;
+    syncCellType(cell);
     cell.hp = 0;
     cell.isBurning = false;
     if (engine.modelFactory?.createCraterBlock && engine.mapGroup) {
@@ -570,30 +601,38 @@ export class TerrainDestructionController {
     }
   }
 
-  /** Converts passable ground into deep swamp/mud (used by Water Tower bursts). */
+  /** Converts passable ground into deep swamp/mud (respecting facility surface lock). */
   convertCellToSwamp(cell) {
     const { engine } = this;
     if (!cell) return;
-    if (
-      cell.type !== TileType.EMPTY &&
-      cell.type !== TileType.SAND &&
-      cell.type !== TileType.ROAD &&
-      cell.type !== TileType.CRATER &&
-      cell.type !== TileType.OIL_SLICK
-    ) {
+    syncCellType(cell);
+    if (!FLOODABLE_SURFACES.has(cell.surface)) {
+      return;
+    }
+    if (cell.object != null && cell.object !== TileType.CRATER) {
       return;
     }
     this.extinguishOilCell(cell);
-    if (cell.mesh) {
+    if (cell.object === TileType.CRATER && cell.mesh) {
+      engine.mapGroup?.remove(cell.mesh);
+      cell.mesh = null;
+      cell.object = null;
+    }
+    if (cell.surfaceMesh) {
+      engine.mapGroup?.remove(cell.surfaceMesh);
+      cell.surfaceMesh = null;
+    } else if (cell.mesh) {
       engine.mapGroup?.remove(cell.mesh);
       cell.mesh = null;
     }
-    cell.type = TileType.SWAMP;
+    cell.surface = TileType.SWAMP;
+    syncCellType(cell);
     cell.hp = 0;
     if (engine.modelFactory?.createSwampBlock && engine.mapGroup) {
       const pos = engine.gridToWorld(cell.row, cell.col);
       const swampMesh = engine.modelFactory.createSwampBlock(pos.x, pos.z);
       engine.mapGroup.add(swampMesh);
+      cell.surfaceMesh = swampMesh;
       cell.mesh = swampMesh;
     }
   }
@@ -601,7 +640,7 @@ export class TerrainDestructionController {
   /** Ignites an OIL_SLICK cell so it burns for 7 seconds with fire damage and smoke. */
   igniteOilSlick(cell) {
     const { engine } = this;
-    if (!cell || cell.type !== TileType.OIL_SLICK || cell.isBurning) return;
+    if (!cell || (cell.surface !== TileType.OIL_SLICK && cell.type !== TileType.OIL_SLICK) || cell.isBurning) return;
     cell.isBurning = true;
     cell.burnTimer = 7.0;
     cell.burnElapsed = 0;
@@ -614,7 +653,8 @@ export class TerrainDestructionController {
     }
     const pos = engine.gridToWorld(cell.row, cell.col);
     sound.playFlamethrower?.({ x: pos.x, z: pos.z });
-    engine.modelFactory?.updateOilSlickBurn?.(cell.mesh, true, 1.0, 0);
+    const oilMesh = cell.surfaceMesh || cell.mesh;
+    engine.modelFactory?.updateOilSlickBurn?.(oilMesh, true, 1.0, 0);
     engine.fx?.explosion?.(pos.x, 0.25, pos.z, { scale: 0.9, boss: false, tint: 0xff5a00 });
     engine.fx?.shockwave?.(pos.x, 0.08, pos.z, 0.22, 2.3, 0xff6a00, 0.3, 0.72);
     engine.fx?.oilFire?.(pos.x, pos.z, 1.1);
@@ -629,7 +669,7 @@ export class TerrainDestructionController {
       if (!row) continue;
       for (let c = 0; c < row.length; c++) {
         const cell = row[c];
-        if (!cell || cell.type !== TileType.OIL_SLICK || cell.isBurning) continue;
+        if (!cell || (cell.surface !== TileType.OIL_SLICK && cell.type !== TileType.OIL_SLICK) || cell.isBurning) continue;
         const pos = engine.gridToWorld(r, c);
         if (Math.hypot(pos.x - x, pos.z - z) <= radius + 0.5) {
           this.igniteOilSlick(cell);
@@ -643,7 +683,7 @@ export class TerrainDestructionController {
     if (!cell?.isBurning) return;
     cell.isBurning = false;
     cell.burnTimer = 0;
-    engine.modelFactory?.updateOilSlickBurn?.(cell.mesh, false, 0, 0);
+    engine.modelFactory?.updateOilSlickBurn?.(cell.surfaceMesh || cell.mesh, false, 0, 0);
     if (engine.burningOilCells?.length) {
       const idx = engine.burningOilCells.indexOf(cell);
       if (idx >= 0) engine.burningOilCells.splice(idx, 1);
@@ -665,7 +705,7 @@ export class TerrainDestructionController {
 
     for (let i = engine.burningOilCells.length - 1; i >= 0; i--) {
       const cell = engine.burningOilCells[i];
-      if (!cell || cell.type !== TileType.OIL_SLICK || !cell.isBurning) {
+      if (!cell || (cell.surface !== TileType.OIL_SLICK && cell.type !== TileType.OIL_SLICK) || !cell.isBurning) {
         engine.burningOilCells.splice(i, 1);
         continue;
       }
@@ -675,8 +715,9 @@ export class TerrainDestructionController {
       cell.burnFxCooldown = (cell.burnFxCooldown || 0) - dt;
       const pos = engine.gridToWorld(cell.row, cell.col);
       const intensity = Math.min(1.05, Math.max(0.28, cell.burnTimer / 1.8));
+      const oilMesh = cell.surfaceMesh || cell.mesh;
 
-      engine.modelFactory?.updateOilSlickBurn?.(cell.mesh, true, intensity, cell.burnElapsed);
+      engine.modelFactory?.updateOilSlickBurn?.(oilMesh, true, intensity, cell.burnElapsed);
 
       // Chain-ignite contiguous adjacent oil slick and forest cells after a brief flashover delay
       if (!cell.hasSpreadFire && cell.burnElapsed >= 0.32) {
@@ -753,12 +794,15 @@ export class TerrainDestructionController {
       if (cell.burnTimer <= 0) {
         cell.isBurning = false;
         engine.burningOilCells.splice(i, 1);
-        if (cell.mesh) {
-          engine.modelFactory?.updateOilSlickBurn?.(cell.mesh, false, 0, 0);
-          engine.mapGroup?.remove(cell.mesh);
-          cell.mesh = null;
+        const oilMesh = cell.surfaceMesh || cell.mesh;
+        if (oilMesh) {
+          engine.modelFactory?.updateOilSlickBurn?.(oilMesh, false, 0, 0);
+          engine.mapGroup?.remove(oilMesh);
+          if (cell.surfaceMesh === oilMesh) cell.surfaceMesh = null;
+          if (cell.mesh === oilMesh) cell.mesh = null;
         }
-        cell.type = TileType.EMPTY;
+        cell.surface = TileType.EMPTY;
+        syncCellType(cell);
         engine.fx?.scorch?.(pos.x, pos.z, 2.1);
       }
     }
@@ -774,7 +818,8 @@ export class TerrainDestructionController {
       engine.mapGroup?.remove(cell.mesh);
       cell.mesh = null;
     }
-    cell.type = TileType.EMPTY;
+    cell.object = null;
+    syncCellType(cell);
     cell.hp = 0;
     engine.blocksDestroyed++;
 

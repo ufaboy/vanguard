@@ -4,7 +4,10 @@
  * a numeric `type`, or bare numbers in tests).
  */
 
-// Mirrors TileType in game/terrains/surfaces.js (kept local so sim/ stays engine-free)
+// Passability comes from the tile catalog; layers.js and surfaces.js are plain data (no engine or Three.js).
+import { isTilePassable } from '../../game/terrains/layers.js';
+
+// Mirrors TileType in game/terrains/surfaces.js (tests assert they match).
 export const NAV_TILE = Object.freeze({
   EMPTY: 0,
   BRICK: 1,
@@ -12,7 +15,6 @@ export const NAV_TILE = Object.freeze({
   FOREST: 3,
   WATER: 4,
   ICE: 5,
-  SPAWNER: 6,
   BASE: 7,
   ENEMY_BASE: 8,
   HEDGEHOG: 9,
@@ -29,6 +31,8 @@ export const NAV_TILE = Object.freeze({
   RUBBLE: 20,
   HOUSE_1: 21,
   HOUSE_2: 22,
+  STONE: 23,
+  GRASS: 24,
 });
 
 export function tileTypeAt(grid, row, col) {
@@ -37,21 +41,9 @@ export function tileTypeAt(grid, row, col) {
   return typeof value === 'number' ? value : value.type;
 }
 
+/** Driveable top-layer tile; the catalog (SURFACE_CONFIGS.passableByTracks) is the single source. */
 function isPassableTile(type, canCrossWater = false) {
-  return (
-    type === NAV_TILE.EMPTY ||
-    type === NAV_TILE.FOREST ||
-    type === NAV_TILE.ICE ||
-    type === NAV_TILE.SPAWNER ||
-    type === NAV_TILE.SAND ||
-    type === NAV_TILE.ROAD ||
-    type === NAV_TILE.BRIDGE ||
-    type === NAV_TILE.SWAMP ||
-    type === NAV_TILE.OIL_SLICK ||
-    type === NAV_TILE.CRATER ||
-    type === NAV_TILE.RUBBLE ||
-    (canCrossWater && type === NAV_TILE.WATER)
-  );
+  return isTilePassable(type, canCrossWater);
 }
 
 export function isPassableCell(grid, row, col, canCrossWater = false) {

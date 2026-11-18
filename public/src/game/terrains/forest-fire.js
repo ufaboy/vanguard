@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { TileType } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
+import { syncCellType } from './layers.js';
 
 export class ForestFireController {
   constructor(engine) {
@@ -85,6 +86,7 @@ export class ForestFireController {
       z,
       timer: 10.0,
       maxTimer: 10.0,
+      houseBurnCooldown: 1.0,
     });
   }
 
@@ -143,6 +145,38 @@ export class ForestFireController {
         }
       }
 
+      if (!bf.spreadForest && progress >= 0.22) {
+        bf.spreadForest = true;
+        const r = bf.cell?.row;
+        const c = bf.cell?.col;
+        if (r != null && c != null) {
+          for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+            const nb = e.grid?.[r + dr]?.[c + dc];
+            if (nb && nb.type === TileType.FOREST && !nb.isBurning) {
+              const nbPos = e.gridToWorld(nb.row, nb.col);
+              this.startBurning(nb, nbPos.x, nbPos.z);
+            }
+          }
+        }
+      }
+
+      bf.houseBurnCooldown = (bf.houseBurnCooldown ?? 1.0) - dt;
+      if (bf.houseBurnCooldown <= 0) {
+        bf.houseBurnCooldown += 1.2;
+        const r = bf.cell?.row;
+        const c = bf.cell?.col;
+        if (r != null && c != null) {
+          for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+            const nb = e.grid?.[r + dr]?.[c + dc];
+            if (!nb || (nb.type !== TileType.HOUSE_1 && nb.type !== TileType.HOUSE_2) || nb.hp <= 0) {
+              continue;
+            }
+            const nbPos = e.gridToWorld(nb.row, nb.col);
+            e.damageTileCell?.(nb, 3, nbPos.x, nbPos.z, false);
+          }
+        }
+      }
+
       if (bf.cell.mesh) {
         const hScale = Math.max(0.12, 1 - progress * 0.75);
         const wScale = Math.max(0.3, 1 - progress * 0.45);
@@ -151,7 +185,7 @@ export class ForestFireController {
 
       const distPlayer = Math.hypot(e.playerX - bf.x, e.playerZ - bf.z);
       if (distPlayer < 1.15) {
-        e.damagePlayer(2.5 * dt);
+        e.damagePlayer(2.5 * dt, null, 'fire');
         if (Math.random() < 0.2) {
           e.spawnSparks(e.playerX, 0.8, e.playerZ, 0xff7700, 3);
         }
@@ -173,11 +207,18 @@ export class ForestFireController {
           e.mapGroup.remove(bf.cell.mesh);
           bf.cell.mesh = null;
         }
+        if (bf.cell.surfaceMesh) {
+          e.mapGroup.remove(bf.cell.surfaceMesh);
+          bf.cell.surfaceMesh = null;
+        }
 
-        bf.cell.type = TileType.SAND;
+        bf.cell.object = null;
+        bf.cell.surface = TileType.SAND;
+        syncCellType(bf.cell);
 
         const sandMesh = e.modelFactory.createSandBlock(bf.x, bf.z);
         e.mapGroup.add(sandMesh);
+        bf.cell.surfaceMesh = sandMesh;
         bf.cell.mesh = sandMesh;
 
         e.fx.blockDestroyed(bf.x, bf.z, 'forest');

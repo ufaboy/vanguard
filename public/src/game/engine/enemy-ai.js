@@ -10,6 +10,7 @@ import { EnemyClass, TileType } from '../types.js';
 import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { deckClearance } from '../render/models.js';
+import { cellMovement } from '../terrains/layers.js';
 import { inContactRange, updateAbilities } from '../abilities/index.js';
 import { normalizeAngleSigned, stepAngleTowards } from '../../sim/ai.js';
 import {
@@ -1005,20 +1006,16 @@ export class EnemyAiController {
           engine.terrainDestruction?.clearRubbleCell?.(eCell);
         }
         const eAllTerrain = Boolean(e.stats.canHover || e.stats.allTerrain);
-        let terrainSpeedMult = 1.0;
-        if (eCell?.type === TileType.RUBBLE && !e.isBoss) {
-          terrainSpeedMult = 0.45;
-        } else if (eCell?.type === TileType.ROAD || eCell?.type === TileType.BRIDGE) {
-          terrainSpeedMult = 1.2;
-        } else if (eCell?.type === TileType.WATER && !e.stats.canHover) {
-          terrainSpeedMult = e.stats.waterSpeedMultiplier || 0.6;
-        } else if (!eAllTerrain) {
-          if (eCell?.type === TileType.SAND) terrainSpeedMult = 0.78;
-          else if (eCell?.type === TileType.SWAMP) terrainSpeedMult = 0.58;
-          else if (eCell?.type === TileType.CRATER) terrainSpeedMult = 0.85;
-          else if (eCell?.type === TileType.OIL_SLICK) terrainSpeedMult = 0.9;
-        }
-        const worldSpeed = e.stats.moveSpeed * TILE_SIZE * lowSpeedMult * terrainSpeedMult * dashSpeedMult;
+        const tileMove = cellMovement(eCell, { allTerrain: eAllTerrain, isBoss: e.isBoss, isEnemy: true });
+        const terrainSpeedMult =
+          eCell?.type === TileType.WATER && !e.stats.canHover
+            ? e.stats.waterSpeedMultiplier || 0.6
+            : tileMove?.speedMultiplier ?? 1.0;
+        // Rough ground (STONE) caps the top speed in cells per second instead of scaling it.
+        const worldSpeed = Math.min(
+          (tileMove?.maxSpeedCells ?? Infinity) * TILE_SIZE,
+          e.stats.moveSpeed * TILE_SIZE * lowSpeedMult * terrainSpeedMult * dashSpeedMult
+        );
 
         if (e.yieldTimer > 0) {
           e.yieldTimer -= dt;

@@ -60,22 +60,6 @@ export class EnemySpawnerController {
     this.engine = engine;
   }
 
-  /** Spawner cells, cached until a cell changes type (see invalidateSpawnerCache). */
-  getSpawnerCells() {
-    const { engine } = this;
-    if (engine._spawnerCells) return engine._spawnerCells;
-    const list = [];
-    for (let r = 0; r < GRID_SIZE; r++) {
-      for (let c = 0; c < GRID_SIZE; c++) {
-        if (engine.grid[r][c].type === TileType.SPAWNER) {
-          list.push(engine.grid[r][c]);
-        }
-      }
-    }
-    engine._spawnerCells = list;
-    return list;
-  }
-
   getSpawnPosition() {
     const { engine } = this;
     const safeMinDist = 14.0;
@@ -102,10 +86,10 @@ export class EnemySpawnerController {
       return farthest;
     };
 
-    const spawners = engine.getSpawnerCells();
-    if (spawners.length > 0) {
-      const freePositions = spawners
-        .map((cell) => engine.gridToWorld(cell.row, cell.col))
+    const configuredEntrances = engine.sectorEntrances;
+    if (Array.isArray(configuredEntrances) && configuredEntrances.length > 0) {
+      const freePositions = configuredEntrances
+        .map((entry) => engine.gridToWorld(entry.row, entry.col))
         .filter((pos) => !engine.enemies.some((e) => Math.hypot(e.x - pos.x, e.z - pos.z) < 1.8));
       return pickSafePosition(freePositions);
     }
@@ -783,14 +767,13 @@ export class EnemySpawnerController {
       }
       return;
     }
-    const spawners = engine.getSpawnerCells();
     const sector = SECTORS[engine.currentSectorIndex];
     const maxConcurrent = sector?.maxConcurrentEnemies ?? 8;
     const spawnInterval = sector?.spawnIntervalSec ?? 2.6;
 
     this.stepBossSequenceSpawning(sector);
 
-    if (engine.vanguardRemainingToSpawn > 0 && spawners.length > 0) {
+    if (engine.vanguardRemainingToSpawn > 0) {
       if (engine.enemies.length < maxConcurrent) {
         engine.spawnTimer -= dt;
         if (engine.spawnTimer <= 0) {

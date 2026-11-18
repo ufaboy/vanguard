@@ -291,8 +291,6 @@ export class ExplosionsController {
           engine.terrainDestruction?.igniteOilSlick?.(cell);
         } else if (cell.type === TileType.BOXES) {
           engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
-        } else if (cell.type === TileType.SPAWNER) {
-          engine.destroyTileCell(cell);
         } else if (cell.type === TileType.BASE && !fromPlayer) {
           hitCommandBase = true;
         } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
@@ -379,7 +377,7 @@ export class ExplosionsController {
             engine.damageTileCell(cell, 1, pos.x, pos.z, fromPlayer);
           } else if (cell.type === TileType.RUBBLE) {
             engine.terrainDestruction?.clearRubbleCell?.(cell);
-          } else if (cell.type === TileType.BRICK || cell.type === TileType.SPAWNER) {
+          } else if (cell.type === TileType.BRICK) {
             engine.destroyTileCell(cell);
           } else if (cell.type === TileType.BARREL) {
             engine.explodeBarrel(cell, fromPlayer);

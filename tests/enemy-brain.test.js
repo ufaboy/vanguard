@@ -229,7 +229,7 @@ test('A far-away howitzer still drives to a firing cell instead of idling', () =
 
 test('Role brains find reachable positions on every real sector map', () => {
   for (const sector of SECTORS.slice(0, 6)) {
-    const grid = sector.grid || sector.tiles || sector.layout;
+    const grid = sector.grid;
     if (!Array.isArray(grid) || !Array.isArray(grid[0])) continue;
     const brain = createBrain('line', seq([0.3, 0.7]));
     let start = null;

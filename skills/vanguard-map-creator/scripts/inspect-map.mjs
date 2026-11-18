@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { effectiveLayout as flattenLayout } from './layered-layout.mjs';
 
 // Read-only checks for the currently authored Vanguard JSON format.
 export async function inspectMap(projectRoot, mapPath) {
@@ -12,15 +13,21 @@ export async function inspectMap(projectRoot, mapPath) {
   const size = map.gridSize ?? 40;
   check(size === 40, 'Expected the current 40x40 map contract; review the helper for other formats.');
   check((map.tileSize ?? 2) === 2, 'Expected two world units per tile.');
-  const validGrid = Array.isArray(map.layout) && map.layout.length === size && map.layout.every(row => typeof row === 'string' && row.length === size && /^[.BCFWIGHESXZDOQNRMLKTAP=_ ]+$/.test(row));
-  check(validGrid, 'Layout must contain 40 equal-width rows using known tile tokens.');
-  if (!validGrid) return { mapId: map.mapId, errors, warnings };
+  const hasLayered = Array.isArray(map.surfaceLayout) && Array.isArray(map.objectLayout);
+  const validLayered = hasLayered
+    && map.surfaceLayout.length === size
+    && map.objectLayout.length === size
+    && map.surfaceLayout.every(row => typeof row === 'string' && row.length === size && /^[GRWISNVML^_. ]+$/.test(row))
+    && map.objectLayout.every(row => typeof row === 'string' && row.length === size && /^[.BCFXDOQKT=UAPHE_ ]+$/.test(row));
+  check(validLayered, 'surfaceLayout and objectLayout must each contain 40 equal-width rows using known tile tokens.');
+  if (!validLayered) return { mapId: map.mapId, errors, warnings };
+  const effectiveLayout = flattenLayout(map);
   const inside = c => c && Number.isInteger(c.row) && Number.isInteger(c.col) && c.row >= 0 && c.col >= 0 && c.row < size && c.col < size;
   const key = c => `${c.row},${c.col}`;
-  const passable = c => inside(c) && '.FIGNRMLK_ ='.includes(map.layout[c.row][c.col]);
-  const breachable = c => inside(c) && '.FIGNRMLK_ BCEHQTAP='.includes(map.layout[c.row][c.col]);
+  const passable = c => inside(c) && '.FIVSNRMLK^_ ='.includes(effectiveLayout[c.row][c.col]);
+  const breachable = c => inside(c) && '.FIVSNRMLK^_ BCEHQTAP='.includes(effectiveLayout[c.row][c.col]);
   check(passable(map.playerSpawnCell), 'Player spawn must be an open stock-track cell.');
-  check(inside(map.baseCell) && map.layout[map.baseCell.row].slice(map.baseCell.col, map.baseCell.col + 2) === 'HH', 'baseCell and its right neighbour must be the two H tiles.');
+  check(inside(map.baseCell) && effectiveLayout[map.baseCell.row].slice(map.baseCell.col, map.baseCell.col + 2) === 'HH', 'baseCell and its right neighbour must be the two H tiles.');
   const reached = new Set();
   const reachedBreach = new Set();
   if (passable(map.playerSpawnCell)) {
@@ -113,7 +120,7 @@ export async function inspectMap(projectRoot, mapPath) {
       for (const [dr, dc] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]) {
         const nr = enemyBaseCell.row + dr;
         const nc = enemyBaseCell.col + dc;
-        if (inside({ row: nr, col: nc }) && map.layout[nr][nc] === 'C') {
+        if (inside({ row: nr, col: nc }) && effectiveLayout[nr][nc] === 'C') {
           hasConcreteNeighbor = true;
           break;
         }
@@ -142,7 +149,7 @@ export async function inspectMap(projectRoot, mapPath) {
       return dist;
     };
     for (const breach of map.design.breaches) {
-      check(Array.isArray(breach.cells) && breach.cells.length > 0 && breach.cells.every(c => inside(c) && map.layout[c.row][c.col] === 'B'), `Breach ${breach.name} must contain only B cells.`);
+      check(Array.isArray(breach.cells) && breach.cells.length > 0 && breach.cells.every(c => inside(c) && effectiveLayout[c.row][c.col] === 'B'), `Breach ${breach.name} must contain only B cells.`);
       if (breach.start && breach.end) {
         const before = bfs(breach.start).get(key(breach.end));
         const after = bfs(breach.start, breach.cells || []).get(key(breach.end));
@@ -153,8 +160,8 @@ export async function inspectMap(projectRoot, mapPath) {
   let open = 0; let solid = 0; let isolated = 0; let edgeC = 0;
   for (let row = 0; row < size; row++) for (let col = 0; col < size; col++) {
     if (passable({row,col})) { open++; if (!reached.has(`${row},${col}`)) isolated++; }
-    if ('BC'.includes(map.layout[row][col])) solid++;
-    if ((row === 0 || row === size - 1 || col === 0 || col === size - 1) && map.layout[row][col] === 'C') edgeC++;
+    if ('BC'.includes(effectiveLayout[row][col])) solid++;
+    if ((row === 0 || row === size - 1 || col === 0 || col === size - 1) && effectiveLayout[row][col] === 'C') edgeC++;
   }
   if (isolated) warnings.push(`${isolated} disconnected stock-track cells: inspect whether they are intentional scenery or a trap.`);
   if (edgeC >= (size * 4 - 4) * 0.35) warnings.push('Outer perimeter has excessive Concrete (C): avoid wrapping the map in a concrete box.');

@@ -1111,10 +1111,6 @@ export class FxSystem {
 
   /** Debris burst for a destroyed wall/obstacle cell. */
   blockDestroyed(x, z, kind = 'brick') {
-    if (kind === 'spawner') {
-      this.explosion(x, 0.5, z, { scale: 0.9, tint: 0xff4a3a, scorchLife: 10 });
-      return;
-    }
     if (kind === 'forest') {
       for (let i = 0; i < this.n(10); i++) {
         this.point('glow', {

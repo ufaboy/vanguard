@@ -33,6 +33,27 @@ const SAND_PATCH_VARIANTS = 6;
 const SAND_PATCH_CELL_FRACTION = 0.6;
 const SAND_PATTERN_CELLS = 4;
 
+/** Samples a material's colour map in world XZ (one texture repeat per SAND_PATTERN_CELLS tiles); works instanced. */
+function applyWorldSurfaceUv(material) {
+  const span = (TILE_SIZE * SAND_PATTERN_CELLS).toFixed(3);
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace(
+      '#include <uv_vertex>',
+      `#include <uv_vertex>
+      #ifdef USE_MAP
+        vec4 surfaceWorld = vec4(position, 1.0);
+        #ifdef USE_INSTANCING
+          surfaceWorld = instanceMatrix * surfaceWorld;
+        #endif
+        surfaceWorld = modelMatrix * surfaceWorld;
+        vMapUv = (mapTransform * vec3(surfaceWorld.x / ${span}, surfaceWorld.z / ${span}, 1.0)).xy;
+      #endif`
+    );
+  };
+  material.customProgramCacheKey = () => `world-surface-uv-${span}`;
+  return material;
+}
+
 const HYDRA_GLB_MODEL = Object.freeze({
   url: './models/tank_boss_hydra.glb',
   scale: 0.28,
@@ -1136,14 +1157,6 @@ export class ModelFactory extends TextureGenerator {
       water.color.offset.y = (water.color.offset.y + dt * 0.02) % 1;
       water.normal.offset.x = (water.normal.offset.x - dt * 0.03) % 1;
       water.normal.offset.y = (water.normal.offset.y + dt * 0.045) % 1;
-    }
-    const sp = this.spawnerMats;
-    if (sp) {
-      sp.glowTex.rotation = (sp.glowTex.rotation + dt * 0.6) % (Math.PI * 2);
-      sp.coreTex.rotation = sp.glowTex.rotation;
-      const pulse = 0.5 + 0.5 * Math.sin(this.animTime * 3.2);
-      sp.coreTop.emissiveIntensity = 0.9 + pulse * 0.9;
-      sp.coreSide.emissiveIntensity = 0.6 + pulse * 0.6;
     }
     if (this.hqMats) {
       const r = this.hqMats.repairTex;
@@ -2351,13 +2364,6 @@ export class ModelFactory extends TextureGenerator {
     const foliageMat1 = mats.foliage1;
     const foliageMat2 = mats.foliage2;
 
-    const floor = new THREE.Mesh(this.sharedGeometry('PlaneGeometry', TILE_SIZE * 1.1, TILE_SIZE * 1.1), mats.floor);
-    floor.rotation.x = -Math.PI / 2;
-    floor.rotation.z = Math.floor(Math.random() * 4) * (Math.PI / 2);
-    floor.position.y = 0.015;
-    floor.receiveShadow = true;
-    group.add(floor);
-
     const positions = [
       [-0.45, -0.42, 1.0],
       [0.48, -0.35, 0.88],
@@ -2397,6 +2403,141 @@ export class ModelFactory extends TextureGenerator {
 
     group.userData.batchTile = true;
     return group;
+  }
+
+  /**
+   * Seamless surface patch at world (x, z). All patches share one plane geometry and a few mask
+   * materials, so the TileBatcher draws them as instances; the colour map is sampled in world space
+   * (see applyWorldSurfaceUv), which keeps neighbouring patches seamless.
+   */
+  createSeamlessSurfacePatch(x, z, mats, y = 0.011) {
+    if (!this.surfacePatchGeometry) {
+      const span = TILE_SIZE / SAND_PATCH_CELL_FRACTION;
+      const geometry = new THREE.PlaneGeometry(span, span);
+      geometry.setAttribute('uv1', geometry.attributes.uv.clone());
+      geometry.userData.batchGeometryKey = 'surface-patch';
+      this.surfacePatchGeometry = geometry;
+    }
+
+    const cellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
+    const floor = new THREE.Mesh(this.surfacePatchGeometry, mats[cellHash % SAND_PATCH_VARIANTS]);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = y;
+    floor.receiveShadow = true;
+
+    const group = new THREE.Group();
+    group.position.set(x, 0, z);
+    group.add(floor);
+    group.userData.batchTile = true;
+    return group;
+  }
+
+  /** Seamless natural grass & meadow turf surface patch at world (x, z). */
+  createGrassBlock(x = 0, z = 0) {
+    if (!this.grassPatchMats) {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#334d2b';
+      ctx.fillRect(0, 0, 256, 256);
+      let seed = 7711;
+      const rand = () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        return seed / 4294967296;
+      };
+      for (let i = 0; i < 90; i++) {
+        const px = rand() * 256;
+        const py = rand() * 256;
+        const r = 10 + rand() * 24;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(66, 98, 48, 0.35)' : 'rgba(38, 58, 30, 0.35)';
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      for (let i = 0; i < 160; i++) {
+        const px = rand() * 256;
+        const py = rand() * 256;
+        ctx.fillStyle = i % 3 === 0 ? 'rgba(94, 134, 62, 0.45)' : 'rgba(54, 82, 42, 0.4)';
+        ctx.fillRect(px, py, 2, 4);
+      }
+      const grassTex = this.configureColorTexture(new THREE.CanvasTexture(c));
+      grassTex.wrapS = THREE.RepeatWrapping;
+      grassTex.wrapT = THREE.RepeatWrapping;
+
+      this.grassPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
+        const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
+        mask.channel = 1;
+        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
+          map: grassTex,
+          alphaMap: mask,
+          transparent: true,
+          depthWrite: false,
+          roughness: 0.92,
+          metalness: 0.02,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1,
+        }));
+      });
+    }
+    return this.createSeamlessSurfacePatch(x, z, this.grassPatchMats, 0.01);
+  }
+
+  /** Seamless compacted stone & rocky bedrock surface patch at world (x, z). */
+  createStoneBlock(x = 0, z = 0) {
+    if (!this.stonePatchMats) {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#575c63';
+      ctx.fillRect(0, 0, 256, 256);
+      let seed = 8822;
+      const rand = () => {
+        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+        return seed / 4294967296;
+      };
+      for (let i = 0; i < 70; i++) {
+        const px = rand() * 256;
+        const py = rand() * 256;
+        const r = 10 + rand() * 24;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(110, 116, 124, 0.34)' : 'rgba(54, 58, 64, 0.38)';
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      for (let i = 0; i < 18; i++) {
+        const sx = rand() * 256;
+        const sy = rand() * 256;
+        ctx.strokeStyle = 'rgba(32, 35, 38, 0.36)';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(sx + (rand() - 0.5) * 32, sy + (rand() - 0.5) * 32);
+        ctx.stroke();
+      }
+      const stoneTex = this.configureColorTexture(new THREE.CanvasTexture(c));
+      stoneTex.wrapS = THREE.RepeatWrapping;
+      stoneTex.wrapT = THREE.RepeatWrapping;
+
+      this.stonePatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
+        const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
+        mask.channel = 1;
+        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
+          map: stoneTex,
+          alphaMap: mask,
+          transparent: true,
+          depthWrite: false,
+          roughness: 0.86,
+          metalness: 0.06,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1,
+        }));
+      });
+    }
+    return this.createSeamlessSurfacePatch(x, z, this.stonePatchMats, 0.011);
   }
 
   /**
@@ -2508,84 +2649,6 @@ export class ModelFactory extends TextureGenerator {
     return createIceSurface(grid, iceType, TILE_SIZE, this.iceMat, {
       lowQuality: this.isSoftwareGl || this.physicalWater === false,
     });
-  }
-
-  getSpawnerMaterials() {
-    if (this.spawnerMats) return this.spawnerMats;
-    const tex = this.generated('createSpawnerTextures');
-    const rim = new THREE.MeshStandardMaterial({ map: tex.band, roughness: 0.55, metalness: 0.6 });
-    const deck = new THREE.MeshStandardMaterial({ map: tex.deck, roughness: 0.5, metalness: 0.7 });
-    const coreTop = new THREE.MeshStandardMaterial({
-      map: tex.coreTop,
-      emissive: 0xffffff,
-      emissiveMap: tex.coreGlow,
-      emissiveIntensity: 1.2,
-      roughness: 0.25,
-      metalness: 0.3,
-    });
-    const coreSide = new THREE.MeshStandardMaterial({
-      color: 0x7f1d1d,
-      emissive: 0xdc2626,
-      emissiveIntensity: 0.9,
-      roughness: 0.3,
-      metalness: 0.4,
-    });
-    const pylon = new THREE.MeshStandardMaterial({
-      map: tex.pylon,
-      emissive: 0xffffff,
-      emissiveMap: tex.pylonGlow,
-      emissiveIntensity: 1,
-      roughness: 0.45,
-      metalness: 0.7,
-    });
-    this.spawnerMats = {
-      pad: [rim, deck, deck],
-      core: [coreSide, coreTop, coreTop],
-      pylon,
-      coreTop,
-      coreSide,
-      glowTex: tex.coreGlow,
-      coreTex: tex.coreTop,
-    };
-    return this.spawnerMats;
-  }
-
-  createSpawnerPad() {
-    const group = new THREE.Group();
-    const mats = this.getSpawnerMaterials();
-    const baseMat = mats.pylon;
-
-    const pad = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.88, 0.96, 0.18, 24),
-      mats.pad
-    );
-    pad.position.y = 0.09;
-    pad.receiveShadow = true;
-    group.add(pad);
-
-    const core = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.52, 0.52, 0.22, 24),
-      mats.core
-    );
-    core.position.y = 0.11;
-    group.add(core);
-
-    for (let i = 0; i < 4; i++) {
-      const angle = (i * Math.PI) / 2 + Math.PI / 4;
-      const pylon = new THREE.Mesh(
-        new THREE.BoxGeometry(0.22, 0.55, 0.22),
-        baseMat
-      );
-      pylon.position.set(
-        Math.cos(angle) * 0.72,
-        0.28,
-        Math.sin(angle) * 0.72
-      );
-      pylon.castShadow = true;
-      group.add(pylon);
-    }
-
-    return markOwned(group, { materials: false });
   }
 
   createHedgehogBlock() {
