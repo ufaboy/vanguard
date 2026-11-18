@@ -166,12 +166,13 @@ export function setupDelegatedEvents(
         renderUI(true);
         break;
       case 'return-survival':
+        // Settle first (saves the survival record and reports mission_abort), then leave.
+        engine?.abortMissionToHangar();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.survival;
           break;
         }
         state.menuPage = 'survival';
-        engine?.abortMissionToHangar();
         renderUI(true);
         break;
       case 'survival-next-wave':
@@ -179,12 +180,12 @@ export function setupDelegatedEvents(
         renderUI(false);
         break;
       case 'return-contracts':
+        engine?.abortMissionToHangar();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.contracts;
           break;
         }
         state.menuPage = 'contracts';
-        engine?.abortMissionToHangar();
         renderUI(true);
         break;
       case 'contract-load-cargo':
@@ -196,12 +197,12 @@ export function setupDelegatedEvents(
         renderUI(false);
         break;
       case 'return-campaign':
+        engine?.abortMissionToHangar();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.campaign;
           break;
         }
         state.menuPage = 'campaign';
-        engine?.abortMissionToHangar();
         renderUI(true);
         break;
       case 'main-menu':

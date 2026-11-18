@@ -64,8 +64,8 @@ export function attachSettingsModal(root, onSettingsChange = null) {
     }
     const ctaLink = event.target.closest('a[href]');
     const href = ctaLink?.getAttribute('href') || '';
-    if (/^\/?(campaign|contracts|survival|battlefield)/.test(href)) {
-      analyticsManager.trackEvent('cta_click', { target: href.replace(/^\.\//, '') });
+    if (/^(\.\/|\/)?(campaign|contracts|survival|battlefield)/.test(href)) {
+      analyticsManager.trackEvent('cta_click', { target: href.replace(/^\.?\//, '') });
     }
   });
 

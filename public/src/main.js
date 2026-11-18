@@ -236,10 +236,10 @@ function initApp() {
     },
     { passive: true }
   );
+  // The Google tag sends page_view automatically; a manual one here would double-count it.
   analyticsManager.init({
     defaultParams: { page: state.menuPage },
   });
-  analyticsManager.trackPageView(`${location.pathname}${location.search}`);
   window.addEventListener('error', (event) => {
     analyticsManager.trackEvent('app_error', {
       stage: 'runtime',
@@ -345,7 +345,10 @@ function initApp() {
             duration_sec: durationSec,
             reason: snapshot.gameOverReason || (isVictory ? 'cleared' : 'defeat'),
             wave: snapshot.survivalWave || undefined,
+            fps_avg: engine?.getAverageFps?.(),
+            fps_cap: state.fpsCap,
           });
+          syncCampaignProgressProperty();
           if (!snapshot.defeatCinematicsActive) {
             adManager.onBattleEnd({
               outcome,
@@ -600,6 +603,17 @@ function cycleCameraPreset() {
 
 let startingSector = false;
 let missionStartedAt = 0;
+let gameReadyTracked = false;
+
+/** Reports the furthest completed campaign mission (1-based, 0 = none) as a GA user property. */
+function syncCampaignProgressProperty() {
+  const completed = state.hud.playerSave?.completedMissions || {};
+  let maxMission = 0;
+  CAMPAIGN_MISSIONS.forEach((mission, index) => {
+    if (completed[mission.id]) maxMission = index + 1;
+  });
+  analyticsManager.setUserProperties({ max_mission: maxMission });
+}
 
 async function startSector(sectorIndex) {
   if (startingSector) return;
@@ -635,16 +649,28 @@ async function startSector(sectorIndex) {
     await engine?.waitForSectorModels?.(sectorIndex);
     engine?.startSector(sectorIndex);
     missionStartedAt = performance.now();
+    syncCampaignProgressProperty();
+    if (!gameReadyTracked && document.body?.dataset?.page === 'battlefield') {
+      // First playable frame after opening the battlefield: time since navigation start.
+      gameReadyTracked = true;
+      analyticsManager.trackEvent('game_ready', {
+        load_ms: Math.round(missionStartedAt),
+        mode: targetSector.gameMode,
+        quality: state.graphicsQuality,
+        is_software_gl: Boolean(engine?.isSoftwareGl),
+      });
+    }
     analyticsManager.trackEvent('mission_start', {
       mode: targetSector.gameMode,
       sector_id: sectorIndex,
       map_id: targetSector.mapId,
     });
     if (document.body?.dataset?.page === 'battlefield') {
-      const targetUrl = battlefieldUrlForSector(targetSector);
-      if (`${location.pathname}${location.search}` !== targetUrl) {
-        history.replaceState(null, '', targetUrl);
-        analyticsManager.trackPageView(targetUrl);
+      // Compare resolved URLs: battlefieldUrlForSector returns a relative "./battlefield?..." path.
+      // GA records the page view on its own (initial load and history changes), so none is sent here.
+      const target = new URL(battlefieldUrlForSector(targetSector), location.href);
+      if (`${location.pathname}${location.search}` !== `${target.pathname}${target.search}`) {
+        history.replaceState(null, '', target.href);
       }
     }
     renderUI(true);

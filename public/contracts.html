@@ -13,6 +13,13 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
+      // Developer devices: ?internal=1 marks this browser as internal traffic (?internal=0 clears it).
+      try {
+        var internalFlag = new URLSearchParams(location.search).get('internal');
+        if (internalFlag === '1') localStorage.setItem('bt_internal_traffic', '1');
+        else if (internalFlag === '0') localStorage.removeItem('bt_internal_traffic');
+        if (localStorage.getItem('bt_internal_traffic') === '1') gtag('set', { traffic_type: 'internal' });
+      } catch (e) {}
     </script>
     <link rel="canonical" href="https://battletank.online/contracts" />
     <link rel="icon" type="image/svg+xml" href="./images/icon.svg" />

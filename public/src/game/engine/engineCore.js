@@ -92,6 +92,9 @@ export class TankGameEngine {
 
     this.status = GameStatus.MENU;
     this.currentSectorIndex = 0;
+    // Rendered frames and seconds spent in active combat since the mission started (for fps_avg).
+    this.fpsSampleFrames = 0;
+    this.fpsSampleSec = 0;
     this.upgrades = {
       cannon: 1,
       chassis: 1,
@@ -373,7 +376,15 @@ export class TankGameEngine {
   }
 
   startSector(sectorIdx) {
+    this.fpsSampleFrames = 0;
+    this.fpsSampleSec = 0;
     this.profileSave.startSector(sectorIdx);
+  }
+
+  /** Average frame rate during combat since the mission started, or undefined below 1 s of data. */
+  getAverageFps() {
+    if (this.fpsSampleSec < 1) return undefined;
+    return Math.round(this.fpsSampleFrames / this.fpsSampleSec);
   }
 
   setCameraPreset(preset) {
@@ -858,6 +869,11 @@ export class TankGameEngine {
         } else {
           this.tileBatcher.sync();
           this.renderer.render(this.scene, this.camera);
+          // Skip long gaps (hidden tab, debugger) so they don't drag the average down.
+          if (this.status === GameStatus.PLAYING && rawDelta > 0 && rawDelta < 1) {
+            this.fpsSampleFrames += 1;
+            this.fpsSampleSec += rawDelta;
+          }
         }
       }
 

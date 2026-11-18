@@ -263,10 +263,13 @@ export class HangarOps {
 
   abortMissionToHangar() {
     const e = this.engine;
-    if (e.status === GameStatus.PLAYING) {
+    // Players usually quit from the pause menu, so a paused mission counts as an abort too.
+    if (e.status === GameStatus.PLAYING || e.status === GameStatus.PAUSED) {
       analyticsManager.trackEvent('mission_abort', {
         mode: e.survivalState ? 'survival' : (e.activeMissionRun?.mode || 'campaign'),
         sector_id: e.currentSectorIndex,
+        fps_avg: e.getAverageFps(),
+        fps_cap: e.fpsCap,
       });
     }
     if (e.survivalState) {

@@ -1,5 +1,6 @@
 /**
- * Analytics manager for routing page views and gameplay events to analytics services.
+ * Analytics manager for routing gameplay events and user properties to analytics services.
+ * Page views are not sent from here: the Google tag records them automatically.
  * Currently configured for Google Analytics 4 (gtag.js) via a pluggable provider
  * architecture, with error isolation so blocked or missing SDKs never affect gameplay.
  */
@@ -22,25 +23,27 @@ function createGtagProvider(globalObj) {
 
   return {
     name: 'gtag',
-    trackPageView: (pagePath, params = {}) => send('page_view', { page_path: pagePath, ...params }),
     trackEvent: (eventName, params = {}) => send(eventName, params),
+    setUserProperties: (props) => {
+      if (typeof globalObj?.gtag === 'function') {
+        globalObj.gtag('set', 'user_properties', props);
+      }
+    },
   };
 }
 
 class AnalyticsManager {
   constructor(globalObj = typeof window !== 'undefined' ? window : globalThis) {
-    this.globalObj = globalObj;
     this.enabled = true;
     this.providers = new Map();
     this.defaultParams = {};
+    // Registered up front so every page reports events, not only pages that call init().
+    this.registerProvider(createGtagProvider(globalObj));
   }
 
   init({ enabled, defaultParams } = {}) {
     if (enabled !== undefined) this.enabled = Boolean(enabled);
     if (defaultParams !== undefined) this.defaultParams = sanitizeParams(defaultParams);
-    if (!this.providers.has('gtag')) {
-      this.registerProvider(createGtagProvider(this.globalObj));
-    }
   }
 
   registerProvider(provider) {
@@ -65,12 +68,11 @@ class AnalyticsManager {
     return true;
   }
 
-  trackPageView(pagePath, params = {}) {
-    const resolvedPath = pagePath ?? this.globalObj?.location?.pathname ?? '/';
-    return this.dispatch('trackPageView', resolvedPath, {
-      ...this.defaultParams,
-      ...sanitizeParams(params),
-    });
+  /** Sets GA user-scoped properties (e.g. campaign progress) for all later events. */
+  setUserProperties(props = {}) {
+    const clean = sanitizeParams(props);
+    if (!Object.keys(clean).length) return false;
+    return this.dispatch('setUserProperties', clean);
   }
 
   trackEvent(eventName, params = {}) {

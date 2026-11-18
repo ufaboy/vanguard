@@ -13,6 +13,13 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
+      // Developer devices: ?internal=1 marks this browser as internal traffic (?internal=0 clears it).
+      try {
+        var internalFlag = new URLSearchParams(location.search).get('internal');
+        if (internalFlag === '1') localStorage.setItem('bt_internal_traffic', '1');
+        else if (internalFlag === '0') localStorage.removeItem('bt_internal_traffic');
+        if (localStorage.getItem('bt_internal_traffic') === '1') gtag('set', { traffic_type: 'internal' });
+      } catch (e) {}
     </script>
     <link rel="canonical" href="https://battletank.online/changelog" />
     <link rel="icon" type="image/svg+xml" href="./images/icon.svg" />
@@ -58,6 +65,12 @@
         </p>
 
         <div class="menu-grid" style="margin-top:24px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.23.6 // ANALYTICS TELEMETRY, INTERNAL TRAFFIC FLAG &amp; FPS SAMPLING</span>
+            <strong>Refined GA4 Telemetry, Internal Traffic Filter, Average FPS Sampling &amp; Campaign Progress Property</strong>
+            <p>Added <code>?internal=1</code> developer traffic tagging across all HTML pages, removed duplicate manual <code>page_view</code> dispatches in favor of native Google Tag tracking, and added <code>game_ready</code> load timing, combat <code>fps_avg</code> sampling, <code>max_mission</code> user properties, and pre-navigation <code>mission_abort</code> settlement.</p>
+          </article>
+
           <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.23.5 // SEO METADATA &amp; DEPLOY SITEMAP REFRESH</span>
             <strong>Updated Home Page SEO Metadata &amp; Automated Sitemap / JSON-LD Version Sync on Deploy</strong>
