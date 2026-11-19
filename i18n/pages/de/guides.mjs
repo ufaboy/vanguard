@@ -267,10 +267,10 @@ export default {
   "BATTLE TANK is a free browser tank game with destructible terrain: brick and concrete walls, forest cover, water, ice, mud, burning oil and blast craters on 40x40 arenas.": "BATTLE TANK ist ein kostenloses Browser-Panzerspiel mit zerstörbarem Gelände: Ziegel- und Betonmauern, Wald, Wasser, Eis, Schlamm, Ölbrände und Krater auf 40x40-Arenen.",
 
   // Games Like Battle City
-  "Games Like Battle City: A 3D Tank Game in Browser — BATTLE TANK": "Spiele wie Battle City: Ein 3D-Panzerspiel im Browser — BATTLE TANK",
-  "Looking for games like Battle City or Tank 1990? BATTLE TANK is a free 3D isometric tank game in your browser with HQ defense, destructible walls and 35 missions.": "Auf der Suche nach Spielen wie Battle City oder Tank 1990? BATTLE TANK ist ein kostenloses isometrisches 3D-Panzerspiel im Browser mit HQ-Verteidigung, zerstörbaren Mauern und 35 Missionen.",
+  "Games Like Battle City &amp; Tank 1990: 3D Tank Game Online — BATTLE TANK": "Spiele wie Battle City &amp; Tank 1990: 3D-Panzerspiel online — BATTLE TANK",
+  "Looking for games like Battle City or Tank 1990 to play online? BATTLE TANK is a free 3D tank game in your browser with HQ defense, destructible walls and 35 missions.": "Auf der Suche nach Spielen wie Battle City oder Tank 1990 zum Online-Spielen? BATTLE TANK ist ein kostenloses 3D-Panzerspiel im Browser mit HQ-Verteidigung, zerstörbaren Mauern und 35 Missionen.",
   "Games Like Battle City": "Spiele wie Battle City",
-  "Games Like Battle City: BATTLE TANK in 3D": "Spiele wie Battle City: BATTLE TANK in 3D",
+  "Games Like Battle City (Tank 1990): BATTLE TANK in 3D": "Spiele wie Battle City (Tank 1990): BATTLE TANK in 3D",
   "If you grew up with the 1985 arcade tank classic Battle City, also known as Tank 1990, you remember the rules: protect your base, break through brick walls and stop wave after wave of enemy tanks. BATTLE TANK is a": "Wer mit dem Arcade-Klassiker Battle City (1985, auch Tank 1990) aufgewachsen ist, kennt die Regeln: Basis schützen, Ziegelmauern durchbrechen und Panzerwellen stoppen. BATTLE TANK ist ein",
   "built on that same base-defense idea, redesigned as a modern tactics game that runs in your browser with no download.": "auf Basis genau dieser Idee — neu gestaltet als modernes Taktikspiel im Browser ohne Download.",
   "What Carries Over From the Classic": "Was vom Klassiker bleibt",
