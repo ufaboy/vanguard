@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BATTLE TANK — Free 3D Tank Game in Your Browser</title>
-    <meta name="description" content="Play BATTLE TANK, a free online 3D tank game with no download. Upgrade your tank, smash destructible 40×40 arenas, and beat 4 Sector Bosses across 35 missions." />
+    <title>BATTLE TANK — Free 3D Isometric Tank Game in Browser</title>
+    <meta name="description" content="Play BATTLE TANK free in your browser, no download. A 3D isometric Battle City remake: 35 missions, 5-tier upgrades, directional armor and destructible maps." />
     <meta name="theme-color" content="#0B1120" />
     <meta name="google-adsense-account" content="ca-pub-3217305527287787">
     <script>
@@ -38,8 +38,8 @@
     <link rel="apple-touch-icon" sizes="180x180" href="./images/apple-touch-icon.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <meta property="og:site_name" content="BATTLE TANK" />
-    <meta property="og:title" content="BATTLE TANK — Free 3D Tank Game in Your Browser" />
-    <meta property="og:description" content="Play BATTLE TANK, a free online 3D tank game with no download. Upgrade your tank, smash destructible 40×40 arenas, and beat 4 Sector Bosses across 35 missions." />
+    <meta property="og:title" content="BATTLE TANK — Free 3D Isometric Tank Game in Browser" />
+    <meta property="og:description" content="Play BATTLE TANK free in your browser, no download. A 3D isometric Battle City remake: 35 missions, 5-tier upgrades, directional armor and destructible maps." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://battletank.online/" />
     <meta property="og:image" content="https://battletank.online/images/og-battle.jpg" />
@@ -47,15 +47,15 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="BATTLE TANK 3D tactical tank advancing through a destructible city battlefield" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BATTLE TANK — Free 3D Tank Game in Your Browser" />
-    <meta name="twitter:description" content="Free online 3D tank game in your browser, no download. Upgrade your tank across 5 tiers, smash destructible arenas, and defeat 4 Sector Bosses." />
+    <meta name="twitter:title" content="BATTLE TANK — Free 3D Isometric Tank Game in Browser" />
+    <meta name="twitter:description" content="Free 3D isometric Battle City remake in your browser, no download. Upgrade your tank across 5 tiers, smash destructible arenas and defeat 4 Sector Bosses." />
     <meta name="twitter:image" content="https://battletank.online/images/og-battle.jpg" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "VideoGame",
+        "@type": ["VideoGame", "WebApplication"],
         "name": "BATTLE TANK",
-        "alternateName": ["BATTLE TANK 3D", "Battle Tank Online"],
+        "alternateName": ["BATTLE TANK 3D", "Battle Tank Online", "Battle City 3D Remake"],
         "url": "https://battletank.online/",
         "image": "https://battletank.online/images/og-battle.jpg",
         "screenshot": [
@@ -64,15 +64,17 @@
           "https://battletank.online/images/campaign-map-clean.webp",
           "https://battletank.online/images/survival-hero.webp"
         ],
-        "description": "Free 3D isometric tactical tank assault browser game inspired by Battle City featuring destructible 40x40 arenas, 5-tier modular tank upgrades, 4-Corner APS, homing ATGM missiles, 12 enemy classes, and 4 Sector Bosses.",
-        "genre": ["Action", "Tactical", "Tank Shooter"],
+        "description": "Free 3D isometric tactical tank game for the web browser, a modern Battle City remake with 35 campaign missions, Command Base defense, destructible 40x40 arenas, 5-tier modular tank upgrades, directional armor, 4-Corner APS, homing ATGM missiles, 12 enemy classes and 4 Sector Bosses.",
+        "genre": ["Action", "Tactical Shooter", "Arcade", "Base Defense"],
         "playMode": "SinglePlayer",
         "gamePlatform": "Web Browser",
-        "applicationCategory": "Game",
+        "applicationCategory": "GameApplication",
         "applicationSubCategory": "Action / Tactical Tank Combat",
         "operatingSystem": "Any",
-        "softwareVersion": "1.10.2",
+        "browserRequirements": "Requires JavaScript and WebGL",
+        "softwareVersion": "1.26.2",
         "inLanguage": "en",
+        "isAccessibleForFree": true,
         "featureList": [
           "35-mission Road to the Capital Campaign across 7 tactical regions",
           "Endless Survival mode and high-stakes Tactical Contracts",
@@ -83,8 +85,81 @@
         "offers": {
           "@type": "Offer",
           "price": "0",
-          "priceCurrency": "USD"
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
         }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is BATTLE TANK free to play?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. BATTLE TANK is completely free and runs in a normal browser tab. There is no download, no installation and no sign-up: open the page and start the first mission in seconds on Windows, macOS, Linux or a Chromebook."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is it a Battle City remake?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "BATTLE TANK is inspired by the classic Battle City (also known as Tank 1990). You still defend your Command Base HQ behind brick and concrete walls, hide in forests and fight around water and ice, but the game is rebuilt as a 3D isometric tactics game with tank upgrades, directional armor and multi-phase Sector Bosses."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What do I need to play?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A current browser with WebGL support (Chrome, Edge, Firefox or Safari), a keyboard and a mouse. The game is made for desktop screens and tablets in landscape orientation, and it switches to a lighter rendering path when hardware acceleration is not available, so it also runs on modest laptops."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I control the tank?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Drive with WASD or the arrow keys, aim the turret with the mouse and fire with the left button. Space or E launches a homing ATGM missile, U opens the Garage near your base, M shows the tactical map and Esc pauses the battle. The full list is in the How to Play guide."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What game modes are there?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The Campaign has 35 missions across 7 regions with 4 Sector Bosses. Survival throws endless enemy waves at you, and Contracts are special operations such as Blackout Protocol and Last Cargo."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is BATTLE TANK a single-player game?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. It is a single-player campaign against tactical AI squads: twelve enemy classes with their own roles, coordinated by a squad director, plus boss fights at the end of each sector."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does tank upgrading work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Destroyed enemies and cleared missions pay credits. Spend them in the Garage to raise the Cannon, Chassis, Frame, Engine and Armor from Tier I to Tier V and to buy APS charges and missiles. Every tier changes the 3D model of your tank. See the Tank Arsenal for all components."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is my progress saved?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Campaign unlocks, credits, component tiers, medals and Survival records are stored in your browser, so you can close the tab and continue later on the same device."
+            }
+          }
+        ]
       }
     </script>
     <link rel="stylesheet" href="./src/index.css" />
@@ -214,6 +289,29 @@
           <p>Your VANGUARD tank is assembled from five upgradeable components — Cannon, Chassis, Frame, Engine and Armor — each with five tiers you can see change on the 3D model. Earn credits in battle, spend them in the Garage and add standalone modules such as the 4-corner Active Protection System, a homing ATGM missile pod or an emergency repair kit.</p>
           <h3>Enemies that think</h3>
           <p>Twelve enemy tank classes fight with their own roles: scouts flank, line tanks peek from cover, howitzers shell you from hiding, sappers lay mines on your route and stealth snipers vanish after each shot. A squad director limits how many shoot at once and spreads them around you, so every fight feels like a coordinated assault rather than a crowd.</p>
+        </section>
+      </div>
+    </section>
+    <section class="home-briefing-strip page-briefing home-about home-faq" aria-labelledby="home-faq-title">
+      <h2 id="home-faq-title">Frequently Asked Questions</h2>
+      <div class="menu-guide">
+        <section>
+          <h3>Is BATTLE TANK free to play?</h3>
+          <p>Yes. BATTLE TANK is completely free and runs in a normal browser tab. There is no download, no installation and no sign-up: open the page and start the first mission in seconds on Windows, macOS, Linux or a Chromebook.</p>
+          <h3>Is it a Battle City remake?</h3>
+          <p>BATTLE TANK is inspired by the classic Battle City (also known as Tank 1990). You still defend your Command Base HQ behind brick and concrete walls, hide in forests and fight around water and ice, but the game is rebuilt as a 3D isometric tactics game with tank upgrades, directional armor and multi-phase Sector Bosses.</p>
+          <h3>What do I need to play?</h3>
+          <p>A current browser with WebGL support (Chrome, Edge, Firefox or Safari), a keyboard and a mouse. The game is made for desktop screens and tablets in landscape orientation, and it switches to a lighter rendering path when hardware acceleration is not available, so it also runs on modest laptops.</p>
+          <h3>How do I control the tank?</h3>
+          <p>Drive with WASD or the arrow keys, aim the turret with the mouse and fire with the left button. Space or E launches a homing ATGM missile, U opens the Garage near your base, M shows the tactical map and Esc pauses the battle. The full list is in the <a href="./how-to-play">How to Play guide</a>.</p>
+        </section>
+        <section>
+          <h3>What game modes are there?</h3>
+          <p>The <a href="./campaign">Campaign</a> has 35 missions across 7 regions with 4 Sector Bosses. <a href="./survival">Survival</a> throws endless enemy waves at you, and <a href="./contracts">Contracts</a> are special operations such as Blackout Protocol and Last Cargo.</p>
+          <h3>Is BATTLE TANK a single-player game?</h3>
+          <p>Yes. It is a single-player campaign against tactical AI squads: twelve enemy classes with their own roles, coordinated by a squad director, plus boss fights at the end of each sector.</p>
+          <h3>How does tank upgrading work?</h3>
+          <p>Destroyed enemies and cleared missions pay credits. Spend them in the Garage to raise the Cannon, Chassis, Frame, Engine and Armor from Tier I to Tier V and to buy APS charges and missiles. Every tier changes the 3D model of your tank. See the <a href="./arsenal">Tank Arsenal</a> for all components.</p>
           <h3>Is my progress saved?</h3>
           <p>Yes. Campaign unlocks, credits, component tiers, medals and Survival records are stored in your browser, so you can close the tab and continue later on the same device.</p>
         </section>
@@ -256,7 +354,7 @@
     <!-- prerender:end --></div>
     <noscript>
       <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
-        <h1>BATTLE TANK — Free 3D Tank Game in Your Browser</h1>
+        <h1>BATTLE TANK — Free 3D Isometric Tank Game in Browser</h1>
         <p>Play BATTLE TANK, a free 3D isometric tactical tank game inspired by Battle City. Upgrade your VANGUARD tank across 5 tiers, smash destructible 40x40 arenas, and battle 4 Sector Bosses.</p>
         <p>JavaScript and WebGL are required to launch the battlefield.</p>
       </main>

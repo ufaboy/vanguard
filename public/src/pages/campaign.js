@@ -251,7 +251,7 @@ function syncCampaignMapState(completedMissions = {}, selectedId = null) {
     const thumbImg = drawer.querySelector('.brief-thumb-img');
     if (thumbImg) {
       thumbImg.src = `./images/region-thumb-${chapter.id}.jpg`;
-      thumbImg.alt = `${chapter.name} terrain preview`;
+      thumbImg.alt = `${chapter.name} — 3D isometric tank campaign region preview`;
     }
     const regionIcon = drawer.querySelector('.region-svg-icon');
     if (regionIcon) regionIcon.innerHTML = region.iconSvg;

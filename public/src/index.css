@@ -4639,3 +4639,5 @@ body.scrollable-page[data-page="contracts"] .menu-page > .campaign-content {
 .page-briefing ol, .page-briefing ul { color: #acbcbd; font-size: 14px; line-height: 1.7; margin: 10px 0 0; padding-left: 20px; }
 .home-about { padding: 30px 8px 36px; margin-block: 0; }
 .home-about > h2 { margin: 0 0 6px; }
+.home-faq p a, .menu-lead a { color: #e3f7ad; text-decoration: underline; text-underline-offset: 2px; transition: color 0.15s ease; }
+.home-faq p a:hover, .menu-lead a:hover { color: #f59e0b; }
