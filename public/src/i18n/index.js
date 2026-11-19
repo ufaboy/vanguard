@@ -12,15 +12,16 @@
  */
 
 const DEFAULT_LOCALE = 'en';
-export const SUPPORTED_LOCALES = Object.freeze(['en', 'es', 'pt-BR']);
-export const LOCALE_NAMES = Object.freeze({ en: 'English', es: 'Español', 'pt-BR': 'Português (Brasil)' });
+export const SUPPORTED_LOCALES = Object.freeze(['en', 'es', 'pt-BR', 'de']);
+export const LOCALE_NAMES = Object.freeze({ en: 'English', es: 'Español', 'pt-BR': 'Português (Brasil)', de: 'Deutsch' });
 
 const LOCALE_STORAGE_KEY = 'iron_vanguard_locale_v1';
 const LOADERS = {
   es: () => import('./locales/es.js'),
   'pt-BR': () => import('./locales/pt-BR.js'),
+  de: () => import('./locales/de.js'),
 };
-const NUMBER_LOCALE_TAGS = { en: 'en-US', es: 'es-ES', 'pt-BR': 'pt-BR' };
+const NUMBER_LOCALE_TAGS = { en: 'en-US', es: 'es-ES', 'pt-BR': 'pt-BR', de: 'de-DE' };
 
 let currentLocale = DEFAULT_LOCALE;
 let messages = null;
