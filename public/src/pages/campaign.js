@@ -1,4 +1,5 @@
 import { battlefieldUrl } from '../app/routes.js';
+import { t } from '../i18n/index.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
 import { loadPlayerSave } from '../app/state.js';
@@ -154,7 +155,7 @@ function renderBriefActionHtml(selected, playable) {
                 <svg class="start-tank-icon" viewBox="0 0 48 22" fill="currentColor" aria-hidden="true">
                   <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
                 </svg>
-                <span class="start-text">START MISSION »</span>
+                <span class="start-text">${t('START MISSION »')}</span>
               </span>
               <span class="start-glow" aria-hidden="true"></span>
             </button>
@@ -166,8 +167,8 @@ function renderBriefActionHtml(selected, playable) {
               class="brief-start-btn is-locked"
               disabled
             >
-              <span class="start-text">LOCKED</span>
-              <small class="locked-sub">Pass Sector ${selected.number - 1}</small>
+              <span class="start-text">${t('LOCKED')}</span>
+              <small class="locked-sub">${t('Pass Sector {n}', { n: selected.number - 1 })}</small>
             </button>
           `;
 }
@@ -250,19 +251,20 @@ function syncCampaignMapState(completedMissions = {}, selectedId = null) {
 
     const thumbImg = drawer.querySelector('.brief-thumb-img');
     if (thumbImg) {
-      thumbImg.src = `./images/region-thumb-${chapter.id}.jpg`;
-      thumbImg.alt = `${chapter.name} — 3D isometric tank campaign region preview`;
+      const imgPrefix = /^\/es(\/|$)/.test(location.pathname) ? '../' : './';
+      thumbImg.src = `${imgPrefix}images/region-thumb-${chapter.id}.jpg`;
+      thumbImg.alt = `${t(chapter.name)} — ${t('3D isometric tank campaign region preview')}`;
     }
     const regionIcon = drawer.querySelector('.region-svg-icon');
     if (regionIcon) regionIcon.innerHTML = region.iconSvg;
     const regionName = drawer.querySelector('.region-badge-name');
-    if (regionName) regionName.textContent = chapter.name.toUpperCase();
+    if (regionName) regionName.textContent = t(chapter.name).toUpperCase();
     const sectorCode = drawer.querySelector('.brief-sector-code');
     if (sectorCode) sectorCode.textContent = `SECTOR ${String(selected.number).padStart(2, '0')} // 35`;
     const titleEl = drawer.querySelector('.brief-mission-title');
-    if (titleEl) titleEl.textContent = selected.name;
+    if (titleEl) titleEl.textContent = t(selected.name);
     const descEl = drawer.querySelector('.brief-mission-desc');
-    if (descEl) descEl.textContent = `${selected.objective} · ${selected.enemyTotal} hostiles`;
+    if (descEl) descEl.textContent = `${t(selected.objective)} · ${t('{n} hostiles', { n: selected.enemyTotal })}`;
     const actionBlock = drawer.querySelector('.brief-action-block');
     if (actionBlock) actionBlock.innerHTML = renderBriefActionHtml(selected, playable);
   }

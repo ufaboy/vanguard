@@ -339,4 +339,9 @@ export default {
   "engineer": "ingeniero",
   "striker": "cazador",
   "stealth": "sigiloso",
+  "START MISSION »": "INICIAR MISIÓN »",
+  "LOCKED": "BLOQUEADO",
+  "Pass Sector {n}": "Supera el Sector {n}",
+  "3D isometric tank campaign region preview": "Vista previa de región de campaña de tanques 3D isométrica",
+  "{n} hostiles": "{n} hostiles",
 };
