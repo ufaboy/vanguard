@@ -162,7 +162,7 @@ export const MEDAL_CATALOG = Object.freeze([
     name: 'Ghost Hunter',
     grade: 'silver',
     category: 'Tactics',
-    description: 'Destroy a stationary camouflaged Stealth tank or a Jammer during its ECM pulse.',
+    description: 'Destroy a stationary camouflaged Stealth tank, or a Jammer from inside its 5-cell ECM bubble.',
     evaluate: ({ tracker }) => tracker.ghostHunterKills >= 1,
   }),
   Object.freeze({

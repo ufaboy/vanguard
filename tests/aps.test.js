@@ -14,7 +14,7 @@ test('APS cost follows weapon identity and missiles override heavy classificatio
 
 function engine(ammo) {
   return Object.assign(Object.create(TankGameEngine.prototype), {
-    apsAmmo: [...ammo], apsRearmTimer: 0, jammedTimer: 0, playerX: 0, playerZ: 0,
+    apsAmmo: [...ammo], apsRearmTimer: 0, enemies: [], playerX: 0, playerZ: 0,
     projectiles: [], hazardZones: [], hasLineOfSight: () => true,
     syncApsVisuals() {}, emitHudUpdate() {}, fx: { apsIntercept() {} }, fxGroup: { remove() {} },
   });

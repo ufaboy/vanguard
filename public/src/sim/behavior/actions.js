@@ -47,7 +47,6 @@ const ACTIONS = Object.freeze({
   set_mine: { kind: ACTION_KIND.SPECIAL, description: 'Plant a mine (failure: the mine lands off the planned cell).' },
   build_brick: { kind: ACTION_KIND.SPECIAL, description: 'Repair or raise a brick wall (failure: nothing is built).' },
   repair_ally: { kind: ACTION_KIND.SPECIAL, description: 'Weld a damaged ally (failure: the weld is wasted).' },
-  jam: { kind: ACTION_KIND.SPECIAL, description: 'ECM pulse (failure: the pulse fizzles).' },
 });
 
 /** Plan durations and miss geometry. Distances in grid cells, times in seconds. */

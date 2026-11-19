@@ -134,7 +134,7 @@ test('Specials roll the listed luck; unlisted specials always succeed', () => {
   };
   assert.equal(rollTankSpecial(tank, 'set_mine'), false);
   assert.deepEqual(tank.lastSpecial, { id: 'set_mine', ok: false });
-  assert.equal(rollTankSpecial(tank, 'jam'), true);
+  assert.equal(rollTankSpecial(tank, 'build_brick'), true);
 });
 
 test('Zones: 6x6-cell sectors; a failed move goes to a different zone', () => {

@@ -23,14 +23,12 @@
  */
 
 import { mineLayer } from './mine-layer.js';
-import { jammerPulse } from './jammer-pulse.js';
 import { engineerSupport } from './engineer-support.js';
 import { flameStream } from './flame-stream.js';
 import { contactWarhead } from './contact-warhead.js';
 
 export const ABILITIES = Object.freeze({
   [mineLayer.id]: mineLayer,
-  [jammerPulse.id]: jammerPulse,
   [engineerSupport.id]: engineerSupport,
   [flameStream.id]: flameStream,
   [contactWarhead.id]: contactWarhead,

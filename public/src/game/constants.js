@@ -284,6 +284,9 @@ export function computeEffectiveDamage(
   return baseDamage * (1 - effectiveArmor / DURABILITY.ARMOR_SCALE);
 }
 
+/** Range of the player's sensor radar (minimap) in grid cells. */
+export const RADAR_RANGE_CELLS = 16;
+
 export const MISSILE = Object.freeze({
   CREDIT_PRICE: 3000, // Price per missile in the hangar
   GUIDED: true, // Whether missiles have active homing towards the target coordinate

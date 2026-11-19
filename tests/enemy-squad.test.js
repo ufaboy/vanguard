@@ -8,11 +8,11 @@ import {
   hasGridLineOfSight,
   isChokeCell,
   notifyBrainFired,
-  notifyBrainJammed,
   notifyBrainMined,
   stepBrain,
   updateAttackTokens,
 } from '../public/src/sim/behavior/index.js';
+import { ROLE_CONFIGS } from '../public/src/sim/behavior/brain.js';
 import { SECTORS } from '../public/src/game/levels.js';
 
 const E = NAV_TILE.EMPTY;
@@ -196,20 +196,26 @@ test('Flamethrower lurks hidden nearby and only rushes a close player', () => {
   assert.equal(rush.direct, true);
 });
 
-test('Jammer shadows out of sight, dashes into jam range only while allies fight', () => {
+test('Jammer shadows out of sight and closes to screen range while allies fight', () => {
   const grid = openGrid(30);
   const target = { row: 15, col: 15 };
   const brain = createBrain('ewar', seq([0.5]));
-  let out = stepBrain(brain, ctxFor(grid, { row: 15, col: 2 }, target, { visible: false }));
-  assert.equal(out.tactic, 'shadow');
-  brain.tactic = 'idle';
-  const engaged = { visible: false, alliesEngaged: true, specialReady: true };
-  const { out: jam } = walk(brain, grid, { row: 15, col: 2 }, target, engaged);
-  assert.equal(jam.tactic, 'jam');
-  assert.equal(jam.wantJam, true);
-  notifyBrainJammed(brain);
-  out = stepBrain(brain, ctxFor(grid, { row: 15, col: 11 }, target, { visible: false }));
-  assert.equal(out.tactic, 'withdraw');
+  const shadow = stepBrain(brain, ctxFor(grid, { row: 15, col: 2 }, target, { visible: false }));
+  assert.equal(shadow.tactic, 'shadow');
+  const engaged = { visible: false, alliesEngaged: true };
+  const { pos, out: screen } = walk(brain, grid, { row: 15, col: 2 }, target, engaged);
+  assert.equal(screen.tactic, 'screen');
+  assert.ok(dist(pos, target) <= 5.5);
+
+  // After the screening run it withdraws out of sight, then screens again.
+  const cfg = ROLE_CONFIGS.ewar;
+  const hold = { ...engaged, dt: cfg.screenSec + 0.1 };
+  const withdraw = stepBrain(brain, ctxFor(grid, pos, target, hold));
+  assert.equal(withdraw.tactic, 'withdraw');
+  const back = walk(brain, grid, pos, target, engaged);
+  assert.ok(dist(back.pos, target) >= cfg.shadow.minCells - 0.5, 'withdrew out of the ECM bubble');
+  const again = stepBrain(brain, ctxFor(grid, back.pos, target, { ...engaged, dt: cfg.withdrawSec + 0.1 }));
+  assert.equal(again.tactic, 'screen');
 });
 
 test('Engineer drives to the damaged ally; flees a close player', () => {

@@ -72,12 +72,13 @@ export const ROLE_CONFIGS = Object.freeze({
     rushBelowCells: 6,
     rushKeepCells: 8,
   }),
-  // JAMMER: shadow the squad out of sight; dash into jam range only while allies are engaged
+  // JAMMER: shadow out of sight while projecting radar ECM; when allies engage, close to
+  // 3-5 cells for `screenSec`, then withdraw out of sight for `withdrawSec` and repeat
   ewar: Object.freeze({
-    jamRun: { minCells: 3, maxCells: 5, los: null, coverWeight: 0.4, travelWeight: 0.1, maxTravel: 14 },
-    jamCells: 5.5,
+    screen: { minCells: 3, maxCells: 5, los: null, coverWeight: 0.4, travelWeight: 0.1, maxTravel: 14 },
     shadow: { minCells: 8, maxCells: 12, los: false, coverWeight: 0.8, travelWeight: 0.15, maxTravel: 12 },
-    withdrawSec: 3.0,
+    screenSec: 9.0,
+    withdrawSec: 4.0,
   }),
   // ENGINEER: repair the most damaged ally out of sight; otherwise fortify; flee close threats
   support: Object.freeze({
@@ -154,9 +155,7 @@ export function createBrain(role, random = Math.random, overrides = null) {
     shotsSinceMove: 0,
     relocateAfter: 1,
     repairId: null,
-    justJammed: false,
     wantMine: false,
-    wantJam: false,
   };
 }
 
@@ -172,13 +171,6 @@ export function notifyBrainMined(brain) {
   brain.goal = null;
 }
 
-/** Engine hook: an ECM pulse went off; withdraw out of sight. */
-export function notifyBrainJammed(brain) {
-  if (!brain) return;
-  brain.justJammed = true;
-  brain.tactic = 'idle';
-}
-
 /** Brain loses control (no contact): forget the current plan. */
 export function resetBrain(brain) {
   if (!brain) return;
@@ -190,7 +182,6 @@ export function resetBrain(brain) {
   brain.pathIdx = 0;
   brain.direct = false;
   brain.wantMine = false;
-  brain.wantJam = false;
 }
 
 /** Seconds between brain re-plans while it drives the tank (random in [min, max]). */
@@ -418,14 +409,16 @@ function decideAmbusher(brain, ctx, cfg) {
 }
 
 function decideEwar(brain, ctx, cfg) {
-  if (brain.justJammed) {
-    brain.justJammed = false;
-    return startTactic(brain, ctx, 'withdraw', cfg.shadow, cfg.withdrawSec);
-  }
   if (timedActive(brain)) return null;
-  if (ctx.alliesEngaged && ctx.specialReady) {
-    if (brain.tactic === 'jam' && brain.goal) return null;
-    return startTactic(brain, ctx, 'jam', cfg.jamRun, 0);
+  if (ctx.alliesEngaged) {
+    if (brain.tactic === 'screen') {
+      // Hold the ECM screen for a while, then fall back out of sight so the
+      // player's APS / ATGM get a window between screening runs.
+      if (brain.tacticTimer <= 0) return startTactic(brain, ctx, 'withdraw', cfg.shadow, cfg.withdrawSec);
+      if (brain.goal) return null;
+      return startTactic(brain, ctx, 'screen', cfg.screen, brain.tacticTimer);
+    }
+    return startTactic(brain, ctx, 'screen', cfg.screen, cfg.screenSec);
   }
   if (brain.tactic === 'shadow' && brain.goal) return null;
   return startTactic(brain, ctx, 'shadow', cfg.shadow, 0);
@@ -550,7 +543,7 @@ const DECIDERS = {
  * @param {Array<{row,col}>} ctx.allyGoals
  * Role extras: playerTrail, mines, minesLeft, playerCanCrossWater, alliesEngaged,
  * specialReady, repairTarget {id,row,col}, bossPhase2.
- * @returns {{tactic: string, waypoint: {row,col}|null, direct: boolean, wantMine: boolean, wantJam: boolean}}
+ * @returns {{tactic: string, waypoint: {row,col}|null, direct: boolean, wantMine: boolean}}
  */
 export function stepBrain(brain, ctx) {
   const cfg = brain.cfg ?? ROLE_CONFIGS[brain.role];
@@ -595,7 +588,6 @@ export function stepBrain(brain, ctx) {
     brain.role === 'minelayer' &&
     ((brain.tactic === 'mine' && atGoal) ||
       (brain.tactic === 'evade' && ctx.distCells < cfg.mineWhileEvadingCells));
-  brain.wantJam = brain.role === 'ewar' && brain.tactic === 'jam' && ctx.distCells <= cfg.jamCells;
 
   const waypoint = !brain.direct && brain.pathIdx < brain.path.length ? brain.path[brain.pathIdx] : null;
   return {
@@ -603,7 +595,6 @@ export function stepBrain(brain, ctx) {
     waypoint,
     direct: brain.direct,
     wantMine: brain.wantMine,
-    wantJam: brain.wantJam,
     isBreachPath: Boolean(brain.isBreachPath),
   };
 }

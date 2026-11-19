@@ -174,7 +174,6 @@ export class TankGameEngine {
     this.missileCooldown = 0;
     this.repairKitCount = 1;
     this.empTimer = 0;
-    this.jammedTimer = 0;
     this.baseRepairSparkTimer = 0;
     this.inBaseRepairZone = false;
     this.isHangarOpen = false;
