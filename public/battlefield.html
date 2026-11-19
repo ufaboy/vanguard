@@ -29,7 +29,11 @@
           var s = document.createElement('script');
           s.async = true;
           s.src = src;
-          if (src.indexOf('googlesyndication') !== -1) s.crossOrigin = 'anonymous';
+          if (src.indexOf('googlesyndication') !== -1) {
+            s.crossOrigin = 'anonymous';
+            // H5 Games Ads: at most one interstitial ad break every 120 seconds.
+            s.setAttribute('data-ad-frequency-hint', '120s');
+          }
           document.head.appendChild(s);
         });
       }

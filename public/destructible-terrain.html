@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Destructible Terrain Tank Game: Arenas &amp; Walls — BATTLE TANK</title>
+    <meta name="description" content="How destructible terrain works in BATTLE TANK, a free 3D tank game in your browser: brick and concrete walls, forest cover, water, ice, mud, oil fires and craters." />
+    <meta name="theme-color" content="#0B1120" />
+    <meta name="google-adsense-account" content="ca-pub-3217305527287787">
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      // Developer devices: ?internal=1 marks this browser as internal traffic (?internal=0 clears it).
+      try {
+        var internalFlag = new URLSearchParams(location.search).get('internal');
+        if (internalFlag === '1') localStorage.setItem('bt_internal_traffic', '1');
+        else if (internalFlag === '0') localStorage.removeItem('bt_internal_traffic');
+        if (localStorage.getItem('bt_internal_traffic') === '1') gtag('set', { traffic_type: 'internal' });
+      } catch (e) {}
+      // Google Analytics (GTM) and AdSense load only on the production domain,
+      // never on *.pages.dev deployments or localhost.
+      if (/^(www\.)?battletank\.online$/.test(location.hostname)) {
+        [
+          'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3217305527287787',
+          'https://www.googletagmanager.com/gtm.js?id=GTM-TB78X2F4',
+        ].forEach(function (src) {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = src;
+          if (src.indexOf('googlesyndication') !== -1) s.crossOrigin = 'anonymous';
+          document.head.appendChild(s);
+        });
+      }
+    </script>
+    <link rel="canonical" href="https://battletank.online/destructible-terrain" />
+    <link rel="icon" type="image/svg+xml" href="./images/icon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./images/apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta property="og:site_name" content="BATTLE TANK" />
+    <meta property="og:title" content="Destructible Terrain Tank Game: Arenas &amp; Walls — BATTLE TANK" />
+    <meta property="og:description" content="How destructible terrain works in BATTLE TANK, a free 3D tank game in your browser: brick and concrete walls, forest cover, water, ice, mud, oil fires and craters." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://battletank.online/destructible-terrain" />
+    <meta property="og:image" content="https://battletank.online/images/og-battle.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Destructible Terrain Tank Game: Arenas &amp; Walls — BATTLE TANK" />
+    <meta name="twitter:description" content="How destructible terrain works in BATTLE TANK, a free 3D tank game in your browser: brick and concrete walls, forest cover, water, ice, mud, oil fires and craters." />
+    <meta name="twitter:image" content="https://battletank.online/images/og-battle.jpg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://battletank.online/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Destructible Terrain",
+            "item": "https://battletank.online/destructible-terrain"
+          }
+        ]
+      }
+    </script>
+    <link rel="stylesheet" href="./src/index.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/build/three.module.js",
+          "three/addons/": "./vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body data-page="destructible-terrain" class="text-slate-100 scrollable-page">
+    <div id="root"><!-- prerender:start -->
+<main class="menu-page">
+      <div class="menu-content">
+        <h1 class="menu-page-title" tabindex="-1">Destructible Terrain &amp; 40×40 Tactical Arenas</h1>
+        <p class="menu-lead">BATTLE TANK is a <a href="./">free 3D isometric tank game</a> where the map is part of the fight. Every battle takes place on a 40×40 grid of 1,600 cells, and almost every wall, crate and building can be shot apart. This guide covers each terrain type, how much punishment it takes, and how to use it for cover, ambushes and shortcuts.</p>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">Destructible Walls: Brick, Concrete and Buildings</h2>
+        <p style="margin-top:12px;">Walls are the core of every arena. You can hide behind them, shoot through them to open a new lane, or leave them standing to protect your Command Base HQ. How quickly a wall falls depends on your cannon: Mk1–Mk3 shells chip walls slowly, while the heavy Mk4 and Mk5 guns tear them down several times faster.</p>
+        <figure class="menu-card" style="cursor:default;padding:14px;margin-top:16px;">
+          <img src="./images/home-battle.webp" alt="VANGUARD tank firing through destructible brick walls in a 3D isometric urban arena" loading="lazy" width="1280" height="720" style="width:100%;height:auto;border-radius:4px;display:block;">
+          <figcaption style="margin-top:10px;color:#acbcbd;font-size:13px;">Brick walls break into sub-blocks hit by hit; concrete cracks and exposes its steel rebar before it collapses.</figcaption>
+        </figure>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">BRICK // 4 HP</span>
+            <strong>Destructible Brick Wall</strong>
+            <p>Each cell is built from 4 sub-blocks. Mk1–Mk3 shells remove one layer per hit; Mk4/Mk5 heavy shells remove two. Enemy Engineer tanks can rebuild brick walls during the fight.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">CONCRETE // 16 HP</span>
+            <strong>Reinforced Concrete</strong>
+            <p>A hard wall with a steel rebar cage. Standard shells deal 1 HP per hit (16 hits), Mk4/Mk5 shells deal 4 HP and artillery blasts 6 HP. Craters open on the faces that were hit and expose the rebar.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">BUILDINGS // 25–70 HP</span>
+            <strong>Houses, Factories &amp; Offices</strong>
+            <p>One- and two-story buildings with 5 to 7 visible damage stages. Shells strip the facade and roof down to the frame, then the building collapses into rubble that slows every tank.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">FORTRESS // 48–100 HP</span>
+            <strong>Enemy Strongholds &amp; Turrets</strong>
+            <p>In stronghold assault missions the enemy citadel (48 HP) is ringed by concrete and guarded by cannon, howitzer and rocket turrets (100 HP each). Destroying the citadel wins the mission.</p>
+          </article>
+        </div>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">Cover, Concealment and Line of Sight</h2>
+        <p style="margin-top:12px;">Directional armor makes positioning decisive: tanks are strongest from the front and weakest from the rear, so terrain that hides your flank is worth as much as a cannon upgrade. Enemies use the same rules, and their AI actively looks for forest, chokepoints and cells hidden from you.</p>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">FOREST</span>
+            <strong>Camouflage Canopy</strong>
+            <p>Tanks inside forest cells are hidden from view and break the lock of enemy guided missiles. Flamethrower tanks and fuel-air blasts can burn a forest down to bare scorched sand.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">HEDGEHOGS</span>
+            <strong>Anti-Tank Obstacles</strong>
+            <p>Steel hedgehogs block every chassis but sit low enough for shells and missiles to fly over them, which makes them ideal firing positions at chokepoints.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">CRATERS</span>
+            <strong>Blast Craters</strong>
+            <p>Heavy explosions gouge craters into the ground. A tank sitting in a crater takes 30% less splash and artillery damage, at the cost of a 15% speed penalty.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">LANDMARKS</span>
+            <strong>Monuments</strong>
+            <p>Indestructible landmarks block movement, shells, missiles and line of sight completely. They are permanent cover that no weapon can remove.</p>
+          </article>
+        </div>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">Water, Ice, Mud and Other Surfaces</h2>
+        <p style="margin-top:12px;">Every cell has a ground surface that changes how tanks drive. Speed, acceleration and turning are combined from the surface and anything standing on it, so a crater on a road keeps part of the road bonus. The <a href="./arsenal">CH4 All-Terrain and CH5 Grav-Hover chassis</a> ignore almost all of these penalties.</p>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">WATER</span>
+            <strong>Deep Water Channels</strong>
+            <p>Standard tracks (CH1–CH3) cannot enter deep water, but shells and missiles fly across it freely. The CH4 All-Terrain chassis wades across and the CH5 Grav-Hover glides over it, opening routes enemies do not expect.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">ICE</span>
+            <strong>Low-Traction Ice</strong>
+            <p>Acceleration drops from 22 to 4.5 and braking from 14 to 1.8, so heavy tanks slide through turns. Plan your stops early or fit an all-terrain chassis.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">SWAMP &amp; SAND</span>
+            <strong>Mud and Scorched Sand</strong>
+            <p>Swamp slows tracked tanks to 58% speed and 65% turn rate. Sand left behind by burned forest costs 22% speed and offers no concealment.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">ROADS &amp; STONE</span>
+            <strong>Highways, Bridges and Rock Fields</strong>
+            <p>Roads and bridges give +20% top speed and +25% acceleration but no cover. Rock fields cap tracked tanks at 1.5 cells per second, whatever the engine.</p>
+          </article>
+        </div>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">Explosive and Interactive Objects</h2>
+        <p style="margin-top:12px;">Some objects react to fire and can change a whole section of the map in a second. Learning them turns the arena into a weapon.</p>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">FUEL DRUMS</span>
+            <strong>Explosive Barrels</strong>
+            <p>Any hit detonates a drum for 35 damage in a 2.8-cell radius. The blast knocks down nearby brick, damages concrete and sets off neighbouring drums in a chain reaction.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">OIL SLICKS</span>
+            <strong>Volatile Oil</strong>
+            <p>Oil makes tracks drift like ice. A shell, flame or nearby explosion ignites it for 7 seconds of fire damage and thick smoke that hides tanks.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">WATER TOWERS</span>
+            <strong>Pressurized Water Towers</strong>
+            <p>Shooting a tower (2 HP) floods the ground around it into swamp and puts out every forest and oil fire within 2.5 cells.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">SUPPLY BOXES</span>
+            <strong>Wooden Supply Caches</strong>
+            <p>Two hits open a cache and drop a field power-up (repair, EMP, APS charge, missile, cannon shells or HQ restore) that waits until you drive over it.</p>
+          </article>
+        </div>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">Defending the Command Base HQ</h2>
+        <p style="margin-top:12px;">Your Command Base is a two-bay workshop on the edge of the map. A 4-cell line of reinforced concrete stands two rows in front of it, with an open lane so you can drive up for repairs (+3 HP per second within 2.5 cells). Every enemy that breaks through that line threatens the HQ, so many players keep the concrete intact and fight in front of it rather than behind it.</p>
+        <p style="margin-top:12px;">Ready to put this into practice? The <a href="./how-to-play">How to Play guide</a> covers controls and tactics, and the <a href="./walkthrough">Campaign Walkthrough</a> shows how each region's terrain shapes its missions.</p>
+        
+        <div class="menu-actions" style="margin-top:28px;">
+          <a class="menu-primary" href="./campaign">Launch Campaign →</a>
+          <a class="menu-secondary" href="./how-to-play">How to Play</a>
+          <a class="menu-secondary" href="./arsenal">Tank Upgrades</a>
+          <a class="menu-secondary" href="./enemies">Enemy Tanks</a>
+        </div>
+      </div>
+
+      <footer class="armored-footer">
+        <div class="armored-footer-bracket" aria-hidden="true">
+          <span class="btn-rivet" aria-hidden="true"></span>
+          <span class="bracket-notch" aria-hidden="true"></span>
+          <span class="btn-rivet" aria-hidden="true"></span>
+        </div>
+
+        <div class="armored-footer-inner">
+          <div class="footer-right-zone">
+            <nav class="footer-links" aria-label="Footer navigation">
+              <a href="./">HOME</a>
+              <a href="./campaign">CAMPAIGN</a>
+              <a href="./survival">SURVIVAL</a>
+              <a href="./contracts">CONTRACTS</a>
+              <span class="footer-sep" aria-hidden="true">|</span>
+              <a href="./how-to-play">HOW TO PLAY</a>
+              <a href="./walkthrough">WALKTHROUGH</a>
+              <a href="./enemies">ENEMIES</a>
+              <a href="./arsenal">ARSENAL</a>
+              <a class="is-active" aria-current="page" href="./destructible-terrain">TERRAIN</a>
+              <a href="./webgl-tank-game">TECH</a>
+              <a href="./changelog">CHANGELOG</a>
+              <a href="./about">ABOUT</a>
+              <a href="./privacy-policy">PRIVACY POLICY</a>
+              <a href="./terms">TERMS</a>
+              <a href="./contact">CONTACT</a>
+              <span class="footer-sep" aria-hidden="true">|</span>
+              <button type="button" class="footer-settings-btn" data-action="open-medals" aria-label="Medal Case"><span aria-hidden="true">🎖️</span> MEDAL CASE</button>
+              <button type="button" class="footer-settings-btn" data-action="open-settings" aria-label="Settings"><span aria-hidden="true">⚙</span> SETTINGS</button>
+            </nav>
+          </div>
+        </div>
+      </footer>
+    </main>
+    <!-- prerender:end --></div>
+    <noscript>
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>Destructible Terrain Tank Game: Arenas &amp; Walls — BATTLE TANK</h1>
+        <p>BATTLE TANK is a free browser tank game with destructible terrain: brick and concrete walls, forest cover, water, ice, mud, burning oil and blast craters on 40x40 arenas.</p>
+      </main>
+    </noscript>
+    <script type="module" src="./src/pages/static-page.js"></script>
+  </body>
+</html>

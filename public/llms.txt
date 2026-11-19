@@ -8,7 +8,7 @@
 - **Platform**: Desktop & Landscape Tablet Web Browsers (WebGL, Three.js, zero-install)
 - **Playable URL**: [Play BATTLE TANK](https://battletank.online/)
 - **Key Mechanics**:
-  - **Destructible Tactical Arenas**: Multi-material grids featuring destructible brick walls, reinforced concrete, stealth forest canopies, water hazards, low-friction ice, enemy spawner pads, and the Command Base HQ.
+  - **Destructible Tactical Arenas**: Multi-material grids featuring destructible brick walls, reinforced concrete, stealth forest canopies, water hazards, low-friction ice, explosive fuel drums, oil slicks, water towers, and the Command Base HQ.
   - **5-Track x 5-Tier Modular Tank Engineering**: Upgrade Cannon (`Mk1`–`Mk5`), Chassis (`CH1`–`CH5`), Hull Frame (`F1`–`F5`), Engine (`E1`–`E5`), and Armor (`A1`–`A5`), with live 3D visual upgrades and physics-based mass, power-to-weight speed, directional armor, and penetration calculations.
   - **Optional Tactical Modules**: 4-Corner Active Protection System (`APS`), Turret Homing ATGM Launcher, Emergency Auto-Repair Kit, and specialized enemy modules.
   - **Tactical Enemy AI**: 12 distinct enemy classes (`SCOUT`, `STANDARD`, `HOWITZER`, `ARMOR`, `SAPPER`, `HOVER`, `KAMIKAZE`, `FLAMETHROWER`, `JAMMER`, `ENGINEER`, `STRIKER`, `STEALTH`) plus Sector Bosses, coordinated by a Squad Director with role-based movement and attack tokens.
@@ -25,6 +25,9 @@
 - [Walkthrough](https://battletank.online/walkthrough): Sector-by-sector tactical strategies and boss counterplay.
 - [Enemy Database](https://battletank.online/enemies): Profiles, behaviors, and weaknesses for all enemy tank classes and bosses.
 - [Arsenal & Upgrades](https://battletank.online/arsenal): Complete breakdown of cannons, chassis, frames, engines, armor tiers, and optional modules.
+- [Destructible Terrain](https://battletank.online/destructible-terrain): Wall durability, cover, water, ice, mud, explosive objects, and HQ defense.
+- [Games Like Battle City](https://battletank.online/games-like-battle-city): How BATTLE TANK compares to the 1985 arcade classic it is inspired by.
+- [WebGL & Three.js Tech](https://battletank.online/webgl-tank-game): How the game is built with Three.js, WebGL, and zero-bundler vanilla JavaScript.
 
 ## Project & Support
 
@@ -32,3 +35,4 @@
 - [About](https://battletank.online/about): Project overview, technology stack, and design philosophy.
 - [Contact](https://battletank.online/contact): Feedback and support channels.
 - [Privacy Policy](https://battletank.online/privacy-policy): Privacy and data handling policy.
+- [Terms of Service](https://battletank.online/terms): Rules of use, saved progress, advertising, and trademarks.
