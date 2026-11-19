@@ -5,10 +5,15 @@ import {
   TRACK_UPGRADE_COSTS,
   UPGRADE,
 } from '../constants.js';
-import { SECTORS, TILE_SIZE } from '../levels.js';
+import { SECTORS, GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
 import { getObservedEnemyCondition } from '../../sim/ai.js';
 import { buildContractHudSnapshot } from '../../sim/contract.js';
+import {
+  JAMMER_ECM,
+  applyRadarJamming,
+  isPointWithinJammerRadius,
+} from '../../sim/jammer.js';
 import { buildSurvivalHudSnapshot } from '../../sim/survival.js';
 
 export function buildHudSnapshot(engine) {
@@ -44,7 +49,7 @@ export function buildHudSnapshot(engine) {
     };
   }
 
-  const sensorContactsList = Array.from(engine.sensorContacts.values()).map((c) => ({
+  const rawSensorContacts = Array.from(engine.sensorContacts.values()).map((c) => ({
     enemyId: c.enemyId,
     x: c.x,
     z: c.z,
@@ -52,6 +57,27 @@ export function buildHudSnapshot(engine) {
     age: c.age,
     source: c.source,
   }));
+  const radarJammed = isPointWithinJammerRadius(
+    engine.playerX,
+    engine.playerZ,
+    engine.enemies,
+    JAMMER_ECM.RADAR_RADIUS_CELLS * TILE_SIZE
+  );
+  const apsJammed = isPointWithinJammerRadius(
+    engine.playerX,
+    engine.playerZ,
+    engine.enemies,
+    JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
+  );
+  const sensorContactsList = radarJammed
+    ? applyRadarJamming(rawSensorContacts, {
+        playerX: engine.playerX,
+        playerZ: engine.playerZ,
+        elapsed: engine.clock?.elapsedTime ?? (typeof performance !== 'undefined' ? performance.now() * 0.001 : 0),
+        radarRange: 16 * TILE_SIZE,
+        halfArena: (GRID_SIZE * TILE_SIZE) / 2,
+      })
+    : rawSensorContacts;
 
   return {
     status: engine.status,
@@ -121,7 +147,8 @@ export function buildHudSnapshot(engine) {
     missileCooldown: engine.missileCooldown,
     repairKitCount: engine.repairKitCount,
     empTimer: engine.empTimer,
-    jammedTimer: engine.jammedTimer,
+    radarJammed,
+    apsJammed,
     inBaseRepairZone: engine.inBaseRepairZone,
     baseAlive: engine.baseAlive,
     baseHp: Math.ceil(engine.baseHp ?? (engine.baseAlive ? 1 : 0)),

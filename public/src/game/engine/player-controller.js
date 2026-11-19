@@ -26,6 +26,7 @@ import { markMaterialOwned, markOwned } from '../render/dispose.js';
 import { cellMovement } from '../terrains/layers.js';
 import { deckClearance } from '../render/models.js';
 import { apsInterceptCost } from '../../sim/aps.js';
+import { JAMMER_ECM, isPointWithinJammerRadius } from '../../sim/jammer.js';
 import { resetBrain } from '../../sim/behavior/index.js';
 import { TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { sampleMissionTerrain } from '../../sim/missions.js';
@@ -349,14 +350,6 @@ export class PlayerController {
   firePlayerHomingMissile() {
     const engine = this.engine;
     if (engine.status !== GameStatus.PLAYING) return;
-    if (engine.jammedTimer > 0) {
-      sound.playJammerPulse();
-      engine.setStatusBanner(
-        'ECM JAMMING ACTIVE! HOMING ATGM TELEMETRY LOCKED!',
-        2.0
-      );
-      return;
-    }
     if (engine.missileAmmo <= 0 || engine.missileCooldown > 0) return;
 
     engine.missileAmmo--;
@@ -462,10 +455,6 @@ export class PlayerController {
         'RM-1 FIELD REPAIR COMPLETE',
         2.6
       );
-    }
-
-    if (engine.jammedTimer > 0) {
-      engine.jammedTimer = Math.max(0, engine.jammedTimer - dt);
     }
 
     const canHover = engine.playerStats.canHover;
@@ -833,7 +822,17 @@ export class PlayerController {
 
   updateApsInterception() {
     const engine = this.engine;
-    if (engine.apsRearmTimer > 0 || engine.jammedTimer > 0) return;
+    if (
+      engine.apsRearmTimer > 0 ||
+      isPointWithinJammerRadius(
+        engine.playerX,
+        engine.playerZ,
+        engine.enemies,
+        JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
+      )
+    ) {
+      return;
+    }
     const totalAmmo = engine.apsAmmo.reduce((a, b) => a + b, 0);
     if (totalAmmo <= 0) return;
 

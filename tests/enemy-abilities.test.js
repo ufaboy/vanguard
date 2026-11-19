@@ -10,7 +10,6 @@ import {
 } from '../public/src/game/abilities/index.js';
 import { CONTACT_WARHEAD } from '../public/src/game/abilities/contact-warhead.js';
 import { MINE_LAYER } from '../public/src/game/abilities/mine-layer.js';
-import { JAMMER_PULSE } from '../public/src/game/abilities/jammer-pulse.js';
 import { ENGINEER_SUPPORT } from '../public/src/game/abilities/engineer-support.js';
 import { FLAME_STREAM, KAMIKAZE_BLAST, LAND_MINE, OPTIONAL_EQUIPMENT, TILE_SIZE } from '../public/src/game/constants.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
@@ -19,8 +18,7 @@ import { SECTOR_BOSS_CONFIGS, TANK_CONFIGS, TANK_TYPES } from '../public/src/gam
 /** Minimal stand-in for the engine services abilities use. */
 function fakeGame(overrides = {}) {
   return {
-    mines: [], planted: [], enemies: [], playerX: 100, playerZ: 100, jammedTimer: 0, sparks: 0,
-    fx: { pulses: 0, jammerPulse() { this.pulses++; } },
+    mines: [], planted: [], enemies: [], playerX: 100, playerZ: 100, sparks: 0,
     plantMineAt(x, z) { this.planted.push({ x, z }); this.mines.push({ x, z }); },
     isOnPlayerTrail: () => true,
     spawnSparks() { this.sparks++; },
@@ -35,11 +33,11 @@ test('Every ability id used by a tank config exists in the registry', () => {
   }
   assert.throws(() => resolveAbilities(['noSuchAbility']), /Unknown enemy ability/);
   assert.deepEqual(TANK_CONFIGS[TANK_TYPES.SAPPER].abilities, ['mineLayer']);
-  assert.deepEqual(TANK_CONFIGS[TANK_TYPES.JAMMER].abilities, ['jammerPulse']);
+  assert.equal(TANK_CONFIGS[TANK_TYPES.JAMMER].abilities, undefined);
   assert.deepEqual(TANK_CONFIGS[TANK_TYPES.ENGINEER].abilities, ['engineerSupport']);
   assert.deepEqual(TANK_CONFIGS[TANK_TYPES.FLAMETHROWER].abilities, ['flameStream']);
   assert.deepEqual(TANK_CONFIGS[TANK_TYPES.KAMIKAZE].abilities, ['contactWarhead']);
-  assert.equal(Object.keys(ABILITIES).length, 5);
+  assert.equal(Object.keys(ABILITIES).length, 4);
 });
 
 test('Mine layer loads the module ammunition and drops mines behind the hull', () => {
@@ -67,22 +65,6 @@ test('Mine layer follows the brain when active and respects the map limit', () =
   assert.equal(updateAbilities(tank, game, { brainActive: true }), 'mineLayer');
   assert.equal(game.planted.length, 0, 'no mine over the map limit');
   assert.equal(tank.minesRemaining, OPTIONAL_EQUIPMENT.MINE_LAYER.ammoCount, 'ammunition kept');
-});
-
-test('Jammer pulse jams the player only inside its radius', () => {
-  const tank = { x: 0, z: 0, specialCooldown: 0 };
-  const far = fakeGame({ playerX: JAMMER_PULSE.RADIUS + 1, playerZ: 0 });
-  equipAbilities(tank, ['jammerPulse'], far);
-  assert.equal(updateAbilities(tank, far, { brainActive: false, canSeePlayer: false }), null, 'needs a reason to jam');
-  assert.equal(updateAbilities(tank, far, { brainActive: false, canSeePlayer: true }), 'jammerPulse');
-  assert.equal(far.fx.pulses, 1);
-  assert.equal(far.jammedTimer, 0);
-  assert.equal(tank.specialCooldown, JAMMER_PULSE.COOLDOWN);
-
-  const near = fakeGame({ playerX: 3, playerZ: 0 });
-  tank.specialCooldown = 0;
-  updateAbilities(tank, near, { brainActive: false, canSeePlayer: true });
-  assert.equal(near.jammedTimer, JAMMER_PULSE.JAM_DURATION);
 });
 
 test('Engineer welds the first damaged ally in range before fortifying', () => {

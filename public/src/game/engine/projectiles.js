@@ -3,6 +3,11 @@ import { resolveArmorHit } from '../../sim/ballistics.js';
 import { HULL_CATALOG, TURRET_CATALOG } from '../../sim/catalog.js';
 import { applySubsystemDamage } from '../../sim/subsystems.js';
 import {
+  JAMMER_ECM,
+  computeJammedMissileTarget,
+  isPointWithinJammerRadius,
+} from '../../sim/jammer.js';
+import {
   BULLET_POWER,
   FLAME_STREAM,
   INFERNO,
@@ -241,26 +246,52 @@ export class ProjectilesController {
         }
         const headingBefore = Math.atan2(p.vx, p.vz);
         if (p.fromPlayer) {
-          let nearest = null;
-          let minDist = Infinity;
-          for (const e of engine.enemies) {
-            if (e.hp <= 0) continue;
-            const d = Math.hypot(e.x - p.x, e.z - p.z);
-            if (d < minDist) {
-              minDist = d;
-              nearest = e;
-            }
+          if (
+            !p.jammedTarget &&
+            isPointWithinJammerRadius(
+              p.x,
+              p.z,
+              engine.enemies,
+              JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
+            )
+          ) {
+            p.jammedTarget = computeJammedMissileTarget(
+              p.x,
+              p.z,
+              JAMMER_ECM.MISSILE_SCATTER_CELLS * TILE_SIZE,
+              (GRID_SIZE * TILE_SIZE) / 2,
+              Math.random
+            );
+            engine.spawnSparks?.(p.x, p.flightY ?? 1.5, p.z, 0xa855f7, 6);
+            sound.playJammerPulse?.({ x: p.x, z: p.z });
           }
-          if (nearest) {
-            missileTargetX = nearest.x;
-            missileTargetZ = nearest.z;
+
+          if (p.jammedTarget) {
+            missileTargetX = p.jammedTarget.x;
+            missileTargetZ = p.jammedTarget.z;
             hasMissileTarget = true;
-          } else if (engine.enemyBaseAlive) {
-            const basePos = engine.getEnemyBaseCenter();
-            if (basePos) {
-              missileTargetX = basePos.x;
-              missileTargetZ = basePos.z;
+          } else {
+            let nearest = null;
+            let minDist = Infinity;
+            for (const e of engine.enemies) {
+              if (e.hp <= 0) continue;
+              const d = Math.hypot(e.x - p.x, e.z - p.z);
+              if (d < minDist) {
+                minDist = d;
+                nearest = e;
+              }
+            }
+            if (nearest) {
+              missileTargetX = nearest.x;
+              missileTargetZ = nearest.z;
               hasMissileTarget = true;
+            } else if (engine.enemyBaseAlive) {
+              const basePos = engine.getEnemyBaseCenter();
+              if (basePos) {
+                missileTargetX = basePos.x;
+                missileTargetZ = basePos.z;
+                hasMissileTarget = true;
+              }
             }
           }
           const curAngle = Math.atan2(p.vx, p.vz);
@@ -304,6 +335,20 @@ export class ProjectilesController {
         : p.isFlame ? 0.72 : 0.75;
       p.mesh.position.set(p.x, flightY, p.z);
       engine.emitProjectileTrail(p, prevX, prevZ, flightY);
+
+      if (
+        p.isMissile &&
+        p.fromPlayer &&
+        p.jammedTarget &&
+        Math.hypot(p.jammedTarget.x - p.x, p.jammedTarget.z - p.z) <=
+          Math.max(0.45, p.speed * dt * 1.1)
+      ) {
+        p.x = p.jammedTarget.x;
+        p.z = p.jammedTarget.z;
+        engine.detonateMissile(p);
+        engine.removeProjectile(i);
+        continue;
+      }
 
       if (p.isThermobaric && p.detonateDist > 0 && p.traveled >= p.detonateDist) {
         engine.detonateThermobaricAt(

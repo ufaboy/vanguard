@@ -529,7 +529,6 @@ export class SectorLoaderController {
       engine.setProfileMode('campaign');
     }
 
-    engine.jammedTimer = 0;
     engine.recomputePlayerStats(false);
 
     engine.assembledTank = resolveAssembledTank(engine.playerSave);

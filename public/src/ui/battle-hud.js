@@ -261,10 +261,16 @@ export function renderBattlefieldHud({
   if (modifiersStrip) {
     const items = [];
     if (hud.status === GameStatus.PLAYING) {
-      if (hud.jammedTimer > 0) {
+      if (hud.apsJammed) {
         items.push(`
           <div class="bg-purple-950/95 border border-purple-500/80 px-3.5 py-1.5 rounded flex items-center gap-2 text-xs font-mono text-purple-200 shadow-lg">
-            <span>ECM JAMMING: APS & ATGM DISABLED (${hud.jammedTimer.toFixed(1)}s)</span>
+            <span>ECM JAMMING: APS & ATGM DISRUPTED</span>
+          </div>
+        `);
+      } else if (hud.radarJammed) {
+        items.push(`
+          <div class="bg-purple-950/95 border border-purple-500/70 px-3.5 py-1.5 rounded flex items-center gap-2 text-xs font-mono text-purple-200 shadow-lg">
+            <span>ECM RADAR INTERFERENCE</span>
           </div>
         `);
       }
@@ -349,7 +355,7 @@ export function renderBattlefieldHud({
 
       const apsTotal = hud.apsTotal ?? 0;
       const apsMax = hud.apsMaxAmmo ?? 0;
-      const apsJammed = hud.jammedTimer > 0;
+      const apsJammed = Boolean(hud.apsJammed);
       const apsReady = apsTotal > 0 && !apsJammed;
       const apsValueText = apsJammed
         ? 'JAM'

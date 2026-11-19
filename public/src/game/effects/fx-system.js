@@ -1288,14 +1288,6 @@ export class FxSystem {
     }
   }
 
-  /** ECM jammer wave: expanding violet rings and crackling arcs. */
-  jammerPulse(x, y, z, radius = 11) {
-    this.shockwave(x, 0.12, z, 0.6, radius, 0xb36bff, 0.75, 0.9);
-    this.shockwave(x, 0.14, z, 0.4, radius * 0.6, 0xe0b0ff, 0.5, 0.6);
-    this.electric(x, y, z, 0xc084fc, 5, 1.1);
-    this.point('glow', { x, y, z, life: 0.35, size: 2.6, size1: 3.4, tex: FxTex.RING, color: [0.75, 0.45, 1], alpha: 0.8 });
-  }
-
   /** APS hard-kill: interceptor streak from the launcher and a fragmentation airburst. */
   apsIntercept(sx, sy, sz, tx, ty, tz) {
     this.segment(sx, sy, sz, tx, ty, tz, [1, 0.85, 0.4], 0.13, 0.16, 1);

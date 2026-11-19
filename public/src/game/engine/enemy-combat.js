@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { normalizeAngleSigned } from '../../sim/ai.js';
+import { JAMMER_ECM, isPointWithinJammerRadius } from '../../sim/jammer.js';
 import {
   ACTION_KIND,
   GUNNER,
@@ -864,7 +865,14 @@ export class EnemyCombatController {
         kamikazeChargingClose: enemy.enemyClass === 'KAMIKAZE' && distToPlayer <= TILE_SIZE * 5.5,
         howitzerBarrages: enemy.howitzerBarrages || 0,
         stealthCamouflaged: enemy.enemyClass === 'STEALTH' && Math.hypot(enemy.vx || 0, enemy.vz || 0) < 0.05,
-        jammerPulsing: enemy.enemyClass === 'JAMMER' && (engine.jammedTimer || 0) > 0,
+        jammerPulsing:
+          enemy.enemyClass === 'JAMMER' &&
+          isPointWithinJammerRadius(
+            engine.playerX,
+            engine.playerZ,
+            [{ ...enemy, hp: 1 }],
+            JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
+          ),
         bossOverloaded: Boolean(enemy.titanOverload),
       });
       const unitClass = String(enemy.enemyClass || 'hostile').toUpperCase();
