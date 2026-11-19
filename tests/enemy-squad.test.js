@@ -12,6 +12,7 @@ import {
   stepBrain,
   updateAttackTokens,
 } from '../public/src/sim/behavior/index.js';
+import { ROLE_CONFIGS } from '../public/src/sim/behavior/brain.js';
 import { SECTORS } from '../public/src/game/levels.js';
 
 const E = NAV_TILE.EMPTY;
@@ -205,6 +206,16 @@ test('Jammer shadows out of sight and closes to screen range while allies fight'
   const { pos, out: screen } = walk(brain, grid, { row: 15, col: 2 }, target, engaged);
   assert.equal(screen.tactic, 'screen');
   assert.ok(dist(pos, target) <= 5.5);
+
+  // After the screening run it withdraws out of sight, then screens again.
+  const cfg = ROLE_CONFIGS.ewar;
+  const hold = { ...engaged, dt: cfg.screenSec + 0.1 };
+  const withdraw = stepBrain(brain, ctxFor(grid, pos, target, hold));
+  assert.equal(withdraw.tactic, 'withdraw');
+  const back = walk(brain, grid, pos, target, engaged);
+  assert.ok(dist(back.pos, target) >= cfg.shadow.minCells - 0.5, 'withdrew out of the ECM bubble');
+  const again = stepBrain(brain, ctxFor(grid, back.pos, target, { ...engaged, dt: cfg.withdrawSec + 0.1 }));
+  assert.equal(again.tactic, 'screen');
 });
 
 test('Engineer drives to the damaged ally; flees a close player', () => {

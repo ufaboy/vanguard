@@ -7,12 +7,16 @@ export const JAMMER_ECM = Object.freeze({
   SYSTEM_RADIUS_CELLS: 5,
   /** Maximum scatter radius in grid cells when an in-flight ATGM is jammed. */
   MISSILE_SCATTER_CELLS: 3,
+  /** Maximum deflection (radians) of a jammed ATGM from its heading when it loses lock. */
+  MISSILE_DEFLECT_RAD: 0.7,
+  /** A jammed ATGM flies at least this fraction of the scatter radius before impact. */
+  MISSILE_MIN_FLIGHT_FRACTION: 0.25,
   /** Fraction of real radar contacts hidden while radar is jammed. */
   RADAR_HIDE_RATIO: 0.5,
   /** Fraction of fake radar contacts added relative to real contacts. */
   RADAR_FAKE_RATIO: 0.5,
   /** Seconds each radar interference pattern persists before reshuffling. */
-  RADAR_GLITCH_INTERVAL_SEC: 0.45,
+  RADAR_GLITCH_INTERVAL_SEC: 1.2,
 });
 
 /** True when `tank` is alive and carries the passive JAMMER ECM module. */
@@ -96,20 +100,24 @@ export function applyRadarJamming(
 
 /**
  * Computes a random impact point within `scatterRadius` of `(x, z)`
- * where an in-flight ATGM was jammed.
+ * where an in-flight ATGM was jammed. The point lies in a forward cone around
+ * `heading` (radians, atan2(vx, vz)) so the missile can reach it flying straight.
  */
 export function computeJammedMissileTarget(
   x,
   z,
+  heading,
   scatterRadius,
   halfArena = 36,
   random = Math.random
 ) {
-  const angle = random() * Math.PI * 2;
-  const dist = Math.sqrt(random()) * Math.max(0, scatterRadius);
+  const angle = heading + (random() * 2 - 1) * JAMMER_ECM.MISSILE_DEFLECT_RAD;
+  const radius = Math.max(0, scatterRadius);
+  const minDist = Math.min(radius, JAMMER_ECM.MISSILE_MIN_FLIGHT_FRACTION * radius);
+  const dist = minDist + random() * (radius - minDist);
   const limit = Math.max(1, halfArena - 0.5);
   return {
-    x: Math.max(-limit, Math.min(limit, x + Math.cos(angle) * dist)),
-    z: Math.max(-limit, Math.min(limit, z + Math.sin(angle) * dist)),
+    x: Math.max(-limit, Math.min(limit, x + Math.sin(angle) * dist)),
+    z: Math.max(-limit, Math.min(limit, z + Math.cos(angle) * dist)),
   };
 }

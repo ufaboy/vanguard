@@ -72,10 +72,13 @@ export const ROLE_CONFIGS = Object.freeze({
     rushBelowCells: 6,
     rushKeepCells: 8,
   }),
-  // JAMMER: shadow out of sight while projecting radar ECM; close to 3-5 cells when allies engage
+  // JAMMER: shadow out of sight while projecting radar ECM; when allies engage, close to
+  // 3-5 cells for `screenSec`, then withdraw out of sight for `withdrawSec` and repeat
   ewar: Object.freeze({
     screen: { minCells: 3, maxCells: 5, los: null, coverWeight: 0.4, travelWeight: 0.1, maxTravel: 14 },
     shadow: { minCells: 8, maxCells: 12, los: false, coverWeight: 0.8, travelWeight: 0.15, maxTravel: 12 },
+    screenSec: 9.0,
+    withdrawSec: 4.0,
   }),
   // ENGINEER: repair the most damaged ally out of sight; otherwise fortify; flee close threats
   support: Object.freeze({
@@ -406,9 +409,16 @@ function decideAmbusher(brain, ctx, cfg) {
 }
 
 function decideEwar(brain, ctx, cfg) {
+  if (timedActive(brain)) return null;
   if (ctx.alliesEngaged) {
-    if (brain.tactic === 'screen' && brain.goal) return null;
-    return startTactic(brain, ctx, 'screen', cfg.screen, 0);
+    if (brain.tactic === 'screen') {
+      // Hold the ECM screen for a while, then fall back out of sight so the
+      // player's APS / ATGM get a window between screening runs.
+      if (brain.tacticTimer <= 0) return startTactic(brain, ctx, 'withdraw', cfg.shadow, cfg.withdrawSec);
+      if (brain.goal) return null;
+      return startTactic(brain, ctx, 'screen', cfg.screen, brain.tacticTimer);
+    }
+    return startTactic(brain, ctx, 'screen', cfg.screen, cfg.screenSec);
   }
   if (brain.tactic === 'shadow' && brain.goal) return null;
   return startTactic(brain, ctx, 'shadow', cfg.shadow, 0);

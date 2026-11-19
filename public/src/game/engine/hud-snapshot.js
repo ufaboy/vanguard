@@ -2,6 +2,7 @@
 
 import {
   PLAYER_UPGRADES,
+  RADAR_RANGE_CELLS,
   TRACK_UPGRADE_COSTS,
   UPGRADE,
 } from '../constants.js';
@@ -74,7 +75,7 @@ export function buildHudSnapshot(engine) {
         playerX: engine.playerX,
         playerZ: engine.playerZ,
         elapsed: engine.clock?.elapsedTime ?? (typeof performance !== 'undefined' ? performance.now() * 0.001 : 0),
-        radarRange: 16 * TILE_SIZE,
+        radarRange: RADAR_RANGE_CELLS * TILE_SIZE,
         halfArena: (GRID_SIZE * TILE_SIZE) / 2,
       })
     : rawSensorContacts;

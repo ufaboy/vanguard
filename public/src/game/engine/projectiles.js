@@ -255,13 +255,20 @@ export class ProjectilesController {
               JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
             )
           ) {
+            // Lost lock: the missile stops steering and flies straight to a scattered
+            // impact point ahead of it (steering at a nearby point would make it orbit).
             p.jammedTarget = computeJammedMissileTarget(
               p.x,
               p.z,
+              Math.atan2(p.vx, p.vz),
               JAMMER_ECM.MISSILE_SCATTER_CELLS * TILE_SIZE,
               (GRID_SIZE * TILE_SIZE) / 2,
               Math.random
             );
+            const jamHeading = Math.atan2(p.jammedTarget.x - p.x, p.jammedTarget.z - p.z);
+            p.vx = Math.sin(jamHeading) * p.speed;
+            p.vz = Math.cos(jamHeading) * p.speed;
+            p.mesh.rotation.y = jamHeading;
             engine.spawnSparks?.(p.x, p.flightY ?? 1.5, p.z, 0xa855f7, 6);
             sound.playJammerPulse?.({ x: p.x, z: p.z });
           }
@@ -294,16 +301,18 @@ export class ProjectilesController {
               }
             }
           }
-          const curAngle = Math.atan2(p.vx, p.vz);
-          const targetAngle = Math.atan2(missileTargetX - p.x, missileTargetZ - p.z);
-          const nextAngle = engine.lerpAngle(
-            curAngle,
-            targetAngle,
-            MISSILE.TURN_RATE * dt
-          );
-          p.vx = Math.sin(nextAngle) * p.speed;
-          p.vz = Math.cos(nextAngle) * p.speed;
-          p.mesh.rotation.y = nextAngle;
+          if (!p.jammedTarget) {
+            const curAngle = Math.atan2(p.vx, p.vz);
+            const targetAngle = Math.atan2(missileTargetX - p.x, missileTargetZ - p.z);
+            const nextAngle = engine.lerpAngle(
+              curAngle,
+              targetAngle,
+              MISSILE.TURN_RATE * dt
+            );
+            p.vx = Math.sin(nextAngle) * p.speed;
+            p.vz = Math.cos(nextAngle) * p.speed;
+            p.mesh.rotation.y = nextAngle;
+          }
         } else if (
           p.isHoming &&
           !engine.inForest &&
@@ -340,8 +349,9 @@ export class ProjectilesController {
         p.isMissile &&
         p.fromPlayer &&
         p.jammedTarget &&
-        Math.hypot(p.jammedTarget.x - p.x, p.jammedTarget.z - p.z) <=
-          Math.max(0.45, p.speed * dt * 1.1)
+        // Reached or flew past the impact point.
+        ((p.jammedTarget.x - p.x) * p.vx + (p.jammedTarget.z - p.z) * p.vz <= 0 ||
+          Math.hypot(p.jammedTarget.x - p.x, p.jammedTarget.z - p.z) <= 0.45)
       ) {
         p.x = p.jammedTarget.x;
         p.z = p.jammedTarget.z;

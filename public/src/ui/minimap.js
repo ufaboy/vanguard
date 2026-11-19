@@ -1,4 +1,4 @@
-import { GRID_SIZE, TILE_SIZE } from '../game/constants.js';
+import { GRID_SIZE, RADAR_RANGE_CELLS, TILE_SIZE } from '../game/constants.js';
 import { GameStatus } from '../game/types.js';
 import { setAttr, setHidden, setHtml, syncPool } from './dom-helpers.js';
 
@@ -49,7 +49,7 @@ export function renderNorthUpSensorMinimap(hud) {
 
   const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
   const RADAR_RADIUS = 45;
-  const RADAR_RANGE = 16 * TILE_SIZE;
+  const RADAR_RANGE = RADAR_RANGE_CELLS * TILE_SIZE;
   const playerX = hud.playerX || 0;
   const playerZ = hud.playerZ || 0;
   const toRadar = (wx, wz) => {

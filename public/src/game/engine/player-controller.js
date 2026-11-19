@@ -351,6 +351,12 @@ export class PlayerController {
     const engine = this.engine;
     if (engine.status !== GameStatus.PLAYING) return;
     if (engine.missileAmmo <= 0 || engine.missileCooldown > 0) return;
+    if (this.isInsideJammerSystemRadius()) {
+      // A missile launched inside the ECM bubble would lose lock at the muzzle; keep it.
+      sound.playJammerPulse();
+      engine.setStatusBanner('ECM JAMMING ACTIVE! ATGM LOCK UNAVAILABLE!', 2.0);
+      return;
+    }
 
     engine.missileAmmo--;
     engine.medalTracker?.recordPlayerMissileFired();
@@ -820,19 +826,20 @@ export class PlayerController {
     return false;
   }
 
+  /** True while the player is inside the close-range APS / ATGM disruption radius of a living JAMMER. */
+  isInsideJammerSystemRadius() {
+    const engine = this.engine;
+    return isPointWithinJammerRadius(
+      engine.playerX,
+      engine.playerZ,
+      engine.enemies,
+      JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
+    );
+  }
+
   updateApsInterception() {
     const engine = this.engine;
-    if (
-      engine.apsRearmTimer > 0 ||
-      isPointWithinJammerRadius(
-        engine.playerX,
-        engine.playerZ,
-        engine.enemies,
-        JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
-      )
-    ) {
-      return;
-    }
+    if (engine.apsRearmTimer > 0 || this.isInsideJammerSystemRadius()) return;
     const totalAmmo = engine.apsAmmo.reduce((a, b) => a + b, 0);
     if (totalAmmo <= 0) return;
 

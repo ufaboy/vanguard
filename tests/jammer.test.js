@@ -54,13 +54,72 @@ test('applyRadarJamming hides 50% of real contacts and adds 50% fake contacts', 
   assert.ok(emptyJammed.length >= 1 && emptyJammed.every((c) => c.fake));
 });
 
-test('computeJammedMissileTarget scatters within 3 cells of the jamming point', () => {
+test('computeJammedMissileTarget scatters within 3 cells, in a forward cone of the heading', () => {
   const scatterRadius = JAMMER_ECM.MISSILE_SCATTER_CELLS * TILE_SIZE;
+  const heading = Math.PI / 2; // flying towards +x
   for (let i = 0; i < 40; i++) {
-    const pt = computeJammedMissileTarget(5, -5, scatterRadius, 36);
+    const pt = computeJammedMissileTarget(5, -5, heading, scatterRadius, 36);
     const dist = Math.hypot(pt.x - 5, pt.z - -5);
     assert.ok(dist <= scatterRadius + 1e-6);
+    assert.ok(dist >= JAMMER_ECM.MISSILE_MIN_FLIGHT_FRACTION * scatterRadius - 1e-6);
+    const bearing = Math.atan2(pt.x - 5, pt.z - -5);
+    const off = Math.abs(Math.atan2(Math.sin(bearing - heading), Math.cos(bearing - heading)));
+    assert.ok(off <= JAMMER_ECM.MISSILE_DEFLECT_RAD + 1e-6);
   }
+});
+
+test('Jammed ATGMs always detonate at their scatter point instead of orbiting it', () => {
+  const seeds = [0, 0.13, 0.27, 0.5, 0.71, 0.88, 0.99];
+  for (const a of seeds) {
+    for (const b of seeds) {
+      const rolls = [a, b];
+      const game = Object.assign(Object.create(TankGameEngine.prototype), {
+        playerX: 0,
+        playerZ: -30,
+        enemies: [{ id: 1, hp: 26, enemyClass: 'JAMMER', x: -9, z: 9, hitRadius: 0.85 }],
+        grid: Array.from({ length: 36 }, () => Array.from({ length: 36 }, () => ({ type: 0, hp: 0 }))),
+        projectiles: [{
+          x: 0, z: 0, vx: 0, vz: 22, speed: 22, fromPlayer: true, isMissile: true,
+          damage: 25, penetration: 60, life: 6, traveled: 20, radius: 0.5,
+          mesh: { position: { set() {} }, rotation: { y: 0 } },
+        }],
+        fxGroup: { remove() {} },
+        fx: {},
+        spawnSparks() {},
+        emitProjectileTrail() {},
+        detonations: [],
+        detonateMissile(p) { this.detonations.push({ x: p.x, z: p.z, life: p.life, target: p.jammedTarget }); },
+        lerpAngle(x, y, t) { return x + Math.atan2(Math.sin(y - x), Math.cos(y - x)) * Math.min(1, t); },
+      });
+      const realRandom = Math.random;
+      Math.random = () => (rolls.length ? rolls.shift() : 0.5);
+      try {
+        for (let step = 0; step < 120 && game.projectiles.length > 0; step++) game.updateProjectiles(1 / 60);
+      } finally {
+        Math.random = realRandom;
+      }
+      assert.equal(game.detonations.length, 1, `missile detonated (rolls ${a}, ${b})`);
+      const hit = game.detonations[0];
+      assert.ok(hit.life > 5, `detonated promptly, not on lifetime expiry (rolls ${a}, ${b})`);
+      assert.ok(Math.hypot(hit.x - hit.target.x, hit.z - hit.target.z) < 1e-6);
+    }
+  }
+});
+
+test('Player cannot launch an ATGM from inside the 5-cell jammer bubble', () => {
+  const banners = [];
+  const game = Object.assign(Object.create(TankGameEngine.prototype), {
+    status: 'PLAYING',
+    missileAmmo: 2,
+    missileCooldown: 0,
+    playerX: 0,
+    playerZ: 0,
+    enemies: [{ id: 1, hp: 20, enemyClass: 'JAMMER', x: 4, z: 0 }],
+    setStatusBanner(text) { banners.push(text); },
+  });
+  game.firePlayerHomingMissile();
+  assert.equal(game.missileAmmo, 2, 'no missile spent');
+  assert.equal(banners.length, 1);
 });
 
 test('Player APS is disabled within 5 cells of a living JAMMER and active outside 5 cells', () => {
