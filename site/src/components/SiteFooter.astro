@@ -1,6 +1,6 @@
 ---
 // Shared footer: one place for the navigation, the language menu and the settings buttons.
-import { LOCALES, LANGUAGE_NAMES, isLocalized, pageHref, twinHref, useTranslations } from '../i18n/index.js';
+import { HTML_LANG, LOCALES, LANGUAGE_NAMES, isLocalized, pageHref, twinHref, useTranslations } from '../i18n/index.js';
 
 interface Props { locale: string; slug: string }
 const { locale, slug } = Astro.props;
@@ -29,7 +29,7 @@ const LINKS = [
           <summary aria-label={t('Language')}><span data-lang-current>{locale.toUpperCase()}</span></summary>
           <div class="lang-menu-list">
             {LOCALES.map((lang) => (
-              <a href={twinHref(slug, locale, lang)} hreflang={lang} lang={lang} aria-current={lang === locale ? 'true' : undefined}><b>{lang.toUpperCase()}</b> {LANGUAGE_NAMES[lang]}</a>
+              <a href={twinHref(slug, locale, lang)} hreflang={HTML_LANG[lang] ?? lang} lang={HTML_LANG[lang] ?? lang} aria-current={lang === locale ? 'true' : undefined}><b>{lang.toUpperCase()}</b> {LANGUAGE_NAMES[lang]}</a>
             ))}
           </div>
         </details>}
