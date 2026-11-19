@@ -127,7 +127,8 @@ All files directly required to run and deploy the game reside inside `/public`, 
 │   ├── lint-methods.mjs    # Fails on calls to methods that do not exist (`// lint-methods-ignore` skips a line)
 │   ├── lint-dead-code.mjs  # Fails on unused imports, exports, methods and write-only fields (`// lint-dead-ignore` keeps one)
 │   ├── bump-version.mjs    # Patch / --minor version bump of package.json and package-lock.json
-│   ├── deploy.mjs          # `npm run deploy`: Cloudflare Pages deploy; syncs sitemap <lastmod> and home JSON-LD softwareVersion
+│   ├── deploy.mjs          # `npm run deploy`: Cloudflare Pages deploy; syncs sitemap <lastmod> and home JSON-LD softwareVersion, publishes Markdown for agents
+│   ├── build-markdown.mjs  # Markdown for agents: <page>.md for every sitemap page + llms-full.txt (`npm run build:md` previews into dist/agent-markdown)
 │   ├── build-itch.mjs      # `npm run build:itch`: ad-free, tracker-free itch.io package in dist/itch/
 │   ├── audit-maps.mjs      # Map JSON consistency audit
 │   ├── sync-vendor.mjs     # `npm run vendor`: copies only the used Three.js files into public/vendor
