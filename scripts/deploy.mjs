@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { publishAgentMarkdown } from './build-markdown.mjs';
 
 function loadDotEnv(filePath) {
   if (!fs.existsSync(filePath)) return {};
@@ -92,6 +93,8 @@ let exitCode = 1;
 try {
   fs.cpSync(publicDir, stagingDir, { recursive: true });
   refreshSeoMetadata(stagingDir);
+  const markdownPages = publishAgentMarkdown(stagingDir);
+  console.log(`Markdown for agents: ${markdownPages.length} pages + llms-full.txt`);
 
   const args = [
     'wrangler',

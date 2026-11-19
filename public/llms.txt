@@ -15,24 +15,32 @@
 
 ## Game Modes
 
-- [Campaign](https://battletank.online/campaign): Multi-region tactical campaign culminating in Sector Boss battles.
-- [Survival](https://battletank.online/survival): Endless wave-based survival mode with escalating enemy compositions.
-- [Tactical Contracts](https://battletank.online/contracts): High-stakes standalone special operations and challenge missions.
+- [Campaign](https://battletank.online/campaign.md): Multi-region tactical campaign culminating in Sector Boss battles.
+- [Survival](https://battletank.online/survival.md): Endless wave-based survival mode with escalating enemy compositions.
+- [Tactical Contracts](https://battletank.online/contracts.md): High-stakes standalone special operations and challenge missions.
 
 ## Guides & Reference
 
-- [How to Play](https://battletank.online/how-to-play): Controls, HUD breakdown, combat rules, and survival tips.
-- [Walkthrough](https://battletank.online/walkthrough): Sector-by-sector tactical strategies and boss counterplay.
-- [Enemy Database](https://battletank.online/enemies): Profiles, behaviors, and weaknesses for all enemy tank classes and bosses.
-- [Arsenal & Upgrades](https://battletank.online/arsenal): Complete breakdown of cannons, chassis, frames, engines, armor tiers, and optional modules.
-- [Destructible Terrain](https://battletank.online/destructible-terrain): Wall durability, cover, water, ice, mud, explosive objects, and HQ defense.
-- [Games Like Battle City](https://battletank.online/games-like-battle-city): How BATTLE TANK compares to the 1985 arcade classic it is inspired by.
-- [WebGL & Three.js Tech](https://battletank.online/webgl-tank-game): How the game is built with Three.js, WebGL, and zero-bundler vanilla JavaScript.
+- [How to Play](https://battletank.online/how-to-play.md): Controls, HUD breakdown, combat rules, and survival tips.
+- [Walkthrough](https://battletank.online/walkthrough.md): Sector-by-sector tactical strategies and boss counterplay.
+- [Enemy Database](https://battletank.online/enemies.md): Profiles, behaviors, and weaknesses for all enemy tank classes and bosses.
+- [Arsenal & Upgrades](https://battletank.online/arsenal.md): Complete breakdown of cannons, chassis, frames, engines, armor tiers, and optional modules.
+- [Destructible Terrain](https://battletank.online/destructible-terrain.md): Wall durability, cover, water, ice, mud, explosive objects, and HQ defense.
+- [Games Like Battle City](https://battletank.online/games-like-battle-city.md): How BATTLE TANK compares to the 1985 arcade classic it is inspired by.
+- [WebGL & Three.js Tech](https://battletank.online/webgl-tank-game.md): How the game is built with Three.js, WebGL, and zero-bundler vanilla JavaScript.
 
 ## Project & Support
 
-- [Changelog](https://battletank.online/changelog): Release history and balance updates.
-- [About](https://battletank.online/about): Project overview, technology stack, and design philosophy.
-- [Contact](https://battletank.online/contact): Feedback and support channels.
-- [Privacy Policy](https://battletank.online/privacy-policy): Privacy and data handling policy.
-- [Terms of Service](https://battletank.online/terms): Rules of use, saved progress, advertising, and trademarks.
+- [Changelog](https://battletank.online/changelog.md): Release history and balance updates.
+- [About](https://battletank.online/about.md): Project overview, technology stack, and design philosophy.
+- [Contact](https://battletank.online/contact.md): Feedback and support channels.
+- [Privacy Policy](https://battletank.online/privacy-policy.md): Privacy and data handling policy.
+- [Terms of Service](https://battletank.online/terms.md): Rules of use, saved progress, advertising, and trademarks.
+
+## Markdown for Agents
+
+Every public page also has a clean Markdown copy: add `.md` to its path (the home page is [index.md](https://battletank.online/index.md)). Each HTML page links its copy with `<link rel="alternate" type="text/markdown">`.
+
+## Optional
+
+- [Full site content](https://battletank.online/llms-full.txt): All public pages in one Markdown file.
