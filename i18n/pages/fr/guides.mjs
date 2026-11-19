@@ -192,7 +192,7 @@ export default {
   "Engineering guide to 5-track x 5-tier VANGUARD tank upgrades, standalone modules, and field power-ups in BATTLE TANK.": "Guide d'ingénierie des améliorations VANGUARD 5×5, modules autonomes et bonus de terrain dans BATTLE TANK.",
 
   // Destructible Terrain
-  "Destructible Terrain Tank Game: Arenas &amp; Walls — BATTLE TANK": "Jeu de Chars à Terrain Destructible : Arènes &amp; Murs — BATTLE TANK",
+  "Destructible Terrain Tank Game: Arenas &amp; Walls — BATTLE TANK": "Jeu de Tank à Terrain Destructible : Arènes &amp; Murs — BATTLE TANK",
   "How destructible terrain works in BATTLE TANK, a free 3D tank game in your browser: brick and concrete walls, forest cover, water, ice, mud, oil fires and craters.": "Fonctionnement du terrain destructible dans BATTLE TANK, jeu de chars 3D gratuit : murs de brique et béton, forêts, eau, glace, boue, feux d'hydrocarbures et cratères.",
   "Destructible Terrain &amp; 40×40 Tactical Arenas": "Terrain Destructible &amp; Arènes Tactiques 40×40",
   "BATTLE TANK is a": "BATTLE TANK est un",
@@ -267,10 +267,10 @@ export default {
   "BATTLE TANK is a free browser tank game with destructible terrain: brick and concrete walls, forest cover, water, ice, mud, burning oil and blast craters on 40x40 arenas.": "BATTLE TANK est un jeu de chars gratuit par navigateur avec terrain destructible : brique, béton, forêt, eau, glace, boue, pétrole enflammé et cratères sur arènes 40x40.",
 
   // Games Like Battle City
-  "Games Like Battle City: A 3D Tank Game in Browser — BATTLE TANK": "Jeux comme Battle City : Un Jeu de Chars 3D par Navigateur — BATTLE TANK",
-  "Looking for games like Battle City or Tank 1990? BATTLE TANK is a free 3D isometric tank game in your browser with HQ defense, destructible walls and 35 missions.": "Vous cherchez des jeux comme Battle City ou Tank 1990 ? BATTLE TANK est un jeu de chars 3D isométrique gratuit par navigateur avec défense de QG, murs destructibles et 35 missions.",
+  "Games Like Battle City &amp; Tank 1990: 3D Tank Game Online — BATTLE TANK": "Jeux comme Battle City &amp; Tank 1990 : Jeu de Tank 3D en Ligne — BATTLE TANK",
+  "Looking for games like Battle City or Tank 1990 to play online? BATTLE TANK is a free 3D tank game in your browser with HQ defense, destructible walls and 35 missions.": "Vous cherchez des jeux comme Battle City ou Tank 1990 en ligne ? BATTLE TANK est un jeu de tank 3D gratuit par navigateur avec défense de QG, murs destructibles et 35 missions.",
   "Games Like Battle City": "Jeux comme Battle City",
-  "Games Like Battle City: BATTLE TANK in 3D": "Jeux comme Battle City : BATTLE TANK en 3D",
+  "Games Like Battle City (Tank 1990): BATTLE TANK in 3D": "Jeux comme Battle City (Tank 1990) : BATTLE TANK en 3D",
   "If you grew up with the 1985 arcade tank classic Battle City, also known as Tank 1990, you remember the rules: protect your base, break through brick walls and stop wave after wave of enemy tanks. BATTLE TANK is a": "Si vous avez grandi avec le classique arcade Battle City (1985, aussi Tank 1990), vous connaissez les règles : protéger sa base, percer la brique et stopper les vagues de chars. BATTLE TANK est un",
   "built on that same base-defense idea, redesigned as a modern tactics game that runs in your browser with no download.": "bâti sur ce principe, repensé en jeu tactique moderne par navigateur sans téléchargement.",
   "What Carries Over From the Classic": "Ce qui est Conservé du Classique",
@@ -325,7 +325,7 @@ export default {
   "BATTLE TANK is a free 3D isometric tank game in the browser inspired by Battle City (Tank 1990): defend your HQ, break brick walls and play 35 missions. It is an independent game, not affiliated with Bandai Namco.": "BATTLE TANK est un jeu de chars 3D isométrique gratuit par navigateur inspiré de Battle City (Tank 1990) : défendez votre QG, brisez la brique et jouez 35 missions. Jeu indépendant non affilié à Bandai Namco.",
 
   // WebGL Tank Game
-  "WebGL Tank Game Built With Three.js — BATTLE TANK": "Jeu de Chars WebGL avec Three.js — BATTLE TANK",
+  "WebGL Tank Game Built With Three.js — BATTLE TANK": "Jeu de Tank WebGL avec Three.js — BATTLE TANK",
   "How BATTLE TANK runs a 3D tank game in the browser: Three.js and WebGL, vanilla JavaScript ES modules with no bundler, instanced terrain, KTX2 and Draco models.": "Comment BATTLE TANK fait tourner un jeu de chars 3D dans le navigateur : Three.js et WebGL, modules ES JavaScript natifs sans bundler, terrain instancié, modèles KTX2 et Draco.",
   "WebGL &amp; Three.js Tech": "Technologie WebGL &amp; Three.js",
   "Under the Hood: a Three.js WebGL Tank Game": "Sous le Capot : un Jeu de Chars WebGL Three.js",

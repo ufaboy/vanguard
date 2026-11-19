@@ -21,8 +21,8 @@ const briefing = [
 ];
 const about = [
   [
-    ['A free tank game you play in the browser', 'BATTLE TANK is a free 3D tank shooter that runs directly in your web browser through WebGL. There is nothing to download or install and no account to create: open the page, pick a mode and you are on the battlefield in seconds. It is built for desktop computers and tablets in landscape orientation, with keyboard and mouse controls — WASD to drive, the mouse to aim the turret and the left button to fire.'],
-    ['Classic arcade roots, modern tactics', 'The game takes the top-down tank battles of the arcade era and rebuilds them as an isometric 3D tactics game. Every arena is a 40×40 grid where walls crumble under fire: brick breaks block by block, reinforced concrete cracks and exposes its rebar, and forests hide tanks from view. Armor is calculated per side, so hitting an enemy in the flank or rear matters far more than firing straight into its front plate.'],
+    ['A free online tank game with no download or sign-up', 'BATTLE TANK is a free online tank game and 3D tank shooter that runs directly in your web browser through WebGL. There is nothing to download or install and no account to create: open the page, pick a mode and you are on the battlefield in seconds on Windows, macOS, Linux or a Chromebook. It is built for desktop computers and tablets in landscape orientation, with keyboard and mouse controls — WASD to drive, the mouse to aim the turret and the left button to fire.'],
+    ['Classic arcade roots, modern tactics', 'Most free tank games in the browser are short arcade rounds. BATTLE TANK takes the top-down tank battles of the arcade era and rebuilds them as an isometric 3D tactics game. Every arena is a 40×40 grid where walls crumble under fire: brick breaks block by block, reinforced concrete cracks and exposes its rebar, and forests hide tanks from view. Armor is calculated per side, so hitting an enemy in the flank or rear matters far more than firing straight into its front plate.'],
   ],
   [
     ['Build your own tank', 'Your VANGUARD tank is assembled from five upgradeable components — Cannon, Chassis, Frame, Engine and Armor — each with five tiers you can see change on the 3D model. Earn credits in battle, spend them in the Garage and add standalone modules such as the 4-corner Active Protection System, a homing ATGM missile pod or an emergency repair kit.'],
@@ -36,6 +36,7 @@ const about = [
  */
 const faq = [
   { q: 'Is BATTLE TANK free to play?', a: 'Yes. BATTLE TANK is completely free and runs in a normal browser tab. There is no download, no installation and no sign-up: open the page and start the first mission in seconds on Windows, macOS, Linux or a Chromebook.' },
+  { q: 'Does BATTLE TANK work on a Chromebook?', a: 'Yes. BATTLE TANK runs in Chrome on a Chromebook like on any other computer, with nothing to install. Play it with a keyboard and a mouse; on Chromebooks without hardware acceleration the game switches to a lighter rendering path automatically.' },
   {
     q: 'Is it like Battle City?',
     a: 'BATTLE TANK is inspired by the classic Battle City (also known as Tank 1990). You still defend your Command Base HQ behind brick and concrete walls, hide in forests and fight around water and ice, but the game is rebuilt as a 3D isometric tactics game with tank upgrades, directional armor and multi-phase Sector Bosses. It is an independent game, not affiliated with Bandai Namco.',
@@ -60,7 +61,7 @@ const faq = [
   },
   { q: 'Is my progress saved?', a: 'Yes. Campaign unlocks, credits, component tiers, medals and Survival records are stored in your browser, so you can close the tab and continue later on the same device.' },
 ];
-const faqColumns = [faq.slice(0, 4), faq.slice(4)];
+const faqColumns = [faq.slice(0, 5), faq.slice(5)];
 
 const game = {
   '@context': 'https://schema.org',
@@ -104,8 +105,8 @@ const faqPage = {
 <PageLayout
   locale={locale}
   slug=""
-  title="BATTLE TANK — Free 3D Isometric Tank Game in Browser"
-  description="Play BATTLE TANK free in your browser, no download: a 3D tactical tank game inspired by Battle City, with 35 missions, 5-tier upgrades and destructible maps."
+  title="BATTLE TANK — Free Online 3D Tank Game, No Download"
+  description="Free online tank game in your browser, no download or sign-up: 3D tactical tank battles inspired by Battle City, with 35 missions and destructible maps."
   twitterDescription="Free 3D isometric tank game inspired by Battle City, in your browser with no download. Upgrade your tank across 5 tiers, smash destructible arenas and defeat 4 Sector Bosses."
   imageAlt="BATTLE TANK 3D tactical tank advancing through a destructible city battlefield"
   imageSize
@@ -135,6 +136,7 @@ const faqPage = {
 
         <h1 id="command-title" class="hero-tactical-title" tabindex="-1">
           {t('BATTLE')}<br><span class="highlight-gold">{t('TANK')}</span>
+          <span class="hero-title-sub">{t('Free Online Tank Game')}</span>
         </h1>
 
         <p class="hero-tactical-tagline">{t('Steel yourself. Break the siege. Eliminate the Colossi.')}</p>
@@ -212,7 +214,7 @@ const faqPage = {
   </section>
 
   <main slot="noscript" style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
-    <h1>{t('BATTLE TANK — Free 3D Isometric Tank Game in Browser')}</h1>
+    <h1>{t('BATTLE TANK — Free Online 3D Tank Game, No Download')}</h1>
     <p>{t('Play BATTLE TANK, a free 3D isometric tactical tank game inspired by Battle City. Upgrade your VANGUARD tank across 5 tiers, smash destructible 40x40 arenas, and battle 4 Sector Bosses.')}</p>
     <p>{t('JavaScript and WebGL are required to launch the battlefield.')}</p>
   </main>

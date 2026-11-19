@@ -267,10 +267,10 @@ export default {
   "BATTLE TANK is a free browser tank game with destructible terrain: brick and concrete walls, forest cover, water, ice, mud, burning oil and blast craters on 40x40 arenas.": "BATTLE TANK é um jogo de tanques gratuito no navegador com terreno destrutível: muros de tijolos e concreto, cobertura florestal, água, gelo, lama, óleo em chamas e crateras em arenas 40x40.",
 
   // Games Like Battle City
-  "Games Like Battle City: A 3D Tank Game in Browser — BATTLE TANK": "Jogos Parecidos com Battle City: Um Jogo de Tanques 3D no Navegador — BATTLE TANK",
-  "Looking for games like Battle City or Tank 1990? BATTLE TANK is a free 3D isometric tank game in your browser with HQ defense, destructible walls and 35 missions.": "Procurando jogos parecidos com Battle City ou Tank 1990? BATTLE TANK é um jogo de tanques 3D isométrico gratuito no navegador com defesa de QG, muros destrutíveis e 35 missões.",
+  "Games Like Battle City &amp; Tank 1990: 3D Tank Game Online — BATTLE TANK": "Jogos Parecidos com Battle City e Tank 1990: Jogo de Tanque 3D Online — BATTLE TANK",
+  "Looking for games like Battle City or Tank 1990 to play online? BATTLE TANK is a free 3D tank game in your browser with HQ defense, destructible walls and 35 missions.": "Procurando jogos parecidos com Battle City ou Tank 1990 para jogar online? BATTLE TANK é um jogo de tanque 3D grátis no navegador, sem baixar, com defesa de QG, muros destrutíveis e 35 missões.",
   "Games Like Battle City": "Jogos Parecidos com Battle City",
-  "Games Like Battle City: BATTLE TANK in 3D": "Jogos Parecidos com Battle City: BATTLE TANK em 3D",
+  "Games Like Battle City (Tank 1990): BATTLE TANK in 3D": "Jogos Parecidos com Battle City (Tank 1990): BATTLE TANK em 3D",
   "If you grew up with the 1985 arcade tank classic Battle City, also known as Tank 1990, you remember the rules: protect your base, break through brick walls and stop wave after wave of enemy tanks. BATTLE TANK is a": "Se você cresceu com o clássico arcade de tanques de 1985 Battle City, também conhecido como Tank 1990, você lembra as regras: proteja sua base, atravesse muros de tijolos e detenha onda após onda de tanques inimigos. BATTLE TANK é um",
   "built on that same base-defense idea, redesigned as a modern tactics game that runs in your browser with no download.": "construído sobre essa mesma ideia de defesa de base, redesenhado como um jogo tático moderno que roda no navegador sem download.",
   "What Carries Over From the Classic": "O que Permanece do Clássico",

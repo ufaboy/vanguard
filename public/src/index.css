@@ -616,6 +616,17 @@ body[data-page="contract"] .menu-page {
   text-shadow: 0 0 24px rgba(245, 158, 11, 0.35);
 }
 
+.hero-title-sub {
+  display: block;
+  margin-top: 10px;
+  font-size: clamp(13px, 1.1vw, 16px);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+}
+
 .hero-tactical-tagline {
   font-family: var(--font-sans, sans-serif);
   font-size: clamp(14px, 1.25vw, 17px);
