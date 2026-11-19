@@ -1,0 +1,88 @@
+---
+/**
+ * Shared shell for every static page: head (meta, canonical, hreflang, Open Graph, Twitter, JSON-LD),
+ * import map, footer and the page's own module from public/src/pages/.
+ * Pages pass English text; the layout translates it for `locale`.
+ */
+import Analytics from '../components/Analytics.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import {
+  DEFAULT_LOCALE, LOCALES, OG_LOCALES, assetHref, localizeJsonLd, pageUrl, useTranslations,
+} from '../i18n/index.js';
+
+interface Props {
+  locale: string;
+  slug: string;
+  title: string;
+  description: string;
+  twitterDescription?: string;
+  imageAlt?: string;
+  imageSize?: boolean;
+  ogLocale?: boolean;
+  jsonLd?: object[];
+  bodyPage?: string;
+  contentClass?: string;
+  script: string;
+}
+const {
+  locale, slug, title, description, twitterDescription = description, imageAlt, imageSize = false,
+  ogLocale = false, jsonLd = [], bodyPage, contentClass = 'menu-content', script,
+} = Astro.props;
+const t = useTranslations(locale);
+const url = pageUrl(slug, locale);
+const image = 'https://battletank.online/images/og-battle.jpg';
+const importMap = {
+  imports: {
+    three: assetHref('vendor/three/build/three.module.js', locale),
+    'three/addons/': assetHref('vendor/three/examples/jsm/', locale),
+  },
+};
+const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, locale), null, 2));
+---
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{t(title)}</title>
+    <meta name="description" content={t(description)} />
+    <meta name="theme-color" content="#0B1120" />
+    <Analytics />
+    <link rel="canonical" href={url} />
+    {LOCALES.map((lang) => <link rel="alternate" hreflang={lang} href={pageUrl(slug, lang)} />)}
+    <link rel="alternate" hreflang="x-default" href={pageUrl(slug, DEFAULT_LOCALE)} />
+    <link rel="icon" type="image/svg+xml" href={assetHref('images/icon.svg', locale)} />
+    <link rel="apple-touch-icon" sizes="180x180" href={assetHref('images/apple-touch-icon.png', locale)} />
+    <link rel="manifest" href={assetHref('manifest.webmanifest', locale)} />
+    <meta property="og:site_name" content="BATTLE TANK" />
+    <meta property="og:title" content={t(title)} />
+    <meta property="og:description" content={t(description)} />
+    <meta property="og:type" content="website" />
+    {ogLocale && <meta property="og:locale" content={OG_LOCALES[locale]} />}
+    {ogLocale && LOCALES.filter((l) => l !== locale).map((l) => <meta property="og:locale:alternate" content={OG_LOCALES[l]} />)}
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={image} />
+    {imageSize && <meta property="og:image:width" content="1200" />}
+    {imageSize && <meta property="og:image:height" content="630" />}
+    {imageAlt && <meta property="og:image:alt" content={t(imageAlt)} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={t(title)} />
+    <meta name="twitter:description" content={t(twitterDescription)} />
+    <meta name="twitter:image" content={image} />
+    {ldBlocks.map((json) => <script is:inline type="application/ld+json" set:html={json} />)}
+    <link rel="stylesheet" href={assetHref('src/index.css', locale)} />
+    <script is:inline type="importmap" set:html={JSON.stringify(importMap, null, 2)} />
+  </head>
+  <body data-page={bodyPage} class="text-slate-100 scrollable-page">
+    <div id="root"><Fragment set:html="<!-- prerender:start -->" />
+      <main class="menu-page">
+        <div class={contentClass}>
+          <slot />
+        </div>
+        <SiteFooter locale={locale} slug={slug} />
+      </main>
+    <Fragment set:html="<!-- prerender:end -->" /></div>
+    <noscript><slot name="noscript" /></noscript>
+    <script is:inline type="module" src={assetHref(script, locale)}></script>
+  </body>
+</html>

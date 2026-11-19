@@ -1,0 +1,65 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localeStaticPaths, pageHref, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = localeStaticPaths;
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const slug = 'about';
+
+const cards = [
+  ['DESTRUCTIBLE ARENAS', '40 × 40 Tactical Grids', 'Every sector spans 1,600 cells with multi-block destructible brick, reinforced 16 HP concrete, stealth forest canopies, water crossings, low-friction ice, and fortified Command Bases.'],
+  ['MODULAR ENGINEERING', '5 Tracks × 5 Tiers', 'Upgrade Cannon, Chassis, Frame, Engine, and Armor from Tier I to Tier V with live 3D visual changes, plus standalone modules like 4-Corner APS, Homing ATGM pods, and Auto-Repair Kits.'],
+  ['TACTICAL AI & BOSSES', '12 Enemy Classes & 4 Bosses', 'Face flanking Scouts, indirect-fire Howitzers, stealth Snipers, Sapper minelayers, Flamethrowers, and four unique Sector Bosses: Mammoth Mk-V, Hydra MLRS-9, Supreme Dreadnought (Titan), and Cerberus-T (Inferno).'],
+  ['PURE WEB STACK', 'Zero-Bundler Three.js', 'Built strictly with native ES Modules, HTML5, standalone CSS, and Three.js WebGL — designed for instant browser launch with hardware or software WebGL fallback.'],
+];
+const actions = [
+  ['campaign', 'Launch Campaign →', true],
+  ['enemies', 'Enemy & Boss Guide'],
+  ['arsenal', 'Tank Arsenal'],
+  ['contracts', 'View Contracts'],
+  ['survival', 'Endless Survival'],
+  ['destructible-terrain', 'Destructible Terrain'],
+  ['games-like-battle-city', 'Compared to Battle City'],
+  ['webgl-tank-game', 'Three.js & WebGL Tech'],
+];
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://battletank.online/' },
+    { '@type': 'ListItem', position: 2, name: 'About', item: 'https://battletank.online/about' },
+  ],
+};
+---
+<PageLayout
+  locale={locale}
+  slug={slug}
+  title="About — BATTLE TANK"
+  description="Learn about BATTLE TANK: 40x40 destructible arenas, 5-track modular VANGUARD tank engineering, 12 enemy classes, and 4 sector bosses."
+  twitterDescription="40x40 destructible arenas, 5-track modular tank engineering, 12 enemy classes, and 4 sector bosses."
+  jsonLd={[breadcrumbs]}
+  script="src/pages/about.js"
+>
+  <h1 class="menu-page-title" tabindex="-1">{t('About Battle Tank')}</h1>
+  <p class="menu-lead">{t('BATTLE TANK is a 3D isometric tactical tank assault game inspired by classic Battle City, engineered with modular armored warfare and destructible 40×40 arenas.')}</p>
+  <div class="menu-grid">
+    {cards.map(([kicker, title, text]) => (
+      <article class="menu-card" style="cursor:default">
+        <span class="menu-kicker">{t(kicker)}</span>
+        <strong>{t(title)}</strong>
+        <p>{t(text)}</p>
+      </article>
+    ))}
+  </div>
+  <div class="menu-actions" style="margin-top:28px;">
+    {actions.map(([target, label, primary]) => (
+      <a class={primary ? 'menu-primary' : 'menu-secondary'} href={pageHref(target, locale)}>{t(label)}</a>
+    ))}
+  </div>
+
+  <main slot="noscript" style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+    <h1>{t('About BATTLE TANK')}</h1>
+    <p>{t('BATTLE TANK is a 3D isometric tactical tank assault game inspired by Battle City, built with Three.js and native ES Modules.')}</p>
+  </main>
+</PageLayout>
