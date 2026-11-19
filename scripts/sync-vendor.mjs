@@ -6,7 +6,7 @@ import path from 'node:path';
 
 const SRC = 'node_modules/three';
 const DEST = 'public/vendor/three';
-// Modules the game imports (see public/index.html import map and public/src)
+// Modules the game imports (see the import map in public/battlefield.html and public/src)
 const ENTRIES = [
   'build/three.module.js',
   'examples/jsm/environments/RoomEnvironment.js',

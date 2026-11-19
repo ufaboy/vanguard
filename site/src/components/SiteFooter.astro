@@ -1,0 +1,41 @@
+---
+// Shared footer: one place for the navigation, the language menu and the settings buttons.
+import { LOCALES, LANGUAGE_NAMES, isLocalized, pageHref, twinHref, useTranslations } from '../i18n/index.js';
+
+interface Props { locale: string; slug: string }
+const { locale, slug } = Astro.props;
+const t = useTranslations(locale);
+
+const SEP = null;
+const LINKS = [
+  ['', 'HOME'], ['campaign', 'CAMPAIGN'], ['survival', 'SURVIVAL'], ['contracts', 'CONTRACTS'],
+  SEP,
+  ['how-to-play', 'HOW TO PLAY'], ['walkthrough', 'WALKTHROUGH'], ['enemies', 'ENEMIES'], ['arsenal', 'ARSENAL'],
+  ['destructible-terrain', 'TERRAIN'], ['webgl-tank-game', 'TECH'], ['changelog', 'CHANGELOG'], ['about', 'ABOUT'],
+  ['privacy-policy', 'PRIVACY POLICY'], ['terms', 'TERMS'], ['contact', 'CONTACT'],
+  SEP,
+];
+---
+<footer class="armored-footer">
+  <div class="armored-footer-inner">
+    <div class="footer-right-zone">
+      <nav class="footer-links" aria-label={t('Footer navigation')}>
+        {LINKS.map((link) => link === SEP
+          ? <span class="footer-sep" aria-hidden="true">|</span>
+          : link[0] === slug
+            ? <a class="is-active" aria-current="page" href={pageHref(link[0], locale)}>{t(link[1])}</a>
+            : <a href={pageHref(link[0], locale)}>{t(link[1])}</a>)}
+        {isLocalized(slug) && <details class="lang-menu" data-lang-menu>
+          <summary aria-label={t('Language')}><span data-lang-current>{locale.toUpperCase()}</span></summary>
+          <div class="lang-menu-list">
+            {LOCALES.map((lang) => (
+              <a href={twinHref(slug, locale, lang)} hreflang={lang} lang={lang} aria-current={lang === locale ? 'true' : undefined}><b>{lang.toUpperCase()}</b> {LANGUAGE_NAMES[lang]}</a>
+            ))}
+          </div>
+        </details>}
+        <button type="button" class="footer-settings-btn" data-action="open-medals" aria-label={t('Medal Case')}><span aria-hidden="true">🎖️</span> {t('MEDAL CASE')}</button>
+        <button type="button" class="footer-settings-btn" data-action="open-settings" aria-label={t('Settings')}><span aria-hidden="true">⚙</span> {t('SETTINGS')}</button>
+      </nav>
+    </div>
+  </div>
+</footer>

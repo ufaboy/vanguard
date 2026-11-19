@@ -20,11 +20,13 @@ A 3D isometric tactical tank assault game inspired by *Battle City*, built with 
 
 ## Tech Stack & Architecture
 
-- **Runtime**: Vanilla JavaScript (Native ES Modules), HTML5 (`<script type="importmap">`), CSS, and Three.js (`three` is the sole runtime dependency). No TypeScript, React, or Vite.
-- **Static Deployment Ready**: Everything needed to run or host the game lives inside [`public/`](public/).
+- **Runtime**: Vanilla JavaScript (Native ES Modules), HTML5 (`<script type="importmap">`), CSS, and Three.js (`three` is the sole runtime dependency). No TypeScript or React; the game is never bundled.
+- **Static SEO pages**: the home, mode, guide and info pages (English and Spanish) are rendered at build time by [Astro](https://astro.build) from [`site/`](site/) into `dist/site`, together with an untouched copy of [`public/`](public/) (the game, assets and page scripts).
 
 ```text
-├── public/              # Self-contained static web app (index.html, src/, maps/, models/, vendor/)
+├── public/              # Game and assets served as written (battlefield.html, src/, maps/, models/, vendor/)
+├── site/                # Astro sources of the static pages (layout, footer, pages, i18n helpers)
+├── i18n/pages/          # Translations of the static pages
 ├── codex/               # Standalone 3D Codex studio (npm run codex -> http://localhost:3001/codex)
 ├── tests/               # Node.js test runner suites (node --test)
 ├── scripts/             # Linter, Three.js vendor sync, GLB optimizer, itch.io packager, Cloudflare Pages deploy
@@ -42,7 +44,7 @@ A 3D isometric tactical tank assault game inspired by *Battle City*, built with 
    ```bash
    npm install
    ```
-2. Start the local static server:
+2. Build the site and start the local static server:
    ```bash
    npm run dev
    ```
@@ -54,7 +56,7 @@ A 3D isometric tactical tank assault game inspired by *Battle City*, built with 
    ```
    and open [http://localhost:3001/codex](http://localhost:3001/codex).
 
-No build step is required—the browser loads ES modules directly from `public/`.
+The game needs no build step: the browser loads its ES modules directly. `npm run dev` only renders the static pages with Astro (`npm run build:site`) and serves `dist/site`; use `npm run dev:site` for the Astro dev server with live reload while editing pages.
 
 ## Development & Testing
 
@@ -62,7 +64,7 @@ No build step is required—the browser loads ES modules directly from `public/`
   ```bash
   npm run lint
   ```
-  *(Also aliased as `npm run build`.)*
+  *(`npm run build` runs lint and the Astro site build.)*
 - **Run tests** (uses Node's built-in test runner):
   ```bash
   npm test
@@ -82,7 +84,7 @@ No build step is required—the browser loads ES modules directly from `public/`
 
 ## Deployment (Cloudflare Pages)
 
-The project includes a deployment script for Cloudflare Pages (`scripts/deploy.mjs`) that deploys `public/`.
+The project includes a deployment script for Cloudflare Pages (`scripts/deploy.mjs`) that builds the site and deploys `dist/site`.
 
 1. Copy `.env.example` to `.env` and set your Cloudflare credentials (or authenticate via `npx wrangler login`):
    ```env

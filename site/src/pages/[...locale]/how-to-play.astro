@@ -1,0 +1,132 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("how-to-play");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://battletank.online/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "How to Play",
+            "item": "https://battletank.online/how-to-play"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do tank stats and armor penetration work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Every tank combines a base hull with 5 core tracks (Cannon, Chassis, Frame, Engine, Armor) and optional modules. Armor is evaluated per hit side (front, left, right, rear). Cannon penetration reduces the target's effective armor percentage before final damage is applied."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I cross water or drive smoothly on ice?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Upgrade your Chassis to Tier IV (All-Terrain Tracks) or Tier V (Grav-Hover). Both cross deep water and handle ice, mud, and sand without slip or slowdown."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does the Active Protection System (APS) work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The 4-corner APS intercepts incoming Cannon Mk1-Mk3 shells and missiles for 1 charge each. Heavy Cannon Mk4/Mk5, Howitzer, and Mammoth Dual shells cost 2 charges. Flamethrowers and Titan Rail shots bypass APS."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do BOX supply drops and field repairs work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Shoot wooden BOX caches to roll tactical Power-Ups (Repair, EMP, Base Restore, APS, or Missile). Your Command Base HQ also repairs your hull while it remains intact. Below 33% hull integrity, movement speed drops by 30%."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How are credits, repairs, and progress saved?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Campaign unlocks, credits, component tiers, and survival records are stored locally in your browser via localStorage and persist across sessions."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What happens if I abort a mission early?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Collected credits and salvaged loot remain in your save, while uncollected battlefield drops are lost."
+            }
+          }
+        ]
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="how-to-play"
+  title={"How to Play BATTLE TANK: Controls &amp; Tank Tactics"}
+  description={"How to play BATTLE TANK, a free 3D isometric tank game: keyboard and mouse controls, game modes, flanking and directional armor, APS and tank upgrades."}
+  twitterDescription={"Controls, game modes, directional armor penetration, APS mechanics, and modular upgrades for BATTLE TANK."}
+  jsonLd={jsonLd}
+  bodyPage="how-to-play"
+  script="src/pages/how-to-play.js"
+>
+        <h1 class="menu-page-title" tabindex="-1">{t("How to Play: Controls &amp; Tank Tactics")}</h1>
+        
+    <p class="menu-lead">{t("Complete field manual for BATTLE TANK, a")} <a href={h("./")}>{t("free 3D isometric tank game inspired by Battle City")}</a> {t("you play in the browser with no download: controls, game modes, directional armor, modular upgrades, and battlefield survival.")}</p>
+    <div class="menu-guide">
+      <section>
+        <h2>{t("Controls")}</h2>
+        <dl><div><dt>{t("W A S D / Arrows")}</dt><dd>{t("Move relative to the camera")}</dd></div><div><dt>{t("Mouse / Left click")}</dt><dd>{t("Aim turret / Fire main cannon")}</dd></div><div><dt>{t("Space / E")}</dt><dd>{t("Launch a homing missile (ATGM)")}</dd></div><div><dt>{t("Right click")}</dt><dd>{t("Designate a target; fire a missile on empty ground")}</dd></div><div><dt>1 / 2 / 3</dt><dd>{t("Activate equipped module slots")}</dd></div><div><dt>C</dt><dd>{t("Cycle camera view")}</dd></div><div><dt>{t("Middle mouse drag")}</dt><dd>{t("Rotate camera")}</dd></div><div><dt>M</dt><dd>{t("Tactical map and route planner")}</dd></div><div><dt>H / U</dt><dd>{t("Diagnostics / Garage")}</dd></div><div><dt>{t("Esc / P")}</dt><dd>{t("Pause or resume combat")}</dd></div></dl>
+      </section>
+      <section>
+        <h2>{t("1. Choose Your Operation")}</h2>
+        <p>{t("Start in")} <strong>{t("Campaign")}</strong> {t("with First Contact (20 hostiles), then break through Broken Avenue, Civic Shelter, and Railway Cut. On defense missions, protect the allied Command Base HQ—losing either HQ cell ends the operation. Test endless waves in")} <strong>{t("Survival")}</strong> {t("or run high-stakes")} <strong>{t("Contracts")}</strong> {t("for extra credits.")}</p>
+        <h2>{t("2. Fight Smart &amp; Flank")}</h2>
+        <p>{t("Read the 40×40 arena: smash brick walls to open firing lanes, watch out for 16 HP reinforced concrete, and use forest canopies for concealment (every surface and obstacle is explained in the")} <a href={h("./destructible-terrain")}>{t("destructible terrain guide")}</a>{t("). Enemy armor is directional—flank heavy tanks and bosses like Titan from the sides or rear instead of trading shots into their glacis.")}</p>
+        <h2>{t("3. Upgrade in the Garage")}</h2>
+        <p>{t("Spend earned credits in the Garage &amp; Workshop (press")} <strong>U</strong> {t("near your base during a mission) to upgrade Cannon, Chassis, Frame, Engine, and Armor from Tier I to Tier V, and equip standalone modules like 4-Corner APS, Homing ATGM pods, and Auto-Repair Kits.")}</p>
+      </section>
+    </div>
+    <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("Tactical Mechanics &amp; Q&amp;A")}</h2>
+    <div class="menu-grid" style="margin-top:16px;"><article class="menu-card" style="cursor:default"><strong>{t("How do tank stats and armor penetration work?")}</strong><p>{t("Every tank combines a base hull with 5 core tracks (Cannon, Chassis, Frame, Engine, Armor) and optional modules. Armor is evaluated per hit side (front, left, right, rear). Cannon penetration reduces the target’s effective armor percentage before final damage is applied.")}</p></article><article class="menu-card" style="cursor:default"><strong>{t("How do I cross water or drive smoothly on ice?")}</strong><p>{t("Upgrade your Chassis to Tier IV (All-Terrain Tracks) or Tier V (Grav-Hover). Both cross deep water and handle ice, mud, and sand without slip or slowdown.")}</p></article><article class="menu-card" style="cursor:default"><strong>{t("How does the Active Protection System (APS) work?")}</strong><p>{t("The 4-corner APS intercepts incoming Cannon Mk1–Mk3 shells and missiles for 1 charge each. Heavy Cannon Mk4/Mk5, Howitzer, and Mammoth Dual shells cost 2 charges. Flamethrowers and Titan Rail shots bypass APS.")}</p></article><article class="menu-card" style="cursor:default"><strong>{t("How do BOX supply drops and field repairs work?")}</strong><p>{t("Shoot wooden BOX caches to roll tactical Power-Ups (Repair, EMP, Base Restore, APS, or Missile). Your Command Base HQ also repairs your hull while it remains intact. Below 33% hull integrity, movement speed drops by 30%.")}</p></article><article class="menu-card" style="cursor:default"><strong>{t("How are credits, repairs, and progress saved?")}</strong><p>{t("Campaign unlocks, credits, component tiers, and survival records are stored locally in your browser via localStorage and persist across sessions.")}</p></article><article class="menu-card" style="cursor:default"><strong>{t("What happens if I abort a mission early?")}</strong><p>{t("Collected credits and salvaged loot remain in your save, while uncollected battlefield drops are lost.")}</p></article></div>
+    <div class="menu-actions" style="margin-top:28px;">
+      <a class="menu-primary" href={h("./campaign")}>{t("Launch Campaign →")}</a>
+      <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
+      <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
+      <a class="menu-secondary" href={h("./contracts")}>{t("View Contracts")}</a>
+      <a class="menu-secondary" href={h("./survival")}>{t("Endless Survival")}</a>
+    </div>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("How to Play BATTLE TANK: Controls &amp; Tank Tactics")}</h1>
+        <p>{t("Controls reference, battlefield survival rules, directional armor, and upgrade tips. Enable JavaScript to browse the interactive command center.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>

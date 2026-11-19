@@ -2,6 +2,7 @@ import http from 'node:http';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import { ensureSite } from './site.mjs';
 
 const root = process.cwd();
 const damageUi = process.argv.includes('--damage-ui');
@@ -35,7 +36,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (url.pathname === '/__damage-ui.html') {
       res.setHeader('Content-Type', 'text/html');
-      res.end((await readFile('public/campaign.html', 'utf8')).replace('./src/main.js', '/__damage-ui.js')); return;
+      res.end((await readFile(path.join(ensureSite(), 'campaign.html'), 'utf8')).replace('./src/main.js', '/__damage-ui.js')); return;
     }
     if (url.pathname === '/__damage.html') {
       res.setHeader('Content-Type', 'text/html');
@@ -43,7 +44,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (url.pathname === '/__home-smoke.html' || url.pathname === '/__hangar-smoke.html') {
       res.setHeader('Content-Type', 'text/html');
-      const template = home ? 'public/index.html' : 'public/campaign.html';
+      const template = home ? path.join(ensureSite(), 'index.html') : path.join(ensureSite(), 'campaign.html');
       res.end((await readFile(template, 'utf8')).replace('</body>', `<script type="module" src="/${home ? '__home-smoke.js' : '__hangar-smoke.js'}"></script></body>`));
       return;
     }

@@ -1,0 +1,100 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("webgl-tank-game");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "WebGL &amp; Three.js Tech",
+        "item": "https://battletank.online/webgl-tank-game"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="webgl-tank-game"
+  title={"WebGL Tank Game Built With Three.js — BATTLE TANK"}
+  description={"How BATTLE TANK runs a 3D tank game in the browser: Three.js and WebGL, vanilla JavaScript ES modules with no bundler, instanced terrain, KTX2 and Draco models."}
+  ogType="article"
+  jsonLd={jsonLd}
+  bodyPage="webgl-tank-game"
+  script="src/pages/static-page.js"
+>
+        <h1 class="menu-page-title" tabindex="-1">{t("Under the Hood: a Three.js WebGL Tank Game")}</h1>
+        <p class="menu-lead">{t("BATTLE TANK is a")} <a href={h("./")}>{t("free 3D isometric tank game")}</a> {t("that runs entirely in the browser. This page explains how it is built: a Three.js and WebGL renderer, plain JavaScript modules without a bundler, and a set of techniques that keep a destructible 1,600-cell arena running smoothly on ordinary laptops.")}</p>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("A Zero-Bundler Vanilla JavaScript Stack")}</h2>
+        <p style="margin-top:12px;">{t("The game is written in plain JavaScript using native ES modules, loaded directly by the browser through an import map. There is no framework, no TypeScript and no build step: the files you download are the files we edit. The only runtime dependency is")} <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">{t("Three.js")}</a>{t(", and a small script copies just the Three.js modules the game actually imports into the site, so players never download unused code.")}</p>
+        <p style="margin-top:12px;">{t("The whole site is static HTML served from a CDN. Every page outside the battlefield, including this one, is a normal HTML document with its text in the markup, so it loads instantly and is easy for search engines to read. Only the battlefield page starts the WebGL engine.")}</p>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("Rendering a Destructible Arena")}</h2>
+        <figure class="menu-card" style="cursor:default;padding:14px;margin-top:16px;">
+          <img src={h("./images/home-battle.webp")} alt={t("Three.js WebGL render of a 3D isometric tank battle with destructible walls")} loading="lazy" width="1280" height="720" style="width:100%;height:auto;border-radius:4px;display:block;">
+          <figcaption style="margin-top:10px;color:#acbcbd;font-size:13px;">{t("Each 40x40 arena is drawn with instanced meshes, so thousands of wall blocks and decorations cost only a few draw calls.")}</figcaption>
+        </figure>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("INSTANCING")}</span>
+            <strong>{t("Batched Terrain Tiles")}</strong>
+            <p>{t("Walls, crates, trees and decorations are grouped by mesh and drawn with instanced rendering. Thousands of blocks share a handful of draw calls instead of one per object.")}</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("TEXTURES")}</span>
+            <strong>{t("Procedural Textures in a Worker")}</strong>
+            <p>{t("Ground and wall textures are generated procedurally in a Web Worker, keeping the main thread free while a mission loads.")}</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("MODELS")}</span>
+            <strong>{t("KTX2 and Draco GLB Models")}</strong>
+            <p>{t("Tank and boss models are modeled in Blender and exported as GLB files with Draco-compressed geometry and KTX2 GPU-compressed textures, capped at 512 px, so they load fast and use little video memory.")}</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("EFFECTS")}</span>
+            <strong>{t("Pooled Particle Effects")}</strong>
+            <p>{t("Explosions, smoke, sparks and tracers come from object pools and a shared texture atlas, so heavy firefights do not create garbage-collection stutter.")}</p>
+          </article>
+        </div>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("Running on Any Machine")}</h2>
+        <p style="margin-top:12px;">{t("At startup the engine checks whether WebGL is hardware-accelerated or running on a software renderer such as SwiftShader or llvmpipe. On software WebGL it switches to a lighter rendering path, so the game still runs on older laptops, virtual machines and computers with disabled graphics acceleration. Players can also choose a graphics quality preset and an FPS cap in the settings.")}</p>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("Simulation and Enemy AI")}</h2>
+        <p style="margin-top:12px;">{t("Gameplay rules are kept in pure simulation modules separate from rendering. Tank stats are computed from a hull base plus five upgrade tracks; damage uses per-side armor and penetration; and enemy tanks plan routes with A* pathfinding on the grid, check line of sight cell by cell, and choose tactical positions based on cover, forest and chokepoints.")}</p>
+        <p style="margin-top:12px;">{t("A squad director limits how many enemies may shoot at you at once and spreads attackers around you, so fights feel coordinated rather than chaotic. You can watch the AI think with the in-game telemetry overlay (F3), which shows each tank's role, current order and planned path. The")} <a href={h("./enemies")}>{t("Enemy Guide")}</a> {t("describes all 12 enemy roles.")}</p>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("Try It Yourself")}</h2>
+        <p style="margin-top:12px;">{t("The best way to see the engine is to play. Open the")} <a href={h("./campaign")}>{t("Campaign")}</a> {t("in Chrome, Edge, Firefox or Safari and start the first mission. Patch notes for every release are listed in the")} <a href={h("./changelog")}>{t("Changelog")}</a>{t(", and bug reports are welcome on the")} <a href={h("./contact")}>{t("Contact")}</a> {t("page.")}</p>
+        
+        <div class="menu-actions" style="margin-top:28px;">
+          <a class="menu-primary" href={h("./campaign")}>{t("Launch Campaign →")}</a>
+          <a class="menu-secondary" href={h("./destructible-terrain")}>{t("Destructible Terrain")}</a>
+          <a class="menu-secondary" href={h("./about")}>{t("About the Game")}</a>
+          <a class="menu-secondary" href={h("./changelog")}>{t("Changelog")}</a>
+        </div>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("WebGL Tank Game Built With Three.js — BATTLE TANK")}</h1>
+        <p>{t("BATTLE TANK is a 3D tank game built with Three.js, WebGL and vanilla JavaScript ES modules with no bundler, served as a static site.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>

@@ -1,13 +1,13 @@
 {
   "name": "iron-vanguard",
   "private": true,
-  "version": "1.31.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npx --yes serve public -l 3000",
+    "dev": "npm run build:site && npx --yes serve dist/site -l 3000",
     "codex": "npx --yes serve . -l 3001",
-    "start": "npx --yes serve public -l 3000",
-    "build": "npm run lint",
+    "start": "npm run build:site && npx --yes serve dist/site -l 3000",
+    "build": "npm run lint && npm run build:site",
     "build:itch": "node scripts/build-itch.mjs",
     "build:md": "node scripts/build-markdown.mjs",
     "vendor": "node scripts/sync-vendor.mjs",
@@ -19,9 +19,11 @@
     "benchmark:bricks": "node scripts/run-brick-benchmark.mjs",
     "deploy": "node scripts/deploy.mjs",
     "deploy:preview": "node scripts/deploy.mjs --preview",
-    "pages:dev": "npx wrangler pages dev public",
+    "pages:dev": "npm run build:site && npx wrangler pages dev dist/site",
     "test:hangar": "node scripts/run-brick-benchmark.mjs --hangar",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "git config core.hooksPath .githooks",
+    "dev:site": "astro dev --root site --port 4321",
+    "build:site": "astro build --root site"
   },
   "dependencies": {
     "three": "^0.187.0"
@@ -30,6 +32,7 @@
     "@gltf-transform/core": "4.5.1",
     "@gltf-transform/extensions": "4.5.1",
     "@gltf-transform/functions": "4.5.1",
+    "astro": "7.4.13",
     "draco3dgltf": "1.5.9",
     "ktx2-encoder": "0.6.0",
     "sharp": "0.35.5",

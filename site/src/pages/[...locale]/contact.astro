@@ -1,0 +1,78 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("contact");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Contact",
+        "item": "https://battletank.online/contact"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="contact"
+  title={"Contact — BATTLE TANK"}
+  description={"Contact BATTLE TANK: report bugs, share balance feedback, or reach the maintainer for support and privacy questions."}
+  twitterDescription={"Report bugs, share balance feedback, or reach the BATTLE TANK maintainer."}
+  jsonLd={jsonLd}
+  bodyPage="contact"
+  script="src/pages/contact.js"
+>
+        <h1 class="menu-page-title" tabindex="-1">{t("Command Inquiries")}</h1>
+        
+    <p class="menu-lead">{t("Have a bug report, balance suggestion, or question about BATTLE TANK? Use the channels below to reach the project maintainer.")}</p>
+    <div class="menu-grid">
+      <article class="menu-card" style="cursor:default">
+        <span class="menu-kicker">{t("BUG REPORTS &amp; FEEDBACK")}</span>
+        <strong>{t("GitHub Issues")}</strong>
+        <p>{t("Report gameplay bugs, rendering issues, or balance feedback directly on the project tracker. Please include your browser, graphics quality setting, and mission or mode.")}</p>
+        <a class="menu-secondary" href="https://github.com/ufaboy/vanguard/issues" target="_blank" rel="noopener noreferrer">{t("Open Issue Tracker ↗")}</a>
+      </article>
+      <article class="menu-card" style="cursor:default">
+        <span class="menu-kicker">{t("PROJECT REPOSITORY")}</span>
+        <strong>{t("Source &amp; Releases")}</strong>
+        <p>{t("Browse release notes, engineering documentation, and recent updates for BATTLE TANK on GitHub.")}</p>
+        <a class="menu-secondary" href="https://github.com/ufaboy/vanguard" target="_blank" rel="noopener noreferrer">{t("View on GitHub ↗")}</a>
+      </article>
+      <article class="menu-card" style="cursor:default">
+        <span class="menu-kicker">{t("PLAYER SUPPORT")}</span>
+        <strong>{t("Controls &amp; Mechanics")}</strong>
+        <p>{t("Looking for keyboard shortcuts, directional armor rules, APS charge costs, or upgrade tips? Check the field manual first.")}</p>
+        <a class="menu-secondary" href={h("./how-to-play")}>{t("Read How to Play →")}</a>
+      </article>
+      <article class="menu-card" style="cursor:default">
+        <span class="menu-kicker">{t("DATA &amp; PRIVACY")}</span>
+        <strong>{t("Privacy Inquiries")}</strong>
+        <p>{t("All saves and settings stay in your browser’s local storage. Read full details on data handling and hosting logs.")}</p>
+        <a class="menu-secondary" href={h("./privacy-policy")}>{t("Privacy Policy →")}</a>
+      </article>
+    </div>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("Contact — BATTLE TANK")}</h1>
+        <p>{t("Report bugs or send feedback via GitHub Issues at https://github.com/ufaboy/vanguard/issues.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>

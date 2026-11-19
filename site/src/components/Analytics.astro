@@ -1,0 +1,30 @@
+---
+// GTM + AdSense loader, identical on every page. `is:inline` keeps Astro/Vite from bundling it.
+---
+<meta name="google-adsense-account" content="ca-pub-3217305527287787">
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  // Developer devices: ?internal=1 marks this browser as internal traffic (?internal=0 clears it).
+  try {
+    var internalFlag = new URLSearchParams(location.search).get('internal');
+    if (internalFlag === '1') localStorage.setItem('bt_internal_traffic', '1');
+    else if (internalFlag === '0') localStorage.removeItem('bt_internal_traffic');
+    if (localStorage.getItem('bt_internal_traffic') === '1') gtag('set', { traffic_type: 'internal' });
+  } catch (e) {}
+  // Google Analytics (GTM) and AdSense load only on the production domain,
+  // never on *.pages.dev deployments or localhost.
+  if (/^(www\.)?battletank\.online$/.test(location.hostname)) {
+    [
+      'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3217305527287787',
+      'https://www.googletagmanager.com/gtm.js?id=GTM-TB78X2F4',
+    ].forEach(function (src) {
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = src;
+      if (src.indexOf('googlesyndication') !== -1) s.crossOrigin = 'anonymous';
+      document.head.appendChild(s);
+    });
+  }
+</script>

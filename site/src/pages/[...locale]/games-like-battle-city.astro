@@ -1,0 +1,133 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("games-like-battle-city");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Games Like Battle City",
+        "item": "https://battletank.online/games-like-battle-city"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="games-like-battle-city"
+  title={"Games Like Battle City: A 3D Tank Game in Browser — BATTLE TANK"}
+  description={"Looking for games like Battle City or Tank 1990? BATTLE TANK is a free 3D isometric tank game in your browser with HQ defense, destructible walls and 35 missions."}
+  ogType="article"
+  jsonLd={jsonLd}
+  bodyPage="games-like-battle-city"
+  script="src/pages/static-page.js"
+>
+        <h1 class="menu-page-title" tabindex="-1">{t("Games Like Battle City: BATTLE TANK in 3D")}</h1>
+        <p class="menu-lead">{t("If you grew up with the 1985 arcade tank classic Battle City, also known as Tank 1990, you remember the rules: protect your base, break through brick walls and stop wave after wave of enemy tanks. BATTLE TANK is a")} <a href={h("./")}>{t("free 3D isometric tank game")}</a> {t("built on that same base-defense idea, redesigned as a modern tactics game that runs in your browser with no download.")}</p>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("What Carries Over From the Classic")}</h2>
+        <p style="margin-top:12px;">{t("The core loop will feel familiar within the first minute. You start next to your own headquarters, enemies pour in from the far side of the map, and the walls around you are both your shield and your obstacle.")}</p>
+        <figure class="menu-card" style="cursor:default;padding:14px;margin-top:16px;">
+          <img src={h("./images/campaign-map-clean.webp")} alt={t("BATTLE TANK campaign map with 35 tank missions across 7 regions")} loading="lazy" width="1376" height="768" style="width:100%;height:auto;border-radius:4px;display:block;">
+          <figcaption style="margin-top:10px;color:#acbcbd;font-size:13px;">{t("The Road to the Capital campaign has 35 missions, the same number of stages as the 1985 original.")}</figcaption>
+        </figure>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("BASE DEFENSE")}</span>
+            <strong>{t("Protect Your HQ")}</strong>
+            <p>{t("Your Command Base sits on the edge of the map behind a concrete line. If enemies destroy it, you lose your repair point, and in base-defense missions you lose the mission.")}</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("BRICK &amp; STEEL")}</span>
+            <strong>{t("Walls You Can Shoot Through")}</strong>
+            <p>{t("Brick walls crumble block by block, while reinforced concrete takes many hits. Opening the right gap at the right time is still half the strategy.")}</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("FOREST, WATER, ICE")}</span>
+            <strong>{t("The Classic Terrain Set")}</strong>
+            <p>{t("Forests hide tanks, deep water blocks standard tracks and ice makes you slide. Each one works the way veterans expect, with extra depth on top.")}</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("35 MISSIONS")}</span>
+            <strong>{t("A Full Campaign")}</strong>
+            <p>{t("The campaign runs for 35 missions across 7 regions, from the city outskirts to the enemy capital, with Sector Bosses guarding the end of each region.")}</p>
+          </article>
+        </div>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("What Is New in BATTLE TANK")}</h2>
+        <p style="margin-top:12px;">{t("BATTLE TANK keeps the spirit of the classic but plays as a tactical game. You see the battlefield in 3D from an isometric camera, aim the turret with the mouse independently from the hull, and plan every engagement around armor angles and cover.")}</p>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("3D ISOMETRIC")}</span>
+            <strong>{t("Real 3D Arenas")}</strong>
+            <p>{t("Every 40×40 map is rendered in 3D with Three.js and WebGL: walls crack, buildings collapse, forests burn and explosions leave craters.")}</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("DIRECTIONAL ARMOR")}</span>
+            <strong>{t("Angles Matter")}</strong>
+            <p>{t("Tanks have separate front, side and rear armor. Flanking a heavy enemy and hitting its rear can turn a hopeless fight around. Read more in the")} <a href={h("./how-to-play")}>{t("How to Play guide")}</a>.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("5×5 UPGRADES")}</span>
+            <strong>{t("Build Your Tank")}</strong>
+            <p>{t("Upgrade Cannon, Chassis, Frame, Engine and Armor through five tiers each, and add modules like an active protection system or a homing missile pod. See the")} <a href={h("./arsenal")}>{t("Tank Arsenal")}</a>.</p>
+          </article>
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("SMART ENEMIES")}</span>
+            <strong>{t("12 Enemy Classes and 4 Bosses")}</strong>
+            <p>{t("Scouts flank, howitzers shell you from cover, snipers hide and sappers mine your route, while four multi-phase Sector Bosses close the regions. Meet them in the")} <a href={h("./enemies")}>{t("Enemy Guide")}</a>.</p>
+          </article>
+        </div>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("Classic vs. BATTLE TANK at a Glance")}</h2>
+        
+        <div class="menu-policy" style="margin-top:16px;">
+          <section>
+            <h3>{t("Camera and graphics")}</h3>
+            <p>{t("The classic is a flat top-down 2D game. BATTLE TANK is a 3D isometric game with dynamic lighting, particle effects and detailed tank models.")}</p>
+            <h3>{t("Controls")}</h3>
+            <p>{t("The classic uses a D-pad and one fire button. BATTLE TANK uses WASD or arrow keys to drive, the mouse to aim the turret, and extra keys for missiles, the Garage and the tactical map.")}</p>
+            <h3>{t("Progression")}</h3>
+            <p>{t("The classic resets your tank between lives. In BATTLE TANK you earn credits, buy permanent upgrades in the Garage, and every upgrade is visible on the 3D model.")}</p>
+            <h3>{t("Game modes")}</h3>
+            <p>{t("Beyond the 35-mission campaign, BATTLE TANK has an endless")} <a href={h("./survival")}>{t("Survival mode")}</a> {t("and special-operations")} <a href={h("./contracts")}>{t("Contracts")}</a> {t("such as sabotage and cargo escort missions.")}</p>
+            <h3>{t("Players")}</h3>
+            <p>{t("BATTLE TANK is a single-player game focused on tactics against AI opponents. There is no online multiplayer.")}</p>
+          </section>
+        </div>
+        
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("How to Start Playing")}</h2>
+        <p style="margin-top:12px;">{t("BATTLE TANK runs in any current desktop browser with WebGL (Chrome, Edge, Firefox or Safari) and on tablets in landscape orientation. Open the")} <a href={h("./campaign")}>{t("Campaign")}</a>{t(", pick the first mission and you are in the fight within seconds. No download, no installation and no sign-up.")}</p>
+        <p style="margin-top:12px;"><em>{t("Battle City is a trademark of Bandai Namco Entertainment. BATTLE TANK is an independent game. It is not affiliated with, endorsed by or sponsored by Bandai Namco, and it uses no original Battle City code, graphics or sound.")}</em></p>
+        
+        <div class="menu-actions" style="margin-top:28px;">
+          <a class="menu-primary" href={h("./campaign")}>{t("Play the Campaign →")}</a>
+          <a class="menu-secondary" href={h("./how-to-play")}>{t("How to Play")}</a>
+          <a class="menu-secondary" href={h("./destructible-terrain")}>{t("Destructible Terrain")}</a>
+          <a class="menu-secondary" href={h("./survival")}>{t("Endless Survival")}</a>
+        </div>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("Games Like Battle City: A 3D Tank Game in Browser — BATTLE TANK")}</h1>
+        <p>{t("BATTLE TANK is a free 3D isometric tank game in the browser inspired by Battle City (Tank 1990): defend your HQ, break brick walls and play 35 missions. It is an independent game, not affiliated with Bandai Namco.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>

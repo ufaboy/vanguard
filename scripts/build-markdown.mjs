@@ -16,6 +16,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { ensureSite } from './site.mjs';
 import { fileURLToPath } from 'node:url';
 
 const SITE_ORIGIN = 'https://battletank.online';
@@ -426,6 +427,6 @@ export function publishAgentMarkdown(siteDir) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const outDir = path.resolve(process.argv[2] ?? 'dist/agent-markdown');
-  const pages = generateAgentMarkdown(path.resolve('public'), outDir);
+  const pages = generateAgentMarkdown(ensureSite(), outDir);
   console.log(`Wrote ${pages.length} Markdown pages and llms-full.txt to ${outDir}`);
 }

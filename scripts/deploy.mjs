@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { publishAgentMarkdown } from './build-markdown.mjs';
-import { PAGE_LOCALES } from './build-i18n-pages.mjs';
+import { SITE_DIR, buildSite } from './site.mjs';
 
 function loadDotEnv(filePath) {
   if (!fs.existsSync(filePath)) return {};
@@ -27,7 +27,6 @@ function loadDotEnv(filePath) {
 
 const isPreview = process.argv.includes('--preview');
 const env = { ...process.env, ...loadDotEnv(path.resolve(process.cwd(), '.env')) };
-const publicDir = path.resolve(process.cwd(), 'public');
 
 function runCheck(cmd, args, label) {
   const res = spawnSync(cmd, args, { stdio: 'inherit', shell: true, env });
@@ -45,58 +44,51 @@ if (!isPreview) {
   }
 }
 
-/** Date (YYYY-MM-DD) of the last commit that touched `relPath`, or null if git has no record. */
-function lastCommitDate(relPath) {
-  const res = spawnSync('git', ['log', '-1', '--format=%cs', '--', relPath], { encoding: 'utf8', env });
+/** Date (YYYY-MM-DD) of the last commit that touched any of `relPaths`, or null if git has no record. */
+function lastCommitDate(relPaths) {
+  const res = spawnSync('git', ['log', '-1', '--format=%cs', '--', ...relPaths], { encoding: 'utf8', env });
   const date = res.status === 0 ? res.stdout.trim() : '';
   return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
 }
 
-/** Maps a sitemap URL to the HTML file in public/ that serves it. */
-function sitemapUrlToFile(loc) {
-  const { pathname } = new URL(loc);
-  if (pathname.endsWith('/')) return `public${pathname}index.html`;
-  return `public${pathname}.html`;
+/**
+ * Source files of a sitemap URL: its Astro page (shared by every locale) plus the locale
+ * dictionaries for translated pages (`/es/...`); pages without an Astro source map to public/.
+ */
+function sitemapUrlToFiles(loc) {
+  const parts = new URL(loc).pathname.split('/').filter(Boolean);
+  const locale = parts[0] && fs.existsSync(path.join('i18n', 'pages', `${parts[0]}.mjs`)) ? parts.shift() : null;
+  const slug = parts[0] || 'index';
+  const page = `site/src/pages/[...locale]/${slug}.astro`;
+  if (!fs.existsSync(page)) return [`public/${slug}.html`];
+  return locale ? [page, `i18n/pages/${locale}`, `i18n/pages/${locale}.mjs`] : [page];
 }
 
-/**
- * Rewrites the staged copy so search engines see fresh metadata:
- * each sitemap <lastmod> becomes the last commit date of its page, and the
- * home page JSON-LD softwareVersion follows package.json.
- */
+/** Rewrites the staged sitemap so each <lastmod> becomes the last commit date of its page sources. */
 function refreshSeoMetadata(dir) {
   const sitemapPath = path.join(dir, 'sitemap.xml');
   if (fs.existsSync(sitemapPath)) {
     const xml = fs.readFileSync(sitemapPath, 'utf8').replace(
       /(<loc>([^<]+)<\/loc>\s*<lastmod>)[^<]*(<\/lastmod>)/g,
       (match, head, loc, tail) => {
-        const date = lastCommitDate(sitemapUrlToFile(loc));
+        const date = lastCommitDate(sitemapUrlToFiles(loc));
         return date ? `${head}${date}${tail}` : match;
       },
     );
     fs.writeFileSync(sitemapPath, xml, 'utf8');
   }
-
-  const { version } = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
-  // The home page and its translated twins (public/<locale>/index.html) carry the version.
-  const homePaths = ['index.html', ...PAGE_LOCALES.map((locale) => path.join(locale, 'index.html'))];
-  for (const homeFile of homePaths) {
-    const homePath = path.join(dir, homeFile);
-    if (!version || !fs.existsSync(homePath)) continue;
-    const html = fs.readFileSync(homePath, 'utf8')
-      .replace(/("softwareVersion":\s*")[^"]*(")/, `$1${version}$2`);
-    fs.writeFileSync(homePath, html, 'utf8');
-  }
 }
 
 runCheck('npm', ['run', 'lint'], 'lint');
 runCheck('npm', ['test'], 'tests');
+// Astro builds the static pages into dist/site (JSON-LD softwareVersion comes from package.json).
+buildSite();
 
 const stagingDir = fs.mkdtempSync(path.join(os.tmpdir(), 'battle-tank-deploy-'));
 
 let exitCode = 1;
 try {
-  fs.cpSync(publicDir, stagingDir, { recursive: true });
+  fs.cpSync(SITE_DIR, stagingDir, { recursive: true });
   refreshSeoMetadata(stagingDir);
   const markdownPages = publishAgentMarkdown(stagingDir);
   console.log(`Markdown for agents: ${markdownPages.length} pages + llms-full.txt`);

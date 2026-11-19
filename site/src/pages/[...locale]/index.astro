@@ -1,0 +1,219 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { assetHref, localeStaticPaths, pageHref, useTranslations } from '../../i18n/index.js';
+import pkg from '../../../../package.json';
+
+export const getStaticPaths = () => localeStaticPaths('');
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const href = (slug) => pageHref(slug, locale);
+
+const modes = [
+  ['campaign', 'is-campaign', '01', 'Campaign', '35 Missions · 4 Bosses'],
+  ['survival', 'is-survival', '02', 'Survival', 'Endless Waves'],
+  ['contracts', 'is-contracts', '03', 'Contracts', 'Special Ops'],
+];
+const briefing = [
+  ['how-to-play', 'Tactical Terrain & Base Defense', '1,600-tile 40×40 arenas with destructible 4-block brick walls, 16 HP concrete, stealth forests, water, ice, and your Command Base HQ.', 'Read Field Manual →'],
+  ['arsenal', 'Modular Tank Engineering', 'Upgrade Cannon (Mk1–Mk5 twin-linked), Chassis, Frame, Engine, and directional Armor across 5 tiers, plus 4-Corner APS and ATGM pods.', 'Explore Tank Arsenal →'],
+  ['enemies', '12 Enemy Classes & 4 Bosses', 'Outsmart flanking Scouts, Howitzers, Sappers, Snipers, and four multi-phase Sector Bosses: Mammoth, Hydra, Titan, and Cerberus-T.', 'View Enemy & Boss Guide →'],
+  ['campaign', 'Campaign, Survival & Contracts', 'Conquer 35 Campaign missions across 7 regions, hold out in Endless Survival waves, or run Blackout Protocol and Last Cargo raids.', 'Open Campaign Map →'],
+];
+const about = [
+  [
+    ['A free tank game you play in the browser', 'BATTLE TANK is a free 3D tank shooter that runs directly in your web browser through WebGL. There is nothing to download or install and no account to create: open the page, pick a mode and you are on the battlefield in seconds. It is built for desktop computers and tablets in landscape orientation, with keyboard and mouse controls — WASD to drive, the mouse to aim the turret and the left button to fire.'],
+    ['Classic arcade roots, modern tactics', 'The game takes the top-down tank battles of the arcade era and rebuilds them as an isometric 3D tactics game. Every arena is a 40×40 grid where walls crumble under fire: brick breaks block by block, reinforced concrete cracks and exposes its rebar, and forests hide tanks from view. Armor is calculated per side, so hitting an enemy in the flank or rear matters far more than firing straight into its front plate.'],
+  ],
+  [
+    ['Build your own tank', 'Your VANGUARD tank is assembled from five upgradeable components — Cannon, Chassis, Frame, Engine and Armor — each with five tiers you can see change on the 3D model. Earn credits in battle, spend them in the Garage and add standalone modules such as the 4-corner Active Protection System, a homing ATGM missile pod or an emergency repair kit.'],
+    ['Enemies that think', 'Twelve enemy tank classes fight with their own roles: scouts flank, line tanks peek from cover, howitzers shell you from hiding, sappers lay mines on your route and stealth snipers vanish after each shot. A squad director limits how many shoot at once and spreads them around you, so every fight feels like a coordinated assault rather than a crowd.'],
+  ],
+];
+
+/**
+ * FAQ written once: `a` feeds the FAQPage JSON-LD, `html` (text and [slug, label] link parts)
+ * the visible answer when it carries links.
+ */
+const faq = [
+  { q: 'Is BATTLE TANK free to play?', a: 'Yes. BATTLE TANK is completely free and runs in a normal browser tab. There is no download, no installation and no sign-up: open the page and start the first mission in seconds on Windows, macOS, Linux or a Chromebook.' },
+  {
+    q: 'Is it like Battle City?',
+    a: 'BATTLE TANK is inspired by the classic Battle City (also known as Tank 1990). You still defend your Command Base HQ behind brick and concrete walls, hide in forests and fight around water and ice, but the game is rebuilt as a 3D isometric tactics game with tank upgrades, directional armor and multi-phase Sector Bosses. It is an independent game, not affiliated with Bandai Namco.',
+    html: ['BATTLE TANK is inspired by the classic Battle City (also known as Tank 1990). You still defend your Command Base HQ behind brick and concrete walls, hide in forests and fight around water and ice, but the game is rebuilt as a 3D isometric tactics game with tank upgrades, directional armor and multi-phase Sector Bosses. It is an independent game, not affiliated with Bandai Namco. See', ['games-like-battle-city', 'how BATTLE TANK compares to Battle City'], '.'],
+  },
+  { q: 'What do I need to play?', a: 'A current browser with WebGL support (Chrome, Edge, Firefox or Safari), a keyboard and a mouse. The game is made for desktop screens and tablets in landscape orientation, and it switches to a lighter rendering path when hardware acceleration is not available, so it also runs on modest laptops.' },
+  {
+    q: 'How do I control the tank?',
+    a: 'Drive with WASD or the arrow keys, aim the turret with the mouse and fire with the left button. Space or E launches a homing ATGM missile, U opens the Garage near your base, M shows the tactical map and Esc pauses the battle. The full list is in the How to Play guide.',
+    html: ['Drive with WASD or the arrow keys, aim the turret with the mouse and fire with the left button. Space or E launches a homing ATGM missile, U opens the Garage near your base, M shows the tactical map and Esc pauses the battle. The full list is in the', ['how-to-play', 'How to Play guide'], '.'],
+  },
+  {
+    q: 'What game modes are there?',
+    a: 'The Campaign has 35 missions across 7 regions with 4 Sector Bosses. Survival throws endless enemy waves at you, and Contracts are special operations such as Blackout Protocol and Last Cargo.',
+    html: ['The', ['campaign', 'Campaign'], 'has 35 missions across 7 regions with 4 Sector Bosses.', ['survival', 'Survival'], 'throws endless enemy waves at you, and', ['contracts', 'Contracts'], 'are special operations such as Blackout Protocol and Last Cargo.'],
+  },
+  { q: 'Is BATTLE TANK a single-player game?', a: 'Yes. It is a single-player campaign against tactical AI squads: twelve enemy classes with their own roles, coordinated by a squad director, plus boss fights at the end of each sector.' },
+  {
+    q: 'How does tank upgrading work?',
+    a: 'Destroyed enemies and cleared missions pay credits. Spend them in the Garage to raise the Cannon, Chassis, Frame, Engine and Armor from Tier I to Tier V and to buy APS charges and missiles. Every tier changes the 3D model of your tank. See the Tank Arsenal for all components.',
+    html: ['Destroyed enemies and cleared missions pay credits. Spend them in the Garage to raise the Cannon, Chassis, Frame, Engine and Armor from Tier I to Tier V and to buy APS charges and missiles. Every tier changes the 3D model of your tank. See the', ['arsenal', 'Tank Arsenal'], 'for all components.'],
+  },
+  { q: 'Is my progress saved?', a: 'Yes. Campaign unlocks, credits, component tiers, medals and Survival records are stored in your browser, so you can close the tab and continue later on the same device.' },
+];
+const faqColumns = [faq.slice(0, 4), faq.slice(4)];
+
+const game = {
+  '@context': 'https://schema.org',
+  '@type': ['VideoGame', 'WebApplication'],
+  name: 'BATTLE TANK',
+  alternateName: ['BATTLE TANK 3D', 'Battle Tank Online 3D'],
+  url: 'https://battletank.online/',
+  image: 'https://battletank.online/images/og-battle.jpg',
+  screenshot: [
+    'https://battletank.online/images/home-hero.webp',
+    'https://battletank.online/images/home-battle.webp',
+    'https://battletank.online/images/campaign-map-clean.webp',
+    'https://battletank.online/images/survival-hero.webp',
+  ],
+  description: 'Free 3D isometric tactical tank game for the web browser, inspired by the classic Battle City, with 35 campaign missions, Command Base defense, destructible 40x40 arenas, 5-tier modular tank upgrades, directional armor, 4-Corner APS, homing ATGM missiles, 12 enemy classes and 4 Sector Bosses.',
+  genre: ['Action', 'Tactical Shooter', 'Arcade', 'Base Defense'],
+  playMode: 'SinglePlayer',
+  gamePlatform: 'Web Browser',
+  applicationCategory: 'GameApplication',
+  applicationSubCategory: 'Action / Tactical Tank Combat',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript and WebGL',
+  softwareVersion: pkg.version,
+  inLanguage: 'en',
+  isAccessibleForFree: true,
+  featureList: [
+    '35-mission Road to the Capital Campaign across 7 tactical regions',
+    'Endless Survival mode and high-stakes Tactical Contracts',
+    '40x40 destructible arenas with brick, 16 HP concrete, forest, water, and ice',
+    '5-track x 5-tier modular tank upgrades with live 3D visual changes',
+    '12 specialized enemy tank classes and 4 multi-phase Sector Bosses',
+  ],
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/InStock' },
+};
+const faqPage = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map(({ q, a }) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+};
+---
+<PageLayout
+  locale={locale}
+  slug=""
+  title="BATTLE TANK — Free 3D Isometric Tank Game in Browser"
+  description="Play BATTLE TANK free in your browser, no download: a 3D tactical tank game inspired by Battle City, with 35 missions, 5-tier upgrades and destructible maps."
+  twitterDescription="Free 3D isometric tank game inspired by Battle City, in your browser with no download. Upgrade your tank across 5 tiers, smash destructible arenas and defeat 4 Sector Bosses."
+  imageAlt="BATTLE TANK 3D tactical tank advancing through a destructible city battlefield"
+  imageSize
+  ogLocale
+  jsonLd={[game, faqPage]}
+  bodyPage="home"
+  contentClass="menu-content command-home-content"
+  script="src/pages/home.js"
+>
+  <div class="command-home-view">
+    <section class="armored-hero-board" aria-labelledby="command-title">
+      <span class="board-rivet top-left" aria-hidden="true"></span>
+      <span class="board-rivet top-right" aria-hidden="true"></span>
+      <span class="board-rivet bottom-left" aria-hidden="true"></span>
+      <span class="board-rivet bottom-right" aria-hidden="true"></span>
+
+      <img class="armored-hero-art" src={assetHref('images/home-hero.webp', locale)} alt={t('VANGUARD player tank advancing with colossal Sector Bosses in the background')} fetchpriority="high" width="1920" height="1080">
+
+      <div class="armored-hero-atmosphere" aria-hidden="true"></div>
+      <div class="armored-hero-vignette" aria-hidden="true"></div>
+
+      <div class="hero-command-flank">
+        <div class="tactical-kicker">
+          <span class="kicker-beacon" aria-hidden="true"></span>
+          <span>{t('ARMORED WARFARE // 3D TACTICAL ASSAULT')}</span>
+        </div>
+
+        <h1 id="command-title" class="hero-tactical-title" tabindex="-1">
+          {t('BATTLE')}<br><span class="highlight-gold">{t('TANK')}</span>
+        </h1>
+
+        <p class="hero-tactical-tagline">{t('Steel yourself. Break the siege. Eliminate the Colossi.')}</p>
+
+        <p class="hero-tactical-desc">
+          {t('Play this free online 3D tank game, an isometric tactical tank shooter inspired by Battle City — instant WebGL browser combat with no download or account. Command the modular VANGUARD tank across 40×40 destructible arenas, upgrade 5-tier cannons, armor, and active defense systems, and crush 4 Sector Bosses.')}
+        </p>
+
+        <div class="hero-tactical-actions">
+          <a class="armored-action-btn primary" href={href('campaign')}>
+            <span aria-hidden="true"></span>
+            <span class="btn-body">
+              <small>{t('PRIMARY CAMPAIGN')}</small>
+              <strong>{t('DEPLOY TO THE FRONT')} <span class="action-arrow" aria-hidden="true">»</span></strong>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <nav class="command-modes-deck" aria-label={t('Operational Modes')}>
+      {modes.map(([slug, cls, index, title, sub]) => (
+        <a class={`armored-mode-plate ${cls}`} href={href(slug)}>
+          <span class="plate-index">{index}</span>
+          <span class="plate-content">
+            <strong>{t(title)}</strong>
+            <small>{t(sub)}</small>
+          </span>
+          <span class="plate-arrow" aria-hidden="true">→</span>
+        </a>
+      ))}
+    </nav>
+  </div>
+
+  <section class="home-briefing-strip" aria-label={t('Game Overview')}>
+    <div class="home-briefing-grid">
+      {briefing.map(([slug, title, text, link]) => (
+        <article class="home-briefing-card">
+          <strong>{t(title)}</strong>
+          <p>{t(text)}</p>
+          <a class="home-briefing-link" href={href(slug)}>{t(link)}</a>
+        </article>
+      ))}
+    </div>
+  </section>
+  <section class="home-briefing-strip page-briefing home-about" aria-labelledby="home-about-title">
+    <h2 id="home-about-title">{t('About BATTLE TANK')}</h2>
+    <div class="menu-guide">
+      {about.map((column) => (
+        <section>
+          {column.map(([title, text]) => <><h3>{t(title)}</h3><p>{t(text)}</p></>)}
+        </section>
+      ))}
+    </div>
+  </section>
+  <section class="home-briefing-strip page-briefing home-about home-faq" aria-labelledby="home-faq-title">
+    <h2 id="home-faq-title">{t('Frequently Asked Questions')}</h2>
+    <div class="menu-guide">
+      {faqColumns.map((column) => (
+        <section>
+          {column.map(({ q, a, html }) => (
+            <>
+              <h3>{t(q)}</h3>
+              <p>{html
+                ? html.map((part, i) => [
+                    i > 0 && !(typeof part === 'string' && /^\p{P}/u.test(part)) ? ' ' : '',
+                    Array.isArray(part) ? <a href={href(part[0])}>{t(part[1])}</a> : t(part),
+                  ])
+                : t(a)}</p>
+            </>
+          ))}
+        </section>
+      ))}
+    </div>
+  </section>
+
+  <main slot="noscript" style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+    <h1>{t('BATTLE TANK — Free 3D Isometric Tank Game in Browser')}</h1>
+    <p>{t('Play BATTLE TANK, a free 3D isometric tactical tank game inspired by Battle City. Upgrade your VANGUARD tank across 5 tiers, smash destructible 40x40 arenas, and battle 4 Sector Bosses.')}</p>
+    <p>{t('JavaScript and WebGL are required to launch the battlefield.')}</p>
+  </main>
+</PageLayout>

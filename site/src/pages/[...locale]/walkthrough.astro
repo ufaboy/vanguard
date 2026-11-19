@@ -1,0 +1,128 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("walkthrough");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Campaign Walkthrough",
+        "item": "https://battletank.online/walkthrough"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="walkthrough"
+  title={"Campaign Walkthrough &amp; Region Guide — BATTLE TANK"}
+  description={"Complete 35-mission Campaign Walkthrough for BATTLE TANK: 7 tactical regions from City Outskirts to Capital City, boss fight strategies, and 3D Battle City gameplay tips."}
+  ogDescription={"35-mission Road to the Capital walkthrough across 7 regions, Sector Boss tactics, and browser 3D tank strategy."}
+  twitterDescription={"How to clear all 7 regions and defeat Mammoth, Hydra, Titan, and Cerberus-T in BATTLE TANK."}
+  image={"https://battletank.online/images/campaign-map-clean.webp"}
+  jsonLd={jsonLd}
+  bodyPage="walkthrough"
+  script="src/pages/how-to-play.js"
+>
+        <h1 class="menu-page-title" tabindex="-1">{t("Campaign Walkthrough &amp; Region Guide")}</h1>
+        <p class="menu-lead">
+          {t("Complete strategic guide to the 35-mission")} <strong>{t("Road to the Capital")}</strong> {t("campaign in BATTLE TANK. Learn how to conquer all 7 tactical regions, prepare your VANGUARD tank upgrades, and defeat the 4 Sector Bosses.")}
+        </p>
+
+        <figure class="menu-card" style="cursor:default;padding:14px;margin-top:20px;">
+          <img src={h("./images/campaign-map-clean.webp")} alt={t("BATTLE TANK Road to the Capital 35-sector campaign map spanning 7 regions")} loading="lazy" width="1376" height="768" style="width:100%;height:auto;border-radius:4px;display:block;">
+          <figcaption style="margin-top:10px;color:#acbcbd;font-size:13px;">{t("The 35-mission Road to the Capital strategic front across 7 distinct biome regions.")}</figcaption>
+        </figure>
+
+        <h2 style="margin-top:36px;font-size:24px;font-weight:800;">{t("7 Campaign Regions (Missions 01–35)")}</h2>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/region-thumb-urban.jpg")} alt={t("City Outskirts urban sector")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("REGION 01 // MISSIONS 01–05")}</span>
+            <strong>{t("City Outskirts")}</strong>
+            <p>{t("Start with First Contact, Broken Avenue, Civic Shelter, Railway Cut, and Outer Gate. Use destructible brick walls for cover, protect your 2-cell Command Base HQ, and invest early credits into Cannon Mk2 and Armor A2.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/region-thumb-forest.jpg")} alt={t("Forest Frontier woodland sector")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("REGION 02 // MISSIONS 06–10")}</span>
+            <strong>{t("Forest Frontier")}</strong>
+            <p>{t("Dense woodland canopies conceal ambushing Flamethrowers, Stealth snipers, and Sapper minelayers. Watch your minimap and upgrade Engine + Chassis to outmaneuver flanking Scouts.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/region-thumb-desert.jpg")} alt={t("Desert Crossing arid canyon sector")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("REGION 03 // MISSIONS 11–15")}</span>
+            <strong>{t("Desert Crossing")}</strong>
+            <p>{t("Open sightlines favor long-range Howitzers and Striker missile carriers. Culminates in Mission 15 against")} <strong>{t("MAMMOTH MK-V")}</strong>{t("—equip 4-Corner APS and Cannon Mk3+ to break its armor and survive its 50% HP overdrive.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/region-thumb-coast.jpg")} alt={t("Coastal Wetlands amphibious sector")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("REGION 04 // MISSIONS 16–20")}</span>
+            <strong>{t("Coastal Wetlands")}</strong>
+            <p>{t("Deep water channels give amphibious Hover raiders free flanks. Upgrade to")} <strong>{t("CH4 All-Terrain Tracks")}</strong> {t("before facing")} <strong>{t("HYDRA MLRS-9")}</strong> {t("so you can cross water and dodge telegraphed 3-rocket salvos.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/region-thumb-alpine.jpg")} alt={t("Frozen Highlands alpine ice sector")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("REGION 05 // MISSIONS 21–25")}</span>
+            <strong>{t("Frozen Highlands")}</strong>
+            <p>{t("Low-friction ice sheets cause standard tracks to drift, while CH4/CH5 chassis hold crisp traction. Watch out for Engineers repairing concrete chokepoints and heavy Armor spearheads.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/region-thumb-industrial.jpg")} alt={t("Industrial Belt heavy factory sector")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("REGION 06 // MISSIONS 26–30")}</span>
+            <strong>{t("Industrial Belt")}</strong>
+            <p>{t("Heavy 16 HP reinforced concrete corridors require")} <strong>{t("Cannon Mk4 or Mk5")}</strong> {t("to breach firing lanes. Prepare for combined-arms Jammers, Strikers, and")} <strong>{t("SUPREME DREADNOUGHT (TITAN)")}</strong> {t("with directional Aegis armor.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/region-thumb-capital.jpg")} alt={t("Capital City final citadel sector")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("REGION 07 // MISSIONS 31–35")}</span>
+            <strong>{t("Capital City")}</strong>
+            <p>{t("The final push through fortified boulevards to Vanguard Dawn (Mission 35), where an escalating multi-boss gauntlet—including thermobaric leviathan")} <strong>{t("CERBERUS-T")}</strong>{t("—guards the capital.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("BROWSER 3D TACTICAL ASSAULT")}</span>
+            <strong>{t("Classic Battle City Reimagined in 3D")}</strong>
+            <p>
+              {t("BATTLE TANK brings the tense base-defense and brick-smashing spirit of 1980s Battle City into a 40×40 Three.js 3D arena: directional hull armor, power-to-weight physics, active protection radars, and zero downloads—play free directly in your browser.")}
+            </p>
+            <a class="menu-secondary" href={h("./enemies")}>{t("Study Boss Counters →")}</a>
+          </article>
+        </div>
+
+        <div class="menu-actions" style="margin-top:28px;">
+          <a class="menu-primary" href={h("./campaign")}>{t("Launch Campaign →")}</a>
+          <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
+          <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
+          <a class="menu-secondary" href={h("./how-to-play")}>{t("How to Play")}</a>
+        </div>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("Campaign Walkthrough &amp; Region Guide — BATTLE TANK")}</h1>
+        <p>{t("35-mission Road to the Capital walkthrough across 7 regions in BATTLE TANK.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>

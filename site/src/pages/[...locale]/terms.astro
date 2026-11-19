@@ -1,0 +1,102 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("terms");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Terms of Service",
+        "item": "https://battletank.online/terms"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="terms"
+  title={"Terms of Service — BATTLE TANK"}
+  description={"Terms of Service for BATTLE TANK, a free browser tank game: acceptable use, locally saved progress, advertising, trademarks, warranty and liability."}
+  jsonLd={jsonLd}
+  bodyPage="terms"
+  script="src/pages/static-page.js"
+>
+        <h1 class="menu-page-title" tabindex="-1">{t("Terms of Service")}</h1>
+        <p class="menu-lead">{t("Effective date: November 19, 2026. These terms explain the rules for playing BATTLE TANK at battletank.online. By opening or playing the game you agree to them. If you do not agree, please do not use the site.")}</p>
+        
+        <div class="menu-policy">
+          <section>
+            <h2>{t("1. The Game")}</h2>
+            <p>{t("BATTLE TANK is a free single-player 3D tank game that runs in your web browser. There is no download, no account and no payment. The game, its pages and its features may change, be paused or be discontinued at any time without notice.")}</p>
+          </section>
+          <section>
+            <h2>{t("2. Saved Progress")}</h2>
+            <p>{t("Campaign unlocks, credits, tank upgrades and settings are stored only in your browser (")}<code>{t("localStorage")}</code> {t("and")} <code>{t("sessionStorage")}</code>{t("), as described in the")} <a href={h("./privacy-policy")}>{t("Privacy Policy")}</a>{t(". Clearing site data, using a private window, switching browsers or devices, or a game update that changes the save format can remove this progress. We cannot restore lost saves.")}</p>
+          </section>
+          <section>
+            <h2>{t("3. Acceptable Use")}</h2>
+            <p>{t("You may play the game for personal, non-commercial entertainment. You agree not to:")}</p>
+            <ul>
+              <li>{t("attack, overload or try to gain unauthorized access to the site or its hosting infrastructure;")}</li>
+              <li>{t("copy, rehost, frame or redistribute the game or its assets on another website or portal without written permission;")}</li>
+              <li>{t("remove, hide or interfere with advertising, or generate fake ad impressions or clicks (including clicking your own ads or using bots);")}</li>
+              <li>{t("use automated tools to scrape the site in a way that degrades service for other players.")}</li>
+            </ul>
+          </section>
+          <section>
+            <h2>{t("4. Advertising and Third Parties")}</h2>
+            <p>{t("The site is funded by advertising from Google AdSense and Google H5 Games Ads, including optional rewarded ads and short breaks between missions. Ads are provided by third parties under their own terms and policies. Links to external sites, such as GitHub, are provided for convenience; we are not responsible for their content.")}</p>
+          </section>
+          <section>
+            <h2>{t("5. Intellectual Property and Trademarks")}</h2>
+            <p>{t("The BATTLE TANK name, game code, maps, 3D models, artwork, sounds and text are owned by the developer unless stated otherwise. The game uses the open-source")} <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">{t("Three.js")}</a> {t("library under its MIT license.")}</p>
+            <p style="margin-top:10px;">{t("BATTLE TANK is an independent game. It is not affiliated with, endorsed by or sponsored by Bandai Namco or any other company. Battle City and other product names mentioned on this site are trademarks of their respective owners and are used only to describe the genre and inspiration.")}</p>
+          </section>
+          <section>
+            <h2>{t("6. No Warranty")}</h2>
+            <p>{t("The game is provided \"as is\" and \"as available\", without warranties of any kind, express or implied, including fitness for a particular purpose, uninterrupted operation or freedom from bugs. Performance depends on your browser, device and WebGL support.")}</p>
+          </section>
+          <section>
+            <h2>{t("7. Limitation of Liability")}</h2>
+            <p>{t("To the maximum extent permitted by law, the developer is not liable for any indirect, incidental or consequential damages, or for loss of data or saved progress, arising from your use of or inability to use the game. Nothing in these terms limits rights you have under consumer law that cannot be waived.")}</p>
+          </section>
+          <section>
+            <h2>{t("8. Health and Breaks")}</h2>
+            <p>{t("The game contains flashing explosions and fast motion. If you have photosensitive epilepsy or feel unwell while playing, stop immediately. Take regular breaks.")}</p>
+          </section>
+          <section>
+            <h2>{t("9. Changes and Contact")}</h2>
+            <p>{t("We may update these terms when the game or the law changes; the effective date above shows the latest version. Continued use after an update means you accept the new terms. Questions can be sent through the")} <a href={h("./contact")}>{t("Contact")}</a> {t("page.")}</p>
+          </section>
+        </div>
+        
+        <div class="menu-actions" style="margin-top:28px;">
+          <a class="menu-primary" href={h("./campaign")}>{t("Launch Campaign →")}</a>
+          <a class="menu-secondary" href={h("./privacy-policy")}>{t("Privacy Policy")}</a>
+          <a class="menu-secondary" href={h("./contact")}>{t("Contact")}</a>
+        </div>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("Terms of Service — BATTLE TANK")}</h1>
+        <p>{t("The rules for playing BATTLE TANK, a free 3D isometric tank game in the browser: acceptable use, local saves, advertising, trademarks and liability.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>

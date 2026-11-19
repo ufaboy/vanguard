@@ -1,0 +1,270 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("contracts");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Tactical Contracts",
+        "item": "https://battletank.online/contracts"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="contracts"
+  title={"Tank Special Ops Missions: Contracts — BATTLE TANK"}
+  description={"Tank special ops missions in your browser: sabotage radar arrays in Blackout Protocol or extract prototype cargo in Last Cargo for bonus credits."}
+  ogDescription={"High-stakes tank special ops missions in BATTLE TANK: Blackout Protocol and Last Cargo."}
+  twitterDescription={"Sabotage radar arrays in Blackout Protocol or extract prototype cargo in Last Cargo."}
+  image={"https://battletank.online/images/contracts-hero.webp"}
+  jsonLd={jsonLd}
+  bodyPage="contracts"
+  contentClass="menu-content campaign-content"
+  script="src/pages/contracts.js"
+>
+        <h1 class="sr-only" tabindex="-1">{t("Tank Special Ops Missions: Tactical Contracts")}</h1>
+
+    <div class="contracts-hero-view">
+      <section class="contracts-hero-board" aria-label={t("Tactical contracts board")}>
+        <span class="board-rivet top-left" aria-hidden="true"></span>
+        <span class="board-rivet top-right" aria-hidden="true"></span>
+        <span class="board-rivet bottom-left" aria-hidden="true"></span>
+        <span class="board-rivet bottom-right" aria-hidden="true"></span>
+
+        <img
+          class="contracts-hero-art"
+          src={h("./images/contracts-hero.webp")}
+          alt={t("Tank special ops command tent overlooking a twilight mountain valley")}
+          fetchpriority="high"
+          width="1920"
+          height="1080"
+        >
+        <div class="contracts-hero-atmosphere" aria-hidden="true"></div>
+
+        <header class="contracts-header-stage">
+          <div class="contracts-crest-row">
+            <span class="crest-wing left" aria-hidden="true"></span>
+            <div class="contracts-title-plate">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fbbf24" stroke-width="2" aria-hidden="true">
+                <rect x="5" y="4" width="14" height="17" rx="2"/>
+                <path d="M9 4V2h6v2M9 11l2 2 4-4M9 16h6"/>
+              </svg>
+              <h2>{t("CONTRACTS")}</h2>
+            </div>
+            <span class="crest-wing right" aria-hidden="true"></span>
+          </div>
+          <p class="contracts-subtitle">{t("— Complete special missions, secure objective payouts, and extract. —")}</p>
+        </header>
+
+        <div class="contracts-banner-list" role="region" aria-label={t("Available tactical contracts")}>
+          
+      <div
+        class="contract-banner is-recovery"
+        data-contract-card="contract-last-cargo"
+      >
+        <span class="plate-rivet tl" aria-hidden="true"></span>
+        <span class="plate-rivet tr" aria-hidden="true"></span>
+        <span class="plate-rivet bl" aria-hidden="true"></span>
+        <span class="plate-rivet br" aria-hidden="true"></span>
+
+        <a
+          class="contract-banner-select"
+          href={h("./battlefield?mode=contract&id=contract-last-cargo")}
+        >
+          <div class="contract-shield-wrap">
+            <div class="contract-shield">
+              
+    <svg viewBox="0 0 36 36" width="32" height="32" fill="none" aria-hidden="true">
+      <path d="M8 12l10-5 10 5v12l-10 5-10-5V12z" stroke="#f8fafc" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M8 12l10 5 10-5M18 17v12" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/>
+    </svg>
+  
+            </div>
+          </div>
+
+          <div class="contract-thumb-wrap" aria-hidden="true">
+            <img src={h("./images/region-thumb-industrial.jpg")} alt="" loading="lazy">
+            <div class="contract-thumb-fade"></div>
+          </div>
+
+          <div class="contract-banner-info">
+            <div class="contract-banner-meta">
+              <span class="contract-code-badge">{t("CONTRACT-01 // LOGISTICS RAID")}</span>
+              <span class="contract-status-tag">{t("2/3 REQUIRED · 3RD ★")}</span>
+            </div>
+            <div class="contract-banner-title-row">
+              <strong class="contract-banner-title">{t("Last Cargo")}</strong>
+              <span class="contract-banner-sub">{t("RIVER TERMINAL DATA RECOVERY")}</span>
+            </div>
+            <p class="contract-banner-summary">{t("Recover two of three sealed data containers from a river terminal and extract from the southern delivery pad. The third container is an optional high-risk run for bonus credits.")}</p>
+            <div class="contract-progress-row" aria-hidden="true">
+              <div class="contract-progress-track">
+                <span class="seg is-ready"></span>
+                <span class="seg is-ready"></span>
+                <span class="seg"></span>
+              </div>
+              <span class="contract-duration">{t("8–12 minutes (no global timer) · High (Late-Game Tier III–V)")}</span>
+            </div>
+          </div>
+        </a>
+
+        <div class="contract-banner-reward">
+          <div class="reward-col">
+            <span class="reward-label">{t("REWARD")}</span>
+            <strong class="reward-amount">$10,000</strong>
+            <small class="reward-sub">{t("+$1500 / OBJ")}</small>
+          </div>
+          <a
+            class="contract-quick-go"
+            href={h("./battlefield?mode=contract&id=contract-last-cargo")}
+            aria-label={t("Deploy Last Cargo")}
+          ><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg></a>
+        </div>
+      </div>
+    
+      <div
+        class="contract-banner is-sabotage"
+        data-contract-card="contract-blackout-protocol"
+      >
+        <span class="plate-rivet tl" aria-hidden="true"></span>
+        <span class="plate-rivet tr" aria-hidden="true"></span>
+        <span class="plate-rivet bl" aria-hidden="true"></span>
+        <span class="plate-rivet br" aria-hidden="true"></span>
+
+        <a
+          class="contract-banner-select"
+          href={h("./battlefield?mode=contract&id=contract-blackout-protocol")}
+        >
+          <div class="contract-shield-wrap">
+            <div class="contract-shield">
+              
+      <svg viewBox="0 0 36 36" width="32" height="32" fill="none" aria-hidden="true">
+        <circle cx="18" cy="18" r="10" stroke="#f8fafc" stroke-width="2"/>
+        <circle cx="18" cy="18" r="4" stroke="#f59e0b" stroke-width="2"/>
+        <path d="M18 4v6M18 26v6M4 18h6M26 18h6" stroke="#f8fafc" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    
+            </div>
+          </div>
+
+          <div class="contract-thumb-wrap" aria-hidden="true">
+            <img src={h("./images/region-thumb-alpine.jpg")} alt="" loading="lazy">
+            <div class="contract-thumb-fade"></div>
+          </div>
+
+          <div class="contract-banner-info">
+            <div class="contract-banner-meta">
+              <span class="contract-code-badge">{t("CONTRACT-02 // SABOTAGE RAID")}</span>
+              <span class="contract-status-tag">{t("2/3 REQUIRED · 3RD ★")}</span>
+            </div>
+            <div class="contract-banner-title-row">
+              <strong class="contract-banner-title">{t("Blackout Protocol")}</strong>
+              <span class="contract-banner-sub">{t("RADAR & ECM RELAY DEMOLITION")}</span>
+            </div>
+            <p class="contract-banner-summary">{t("Infiltrate the northern communications array, plant timed demolition charges [E] on at least two of three armored radar/ECM relays, clear the 3-cell blast zone before the 8-second fuse detonates, and extract from the southern pad.")}</p>
+            <div class="contract-progress-row" aria-hidden="true">
+              <div class="contract-progress-track">
+                <span class="seg is-ready"></span>
+                <span class="seg is-ready"></span>
+                <span class="seg"></span>
+              </div>
+              <span class="contract-duration">{t("7–11 minutes (8.0s blast fuses) · Very High (Stealth / Jammer / Breacher QRF)")}</span>
+            </div>
+          </div>
+        </a>
+
+        <div class="contract-banner-reward">
+          <div class="reward-col">
+            <span class="reward-label">{t("REWARD")}</span>
+            <strong class="reward-amount">$10,000</strong>
+            <small class="reward-sub">{t("+$1500 / OBJ")}</small>
+          </div>
+          <a
+            class="contract-quick-go"
+            href={h("./battlefield?mode=contract&id=contract-blackout-protocol")}
+            aria-label={t("Deploy Blackout Protocol")}
+          ><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg></a>
+        </div>
+      </div>
+    
+        </div>
+      </section>
+    </div>
+
+  <Fragment slot="after">
+      <section class="menu-content page-briefing" aria-labelledby="contracts-briefing-title">
+        <h2 id="contracts-briefing-title">{t("Contracts Briefing: Special Operations for Veteran Crews")}</h2>
+        <p class="menu-lead">{t("Contracts are standalone tank special ops missions in BATTLE TANK, a")} <a href={h("./")}>{t("browser tank game")}</a> {t("with no download, each with its own objectives and separate from the Campaign map. Instead of clearing every hostile, you slip into a heavily defended 40×40 sector, complete a task under fire and get out alive. They are tuned for a late-game tank with Tier III–V components, and every credit you earn goes straight into your main profile for Garage upgrades.")}</p>
+
+        <div class="menu-guide">
+          <section>
+            <h3>{t("Contract 01 — Last Cargo")}</h3>
+            <p>{t("A logistics raid on an industrial river terminal. Drive up to a sealed data container, stop within range and hold")} <strong>E</strong> {t("for two seconds to load it, then haul it back to the southern delivery pad and sit still while it unloads. Two of the three containers are required; the third sits deeper in enemy lines and is an optional high-risk run. Expect 8–12 minutes with no global timer.")}</p>
+            <h3>{t("Contract 02 — Blackout Protocol")}</h3>
+            <p>{t("A sabotage raid on an armored communications and ECM array. Plant timed demolition charges with")} <strong>E</strong> {t("on at least two of three radar relays, then get out of the three-cell blast zone before the eight-second fuse goes off. The garrison includes stealth tanks, jammers and a quick-reaction breacher force, which makes it the hardest operation in the game. Expect 7–11 minutes.")}</p>
+          </section>
+          <section>
+            <h3>{t("How contract payouts work")}</h3>
+            <ul>
+              <li><strong>$1,500</strong> {t("for every container delivered or relay destroyed, paid the moment it happens.")}</li>
+              <li><strong>$3,000</strong> {t("completion bonus when you extract after at least two objectives.")}</li>
+              <li><strong>$2,500</strong> {t("extra for completing all three objectives — up to")} <strong>$10,000</strong> {t("per run.")}</li>
+              <li>{t("Credits for objectives already completed and for destroyed tanks are kept even if you are defeated or abort; only the completion bonus is lost.")}</li>
+            </ul>
+            <h3>{t("Extraction")}</h3>
+            <p>{t("Once two objectives are done, drive onto the southern pad and start the three-second extraction countdown. You can keep fighting on the pad, but driving off it cancels the countdown.")}</p>
+          </section>
+        </div>
+
+        <h2 class="briefing-heading">{t("Tactics for a clean run")}</h2>
+        <div class="menu-grid">
+          <article class="menu-card">
+            <strong>{t("Enemies react to you")}</strong>
+            <p>{t("Reinforcements arrive in small packets from warned gates as you trigger alarms, load cargo or arm charges. Watch the gate warnings and clear each packet before it can join the next one.")}</p>
+          </article>
+          <article class="menu-card">
+            <strong>{t("Bring the right tank")}</strong>
+            <p>{t("A high-tier cannon helps you break through armor fast, and the APS module shrugs off missile strikers. An All-Terrain or Grav-Hover chassis opens shortcuts across the river terminal's water channels.")}</p>
+          </article>
+          <article class="menu-card">
+            <strong>{t("Know when to leave")}</strong>
+            <p>{t("The third objective is worth $4,000 together with its bonus, but it is also the most dangerous one. If your hull is low, extracting with two objectives still pays $6,000.")}</p>
+          </article>
+        </div>
+
+        <div class="menu-actions">
+          <a class="menu-primary" href={h("./battlefield?mode=contract&amp;id=contract-last-cargo")}>{t("Deploy: Last Cargo →")}</a>
+          <a class="menu-secondary" href={h("./battlefield?mode=contract&amp;id=contract-blackout-protocol")}>{t("Deploy: Blackout Protocol")}</a>
+          <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
+          <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
+        </div>
+      </section>
+  </Fragment>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("Tank Special Ops Missions: Contracts — BATTLE TANK")}</h1>
+        <p>{t("Complete tactical cargo and sabotage contracts in BATTLE TANK. JavaScript and WebGL are required.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>

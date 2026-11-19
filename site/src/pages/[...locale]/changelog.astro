@@ -1,0 +1,447 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("changelog");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Changelog",
+        "item": "https://battletank.online/changelog"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="changelog"
+  title={"Changelog &amp; Patch Notes — BATTLE TANK"}
+  description={"Latest updates, balance patches, new bosses, and engineering improvements for BATTLE TANK 3D browser tank game."}
+  ogDescription={"Latest updates, balance patches, and gameplay improvements for BATTLE TANK."}
+  twitterDescription={"Release history and gameplay updates for BATTLE TANK 3D."}
+  jsonLd={jsonLd}
+  bodyPage="changelog"
+  script="src/pages/how-to-play.js"
+>
+        <h1 class="menu-page-title" tabindex="-1">{t("Changelog &amp; Patch Notes")}</h1>
+        <p class="menu-lead">
+          {t("Release history, balance tuning, and new tactical features for BATTLE TANK.")}
+        </p>
+
+        <div class="menu-grid" style="margin-top:24px;">
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 2.0.0 // ASTRO SITE")}</span>
+            <strong>{t("Static Pages Built with Astro")}</strong>
+            <p>{t("All guide, mode and info pages, in English and Spanish, are now rendered at build time by Astro from one shared layout, footer and page source per page. URLs, text, meta tags and structured data stay the same, and the game itself still runs as plain ES modules with no bundler.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.31.0 // LANGUAGE MENU")}</span>
+            <strong>{t("EN / ES Language Dropdown")}</strong>
+            <p>{t("The footer language switcher is now a dropdown menu with English and Spanish options that opens the same page in the chosen language and highlights the current one. The Language setting in Settings is now a select list instead of a cycle button.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.30.0 // FULL SPANISH SITE")}</span>
+            <strong>{t("All Game Modes, Guides &amp; Info Pages in Spanish")}</strong>
+            <p>{t("Added Spanish versions under")} <code>{t("/es/")}</code> {t("for 13 more pages:")} <a href={h("./es/campaign")}>{t("Campaign")}</a>, <a href={h("./es/survival")}>{t("Survival")}</a>, <a href={h("./es/contracts")}>{t("Contracts")}</a>, <a href={h("./es/how-to-play")}>{t("How to Play")}</a>, <a href={h("./es/walkthrough")}>{t("Walkthrough")}</a>, <a href={h("./es/arsenal")}>{t("Arsenal")}</a>, <a href={h("./es/destructible-terrain")}>{t("Destructible Terrain")}</a>, <a href={h("./es/games-like-battle-city")}>{t("Games Like Battle City")}</a>, <a href={h("./es/webgl-tank-game")}>{t("Under the Hood")}</a>, <a href={h("./es/about")}>{t("About")}</a>, <a href={h("./es/privacy-policy")}>{t("Privacy Policy")}</a>, <a href={h("./es/terms")}>{t("Terms")}</a> {t("and")} <a href={h("./es/contact")}>{t("Contact")}</a>{t(", complete with")} <code>{t("hreflang")}</code> {t("links and sitemap entries.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.29.2 // LANGUAGE SWITCHER &amp; SITEMAP")}</span>
+            <strong>{t("Highlighted Footer Language Toggle &amp; Sitemap Hreflang Links")}</strong>
+            <p>{t("Styled the footer language switcher with an amber tactical badge and globe icon so it stands out from regular links, and added")} <code>{t("xhtml:link")}</code> <code>{t("hreflang")}</code> {t("alternates for the English and Spanish page pairs in")} <code>{t("sitemap.xml")}</code>.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.29.1 // FOOTER CLEANUP")}</span>
+            <strong>{t("Removed Armored Footer Bracket Decoration")}</strong>
+            <p>{t("Removed the decorative")} <code>{t(".armored-footer-bracket")}</code> {t("element and its CSS rules across all public pages for a cleaner footer bar.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.29.0 // SPANISH LANGUAGE")}</span>
+            <strong>{t("Play BATTLE TANK in Spanish")}</strong>
+            <p>{t("The whole battlefield interface is now available in Spanish: HUD, Garage, pause and result screens, medals, status banners, tank and component names, and mission briefings shown in battle. Choose the language in Settings, or open the new Spanish")} <a href={h("./es/")}>{t("home page")}</a> {t("and")} <a href={h("./es/enemies")}>{t("enemy guide")}</a>{t(". The game remembers your choice, and every other page stays in English.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.28.0 // MARKDOWN FOR AI AGENTS")}</span>
+            <strong>{t("Markdown Copies of Every Page &amp; Full-Site llms-full.txt")}</strong>
+            <p>{t("Every public page now has a clean Markdown copy for AI assistants and agents: add")} <code>{t(".md")}</code> {t("to its address (the home page is")} <code>{t("/index.md")}</code>{t("). Each page links its copy,")} <code>{t("llms.txt")}</code> {t("now points to the Markdown versions, and the new")} <code>{t("llms-full.txt")}</code> {t("holds the whole site in one file. The copies are generated from the pages on every release, so they always match the site.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.27.0 // NEW GUIDES &amp; TERMS OF SERVICE")}</span>
+            <strong>{t("Destructible Terrain Guide, Battle City Comparison, Tech Page &amp; Terms")}</strong>
+            <p>{t("Added four new pages: a")} <a href={h("./destructible-terrain")}>{t("Destructible Terrain guide")}</a> {t("covering every wall, surface and explosive object;")} <a href={h("./games-like-battle-city")}>{t("Games Like Battle City")}</a>{t(", comparing BATTLE TANK with the 1985 arcade classic;")} <a href={h("./webgl-tank-game")}>{t("Under the Hood")}</a>{t(", explaining the Three.js and WebGL engine; and")} <a href={h("./terms")}>{t("Terms of Service")}</a>{t(". Every page footer now links to all guides. The game is now described as \"inspired by Battle City\" instead of a remake, and between-mission ad breaks are limited to one every 120 seconds.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.26.2 // SEO PAGE METADATA &amp; HOME FAQ")}</span>
+            <strong>{t("Search-Friendly Page Titles, Home Page FAQ &amp; Richer Structured Data")}</strong>
+            <p>{t("Rewrote the home page title, description and social cards around 3D isometric Battle City-style tank combat, co-typed its JSON-LD as")} <code>{t("VideoGame")}</code> + <code>{t("WebApplication")}</code>{t(", and added an 8-question FAQ with matching")} <code>{t("FAQPage")}</code> {t("markup. Campaign, Survival, Contracts, Arsenal, Enemies and How to Play now each have their own focused title, description, heading, intro line and image descriptions.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.26.0 // PASSIVE JAMMER ECM REWORK")}</span>
+            <strong>{t("Continuous 20-Cell Radar Interference &amp; 5-Cell APS / ATGM Disruption")}</strong>
+            <p>{t("Reworked the")} <code>{t("JAMMER")}</code> {t("module into a continuously active passive ECM system: within 20 cells it scrambles the player's radar (hiding 50% of real contacts and injecting 50% false blips), and within 5 cells it disables player APS interception, blocks ATGM launch, and makes in-flight player ATGMs lose lock and fly straight to a random impact point up to 3 cells ahead. The Jammer now screens allies from 3-5 cells in timed runs and withdraws out of sight between them. Removed the legacy periodic jammer pulse ability.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.25.2 // AIRDROP LANDING VALIDATION &amp; MID-FLIGHT DRIFT")}</span>
+            <strong>{t("Prevent AirDrop Crates from Landing on Occupied Cells &amp; Shift Target Mid-Flight")}</strong>
+            <p>{t("Updated")} <code>{t("PowerupsController")}</code> {t("and")} <code>{t("engineerSupport")}</code> {t("so parachute AirDrops avoid live turrets, burning tiles, mines, pickups, tanks, and newly built")} <code>{t("BRICK")}</code> {t("walls, allow landing on")} <code>{t("GRASS")}</code> {t("and")} <code>{t("STONE")}</code>{t(", and smoothly drift to the nearest clear cell if their target becomes occupied during descent.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.25.1 // FOREST GROUND ZONE DECORATION FIX")}</span>
+            <strong>{t("Paint Zone Surfaces Under FOREST &amp; Decoration Tiles on GROUND")}</strong>
+            <p>{t("Fixed")} <code>{t("decorationCellAllowed")}</code> {t("and")} <code>{t("paintDecoration")}</code> {t("in")} <code>{t("decoration.js")}</code> {t("and")} <code>{t("urban-ground.js")}</code> {t("to check")} <code>{t("surfaceGrid")}</code> {t("instead of the top-layer")} <code>{t("grid")}</code>{t(", preventing light-gray unmasked squares from appearing beneath")} <code>{t("FOREST")}</code> {t("clusters inside asphalt, concrete, and gravel decoration zones.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.25.0 // LAYERED TERRAIN, SURFACE &amp; OBJECT ARCHITECTURE")}</span>
+            <strong>{t("Separated Surface, Decoration, Facility &amp; Wall Layers, Removed SPAWNER &amp; Migrated All Maps")}</strong>
+            <p>{t("Reworked arena cells into explicit")} <code>{t("surface")}</code> (<code>{t("GROUND")}</code>, <code>{t("ROAD")}</code>, <code>{t("GRASS")}</code>, <code>{t("STONE")}</code>, <code>{t("SAND")}</code>, <code>{t("WATER")}</code>, <code>{t("ICE")}</code>, <code>{t("SWAMP")}</code>, <code>{t("OIL_SLICK")}</code>{t(") and primary object (")}<code>{t("decoration")}</code>, <code>{t("facility")}</code>, <code>{t("wall")}</code>{t(") layers with placement compatibility checks (")}<code>{t("layers.js")}</code>, <code>{t("surfaces.js")}</code>{t("). New")} <code>{t("STONE")}</code> {t("rocky ground caps tracked hulls at 1.5 cells/s (CH4 / CH5 / hover immune). Removed hardcoded soil decals under")} <code>{t("FOREST")}</code> {t("trees (grass and stone patches are instanced), completely removed legacy")} <code>{t("SPAWNER")}</code> {t("pads (enemies enter through each map's")} <code>{t("enemies.entrances")}</code>{t("), enabled wave-like forest fire spread, and migrated all 39 maps to dual")} <code>{t("surfaceLayout")}</code> + <code>{t("objectLayout")}</code> {t("grids. Tank traction now combines both layers from the surface catalog for the player and enemies (a crater on a road keeps part of the road bonus); craters keep the road or grass beneath them, and exploded barrels no longer leave invisible obstacles.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.24.1 // BURNING OIL SPREAD TO FOREST &amp; BUILDING DAMAGE")}</span>
+            <strong>{t("Burning Oil Slicks Ignite Adjacent Forests &amp; Damage Neighboring Buildings")}</strong>
+            <p>{t("Updated")} <code>{t("TerrainDestructionController.updateBurningOil")}</code> {t("so burning")} <code>{t("OIL_SLICK")}</code> {t("tiles ignite orthogonally adjacent")} <code>{t("FOREST")}</code> {t("cells after flashover and deal periodic fire damage (4 HP/s) to neighboring")} <code>{t("HOUSE_1")}</code> {t("and")} <code>{t("HOUSE_2")}</code> {t("buildings.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.24.0 // VOLATILE OIL SLICK INFERNO, IGNITION &amp; MAP DISTRIBUTION")}</span>
+            <strong>{t("3D Burning Oil Slick Inferno, Full Ignition Triggers &amp; Map-Wide Oil Placement")}</strong>
+            <p>{t("Overhauled burning")} <code>{t("OIL_SLICK")}</code> {t("visuals with a 3D animated fire-bed, 6 flickering flame tongues, boiling oil rings, and multi-layered fire, spark, and black smoke particles (")}<code>{t("models.js")}</code>, <code>{t("fx-system.js")}</code>{t(", and 3D Codex). Added chain ignition across adjacent oil tiles, ignition from destroyed tanks, thermobaric blasts, burning forests, and tank-hitting shells, fixed per-frame fire DoT screen-shake/audio spam, and placed 290 new")} <code>{t("OIL_SLICK")}</code> {t("tiles across all 39 campaign, contract, and survival maps.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.23.8 // TABLET TOUCH CONTROLS AUTO-DETECTION REFINEMENT")}</span>
+            <strong>{t("Prevent Tablet Touch Controls from Auto-Activating on Desktop Resolutions &amp; Mouse Input")}</strong>
+            <p>{t("Refined")} <code>{t("isTouchCapable()")}</code> {t("and")} <code>{t("isMobileOrTabletDevice()")}</code> {t("to exclude desktop viewports wider than 1366px and desktop touch/stylus laptops with a fine primary pointer, and updated")} <code>{t("main.js")}</code> {t("to sync touch controls on viewport resize and hide them on mouse interaction in")} <code>{t("auto")}</code> {t("mode.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.23.7 // PRODUCTION HOSTNAME GATE FOR GTM &amp; ADSENSE")}</span>
+            <strong>{t("Gate Google Tag Manager &amp; AdSense Script Loading to Production Domain Only")}</strong>
+            <p>{t("Restricted Google Tag Manager (")}<code>{t("gtm.js")}</code>{t(") and Google AdSense (")}<code>{t("adsbygoogle.js")}</code>{t(") script loading across all HTML pages strictly to the production hostname (")}<code>{t("battletank.online")}</code>{t("), preventing analytics and ad requests on preview deployments and localhost, and simplified the Itch.io build script in")} <code>{t("scripts/build-itch.mjs")}</code>.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.23.6 // ANALYTICS TELEMETRY, INTERNAL TRAFFIC FLAG &amp; FPS SAMPLING")}</span>
+            <strong>{t("Refined GA4 Telemetry, Internal Traffic Filter, Average FPS Sampling &amp; Campaign Progress Property")}</strong>
+            <p>{t("Added")} <code>{t("?internal=1")}</code> {t("developer traffic tagging across all HTML pages, removed duplicate manual")} <code>{t("page_view")}</code> {t("dispatches in favor of native Google Tag tracking, and added")} <code>{t("game_ready")}</code> {t("load timing, combat")} <code>{t("fps_avg")}</code> {t("sampling,")} <code>{t("max_mission")}</code> {t("user properties, and pre-navigation")} <code>{t("mission_abort")}</code> {t("settlement.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.23.5 // SEO METADATA &amp; DEPLOY SITEMAP REFRESH")}</span>
+            <strong>{t("Updated Home Page SEO Metadata &amp; Automated Sitemap / JSON-LD Version Sync on Deploy")}</strong>
+            <p>{t("Refined the home page title, meta description, Open Graph, Twitter Card, and JSON-LD metadata in")} <code>{t("index.html")}</code>{t(", and updated")} <code>{t("scripts/deploy.mjs")}</code> {t("to automatically sync each sitemap URL's")} <code>{t("&lt;lastmod&gt;")}</code> {t("date from Git history and the home page JSON-LD")} <code>{t("softwareVersion")}</code> {t("from")} <code>{t("package.json")}</code> {t("during deployment.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.23.4 // HOME, CAMPAIGN, CONTRACTS &amp; SURVIVAL BRIEFING SECTIONS")}</span>
+            <strong>{t("Scrollable Mode Briefings &amp; Overview Sections on Home, Campaign, Contracts &amp; Survival Pages")}</strong>
+            <p>{t("Added scrollable mode overview and rules briefings to")} <code>{t("index.html")}</code>, <code>{t("campaign.html")}</code>, <code>{t("contracts.html")}</code>{t(", and")} <code>{t("survival.html")}</code> {t("along with responsive")} <code>{t(".page-briefing")}</code> {t("layout rules in")} <code>{t("src/index.css")}</code>.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.23.3 // BURNING FOREST ENEMY KILL FIX")}</span>
+            <strong>{t("Fix Enemy Tank Freezing &amp; Becoming Invulnerable When Killed by Burning Forest")}</strong>
+            <p>{t("Fixed a bug in")} <code>{t("ForestFireController.update")}</code> {t("where direct subtraction from")} <code>{t("enemy.hp")}</code> {t("before calling")} <code>{t("damageEnemy")}</code> {t("caused enemies killed by burning forest to hit the")} <code>{t("enemy.hp &lt;= DURABILITY.ZERO_HP")}</code> {t("early return in")} <code>{t("damageEnemy")}</code>{t(", leaving an immobile, invulnerable wreck on the burned-out")} <code>{t("SAND")}</code> {t("tile.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.23.2 // ENEMY HQ SIEGE RESUPPLY AIR DROP")}</span>
+            <strong>{t("Automatic Air Drop Near Enemy HQ After All Enemy Tanks Are Cleared")}</strong>
+            <p>{t("On maps with a fortified Enemy Base (")}<code>{t("ENEMY_BASE")}</code>{t("), eliminating all enemy tanks while the Enemy HQ is still standing now automatically dispatches a parachute resupply Air Drop onto a passable cell 2–6 tiles from the Enemy HQ so the player can finish demolishing the stronghold without driving back to the Allied Base.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.23.1 // 3D CODEX BUILDING &amp; RUBBLE INSPECTOR")}</span>
+            <strong>{t("1-Story &amp; 2-Story Modular Buildings &amp; Rubble Added to 3D Codex")}</strong>
+            <p>{t("Added")} <code>{t("HOUSE_1")}</code> {t("(1-Story Modular Building),")} <code>{t("HOUSE_2")}</code> {t("(2-Story Modular Building), and")} <code>{t("RUBBLE")}</code> {t("(Concrete Building Rubble) to")} <code>{t("SURFACE_CATALOG")}</code> {t("and the 3D Codex studio. Includes an interactive Building Configurator to inspect all 8 residential styles (Iteration 1), all 4 industrial/warehouse/office styles (Iteration 2), and every progressive destruction stage down to collapsed rubble, plus live")} <code>{t("SPACE")}</code> {t("/ Test Fire demolition effects.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.23.0 // INDUSTRIAL, WAREHOUSE &amp; OFFICE BUILDINGS ACROSS ALL THEMES")}</span>
+            <strong>{t("New 1–2 Story Industrial, Warehouse &amp; Office Buildings &amp; Theme-Based Map Distribution")}</strong>
+            <p>{t("Expanded the modular building system (")}<code>{t("public/models/terrain/buildings.glb")}</code>{t(") with 4 new 1-story and 4 new 2-story industrial, warehouse, and office building styles (windowless corrugated steel warehouses, sawtooth brick factories, barrel-arch supply depots, heavy industrial plants, and high-bay logistics hubs alongside windowed site, curtain-wall, and administrative offices). Added buildings across all sector themes with theme-specific residential vs. industrial/office proportions:")} <code>{t("forest")}</code> (50%/50%), <code>{t("desert")}</code> (25%/75%), <code>{t("coast")}</code> (75%/25%), <code>{t("alpine")}</code> (50%/50%), <code>{t("industrial")}</code> {t("(25%/75%), and")} <code>{t("capital")}</code> (75%/25%).</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.22.5 // CONCRETE DAMAGE TINT FIX")}</span>
+            <strong>{t("Darkened Concrete Damage Ramp Matching Intact Concrete Tint")}</strong>
+            <p>{t("Aligned the per-hit damage darkening ramp in")} <code>{t("updateConcreteBlockDamage")}</code> {t("and procedural concrete materials with the intact")} <code>{t("CONCRETE")}</code> {t("base color (")}<code>0x8c96a3</code>{t(") so damaged concrete blocks progressively darken on hit instead of jumping to a legacy lighter shade.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.22.4 // ENEMY UPDATE LOOP CRASH FIX &amp; AUDIO AUTOPLAY GUARD")}</span>
+            <strong>{t("Multi-Kill Enemy Iteration Fix &amp; User-Gesture AudioContext Unlock")}</strong>
+            <p>{t("Fixed a runtime freeze in")} <code>{t("EnemyAiController.updateEnemies")}</code> {t("and explosion/hazard damage loops when a barrel detonation or contact warhead eliminated multiple enemies during a single iteration. Deferred")} <code>{t("AudioContext")}</code> {t("initialization until the first user gesture on the page to prevent browser autoplay console warnings while automatically starting the diesel engine loop on first input.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.22.3 // CH4 &amp; CH5 WATER TRAVERSAL BALANCE")}</span>
+            <strong>{t("CH4 Water Speed Penalty &amp; CH5 Full-Speed Amphibious Hover")}</strong>
+            <p>{t("Differentiated amphibious chassis water traversal:")} <code>{t("CH4 Active All-Terrain Tracks")}</code> {t("now crosses deep")} <code>{t("WATER")}</code> {t("at 60% speed while retaining full-speed traction across ice, sand, swamp, craters, and oil slicks, whereas")} <code>{t("CH5 Grav-Hover Hybrid")}</code> {t("glides across water at full speed with zero penalty.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.22.2 // CONTINUOUS BASE REPAIR &amp; REARM IN HANGAR")}</span>
+            <strong>{t("Base Repair &amp; Ammo Rearming Continue Inside Hangar")}</strong>
+            <p>{t("Allied base hull, subsystem, and armor panel repairs as well as cannon shell rearming (up to")} <code>{t("BASE_REARM_CAP")}</code>{t(") now continue at their normal pace while the player is inside the base hangar, keeping combat units and projectiles paused.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.22.1 // COMBAT HUD READABILITY &amp; URBAN BLOCKS")}</span>
+            <strong>{t("Larger Tactical HUD Panels &amp; Split Oversized City Buildings")}</strong>
+            <p>{t("Redesigned the top-left sector telemetry card (")}<code>{t("HOSTILES")}</code>, <code>{t("CREDITS")}</code>, <code>{t("CITADEL")}</code>{t(") and bottom HUD panels (")}<code>{t("HULL HP")}</code>{t(", weapon reload, and uniform")} <code>{t("REPAIR")}</code> / <code>{t("SMOKE")}</code> / <code>{t("ATGM")}</code> / <code>{t("APS")}</code> {t("module tiles) with larger typography, progress bars, and high-contrast pure-CSS state styling. Rewrote 22 campaign, contract, and survival maps to split 143 oversized building clusters into smaller houses (&le; 3&times;3) separated by 1-cell alleys.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.22.0 // HYBRID 1–2 STORY BUILDINGS, RUBBLE &amp; LOFTED MISSILES")}</span>
+            <strong>{t("Modular 1–2 Story City Buildings, Persistent Rubble &amp; Top-Attack Missiles")}</strong>
+            <p>{t("Added a Blender-built modular building system (")}<code>{t("public/models/terrain/buildings.glb")}</code>{t(") with 8 1-story and 8 2-story facade styles sharing a single 1024&times;1024 atlas and ORM map; 2&times;2+")} <code>{t("BRICK")}</code> {t("and")} <code>{t("CONCRETE")}</code> {t("clusters form cohesive multi-tile buildings with 5 (1-story) and 7 (2-story) destruction stages while 1-tile walls remain classic blocks. Destroyed buildings leave persistent")} <code>{t("RUBBLE")}</code> {t("that slows all non-boss tanks until cleared by")} <code>{t("DOZER_BLADE")}</code> {t("or heavy HE blasts, and player ATGMs now climb above rooftops before diving steeply onto targets.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.21.4 // MISSION 35 SUPPLY CRATES")}</span>
+            <strong>{t("More Destructible Supply Crates in Mission 35")}</strong>
+            <p>{t("Increased destructible supply crate (")}<code>{t("BOXES")}</code>{t(") count in Mission 35 (")}<code>{t("Vanguard Dawn")}</code>{t(") by over 30% (from 8 to 11 crates) across balanced courtyard positions.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.21.3 // MISSION 35 AIR DROP TIMING")}</span>
+            <strong>{t("Progress-Triggered Air Drops Before Boss Waves")}</strong>
+            <p>{t("Added optional battle-progress triggers (")}<code>{t("progress")}</code>{t(") to Air Drop configurations and updated Mission 35 to deploy 5 Air Drops — an early opening drop plus one ahead of each of the 4 Sector Boss stages.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.21.2 // ENGINE DISPOSAL, UI, OIL VFX &amp; CODEX FIXES")}</span>
+            <strong>{t("Memory Leak Fixes, Multi-Layered Oil Fire VFX &amp; HUD Optimization")}</strong>
+            <p>{t("Disposed remaining Three.js GPU buffers, ground decals, aim reticle, FX pools, turret fallback rigs, and ModelFactory caches on teardown; prevented duplicate modal listeners and stuck touch controls; restored SPA top compass mounting and Codex UI styles; removed dead achievement modal code and unused CSS; eliminated per-tick reload DOM thrashing in the battle HUD; and upgraded burning oil slicks with multi-layered fire, soot smoke, and embers.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.21.1 // AIR DROP GROUNDING &amp; MISSION 35 BOSS PACING")}</span>
+            <strong>{t("Grounded Air Drop Crates &amp; 4-Stage Boss Sequence")}</strong>
+            <p>{t("Grounded landed Air Drop supply crates so they sit stationary on the terrain instead of hovering and spinning, fixed")} <code>{t("bossSequence")}</code> {t("progression to count destroyed enemies rather than merely spawned ones, and split Mission 35's boss sequence into 4 separate single-boss stages (")}<code>{t("BOSS_MAMMOTH")}</code>, <code>{t("BOSS_HYDRA")}</code>, <code>{t("BOSS_INFERNO")}</code>, <code>{t("BOSS_TITAN")}</code>).</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.21.0 // PARACHUTE AIR DROPS &amp; MISSION 35 BALANCE")}</span>
+            <strong>{t("Configurable Parachute Air Drops, Boss Drops &amp; Pacing")}</strong>
+            <p>{t("Added a Blender-built 3D parachute Air Drop supply crate (")}<code>{t("public/models/air_drop.glb")}</code>{t(") with per-drop percentage configuration (")}<code>{t("airDrop")}</code> {t("array in map JSONs), increased Sector Boss kill bounties, guaranteed 3 power-up drops per defeated boss, and distributed")} <code>{t("bossSequence")}</code> {t("stages evenly across the enemy pool in Mission 35.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.20.0 // MEDALS &amp; MILITARY RANKS")}</span>
+            <strong>{t("Graded Service Medals, Rank Ladder &amp; Medal Case")}</strong>
+            <p>{t("Introduced a 20-medal tactical honors system across four grades (")}<strong>{t("Bronze")}</strong>, <strong>{t("Silver")}</strong>, <strong>{t("Gold")}</strong>{t(", and")} <strong>{t("Vanguard")}</strong>{t("), a 10-tier military rank progression driven by Service XP and medal gates, live battle telemetry tracking, an updated debriefing Service Medals &amp; Rank summary, and a")} <strong>{t("Medal Case")}</strong> {t("modal accessible from the site menu.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.19.0 // SETTINGS PROGRESS RESET")}</span>
+            <strong>{t("Reset Progress Option in Settings")}</strong>
+            <p>{t("Added a two-step")} <strong>{t("Reset Progress")}</strong> {t("control inside the Settings modal to clear campaign missions, credits, tank upgrades, survival records, contracts, and medals on the device while preserving audio, graphics, camera, and touch preferences.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.18.6 // HOME MODE CARDS REDESIGN")}</span>
+            <strong>{t("Cleaner Mode Deck &amp; Crisp Bordered Plates")}</strong>
+            <p>{t("Streamlined the home page")} <code>{t("command-modes-deck")}</code> {t("cards with concise copy, distinct per-mode accent stripes, and clean rounded borders without")} <code>{t("clip-path")}</code> {t("border clipping.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.18.5 // LEGACY CLASS CLEANUP")}</span>
+            <strong>{t("Finalized Removal of")} <code>{t("bg-[#0B1120]")}</code> {t("&amp; Tailwind Leftovers")}</strong>
+            <p>{t("Removed remaining")} <code>{t("bg-[#0B1120]")}</code> {t("and legacy Tailwind utility classes across all")} <code>{t("public/*.html")}</code> {t("pages,")} <code>{t("codex/index.html")}</code>{t(", and")} <code>{t("demo.html")}</code>{t(", and trimmed")} <code>.p-6</code> {t("and")} <code>{t(".font-semibold")}</code> {t("from")} <code>{t("public/src/index.css")}</code>.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.18.4 // CSS &amp; MARKUP CLEANUP")}</span>
+            <strong>{t("Removed Unused CSS Rules &amp; Legacy HTML Classes")}</strong>
+            <p>{t("Cleaned up unused Tailwind utility classes and legacy component styles across")} <code>{t("public/src/index.css")}</code> {t("(384 lines removed) and")} <code>{t("public/*.html")}</code>{t(", and updated")} <code>{t("404.html")}</code> {t("to use the native")} <code>{t("menu-page")}</code> {t("design system.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.18.3 // LLM DISCOVERABILITY &amp; 404 PAGE")}</span>
+            <strong>{t("Added")} <code>{t("llms.txt")}</code> {t("&amp; Dedicated")} <code>{t("404.html")}</code></strong>
+            <p>{t("Added")} <code>{t("public/llms.txt")}</code> {t("with structured game documentation and canonical links for AI crawlers and LLMs, and added a themed")} <code>{t("public/404.html")}</code> {t("so missing routes (including")} <code>{t("/.well-known/ard.json")}</code>{t(") return a proper HTTP")} <code>404</code> {t("instead of falling back to")} <code>{t("index.html")}</code>.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.18.2 // SEO CLEAN URLS &amp; GUIDE LAYOUT FIX")}</span>
+            <strong>{t("Clean Internal Links, Local Clean URLs &amp; Compact Guide Cards")}</strong>
+            <p>{t("Updated all internal navigation and footer links to canonical clean URLs without")} <code>{t(".html")}</code> {t("(while preserving")} <code>{t(".html")}</code> {t("links in itch.io builds), enabled")} <code>{t("cleanUrls")}</code> {t("in")} <code>{t("public/serve.json")}</code> {t("for local dev, and fixed scrollable guide page centering, padding, hero banner height, and compact 3-column card sizing.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.18.1 // SCOUT TUNING &amp; TERRAIN POLISH")}</span>
+            <strong>{t("Scout Speed Tuning, Darker Concrete &amp; Grounded Explosive Barrels")}</strong>
+            <p>{t("Tuned")} <code>{t("SCOUT")}</code> {t("base mass (")}<code>11</code>{t(", total")} <code>74</code>{t(") to reduce movement speed by ~10% and smooth hull turning, darkened the")} <code>{t("CONCRETE")}</code> {t("block base tint to")} <code>0x8c96a3</code>{t(", and removed the square pad under explosive barrels so they sit directly on the underlying ground surface.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.18.0 // SURVIVAL FORTIFICATION &amp; DIRECTIONAL WAVES")}</span>
+            <strong>{t("Chicane HQ Fortress, Clockwise Wave Assaults, Border Spawning &amp; Full HQ Rearm")}</strong>
+            <p>{t("Upgraded")} <em>{t("Paris: Last Stand")}</em> {t("with a double-ring concrete chicane fortress around the Élysée HQ that blocks direct external fire, moved nearby mines to outer approaches, removed in-map spawner pads so enemies enter from outside map bounds, rotated wave assaults clockwise (")}<code>{t("north")}</code> → <code>{t("east")}</code> → <code>{t("south")}</code> → <code>{t("west")}</code>{t(") with HUD direction indicators, and enabled Survival HQ shell replenishment up to full ammo capacity at 2× speed.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.17.2 // UNIFIED SEINE STONE BRIDGES")}</span>
+            <strong>{t("Continuous Procedural Stone Bridges in Paris Survival")}</strong>
+            <p>{t("Replaced per-cell")} <code>{t("BRIDGE_DECK")}</code> {t("segments with unified procedural stone bridges (")}<code>{t("LandmarkModels.createBridge")}</code>{t(") spanning each rectangular run of bridge cells over the Seine in")} <em>{t("Paris: Last Stand")}</em>.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.17.1 // SURVIVAL WAVE BANNER FIX")}</span>
+            <strong>{t("Opaque Background &amp; Bottom Positioning for Next-Wave Banner")}</strong>
+            <p>{t("Added the missing")} <code>{t(".bottom-24")}</code> {t("and")} <code>{t(".bg-slate-950/95")}</code> {t("CSS rules in")} <code>{t("index.css")}</code> {t("and aligned the Survival intermission")} <code>{t("NEXT: WAVE")}</code> {t("banner in")} <code>{t("contract-hud.js")}</code> {t("with")} <code>{t("bg-[#0B0F17]/95")}</code> {t("so it renders with an opaque backdrop above the bottom HUD without overlapping the top compass.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.17.0 // REINFORCED CONCRETE BREACHES")}</span>
+            <strong>{t("Directional Concrete Wall Damage Models &amp; Exposed Rebar")}</strong>
+            <p>{t("Added")} <code>{t("concrete.glb")}</code> {t("and shared directional breach rendering (")}<code>{t("breach-models.js")}</code>, <code>{t("concrete-models.js")}</code>{t(") so reinforced concrete walls open craters on the specific faces hit by shells and blasts, exposing internal steel rebar.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.16.3 // CLEANER BRICK BREACHES")}</span>
+            <strong>{t("No Stray Slabs Beside Breached Brick Walls")}</strong>
+            <p>{t("Rebuilt")} <code>{t("brick.glb")}</code> {t("so corner and two-face breach states keep only connected masonry; bricks cut off by two craters no longer remain as a loose slab next to the wall.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.16.2 // DIRECTIONAL BRICK BREACHES")}</span>
+            <strong>{t("Multi-Face Brick Damage Models &amp; Updated Brick Asset")}</strong>
+            <p>{t("Updated")} <code>{t("brick.glb")}</code> {t("and brick damage state rendering in")} <code>{t("brick-models.js")}</code>, <code>{t("brick-finish.js")}</code>, <code>{t("terrain-destruction.js")}</code>{t(", and")} <code>{t("projectiles.js")}</code> {t("so brick walls reflect directional, corner, and multi-face shell breaches.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.16.1 // BATTLE HUD LAYOUT &amp; CONTROLS")}</span>
+            <strong>{t("Relocated Hull HP &amp; APS Indicators, Clearer Camera Toggle Button")}</strong>
+            <p>{t("Moved the")} <code>{t("HULL HP")}</code> {t("card to the bottom-left corner next to the tank component damage silhouette, integrated the passive")} <code>{t("AUTO APS")}</code> {t("status tile into the bottom module bar alongside")} <code>{t("RM-1")}</code>, <code>{t("SMOKE")}</code>{t(", and")} <code>{t("ATGM")}</code>{t(", and replaced the ambiguous top-right camera glyph with a crisp camera SVG icon and")} <code>[C]</code> {t("preset label.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.16.0 // DETAILED GROUND DECORATIONS")}</span>
+            <strong>{t("World-Space Ground Shader, Procedural Surface Patterns &amp; Campaign Import Map Fix")}</strong>
+            <p>{t("Upgraded battlefield ground rendering with a world-space GLSL surface finish (multi-scale mineral grain, weathering, and micro-roughness variation) paired with procedural tileable surface patterns for asphalt, concrete, pavers, dirt, gravel, and snow, 2048px high-quality ground textures, and richer decals and road/railway markings. Also added the missing Three.js import map to")} <code>{t("campaign.html")}</code> {t("so campaign missions launch cleanly.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.15.0 // PARIS: LAST STAND &amp; CINEMATIC DEFEAT")}</span>
+            <strong>{t("Paris Survival Rework, Textured 3D Landmarks, Turret-Pop Destruction &amp; On-Demand Model Loading")}</strong>
+            <p>{t("Reworked Survival mode into")} <em>{t("Paris: Last Stand")}</em>{t("—a 40×40 fortified central Paris arena with a 120 HP Élysée Palace HQ, timed 60-second waves, 7:00 Victory &amp; Overtime mode, neutral map mines, Seine bridges, and PBR-textured 3D Paris landmarks (Eiffel Tower, Arc de Triomphe, Notre-Dame, Louvre Pyramid, Sacré-Cœur, Concorde Obelisk). Added catastrophic player tank destruction with 3D turret blow-off, secondary cook-off blasts, and a 2.8 s defeat camera delay, fixed HQ projectile/LOS blocking, and implemented per-map lazy loading and unloading of landmark and enemy tank GLB models.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.14.0 // TACTICAL SURFACES &amp; CODEX")}</span>
+            <strong>{t("New Battlefield Surfaces, Water Towers &amp; 3D Codex Fixes")}</strong>
+            <p>{t("Added five tactical arena surfaces and interactive hazards—")}<code>{t("ROAD")}</code>, <code>{t("SWAMP")}</code>, <code>{t("OIL_SLICK")}</code> {t("(ignites on fire/blast),")} <code>{t("CRATER")}</code> {t("(3D blast funnel with scorched debris), and destructible")} <code>{t("WATER_TOWER")}</code> {t("(floods nearby tiles to swamp and extinguishes fires)—along with urban perimeter buildings, campaign/contract/survival map updates, darker weathered wooden crates, and standalone 3D Codex studio fixes.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.13.3 // SENSOR RADAR")}</span>
+            <strong>{t("Player-Centered Tactical Radar")}</strong>
+            <p>{t("Centered the battlefield sensor radar on the player tank with a 16-cell tactical radius, dynamically positioning HQ, enemy contacts, loot, and contract objectives relative to the player and clamping distant bearings to the outer ring.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.13.2 // ENEMY AGILITY")}</span>
+            <strong>{t("Enemy Hull Turn Rate Tuning")}</strong>
+            <p>{t("Increased enemy tank hull turn rate by 10% across movement speed tiers for more responsive maneuvering.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.13.1 // UI POLISH &amp; HUD CLARITY")}</span>
+            <strong>{t("Button Redesign &amp; Tank Damage Silhouette Fix")}</strong>
+            <p>{t("Redesigned menu, modal, share, and drawer-handle buttons with crisp borders and steady glow-ring hover states, centered the contract quick-deploy chevron icon, and updated the battlefield tank silhouette so red highlights persistent component faults requiring paid hangar repair while combat damage displays in yellow.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.13.0 // PWA &amp; BRAND ICONS")}</span>
+            <strong>{t("Web App Manifest &amp; Custom Tank Icon Suite")}</strong>
+            <p>{t("Added")} <code>{t("manifest.webmanifest")}</code> {t("with standalone landscape PWA configuration, a flat-color dark-mode-aware SVG tank icon (")}<code>{t("icon.svg")}</code>{t("), and regenerated")} <code>{t("favicon.ico")}</code>, <code>{t("apple-touch-icon.png")}</code>, <code>{t("icon-192.png")}</code>, <code>{t("icon-512.png")}</code>{t(", and maskable")} <code>{t("icon-mask.png")}</code>.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.12.1 // TABLET PERFORMANCE")}</span>
+            <strong>{t("Battlefield Optimization for Tablets")}</strong>
+            <p>{t("Auto-selects the")} <code>{t("Low")}</code> {t("graphics preset on mobile and tablet devices by default, disables heavy")} <code>{t("RoomEnvironment")}</code> {t("IBL and dynamic explosion lights on")} <code>{t("Low")}</code>{t(", and reduces HUD/compass DOM rebuild frequency during combat.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.12.0 // TABLET CONTROLS &amp; HUD")}</span>
+            <strong>{t("Landscape Touch Controls &amp; Compact Battle HUD")}</strong>
+            <p>{t("Added an on-screen virtual joystick, Fire button, and enlarged combat module buttons for landscape tablets (with Auto/On/Off in Settings), fixed campaign mission URL parameter routing, and streamlined the top-left mission HUD strip.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.11.0 // DISTRIBUTION &amp; HOME UI")}</span>
+            <strong>{t("Home Overview &amp; Distribution Polish")}</strong>
+            <p>{t("Refined the home hero briefing and overview strip layout, improved desktop/tablet viewport scaling, and added HTML5 distribution support.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.10 // FIELD GUIDES &amp; SEO")}</span>
+            <strong>{t("Walkthrough, Enemy &amp; Arsenal Guides")}</strong>
+            <p>{t("Added dedicated field guides for all 12 enemy classes and 4 Sector Bosses (")}<code>{t("/enemies")}</code>{t("), VANGUARD modular upgrades and APS rules (")}<code>{t("/arsenal")}</code>{t("), 35-mission region walkthrough (")}<code>{t("/walkthrough")}</code>{t("), and structured FAQ/Schema metadata.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.9.2 // COMBAT AI")}</span>
+            <strong>{t("Tracked Movement &amp; Flank Reaction Tuning")}</strong>
+            <p>{t("Capped enemy hull turn rates, aligned tracked movement physics, and added realistic flank reaction delays for smoother tactical engagements.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 1.9.0 // TELEMETRY &amp; SUPPLIES")}</span>
+            <strong>{t("BOX Power-Up Balance &amp; Mission Victory Restore")}</strong>
+            <p>{t("Updated BOX power-up drop probabilities and AMMO pickup range; full ammo, hull HP, and components now restore cleanly on mission victory; added battle achievement highlights.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("GARAGE UPDATE // UI REWORK")}</span>
+            <strong>{t("Garage Layout &amp; Component Diagnostics")}</strong>
+            <p>{t("Reworked the in-mission Garage UI layout (")}<code>U</code> {t("key) with clearer component condition indicators, repair pricing by tier, and APS/ATGM magazine capacity scaling.")}</p>
+          </article>
+        </div>
+
+        <div class="menu-actions" style="margin-top:28px;">
+          <a class="menu-primary" href={h("./campaign")}>{t("Launch Campaign →")}</a>
+          <a class="menu-secondary" href={h("./walkthrough")}>{t("Campaign Walkthrough")}</a>
+          <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
+          <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal")}</a>
+        </div>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("Changelog &amp; Patch Notes — BATTLE TANK")}</h1>
+        <p>{t("Latest updates and release history for BATTLE TANK.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>

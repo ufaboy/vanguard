@@ -1,0 +1,193 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("survival");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Endless Survival",
+        "item": "https://battletank.online/survival"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="survival"
+  title={"Tank Survival: Endless Waves in Paris — BATTLE TANK"}
+  description={"Free tank survival game in your browser: defend the Élysée Palace HQ in 3D Paris for 7 minutes, then hold out against endless waves and Sector Bosses."}
+  ogDescription={"Tank survival mode: defend the Élysée Palace HQ in 3D Paris against timed armored waves, Sector Bosses and endless Overtime."}
+  twitterDescription={"Base defense tank survival in 3D Paris: hold the Élysée Palace HQ against endless armored waves."}
+  image={"https://battletank.online/images/survival-hero.webp"}
+  jsonLd={jsonLd}
+  bodyPage="survival"
+  contentClass="menu-content campaign-content"
+  script="src/pages/survival.js"
+>
+        <h1 class="sr-only" tabindex="-1">{t("Tank Survival Mode: Endless Waves in Paris")}</h1>
+        
+    <div class="survival-hero-view">
+      <section class="survival-hero-board" aria-label={t("Survival mode briefing")}>
+        <span class="board-rivet top-left" aria-hidden="true"></span>
+        <span class="board-rivet top-right" aria-hidden="true"></span>
+        <span class="board-rivet bottom-left" aria-hidden="true"></span>
+        <span class="board-rivet bottom-right" aria-hidden="true"></span>
+
+        <img
+          class="survival-hero-art"
+          src={h("./images/survival-hero.webp")}
+          alt={t("Allied battle tanks defending the fortified Élysée Palace and Paris landmarks against armored columns")}
+          fetchpriority="high"
+          width="1920"
+          height="1080"
+        >
+        <div class="survival-hero-atmosphere" aria-hidden="true"></div>
+
+        <div class="survival-center-stage">
+          <div class="survival-crest" aria-hidden="true">
+            <svg viewBox="0 0 64 44" width="64" height="44" fill="none">
+              <path d="M10 30C6 23 6 14 12 8M54 30C58 23 58 14 52 8" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M13 33C9 27 10 19 15 14M51 33C55 27 54 19 49 14" stroke="#fbbf24" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M32 6C24.5 6 20 11 20 17.5C20 21.8 22 25.2 24.5 27.2V31.5C24.5 33 25.7 34 27.2 34H36.8C38.3 34 39.5 33 39.5 31.5V27.2C42 25.2 44 21.8 44 17.5C44 11 39.5 6 32 6Z" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.8"/>
+              <circle cx="27" cy="18.5" r="2.8" fill="#0f172a"/>
+              <circle cx="37" cy="18.5" r="2.8" fill="#0f172a"/>
+              <path d="M32 22.5L30 26.5H34L32 22.5Z" fill="#0f172a"/>
+              <path d="M28 30.5V34M32 30.5V34M36 30.5V34" stroke="#0f172a" stroke-width="1.6"/>
+            </svg>
+          </div>
+
+          <div class="survival-title-plate">
+            <span class="plate-rivet tl" aria-hidden="true"></span>
+            <span class="plate-rivet tr" aria-hidden="true"></span>
+            <span class="plate-rivet bl" aria-hidden="true"></span>
+            <span class="plate-rivet br" aria-hidden="true"></span>
+            <span class="title-slashes left" aria-hidden="true">///</span>
+            <h2 class="survival-main-title">{t("SURVIVAL")}</h2>
+            <span class="title-slashes right" aria-hidden="true">///</span>
+          </div>
+
+          <div class="survival-tagline-row">
+            <span class="tagline-slashes" aria-hidden="true">///</span>
+            <p class="survival-tagline">{t("Paris: Last Stand — Defend the Élysée Palace for 7:00.")}</p>
+            <span class="tagline-slashes" aria-hidden="true">///</span>
+          </div>
+
+          <p class="survival-desc">
+            {t("Hold fortified central Paris against timed armored waves arriving every")} <strong>60s</strong>{t(". Protect the")} <strong>{t("120 HP Élysée Palace HQ")}</strong>{t(", upgrade at the Garage")} <strong>[U]</strong>{t(", defeat the")} <strong>{t("6:00 Finale Boss")}</strong>{t(", and push into endless Overtime.")}
+          </p>
+
+          <div class="survival-signal-strip" aria-hidden="true">
+            <span class="signal-bars"><i></i><i></i><i></i><i></i></span>
+            <span class="signal-infinity">∞</span>
+            <span class="signal-bars right"><i></i><i></i><i></i><i></i></span>
+          </div>
+
+          <div class="survival-record-pill">
+            <span class="pill-dot" aria-hidden="true"></span>
+            <span>{t("7:00 HOLD + OVERTIME · 120 HP ÉLYSÉE HQ · MINEFIELDS &amp; LANDMARKS")}</span>
+          </div>
+        </div>
+
+        <div class="survival-launch-dock">
+          <div class="dock-wing left" aria-hidden="true">
+            <span class="plate-rivet tl"></span>
+            <span class="dock-stripes">///</span>
+          </div>
+
+          <div class="dock-center">
+            <div class="dock-chevron-cap" aria-hidden="true">︽</div>
+            <button type="button" class="survival-start-cta" data-action="start-survival">
+              <span>{t("START »")}</span>
+            </button>
+          </div>
+
+          <div class="dock-wing right" aria-hidden="true">
+            <span class="plate-rivet tr"></span>
+            <span class="dock-stripes">///</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  <Fragment slot="after">
+      <section class="menu-content page-briefing" aria-labelledby="survival-briefing-title">
+        <h2 id="survival-briefing-title">{t("Survival Mode Briefing: Paris — Last Stand")}</h2>
+        <p class="menu-lead">{t("Survival is the base defense holdout of BATTLE TANK, a")} <a href={h("./")}>{t("free 3D isometric tank game")}</a>{t(", set in fortified central Paris. You deploy on a stock Tier I VANGUARD tank with $500 in session credits and one job: keep the 120 HP Élysée Palace HQ standing for seven minutes while armored columns push in from every side of the city. Hold the line long enough and you can extract with a victory — or stay for endless Overtime and chase a higher record.")}</p>
+
+        <div class="menu-guide">
+          <section>
+            <h3>{t("How a Survival run works")}</h3>
+            <p>{t("Waves arrive on a strict 60-second clock at 0:00, 1:00, 2:00 and onward, whether or not you have finished the previous attackers. Falling behind means fighting two waves at once, so speed matters as much as accuracy. Between waves there is a short intermission; calling the next wave early pays a +$150 bonus.")}</p>
+            <h3>{t("Win and loss conditions")}</h3>
+            <p>{t("Reach 7:00 with the Élysée Palace HQ intact to win. The run ends in defeat if the HQ falls or your own tank is destroyed. After the win you choose: extract and bank the result, or continue into Overtime.")}</p>
+            <h3>{t("Credits and the field Garage")}</h3>
+            <p>{t("Each cleared wave pays $250 plus $50 per wave number, and boss waves add a $600 bonus. Spend it in the field Garage")} <strong>[U]</strong> {t("near your HQ to upgrade Cannon, Chassis, Frame, Engine and Armor during the run. Survival credits never carry over to your Campaign or Contracts profile, so every run starts on an even footing.")}</p>
+          </section>
+          <section>
+            <h3>{t("The seven-minute wave schedule")}</h3>
+            <ol>
+              <li><strong>{t("0:00 — Recon Probe.")}</strong> {t("Scouts, line tanks and a mine-laying sapper test your perimeter.")}</li>
+              <li><strong>{t("1:00 — Boulevard Bridgehead.")}</strong> {t("Line tanks and heavy armor push down the avenues with an engineer welding them back together.")}</li>
+              <li><strong>{t("2:00 — Seine River Raiders.")}</strong> {t("Hover tanks strike from the river under howitzer cover.")}</li>
+              <li><strong>{t("3:00 — Champs-Élysées Breachers.")}</strong> {t("Twin heavy tanks, a kamikaze rammer and missile strikers try to break the walls.")}</li>
+              <li><strong>{t("4:00 — Electronic Siege.")}</strong> {t("A jammer, a stealth sniper and artillery blind and shell the defense.")}</li>
+              <li><strong>{t("5:00 — Grand Pincer.")}</strong> {t("Every enemy role at once: armor, flamethrowers, kamikazes, strikers and howitzers.")}</li>
+              <li><strong>{t("6:00 — Finale.")}</strong> {t("The MAMMOTH MK-V siege dreadnought arrives with an armored escort.")}</li>
+            </ol>
+          </section>
+        </div>
+
+        <h2 class="briefing-heading">{t("Overtime, bosses and the Paris battlefield")}</h2>
+        <div class="menu-grid">
+          <article class="menu-card">
+            <strong>{t("Endless Overtime")}</strong>
+            <p>{t("After 7:00 the waves keep coming and grow larger, faster and better coordinated. Every fifth wave (10, 15, 20, 25 …) is a boss wave that rotates through HYDRA MLRS-X, CERBERUS-T and the SUPREME DREADNOUGHT before the cycle repeats at a higher tier.")}</p>
+          </article>
+          <article class="menu-card">
+            <strong>{t("A fortified city")}</strong>
+            <p>{t("The map is a 40×40 destructible slice of Paris with the Eiffel Tower, Arc de Triomphe, Louvre Pyramid, Notre-Dame, Sacré-Cœur and the Concorde obelisk. Minefields, concrete barricades and brick walls shape the attack lanes, and you can blast new ones.")}</p>
+          </article>
+          <article class="menu-card">
+            <strong>{t("Supplies on every wave")}</strong>
+            <p>{t("Each wave drops three supply crates and two explosive barrels onto the map. Shoot crates open for credits and field power-ups such as Repair, EMP and APS charges, and lure enemy columns past barrels before you detonate them.")}</p>
+          </article>
+          <article class="menu-card">
+            <strong>{t("Records worth chasing")}</strong>
+            <p>{t("Your best wave, most kills, longest survival time and number of Paris victories are saved in your browser and shown on this screen, so every run is a chance to beat your own score.")}</p>
+          </article>
+        </div>
+
+        <div class="menu-actions">
+          <button type="button" class="menu-primary" data-action="start-survival">{t("Start Survival →")}</button>
+          <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
+          <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
+          <a class="menu-secondary" href={h("./how-to-play")}>{t("How to Play")}</a>
+        </div>
+      </section>
+  </Fragment>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("Tank Survival: Endless Waves in Paris — BATTLE TANK")}</h1>
+        <p>{t("Defend the Élysée Palace across fortified Paris against timed waves and Sector Bosses. JavaScript and WebGL are required.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>
