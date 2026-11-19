@@ -20,9 +20,29 @@ function switchPageLocale(locale) {
   location.reload();
 }
 
+/** Closes the footer language menus (`<details data-lang-menu>`) on an outside click or Escape. */
+function bindLanguageMenus() {
+  if (typeof document === 'undefined' || document.documentElement.dataset.langMenuBound === '1') return;
+  document.documentElement.dataset.langMenuBound = '1';
+  const openMenus = () => document.querySelectorAll('details[data-lang-menu][open]');
+  document.addEventListener('click', (event) => {
+    for (const menu of openMenus()) if (!menu.contains(event.target)) menu.open = false;
+    const option = event.target.closest('details[data-lang-menu] a[hreflang]');
+    if (option) analyticsManager.trackEvent('setting_change', { setting: 'language', value: option.getAttribute('hreflang') });
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    for (const menu of openMenus()) {
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    }
+  });
+}
+
 /** Attaches a lightweight Settings modal handler to any page root. */
 export function attachSettingsModal(root, onSettingsChange = null) {
   attachMedalsModal(root);
+  bindLanguageMenus();
   const prefs = loadPreferences();
   if (!root || root.dataset.settingsModalBound === '1') {
     return { openModal: () => {}, closeModal: () => {}, prefs };
@@ -87,6 +107,14 @@ export function attachSettingsModal(root, onSettingsChange = null) {
 
   if (modal.dataset.bound !== '1') {
     modal.dataset.bound = '1';
+    modal.addEventListener('change', (event) => {
+      const select = event.target.closest('select[data-setting="language"]');
+      const next = select?.value;
+      if (!SUPPORTED_LOCALES.includes(next) || next === getPreferredLocale()) return;
+      storeLocale(next);
+      analyticsManager.trackEvent('setting_change', { setting: 'language', value: next });
+      switchPageLocale(next);
+    });
     modal.addEventListener('click', (event) => {
       if (event.target === modal || event.target.closest('[data-action="close-settings"]')) {
         closeModal();
@@ -97,13 +125,7 @@ export function attachSettingsModal(root, onSettingsChange = null) {
       const action = actionEl.dataset.action;
       let settingName = '';
       let settingValue = '';
-      if (action === 'cycle-language') {
-        const next = SUPPORTED_LOCALES[(SUPPORTED_LOCALES.indexOf(getPreferredLocale()) + 1) % SUPPORTED_LOCALES.length];
-        storeLocale(next);
-        analyticsManager.trackEvent('setting_change', { setting: 'language', value: next });
-        switchPageLocale(next);
-        return;
-      } else if (action === 'toggle-sound') {
+      if (action === 'toggle-sound') {
         prefs.soundEnabled = !prefs.soundEnabled;
         sound.enabled = prefs.soundEnabled;
         settingName = 'sound';

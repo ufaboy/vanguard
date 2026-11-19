@@ -1,5 +1,5 @@
 /** Settings screen: audio, graphics quality, frame-rate cap, camera and touch preferences. */
-import { LOCALE_NAMES, N_, getPreferredLocale, t } from '../i18n/index.js';
+import { LOCALE_NAMES, N_, SUPPORTED_LOCALES, getPreferredLocale, t } from '../i18n/index.js';
 const QUALITY_LABELS = Object.freeze({ low: N_('Low'), medium: N_('Medium'), high: N_('High') });
 const TOUCH_MODE_LABELS = Object.freeze({ auto: N_('Auto'), on: N_('Always On'), off: N_('Off') });
 
@@ -10,7 +10,8 @@ function settingRow(heading, description, button) {
 export function renderSettings(state, cameraLabels) {
   return `<p class="menu-lead">${t('Your preferences are saved on this device.')}</p>${[
     settingRow(t('Language'), t('Language of the game interface. The page reloads to apply it.'),
-      `<button class="menu-secondary" data-action="cycle-language" lang="${getPreferredLocale()}">${LOCALE_NAMES[getPreferredLocale()]} ↻</button>`),
+      `<select class="menu-secondary menu-select" data-setting="language" aria-label="${t('Language')}">${SUPPORTED_LOCALES.map((code) =>
+        `<option value="${code}" lang="${code}"${code === getPreferredLocale() ? ' selected' : ''}>${code.toUpperCase()} · ${LOCALE_NAMES[code]}</option>`).join('')}</select>`),
     settingRow(t('Combat audio'), t('Weapon fire, impacts, and battlefield effects.'),
       `<button class="menu-secondary" data-action="toggle-sound" aria-pressed="${state.soundEnabled}">${state.soundEnabled ? t('Sound: On') : t('Sound: Off')}</button>`),
     settingRow(t('Graphics quality'), t('Low: fastest, no shadows. Medium: balanced. High: full detail. Anti-aliasing changes apply after a reload; water and ice detail on the next mission.'),

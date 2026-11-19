@@ -21,7 +21,7 @@ export default {
   "PRIVACY POLICY": "PRIVACIDAD",
   "TERMS": "TÉRMINOS",
   "CONTACT": "CONTACTO",
-  "ESPAÑOL": "ENGLISH",
+  "Language": "Idioma",
   "Medal Case": "Vitrina de medallas",
   "MEDAL CASE": "VITRINA DE MEDALLAS",
   "Settings": "Ajustes",
