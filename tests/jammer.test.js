@@ -166,7 +166,8 @@ test('In-flight player ATGM gets jammed within 5 cells of JAMMER and detonates a
         z: jammerZ,
         hullAngle: 0,
         hitRadius: 0.85,
-        stats: { directionalArmor: { front: 16, left: 16, right: 16, rear: 16 } },
+        // The random scatter point can land on the jammer itself, so the hit path must work too.
+        stats: { armor: 16, directionalArmor: false, armorByAspect: { front: 16, left: 16, right: 16, rear: 16 } },
       },
     ],
     grid: Array.from({ length: 36 }, () => Array.from({ length: 36 }, () => ({ type: 0, hp: 0 }))),
