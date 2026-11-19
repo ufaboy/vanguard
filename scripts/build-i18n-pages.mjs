@@ -25,6 +25,19 @@ const SITE = 'https://battletank.online';
 export const LOCALIZED_PAGES = Object.freeze([
   { file: 'index.html', slug: '' },
   { file: 'enemies.html', slug: 'enemies' },
+  { file: 'campaign.html', slug: 'campaign' },
+  { file: 'survival.html', slug: 'survival' },
+  { file: 'contracts.html', slug: 'contracts' },
+  { file: 'how-to-play.html', slug: 'how-to-play' },
+  { file: 'walkthrough.html', slug: 'walkthrough' },
+  { file: 'arsenal.html', slug: 'arsenal' },
+  { file: 'destructible-terrain.html', slug: 'destructible-terrain' },
+  { file: 'games-like-battle-city.html', slug: 'games-like-battle-city' },
+  { file: 'webgl-tank-game.html', slug: 'webgl-tank-game' },
+  { file: 'about.html', slug: 'about' },
+  { file: 'privacy-policy.html', slug: 'privacy-policy' },
+  { file: 'terms.html', slug: 'terms' },
+  { file: 'contact.html', slug: 'contact' },
 ]);
 export const PAGE_LOCALES = Object.freeze(['es']);
 const OG_LOCALES = Object.freeze({ en: 'en_US', es: 'es_ES' });
