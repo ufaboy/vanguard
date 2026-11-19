@@ -157,7 +157,18 @@ test('In-flight player ATGM gets jammed within 5 cells of JAMMER and detonates a
   const game = Object.assign(Object.create(TankGameEngine.prototype), {
     playerX: 0,
     playerZ: 0,
-    enemies: [{ id: 1, hp: 26, enemyClass: 'JAMMER', x: jammerX, z: jammerZ, hitRadius: 0.85 }],
+    enemies: [
+      {
+        id: 1,
+        hp: 26,
+        enemyClass: 'JAMMER',
+        x: jammerX,
+        z: jammerZ,
+        hullAngle: 0,
+        hitRadius: 0.85,
+        stats: { directionalArmor: { front: 16, left: 16, right: 16, rear: 16 } },
+      },
+    ],
     grid: Array.from({ length: 36 }, () => Array.from({ length: 36 }, () => ({ type: 0, hp: 0 }))),
     projectiles: [
       {
@@ -180,6 +191,7 @@ test('In-flight player ATGM gets jammed within 5 cells of JAMMER and detonates a
     fx: {},
     spawnSparks() {},
     emitProjectileTrail() {},
+    damageEnemy() {},
     detonateMissile(p) {
       missilesDetonated.push({ x: p.x, z: p.z, jammedTarget: p.jammedTarget });
     },
