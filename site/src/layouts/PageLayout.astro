@@ -7,7 +7,7 @@
 import Analytics from '../components/Analytics.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import {
-  DEFAULT_LOCALE, LOCALES, OG_LOCALES, assetHref, isLocalized, localizeJsonLd, pageUrl, useTranslations,
+  DEFAULT_LOCALE, HTML_LANG, LOCALES, OG_LOCALES, assetHref, isLocalized, localizeJsonLd, pageUrl, useTranslations,
 } from '../i18n/index.js';
 
 interface Props {
@@ -47,7 +47,7 @@ const importMap = {
 const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, locale), null, 2));
 ---
 <!doctype html>
-<html lang={locale}>
+<html lang={HTML_LANG[locale] ?? locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,7 +56,7 @@ const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, loca
     <meta name="theme-color" content="#0B1120" />
     <Analytics />
     <link rel="canonical" href={url} />
-    {alternates && LOCALES.map((lang) => <link rel="alternate" hreflang={lang} href={pageUrl(slug, lang)} />)}
+    {alternates && LOCALES.map((lang) => <link rel="alternate" hreflang={HTML_LANG[lang] ?? lang} href={pageUrl(slug, lang)} />)}
     {alternates && <link rel="alternate" hreflang="x-default" href={pageUrl(slug, DEFAULT_LOCALE)} />}
     <link rel="icon" type="image/svg+xml" href={assetHref('images/icon.svg', locale)} />
     <link rel="apple-touch-icon" sizes="180x180" href={assetHref('images/apple-touch-icon.png', locale)} />

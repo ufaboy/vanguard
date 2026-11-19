@@ -12,13 +12,15 @@
  */
 
 const DEFAULT_LOCALE = 'en';
-export const SUPPORTED_LOCALES = Object.freeze(['en', 'es']);
-export const LOCALE_NAMES = Object.freeze({ en: 'English', es: 'Español' });
+export const SUPPORTED_LOCALES = Object.freeze(['en', 'es', 'pt-BR']);
+export const LOCALE_NAMES = Object.freeze({ en: 'English', es: 'Español', 'pt-BR': 'Português (Brasil)' });
 
 const LOCALE_STORAGE_KEY = 'iron_vanguard_locale_v1';
 const LOADERS = {
   es: () => import('./locales/es.js'),
+  'pt-BR': () => import('./locales/pt-BR.js'),
 };
+const NUMBER_LOCALE_TAGS = { en: 'en-US', es: 'es-ES', 'pt-BR': 'pt-BR' };
 
 let currentLocale = DEFAULT_LOCALE;
 let messages = null;
@@ -29,7 +31,10 @@ function isSupported(code) {
 }
 
 function normalize(code) {
-  const base = String(code || '').trim().toLowerCase().split(/[-_]/)[0];
+  const raw = String(code || '').trim().toLowerCase().replace(/_/g, '-');
+  if (!raw) return null;
+  if (raw === 'pt-br' || raw === 'pt') return 'pt-BR';
+  const base = raw.split('-')[0];
   return isSupported(base) ? base : null;
 }
 
@@ -135,7 +140,7 @@ export function t(source, params = null) {
 export function formatNumber(value, options) {
   const num = Number(value);
   if (!Number.isFinite(num)) return String(value ?? '');
-  return num.toLocaleString(currentLocale === 'es' ? 'es-ES' : 'en-US', options);
+  return num.toLocaleString(NUMBER_LOCALE_TAGS[currentLocale] || 'en-US', options);
 }
 
 /** Marks a source string for extraction without translating it (translate later with `t(value)`). */

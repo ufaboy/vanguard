@@ -6,13 +6,15 @@
  * A missing translation fails the build.
  */
 import es from '../../../i18n/pages/es.mjs';
+import ptBr from '../../../i18n/pages/pt-BR.mjs';
 
 export const SITE = 'https://battletank.online';
 export const DEFAULT_LOCALE = 'en';
-export const LOCALES = ['en', 'es'];
-export const LANGUAGE_NAMES = { en: 'English', es: 'Español' };
-export const OG_LOCALES = { en: 'en_US', es: 'es_ES' };
-const DICTIONARIES = { es };
+export const LOCALES = ['en', 'es', 'pt-br'];
+export const HTML_LANG = { en: 'en', es: 'es', 'pt-br': 'pt-BR' };
+export const LANGUAGE_NAMES = { en: 'English', es: 'Español', 'pt-br': 'Português (Brasil)' };
+export const OG_LOCALES = { en: 'en_US', es: 'es_ES', 'pt-br': 'pt_BR' };
+const DICTIONARIES = { es, 'pt-br': ptBr };
 
 /**
  * Pages built in every locale (`''` is the home page); every other page is English only.
@@ -112,7 +114,7 @@ export function localizeJsonLd(value, locale) {
       if (JSONLD_TEXT_KEYS.has(key) && typeof item === 'string') out[key] = t(item);
       else if (JSONLD_TEXT_KEYS.has(key) && Array.isArray(item) && item.every((x) => typeof x === 'string')) out[key] = item.map(t);
       else if ((key === 'url' || key === 'item') && urls.has(item)) out[key] = urls.get(item);
-      else if (key === 'inLanguage') out[key] = locale;
+      else if (key === 'inLanguage') out[key] = HTML_LANG[locale] ?? locale;
       else out[key] = walk(item);
     }
     return out;
