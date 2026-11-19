@@ -863,12 +863,12 @@ export class EnemyCombatController {
         salvoId: hitMeta?.salvoId ?? null,
         minesPlaced: enemy.minesPlaced || 0,
         engineerActing: Boolean(enemy.isRepairing || enemy.isBuilding || (enemy.specialCooldown || 0) > 0),
-        kamikazeChargingClose: enemy.enemyClass === 'KAMIKAZE' && distToPlayer <= TILE_SIZE * 5.5,
+        kamikazeChargingClose: enemy.enemyClass === EnemyClass.KAMIKAZE && distToPlayer <= TILE_SIZE * 5.5,
         howitzerBarrages: enemy.howitzerBarrages || 0,
-        stealthCamouflaged: enemy.enemyClass === 'STEALTH' && Math.hypot(enemy.vx || 0, enemy.vz || 0) < 0.05,
+        stealthCamouflaged: enemy.enemyClass === EnemyClass.STEALTH && Math.hypot(enemy.vx || 0, enemy.vz || 0) < 0.05,
         // The kill counts while the player sits inside the jammer's APS / ATGM disruption bubble.
         jammerPulsing:
-          enemy.enemyClass === 'JAMMER' && distToPlayer <= JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE,
+          enemy.enemyClass === EnemyClass.JAMMER && distToPlayer <= JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE,
         bossOverloaded: Boolean(enemy.titanOverload),
       });
       const unitClass = String(enemy.enemyClass || 'hostile').toUpperCase();

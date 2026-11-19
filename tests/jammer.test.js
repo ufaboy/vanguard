@@ -8,17 +8,19 @@ import {
   isPointWithinJammerRadius,
 } from '../public/src/sim/jammer.js';
 import { TILE_SIZE } from '../public/src/game/constants.js';
+import { EnemyClass } from '../public/src/game/tanks.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 
 test('hasJammerModule detects living JAMMER tanks and optionalEquipment JAMMER', () => {
+  assert.equal(hasJammerModule({ hp: 20, enemyClass: EnemyClass.JAMMER }), true);
   assert.equal(hasJammerModule({ hp: 20, enemyClass: 'JAMMER' }), true);
   assert.equal(hasJammerModule({ hp: 20, loadout: { optionalEquipment: ['JAMMER'] } }), true);
-  assert.equal(hasJammerModule({ hp: 0, enemyClass: 'JAMMER' }), false);
-  assert.equal(hasJammerModule({ hp: 20, enemyClass: 'STANDARD' }), false);
+  assert.equal(hasJammerModule({ hp: 0, enemyClass: EnemyClass.JAMMER }), false);
+  assert.equal(hasJammerModule({ hp: 20, enemyClass: EnemyClass.STANDARD }), false);
 });
 
 test('isPointWithinJammerRadius checks continuous passive radius', () => {
-  const jammer = { hp: 20, enemyClass: 'JAMMER', x: 0, z: 0 };
+  const jammer = { hp: 20, enemyClass: EnemyClass.JAMMER, x: 0, z: 0 };
   const systemRadius = JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE; // 5 cells = 10
   const radarRadius = JAMMER_ECM.RADAR_RADIUS_CELLS * TILE_SIZE; // 20 cells = 40
 
@@ -76,7 +78,7 @@ test('Jammed ATGMs always detonate at their scatter point instead of orbiting it
       const game = Object.assign(Object.create(TankGameEngine.prototype), {
         playerX: 0,
         playerZ: -30,
-        enemies: [{ id: 1, hp: 26, enemyClass: 'JAMMER', x: -9, z: 9, hitRadius: 0.85 }],
+        enemies: [{ id: 1, hp: 26, enemyClass: EnemyClass.JAMMER, x: -9, z: 9, hitRadius: 0.85 }],
         grid: Array.from({ length: 36 }, () => Array.from({ length: 36 }, () => ({ type: 0, hp: 0 }))),
         projectiles: [{
           x: 0, z: 0, vx: 0, vz: 22, speed: 22, fromPlayer: true, isMissile: true,
@@ -114,7 +116,7 @@ test('Player cannot launch an ATGM from inside the 5-cell jammer bubble', () => 
     missileCooldown: 0,
     playerX: 0,
     playerZ: 0,
-    enemies: [{ id: 1, hp: 20, enemyClass: 'JAMMER', x: 4, z: 0 }],
+    enemies: [{ id: 1, hp: 20, enemyClass: EnemyClass.JAMMER, x: 4, z: 0 }],
     setStatusBanner(text) { banners.push(text); },
   });
   game.firePlayerHomingMissile();
@@ -129,7 +131,7 @@ test('Player APS is disabled within 5 cells of a living JAMMER and active outsid
       apsRearmTimer: 0,
       playerX: 0,
       playerZ: 0,
-      enemies: [{ id: 1, hp: 20, enemyClass: 'JAMMER', x: jammerX, z: 0 }],
+      enemies: [{ id: 1, hp: 20, enemyClass: EnemyClass.JAMMER, x: jammerX, z: 0 }],
       projectiles: [{ x: 0, z: 2, vx: 0, vz: -1, weaponId: 'CANNON_Mk2' }],
       hazardZones: [],
       hasLineOfSight: () => true,
@@ -161,7 +163,7 @@ test('In-flight player ATGM gets jammed within 5 cells of JAMMER and detonates a
       {
         id: 1,
         hp: 26,
-        enemyClass: 'JAMMER',
+        enemyClass: EnemyClass.JAMMER,
         x: jammerX,
         z: jammerZ,
         hullAngle: 0,

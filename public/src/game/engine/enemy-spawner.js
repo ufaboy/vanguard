@@ -554,6 +554,7 @@ export class EnemySpawnerController {
           SECTORS[engine.currentSectorIndex].bossName
         : cfg?.name || `${enemyClass} Unit`,
       enemyClass,
+      loadout: cfg?.loadout || null,
       isBoss,
       hitRadius:
         TANK_HIT_RADIUS[enemyClass] ?? (isBoss ? TANK_HIT_RADIUS.DEFAULT_BOSS : TANK_HIT_RADIUS.DEFAULT),
