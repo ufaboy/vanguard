@@ -3,6 +3,22 @@ import { renderSettings } from '../pages/settings.js';
 import { sound } from '../game/sound.js';
 import { attachMedalsModal } from '../ui/medals-modal.js';
 import { analyticsManager } from './analyticsManager.js';
+import { SUPPORTED_LOCALES, getPreferredLocale, storeLocale, t } from '../i18n/index.js';
+
+/**
+ * Applies a new UI language. A page with a translated twin (`<link rel="alternate" hreflang>`)
+ * navigates to it; every other page reloads so its scripts pick up the saved preference.
+ */
+function switchPageLocale(locale) {
+  const alternate = document.querySelector(`link[rel="alternate"][hreflang="${locale}"]`);
+  if (alternate?.href) {
+    // hreflang URLs are absolute production URLs; stay on the current host (localhost, previews).
+    const target = new URL(alternate.href);
+    location.href = `${target.pathname}${target.search}`;
+    return;
+  }
+  location.reload();
+}
 
 /** Attaches a lightweight Settings modal handler to any page root. */
 export function attachSettingsModal(root, onSettingsChange = null) {
@@ -34,10 +50,10 @@ export function attachSettingsModal(root, onSettingsChange = null) {
         <span class="board-rivet bottom-right" aria-hidden="true"></span>
         <div class="settings-modal-header">
           <div>
-            <small class="settings-modal-kicker">/// SYSTEM PREFERENCES</small>
-            <h2 id="settings-modal-title" class="settings-modal-title">Settings</h2>
+            <small class="settings-modal-kicker">/// ${t('SYSTEM PREFERENCES')}</small>
+            <h2 id="settings-modal-title" class="settings-modal-title">${t('Settings')}</h2>
           </div>
-          <button type="button" class="menu-secondary" data-action="close-settings">Close [ESC]</button>
+          <button type="button" class="menu-secondary" data-action="close-settings">${t('Close [ESC]')}</button>
         </div>
         <div class="settings-modal-body">
           ${renderSettings({ ...prefs, confirmReset }, CAMERA_LABELS)}
@@ -81,7 +97,13 @@ export function attachSettingsModal(root, onSettingsChange = null) {
       const action = actionEl.dataset.action;
       let settingName = '';
       let settingValue = '';
-      if (action === 'toggle-sound') {
+      if (action === 'cycle-language') {
+        const next = SUPPORTED_LOCALES[(SUPPORTED_LOCALES.indexOf(getPreferredLocale()) + 1) % SUPPORTED_LOCALES.length];
+        storeLocale(next);
+        analyticsManager.trackEvent('setting_change', { setting: 'language', value: next });
+        switchPageLocale(next);
+        return;
+      } else if (action === 'toggle-sound') {
         prefs.soundEnabled = !prefs.soundEnabled;
         sound.enabled = prefs.soundEnabled;
         settingName = 'sound';

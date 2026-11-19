@@ -1,5 +1,6 @@
 import { GRID_SIZE, RADAR_RANGE_CELLS, TILE_SIZE } from '../game/constants.js';
 import { GameStatus } from '../game/types.js';
+import { t } from '../i18n/index.js';
 import { setAttr, setHidden, setHtml, syncPool } from './dom-helpers.js';
 
 const MINIMAP_SKELETON = `
@@ -148,8 +149,8 @@ export function renderNorthUpSensorMinimap(hud) {
   setAttr(mm.turret, 'transform', `rotate(${fmt(-turretDeg)})`);
 
   const footer = hud.radarJammed
-    ? `ECM JAMMED · CAM ${Math.round(camDeg)}°`
-    : `CAM ${Math.round(camDeg)}°`;
+    ? `${t('ECM JAMMED')} · ${t('CAM')} ${Math.round(camDeg)}°`
+    : `${t('CAM')} ${Math.round(camDeg)}°`;
   if (mm.footer.textContent !== footer) mm.footer.textContent = footer;
   mm.footer.classList.remove('text-teal-300', 'text-purple-300', 'text-slate-500');
   mm.footer.classList.add(hud.radarJammed ? 'text-purple-300' : 'text-slate-500');

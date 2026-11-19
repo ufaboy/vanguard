@@ -1,9 +1,10 @@
+import { N_ } from '../../i18n/index.js';
 export const CHASSIS = Object.freeze({
   CH1: Object.freeze({
     id: 'CH1',
     tier: 1,
-    name: 'CH1 Standard Tracks',
-    description: 'Standard 5-roadwheel steel caterpillar suspension.',
+    name: N_('CH1 Standard Tracks'),
+    description: N_('Standard 5-roadwheel steel caterpillar suspension.'),
     mass: 16,
     speedMultiplier: 1.0,
     hpBonus: 0,
@@ -15,8 +16,8 @@ export const CHASSIS = Object.freeze({
   CH2: Object.freeze({
     id: 'CH2',
     tier: 2,
-    name: 'CH2 High-Mobility Tracks',
-    description: 'Lightened wide chevron tracks with hydro-pneumatic shock absorbers (+2 HP).',
+    name: N_('CH2 High-Mobility Tracks'),
+    description: N_('Lightened wide chevron tracks with hydro-pneumatic shock absorbers (+2 HP).'),
     mass: 14,
     speedMultiplier: 1.06,
     hpBonus: 2,
@@ -28,8 +29,8 @@ export const CHASSIS = Object.freeze({
   CH3: Object.freeze({
     id: 'CH3',
     tier: 3,
-    name: 'CH3 Heavy Torsion Tracks',
-    description: 'Reinforced 7-roadwheel heavy torsion-bar suspension (+6 HP).',
+    name: N_('CH3 Heavy Torsion Tracks'),
+    description: N_('Reinforced 7-roadwheel heavy torsion-bar suspension (+6 HP).'),
     mass: 19,
     speedMultiplier: 0.96,
     hpBonus: 6,
@@ -41,9 +42,9 @@ export const CHASSIS = Object.freeze({
   CH4: Object.freeze({
     id: 'CH4',
     tier: 4,
-    name: 'CH4 Active All-Terrain Tracks',
+    name: N_('CH4 Active All-Terrain Tracks'),
     description:
-      'Wide grouser-pad tracks on computer-controlled hydropneumatic struts with rear water-jet propulsors and a wading snorkel: crosses deep water at reduced speed (60%) and drives over ice, sand, mud and fords with no slowdown or slip (+4 HP).',
+      N_('Wide grouser-pad tracks on computer-controlled hydropneumatic struts with rear water-jet propulsors and a wading snorkel: crosses deep water at reduced speed (60%) and drives over ice, sand, mud and fords with no slowdown or slip (+4 HP).'),
     mass: 21,
     speedMultiplier: 1.2,
     hpBonus: 4,
@@ -57,9 +58,9 @@ export const CHASSIS = Object.freeze({
   CH5: Object.freeze({
     id: 'CH5',
     tier: 5,
-    name: 'CH5 Grav-Hover Hybrid',
+    name: N_('CH5 Grav-Hover Hybrid'),
     description:
-      'Articulated quad-track bogies with integrated grav-hover thrusters for full amphibious mobility: crosses water at full speed with no slowdown or slip on any terrain (+12 HP).',
+      N_('Articulated quad-track bogies with integrated grav-hover thrusters for full amphibious mobility: crosses water at full speed with no slowdown or slip on any terrain (+12 HP).'),
     mass: 23,
     speedMultiplier: 1.28,
     hpBonus: 12,
@@ -73,8 +74,8 @@ export const CHASSIS = Object.freeze({
 
   CH_HOVER: Object.freeze({
     id: 'CH_HOVER',
-    name: 'Amphibious Hover Cushion',
-    description: 'Amphibious air-cushion skirt with dual lift fans capable of crossing deep water and ignoring ice (+4 HP).',
+    name: N_('Amphibious Hover Cushion'),
+    description: N_('Amphibious air-cushion skirt with dual lift fans capable of crossing deep water and ignoring ice (+4 HP).'),
     mass: 21,
     speedMultiplier: 1.2,
     hpBonus: 4,
@@ -85,8 +86,8 @@ export const CHASSIS = Object.freeze({
   }),
   CH_SCOUT: Object.freeze({
     id: 'CH_SCOUT',
-    name: 'Ultra-Light Recon Suspension',
-    description: 'Lightweight high-speed reconnaissance suspension built for flanking maneuvers.',
+    name: N_('Ultra-Light Recon Suspension'),
+    description: N_('Lightweight high-speed reconnaissance suspension built for flanking maneuvers.'),
     mass: 11,
     speedMultiplier: 1.18 * 0.8,
     hpBonus: 0,
@@ -97,8 +98,8 @@ export const CHASSIS = Object.freeze({
   }),
   CH_TITAN: Object.freeze({
     id: 'CH_TITAN',
-    name: 'Dreadnought Quad-Crawler',
-    description: 'Super-heavy multi-bogie dreadnought crawler suspension (+14 HP).',
+    name: N_('Dreadnought Quad-Crawler'),
+    description: N_('Super-heavy multi-bogie dreadnought crawler suspension (+14 HP).'),
     mass: 30,
     speedMultiplier: 0.56,
     hpBonus: 14,
@@ -109,8 +110,8 @@ export const CHASSIS = Object.freeze({
   }),
   CH_HYDRA: Object.freeze({
     id: 'CH_HYDRA',
-    name: 'Amphibious Cruiser Hover-Crawler',
-    description: 'Heavy amphibious air-cushion crawler that crosses water and ignores ice (+10 HP).',
+    name: N_('Amphibious Cruiser Hover-Crawler'),
+    description: N_('Heavy amphibious air-cushion crawler that crosses water and ignores ice (+10 HP).'),
     mass: 26,
     speedMultiplier: 0.58,
     hpBonus: 10,
@@ -121,8 +122,8 @@ export const CHASSIS = Object.freeze({
   }),
   CH_COLOSSUS: Object.freeze({
     id: 'CH_COLOSSUS',
-    name: 'Colossus Tandem Quad-Crawler',
-    description: 'Super-heavy tandem quad-track dreadnought crawler with segmented modular side armor (+18 HP).',
+    name: N_('Colossus Tandem Quad-Crawler'),
+    description: N_('Super-heavy tandem quad-track dreadnought crawler with segmented modular side armor (+18 HP).'),
     mass: 34,
     speedMultiplier: 0.5,
     hpBonus: 18,
@@ -133,8 +134,8 @@ export const CHASSIS = Object.freeze({
   }),
   CH_INFERNO: Object.freeze({
     id: 'CH_INFERNO',
-    name: 'Inferno All-Terrain Quad-Crawler',
-    description: 'Super-heavy thermal-grouser quad-crawler ignoring ice traction loss and scorched sand drag (+16 HP).',
+    name: N_('Inferno All-Terrain Quad-Crawler'),
+    description: N_('Super-heavy thermal-grouser quad-crawler ignoring ice traction loss and scorched sand drag (+16 HP).'),
     mass: 32,
     speedMultiplier: 0.62,
     hpBonus: 16,

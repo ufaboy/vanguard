@@ -43,6 +43,7 @@ import {
 } from '../../sim/ai.js';
 import { settleMission } from '../../sim/hangar.js';
 import { recordSurvivalRun } from '../../sim/survival.js';
+import { t } from '../../i18n/index.js';
 
 const DEFAULT_SENSOR_TURRET = Object.freeze({ visionRange: 75 });
 
@@ -185,11 +186,11 @@ export class PlayerController {
         engine.playerController.persistRepairKitCharges();
         sound.playEngineerWeld();
         engine.setStatusBanner(
-          'RM-1: COMPONENTS RESTORED / REGENERATING 25 HP OVER 10s',
+          t('RM-1: COMPONENTS RESTORED / REGENERATING 25 HP OVER 10s'),
           2.2
         );
       } else {
-        engine.setStatusBanner(`[1] RM-1 REPAIR KIT: ${res.reason.toUpperCase()}`, 2.0);
+        engine.setStatusBanner(t('[1] RM-1 REPAIR KIT: {reason}', { reason: res.reason.toUpperCase() }), 2.0);
       }
       engine.emitHudUpdate();
       return;
@@ -198,9 +199,7 @@ export class PlayerController {
     if (slotNumber === 2) {
       if (engine.smokeCharges <= 0 || engine.smokeCooldown > 0) {
         engine.setStatusBanner(
-          engine.smokeCharges <= 0
-            ? '[2] TUCHA-S SMOKE: NO CHARGES REMAINING'
-            : `[2] TUCHA-S SMOKE ON COOLDOWN (${engine.smokeCooldown.toFixed(1)}s)`,
+          engine.smokeCharges <= 0 ? t('[2] TUCHA-S SMOKE: NO CHARGES REMAINING') : t('[2] TUCHA-S SMOKE ON COOLDOWN ({smokeCooldown}s)', { smokeCooldown: engine.smokeCooldown.toFixed(1) }),
           2.0
         );
         return;
@@ -210,7 +209,7 @@ export class PlayerController {
       engine.deploySmokeCloud(engine.playerX, engine.playerZ, 9.5, 8.0);
       sound.playFlamethrower();
       engine.setStatusBanner(
-        '[2] TUCHA-S AEROSOL SMOKE SCREEN DEPLOYED (OPTICAL LOS BLOCKED FOR 8s)',
+        t('[2] TUCHA-S AEROSOL SMOKE SCREEN DEPLOYED (OPTICAL LOS BLOCKED FOR 8s)'),
         2.6
       );
       engine.emitHudUpdate();
@@ -354,7 +353,7 @@ export class PlayerController {
     if (this.isInsideJammerSystemRadius()) {
       // A missile launched inside the ECM bubble would lose lock at the muzzle; keep it.
       sound.playJammerPulse();
-      engine.setStatusBanner('ECM JAMMING ACTIVE! ATGM LOCK UNAVAILABLE!', 2.0);
+      engine.setStatusBanner(t('ECM JAMMING ACTIVE! ATGM LOCK UNAVAILABLE!'), 2.0);
       return;
     }
 
@@ -458,7 +457,7 @@ export class PlayerController {
     if (repairDone?.completed) {
       sound.playPowerUp();
       engine.setStatusBanner(
-        'RM-1 FIELD REPAIR COMPLETE',
+        t('RM-1 FIELD REPAIR COMPLETE'),
         2.6
       );
     }
@@ -811,7 +810,7 @@ export class PlayerController {
       if (repairedAny) {
         if (!wasInZone && !engine.statusMessage) {
           engine.setStatusBanner(
-            'ALLIED BASE REPAIR & REARM BAY ACTIVE',
+            t('ALLIED BASE REPAIR & REARM BAY ACTIVE'),
             2.2
           );
         }
@@ -943,7 +942,7 @@ export class PlayerController {
     if (engine.playerFireCooldown > 0) return;
     if (engine.cannonAmmo <= 0) {
       sound.playDryFire();
-      engine.setStatusBanner('OUT OF AMMO! REARM AT BASE OR FIND AMMO CRATES', 2.0);
+      engine.setStatusBanner(t('OUT OF AMMO! REARM AT BASE OR FIND AMMO CRATES'), 2.0);
       return;
     }
     engine.cannonAmmo--;
@@ -1084,7 +1083,7 @@ export class PlayerController {
       sound.playEngineerWeld({ x: engine.playerX, z: engine.playerZ });
       engine.spawnSparks(engine.playerX, 0.9, engine.playerZ, 0x10b981, 14);
       engine.setStatusBanner(
-        `EMERGENCY REPAIR KIT TRIGGERED! RESTORED +${REPAIR_KIT.RESTORE_AMOUNT} HP`,
+        t('EMERGENCY REPAIR KIT TRIGGERED! RESTORED +{RESTORE_AMOUNT} HP', { RESTORE_AMOUNT: REPAIR_KIT.RESTORE_AMOUNT }),
         3.0
       );
       engine.emitHudUpdate();
@@ -1125,7 +1124,7 @@ export class PlayerController {
         engine.syncCampaignCredits();
         engine.saveProgress();
       }
-      engine.setStatusBanner?.('CATASTROPHIC AMMO COOK-OFF — TANK DESTROYED!', 3.2);
+      engine.setStatusBanner?.(t('CATASTROPHIC AMMO COOK-OFF — TANK DESTROYED!'), 3.2);
       engine.emitHudUpdate();
     }
   }

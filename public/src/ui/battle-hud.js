@@ -1,6 +1,7 @@
 import { POWERUP, getMaxMissileAmmo } from '../game/constants.js';
 import { renderPowerUpBadgeSvg } from '../game/icons.js';
 import { GameStatus } from '../game/types.js';
+import { formatNumber, t } from '../i18n/index.js';
 import { setHidden, setHtml } from './dom-helpers.js';
 import { renderTankSilhouette } from './tank-silhouette.js';
 
@@ -33,7 +34,7 @@ export function renderBattlefieldHud({
     const hostilesPct = totalHostiles > 0
       ? Math.max(0, Math.min(100, (remainingHostiles / totalHostiles) * 100))
       : 0;
-    const creditsFormatted = Number(hud.credits ?? 0).toLocaleString('en-US');
+    const creditsFormatted = formatNumber(hud.credits ?? 0);
 
     let enemyCitadelHtml = '';
     if (hud.enemyBaseAlive) {
@@ -42,7 +43,7 @@ export function renderBattlefieldHud({
       const citadelPct = Math.max(0, Math.min(100, (citadelHp / citadelMax) * 100));
       enemyCitadelHtml = `
         <div class="hud-sector-stat is-citadel">
-          <span class="hud-label">CITADEL</span>
+          <span class="hud-label">${t('CITADEL')}</span>
           <div class="hud-sector-val text-red-400">${citadelHp}<small>/${citadelMax}</small></div>
           <div class="hud-sector-bar" aria-hidden="true"><span class="bg-red-400" style="width:${citadelPct.toFixed(1)}%"></span></div>
         </div>
@@ -54,8 +55,8 @@ export function renderBattlefieldHud({
       currentSector.gameMode !== 'survival' &&
       !currentSector.contractId;
     const sectorTitle = isCampaignSector
-      ? `MISSION ${String(currentSector.id).padStart(2, '0')}`
-      : `${currentSector.code} · ${currentSector.name}`;
+      ? t('MISSION {n}', { n: String(currentSector.id).padStart(2, '0') })
+      : `${t(currentSector.code)} · ${t(currentSector.name)}`;
 
     setHtml(topTelemetry, `
       <div class="hud-card hud-sector-strip">
@@ -65,12 +66,12 @@ export function renderBattlefieldHud({
         </div>
         <div class="hud-sector-metrics">
           <div class="hud-sector-stat">
-            <span class="hud-label">HOSTILES</span>
+            <span class="hud-label">${t('HOSTILES')}</span>
             <div class="hud-sector-val text-emerald-400">${remainingHostiles}<small>/${totalHostiles}</small></div>
             <div class="hud-sector-bar" aria-hidden="true"><span class="bg-emerald-400" style="width:${hostilesPct.toFixed(1)}%"></span></div>
           </div>
           <div class="hud-sector-stat">
-            <span class="hud-label">CREDITS</span>
+            <span class="hud-label">${t('CREDITS')}</span>
             <div class="hud-sector-val text-emerald-400">$${creditsFormatted}</div>
           </div>
           ${enemyCitadelHtml}
@@ -82,7 +83,7 @@ export function renderBattlefieldHud({
   // 1b. Top-Center Live Compass (quantized to 2° steps to avoid redundant DOM rebuilds)
   if (topCompass) {
     const compassHeading = Math.round(turretAzimuthDeg / 2) * 2;
-    const compassLabels = { 0: 'N', 45: 'NE', 90: 'E', 135: 'SE', 180: 'S', 225: 'SW', 270: 'W', 315: 'NW' };
+    const compassLabels = { 0: t('N'), 45: t('NE'), 90: t('E'), 135: t('SE'), 180: t('S'), 225: t('SW'), 270: t('W'), 315: t('NW') };
     const ticks = [];
     for (let offset = -75; offset <= 75; offset += 15) {
       const snapped = Math.round((compassHeading + offset) / 15) * 15;
@@ -114,23 +115,23 @@ export function renderBattlefieldHud({
               ? 'border-teal-400 text-teal-300 ring-2 ring-teal-400/50 animate-pulse'
               : 'border-amber-500/60 text-amber-400'
           } px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
-          title="Allied Base Garage & Upgrades [U]"
+          title="${t('Allied Base Garage & Upgrades [U]')}"
         >
           <span>⚙</span>
-          <span class="hidden sm:inline">GARAGE [U]</span>
+          <span class="hidden sm:inline">${t('GARAGE [U]')}</span>
         </button>
 
         <button
           data-action="cycle-camera"
           class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
-          title="Cycle Camera Angle [C]"
-          aria-label="Cycle Camera Angle [C]"
+          title="${t('Cycle Camera Angle [C]')}"
+          aria-label="${t('Cycle Camera Angle [C]')}"
         >
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
             <circle cx="12" cy="13" r="3"/>
           </svg>
-          <span class="hidden sm:inline">${cameraLabels[state.cameraPreset]} [C]</span>
+          <span class="hidden sm:inline">${t(cameraLabels[state.cameraPreset])} [C]</span>
         </button>
 
         <button
@@ -141,7 +142,7 @@ export function renderBattlefieldHud({
               ? 'border-slate-700/70 text-slate-200 hover:text-white'
               : 'border-red-500/70 text-red-300 hover:text-red-200'
           } px-2 py-1.5 rounded text-[11px] font-mono transition-colors cursor-pointer"
-          title="Toggle Combat Audio"
+          title="${t('Toggle Combat Audio')}"
         >
           ${state.soundEnabled ? '🔊' : '🔇'}
         </button>
@@ -151,7 +152,7 @@ export function renderBattlefieldHud({
             ? `<button
                 data-action="toggle-pause"
                 class="bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono text-amber-400 hover:text-white transition-colors cursor-pointer"
-                title="Pause [ESC / P]"
+                title="${t('Pause [ESC / P]')}"
               >
                 ${hud.status === GameStatus.PAUSED ? '▶' : '❚❚'}
               </button>`
@@ -202,19 +203,19 @@ export function renderBattlefieldHud({
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2 text-red-400 font-bold">
               <span>⚠ ${hud.bossName}</span>
-              <span class="px-1.5 py-0.5 text-[10px] rounded border ${phaseBadgeClass}">${phaseLabel}</span>
+              <span class="px-1.5 py-0.5 text-[10px] rounded border ${phaseBadgeClass}">${t(phaseLabel)}</span>
             </div>
             <span class="font-bold ${condColor}">
-              ${cond}${hud.aiDebugMode ? ` (${hud.bossHp}/${hud.bossMaxHp} HP)` : ''}
+              ${t(cond)}${hud.aiDebugMode ? ` (${hud.bossHp}/${hud.bossMaxHp} HP)` : ''}
             </span>
           </div>
           <div class="w-full h-1.5 bg-slate-800 rounded overflow-hidden">
             <div class="h-full ${barColor} transition-all duration-150" style="width: ${hpPct.toFixed(1)}%"></div>
           </div>
           <div class="flex items-center justify-between text-[10px] text-slate-400">
-            <span>${hud.bossTitle}</span>
+            <span>${t(hud.bossTitle)}</span>
             <div class="flex items-center gap-3">
-              ${shieldActive ? `<span class="text-sky-300 font-bold">SHIELD ${hud.bossPhaseShield.toFixed(1)}s</span>` : ''}
+              ${shieldActive ? `<span class="text-sky-300 font-bold">${t('SHIELD {sec}s', { sec: hud.bossPhaseShield.toFixed(1) })}</span>` : ''}
               ${apsMax > 0 ? `<span>APS ${apsPips} <span class="text-cyan-300">${apsCur}/${apsMax}</span></span>` : ''}
             </div>
           </div>
@@ -229,18 +230,19 @@ export function renderBattlefieldHud({
   if (targetBadge) {
     if (hud.status === GameStatus.PLAYING && hud.observedTarget) {
       setHidden(targetBadge, false);
-      const t = hud.observedTarget;
+      const target = hud.observedTarget;
+      const targetName = t(target.name).toUpperCase();
       const condColor =
-        t.condition === 'CRITICAL'
+        target.condition === 'CRITICAL'
           ? 'text-red-400'
-          : t.condition === 'DAMAGED'
+          : target.condition === 'DAMAGED'
           ? 'text-amber-400'
           : 'text-emerald-400';
       setHtml(targetBadge, `
-        <span class="text-slate-300">${t.isPriority ? '⌖ PRIORITY TARGET: ' : 'TARGET: '}${t.name.toUpperCase()}</span>
-        <span class="ml-2 font-bold ${condColor}">[${t.condition}]</span>
-        ${t.aiState ? `<span class="ml-2 text-purple-300">AI: ${t.aiState.toUpperCase()}</span>` : ''}
-        ${t.aiActions ? `<span class="ml-2 text-purple-300">${t.aiActions.move} / ${t.aiActions.shot}</span>` : ''}
+        <span class="text-slate-300">${target.isPriority ? t('⌖ PRIORITY TARGET: {name}', { name: targetName }) : t('TARGET: {name}', { name: targetName })}</span>
+        <span class="ml-2 font-bold ${condColor}">[${t(target.condition)}]</span>
+        ${target.aiState ? `<span class="ml-2 text-purple-300">AI: ${target.aiState.toUpperCase()}</span>` : ''}
+        ${target.aiActions ? `<span class="ml-2 text-purple-300">${target.aiActions.move} / ${target.aiActions.shot}</span>` : ''}
       `);
     } else {
       setHidden(targetBadge, true);
@@ -264,13 +266,13 @@ export function renderBattlefieldHud({
       if (hud.apsJammed) {
         items.push(`
           <div class="bg-purple-950/95 border border-purple-500/80 px-3.5 py-1.5 rounded flex items-center gap-2 text-xs font-mono text-purple-200 shadow-lg">
-            <span>ECM JAMMING: APS & ATGM DISRUPTED</span>
+            <span>${t('ECM JAMMING: APS & ATGM DISRUPTED')}</span>
           </div>
         `);
       } else if (hud.radarJammed) {
         items.push(`
           <div class="bg-purple-950/95 border border-purple-500/70 px-3.5 py-1.5 rounded flex items-center gap-2 text-xs font-mono text-purple-200 shadow-lg">
-            <span>ECM RADAR INTERFERENCE</span>
+            <span>${t('ECM RADAR INTERFERENCE')}</span>
           </div>
         `);
       }
@@ -278,7 +280,7 @@ export function renderBattlefieldHud({
         items.push(`
           <div class="bg-cyan-950/95 border border-cyan-500/80 px-3 py-1 rounded flex items-center gap-2 text-xs font-mono text-cyan-200 shadow-lg">
             ${renderPowerUpBadgeSvg(POWERUP.EMP, 26, false)}
-            <span>EMP PULSE: HOSTILES STUNNED (${hud.empTimer.toFixed(1)}s)</span>
+            <span>${t('EMP PULSE: HOSTILES STUNNED ({sec}s)', { sec: hud.empTimer.toFixed(1) })}</span>
           </div>
         `);
       }
@@ -286,7 +288,7 @@ export function renderBattlefieldHud({
         items.push(`
           <div class="bg-teal-950/95 border border-teal-400 px-3.5 py-1.5 rounded flex items-center gap-2 text-xs font-mono text-teal-200 shadow-xl animate-pulse pointer-events-auto cursor-pointer" data-action="toggle-upgrades">
             <span class="px-1.5 py-0.5 bg-teal-400 text-slate-950 font-bold rounded">U</span>
-            <span>BASE REPAIR BAY: PRESS [U] TO ENTER GARAGE & UPGRADE</span>
+            <span>${t('BASE REPAIR BAY: PRESS [U] TO ENTER GARAGE & UPGRADE')}</span>
           </div>
         `);
       }
@@ -358,9 +360,9 @@ export function renderBattlefieldHud({
       const apsJammed = Boolean(hud.apsJammed);
       const apsReady = apsTotal > 0 && !apsJammed;
       const apsValueText = apsJammed
-        ? 'JAM'
+        ? t('JAM')
         : apsMax <= 0
-        ? 'OFF'
+        ? t('OFF')
         : `${apsTotal}<small>/${apsMax}</small>`;
       const apsStateClass = apsJammed
         ? 'is-jammed'
@@ -402,7 +404,7 @@ export function renderBattlefieldHud({
             </div>
             <div class="hud-hp-body">
               <div class="hud-hp-head">
-                <span class="hud-label">HULL HP</span>
+                <span class="hud-label">${t('HULL HP')}</span>
                 <span class="hud-hp-pct ${hpPctColor}">${hpPctText}</span>
               </div>
               <div class="hud-hp-segs" aria-hidden="true">${hpSegsHtml}</div>
@@ -412,7 +414,7 @@ export function renderBattlefieldHud({
         </div>
       `);
 
-      const reloadText = cannonAmmo <= 0 ? 'EMPTY' : reloadReady ? 'READY' : `${reloadRemaining.toFixed(1)}s`;
+      const reloadText = cannonAmmo <= 0 ? t('EMPTY') : reloadReady ? t('READY') : `${reloadRemaining.toFixed(1)}s`;
       const reloadStatusClass = cannonAmmo <= 0 ? ' is-empty' : reloadReady ? ' is-ready' : ' is-charging';
       const staticKey = `${hud.cannonName}|${cannonAmmo}|${cannonMax}|${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canFireMissile}|${hud.missileAmmo}|${missileMax}|${apsValueText}|${apsStateClass}`;
 
@@ -442,12 +444,12 @@ export function renderBattlefieldHud({
                   <path d="M7 20V9l2-5 2 5v11H7zM13 20V9l2-5 2 5v11h-4z" fill="#cbd5e1" fill-opacity="0.9"/>
                 </svg>
                 <div>
-                  <span class="hud-label">${hud.cannonName}</span>
+                  <span class="hud-label">${t(hud.cannonName)}</span>
                   <div class="hud-ammo-val"><span class="${cannonAmmo <= 5 ? 'text-amber-400 animate-pulse' : ''}">${cannonAmmo}</span> <small>/ ${cannonMax}</small></div>
                 </div>
               </div>
               <div class="hud-reload-block">
-                <span class="hud-label">RELOAD</span>
+                <span class="hud-label">${t('RELOAD')}</span>
                 <div class="hud-reload-row">
                   <div class="hud-reload-segs${reloadReady ? ' is-ready' : ''}" aria-hidden="true">${reloadSegsHtml}</div>
                   <span class="hud-reload-time${reloadStatusClass}">${reloadText}</span>
@@ -460,11 +462,11 @@ export function renderBattlefieldHud({
                 data-action="activate-module-slot"
                 data-slot="1"
                 class="hud-mod-tile ${rkStateClass}"
-                title="Activate RM-1 Field Repair Kit [Key 1]"
+                title="${t('Activate RM-1 Field Repair Kit [Key 1]')}"
               >
                 <div class="hud-mod-top">
                   <span class="hud-mod-key">1</span>
-                  <span class="hud-mod-name">REPAIR</span>
+                  <span class="hud-mod-name">${t('REPAIR')}</span>
                 </div>
                 <div class="hud-mod-val-row">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
@@ -478,11 +480,11 @@ export function renderBattlefieldHud({
                 data-action="activate-module-slot"
                 data-slot="2"
                 class="hud-mod-tile ${smokeStateClass}"
-                title="Deploy Aerosol Smoke Screen [Key 2]"
+                title="${t('Deploy Aerosol Smoke Screen [Key 2]')}"
               >
                 <div class="hud-mod-top">
                   <span class="hud-mod-key">2</span>
-                  <span class="hud-mod-name">SMOKE</span>
+                  <span class="hud-mod-name">${t('SMOKE')}</span>
                 </div>
                 <div class="hud-mod-val-row">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
@@ -496,7 +498,7 @@ export function renderBattlefieldHud({
                 data-action="fire-missile"
                 ${canFireMissile ? '' : 'disabled'}
                 class="hud-mod-tile ${missileStateClass}"
-                title="Launch Homing ATGM Missile [Space]"
+                title="${t('Launch Homing ATGM Missile [Space]')}"
               >
                 <div class="hud-mod-top">
                   <span class="hud-mod-key">SPC</span>
@@ -510,10 +512,10 @@ export function renderBattlefieldHud({
 
               <div
                 class="hud-mod-tile is-passive ${apsStateClass}"
-                title="Active Protection System (Automatic)"
+                title="${t('Active Protection System (Automatic)')}"
               >
                 <div class="hud-mod-top">
-                  <span class="hud-mod-key is-auto">AUTO</span>
+                  <span class="hud-mod-key is-auto">${t('AUTO')}</span>
                   <span class="hud-mod-name">APS</span>
                 </div>
                 <div class="hud-mod-val-row">

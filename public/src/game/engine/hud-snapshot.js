@@ -16,6 +16,7 @@ import {
   isPointWithinJammerRadius,
 } from '../../sim/jammer.js';
 import { buildSurvivalHudSnapshot } from '../../sim/survival.js';
+import { N_ } from '../../i18n/index.js';
 
 export function buildHudSnapshot(engine) {
   const sector = SECTORS[engine.currentSectorIndex];
@@ -155,14 +156,14 @@ export function buildHudSnapshot(engine) {
     baseHp: Math.ceil(engine.baseHp ?? (engine.baseAlive ? 1 : 0)),
     baseMaxHp: engine.baseMaxHp || 1,
     gameMode: engine.activeMapRules?.gameMode || sector.gameMode || 'extermination',
-    mapModeName: engine.activeMapRules?.name || 'Total Extermination',
+    mapModeName: engine.activeMapRules?.name || N_('Total Extermination'),
     mapObjectiveLabel:
-      engine.activeMapRules?.shortLabel || 'DESTROY ALL HOSTILES',
+      engine.activeMapRules?.shortLabel || N_('DESTROY ALL HOSTILES'),
     defeatOnBaseLoss: Boolean(engine.activeMapRules?.defeatOnBaseLoss),
     enemyBaseAlive: Boolean(engine.enemyBaseAlive),
     enemyBaseHp: Math.ceil(engine.enemyBaseHp || 0),
     enemyBaseMaxHp: engine.enemyBaseMaxHp || 48,
-    enemyBaseName: engine.enemyBaseName || 'Enemy Fortified Citadel',
+    enemyBaseName: engine.enemyBaseName || N_('Enemy Fortified Citadel'),
     enemiesRemaining: engine.survivalState
       ? engine.enemies.length +
         engine.vanguardRemainingToSpawn +
@@ -201,16 +202,16 @@ export function buildHudSnapshot(engine) {
       SECTOR_BOSS_CONFIGS[boss?.enemyClass]?.role ||
       engine.survivalState?.waveSpec?.bossTitle ||
       sector.bossTitle,
-    bossCondition: boss ? getObservedEnemyCondition(boss) : 'INTACT',
+    bossCondition: boss ? getObservedEnemyCondition(boss) : N_('INTACT'),
     bossHp: boss ? Math.ceil(boss.hp) : 0,
     bossMaxHp: boss ? boss.maxHp : 1,
     bossPhaseLabel: boss
       ? boss.titanOverload
-        ? 'OVERLOAD'
+        ? N_('OVERLOAD')
         : boss.mammothEnraged || boss.hydraEnraged || boss.infernoEnraged || boss.titanEscortCalled
-        ? 'PHASE 2'
-        : 'PHASE 1'
-      : 'PHASE 1',
+        ? N_('PHASE 2')
+        : N_('PHASE 1')
+      : N_('PHASE 1'),
     bossPhaseShield: boss ? Math.max(0, Math.round((boss.phaseShieldTimer || 0) * 10) / 10) : 0,
     bossApsCharges: boss ? boss.apsCharges ?? 0 : 0,
     bossApsMaxCharges: boss ? boss.apsMaxCharges ?? 0 : 0,

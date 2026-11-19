@@ -23,6 +23,16 @@ import {
   settleMission,
 } from '../../sim/hangar.js';
 import { recordSurvivalRun } from '../../sim/survival.js';
+import { N_, t } from '../../i18n/index.js';
+
+const TRACK_LABELS = Object.freeze({
+  cannon: N_('Cannon'),
+  chassis: N_('Chassis'),
+  frame: N_('Frame'),
+  engine: N_('Engine'),
+  armor: N_('Armor'),
+});
+const trackLabel = (track) => t(TRACK_LABELS[track] || track).toUpperCase();
 
 export class HangarOps {
   constructor(engine) {
@@ -56,7 +66,7 @@ export class HangarOps {
       if (e.status === GameStatus.PLAYING || e.status === GameStatus.BOSS_INTRO) {
         if (!e.inBaseRepairZone) {
           e.setStatusBanner(
-            'GARAGE UNAVAILABLE: RETURN TO ALLIED BASE REPAIR ZONE TO UPGRADE',
+            t('GARAGE UNAVAILABLE: RETURN TO ALLIED BASE REPAIR ZONE TO UPGRADE'),
             2.5
           );
           return false;
@@ -105,26 +115,26 @@ export class HangarOps {
       e.componentWaterEgress = e.grid[row]?.[col]?.type === TileType.WATER;
     }
     e.persistComponentDamage();
-    e.setStatusBanner(`${track.toUpperCase()} DAMAGED: TIER ${e.upgrades[track]} -> ${e.effectiveUpgrades[track]}. GARAGE REPAIR $${componentRepairCost(e.upgrades[track])}`, 4);
+    e.setStatusBanner(t('{track} DAMAGED: TIER {from} -> {to}. GARAGE REPAIR ${cost}', { track: trackLabel(track), from: e.upgrades[track], to: e.effectiveUpgrades[track], cost: componentRepairCost(e.upgrades[track]) }), 4);
     e.emitHudUpdate();
   }
 
   repairComponent(track) {
     const e = this.engine;
-    if (!e.isHangarOpen) return { success: false, reason: 'Open the garage to repair components.' };
+    if (!e.isHangarOpen) return { success: false, reason: t('Open the garage to repair components.') };
     if (!Object.hasOwn(e.componentDamage, track) || !e.componentDamage[track]) {
-      return { success: false, reason: 'This component does not need repair.' };
+      return { success: false, reason: t('This component does not need repair.') };
     }
     const repairCost = componentRepairCost(e.upgrades[track]);
     if ((e.playerSave.credits || 0) < repairCost) {
-      return { success: false, reason: `Insufficient credits. Repair costs $${repairCost}.` };
+      return { success: false, reason: t('Insufficient credits. Repair costs ${repairCost}.', { repairCost }) };
     }
     e.playerSave.credits -= repairCost;
     e.componentDamage[track] = false;
     e.recomputePlayerStats(true);
     e.persistComponentDamage();
     e.emitHudUpdate();
-    return { success: true, reason: `${track.toUpperCase()} restored to Tier ${e.upgrades[track]}. Paid $${repairCost}.` };
+    return { success: true, reason: t('{track} restored to Tier {tier}. Paid ${repairCost}.', { track: trackLabel(track), tier: e.upgrades[track], repairCost }) };
   }
 
   restoreAllComponents() {
@@ -140,12 +150,12 @@ export class HangarOps {
   upgradeTrack(track) {
     const e = this.engine;
     if (!e.isHangarOpen || !Object.hasOwn(UPGRADE_MAX_LEVEL, track)) {
-      return { success: false, reason: 'Select a system in the garage first.' };
+      return { success: false, reason: t('Select a system in the garage first.') };
     }
     const curLvl = e.upgrades[track] || 1;
     const maxLvl = UPGRADE_MAX_LEVEL[track] || 5;
     if (curLvl >= maxLvl) {
-      return { success: false, reason: 'Already at maximum tier (Tier 5).' };
+      return { success: false, reason: t('Already at maximum tier (Tier 5).') };
     }
     const nextTier = curLvl + 1;
     const cost = TRACK_UPGRADE_COSTS[nextTier] || 500;
@@ -153,7 +163,7 @@ export class HangarOps {
     if (credits < cost) {
       return {
         success: false,
-        reason: `Insufficient Credits (Need $${cost}).`,
+        reason: t('Insufficient Credits (Need ${cost}).', { cost }),
       };
     }
 
@@ -165,44 +175,44 @@ export class HangarOps {
     e.recomputePlayerStats(true);
     sound.playPowerUp();
     e.setStatusBanner(
-      `${track.toUpperCase()} UPGRADED TO TIER ${nextTier}! (-$${cost})`,
+      t('{track} UPGRADED TO TIER {nextTier}! (-${cost})', { track: trackLabel(track), nextTier, cost }),
       2.5
     );
     e.emitHudUpdate();
-    return { success: true, reason: `Upgraded to Tier ${nextTier}` };
+    return { success: true, reason: t('Upgraded to Tier {nextTier}', { nextTier }) };
   }
 
   buyCannonAmmo() {
     const e = this.engine;
-    if (!e.isHangarOpen) return { success: false, reason: 'Open the garage to purchase ammunition.' };
+    if (!e.isHangarOpen) return { success: false, reason: t('Open the garage to purchase ammunition.') };
     const maxAmmo = e.getPlayerMaxCannonAmmo();
     if (e.cannonAmmo >= maxAmmo) {
-      return { success: false, reason: `Ammunition magazine is full (${maxAmmo} shells).` };
+      return { success: false, reason: t('Ammunition magazine is full ({maxAmmo} shells).', { maxAmmo }) };
     }
     const cost = CANNON_AMMO.CREDIT_PRICE_PER_PACK;
     if ((e.playerSave.credits || 0) < cost) {
-      return { success: false, reason: `Insufficient Credits (Need ${cost}).` };
+      return { success: false, reason: t('Insufficient Credits (Need {cost}).', { cost }) };
     }
     e.playerSave.credits -= cost;
     e.cannonAmmo = Math.min(maxAmmo, e.cannonAmmo + CANNON_AMMO.SHELLS_PER_PACK);
     e.syncCampaignCredits();
     e.saveRepo.savePlayerSave(e.playerSave);
     sound.playPowerUp();
-    e.setStatusBanner(`+${CANNON_AMMO.SHELLS_PER_PACK} SHELLS PURCHASED! (${e.cannonAmmo}/${maxAmmo}) (-${cost})`, 2.5);
+    e.setStatusBanner(t('+{SHELLS_PER_PACK} SHELLS PURCHASED! ({cannonAmmo}/{maxAmmo}) (-{cost})', { SHELLS_PER_PACK: CANNON_AMMO.SHELLS_PER_PACK, cannonAmmo: e.cannonAmmo, maxAmmo, cost }), 2.5);
     e.emitHudUpdate();
-    return { success: true, reason: `+${CANNON_AMMO.SHELLS_PER_PACK} shells purchased (${e.cannonAmmo}/${maxAmmo}).` };
+    return { success: true, reason: t('+{SHELLS_PER_PACK} shells purchased ({cannonAmmo}/{maxAmmo}).', { SHELLS_PER_PACK: CANNON_AMMO.SHELLS_PER_PACK, cannonAmmo: e.cannonAmmo, maxAmmo }) };
   }
 
   buyMissile() {
     const e = this.engine;
-    if (!e.isHangarOpen) return { success: false, reason: 'Open the garage to purchase missiles.' };
+    if (!e.isHangarOpen) return { success: false, reason: t('Open the garage to purchase missiles.') };
     const maxMissiles = e.getPlayerMaxMissileAmmo();
     if (e.missileAmmo >= maxMissiles) {
-      return { success: false, reason: `Missile magazine is full (${maxMissiles}).` };
+      return { success: false, reason: t('Missile magazine is full ({maxMissiles}).', { maxMissiles }) };
     }
     const cost = MISSILE.CREDIT_PRICE;
     if ((e.playerSave.credits || 0) < cost) {
-      return { success: false, reason: `Insufficient Credits (Need $${cost}).` };
+      return { success: false, reason: t('Insufficient Credits (Need ${cost}).', { cost }) };
     }
     e.playerSave.credits -= cost;
     e.missileAmmo++;
@@ -211,27 +221,27 @@ export class HangarOps {
     e.saveRepo.savePlayerSave(e.playerSave);
     e.recomputePlayerStats(true);
     sound.playPowerUp();
-    e.setStatusBanner(`+1 MISSILE PURCHASED! (${e.missileAmmo}/${maxMissiles}) (-$${cost})`, 2.5);
+    e.setStatusBanner(t('+1 MISSILE PURCHASED! ({missileAmmo}/{maxMissiles}) (-${cost})', { missileAmmo: e.missileAmmo, maxMissiles, cost }), 2.5);
     e.emitHudUpdate();
-    return { success: true, reason: `+1 missile purchased (${e.missileAmmo}/${maxMissiles}).` };
+    return { success: true, reason: t('+1 missile purchased ({missileAmmo}/{maxMissiles}).', { missileAmmo: e.missileAmmo, maxMissiles }) };
   }
 
   buyApsCharge() {
     const e = this.engine;
     if (!e.isHangarOpen) {
-      return { success: false, reason: 'Open the garage to purchase APS charges.' };
+      return { success: false, reason: t('Open the garage to purchase APS charges.') };
     }
     const maxAps = e.getPlayerMaxApsAmmo();
     const currentTotal = e.apsAmmo.reduce((a, b) => a + b, 0);
     if (currentTotal >= maxAps) {
-      return { success: false, reason: `APS magazine is already at maximum capacity (${maxAps} charges).` };
+      return { success: false, reason: t('APS magazine is already at maximum capacity ({maxAps} charges).', { maxAps }) };
     }
     const cost = APS.CHARGE_CREDIT_PRICE || 1000;
     const credits = e.playerSave?.credits || 0;
     if (credits < cost) {
       return {
         success: false,
-        reason: `Insufficient Credits (Need $${cost}).`,
+        reason: t('Insufficient Credits (Need ${cost}).', { cost }),
       };
     }
 
@@ -244,11 +254,11 @@ export class HangarOps {
     sound.playPowerUp();
     const newTotal = e.apsAmmo.reduce((a, b) => a + b, 0);
     e.setStatusBanner(
-      `+1 APS CHARGE PURCHASED! (${newTotal}/${maxAps}) (-$${cost})`,
+      t('+1 APS CHARGE PURCHASED! ({newTotal}/{maxAps}) (-${cost})', { newTotal, maxAps, cost }),
       2.5
     );
     e.emitHudUpdate();
-    return { success: true, total: newTotal, reason: `+1 APS charge purchased (${newTotal}/${maxAps}).` };
+    return { success: true, total: newTotal, reason: t('+1 APS charge purchased ({newTotal}/{maxAps}).', { newTotal, maxAps }) };
   }
 
   toggleFavoritePart(instanceId) {

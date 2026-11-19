@@ -4,14 +4,15 @@
  */
 
 import { pageUrl } from '../app/routes.js';
+import { N_, t } from '../i18n/index.js';
 
 const DEFAULT_SHARE_ORIGIN = 'https://battletank.online';
 
 const ACHIEVEMENT_DEFS = Object.freeze([
   {
     id: 'sector_cleared',
-    title: 'Sector Secured',
-    description: 'Win a campaign or assault sector.',
+    title: N_('Sector Secured'),
+    description: N_('Win a campaign or assault sector.'),
     icon: '🎖️',
     rarity: 'common',
     rewardCredits: 100,
@@ -19,8 +20,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'boss_slayer',
-    title: 'Boss Slayer',
-    description: 'Destroy a Sector Boss.',
+    title: N_('Boss Slayer'),
+    description: N_('Destroy a Sector Boss.'),
     icon: '👑',
     rarity: 'epic',
     rewardCredits: 250,
@@ -30,8 +31,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'full_extraction',
-    title: 'Full Extraction',
-    description: 'Extract 3/3 cargo in a Contract.',
+    title: N_('Full Extraction'),
+    description: N_('Extract 3/3 cargo in a Contract.'),
     icon: '📦',
     rarity: 'epic',
     rewardCredits: 250,
@@ -39,8 +40,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'contract_extracted',
-    title: 'Contract Fulfilled',
-    description: 'Extract from a Contract.',
+    title: N_('Contract Fulfilled'),
+    description: N_('Extract from a Contract.'),
     icon: '💼',
     rarity: 'common',
     rewardCredits: 100,
@@ -48,8 +49,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'deadeye',
-    title: 'Deadeye',
-    description: '90%+ accuracy with 8+ hits.',
+    title: N_('Deadeye'),
+    description: N_('90%+ accuracy with 8+ hits.'),
     icon: '🔭',
     rarity: 'epic',
     rewardCredits: 250,
@@ -57,8 +58,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'sharpshooter',
-    title: 'Sharpshooter',
-    description: '75%+ accuracy with 5+ hits.',
+    title: N_('Sharpshooter'),
+    description: N_('75%+ accuracy with 5+ hits.'),
     icon: '🎯',
     rarity: 'rare',
     rewardCredits: 150,
@@ -67,8 +68,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'ace_commander',
-    title: 'Ace Commander',
-    description: '20+ kills in one battle.',
+    title: N_('Ace Commander'),
+    description: N_('20+ kills in one battle.'),
     icon: '⚡',
     rarity: 'epic',
     rewardCredits: 250,
@@ -76,8 +77,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'tank_hunter',
-    title: 'Tank Hunter',
-    description: '8+ kills in one battle.',
+    title: N_('Tank Hunter'),
+    description: N_('8+ kills in one battle.'),
     icon: '🔥',
     rarity: 'common',
     rewardCredits: 100,
@@ -85,8 +86,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'unscathed',
-    title: 'Unscathed',
-    description: 'Win with 100% hull integrity.',
+    title: N_('Unscathed'),
+    description: N_('Win with 100% hull integrity.'),
     icon: '💎',
     rarity: 'epic',
     rewardCredits: 250,
@@ -94,8 +95,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'iron_survivor',
-    title: 'Iron Survivor',
-    description: 'Win with 75%+ hull integrity.',
+    title: N_('Iron Survivor'),
+    description: N_('Win with 75%+ hull integrity.'),
     icon: '🛡️',
     rarity: 'rare',
     rewardCredits: 150,
@@ -103,8 +104,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'against_all_odds',
-    title: 'Against All Odds',
-    description: 'Win with ≤25% hull integrity.',
+    title: N_('Against All Odds'),
+    description: N_('Win with ≤25% hull integrity.'),
     icon: '🩹',
     rarity: 'rare',
     rewardCredits: 150,
@@ -112,8 +113,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'hq_guardian',
-    title: 'HQ Guardian',
-    description: 'Win Defense with HQ intact.',
+    title: N_('HQ Guardian'),
+    description: N_('Win Defense with HQ intact.'),
     icon: '🏰',
     rarity: 'rare',
     rewardCredits: 150,
@@ -121,8 +122,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'demolitionist',
-    title: 'Demolitionist',
-    description: 'Smash 25+ battlefield blocks.',
+    title: N_('Demolitionist'),
+    description: N_('Smash 25+ battlefield blocks.'),
     icon: '💥',
     rarity: 'rare',
     rewardCredits: 150,
@@ -130,8 +131,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'scavenger',
-    title: 'Field Scavenger',
-    description: 'Collect 3+ supply drops.',
+    title: N_('Field Scavenger'),
+    description: N_('Collect 3+ supply drops.'),
     icon: '🧰',
     rarity: 'common',
     rewardCredits: 100,
@@ -139,8 +140,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'wave_breaker',
-    title: 'Wave Breaker',
-    description: 'Clear 5+ Survival waves.',
+    title: N_('Wave Breaker'),
+    description: N_('Clear 5+ Survival waves.'),
     icon: '🌊',
     rarity: 'rare',
     rewardCredits: 150,
@@ -148,8 +149,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'record_breaker',
-    title: 'Record Breaker',
-    description: 'New personal Survival record.',
+    title: N_('Record Breaker'),
+    description: N_('New personal Survival record.'),
     icon: '⭐',
     rarity: 'epic',
     rewardCredits: 250,
@@ -163,8 +164,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'veteran_gunner',
-    title: 'Veteran Gunner',
-    description: '50 career hostile kills.',
+    title: N_('Veteran Gunner'),
+    description: N_('50 career hostile kills.'),
     icon: '🪖',
     rarity: 'common',
     rewardCredits: 100,
@@ -172,8 +173,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'armored_legend',
-    title: 'Armored Legend',
-    description: '250 career hostile kills.',
+    title: N_('Armored Legend'),
+    description: N_('250 career hostile kills.'),
     icon: '🏆',
     rarity: 'rare',
     rewardCredits: 200,
@@ -181,8 +182,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'war_machine',
-    title: 'War Machine',
-    description: '1,000 career hostile kills.',
+    title: N_('War Machine'),
+    description: N_('1,000 career hostile kills.'),
     icon: '💀',
     rarity: 'epic',
     rewardCredits: 300,
@@ -190,8 +191,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'tier5_engineer',
-    title: 'Tier V Engineer',
-    description: 'All 5 systems at Tier V.',
+    title: N_('Tier V Engineer'),
+    description: N_('All 5 systems at Tier V.'),
     icon: '⚙️',
     rarity: 'epic',
     rewardCredits: 300,
@@ -204,8 +205,8 @@ const ACHIEVEMENT_DEFS = Object.freeze([
   },
   {
     id: 'campaign_conqueror',
-    title: 'Campaign Conqueror',
-    description: 'Clear all Campaign sectors.',
+    title: N_('Campaign Conqueror'),
+    description: N_('Clear all Campaign sectors.'),
     icon: '🗺️',
     rarity: 'epic',
     rewardCredits: 300,
@@ -449,7 +450,7 @@ export function buildBattleSharePayload({
   const isVictory = hud?.status === 'VICTORY';
   const isContract = gameMode === 'contract';
   const isSurvival = gameMode === 'survival';
-  const sectorName = currentSector?.name || 'Sector';
+  const sectorName = t(currentSector?.name || 'Sector');
   const missionId = currentSector?.mapId || '';
   const kills = Number(hud?.kills) || 0;
   const acc = Math.max(0, Math.min(100, Math.round(Number(accuracy) || 0)));
@@ -467,7 +468,9 @@ export function buildBattleSharePayload({
     }),
   });
 
-  let headline = `${isVictory ? 'VICTORY' : 'BATTLE REPORT'} in ${sectorName}`;
+  let headline = isVictory
+    ? t('VICTORY in {sector}', { sector: sectorName })
+    : t('BATTLE REPORT in {sector}', { sector: sectorName });
   if (isSurvival) {
     const sv = hud?.survival || {};
     const rec = sv.recordSummary || {};
@@ -481,7 +484,7 @@ export function buildBattleSharePayload({
         ach: achIds,
       }),
     });
-    headline = `SURVIVAL RUN in ${sectorName}: Wave ${waveReached} (${wavesCleared} cleared)`;
+    headline = t('SURVIVAL RUN in {sector}: Wave {wave} ({cleared} cleared)', { sector: sectorName, wave: waveReached, cleared: wavesCleared });
   } else if (isContract) {
     const delivered = hud?.lastSettlementSummary?.deliveredCount ?? 0;
     path = pageUrl('contracts', {
@@ -494,15 +497,19 @@ export function buildBattleSharePayload({
         ach: achIds,
       }),
     });
-    headline = `${isVictory ? 'CONTRACT EXTRACTED' : 'CONTRACT REPORT'} — ${sectorName} (${delivered}/3 cargo)`;
+    headline = isVictory
+      ? t('CONTRACT EXTRACTED — {sector} ({delivered}/3 cargo)', { sector: sectorName, delivered })
+      : t('CONTRACT REPORT — {sector} ({delivered}/3 cargo)', { sector: sectorName, delivered });
   }
 
   const url = new URL(path, `${baseOrigin}/`).href;
-  const medalNames = earnedAchievements.slice(0, 3).map((a) => a.title);
-  const medalPart = medalNames.length > 0 ? ` | Medals: ${medalNames.join(', ')}` : '';
-  const statsPart = isSurvival ? `${kills} hostiles destroyed` : `${kills} hostiles destroyed | ${acc}% accuracy`;
+  const medalNames = earnedAchievements.slice(0, 3).map((a) => t(a.title));
+  const medalPart = medalNames.length > 0 ? ` | ${t('Medals: {list}', { list: medalNames.join(', ') })}` : '';
+  const statsPart = isSurvival
+    ? t('{kills} hostiles destroyed', { kills })
+    : t('{kills} hostiles destroyed | {acc}% accuracy', { kills, acc });
   const title = `BATTLE TANK — ${headline}`;
-  const text = `${headline}! ${statsPart}${medalPart} — Play BATTLE TANK:`;
+  const text = `${headline}! ${statsPart}${medalPart} — ${t('Play BATTLE TANK:')}`;
 
   return {
     url,
@@ -515,8 +522,8 @@ export function buildBattleSharePayload({
 /** Builds direct social-network share intent URLs for a battle share payload. */
 export function buildSocialShareLinks(payload) {
   const url = encodeURIComponent(payload?.url || DEFAULT_SHARE_ORIGIN);
-  const text = encodeURIComponent(payload?.text || 'Play BATTLE TANK!');
-  const title = encodeURIComponent(payload?.title || 'BATTLE TANK — Battle Report');
+  const text = encodeURIComponent(payload?.text || t('Play BATTLE TANK!'));
+  const title = encodeURIComponent(payload?.title || `BATTLE TANK — ${t('Battle Report')}`);
   return {
     telegramUrl: `https://t.me/share/url?url=${url}&text=${text}`,
     xUrl: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,

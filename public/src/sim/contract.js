@@ -20,6 +20,7 @@
 
 import { GRID_SIZE, TILE_SIZE } from '../game/constants.js';
 import { EnemyClass } from '../game/tanks.js';
+import { N_, t } from '../i18n/index.js';
 
 export const CARGO_STATUS = Object.freeze({
   AVAILABLE: 'available',
@@ -61,7 +62,7 @@ export const CONTRACT_TIMING = Object.freeze({
 export const LAST_CARGO_GATES = Object.freeze({
   west: Object.freeze({
     id: 'west',
-    label: 'WEST GATE',
+    label: N_('WEST GATE'),
     shortLabel: 'WEST',
     row: 0,
     col: 7,
@@ -70,7 +71,7 @@ export const LAST_CARGO_GATES = Object.freeze({
   }),
   center: Object.freeze({
     id: 'center',
-    label: 'CENTER GATE',
+    label: N_('CENTER GATE'),
     shortLabel: 'CENTER',
     row: 0,
     col: 20,
@@ -79,7 +80,7 @@ export const LAST_CARGO_GATES = Object.freeze({
   }),
   east: Object.freeze({
     id: 'east',
-    label: 'EAST GATE',
+    label: N_('EAST GATE'),
     shortLabel: 'EAST',
     row: 0,
     col: 32,
@@ -93,8 +94,8 @@ export const LAST_CARGO_CONTAINERS = Object.freeze([
     id: 'cargo-a',
     slot: 1,
     code: 'A',
-    name: 'Cargo A · Rail Depot',
-    shortName: 'RAIL DEPOT',
+    name: N_('Cargo A · Rail Depot'),
+    shortName: N_('RAIL DEPOT'),
     row: 14,
     col: 9,
     gateId: 'west',
@@ -126,8 +127,8 @@ export const LAST_CARGO_CONTAINERS = Object.freeze([
     id: 'cargo-b',
     slot: 2,
     code: 'B',
-    name: 'Cargo B · Pump Island',
-    shortName: 'PUMP ISLAND',
+    name: N_('Cargo B · Pump Island'),
+    shortName: N_('PUMP ISLAND'),
     row: 22,
     col: 20,
     gateId: 'center',
@@ -159,8 +160,8 @@ export const LAST_CARGO_CONTAINERS = Object.freeze([
     id: 'cargo-c',
     slot: 3,
     code: 'C',
-    name: 'Cargo C · Container Yard',
-    shortName: 'CONTAINER YARD',
+    name: N_('Cargo C · Container Yard'),
+    shortName: N_('CONTAINER YARD'),
     row: 9,
     col: 30,
     gateId: 'east',
@@ -207,7 +208,7 @@ export const LAST_CARGO_GROUPS = Object.freeze({
   G0: Object.freeze({
     id: 'G0',
     trigger: 'contract_start',
-    label: 'G0 // TERMINAL PATROL DEPLOYED',
+    label: N_('G0 // TERMINAL PATROL DEPLOYED'),
     assignment: 'northern_patrol',
     roster: Object.freeze([
       EnemyClass.STANDARD,
@@ -225,7 +226,7 @@ export const LAST_CARGO_GROUPS = Object.freeze({
   G1: Object.freeze({
     id: 'G1',
     trigger: 'first_cargo_loaded',
-    label: 'G1 // TERMINAL ALARM — INTERCEPTORS INBOUND',
+    label: N_('G1 // TERMINAL ALARM — INTERCEPTORS INBOUND'),
     assignment: 'alarm_search',
     roster: Object.freeze([
       EnemyClass.SCOUT,
@@ -237,7 +238,7 @@ export const LAST_CARGO_GROUPS = Object.freeze({
   G2: Object.freeze({
     id: 'G2',
     trigger: 'first_delivery_completed',
-    label: 'G2 // ROUTE CHECKPOINT GARRISON INBOUND',
+    label: N_('G2 // ROUTE CHECKPOINT GARRISON INBOUND'),
     assignment: 'cargo_checkpoints',
     roster: Object.freeze([
       EnemyClass.ARMOR,
@@ -250,7 +251,7 @@ export const LAST_CARGO_GROUPS = Object.freeze({
   G3: Object.freeze({
     id: 'G3',
     trigger: 'second_cargo_loaded',
-    label: 'G3 // RETURN LANE OVERWATCH INBOUND',
+    label: N_('G3 // RETURN LANE OVERWATCH INBOUND'),
     assignment: 'return_overwatch',
     roster: Object.freeze([
       EnemyClass.STRIKER,
@@ -262,7 +263,7 @@ export const LAST_CARGO_GROUPS = Object.freeze({
   G4: Object.freeze({
     id: 'G4',
     trigger: 'third_cargo_loaded',
-    label: 'G4 // FINAL PURSUIT SQUADRON INBOUND',
+    label: N_('G4 // FINAL PURSUIT SQUADRON INBOUND'),
     assignment: 'final_pursuit',
     roster: Object.freeze([
       EnemyClass.ARMOR,
@@ -278,7 +279,7 @@ export const LAST_CARGO_CONTRACT = Object.freeze({
   id: 'contract-last-cargo',
   contractType: CONTRACT_TYPES.CARGO_RECOVERY,
   code: 'CONTRACT-01 // LOGISTICS RAID',
-  name: 'Last Cargo',
+  name: N_('Last Cargo'),
   subtitle: 'RIVER TERMINAL DATA RECOVERY',
   theme: 'Industrial River Terminal · 40×40',
   targetDuration: '8–12 minutes (no global timer)',
@@ -292,9 +293,9 @@ export const LAST_CARGO_CONTRACT = Object.freeze({
   payouts: CONTRACT_PAYOUTS,
   timing: CONTRACT_TIMING,
   landmarks: Object.freeze([
-    Object.freeze({ id: 'west-rail-gantry', kind: 'rail_gantry', row: 11, col: 9, label: 'WEST RAIL GANTRY' }),
-    Object.freeze({ id: 'island-pump-assembly', kind: 'pump_assembly', row: 17, col: 21, label: 'ISLAND PUMP STATION' }),
-    Object.freeze({ id: 'east-cargo-crane', kind: 'cargo_crane', row: 8, col: 32, label: 'EAST CARGO CRANE' }),
+    Object.freeze({ id: 'west-rail-gantry', kind: 'rail_gantry', row: 11, col: 9, label: N_('WEST RAIL GANTRY') }),
+    Object.freeze({ id: 'island-pump-assembly', kind: 'pump_assembly', row: 17, col: 21, label: N_('ISLAND PUMP STATION') }),
+    Object.freeze({ id: 'east-cargo-crane', kind: 'cargo_crane', row: 8, col: 32, label: N_('EAST CARGO CRANE') }),
   ]),
 });
 
@@ -303,8 +304,8 @@ const BLACKOUT_RELAYS = Object.freeze([
     id: 'relay-alpha',
     slot: 1,
     code: 'A',
-    name: 'Relay Alpha · West Listening Array',
-    shortName: 'WEST ARRAY',
+    name: N_('Relay Alpha · West Listening Array'),
+    shortName: N_('WEST ARRAY'),
     row: 13,
     col: 8,
     gateId: 'west',
@@ -335,8 +336,8 @@ const BLACKOUT_RELAYS = Object.freeze([
     id: 'relay-bravo',
     slot: 2,
     code: 'B',
-    name: 'Relay Bravo · Central ECM Citadel',
-    shortName: 'ECM CITADEL',
+    name: N_('Relay Bravo · Central ECM Citadel'),
+    shortName: N_('ECM CITADEL'),
     row: 16,
     col: 19,
     gateId: 'center',
@@ -366,8 +367,8 @@ const BLACKOUT_RELAYS = Object.freeze([
     id: 'relay-charlie',
     slot: 3,
     code: 'C',
-    name: 'Relay Charlie · East Uplink Bunker',
-    shortName: 'UPLINK BUNKER',
+    name: N_('Relay Charlie · East Uplink Bunker'),
+    shortName: N_('UPLINK BUNKER'),
     row: 9,
     col: 31,
     gateId: 'east',
@@ -399,7 +400,7 @@ const BLACKOUT_GROUPS = Object.freeze({
   G0: Object.freeze({
     id: 'G0',
     trigger: 'contract_start',
-    label: 'G0 // RELAY PERIMETER GARRISON DEPLOYED',
+    label: N_('G0 // RELAY PERIMETER GARRISON DEPLOYED'),
     assignment: 'northern_patrol',
     roster: Object.freeze([
       EnemyClass.STANDARD,
@@ -417,7 +418,7 @@ const BLACKOUT_GROUPS = Object.freeze({
   G1: Object.freeze({
     id: 'G1',
     trigger: 'first_charge_armed',
-    label: 'G1 // DEMOLITION ALARM — STEALTH HUNTERS INBOUND',
+    label: N_('G1 // DEMOLITION ALARM — STEALTH HUNTERS INBOUND'),
     assignment: 'alarm_search',
     roster: Object.freeze([
       EnemyClass.SCOUT,
@@ -429,7 +430,7 @@ const BLACKOUT_GROUPS = Object.freeze({
   G2: Object.freeze({
     id: 'G2',
     trigger: 'first_relay_destroyed',
-    label: 'G2 // ECM BLACKOUT QRF — BREACHERS INBOUND',
+    label: N_('G2 // ECM BLACKOUT QRF — BREACHERS INBOUND'),
     assignment: 'cargo_checkpoints',
     roster: Object.freeze([
       EnemyClass.ARMOR,
@@ -442,7 +443,7 @@ const BLACKOUT_GROUPS = Object.freeze({
   G3: Object.freeze({
     id: 'G3',
     trigger: 'second_charge_armed',
-    label: 'G3 // EXTRACTION CORRIDOR BLOCKADE INBOUND',
+    label: N_('G3 // EXTRACTION CORRIDOR BLOCKADE INBOUND'),
     assignment: 'return_overwatch',
     roster: Object.freeze([
       EnemyClass.STRIKER,
@@ -454,7 +455,7 @@ const BLACKOUT_GROUPS = Object.freeze({
   G4: Object.freeze({
     id: 'G4',
     trigger: 'third_charge_armed',
-    label: 'G4 // TOTAL BLACKOUT TERMINATION SQUAD INBOUND',
+    label: N_('G4 // TOTAL BLACKOUT TERMINATION SQUAD INBOUND'),
     assignment: 'final_pursuit',
     roster: Object.freeze([
       EnemyClass.ARMOR,
@@ -470,7 +471,7 @@ const BLACKOUT_PROTOCOL_CONTRACT = Object.freeze({
   id: 'contract-blackout-protocol',
   contractType: CONTRACT_TYPES.SABOTAGE_PROTOCOL,
   code: 'CONTRACT-02 // SABOTAGE RAID',
-  name: 'Blackout Protocol',
+  name: N_('Blackout Protocol'),
   subtitle: 'RADAR & ECM RELAY DEMOLITION',
   theme: 'Armored Comms & ECM Array · 40×40',
   targetDuration: '7–11 minutes (8.0s blast fuses)',
@@ -484,9 +485,9 @@ const BLACKOUT_PROTOCOL_CONTRACT = Object.freeze({
   payouts: CONTRACT_PAYOUTS,
   timing: CONTRACT_TIMING,
   landmarks: Object.freeze([
-    Object.freeze({ id: 'west-listening-dish', kind: 'rail_gantry', row: 11, col: 8, label: 'WEST LISTENING ARRAY' }),
-    Object.freeze({ id: 'central-ecm-citadel', kind: 'pump_assembly', row: 15, col: 19, label: 'CENTRAL ECM CITADEL' }),
-    Object.freeze({ id: 'east-uplink-bunker', kind: 'cargo_crane', row: 8, col: 31, label: 'EAST UPLINK BUNKER' }),
+    Object.freeze({ id: 'west-listening-dish', kind: 'rail_gantry', row: 11, col: 8, label: N_('WEST LISTENING ARRAY') }),
+    Object.freeze({ id: 'central-ecm-citadel', kind: 'pump_assembly', row: 15, col: 19, label: N_('CENTRAL ECM CITADEL') }),
+    Object.freeze({ id: 'east-uplink-bunker', kind: 'cargo_crane', row: 8, col: 31, label: N_('EAST UPLINK BUNKER') }),
   ]),
 });
 
@@ -823,21 +824,17 @@ export function startCargoLoading(contractState, x, z, isMoving = false, tileSiz
   if (!contractState || contractState.carriedCargoId || isMoving) {
     return {
       started: false,
-      reason: isSabotage
-        ? 'Stop within 1.5 cells of a relay to plant demolition charge'
-        : 'Cannot load while moving or carrying cargo',
+      reason: isSabotage ? t('Stop within 1.5 cells of a relay to plant demolition charge') : t('Cannot load while moving or carrying cargo'),
     };
   }
   if (isSabotage && contractState.containers.some((c) => c.status === CARGO_STATUS.ARMED)) {
-    return { started: false, reason: 'Clear the blast radius — active demolition charge ticking!' };
+    return { started: false, reason: t('Clear the blast radius — active demolition charge ticking!') };
   }
   const cargo = findNearbyAvailableCargo(contractState, x, z, tileSize);
   if (!cargo) {
     return {
       started: false,
-      reason: isSabotage
-        ? 'No relay node within 1.5 cells'
-        : 'No available cargo within 1.5 cells',
+      reason: isSabotage ? t('No relay node within 1.5 cells') : t('No available cargo within 1.5 cells'),
     };
   }
   if (cargo.status === CARGO_STATUS.LOADING) {
@@ -851,24 +848,22 @@ export function startCargoLoading(contractState, x, z, isMoving = false, tileSiz
 
 /** Explicitly starts the 3-second extraction countdown on the delivery pad. */
 export function startContractExtraction(contractState, x, z) {
-  if (!contractState) return { started: false, reason: 'No active contract' };
+  if (!contractState) return { started: false, reason: t('No active contract') };
   const isSabotage = contractState.contractType === CONTRACT_TYPES.SABOTAGE_PROTOCOL;
   if (contractState.deliveredCount < CONTRACT_TIMING.REQUIRED_DELIVERIES) {
     return {
       started: false,
-      reason: isSabotage
-        ? 'Demolish at least 2 radar relays first'
-        : 'Deliver at least 2 containers first',
+      reason: isSabotage ? t('Demolish at least 2 radar relays first') : t('Deliver at least 2 containers first'),
     };
   }
   if (contractState.carriedCargoId) {
-    return { started: false, reason: 'Finish unloading current cargo first' };
+    return { started: false, reason: t('Finish unloading current cargo first') };
   }
   if (isSabotage && contractState.containers.some((c) => c.status === CARGO_STATUS.ARMED)) {
-    return { started: false, reason: 'Wait for armed demolition charge to detonate first' };
+    return { started: false, reason: t('Wait for armed demolition charge to detonate first') };
   }
   if (!isOnDeliveryPad(contractState, x, z)) {
-    return { started: false, reason: 'Must be on the Southern Extraction Pad' };
+    return { started: false, reason: t('Must be on the Southern Extraction Pad') };
   }
   if (contractState.extraction.active) {
     return { started: true, alreadyActive: true };

@@ -22,6 +22,7 @@ import {
   PLAYER_UPGRADES,
   UPGRADE_MAX_LEVEL,
 } from './components/index.js';
+import { N_ } from '../i18n/index.js';
 
 export {
   TANK_TYPES,
@@ -481,7 +482,7 @@ export const DEFENSE_TURRET_TYPES = Object.freeze({
 export const DEFENSE_TURRET_CONFIGS = Object.freeze({
   [DEFENSE_TURRET_TYPES.CANNON]: Object.freeze({
     type: DEFENSE_TURRET_TYPES.CANNON,
-    name: 'Cannon Bastion', // Display name in UI and destruction banners
+    name: N_('Cannon Bastion'), // Display name in UI and destruction banners
     maxHp: 100, // Total structural hit points
     armor: 35, // Passive damage reduction rating (%)
     fireCooldown: 1.8, // Fire interval in seconds between cannon rounds
@@ -494,7 +495,7 @@ export const DEFENSE_TURRET_CONFIGS = Object.freeze({
   }),
   [DEFENSE_TURRET_TYPES.HOWITZER]: Object.freeze({
     type: DEFENSE_TURRET_TYPES.HOWITZER,
-    name: 'Howitzer Redoubt', // Display name in UI and destruction banners
+    name: N_('Howitzer Redoubt'), // Display name in UI and destruction banners
     maxHp: 100, // Total structural hit points
     armor: 40, // Reinforced heavy bunker armor rating (%)
     fireCooldown: 4.2, // Long reload interval in seconds between artillery barrages
@@ -507,7 +508,7 @@ export const DEFENSE_TURRET_CONFIGS = Object.freeze({
   }),
   [DEFENSE_TURRET_TYPES.MLRS]: Object.freeze({
     type: DEFENSE_TURRET_TYPES.MLRS,
-    name: 'Hydra MLRS Battery', // Display name in UI and destruction banners
+    name: N_('Hydra MLRS Battery'), // Display name in UI and destruction banners
     maxHp: 100, // Total structural hit points
     armor: 30, // Standard fortified bunker armor rating (%)
     fireCooldown: 5.2, // Full reload cycle between rocket salvo barrages

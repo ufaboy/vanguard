@@ -1,9 +1,10 @@
+import { N_ } from '../../i18n/index.js';
 export const ARMORS = Object.freeze({
   A1: Object.freeze({
     id: 'A1',
     tier: 1,
-    name: 'A1 Rolled Steel (8%)',
-    description: 'Rolled homogeneous steel hull plating providing 8% damage reduction.',
+    name: N_('A1 Rolled Steel (8%)'),
+    description: N_('Rolled homogeneous steel hull plating providing 8% damage reduction.'),
     mass: 30,
     reductionPct: 8,
     armor: 8,
@@ -13,8 +14,8 @@ export const ARMORS = Object.freeze({
   A2: Object.freeze({
     id: 'A2',
     tier: 2,
-    name: 'A2 Appliqué + Skirts (16%)',
-    description: 'Bolted high-hardness appliqué plates and armored side skirts (16% reduction, +10 HP).',
+    name: N_('A2 Appliqué + Skirts (16%)'),
+    description: N_('Bolted high-hardness appliqué plates and armored side skirts (16% reduction, +10 HP).'),
     mass: 36,
     reductionPct: 16,
     armor: 16,
@@ -24,8 +25,8 @@ export const ARMORS = Object.freeze({
   A3: Object.freeze({
     id: 'A3',
     tier: 3,
-    name: 'A3 Kontakt-5 ERA (24%)',
-    description: 'Sloped Kontakt-5 explosive reactive armor wedges and smoke grenade banks (24% reduction, +18 HP).',
+    name: N_('A3 Kontakt-5 ERA (24%)'),
+    description: N_('Sloped Kontakt-5 explosive reactive armor wedges and smoke grenade banks (24% reduction, +18 HP).'),
     mass: 42,
     reductionPct: 24,
     armor: 24,
@@ -35,8 +36,8 @@ export const ARMORS = Object.freeze({
   A4: Object.freeze({
     id: 'A4',
     tier: 4,
-    name: 'A4 Chobham + Slat (32%)',
-    description: 'Arrowhead Chobham ceramic-matrix cheeks with rear anti-HEAT slat screens (32% reduction, +26 HP).',
+    name: N_('A4 Chobham + Slat (32%)'),
+    description: N_('Arrowhead Chobham ceramic-matrix cheeks with rear anti-HEAT slat screens (32% reduction, +26 HP).'),
     mass: 48,
     reductionPct: 32,
     armor: 32,
@@ -46,8 +47,8 @@ export const ARMORS = Object.freeze({
   A5: Object.freeze({
     id: 'A5',
     tier: 5,
-    name: 'A5 Relikt + Hard-Kill (40%)',
-    description: 'Super-heavy Relikt V-glacis citadel with wrap-around reactive pods (40% reduction, +36 HP).',
+    name: N_('A5 Relikt + Hard-Kill (40%)'),
+    description: N_('Super-heavy Relikt V-glacis citadel with wrap-around reactive pods (40% reduction, +36 HP).'),
     mass: 54,
     reductionPct: 40,
     armor: 40,
@@ -57,8 +58,8 @@ export const ARMORS = Object.freeze({
 
   A0: Object.freeze({
     id: 'A0',
-    name: 'A0 Unarmored (0%)',
-    description: 'Unarmored light structural skin offering 0% damage reduction for maximum speed.',
+    name: N_('A0 Unarmored (0%)'),
+    description: N_('Unarmored light structural skin offering 0% damage reduction for maximum speed.'),
     mass: 0,
     reductionPct: 0,
     armor: 0,
@@ -67,8 +68,8 @@ export const ARMORS = Object.freeze({
   }),
   A_STEALTH: Object.freeze({
     id: 'A_STEALTH',
-    name: 'A-STEALTH Carbon Skin (10%)',
-    description: 'Faceted radar-absorbent carbon-polymer plating (10% reduction).',
+    name: N_('A-STEALTH Carbon Skin (10%)'),
+    description: N_('Faceted radar-absorbent carbon-polymer plating (10% reduction).'),
     mass: 24,
     reductionPct: 10,
     armor: 10,
@@ -77,8 +78,8 @@ export const ARMORS = Object.freeze({
   }),
   A_OMEGA: Object.freeze({
     id: 'A_OMEGA',
-    name: 'A-OMEGA Citadel (40%)',
-    description: 'Multi-layered dreadnought citadel armor plating (40% reduction, +80 HP).',
+    name: N_('A-OMEGA Citadel (40%)'),
+    description: N_('Multi-layered dreadnought citadel armor plating (40% reduction, +80 HP).'),
     mass: 64,
     reductionPct: 40,
     armor: 40,
@@ -87,8 +88,8 @@ export const ARMORS = Object.freeze({
   }),
   A_HYDRA: Object.freeze({
     id: 'A_HYDRA',
-    name: 'A-H Spaced Cruiser (50%)',
-    description: 'Lighter spaced cruiser armor trading protection for mobility (50% reduction, +80 HP).',
+    name: N_('A-H Spaced Cruiser (50%)'),
+    description: N_('Lighter spaced cruiser armor trading protection for mobility (50% reduction, +80 HP).'),
     mass: 40,
     reductionPct: 50,
     armor: 50,
@@ -97,9 +98,9 @@ export const ARMORS = Object.freeze({
   }),
   A_AEGIS: Object.freeze({
     id: 'A_AEGIS',
-    name: 'A-AE Aegis (60 / 35 / 15%)',
+    name: N_('A-AE Aegis (60 / 35 / 15%)'),
     description:
-      'Front-biased fortress armor: 60% front, 35% sides, 15% rear (+120 HP). Rewards flanking.',
+      N_('Front-biased fortress armor: 60% front, 35% sides, 15% rear (+120 HP). Rewards flanking.'),
     mass: 70,
     reductionPct: 65,
     armor: 65,
@@ -110,9 +111,9 @@ export const ARMORS = Object.freeze({
   }),
   A_INFERNO: Object.freeze({
     id: 'A_INFERNO',
-    name: 'A-INF Thermal Glacis (50 / 38 / 25%)',
+    name: N_('A-INF Thermal Glacis (50 / 38 / 25%)'),
     description:
-      'Directional thermal-baffle citadel armor: 50% front, 38% sides, 25% rear (+96 HP).',
+      N_('Directional thermal-baffle citadel armor: 50% front, 38% sides, 25% rear (+96 HP).'),
     mass: 58,
     reductionPct: 38,
     armor: 38,

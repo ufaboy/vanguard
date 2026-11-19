@@ -10,46 +10,47 @@ import {
   RANK_LADDER,
   getRankProgress,
 } from '../sim/medals.js';
+import { N_, formatNumber, t } from '../i18n/index.js';
 
 const GRADE_FILTERS = Object.freeze([
-  { id: 'all', label: 'All (20)' },
-  { id: 'vanguard', label: 'Vanguard' },
-  { id: 'gold', label: 'Gold' },
-  { id: 'silver', label: 'Silver' },
-  { id: 'bronze', label: 'Bronze' },
+  { id: 'all', label: N_('All (20)') },
+  { id: 'vanguard', label: N_('Vanguard') },
+  { id: 'gold', label: N_('Gold') },
+  { id: 'silver', label: N_('Silver') },
+  { id: 'bronze', label: N_('Bronze') },
 ]);
 
 function renderRankHeader(progress) {
   const { currentRank, nextRank, serviceXp, goldPlus, vanguard, totalUnlocked, xpProgressPct, missingGate } = progress;
   const nextLabel = nextRank
-    ? `Next: ${nextRank.title} (${serviceXp.toLocaleString()} / ${nextRank.minXp.toLocaleString()} XP)`
-    : 'Maximum Rank Reached';
+    ? t('Next: {rank} ({xp} / {next} XP)', { rank: t(nextRank.title), xp: formatNumber(serviceXp), next: formatNumber(nextRank.minXp) })
+    : t('Maximum Rank Reached');
 
   return `
     <div class="medal-rank-banner">
       <div class="medal-rank-left">
         <div class="medal-rank-insignia" aria-hidden="true">${currentRank.insignia}</div>
         <div>
-          <span class="medal-rank-kicker">COMMANDER RANK</span>
-          <h3 class="medal-rank-title">${currentRank.title}</h3>
+          <span class="medal-rank-kicker">${t('COMMANDER RANK')}</span>
+          <h3 class="medal-rank-title">${t(currentRank.title)}</h3>
           <p class="medal-rank-sub">${nextLabel}</p>
           ${missingGate ? `<p class="medal-rank-gate">${missingGate}</p>` : ''}
         </div>
       </div>
       <div class="medal-rank-stats">
-        <div class="medal-stat-pill"><span>MEDALS</span><strong>${totalUnlocked} / ${MEDAL_CATALOG.length}</strong></div>
-        <div class="medal-stat-pill"><span>GOLD+</span><strong>${goldPlus}</strong></div>
-        <div class="medal-stat-pill"><span>VANGUARD</span><strong>${vanguard}</strong></div>
+        <div class="medal-stat-pill"><span>${t('MEDALS')}</span><strong>${totalUnlocked} / ${MEDAL_CATALOG.length}</strong></div>
+        <div class="medal-stat-pill"><span>${t('GOLD+')}</span><strong>${goldPlus}</strong></div>
+        <div class="medal-stat-pill"><span>${t('VANGUARD')}</span><strong>${vanguard}</strong></div>
       </div>
     </div>
     <div class="medal-xp-bar-track" role="progressbar" aria-valuenow="${xpProgressPct}" aria-valuemin="0" aria-valuemax="100">
       <div class="medal-xp-bar-fill" style="width: ${xpProgressPct}%"></div>
     </div>
-    <div class="medal-ladder-strip" aria-label="Rank ladder">
+    <div class="medal-ladder-strip" aria-label="${t('Rank ladder')}">
       ${RANK_LADDER.map((r) => {
         const reached = serviceXp >= r.minXp && goldPlus >= r.minGoldPlus && vanguard >= r.minVanguard;
         const active = r.id === currentRank.id;
-        return `<span class="medal-ladder-node ${active ? 'is-current' : reached ? 'is-reached' : ''}" title="${r.title} (${r.minXp} XP)">${r.insignia}</span>`;
+        return `<span class="medal-ladder-node ${active ? 'is-current' : reached ? 'is-reached' : ''}" title="${t(r.title)} (${r.minXp} XP)">${r.insignia}</span>`;
       }).join('')}
     </div>
   `;
@@ -66,12 +67,12 @@ function renderMedalCard(medal, entry) {
       style="--medal-color: ${grade.color}; --medal-bg: ${grade.bgColor}; --medal-border: ${grade.borderColor};"
     >
       <div class="medal-case-top">
-        <span class="medal-grade-badge">${grade.label.toUpperCase()}</span>
+        <span class="medal-grade-badge">${t(grade.label).toUpperCase()}</span>
         ${unlocked ? `<span class="medal-count-badge">×${count}</span>` : `<span class="medal-xp-hint">+${grade.firstXp} XP</span>`}
       </div>
-      <h4 class="medal-case-name">${medal.name}</h4>
-      <p class="medal-case-desc">${medal.description}</p>
-      <span class="medal-case-cat">${medal.category}</span>
+      <h4 class="medal-case-name">${t(medal.name)}</h4>
+      <p class="medal-case-desc">${t(medal.description)}</p>
+      <span class="medal-case-cat">${t(medal.category)}</span>
     </article>
   `;
 }
@@ -109,14 +110,14 @@ export function attachMedalsModal(root) {
         <span class="board-rivet bottom-right" aria-hidden="true"></span>
         <div class="settings-modal-header">
           <div>
-            <small class="settings-modal-kicker">/// SERVICE RECORD &amp; HONORS</small>
-            <h2 id="medals-modal-title" class="settings-modal-title">Medals &amp; Ranks</h2>
+            <small class="settings-modal-kicker">/// ${t('SERVICE RECORD &amp; HONORS')}</small>
+            <h2 id="medals-modal-title" class="settings-modal-title">${t('Medals &amp; Ranks')}</h2>
           </div>
-          <button type="button" class="menu-secondary" data-action="close-medals">Close [ESC]</button>
+          <button type="button" class="menu-secondary" data-action="close-medals">${t('Close [ESC]')}</button>
         </div>
         <div class="settings-modal-body medals-modal-body">
           ${renderRankHeader(progress)}
-          <div class="medal-filter-bar" role="tablist" aria-label="Filter medals by grade">
+          <div class="medal-filter-bar" role="tablist" aria-label="${t('Filter medals by grade')}">
             ${GRADE_FILTERS.map((f) => `
               <button
                 type="button"
@@ -125,7 +126,7 @@ export function attachMedalsModal(root) {
                 class="medal-filter-btn ${activeFilter === f.id ? 'is-active' : ''}"
                 data-action="filter-medals"
                 data-grade="${f.id}"
-              >${f.label}</button>
+              >${t(f.label)}</button>
             `).join('')}
           </div>
           <div class="medal-case-grid">

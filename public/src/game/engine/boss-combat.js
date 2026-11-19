@@ -16,6 +16,7 @@ import { EnemyClass, TileType } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { disposeOwned, markOwned } from '../render/dispose.js';
 import { sound } from '../sound.js';
+import { t } from '../../i18n/index.js';
 
 export class BossCombat {
   constructor(engine) {
@@ -126,7 +127,7 @@ export class BossCombat {
         engine.fx.explosion(engine.playerX, 0.7, engine.playerZ, { scale: 1.35, tint: 0xff4500 });
         sound.playExplosion(1.3, { x: engine.playerX, z: engine.playerZ });
         engine.screenShake = Math.max(engine.screenShake || 0, 0.85);
-        engine.setStatusBanner('CRITICAL RAM IMPACT FROM CERBERUS-T!', 2.2);
+        engine.setStatusBanner(t('CRITICAL RAM IMPACT FROM CERBERUS-T!'), 2.2);
       }
 
       if (e.infernoDashTimer <= 0) {
@@ -168,7 +169,7 @@ export class BossCombat {
       e.infernoDashBeam = beam;
 
       sound.playBossAlarm();
-      engine.setStatusBanner(`${e.name.toUpperCase()}: OVERDRIVE RAM ENGAGED!`, 1.8);
+      engine.setStatusBanner(t('{name}: OVERDRIVE RAM ENGAGED!', { name: t(e.name).toUpperCase() }), 1.8);
       return 1.0;
     }
 
@@ -238,7 +239,7 @@ export class BossCombat {
       engine.screenShake = Math.max(engine.screenShake || 0, 0.55);
       engine.callBossEscort(e, MAMMOTH.ESCORT_CLASSES);
       engine.setStatusBanner?.(
-        `${e.name.toUpperCase()}: CITADEL OVERDRIVE & PHASE SHIELD - ESCORT INBOUND`,
+        t('{name}: CITADEL OVERDRIVE & PHASE SHIELD - ESCORT INBOUND', { name: t(e.name).toUpperCase() }),
         3.2
       );
     } else if (phaseId === 'hydra_phase2') {
@@ -246,7 +247,7 @@ export class BossCombat {
       engine.screenShake = Math.max(engine.screenShake || 0, 0.55);
       engine.callBossEscort(e, HYDRA.ESCORT_CLASSES);
       engine.setStatusBanner?.(
-        `${e.name.toUpperCase()}: LAUNCHER HEADS OVERCLOCKED & SHIELD UP - ESCORT INBOUND`,
+        t('{name}: LAUNCHER HEADS OVERCLOCKED & SHIELD UP - ESCORT INBOUND', { name: t(e.name).toUpperCase() }),
         3.2
       );
     } else if (phaseId === 'inferno_phase2') {
@@ -255,7 +256,7 @@ export class BossCombat {
       engine.screenShake = Math.max(engine.screenShake || 0, 0.65);
       engine.callBossEscort(e, INFERNO.ESCORT_CLASSES);
       engine.setStatusBanner?.(
-        `${e.name.toUpperCase()}: THERMOBARIC OVERDRIVE & PHASE SHIELD - INCENDIARY ESCORT INBOUND`,
+        t('{name}: THERMOBARIC OVERDRIVE & PHASE SHIELD - INCENDIARY ESCORT INBOUND', { name: t(e.name).toUpperCase() }),
         3.4
       );
     } else if (phaseId === 'titan_escort') {
@@ -263,14 +264,14 @@ export class BossCombat {
       engine.screenShake = Math.max(engine.screenShake || 0, 0.5);
       engine.callBossEscort(e, TITAN.ESCORT_CLASSES);
       engine.setStatusBanner?.(
-        `${e.name.toUpperCase()}: PHASE SHIELD ACTIVE - ESCORT REINFORCEMENTS INBOUND`,
+        t('{name}: PHASE SHIELD ACTIVE - ESCORT REINFORCEMENTS INBOUND', { name: t(e.name).toUpperCase() }),
         3.2
       );
     } else if (phaseId === 'titan_overload') {
       e.titanOverload = true;
       engine.screenShake = Math.max(engine.screenShake || 0, 0.65);
       engine.setStatusBanner?.(
-        `${e.name.toUpperCase()}: REACTOR OVERLOAD & PHASE SHIELD - REAR RADIATORS EXPOSED`,
+        t('{name}: REACTOR OVERLOAD & PHASE SHIELD - REAR RADIATORS EXPOSED', { name: t(e.name).toUpperCase() }),
         3.4
       );
     }
@@ -320,7 +321,7 @@ export class BossCombat {
         projectile.z
       );
       engine.setStatusBanner?.(
-        `${e.name.toUpperCase()}: APS INTERCEPTED ATGM (${e.apsCharges}/${e.apsMaxCharges})`,
+        t('{name}: APS INTERCEPTED ATGM ({apsCharges}/{apsMaxCharges})', { name: t(e.name).toUpperCase(), apsCharges: e.apsCharges, apsMaxCharges: e.apsMaxCharges }),
         1.4
       );
       return true;

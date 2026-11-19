@@ -1,11 +1,12 @@
 import { BULLET_POWER, WEAPON } from './types.js';
+import { N_ } from '../../i18n/index.js';
 
 const CANNON_Mk1 = Object.freeze({
   id: 'CANNON_Mk1',
   tier: 1,
-  name: 'Cannon Mk1',
+  name: N_('Cannon Mk1'),
   shortName: 'I',
-  description: 'Standard tank cannon and muzzle velocity.',
+  description: N_('Standard tank cannon and muzzle velocity.'),
   mass: 10,
   damage: 20,
   penetration: 0,
@@ -23,9 +24,9 @@ const CANNON_Mk1 = Object.freeze({
 const CANNON_Mk2 = Object.freeze({
   id: 'CANNON_Mk2',
   tier: 2,
-  name: 'Cannon Mk2',
+  name: N_('Cannon Mk2'),
   shortName: 'II',
-  description: 'High-velocity barrel with laser rangefinder.',
+  description: N_('High-velocity barrel with laser rangefinder.'),
   mass: 12,
   damage: 22,
   penetration: 10,
@@ -43,9 +44,9 @@ const CANNON_Mk2 = Object.freeze({
 const CANNON_Mk3 = Object.freeze({
   id: 'CANNON_Mk3',
   tier: 3,
-  name: 'Cannon Mk3',
+  name: N_('Cannon Mk3'),
   shortName: 'III',
-  description: 'Thermal-shrouded cannon with mechanized autoloader.',
+  description: N_('Thermal-shrouded cannon with mechanized autoloader.'),
   mass: 14,
   damage: 25,
   penetration: 22,
@@ -63,9 +64,9 @@ const CANNON_Mk3 = Object.freeze({
 const CANNON_Mk4 = Object.freeze({
   id: 'CANNON_Mk4',
   tier: 4,
-  name: 'Cannon Mk4',
+  name: N_('Cannon Mk4'),
   shortName: 'IV',
-  description: 'Heavy siege gun with hydro-pneumatic recoil cylinders capable of shattering reinforced concrete.',
+  description: N_('Heavy siege gun with hydro-pneumatic recoil cylinders capable of shattering reinforced concrete.'),
   mass: 16,
   damage: 28,
   penetration: 32,
@@ -83,9 +84,9 @@ const CANNON_Mk4 = Object.freeze({
 const CANNON_Mk5 = Object.freeze({
   id: 'CANNON_Mk5',
   tier: 5,
-  name: 'Cannon Mk5',
+  name: N_('Cannon Mk5'),
   shortName: 'V',
-  description: 'Twin-linked heavy siege guns firing a rapid double salvo with 0.2s inter-barrel delay.',
+  description: N_('Twin-linked heavy siege guns firing a rapid double salvo with 0.2s inter-barrel delay.'),
   mass: 20,
   damage: 28,
   penetration: 32,
@@ -110,8 +111,8 @@ export const CANNONS = Object.freeze({
 
   NONE: Object.freeze({
     id: 'NONE',
-    name: 'No Cannon (Ram / Support)',
-    description: 'Unarmed turret mount used on dedicated demolition and support vehicles.',
+    name: N_('No Cannon (Ram / Support)'),
+    description: N_('Unarmed turret mount used on dedicated demolition and support vehicles.'),
     mass: 0,
     damage: 0,
     penetration: 0,
@@ -127,8 +128,8 @@ export const CANNONS = Object.freeze({
   }),
   HOWITZER: Object.freeze({
     id: 'HOWITZER',
-    name: '152mm Indirect Howitzer',
-    description: 'High-angle 152mm mortar cannon lobbing high-explosive shells over terrain obstacles.',
+    name: N_('152mm Indirect Howitzer'),
+    description: N_('High-angle 152mm mortar cannon lobbing high-explosive shells over terrain obstacles.'),
     mass: 26,
     damage: 40,
     penetration: 0,
@@ -144,9 +145,9 @@ export const CANNONS = Object.freeze({
   }),
   HYDRA_MLRS: Object.freeze({
     id: 'HYDRA_MLRS',
-    name: 'Hydra Triple MLRS',
+    name: N_('Hydra Triple MLRS'),
     description:
-      'Three articulated 9-tube rocket launcher heads firing telegraphed 3-rocket salvos in a triangle around the target (6-14 cell range).',
+      N_('Three articulated 9-tube rocket launcher heads firing telegraphed 3-rocket salvos in a triangle around the target (6-14 cell range).'),
     mass: 22,
     damage: 30,
     penetration: 0,
@@ -162,9 +163,9 @@ export const CANNONS = Object.freeze({
   }),
   TITAN_RAIL: Object.freeze({
     id: 'TITAN_RAIL',
-    name: 'Supreme Twin Heavy Cannon',
+    name: N_('Supreme Twin Heavy Cannon'),
     description:
-      'Twin-barrel high-caliber dreadnought cannons mounted in two independent rotating turrets (4 barrels total), firing dual concrete-breaching salvos.',
+      N_('Twin-barrel high-caliber dreadnought cannons mounted in two independent rotating turrets (4 barrels total), firing dual concrete-breaching salvos.'),
     mass: 28,
     damage: 24,
     penetration: 45,
@@ -180,8 +181,8 @@ export const CANNONS = Object.freeze({
   }),
   FLAMETHROWER: Object.freeze({
     id: 'FLAMETHROWER',
-    name: 'Flamethrower',
-    description: 'Short-range pressurized napalm projector that bypasses conventional armor and incinerates forest cover.',
+    name: N_('Flamethrower'),
+    description: N_('Short-range pressurized napalm projector that bypasses conventional armor and incinerates forest cover.'),
     mass: 18,
     damage: 0,
     penetration: 0,
@@ -197,8 +198,8 @@ export const CANNONS = Object.freeze({
   }),
   BOSS_DUAL: Object.freeze({
     id: 'BOSS_DUAL',
-    name: 'Dreadnought Twin Siege AP',
-    description: 'Twin-barrel 155mm command dreadnought siege cannon firing synchronized dual concrete-breaching salvos (1.65s reload).',
+    name: N_('Dreadnought Twin Siege AP'),
+    description: N_('Twin-barrel 155mm command dreadnought siege cannon firing synchronized dual concrete-breaching salvos (1.65s reload).'),
     mass: 24,
     damage: 20,
     penetration: 42,
@@ -214,8 +215,8 @@ export const CANNONS = Object.freeze({
   }),
   AUTOCANNON: Object.freeze({
     id: 'AUTOCANNON',
-    name: '30mm Rapid Autocannon',
-    description: 'High-rate light autocannon firing rapid 30mm rounds that drain APS charges and shred brick cover.',
+    name: N_('30mm Rapid Autocannon'),
+    description: N_('High-rate light autocannon firing rapid 30mm rounds that drain APS charges and shred brick cover.'),
     mass: 10,
     damage: 7,
     penetration: 0,
@@ -230,9 +231,9 @@ export const CANNONS = Object.freeze({
   }),
   INFERNO_THERMO: Object.freeze({
     id: 'INFERNO_THERMO',
-    name: '240mm Thermobaric Siege Mortar',
+    name: N_('240mm Thermobaric Siege Mortar'),
     description:
-      'Heavy direct-fire fuel-air siege cannon launching thermobaric shells that detonate in a 2.5-cell blast radius, vaporizing forest, brick, concrete, ice, and water into scorched sand.',
+      N_('Heavy direct-fire fuel-air siege cannon launching thermobaric shells that detonate in a 2.5-cell blast radius, vaporizing forest, brick, concrete, ice, and water into scorched sand.'),
     mass: 28,
     damage: 34,
     penetration: 25,

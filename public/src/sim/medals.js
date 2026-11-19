@@ -2,11 +2,12 @@
  * Medals, Grades, Battle Telemetry Tracker, and Military Rank Progression.
  * Pure simulation module (zero DOM / Three.js dependencies).
  */
+import { N_, t } from '../i18n/index.js';
 
 export const MEDAL_GRADES = Object.freeze({
   bronze: Object.freeze({
     id: 'bronze',
-    label: 'Bronze',
+    label: N_('Bronze'),
     order: 1,
     color: '#CD7F32',
     bgColor: 'rgba(205, 127, 50, 0.14)',
@@ -16,7 +17,7 @@ export const MEDAL_GRADES = Object.freeze({
   }),
   silver: Object.freeze({
     id: 'silver',
-    label: 'Silver',
+    label: N_('Silver'),
     order: 2,
     color: '#CBD5E1',
     bgColor: 'rgba(203, 213, 225, 0.14)',
@@ -26,7 +27,7 @@ export const MEDAL_GRADES = Object.freeze({
   }),
   gold: Object.freeze({
     id: 'gold',
-    label: 'Gold',
+    label: N_('Gold'),
     order: 3,
     color: '#F59E0B',
     bgColor: 'rgba(245, 158, 11, 0.15)',
@@ -36,7 +37,7 @@ export const MEDAL_GRADES = Object.freeze({
   }),
   vanguard: Object.freeze({
     id: 'vanguard',
-    label: 'Vanguard',
+    label: N_('Vanguard'),
     order: 4,
     color: '#38BDF8',
     bgColor: 'rgba(56, 189, 248, 0.16)',
@@ -47,16 +48,16 @@ export const MEDAL_GRADES = Object.freeze({
 });
 
 export const RANK_LADDER = Object.freeze([
-  Object.freeze({ id: 'recruit', title: 'Recruit', insignia: 'I', minXp: 0, minGoldPlus: 0, minVanguard: 0 }),
-  Object.freeze({ id: 'gunner', title: 'Gunner', insignia: 'II', minXp: 200, minGoldPlus: 0, minVanguard: 0 }),
-  Object.freeze({ id: 'corporal', title: 'Corporal', insignia: 'III', minXp: 500, minGoldPlus: 0, minVanguard: 0 }),
-  Object.freeze({ id: 'sergeant', title: 'Sergeant', insignia: 'IV', minXp: 950, minGoldPlus: 0, minVanguard: 0 }),
-  Object.freeze({ id: 'lieutenant', title: 'Lieutenant', insignia: 'V', minXp: 1550, minGoldPlus: 0, minVanguard: 0 }),
-  Object.freeze({ id: 'captain', title: 'Captain', insignia: 'VI', minXp: 2350, minGoldPlus: 0, minVanguard: 0 }),
-  Object.freeze({ id: 'major', title: 'Major', insignia: 'VII', minXp: 3400, minGoldPlus: 0, minVanguard: 0 }),
-  Object.freeze({ id: 'colonel', title: 'Colonel', insignia: 'VIII', minXp: 4800, minGoldPlus: 2, minVanguard: 0 }),
-  Object.freeze({ id: 'brigadier', title: 'Brigadier', insignia: 'IX', minXp: 6600, minGoldPlus: 4, minVanguard: 0 }),
-  Object.freeze({ id: 'vanguard_marshal', title: 'Vanguard Marshal', insignia: 'X', minXp: 9000, minGoldPlus: 4, minVanguard: 1 }),
+  Object.freeze({ id: 'recruit', title: N_('Recruit'), insignia: 'I', minXp: 0, minGoldPlus: 0, minVanguard: 0 }),
+  Object.freeze({ id: 'gunner', title: N_('Gunner'), insignia: 'II', minXp: 200, minGoldPlus: 0, minVanguard: 0 }),
+  Object.freeze({ id: 'corporal', title: N_('Corporal'), insignia: 'III', minXp: 500, minGoldPlus: 0, minVanguard: 0 }),
+  Object.freeze({ id: 'sergeant', title: N_('Sergeant'), insignia: 'IV', minXp: 950, minGoldPlus: 0, minVanguard: 0 }),
+  Object.freeze({ id: 'lieutenant', title: N_('Lieutenant'), insignia: 'V', minXp: 1550, minGoldPlus: 0, minVanguard: 0 }),
+  Object.freeze({ id: 'captain', title: N_('Captain'), insignia: 'VI', minXp: 2350, minGoldPlus: 0, minVanguard: 0 }),
+  Object.freeze({ id: 'major', title: N_('Major'), insignia: 'VII', minXp: 3400, minGoldPlus: 0, minVanguard: 0 }),
+  Object.freeze({ id: 'colonel', title: N_('Colonel'), insignia: 'VIII', minXp: 4800, minGoldPlus: 2, minVanguard: 0 }),
+  Object.freeze({ id: 'brigadier', title: N_('Brigadier'), insignia: 'IX', minXp: 6600, minGoldPlus: 4, minVanguard: 0 }),
+  Object.freeze({ id: 'vanguard_marshal', title: N_('Vanguard Marshal'), insignia: 'X', minXp: 9000, minGoldPlus: 4, minVanguard: 1 }),
 ]);
 
 const BOSS_CLASSES = new Set(['BOSS_MAMMOTH', 'BOSS_HYDRA', 'BOSS_INFERNO', 'BOSS_TITAN']);
@@ -84,42 +85,42 @@ export const MEDAL_CATALOG = Object.freeze([
   // --- BRONZE ---
   Object.freeze({
     id: 'mine_sweeper',
-    name: 'Mine Sweeper',
+    name: N_('Mine Sweeper'),
     grade: 'bronze',
-    category: 'Tactics',
-    description: 'Destroy 3+ enemy mines by shooting them or eliminate a Sapper before it lays its first mine.',
+    category: N_('Tactics'),
+    description: N_('Destroy 3+ enemy mines by shooting them or eliminate a Sapper before it lays its first mine.'),
     evaluate: ({ tracker }) => tracker.minesShot >= 3 || tracker.sapperKilledBeforeMining >= 1,
   }),
   Object.freeze({
     id: 'saboteur',
-    name: 'Saboteur',
+    name: N_('Saboteur'),
     grade: 'bronze',
-    category: 'Tactics',
-    description: 'Destroy an Engineer while it is repairing an ally or building fortifications.',
+    category: N_('Tactics'),
+    description: N_('Destroy an Engineer while it is repairing an ally or building fortifications.'),
     evaluate: ({ tracker }) => tracker.engineerKilledWhileActing >= 1,
   }),
   Object.freeze({
     id: 'bunker_buster',
-    name: 'Bunker Buster',
+    name: N_('Bunker Buster'),
     grade: 'bronze',
-    category: 'Tactics',
-    description: 'Breach reinforced concrete and hit an enemy shortly after destroying the cover.',
+    category: N_('Tactics'),
+    description: N_('Breach reinforced concrete and hit an enemy shortly after destroying the cover.'),
     evaluate: ({ tracker }) => tracker.bunkerBusterHits >= 1,
   }),
   Object.freeze({
     id: 'demolition_crew',
-    name: 'Demolition Crew',
+    name: N_('Demolition Crew'),
     grade: 'bronze',
-    category: 'Tactics',
-    description: 'Destroy 50+ terrain cover blocks in a single battle.',
+    category: N_('Tactics'),
+    description: N_('Destroy 50+ terrain cover blocks in a single battle.'),
     evaluate: ({ hud }) => (Number(hud?.blocksDestroyed) || 0) >= 50,
   }),
   Object.freeze({
     id: 'apex_vanguard',
-    name: 'Apex Vanguard',
+    name: N_('Apex Vanguard'),
     grade: 'bronze',
-    category: 'Arsenal',
-    description: 'Win a mission with all 5 core tank systems upgraded to Tier 5.',
+    category: N_('Arsenal'),
+    description: N_('Win a mission with all 5 core tank systems upgraded to Tier 5.'),
     evaluate: ({ isVictory, upgrades }) => {
       if (!isVictory || !upgrades) return false;
       return (
@@ -135,60 +136,60 @@ export const MEDAL_CATALOG = Object.freeze([
   // --- SILVER ---
   Object.freeze({
     id: 'flank_master',
-    name: 'Flank Master',
+    name: N_('Flank Master'),
     grade: 'silver',
-    category: 'Tactics',
-    description: 'Destroy an Armor tank or Sector Boss with a decisive side or rear hit.',
+    category: N_('Tactics'),
+    description: N_('Destroy an Armor tank or Sector Boss with a decisive side or rear hit.'),
     evaluate: ({ tracker }) => tracker.flankHeavyKills >= 1,
   }),
   Object.freeze({
     id: 'matador',
-    name: 'Matador',
+    name: N_('Matador'),
     grade: 'silver',
-    category: 'Tactics',
-    description: 'Destroy a charging Kamikaze at close range before its warhead detonates.',
+    category: N_('Tactics'),
+    description: N_('Destroy a charging Kamikaze at close range before its warhead detonates.'),
     evaluate: ({ tracker }) => tracker.matadorKills >= 1,
   }),
   Object.freeze({
     id: 'counter_battery',
-    name: 'Counter-Battery',
+    name: N_('Counter-Battery'),
     grade: 'silver',
-    category: 'Tactics',
-    description: 'Destroy a Howitzer before it completes its second artillery barrage.',
+    category: N_('Tactics'),
+    description: N_('Destroy a Howitzer before it completes its second artillery barrage.'),
     evaluate: ({ tracker }) => tracker.counterBatteryKills >= 1,
   }),
   Object.freeze({
     id: 'ghost_hunter',
-    name: 'Ghost Hunter',
+    name: N_('Ghost Hunter'),
     grade: 'silver',
-    category: 'Tactics',
-    description: 'Destroy a stationary camouflaged Stealth tank, or a Jammer from inside its 5-cell ECM bubble.',
+    category: N_('Tactics'),
+    description: N_('Destroy a stationary camouflaged Stealth tank, or a Jammer from inside its 5-cell ECM bubble.'),
     evaluate: ({ tracker }) => tracker.ghostHunterKills >= 1,
   }),
   Object.freeze({
     id: 'iron_dome',
-    name: 'Iron Dome',
+    name: N_('Iron Dome'),
     grade: 'silver',
-    category: 'Arsenal',
-    description: 'Intercept 5+ incoming shells or missiles with the Active Protection System in one battle.',
+    category: N_('Arsenal'),
+    description: N_('Intercept 5+ incoming shells or missiles with the Active Protection System in one battle.'),
     evaluate: ({ tracker }) => tracker.apsIntercepts >= 5,
   }),
   Object.freeze({
     id: 'amphibious_assault',
-    name: 'Amphibious Assault',
+    name: N_('Amphibious Assault'),
     grade: 'silver',
-    category: 'Arsenal',
-    description: 'Destroy 2+ enemies while operating from deep water (CH4 / CH5 chassis).',
+    category: N_('Arsenal'),
+    description: N_('Destroy 2+ enemies while operating from deep water (CH4 / CH5 chassis).'),
     evaluate: ({ tracker }) => tracker.waterKills >= 2,
   }),
 
   // --- GOLD ---
   Object.freeze({
     id: 'fortress_guardian',
-    name: 'Fortress Guardian',
+    name: N_('Fortress Guardian'),
     grade: 'gold',
-    category: 'Defense',
-    description: 'Win a mission with 100% Command HQ integrity.',
+    category: N_('Defense'),
+    description: N_('Win a mission with 100% Command HQ integrity.'),
     evaluate: ({ isVictory, hud }) => {
       if (!isVictory) return false;
       const maxHp = Number(hud?.baseMaxHp) || 0;
@@ -198,43 +199,43 @@ export const MEDAL_CATALOG = Object.freeze([
   }),
   Object.freeze({
     id: 'last_stand',
-    name: 'Last Stand',
+    name: N_('Last Stand'),
     grade: 'gold',
-    category: 'Defense',
-    description: 'Destroy 2+ enemies while below 33% hull integrity and survive to win.',
+    category: N_('Defense'),
+    description: N_('Destroy 2+ enemies while below 33% hull integrity and survive to win.'),
     evaluate: ({ isVictory, tracker }) => isVictory && tracker.lastStandKills >= 2,
   }),
   Object.freeze({
     id: 'twin_thunder',
-    name: 'Twin Thunder',
+    name: N_('Twin Thunder'),
     grade: 'gold',
-    category: 'Arsenal',
-    description: 'Destroy two different enemies with a single dual-salvo of Cannon Mk5.',
+    category: N_('Arsenal'),
+    description: N_('Destroy two different enemies with a single dual-salvo of Cannon Mk5.'),
     evaluate: ({ tracker }) => tracker.twinThunderTriggered,
   }),
   Object.freeze({
     id: 'mammoth_slayer',
-    name: 'Mammoth Slayer',
+    name: N_('Mammoth Slayer'),
     grade: 'gold',
-    category: 'Bosses',
-    description: 'Defeat BOSS_MAMMOTH in Sector 01.',
+    category: N_('Bosses'),
+    description: N_('Defeat BOSS_MAMMOTH in Sector 01.'),
     evaluate: ({ isVictory, tracker }) => isVictory && tracker.defeatedBosses.includes('BOSS_MAMMOTH'),
   }),
   Object.freeze({
     id: 'hydra_dodger',
-    name: 'Hydra Dodger',
+    name: N_('Hydra Dodger'),
     grade: 'gold',
-    category: 'Bosses',
-    description: 'Defeat BOSS_HYDRA without taking a single hit from its MLRS rocket salvo.',
+    category: N_('Bosses'),
+    description: N_('Defeat BOSS_HYDRA without taking a single hit from its MLRS rocket salvo.'),
     evaluate: ({ isVictory, tracker }) =>
       isVictory && tracker.defeatedBosses.includes('BOSS_HYDRA') && tracker.hydraMlrsHitsTaken === 0,
   }),
   Object.freeze({
     id: 'titan_breaker',
-    name: 'Titan Breaker',
+    name: N_('Titan Breaker'),
     grade: 'gold',
-    category: 'Bosses',
-    description: 'Defeat BOSS_TITAN without taking a single hit from its TITAN_RAIL cannon.',
+    category: N_('Bosses'),
+    description: N_('Defeat BOSS_TITAN without taking a single hit from its TITAN_RAIL cannon.'),
     evaluate: ({ isVictory, tracker }) =>
       isVictory && tracker.defeatedBosses.includes('BOSS_TITAN') && tracker.titanRailHitsTaken === 0,
   }),
@@ -242,26 +243,26 @@ export const MEDAL_CATALOG = Object.freeze([
   // --- VANGUARD ---
   Object.freeze({
     id: 'untouchable',
-    name: 'Untouchable',
+    name: N_('Untouchable'),
     grade: 'vanguard',
-    category: 'Challenge',
-    description: 'Win a mission without taking any hull damage.',
+    category: N_('Challenge'),
+    description: N_('Win a mission without taking any hull damage.'),
     evaluate: ({ isVictory, tracker }) => isVictory && tracker.playerDamageTaken === 0 && tracker.killsByClassTotal > 0,
   }),
   Object.freeze({
     id: 'exploit_the_gap',
-    name: 'Exploit the Gap',
+    name: N_('Exploit the Gap'),
     grade: 'vanguard',
-    category: 'Bosses',
-    description: 'Finish off BOSS_TITAN with a rear-aspect hit during its Overload phase (< 30% HP).',
+    category: N_('Bosses'),
+    description: N_('Finish off BOSS_TITAN with a rear-aspect hit during its Overload phase (< 30% HP).'),
     evaluate: ({ isVictory, tracker }) => isVictory && tracker.titanOverloadRearKill,
   }),
   Object.freeze({
     id: 'david_vs_goliath',
-    name: 'David vs Goliath',
+    name: N_('David vs Goliath'),
     grade: 'vanguard',
-    category: 'Challenge',
-    description: 'Win a mission using the stock Cannon Mk1 without firing ATGM missiles.',
+    category: N_('Challenge'),
+    description: N_('Win a mission using the stock Cannon Mk1 without firing ATGM missiles.'),
     evaluate: ({ isVictory, upgrades, tracker }) => {
       if (!isVictory) return false;
       const cannonTier = Number(upgrades?.cannon) || 1;
@@ -544,9 +545,9 @@ export function getRankProgress(playerSave = {}) {
 
     if (serviceXp >= nextRank.minXp) {
       if (vanguard < nextRank.minVanguard) {
-        missingGate = `Requires ${nextRank.minVanguard} Vanguard medal`;
+        missingGate = t('Requires {n} Vanguard medal', { n: nextRank.minVanguard });
       } else if (goldPlus < nextRank.minGoldPlus) {
-        missingGate = `Requires ${nextRank.minGoldPlus} Gold+ medals (${goldPlus}/${nextRank.minGoldPlus})`;
+        missingGate = t('Requires {n} Gold+ medals ({have}/{n})', { n: nextRank.minGoldPlus, have: goldPlus });
       }
     }
   }

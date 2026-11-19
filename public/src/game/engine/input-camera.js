@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { getObservedEnemyCondition, normalizeAngleSigned } from '../../sim/ai.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { GameStatus } from '../types.js';
+import { t } from '../../i18n/index.js';
 
 const _plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const _intersectPoint = new THREE.Vector3();
@@ -49,7 +50,7 @@ export class InputCameraController {
           if (unit.rig?.hpBarFill) unit.rig.hpBarFill.visible = engine.aiDebugMode;
         }
         engine.setStatusBanner(
-          `DEVELOPER AI TELEMETRY OVERLAY: ${engine.aiDebugMode ? 'ENABLED' : 'HIDDEN'}`,
+          t('DEVELOPER AI TELEMETRY OVERLAY: {label}', { label: engine.aiDebugMode ? t('ENABLED') : t('HIDDEN') }),
           2.0
         );
         return;
@@ -150,13 +151,13 @@ export class InputCameraController {
           engine.priorityTargetId = clickedEnemy.id;
           const cond = getObservedEnemyCondition(clickedEnemy);
           engine.setStatusBanner(
-            `PRIORITY TARGET DESIGNATED: ${clickedEnemy.name.toUpperCase()} [OBSERVED: ${cond}]`,
+            t('PRIORITY TARGET DESIGNATED: {name} [OBSERVED: {cond}]', { name: t(clickedEnemy.name).toUpperCase(), cond: t(cond) }),
             2.4
           );
           engine.emitHudUpdate();
         } else if (engine.priorityTargetId !== null) {
           engine.priorityTargetId = null;
-          engine.setStatusBanner('PRIORITY TARGET DESIGNATION CLEARED', 1.8);
+          engine.setStatusBanner(t('PRIORITY TARGET DESIGNATION CLEARED'), 1.8);
           engine.emitHudUpdate();
         } else {
           engine.firePlayerHomingMissile();

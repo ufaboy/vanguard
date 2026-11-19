@@ -3,11 +3,12 @@
  * Modules may add hpBonus, nominalMass, armorBonusByAspect, sightBonus and radioBonus, but a
  * module is never created only to tune numbers: per-type tuning lives in the tank's `base`.
  */
+import { N_ } from '../../i18n/index.js';
 export const OPTIONAL_EQUIPMENT = Object.freeze({
   APS_MODULE: Object.freeze({
     id: 'APS_MODULE',
-    name: '4-Corner "Arena" APS',
-    description: 'Standalone radar protection: 1 charge per light shell or missile; 2 per Cannon Mk4/Mk5, HOWITZER or BOSS_DUAL shell. Cannot stop flames or TITAN_RAIL.',
+    name: N_('4-Corner "Arena" APS'),
+    description: N_('Standalone radar protection: 1 charge per light shell or missile; 2 per Cannon Mk4/Mk5, HOWITZER or BOSS_DUAL shell. Cannot stop flames or TITAN_RAIL.'),
     leveled: false,
     installMass: 4,
     ammoCount: 12,
@@ -17,8 +18,8 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
   }),
   ROCKET_LAUNCHER: Object.freeze({
     id: 'ROCKET_LAUNCHER',
-    name: 'Homing ATGM Pod',
-    description: 'Standalone turret-mounted guided anti-tank missile launcher.',
+    name: N_('Homing ATGM Pod'),
+    description: N_('Standalone turret-mounted guided anti-tank missile launcher.'),
     leveled: false,
     installMass: 6,
     ammoCount: 2,
@@ -28,8 +29,8 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
   }),
   REPAIR_KIT_MOD: Object.freeze({
     id: 'REPAIR_KIT_MOD',
-    name: 'Emergency Auto-Repair Kit',
-    description: 'Standalone nanite field-welding pack that auto-triggers below 33% HP (+20 HP).',
+    name: N_('Emergency Auto-Repair Kit'),
+    description: N_('Standalone nanite field-welding pack that auto-triggers below 33% HP (+20 HP).'),
     leveled: false,
     installMass: 2,
     ammoCount: 1,
@@ -39,8 +40,8 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
   }),
   MINE_LAYER: Object.freeze({
     id: 'MINE_LAYER',
-    name: 'Proximity Mine Dispenser',
-    description: 'Standalone rear hull chute deploying up to 3 magnetic proximity landmines.',
+    name: N_('Proximity Mine Dispenser'),
+    description: N_('Standalone rear hull chute deploying up to 3 magnetic proximity landmines.'),
     leveled: false,
     installMass: 64,
     ammoCount: 3,
@@ -50,8 +51,8 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
   }),
   WARHEAD: Object.freeze({
     id: 'WARHEAD',
-    name: 'Shaped Demolition Warhead',
-    description: 'Standalone high-explosive nose warhead for direct-contact ramming.',
+    name: N_('Shaped Demolition Warhead'),
+    description: N_('Standalone high-explosive nose warhead for direct-contact ramming.'),
     leveled: false,
     installMass: 8,
     ammoCount: 0,
@@ -61,8 +62,8 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
   }),
   JAMMER: Object.freeze({
     id: 'JAMMER',
-    name: 'ECM Electronic Warfare Dome',
-    description: 'Standalone broadband emitter that suppresses APS radar and missile guidance.',
+    name: N_('ECM Electronic Warfare Dome'),
+    description: N_('Standalone broadband emitter that suppresses APS radar and missile guidance.'),
     leveled: false,
     installMass: 6,
     ammoCount: 0,
@@ -72,8 +73,8 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
   }),
   BUILDER_KIT: Object.freeze({
     id: 'BUILDER_KIT',
-    name: 'Combat Engineer Rig',
-    description: 'Standalone dozer & masonry fabricator that erects brick walls and clears trees.',
+    name: N_('Combat Engineer Rig'),
+    description: N_('Standalone dozer & masonry fabricator that erects brick walls and clears trees.'),
     leveled: false,
     installMass: 10,
     ammoCount: 0,
@@ -83,8 +84,8 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
   }),
   DOZER_BLADE: Object.freeze({
     id: 'DOZER_BLADE',
-    name: 'Front Dozer Blade',
-    description: 'Standalone hydraulic front mine-dozer blade bolted to the lower glacis.',
+    name: N_('Front Dozer Blade'),
+    description: N_('Standalone hydraulic front mine-dozer blade bolted to the lower glacis.'),
     leveled: false,
     playerAvailable: false,
     installMass: 8,
@@ -95,8 +96,8 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
   }),
   CLOAK: Object.freeze({
     id: 'CLOAK',
-    name: 'Optical Camouflage Generator',
-    description: 'Standalone active light-bending emitter concealing hull signature at range.',
+    name: N_('Optical Camouflage Generator'),
+    description: N_('Standalone active light-bending emitter concealing hull signature at range.'),
     leveled: false,
     installMass: 4,
     ammoCount: 0,

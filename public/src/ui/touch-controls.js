@@ -1,5 +1,7 @@
 /** On-screen virtual joystick and combat action buttons for landscape tablet play. */
 
+import { t } from '../i18n/index.js';
+
 export const MAX_TABLET_VIEWPORT_WIDTH = 1366;
 
 export function isTouchCapable() {
@@ -33,17 +35,17 @@ export class TouchControlsOverlay {
 
     container.innerHTML = `
       <div class="touch-zone-left">
-        <div class="touch-joystick-base" data-touch="joystick" role="application" aria-label="Movement joystick">
+        <div class="touch-joystick-base" data-touch="joystick" role="application" aria-label="${t('Movement joystick')}">
           <div class="touch-joystick-ring" aria-hidden="true"></div>
           <div class="touch-joystick-knob" data-touch="knob" aria-hidden="true"></div>
         </div>
       </div>
       <div class="touch-zone-right">
-        <button type="button" class="touch-action-btn touch-wave-btn hidden" data-touch="wave" aria-label="Next survival wave">
-          <span>WAVE</span>
+        <button type="button" class="touch-action-btn touch-wave-btn hidden" data-touch="wave" aria-label="${t('Next survival wave')}">
+          <span>${t('WAVE')}</span>
         </button>
-        <button type="button" class="touch-action-btn touch-fire-btn" data-touch="fire" aria-label="Fire main cannon">
-          <span class="touch-btn-title">FIRE</span>
+        <button type="button" class="touch-action-btn touch-fire-btn" data-touch="fire" aria-label="${t('Fire main cannon')}">
+          <span class="touch-btn-title">${t('FIRE')}</span>
         </button>
       </div>
     `;

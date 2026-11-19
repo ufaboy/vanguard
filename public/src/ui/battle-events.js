@@ -10,6 +10,7 @@ import { GameStatus } from '../game/types.js';
 import { HANGAR_TRACKS } from '../hangar-ui.js';
 import { buildBattleSharePayload, CONTRACTS_CATALOG } from '../sim/index.js';
 import { downloadBattleShareCard } from './share-card.js';
+import { t } from '../i18n/index.js';
 
 const UI_ONLY_ACTIONS = new Set([
   'menu-page',
@@ -247,10 +248,10 @@ export function setupDelegatedEvents(
             });
           }
           state.hangarFeedback = res.success
-            ? `${HANGAR_TRACKS.find((item) => item.key === track)?.label || 'System'} upgraded. Ready for deployment.`
+            ? t('{system} upgraded. Ready for deployment.', { system: t(HANGAR_TRACKS.find((item) => item.key === track)?.label || 'System') })
             : res.reason;
           if (!res.success && res.reason) {
-            engine.setStatusBanner(`UPGRADE BLOCKED: ${res.reason.toUpperCase()}`, 2.4);
+            engine.setStatusBanner(t('UPGRADE BLOCKED: {reason}', { reason: res.reason.toUpperCase() }), 2.4);
           }
           renderUI(true);
         }
@@ -293,7 +294,7 @@ export function setupDelegatedEvents(
           }
           state.hangarFeedback = res.reason;
           if (!res.success && res.reason) {
-            engine.setStatusBanner(`APS RESUPPLY BLOCKED: ${res.reason.toUpperCase()}`, 2.4);
+            engine.setStatusBanner(t('APS RESUPPLY BLOCKED: {reason}', { reason: res.reason.toUpperCase() }), 2.4);
           }
           renderUI(true);
         }
@@ -318,7 +319,7 @@ export function setupDelegatedEvents(
           const res = engine.mountHangarPart(instanceId, socketId);
           const errReason = res.reason || res.reasons?.[0];
           if (!res.success && errReason) {
-            engine.setStatusBanner(`MOUNT REJECTED: ${errReason.toUpperCase()}`, 2.6);
+            engine.setStatusBanner(t('MOUNT REJECTED: {reason}', { reason: errReason.toUpperCase() }), 2.6);
           } else if (res.success && res.reason) {
             analyticsManager.trackEvent('module_equip', {
               module_id: instanceId,
@@ -395,8 +396,8 @@ export function setupDelegatedEvents(
             outcome: ok ? 'success' : 'failed',
           });
           state.shareFeedback = ok
-            ? '✓ Battle report PNG card downloaded!'
-            : 'Unable to generate PNG card in this browser.';
+            ? t('✓ Battle report PNG card downloaded!')
+            : t('Unable to generate PNG card in this browser.');
           renderUI(true);
         });
         break;
@@ -424,15 +425,15 @@ export function setupDelegatedEvents(
             })
             .then(() => {
               analyticsManager.trackEvent('share_click', { method: 'native_share', outcome: 'success' });
-              state.shareFeedback = '✓ Battle report shared!';
+              state.shareFeedback = t('✓ Battle report shared!');
               renderUI(true);
             })
             .catch(async (err) => {
               if (err?.name === 'AbortError') return;
               const copied = await copyTextToClipboard(payload.fullText);
               state.shareFeedback = copied
-                ? '✓ Battle summary & link copied to clipboard!'
-                : 'Unable to copy automatically — select the URL above.';
+                ? t('✓ Battle summary & link copied to clipboard!')
+                : t('Unable to copy automatically — select the URL above.');
               renderUI(true);
             });
           break;
@@ -447,10 +448,10 @@ export function setupDelegatedEvents(
           if (copied) {
             state.shareFeedback =
               action === 'share-battle'
-                ? '✓ Battle summary & link copied to clipboard!'
-                : '✓ Share link copied to clipboard for social media!';
+                ? t('✓ Battle summary & link copied to clipboard!')
+                : t('✓ Share link copied to clipboard for social media!');
           } else {
-            state.shareFeedback = 'Unable to copy automatically — select the URL above.';
+            state.shareFeedback = t('Unable to copy automatically — select the URL above.');
           }
           renderUI(true);
         });
@@ -465,7 +466,7 @@ export function setupDelegatedEvents(
               const granted = engine?.grantCredits(150) ?? 0;
               if (granted > 0) {
                 state.adRewardClaimed = true;
-                state.adRewardFeedback = `+$${granted} BONUS CREDITS AWARDED`;
+                state.adRewardFeedback = t('+${amount} BONUS CREDITS AWARDED', { amount: granted });
                 analyticsManager.trackEvent('rewarded_ad_claimed', {
                   reward_type: 'credits',
                   amount: granted,
@@ -477,8 +478,8 @@ export function setupDelegatedEvents(
             if (!res.rewarded && !state.adRewardClaimed) {
               state.adRewardFeedback =
                 res.status === 'dismissed'
-                  ? 'AD CLOSED EARLY — NO BONUS AWARDED'
-                  : 'AD UNAVAILABLE RIGHT NOW — CONTINUE PLAYING';
+                  ? t('AD CLOSED EARLY — NO BONUS AWARDED')
+                  : t('AD UNAVAILABLE RIGHT NOW — CONTINUE PLAYING');
             }
             renderUI(true);
           });

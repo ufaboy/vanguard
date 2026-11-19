@@ -36,6 +36,7 @@ import { analyticsManager } from '../../app/analyticsManager.js';
 import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';
 import { EnemyClass, TANK_CONFIGS, TileType, checkMapVictory } from '../types.js';
+import { t } from '../../i18n/index.js';
 
 /** Manages enemy gunnery, artillery/missile/boss secondary attacks, obstacle crushing, and enemy damage/kill handling. */
 export class EnemyCombatController {
@@ -745,7 +746,7 @@ export class EnemyCombatController {
       engine.spawnEnemyHomingMissile(start.x, start.z, dx, dz, homing);
     }
     sound.playMissileLaunch(e);
-    engine.setStatusBanner(`${e.name.toUpperCase()}: HOMING ATGM SALVO INBOUND`, 1.6);
+    engine.setStatusBanner(t('{name}: HOMING ATGM SALVO INBOUND', { name: t(e.name).toUpperCase() }), 1.6);
   }
 
   /** Crushes BOXES supply crates and detonates BARREL hazards under any moving tank; only player-crushed crates drop loot. */
@@ -871,11 +872,12 @@ export class EnemyCombatController {
         bossOverloaded: Boolean(enemy.titanOverload),
       });
       const unitClass = String(enemy.enemyClass || 'hostile').toUpperCase();
-      const unitName =
+      const unitName = t(
         enemy.name ||
         TANK_CONFIGS[enemy.enemyClass]?.name ||
         SECTOR_BOSS_CONFIGS[enemy.enemyClass]?.name ||
-        unitClass;
+        unitClass
+      );
       const bounty =
         ENEMY_KILL_CREDITS[enemy.enemyClass] ||
         (enemy.isBoss ? 750 : 75);
@@ -883,7 +885,7 @@ export class EnemyCombatController {
       engine.creditsEarnedThisMission = (engine.creditsEarnedThisMission || 0) + bounty;
       engine.syncCampaignCredits();
       engine.saveRepo.savePlayerSave(engine.playerSave);
-      engine.setStatusBanner(`+ $${bounty} CREDITS (${unitName})`, 1.8);
+      engine.setStatusBanner(t('+ ${bounty} CREDITS ({unitName})', { bounty, unitName }), 1.8);
       engine.screenShake = Math.max(engine.screenShake, enemy.isBoss ? 0.9 : 0.35);
       engine.fx.tankDestroyed(enemy.x, enemy.z, { boss: enemy.isBoss });
       sound.playExplosion(enemy.isBoss ? 2.0 : 1.7, { x: enemy.x, z: enemy.z });
@@ -910,7 +912,7 @@ export class EnemyCombatController {
           engine.survivalDirector.onWaveCleared();
         } else if (enemy.isBoss) {
           engine.setStatusBanner(
-            `${unitName.toUpperCase()} DESTROYED! ELIMINATE REMAINING ESCORT!`,
+            t('{unitName} DESTROYED! ELIMINATE REMAINING ESCORT!', { unitName: unitName.toUpperCase() }),
             3.2
           );
         }
@@ -941,14 +943,14 @@ export class EnemyCombatController {
         });
         if (victoryRes.isVictory) {
           engine.triggerMissionVictory(
-            enemy.isBoss ? 'SECTOR BOSS DESTROYED! CREDITS SECURED!' : victoryRes.banner
+            enemy.isBoss ? t('SECTOR BOSS DESTROYED! CREDITS SECURED!') : victoryRes.banner
           );
         } else {
           if (enemy.isBoss) {
             const msg =
               engine.activeMapRules?.victoryOnEnemyBaseDestroyed && engine.enemyBaseAlive
-                ? `${unitName.toUpperCase()} DESTROYED! DESTROY THE ENEMY COMMAND CORE!`
-                : `${unitName.toUpperCase()} DESTROYED! ELIMINATE REMAINING ESCORT!`;
+                ? t('{unitName} DESTROYED! DESTROY THE ENEMY COMMAND CORE!', { unitName: unitName.toUpperCase() })
+                : t('{unitName} DESTROYED! ELIMINATE REMAINING ESCORT!', { unitName: unitName.toUpperCase() });
             engine.setStatusBanner(msg, 3.2);
           }
           engine.powerupsController?.checkEnemyBaseClearAirDrop?.();

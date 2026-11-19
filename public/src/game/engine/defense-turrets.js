@@ -12,6 +12,7 @@ import { setCellObject, setCellSurface } from '../terrains/layers.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { normalizeAngleSigned } from '../../sim/ai.js';
+import { t } from '../../i18n/index.js';
 
 export class DefenseTurretsController {
   constructor(engine) {
@@ -262,7 +263,7 @@ export class DefenseTurretsController {
     engine.saveRepo.savePlayerSave(engine.playerSave);
     engine.emitHudUpdate();
     sound.playExplosionLarge();
-    engine.setStatusBanner(`${turret.name.toUpperCase()} DESTROYED! +300 CREDITS`, 2.5);
+    engine.setStatusBanner(t('{name} DESTROYED! +300 CREDITS', { name: t(turret.name).toUpperCase() }), 2.5);
   }
 
   /** A destroyed turret leaves passable sand where its concrete barbette stood. */
