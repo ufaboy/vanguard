@@ -1,12 +1,13 @@
 import { sound } from '../game/sound.js';
 import { SaveRepository } from '../sim/hangar.js';
+import { N_ } from '../i18n/index.js';
 
 const VALID_QUALITY_PRESETS = Object.freeze(['low', 'medium', 'high']);
 
 export const CAMERA_LABELS = Object.freeze({
-  ISOMETRIC: 'ISOMETRIC 45°',
-  TACTICAL_HIGH: 'TACTICAL OVERVIEW',
-  CLOSE_COMBAT: 'CLOSE COMBAT',
+  ISOMETRIC: N_('ISOMETRIC 45°'),
+  TACTICAL_HIGH: N_('TACTICAL OVERVIEW'),
+  CLOSE_COMBAT: N_('CLOSE COMBAT'),
 });
 
 // Frame-rate cap choices cycled in Settings (0 = unlimited)

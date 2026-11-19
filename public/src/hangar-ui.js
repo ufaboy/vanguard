@@ -3,16 +3,17 @@ import { PLAYER_UPGRADES } from './game/components/index.js';
 import { computeTankStats, APS, MISSILE, CANNON_AMMO, getMaxApsAmmo, getMaxMissileAmmo, getMaxCannonAmmo } from './game/constants.js';
 import { renderTrackBadgeSvg } from './game/icons.js';
 import { PLAYER_TANK_CONFIG } from './game/tanks.js';
+import { N_, formatNumber, t } from './i18n/index.js';
 
 export const HANGAR_TRACKS = [
-  { key: 'cannon', label: 'Cannon', role: 'Firepower', summary: 'Hit harder. Defeat heavier armor.' },
-  { key: 'chassis', label: 'Chassis', role: 'Mobility', summary: 'Improve traction and cross difficult terrain.' },
-  { key: 'frame', label: 'Frame', role: 'Structure', summary: 'Strengthen the foundation of your tank.' },
-  { key: 'engine', label: 'Engine', role: 'Powerplant', summary: 'Move heavy armor with greater power.' },
-  { key: 'armor', label: 'Armor', role: 'Protection', summary: 'Reduce incoming damage and survive longer.' },
+  { key: 'cannon', label: N_('Cannon'), role: N_('Firepower'), summary: N_('Hit harder. Defeat heavier armor.') },
+  { key: 'chassis', label: N_('Chassis'), role: N_('Mobility'), summary: N_('Improve traction and cross difficult terrain.') },
+  { key: 'frame', label: N_('Frame'), role: N_('Structure'), summary: N_('Strengthen the foundation of your tank.') },
+  { key: 'engine', label: N_('Engine'), role: N_('Powerplant'), summary: N_('Move heavy armor with greater power.') },
+  { key: 'armor', label: N_('Armor'), role: N_('Protection'), summary: N_('Reduce incoming damage and survive longer.') },
 ];
 
-const money = value => Math.round(value).toLocaleString('en-US');
+const money = value => formatNumber(Math.round(value));
 const number = value => Number(value.toFixed(2)).toString();
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
@@ -45,7 +46,8 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
   const cannonTotal = hud.cannonAmmo ?? 15;
   const cannonMax = hud.cannonMaxAmmo ?? getMaxCannonAmmo(purchasedFrame);
 
-  const supplyRow = (kind, label, count, max, price, action, amountLabel = '+1') => {
+  const supplyRow = (kind, sourceLabel, count, max, price, action, amountLabel = '+1') => {
+    const label = t(sourceLabel);
     const full = count >= max;
     const affordable = credits >= price;
     const pct = max > 0 ? Math.min(100, Math.round((count / max) * 100)) : 0;
@@ -69,9 +71,9 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
           class="garage-supply-btn"
           data-action="${action}"
           ${full || !affordable ? 'disabled' : ''}
-          aria-label="${full ? `${label} full` : `Buy ${amountLabel} ${label} for ${price} credits${affordable ? '' : ', not enough credits'}`}"
+          aria-label="${full ? t('{item} full', { item: label }) : `${t('Buy {amount} {item} for {price} credits', { amount: amountLabel, item: label, price })}${affordable ? t(', not enough credits') : ''}`}"
         >
-          ${full ? 'FULL' : `${amountLabel} · $${money(price)}`}
+          ${full ? t('FULL') : `${amountLabel} · $${money(price)}`}
         </button>
       </div>
     `;
@@ -90,35 +92,35 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
   after.cannonMaxAmmo = getMaxCannonAmmo(Math.min(5, purchasedFrame + 1));
 
   const metrics = {
-    cannon: [['Damage', 'damage', '', false], ['Penetration', 'penetration', '%', false], ['Reload', 'fireCooldown', ' s', true]],
-    chassis: [['Travel speed', 'moveSpeed', ' c/s', false], ['Total mass', 'totalMass', ' t', true]],
-    frame: [['Durability', 'maxHP', ' HP', false], ['APS capacity', 'apsMaxAmmo', '', false], ['Missile capacity', 'missileMaxAmmo', '', false], ['Shells capacity', 'cannonMaxAmmo', '', false], ['Total mass', 'totalMass', ' t', true]],
-    engine: [['Travel speed', 'moveSpeed', ' c/s', false], ['Total mass', 'totalMass', ' t', true]],
-    armor: [['Damage reduction', 'armor', '%', false], ['Durability', 'maxHP', ' HP', false], ['Total mass', 'totalMass', ' t', true]],
+    cannon: [[N_('Damage'), 'damage', '', false], [N_('Penetration'), 'penetration', '%', false], [N_('Reload'), 'fireCooldown', ' s', true]],
+    chassis: [[N_('Travel speed'), 'moveSpeed', ' c/s', false], [N_('Total mass'), 'totalMass', ' t', true]],
+    frame: [[N_('Durability'), 'maxHP', ' HP', false], [N_('APS capacity'), 'apsMaxAmmo', '', false], [N_('Missile capacity'), 'missileMaxAmmo', '', false], [N_('Shells capacity'), 'cannonMaxAmmo', '', false], [N_('Total mass'), 'totalMass', ' t', true]],
+    engine: [[N_('Travel speed'), 'moveSpeed', ' c/s', false], [N_('Total mass'), 'totalMass', ' t', true]],
+    armor: [[N_('Damage reduction'), 'armor', '%', false], [N_('Durability'), 'maxHP', ' HP', false], [N_('Total mass'), 'totalMass', ' t', true]],
   }[track.key];
 
   const comparison = metrics.map(([label, key, unit, lower]) => {
     const delta = after[key] - before[key];
     const good = lower ? delta < 0 : delta > 0;
-    return `<div class="hangar-stat-row"><span>${label}</span><span>${number(before[key])}${unit}</span><b class="${delta ? (good ? 'positive' : 'tradeoff') : ''}">${maxed ? '—' : `${number(after[key])}${unit}`}</b></div>`;
+    return `<div class="hangar-stat-row"><span>${t(label)}</span><span>${number(before[key])}${unit}</span><b class="${delta ? (good ? 'positive' : 'tradeoff') : ''}">${maxed ? '—' : `${number(after[key])}${unit}`}</b></div>`;
   }).join('');
 
-  const bars = level => `<span class="hangar-tier-bars" aria-label="Tier ${level} of 5">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= level ? 'filled' : ''}"></i>`).join('')}</span>`;
+  const bars = level => `<span class="hangar-tier-bars" aria-label="${t('Tier {n} of 5', { n: level })}">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= level ? 'filled' : ''}"></i>`).join('')}</span>`;
 
   return `
-    <aside class="garage-sidebar" aria-label="Garage upgrades and supplies">
+    <aside class="garage-sidebar" aria-label="${t('Garage upgrades and supplies')}">
       <div class="garage-sidebar-head">
         <div class="garage-brand">
-          <h1>GARAGE</h1>
-          <span class="garage-status-pill">${hud.isHangarPaused ? 'PAUSED' : 'SERVICE BAY'}</span>
+          <h1>${t('GARAGE')}</h1>
+          <span class="garage-status-pill">${hud.isHangarPaused ? t('PAUSED') : t('SERVICE BAY')}</span>
         </div>
         <div class="garage-wallet">
-          <span>CREDITS</span>
+          <span>${t('CREDITS')}</span>
           <strong>$${money(credits)}</strong>
         </div>
       </div>
 
-      <nav class="garage-tabs" aria-label="Tank upgrade systems">
+      <nav class="garage-tabs" aria-label="${t('Tank upgrade systems')}">
         ${HANGAR_TRACKS.map(item => {
           const level = upgrades[item.key] || 1;
           const isFaulted = Boolean(faults[item.key]);
@@ -130,7 +132,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
               aria-pressed="${item.key === track.key}"
             >
               ${renderTrackBadgeSvg(item.key, 24)}
-              <span class="garage-tab-name">${item.label}</span>
+              <span class="garage-tab-name">${t(item.label)}</span>
               <span class="garage-tab-tier">${level}/5</span>
               ${bars(level)}
             </button>
@@ -141,77 +143,77 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       <div class="garage-component-panel">
         <div class="garage-component-head">
           <div>
-            <span class="garage-eyebrow">${escape(track.role)} · ${maxed ? 'MAX TIER' : `TIER ${tier} → ${tier + 1}`}</span>
-            <h2>${escape(track.label)}</h2>
+            <span class="garage-eyebrow">${escape(t(track.role))} · ${maxed ? t('MAX TIER') : t('TIER {from} → {to}', { from: tier, to: tier + 1 })}</span>
+            <h2>${escape(t(track.label))}</h2>
           </div>
-          <span class="garage-current-badge">INSTALLED: ${escape(current.name)}</span>
+          <span class="garage-current-badge">${t('INSTALLED: {name}', { name: escape(t(current.name)) })}</span>
         </div>
 
         <div class="garage-next-card">
           <div class="garage-next-title">
-            <span>${maxed ? 'MAX SPECIFICATION' : `NEXT: ${escape(next.name)}`}</span>
+            <span>${maxed ? t('MAX SPECIFICATION') : t('NEXT: {name}', { name: escape(t(next.name)) })}</span>
           </div>
-          <p class="garage-next-desc">${escape(maxed ? track.summary : next.description)}</p>
+          <p class="garage-next-desc">${escape(t(maxed ? track.summary : next.description))}</p>
         </div>
 
         ${damaged ? `
           <div class="component-repair">
             <div class="garage-repair-row">
-              <strong>${escape(track.label)} damaged (Tier ${tier} → ${Math.max(1, tier - 1)})</strong>
+              <strong>${t('{component} damaged (Tier {from} → {to})', { component: escape(t(track.label)), from: tier, to: Math.max(1, tier - 1) })}</strong>
               <button data-action="repair-component" data-track="${track.key}" ${credits < repairCost ? 'disabled' : ''}>
-                ${credits < repairCost ? `Need $ ${money(repairCost)}` : `Repair component · $ ${money(repairCost)}`}
+                ${credits < repairCost ? t('Need $ {amount}', { amount: money(repairCost) }) : t('Repair component · $ {amount}', { amount: money(repairCost) })}
               </button>
             </div>
           </div>
         ` : ''}
 
         <div class="hangar-comparison">
-          <div class="hangar-stat-row hangar-stat-heading"><span>STAT</span><span>NOW</span><span>AFTER</span></div>
+          <div class="hangar-stat-row hangar-stat-heading"><span>${t('STAT')}</span><span>${t('NOW')}</span><span>${t('AFTER')}</span></div>
           ${comparison}
-          ${track.key === 'chassis' ? `<div class="hangar-capability">${after.canCrossWater ? (after.canHover || after.waterSpeedMultiplier >= 1 ? '✓ Water crossing (full speed)' : `✓ Water crossing (${Math.round(after.waterSpeedMultiplier * 100)}% speed)`) : 'Land traversal'} · ${after.allTerrain ? 'All-terrain traction' : 'Standard traction'}</div>` : ''}
+          ${track.key === 'chassis' ? `<div class="hangar-capability">${after.canCrossWater ? (after.canHover || after.waterSpeedMultiplier >= 1 ? `✓ ${t('Water crossing (full speed)')}` : `✓ ${t('Water crossing ({pct}% speed)', { pct: Math.round(after.waterSpeedMultiplier * 100) })}`) : t('Land traversal')} · ${after.allTerrain ? t('All-terrain traction') : t('Standard traction')}</div>` : ''}
         </div>
 
         <div class="hangar-purchase">
           <button class="hangar-buy" data-action="upgrade-track" data-track="${track.key}" ${maxed || credits < cost ? 'disabled' : ''}>
-            <span>${maxed ? 'System complete' : credits < cost ? `Need $ ${money(cost - credits)} more` : `Install upgrade · $ ${money(cost)}`}</span>
+            <span>${maxed ? t('System complete') : credits < cost ? t('Need $ {amount} more', { amount: money(cost - credits) }) : t('Install upgrade · $ {amount}', { amount: money(cost) })}</span>
             <span class="hangar-buy-arrow" aria-hidden="true">${maxed ? '✓' : '↗'}</span>
           </button>
           ${feedback ? `<div class="hangar-feedback" role="status" aria-live="polite">${escape(feedback)}</div>` : ''}
         </div>
       </div>
 
-      <section class="garage-supplies" aria-label="Buy ammunition and charges">
+      <section class="garage-supplies" aria-label="${t('Buy ammunition and charges')}">
         <div class="garage-supplies-head">
-          <span>AMMUNITION &amp; CHARGES</span>
+          <span>${t('AMMUNITION &amp; CHARGES')}</span>
         </div>
         <div class="garage-supply-list">
-          ${supplyRow('cannon', 'Shells', cannonTotal, cannonMax, CANNON_AMMO.CREDIT_PRICE_PER_PACK, 'buy-cannon-ammo', `+${CANNON_AMMO.SHELLS_PER_PACK}`)}
-          ${supplyRow('aps', 'APS', apsTotal, apsMax, apsPrice, 'buy-aps-charge', '+1')}
-          ${supplyRow('missile', 'Missile', missileTotal, missileMax, MISSILE.CREDIT_PRICE, 'buy-missile', '+1')}
+          ${supplyRow('cannon', N_('Shells'), cannonTotal, cannonMax, CANNON_AMMO.CREDIT_PRICE_PER_PACK, 'buy-cannon-ammo', `+${CANNON_AMMO.SHELLS_PER_PACK}`)}
+          ${supplyRow('aps', N_('APS'), apsTotal, apsMax, apsPrice, 'buy-aps-charge', '+1')}
+          ${supplyRow('missile', N_('Missile'), missileTotal, missileMax, MISSILE.CREDIT_PRICE, 'buy-missile', '+1')}
         </div>
       </section>
     </aside>
 
-    <section class="hangar-visual" aria-label="Player tank in the garage">
+    <section class="hangar-visual" aria-label="${t('Player tank in the garage')}">
       <div class="hangar-stage-window"></div>
       <div class="garage-stage-top">
         <div class="hangar-vehicle-label">
-          <span class="hangar-eyebrow">ASSIGNED VEHICLE</span>
-          <h2>PLAYER <span>MBT</span></h2>
+          <span class="hangar-eyebrow">${t('ASSIGNED VEHICLE')}</span>
+          <h2>${t('PLAYER')} <span>${t('MBT')}</span></h2>
         </div>
-        <button class="hangar-exit" data-action="toggle-upgrades" aria-label="Close garage">
-          ${hud.isHangarPaused ? 'Return to battle' : 'Back to operations'} <kbd>ESC</kbd>
+        <button class="hangar-exit" data-action="toggle-upgrades" aria-label="${t('Close garage')}">
+          ${hud.isHangarPaused ? t('Return to battle') : t('Back to operations')} <kbd>ESC</kbd>
         </button>
       </div>
       <div class="garage-stage-bottom">
-        <div class="hangar-view-controls" aria-label="Tank viewing angle">
-          ${['front', 'side', 'rear'].map(item => `<button data-action="hangar-view" data-view="${item}" aria-pressed="${view === item}" class="${view === item ? 'is-selected' : ''}">${item === 'front' ? 'Overview' : item === 'side' ? 'Side view' : 'Rear view'}</button>`).join('')}
+        <div class="hangar-view-controls" aria-label="${t('Tank viewing angle')}">
+          ${['front', 'side', 'rear'].map(item => `<button data-action="hangar-view" data-view="${item}" aria-pressed="${view === item}" class="${view === item ? 'is-selected' : ''}">${item === 'front' ? t('Overview') : item === 'side' ? t('Side view') : t('Rear view')}</button>`).join('')}
         </div>
-        <div class="garage-loadout-pill" aria-label="Current tank summary">
+        <div class="garage-loadout-pill" aria-label="${t('Current tank summary')}">
           <span>HP <b>${number(before.maxHP)}</b></span>
-          <span>DMG <b>${number(before.damage)}</b></span>
-          <span>ARM <b>${number(before.armor)}%</b></span>
-          <span>MASS <b>${number(before.totalMass)}t</b></span>
+          <span>${t('DMG')} <b>${number(before.damage)}</b></span>
+          <span>${t('ARM')} <b>${number(before.armor)}%</b></span>
+          <span>${t('MASS')} <b>${number(before.totalMass)}t</b></span>
         </div>
       </div>
     </section>

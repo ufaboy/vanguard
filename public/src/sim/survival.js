@@ -14,6 +14,7 @@
  */
 
 import { EnemyClass } from '../game/tanks.js';
+import { N_, t } from '../i18n/index.js';
 
 export const SURVIVAL_CONFIG = Object.freeze({
   MAP_ID: 'survival-paris-last-stand',
@@ -37,8 +38,8 @@ const BOSS_ROTATION = Object.freeze([
   Object.freeze({
     bossClass: EnemyClass.BOSS_MAMMOTH,
     bossName: 'MAMMOTH MK-V',
-    bossTitle: 'Super-Heavy Siege Dreadnought',
-    title: 'FINAL ASSAULT // SIEGE DREADNOUGHT',
+    bossTitle: N_('Super-Heavy Siege Dreadnought'),
+    title: N_('FINAL ASSAULT // SIEGE DREADNOUGHT'),
     escortBase: [
       EnemyClass.STANDARD,
       EnemyClass.ARMOR,
@@ -51,8 +52,8 @@ const BOSS_ROTATION = Object.freeze([
   Object.freeze({
     bossClass: EnemyClass.BOSS_HYDRA,
     bossName: 'HYDRA MLRS-X',
-    bossTitle: 'Amphibious Rocket-Artillery Cruiser',
-    title: 'SEINE FLOTILLA // ROCKET BARRAGE',
+    bossTitle: N_('Amphibious Rocket-Artillery Cruiser'),
+    title: N_('SEINE FLOTILLA // ROCKET BARRAGE'),
     escortBase: [
       EnemyClass.HOVER,
       EnemyClass.STRIKER,
@@ -66,8 +67,8 @@ const BOSS_ROTATION = Object.freeze([
   Object.freeze({
     bossClass: EnemyClass.BOSS_INFERNO,
     bossName: 'CERBERUS-T',
-    bossTitle: 'Thermobaric Siege Leviathan',
-    title: 'THERMOBARIC LEVIATHAN ASSAULT',
+    bossTitle: N_('Thermobaric Siege Leviathan'),
+    title: N_('THERMOBARIC LEVIATHAN ASSAULT'),
     escortBase: [
       EnemyClass.FLAMETHROWER,
       EnemyClass.KAMIKAZE,
@@ -81,8 +82,8 @@ const BOSS_ROTATION = Object.freeze([
   Object.freeze({
     bossClass: EnemyClass.BOSS_TITAN,
     bossName: 'SUPREME DREADNOUGHT',
-    bossTitle: 'Twin-Turret Supreme Dreadnought',
-    title: 'SUPREME DREADNOUGHT SPEARHEAD',
+    bossTitle: N_('Twin-Turret Supreme Dreadnought'),
+    title: N_('SUPREME DREADNOUGHT SPEARHEAD'),
     escortBase: [
       EnemyClass.ARMOR,
       EnemyClass.JAMMER,
@@ -98,7 +99,7 @@ const BOSS_ROTATION = Object.freeze([
 
 const WAVE_PRESETS = Object.freeze({
   1: {
-    title: 'RECON PROBE',
+    title: N_('RECON PROBE'),
     roster: [
       EnemyClass.SCOUT,
       EnemyClass.STANDARD,
@@ -109,7 +110,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   2: {
-    title: 'BOULEVARD BRIDGEHEAD',
+    title: N_('BOULEVARD BRIDGEHEAD'),
     roster: [
       EnemyClass.STANDARD,
       EnemyClass.ARMOR,
@@ -121,7 +122,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   3: {
-    title: 'SEINE RIVER RAIDERS',
+    title: N_('SEINE RIVER RAIDERS'),
     roster: [
       EnemyClass.HOVER,
       EnemyClass.HOVER,
@@ -134,7 +135,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   4: {
-    title: 'CHAMPS-ÉLYSÉES BREACHERS',
+    title: N_('CHAMPS-ÉLYSÉES BREACHERS'),
     roster: [
       EnemyClass.ARMOR,
       EnemyClass.ARMOR,
@@ -148,7 +149,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   5: {
-    title: 'ELECTRONIC SIEGE',
+    title: N_('ELECTRONIC SIEGE'),
     roster: [
       EnemyClass.JAMMER,
       EnemyClass.STEALTH,
@@ -163,7 +164,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   6: {
-    title: 'GRAND PINCER',
+    title: N_('GRAND PINCER'),
     roster: [
       EnemyClass.ARMOR,
       EnemyClass.HOVER,
@@ -179,7 +180,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   8: {
-    title: 'OVERTIME // SHOCK SPEARHEAD',
+    title: N_('OVERTIME // SHOCK SPEARHEAD'),
     roster: [
       EnemyClass.ARMOR,
       EnemyClass.STRIKER,
@@ -197,7 +198,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   9: {
-    title: 'OVERTIME // MISSILE BATTERY',
+    title: N_('OVERTIME // MISSILE BATTERY'),
     roster: [
       EnemyClass.STRIKER,
       EnemyClass.HOWITZER,
@@ -216,7 +217,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   11: {
-    title: 'OVERTIME // PHANTOM OVERWATCH',
+    title: N_('OVERTIME // PHANTOM OVERWATCH'),
     roster: [
       EnemyClass.STEALTH,
       EnemyClass.STRIKER,
@@ -235,7 +236,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   12: {
-    title: 'OVERTIME // IRON PHALANX',
+    title: N_('OVERTIME // IRON PHALANX'),
     roster: [
       EnemyClass.ARMOR,
       EnemyClass.ENGINEER,
@@ -255,7 +256,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   13: {
-    title: 'OVERTIME // COMBINED ARMS BLITZ',
+    title: N_('OVERTIME // COMBINED ARMS BLITZ'),
     roster: [
       EnemyClass.STRIKER,
       EnemyClass.STEALTH,
@@ -276,7 +277,7 @@ const WAVE_PRESETS = Object.freeze({
     ],
   },
   14: {
-    title: 'OVERTIME // CITADEL VANGUARD',
+    title: N_('OVERTIME // CITADEL VANGUARD'),
     roster: [
       EnemyClass.ARMOR,
       EnemyClass.STRIKER,
@@ -399,7 +400,7 @@ export function buildSurvivalWaveSpec(waveNumber = 1) {
   return {
     wave,
     attackEdge,
-    title: `OVERTIME ASSAULT // ECHELON ${wave}`,
+    title: t('OVERTIME ASSAULT // ECHELON {wave}', { wave }),
     isBossWave: false,
     bossClass: null,
     bossName: null,
@@ -534,7 +535,7 @@ export function buildSurvivalHudSnapshot(
     attackEdge: spec?.attackEdge || getSurvivalWaveEdge(survivalState.wave),
     wavesCleared: survivalState.wavesCleared,
     phase: survivalState.phase,
-    title: spec?.title || `WAVE ${survivalState.wave}`,
+    title: spec?.title || t('WAVE {wave}', { wave: survivalState.wave }),
     isBossWave: Boolean(spec?.isBossWave),
     bossName: spec?.bossName || null,
     waveTimer,

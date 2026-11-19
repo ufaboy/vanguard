@@ -1,8 +1,9 @@
+import { N_ } from '../../i18n/index.js';
 const FRAME_F1 = Object.freeze({
   id: 'F1',
   tier: 1,
-  name: 'F1 Standard Frame',
-  description: 'Standard welded monocoque steel hull frame with front tow shackles.',
+  name: N_('F1 Standard Frame'),
+  description: N_('Standard welded monocoque steel hull frame with front tow shackles.'),
   mass: 14,
   speedMultiplier: 1.0,
   hpBonus: 0,
@@ -15,8 +16,8 @@ const FRAME_F1 = Object.freeze({
 const FRAME_F2 = Object.freeze({
   id: 'F2',
   tier: 2,
-  name: 'F2 Bull-Bar Frame',
-  description: 'Lightened alloy hull frame fitted with a front tubular impact bull-bar (+2 HP).',
+  name: N_('F2 Bull-Bar Frame'),
+  description: N_('Lightened alloy hull frame fitted with a front tubular impact bull-bar (+2 HP).'),
   mass: 13,
   speedMultiplier: 1.02,
   hpBonus: 2,
@@ -29,9 +30,9 @@ const FRAME_F2 = Object.freeze({
 const FRAME_F3 = Object.freeze({
   id: 'F3',
   tier: 3,
-  name: 'F3 Reinforced Heavy Frame',
+  name: N_('F3 Reinforced Heavy Frame'),
   description:
-    'Reinforced heavy hull frame with a thick front armor beam, side frame rails, and bolted corner gussets (+4 HP). Dozer blades are fitted separately as the DOZER_BLADE module.',
+    N_('Reinforced heavy hull frame with a thick front armor beam, side frame rails, and bolted corner gussets (+4 HP). Dozer blades are fitted separately as the DOZER_BLADE module.'),
   mass: 17,
   speedMultiplier: 0.96,
   hpBonus: 4,
@@ -44,8 +45,8 @@ const FRAME_F3 = Object.freeze({
 const FRAME_F4 = Object.freeze({
   id: 'F4',
   tier: 4,
-  name: 'F4 Exo-Truss Frame',
-  description: 'Composite exo-skeleton structural truss roll-cage reinforcing the entire hull (+14 HP).',
+  name: N_('F4 Exo-Truss Frame'),
+  description: N_('Composite exo-skeleton structural truss roll-cage reinforcing the entire hull (+14 HP).'),
   mass: 18,
   speedMultiplier: 1.02,
   hpBonus: 14,
@@ -58,8 +59,8 @@ const FRAME_F4 = Object.freeze({
 const FRAME_F5 = Object.freeze({
   id: 'F5',
   tier: 5,
-  name: 'F5 Vanguard Titan Frame',
-  description: 'Apex serrated siege ram prow with reinforced side sponsons (+22 HP).',
+  name: N_('F5 Vanguard Titan Frame'),
+  description: N_('Apex serrated siege ram prow with reinforced side sponsons (+22 HP).'),
   mass: 20,
   speedMultiplier: 1.06,
   hpBonus: 22,
@@ -78,8 +79,8 @@ export const FRAMES = Object.freeze({
 
   F_RAM: Object.freeze({
     id: 'F_RAM',
-    name: 'Explosive Breacher Frame',
-    description: 'High-speed reinforced forward breacher frame for kamikaze demolition units.',
+    name: N_('Explosive Breacher Frame'),
+    description: N_('High-speed reinforced forward breacher frame for kamikaze demolition units.'),
     mass: 12,
     speedMultiplier: 1.26,
     hpBonus: 0,
@@ -90,8 +91,8 @@ export const FRAMES = Object.freeze({
   }),
   F_TITAN: Object.freeze({
     id: 'F_TITAN',
-    name: 'Dreadnought Citadel Frame',
-    description: 'Massive command dreadnought structural hull frame (+20 HP).',
+    name: N_('Dreadnought Citadel Frame'),
+    description: N_('Massive command dreadnought structural hull frame (+20 HP).'),
     mass: 26,
     speedMultiplier: 0.9,
     hpBonus: 30,
@@ -102,8 +103,8 @@ export const FRAMES = Object.freeze({
   }),
   F_HYDRA: Object.freeze({
     id: 'F_HYDRA',
-    name: 'Artillery Cruiser Frame',
-    description: 'Long, low artillery cruiser hull frame carrying three launcher mounts (+14 HP).',
+    name: N_('Artillery Cruiser Frame'),
+    description: N_('Long, low artillery cruiser hull frame carrying three launcher mounts (+14 HP).'),
     mass: 22,
     speedMultiplier: 0.9,
     hpBonus: 30,
@@ -114,8 +115,8 @@ export const FRAMES = Object.freeze({
   }),
   F_BASTION: Object.freeze({
     id: 'F_BASTION',
-    name: 'Bastion Fortress Frame',
-    description: 'Fortress hull frame with a massively reinforced glacis (+24 HP).',
+    name: N_('Bastion Fortress Frame'),
+    description: N_('Fortress hull frame with a massively reinforced glacis (+24 HP).'),
     mass: 30,
     speedMultiplier: 0.9,
     hpBonus: 50,
@@ -126,8 +127,8 @@ export const FRAMES = Object.freeze({
   }),
   F_INFERNO: Object.freeze({
     id: 'F_INFERNO',
-    name: 'Inferno Siege Breacher Frame',
-    description: 'Super-heavy ramming leviathan chassis frame reinforced for overdrive plow impacts (+36 HP).',
+    name: N_('Inferno Siege Breacher Frame'),
+    description: N_('Super-heavy ramming leviathan chassis frame reinforced for overdrive plow impacts (+36 HP).'),
     mass: 26,
     speedMultiplier: 0.95,
     hpBonus: 36,

@@ -13,6 +13,7 @@ import { isUsefulPowerUp } from '../powerup-drops.js';
 import { disposeOwned } from '../render/dispose.js';
 import { sound } from '../sound.js';
 import { TileType } from '../types.js';
+import { t } from '../../i18n/index.js';
 
 /** Manages spawning, field pickup animation/collection, and application of power-ups. */
 export class PowerupsController {
@@ -149,7 +150,7 @@ export class PowerupsController {
     };
     engine.airDrops ||= [];
     engine.airDrops.push(drop);
-    engine.setStatusBanner('ALLIED AIR DROP INBOUND — SECURE THE PARACHUTE CRATE!', 3.0);
+    engine.setStatusBanner(t('ALLIED AIR DROP INBOUND — SECURE THE PARACHUTE CRATE!'), 3.0);
     return drop;
   }
 
@@ -371,7 +372,7 @@ export class PowerupsController {
     const addShells = resolvePctAmount(maxShells, config.shells);
     if (addShells > 0) {
       engine.cannonAmmo = Math.min(maxShells, engine.cannonAmmo + addShells);
-      parts.push(`SHELLS ${engine.cannonAmmo}/${maxShells}`);
+      parts.push(`${t('SHELLS')} ${engine.cannonAmmo}/${maxShells}`);
     }
 
     const maxAps = engine.getPlayerMaxApsAmmo();
@@ -395,7 +396,7 @@ export class PowerupsController {
     }
     engine.recomputePlayerStats(true);
     engine.setStatusBanner(
-      parts.length ? `AIR DROP SECURED: ${parts.join(' · ')}` : 'AIR DROP SECURED',
+      parts.length ? t('AIR DROP SECURED: {items}', { items: parts.join(' · ') }) : t('AIR DROP SECURED'),
       3.2
     );
     engine.emitHudUpdate();
@@ -435,7 +436,7 @@ export class PowerupsController {
           engine.repairKitState.charges++;
           engine.playerController.persistRepairKitCharges();
           engine.setStatusBanner(
-            'RM-1 FIELD REPAIR KIT ACQUIRED / PRESS [1] TO REPAIR',
+            t('RM-1 FIELD REPAIR KIT ACQUIRED / PRESS [1] TO REPAIR'),
             2.6
           );
         } else {
@@ -445,7 +446,7 @@ export class PowerupsController {
             engine.playerHp + DURABILITY.REPAIR_POWERUP
           );
           engine.setStatusBanner(
-            `HULL REPAIRED: +${DURABILITY.REPAIR_POWERUP} HP (OVERHEAL UP TO 140%)`,
+            t('HULL REPAIRED: +{REPAIR_POWERUP} HP (OVERHEAL UP TO 140%)', { REPAIR_POWERUP: DURABILITY.REPAIR_POWERUP }),
             2.6
           );
         }
@@ -454,7 +455,7 @@ export class PowerupsController {
       case POWERUP.EMP:
         engine.empTimer = POWERUP_TYPES[POWERUP.EMP].duration;
         engine.setStatusBanner(
-          'EMP BLAST ACTIVATED! ALL HOSTILE ARMOR DISABLED FOR 10s!',
+          t('EMP BLAST ACTIVATED! ALL HOSTILE ARMOR DISABLED FOR 10s!'),
           2.8
         );
         break;
@@ -466,7 +467,7 @@ export class PowerupsController {
       case POWERUP.APS:
         engine.addApsRounds(APS.PICKUP_ROUNDS);
         engine.setStatusBanner(
-          `ACTIVE PROTECTION SYSTEM (APS): +${APS.PICKUP_ROUNDS} INTERCEPT CHARGES`,
+          t('ACTIVE PROTECTION SYSTEM (APS): +{PICKUP_ROUNDS} INTERCEPT CHARGES', { PICKUP_ROUNDS: APS.PICKUP_ROUNDS }),
           2.6
         );
         break;
@@ -478,7 +479,7 @@ export class PowerupsController {
         const shells = minShells + Math.floor(Math.random() * (maxDrop - minShells + 1));
         engine.cannonAmmo = Math.min(maxShells, engine.cannonAmmo + shells);
         engine.setStatusBanner(
-          `AMMO CRATE COLLECTED: +${shells} SHELLS (${engine.cannonAmmo}/${maxShells})`,
+          t('AMMO CRATE COLLECTED: +{shells} SHELLS ({cannonAmmo}/{maxShells})', { shells, cannonAmmo: engine.cannonAmmo, maxShells }),
           2.5
         );
         break;
@@ -494,7 +495,7 @@ export class PowerupsController {
         engine.saveRepo.savePlayerSave(engine.playerSave);
         engine.recomputePlayerStats(true);
         engine.setStatusBanner(
-          `HOMING ATGM MISSILE ACQUIRED (${engine.missileAmmo}/${maxMissiles}) [SPACE / RMB]`,
+          t('HOMING ATGM MISSILE ACQUIRED ({missileAmmo}/{maxMissiles}) [SPACE / RMB]', { missileAmmo: engine.missileAmmo, maxMissiles }),
           2.6
         );
         break;

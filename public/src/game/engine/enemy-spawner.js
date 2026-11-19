@@ -30,6 +30,7 @@ import {
   TileType,
   checkMapVictory,
 } from '../types.js';
+import { t } from '../../i18n/index.js';
 
 const SURVIVAL_EDGE_ENTRIES = Object.freeze({
   north: [
@@ -268,7 +269,7 @@ export class EnemySpawnerController {
     const maxConcurrent = sector?.maxConcurrentEnemies ?? 8;
     if (engine.enemies.length >= maxConcurrent) {
       engine.setStatusBanner(
-        `MAX CONCURRENT HOSTILES (${maxConcurrent}) REACHED ON BATTLEFIELD`,
+        t('MAX CONCURRENT HOSTILES ({maxConcurrent}) REACHED ON BATTLEFIELD', { maxConcurrent }),
         2.2
       );
       return;
@@ -280,7 +281,7 @@ export class EnemySpawnerController {
       SPECIAL_ENEMY_CATALOG.find((m) => m.id === enemyClass);
     if (meta) {
       engine.setStatusBanner(
-        `DEPLOYED: ${meta.name.toUpperCase()} (${meta.loadoutSummary})`,
+        t('DEPLOYED: {name} ({loadoutSummary})', { name: t(meta.name).toUpperCase(), loadoutSummary: meta.loadoutSummary }),
         2.6
       );
     }
@@ -377,9 +378,8 @@ export class EnemySpawnerController {
     engine.screenShake = 1.35;
     engine.enemySpawner.scheduleBossAftershock();
 
-    const stageTag = `BOSS WAVE ${stageIndex + 1}/${sequence.length}`;
     engine.setStatusBanner(
-      `${stageTag}: ${names.join(' & ')} DEPLOYED!`,
+      t('BOSS WAVE {stage}/{total}: {names} DEPLOYED!', { stage: stageIndex + 1, total: sequence.length, names: names.join(' & ') }),
       4.8
     );
     engine.emitHudUpdate();
@@ -422,9 +422,9 @@ export class EnemySpawnerController {
 
     engine.enemySpawner.scheduleBossAftershock();
 
-    const bossTitle = (bossName || 'SECTOR COMMANDER').toUpperCase();
+    const bossTitle = (bossName || t('SECTOR COMMANDER')).toUpperCase();
     engine.setStatusBanner(
-      `CRITICAL PERIMETER BREACH! ${bossTitle} DEMOLISHED THE BASTION!`,
+      t('CRITICAL PERIMETER BREACH! {bossTitle} DEMOLISHED THE BASTION!', { bossTitle }),
       4.8
     );
     engine.emitHudUpdate();
@@ -749,7 +749,7 @@ export class EnemySpawnerController {
         sector.maxConcurrentEnemies,
         sector.spawnIntervalSec,
         (type, group) => engine.enemySpawner.spawnEncounterEnemy(type, group),
-        (label) => engine.setStatusBanner(label, 4)
+        (label) => engine.setStatusBanner(t(label), 4)
       );
       engine.vanguardRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
       this.stepBossSequenceSpawning(sector);

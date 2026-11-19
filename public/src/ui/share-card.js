@@ -2,6 +2,7 @@
  * Generates a 1200x630 PNG battle report card on an offscreen HTML5 Canvas
  * for downloading or sharing via Web Share API.
  */
+import { t } from '../i18n/index.js';
 
 function drawRoundedRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
@@ -34,7 +35,7 @@ async function generateBattleShareCardBlob({
   const gameMode = hud?.gameMode || currentSector?.gameMode || 'extermination';
   const isSurvival = gameMode === 'survival';
   const isContract = gameMode === 'contract';
-  const sectorName = (currentSector?.name || 'Sector').toUpperCase();
+  const sectorName = t(currentSector?.name || 'Sector').toUpperCase();
   const accent = isVictory ? '#10B981' : isSurvival ? '#F59E0B' : '#EF4444';
 
   // Background
@@ -68,15 +69,15 @@ async function generateBattleShareCardBlob({
   // Header kicker & outcome pill
   ctx.fillStyle = '#94A3B8';
   ctx.font = 'bold 18px monospace';
-  ctx.fillText('BATTLE TANK // TACTICAL SORTIE REPORT', 64, 78);
+  ctx.fillText(`BATTLE TANK // ${t('TACTICAL SORTIE REPORT')}`, 64, 78);
 
   const badgeText = isVictory
     ? isContract
-      ? 'CONTRACT EXTRACTED'
-      : 'VICTORY'
+      ? t('CONTRACT EXTRACTED')
+      : t('VICTORY')
     : isSurvival
-    ? 'SURVIVAL RUN'
-    : 'DEFEAT';
+    ? t('SURVIVAL RUN')
+    : t('DEFEAT');
   ctx.font = 'bold 18px monospace';
   const badgeW = ctx.measureText(badgeText).width + 36;
   drawRoundedRect(ctx, 1136 - badgeW, 50, badgeW, 38, 8);
@@ -100,23 +101,23 @@ async function generateBattleShareCardBlob({
 
   const stats = isSurvival
     ? [
-        { label: 'WAVE REACHED', value: `WAVE ${rec.waveReached ?? sv.wave ?? 1}`, color: '#FBBF24' },
-        { label: 'HOSTILES DESTROYED', value: `${kills}`, color: '#34D399' },
-        { label: 'BOSSES DEFEATED', value: `${rec.bossesDefeated ?? sv.bossesDefeated ?? 0}`, color: '#F87171' },
-        { label: 'BLOCKS SMASHED', value: `${blocks}`, color: '#38BDF8' },
+        { label: t('WAVE REACHED'), value: t('WAVE {n}', { n: rec.waveReached ?? sv.wave ?? 1 }), color: '#FBBF24' },
+        { label: t('HOSTILES DESTROYED'), value: `${kills}`, color: '#34D399' },
+        { label: t('BOSSES DEFEATED'), value: `${rec.bossesDefeated ?? sv.bossesDefeated ?? 0}`, color: '#F87171' },
+        { label: t('BLOCKS SMASHED'), value: `${blocks}`, color: '#38BDF8' },
       ]
     : isContract
     ? [
-        { label: 'CARGO DELIVERED', value: `${s.deliveredCount ?? 0} / 3`, color: '#38BDF8' },
-        { label: 'HOSTILES DESTROYED', value: `${kills}`, color: '#34D399' },
-        { label: 'ACCURACY', value: `${acc}%`, color: '#FBBF24' },
-        { label: 'CREDITS EARNED', value: `+$${s.totalObjectiveCredits ?? s.cargoCreditsSecured ?? 0}`, color: '#34D399' },
+        { label: t('CARGO DELIVERED'), value: `${s.deliveredCount ?? 0} / 3`, color: '#38BDF8' },
+        { label: t('HOSTILES DESTROYED'), value: `${kills}`, color: '#34D399' },
+        { label: t('ACCURACY'), value: `${acc}%`, color: '#FBBF24' },
+        { label: t('CREDITS EARNED'), value: `+$${s.totalObjectiveCredits ?? s.cargoCreditsSecured ?? 0}`, color: '#34D399' },
       ]
     : [
-        { label: 'HOSTILES DESTROYED', value: `${kills}`, color: '#34D399' },
-        { label: 'ACCURACY', value: `${acc}%`, color: '#38BDF8' },
-        { label: 'CREDITS RECOVERED', value: `+$${s.creditsGained ?? 0}`, color: '#FBBF24' },
-        { label: 'BLOCKS SMASHED', value: `${blocks}`, color: '#A78BFA' },
+        { label: t('HOSTILES DESTROYED'), value: `${kills}`, color: '#34D399' },
+        { label: t('ACCURACY'), value: `${acc}%`, color: '#38BDF8' },
+        { label: t('CREDITS RECOVERED'), value: `+$${s.creditsGained ?? 0}`, color: '#FBBF24' },
+        { label: t('BLOCKS SMASHED'), value: `${blocks}`, color: '#A78BFA' },
       ];
 
   const boxW = 252;
@@ -144,7 +145,7 @@ async function generateBattleShareCardBlob({
   ctx.fillStyle = '#FBBF24';
   ctx.font = 'bold 16px monospace';
   ctx.fillText(
-    `BATTLEFIELD ACHIEVEMENTS (${earnedAchievements.length})`,
+    t('BATTLEFIELD ACHIEVEMENTS ({n})', { n: earnedAchievements.length }),
     64,
     324
   );
@@ -157,7 +158,7 @@ async function generateBattleShareCardBlob({
     ctx.stroke();
     ctx.fillStyle = '#94A3B8';
     ctx.font = '20px monospace';
-    ctx.fillText('No medals earned this sortie — deploy again to claim commendations.', 92, 432);
+    ctx.fillText(t('No medals earned this sortie — deploy again to claim commendations.'), 92, 432);
   } else {
     const shown = earnedAchievements.slice(0, 6);
     const cardW = 344;
@@ -180,18 +181,18 @@ async function generateBattleShareCardBlob({
 
       ctx.fillStyle = '#F8FAFC';
       ctx.font = 'bold 18px sans-serif';
-      ctx.fillText(ach.title, cx + 58, cy + 34, cardW - 74);
+      ctx.fillText(t(ach.title), cx + 58, cy + 34, cardW - 74);
 
       ctx.fillStyle = '#94A3B8';
       ctx.font = '13px monospace';
-      ctx.fillText(ach.description, cx + 58, cy + 57, cardW - 74);
+      ctx.fillText(t(ach.description), cx + 58, cy + 57, cardW - 74);
     });
   }
 
   // Footer
   ctx.fillStyle = '#64748B';
   ctx.font = '16px monospace';
-  const loadoutLine = `${hud?.cannonName || 'Cannon'} · ${hud?.chassisName || 'Chassis'} · ${hud?.armorName || 'Armor'}`;
+  const loadoutLine = `${t(hud?.cannonName || 'Cannon')} · ${t(hud?.chassisName || 'Chassis')} · ${t(hud?.armorName || 'Armor')}`;
   ctx.fillText(loadoutLine, 64, 566, 760);
 
   ctx.fillStyle = '#38BDF8';

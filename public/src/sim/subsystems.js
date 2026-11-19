@@ -2,6 +2,7 @@
  * Mechanical Tank Subsystems (Left/Right Tracks, Engine, Turret Ring, Main Gun Breech, Gyro Stabilizer),
  * Automatic Field Track Repair, and RM-1 Field Repair Kit Channeling.
  */
+import { t } from '../i18n/index.js';
 
 export function createTankSubsystems() {
   return {
@@ -206,12 +207,12 @@ export function createRepairKitState(initialCharges = 0) {
 }
 
 export function activateRepairKit(state, subsystems, needsRepair = false) {
-  if (!state) return { started: false, reason: 'Unavailable' };
-  if (state.channeling) return { started: false, reason: 'Repair in progress' };
-  if (state.charges <= 0) return { started: false, reason: 'Collect a surplus REPAIR power-up' };
-  if (state.cooldown > 0) return { started: false, reason: `Cooldown ${state.cooldown.toFixed(1)}s` };
+  if (!state) return { started: false, reason: t('Unavailable') };
+  if (state.channeling) return { started: false, reason: t('Repair in progress') };
+  if (state.charges <= 0) return { started: false, reason: t('Collect a surplus REPAIR power-up') };
+  if (state.cooldown > 0) return { started: false, reason: t('Cooldown {cooldown}s', { cooldown: state.cooldown.toFixed(1) }) };
   const damaged = Object.values(subsystems || {}).some(sub => sub.hp < sub.maxHp);
-  if (!needsRepair && !damaged) return { started: false, reason: 'No repairs needed' };
+  if (!needsRepair && !damaged) return { started: false, reason: t('No repairs needed') };
   for (const sub of Object.values(subsystems || {})) {
     sub.hp = sub.maxHp;
     sub.status = 'normal';

@@ -50,6 +50,7 @@ import { analyticsManager } from '../../app/analyticsManager.js';
 import { ARMOR_PANEL_CATALOG, TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
 import { getSafeStorage, resolveAssembledTank, SaveRepository, settleMission } from '../../sim/hangar.js';
+import { t } from '../../i18n/index.js';
 
 /** Graphics quality presets. Pixel ratio, shadows, IBL and particle budget apply immediately. */
 export const QUALITY_PRESETS = Object.freeze({
@@ -1244,9 +1245,7 @@ export class TankGameEngine {
     }
     this.syncCampaignCredits();
     this.setStatusBanner(
-      bannerText ||
-        this.activeMapRules?.victoryBanner ||
-        'SECTOR SECURED! REMAINING BATTLEFIELD LOOT AUTO-COLLECTED!',
+      t(bannerText || this.activeMapRules?.victoryBanner || 'SECTOR SECURED! REMAINING BATTLEFIELD LOOT AUTO-COLLECTED!'),
       5.0
     );
     this.saveProgress();

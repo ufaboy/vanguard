@@ -2,11 +2,12 @@
  * Core Modular Tank Catalogs, Surface Modifiers, and Upgrade Curves
  * Strictly aligned with TANK_GAME_AI_AGENT_GUIDE.md Section 8, 9, 10, 11, 16.
  */
+import { N_ } from '../i18n/index.js';
 
 export const HULL_CATALOG = {
   bars_m1: {
     id: 'bars_m1',
-    name: 'Bars-M1 Medium Hull',
+    name: N_('Bars-M1 Medium Hull'),
     code: 'BARS-M1',
     classType: 'medium',
     hullHP: 1200,
@@ -31,7 +32,7 @@ export const HULL_CATALOG = {
   },
   bastion_m2: {
     id: 'bastion_m2',
-    name: 'Bastion-M2 Heavy Hull',
+    name: N_('Bastion-M2 Heavy Hull'),
     code: 'BASTION-M2',
     classType: 'heavy',
     hullHP: 1600,
@@ -56,7 +57,7 @@ export const HULL_CATALOG = {
   },
   lynx_s1: {
     id: 'lynx_s1',
-    name: 'Lynx-S1 Recon Hull',
+    name: N_('Lynx-S1 Recon Hull'),
     code: 'LYNX-S1',
     classType: 'light',
     hullHP: 850,
@@ -84,7 +85,7 @@ export const HULL_CATALOG = {
 export const TURRET_CATALOG = {
   t_01: {
     id: 't_01',
-    name: 'T-01 Universal Turret',
+    name: N_('T-01 Universal Turret'),
     code: 'T-01',
     turretSocketType: 'standard_m',
     gunSocketType: 'gun_m',
@@ -106,7 +107,7 @@ export const TURRET_CATALOG = {
   },
   t_02: {
     id: 't_02',
-    name: 'T-02 Heavy Assault Turret',
+    name: N_('T-02 Heavy Assault Turret'),
     code: 'T-02',
     turretSocketType: 'standard_m',
     gunSocketType: 'gun_m',
@@ -131,7 +132,7 @@ export const TURRET_CATALOG = {
 export const GUN_CATALOG = {
   sokol_90: {
     id: 'sokol_90',
-    name: 'Sokol-90 (90mm Rifled Gun)',
+    name: N_('Sokol-90 (90mm Rifled Gun)'),
     code: 'SOKOL-90',
     gunSocketType: 'gun_m',
     caliber: 90,
@@ -151,7 +152,7 @@ export const GUN_CATALOG = {
   },
   kopye_105: {
     id: 'kopye_105',
-    name: 'Kopye-105 (105mm High-Velocity)',
+    name: N_('Kopye-105 (105mm High-Velocity)'),
     code: 'KOPYE-105',
     gunSocketType: 'gun_m',
     caliber: 105,
@@ -171,7 +172,7 @@ export const GUN_CATALOG = {
   },
   grom_120: {
     id: 'grom_120',
-    name: 'Grom-120 (120mm Heavy Gun)',
+    name: N_('Grom-120 (120mm Heavy Gun)'),
     code: 'GROM-120',
     gunSocketType: 'gun_m',
     caliber: 120,
@@ -191,7 +192,7 @@ export const GUN_CATALOG = {
   },
   molot_140_twin: {
     id: 'molot_140_twin',
-    name: 'Molot-140 Twin (140mm Dual Gun)',
+    name: N_('Molot-140 Twin (140mm Dual Gun)'),
     code: 'MOLOT-140',
     gunSocketType: 'gun_m',
     caliber: 140,
@@ -214,7 +215,7 @@ export const GUN_CATALOG = {
 export const ARMOR_PANEL_CATALOG = {
   sb_40: {
     id: 'sb_40',
-    name: 'SB-40 Front Applique Plate',
+    name: N_('SB-40 Front Applique Plate'),
     code: 'SB-40',
     socketType: 'SOCKET_ARMOR_FRONT',
     zone: 'front',
@@ -224,7 +225,7 @@ export const ARMOR_PANEL_CATALOG = {
   },
   ekran_b25_left: {
     id: 'ekran_b25_left',
-    name: 'Ekran-B25 Left Side Screen',
+    name: N_('Ekran-B25 Left Side Screen'),
     code: 'EKRAN-B25-L',
     socketType: 'SOCKET_ARMOR_LEFT',
     zone: 'left',
@@ -234,7 +235,7 @@ export const ARMOR_PANEL_CATALOG = {
   },
   ekran_b25_right: {
     id: 'ekran_b25_right',
-    name: 'Ekran-B25 Right Side Screen',
+    name: N_('Ekran-B25 Right Side Screen'),
     code: 'EKRAN-B25-R',
     socketType: 'SOCKET_ARMOR_RIGHT',
     zone: 'right',
@@ -244,7 +245,7 @@ export const ARMOR_PANEL_CATALOG = {
   },
   turret_cheek_35: {
     id: 'turret_cheek_35',
-    name: 'KShield-35 Turret Cheek Screen',
+    name: N_('KShield-35 Turret Cheek Screen'),
     code: 'KSHIELD-35',
     socketType: 'SOCKET_ARMOR_TURRET',
     zone: 'turret_front',
@@ -257,7 +258,7 @@ export const ARMOR_PANEL_CATALOG = {
 const MODULE_CATALOG = {
   rm_1: {
     id: 'rm_1',
-    name: 'RM-1 Field Repair Kit',
+    name: N_('RM-1 Field Repair Kit'),
     code: 'RM-1',
     slotType: 'module',
     activationType: 'active',
@@ -266,11 +267,11 @@ const MODULE_CATALOG = {
     restoreAmount: 25, // hull HP regenerated over the duration
     cooldown: 45, // seconds
     maxCharges: 2,
-    description: 'Restores damaged components and regenerates 25 hull HP over 10 seconds. Collect REPAIR at full hull integrity to gain a charge (maximum 2).',
+    description: N_('Restores damaged components and regenerates 25 hull HP over 10 seconds. Collect REPAIR at full hull integrity to gain a charge (maximum 2).'),
   },
   smoke_gen: {
     id: 'smoke_gen',
-    name: 'Tucha-S Smoke Discharger',
+    name: N_('Tucha-S Smoke Discharger'),
     code: 'TUCHA-S',
     slotType: 'module',
     activationType: 'active',
@@ -279,11 +280,11 @@ const MODULE_CATALOG = {
     duration: 8.0,
     cooldown: 25,
     maxCharges: 3,
-    description: 'Deploys a dense aerosol smoke cloud for 8s that blocks optical line-of-sight and breaks enemy visual tracking.',
+    description: N_('Deploys a dense aerosol smoke cloud for 8s that blocks optical line-of-sight and breaks enemy visual tracking.'),
   },
   kord_aux: {
     id: 'kord_aux',
-    name: 'Kord-12.7 Auxiliary Roof Turret',
+    name: N_('Kord-12.7 Auxiliary Roof Turret'),
     code: 'KORD-12.7',
     slotType: 'aux',
     activationType: 'autonomous',
@@ -293,14 +294,14 @@ const MODULE_CATALOG = {
     penetration: 42,
     reloadTime: 0.65,
     projectileSpeed: 240,
-    description: 'Autonomous roof-mounted heavy machine gun that engages the player-designated RMB priority target within 36m.',
+    description: N_('Autonomous roof-mounted heavy machine gun that engages the player-designated RMB priority target within 36m.'),
   },
 };
 
 export const TERRAIN_SURFACES = {
   asphalt: {
     id: 'asphalt',
-    label: 'Asphalt Road',
+    label: N_('Asphalt Road'),
     speedMultiplier: 1.0,
     accelMultiplier: 1.0,
     turnMultiplier: 1.0,
@@ -309,7 +310,7 @@ export const TERRAIN_SURFACES = {
   },
   dirt: {
     id: 'dirt',
-    label: 'Compacted Dirt',
+    label: N_('Compacted Dirt'),
     speedMultiplier: 0.92,
     accelMultiplier: 0.9,
     turnMultiplier: 0.95,
@@ -318,7 +319,7 @@ export const TERRAIN_SURFACES = {
   },
   sand: {
     id: 'sand',
-    label: 'Loose Sand',
+    label: N_('Loose Sand'),
     speedMultiplier: 0.78,
     accelMultiplier: 0.75,
     turnMultiplier: 0.82,
@@ -327,7 +328,7 @@ export const TERRAIN_SURFACES = {
   },
   mud: {
     id: 'mud',
-    label: 'Deep Mud',
+    label: N_('Deep Mud'),
     speedMultiplier: 0.64,
     accelMultiplier: 0.6,
     turnMultiplier: 0.72,
@@ -336,7 +337,7 @@ export const TERRAIN_SURFACES = {
   },
   shallow_water: {
     id: 'shallow_water',
-    label: 'Shallow Ford',
+    label: N_('Shallow Ford'),
     speedMultiplier: 0.58,
     accelMultiplier: 0.55,
     turnMultiplier: 0.7,
@@ -345,7 +346,7 @@ export const TERRAIN_SURFACES = {
   },
   steep_slope: {
     id: 'steep_slope',
-    label: 'Steep Grade',
+    label: N_('Steep Grade'),
     speedMultiplier: 0.68,
     accelMultiplier: 0.62,
     turnMultiplier: 0.78,

@@ -10,6 +10,7 @@ import {
   TURRET_CATALOG,
 } from './catalog.js';
 import { settleContractMission } from './contract.js';
+import { t } from '../i18n/index.js';
 
 export function createInitialPlayerSave() {
   return {
@@ -232,36 +233,36 @@ function validateMountCompatibility(
   tankId = playerSave.activeTankId
 ) {
   if (!candidatePart) {
-    return { valid: false, reason: 'Invalid part selection.' };
+    return { valid: false, reason: t('Invalid part selection.') };
   }
   const currentAssembled = resolveAssembledTank(playerSave, tankId);
 
   if (candidatePart.category === 'gun') {
     const gunStats = GUN_CATALOG[candidatePart.definitionId];
-    if (!gunStats) return { valid: false, reason: 'Unknown gun definition.' };
+    if (!gunStats) return { valid: false, reason: t('Unknown gun definition.') };
     if (gunStats.mass > currentAssembled.turret.maxGunMass) {
       return {
         valid: false,
-        reason: `${gunStats.name} mass (${gunStats.mass}t) exceeds ${currentAssembled.turret.name} limit (${currentAssembled.turret.maxGunMass}t). Mount T-02 Heavy Turret first.`,
+        reason: t('{name} mass ({mass}t) exceeds {name2} limit ({maxGunMass}t). Mount T-02 Heavy Turret first.', { name: t(gunStats.name), mass: gunStats.mass, name2: t(currentAssembled.turret.name), maxGunMass: currentAssembled.turret.maxGunMass }),
       };
     }
-    return { valid: true, reason: 'Compatible' };
+    return { valid: true, reason: t('Compatible') };
   }
 
   if (candidatePart.category === 'turret') {
     const turretStats = TURRET_CATALOG[candidatePart.definitionId];
     if (!turretStats)
-      return { valid: false, reason: 'Unknown turret definition.' };
+      return { valid: false, reason: t('Unknown turret definition.') };
     if (currentAssembled.gun.mass > turretStats.maxGunMass) {
       return {
         valid: false,
-        reason: `Mounted ${currentAssembled.gun.name} (${currentAssembled.gun.mass}t) is too heavy for ${turretStats.name} (max ${turretStats.maxGunMass}t).`,
+        reason: t('Mounted {name} ({mass}t) is too heavy for {name2} (max {maxGunMass}t).', { name: t(currentAssembled.gun.name), mass: currentAssembled.gun.mass, name2: t(turretStats.name), maxGunMass: turretStats.maxGunMass }),
       };
     }
-    return { valid: true, reason: 'Compatible' };
+    return { valid: true, reason: t('Compatible') };
   }
 
-  return { valid: true, reason: 'Compatible' };
+  return { valid: true, reason: t('Compatible') };
 }
 
 export function mountPartInHangar(
@@ -272,7 +273,7 @@ export function mountPartInHangar(
   const part = (playerSave?.parts || []).find(
     (p) => p.instanceId === instanceId
   );
-  if (!part) return { success: false, reason: 'Part not found in inventory.' };
+  if (!part) return { success: false, reason: t('Part not found in inventory.') };
 
   const tankId = playerSave.activeTankId || 'tank_alpha';
   const check = validateMountCompatibility(
@@ -311,7 +312,7 @@ export function mountPartInHangar(
 
   part.equippedOnTankId = tankId;
   part.socketId = socket;
-  return { success: true, reason: `Mounted ${part.definitionId.toUpperCase()}` };
+  return { success: true, reason: t('Mounted {definitionId}', { definitionId: part.definitionId.toUpperCase() }) };
 }
 
 export function settleMission({

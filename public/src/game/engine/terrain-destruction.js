@@ -10,6 +10,7 @@ import { rollBoxLoot } from '../terrains/boxes-loot.js';
 import { breachPointToward } from '../terrains/breach-models.js';
 import { canPlaceOnSurface, setCellObject, syncCellType } from '../terrains/layers.js';
 import { GameStatus, TileType, checkMapDefeat, checkMapVictory } from '../types.js';
+import { t } from '../../i18n/index.js';
 
 /** Facilities a sand conversion (thermobaric blast, boss dozer) must never erase. */
 const SAND_PROOF_OBJECTS = new Set([
@@ -154,7 +155,7 @@ export class TerrainDestructionController {
       if (engine.activeMapRules?.spawnSectorBossOnClear && !engine.bossSpawned) {
         engine.spawnSectorBoss();
         engine.setStatusBanner(
-          'ENEMY COMMAND CORE DESTROYED! ELIMINATE THE SECTOR BOSS!',
+          t('ENEMY COMMAND CORE DESTROYED! ELIMINATE THE SECTOR BOSS!'),
           4.0
         );
       }
@@ -248,11 +249,10 @@ export class TerrainDestructionController {
           engine.saveRepo.recordMissionRun(engine.activeMissionRun);
         }
       }
-      engine.setStatusBanner(defeatRes.banner, 5.0);
+      engine.setStatusBanner(t(defeatRes.banner), 5.0);
     } else {
       engine.setStatusBanner(
-        engine.activeMapRules?.baseLostBanner ||
-          'REPAIR BASE DESTROYED! FIELD REPAIR BAY OFFLINE — CONTINUE THE ASSAULT!',
+        t(engine.activeMapRules?.baseLostBanner || 'REPAIR BASE DESTROYED! FIELD REPAIR BAY OFFLINE — CONTINUE THE ASSAULT!'),
         4.5
       );
     }
@@ -284,7 +284,7 @@ export class TerrainDestructionController {
     engine.baseAlive = true;
     engine.baseHp = maxHp;
     engine.tileBatcher.sync();
-    engine.setStatusBanner('ALLIED HQ REBUILT! FIELD REPAIR BAY ONLINE!', 3);
+    engine.setStatusBanner(t('ALLIED HQ REBUILT! FIELD REPAIR BAY ONLINE!'), 3);
     engine.saveProgress();
   }
 

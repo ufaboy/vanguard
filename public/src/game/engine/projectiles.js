@@ -20,6 +20,7 @@ import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { breachEntryOffset } from '../terrains/breach-models.js';
 import { EnemyClass, TileType } from '../types.js';
+import { t } from '../../i18n/index.js';
 
 const MISSILE_CRUISE_Y = 4.4;
 const MISSILE_IMPACT_Y = 0.85;
@@ -613,7 +614,7 @@ export class ProjectilesController {
               sound.playSteelHit({ x: p.x, z: p.z });
               engine.spawnSparks(p.x, 0.9, p.z, 0x38bdf8, 10);
               engine.setStatusBanner(
-                `${enemy.name.toUpperCase()}: STOPPED BY DREADNOUGHT CITADEL PANEL (${aspectStr.toUpperCase()})`,
+                t('{name}: STOPPED BY DREADNOUGHT CITADEL PANEL ({aspectStr})', { name: t(enemy.name).toUpperCase(), aspectStr: t(aspectStr.toUpperCase()) }),
                 1.6
               );
             } else if (
@@ -625,7 +626,7 @@ export class ProjectilesController {
               sound.playSteelHit({ x: p.x, z: p.z });
               engine.spawnSparks(p.x, 0.9, p.z, 0x38bdf8, 10);
               engine.setStatusBanner(
-                `${enemy.name.toUpperCase()}: RICOCHET (${angleDeg.toFixed(0)}°)`,
+                t('{name}: RICOCHET ({angleDeg}°)', { name: t(enemy.name).toUpperCase(), angleDeg: angleDeg.toFixed(0) }),
                 1.6
               );
             } else {
@@ -725,10 +726,10 @@ export class ProjectilesController {
             }
             const msg =
               outcome === 'panel_stopped' || outcome === 'stopped_by_panel'
-                ? `ADD-ON ARMOR PANEL ABSORBED HIT!${armorRes?.panelBroke ? ' (PANEL SHATTERED!)' : ''}`
+                ? `${t('ADD-ON ARMOR PANEL ABSORBED HIT!')}${armorRes?.panelBroke ? ` ${t('(PANEL SHATTERED!)')}` : ''}`
                 : outcome === 'ricochet'
-                ? `SHELL RICOCHETED OFF ${aspectStr.toUpperCase()} ARMOR (${angleDeg.toFixed(0)}°)!`
-                : `ARMOR STOPPED SHELL (${aspectStr.toUpperCase()} ${effArmor.toFixed(0)}mm)!`;
+                ? t('SHELL RICOCHETED OFF {aspect} ARMOR ({angle}°)!', { aspect: t(aspectStr.toUpperCase()), angle: angleDeg.toFixed(0) })
+                : t('ARMOR STOPPED SHELL ({aspect} {mm}mm)!', { aspect: t(aspectStr.toUpperCase()), mm: effArmor.toFixed(0) });
             engine.setStatusBanner(msg, 2.0);
             engine.emitHudUpdate();
           } else {
@@ -740,7 +741,7 @@ export class ProjectilesController {
               );
               if (subRes?.destroyed) {
                 engine.setStatusBanner(
-                  `CRITICAL HIT: ${subTarget.toUpperCase()} DISABLED! AUTO-REPAIR IN 7s OR PRESS [1] RM-1`,
+                  t('CRITICAL HIT: {subTarget} DISABLED! AUTO-REPAIR IN 7s OR PRESS [1] RM-1', { subTarget: t(subTarget.toUpperCase()) }),
                   2.8
                 );
               }

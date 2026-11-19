@@ -1,4 +1,5 @@
 /** Map Types, Game Modes & Victory/Defeat Rules Catalog. */
+import { N_ } from '../i18n/index.js';
 
 export const MAP_MODES = Object.freeze({
   EXTERMINATION: 'extermination',
@@ -49,8 +50,8 @@ export const MAP_MODE_CONFIGS = Object.freeze({
   [MAP_MODES.EXTERMINATION]: Object.freeze({
     id: MAP_MODES.EXTERMINATION,
     code: 'MODE-01 // EXTERMINATION',
-    name: 'Total Extermination',
-    shortLabel: 'DESTROY ALL HOSTILES',
+    name: N_('Total Extermination'),
+    shortLabel: N_('DESTROY ALL HOSTILES'),
     accentHex: '#F59E0B',
     victoryCondition: VICTORY_CONDITIONS.DESTROY_ALL_ENEMIES,
     defeatCondition: DEFEAT_CONDITIONS.PLAYER_DESTROYED,
@@ -63,19 +64,19 @@ export const MAP_MODE_CONFIGS = Object.freeze({
     hasEnemyFortifiedBase: false,
     enemyBaseMaxHp: 0,
     description:
-      'Standard tactical sweep: eliminate all enemy tanks in the sector and defeat the Sector Commander. Your base serves strictly as a Field Repair Bay — losing it disables base repairs but does not cause defeat.',
+      N_('Standard tactical sweep: eliminate all enemy tanks in the sector and defeat the Sector Commander. Your base serves strictly as a Field Repair Bay — losing it disables base repairs but does not cause defeat.'),
     objectiveBanner: 'OBJECTIVE: ELIMINATE ALL HOSTILE ARMOR IN SECTOR',
     victoryBanner:
-      'ALL HOSTILE FORCES ELIMINATED! REMAINING BATTLEFIELD LOOT AUTO-COLLECTED!',
+      N_('ALL HOSTILE FORCES ELIMINATED! REMAINING BATTLEFIELD LOOT AUTO-COLLECTED!'),
     baseLostBanner:
-      'REPAIR BASE DESTROYED! FIELD REPAIR BAY OFFLINE — CONTINUE THE ASSAULT!',
+      N_('REPAIR BASE DESTROYED! FIELD REPAIR BAY OFFLINE — CONTINUE THE ASSAULT!'),
   }),
 
   [MAP_MODES.STRONGHOLD_ASSAULT]: Object.freeze({
     id: MAP_MODES.STRONGHOLD_ASSAULT,
     code: 'MODE-02 // STRONGHOLD SIEGE',
-    name: 'Enemy Base Assault',
-    shortLabel: 'DESTROY ENEMY CITADEL',
+    name: N_('Enemy Base Assault'),
+    shortLabel: N_('DESTROY ENEMY CITADEL'),
     accentHex: '#EF4444',
     victoryCondition: VICTORY_CONDITIONS.DESTROY_ENEMY_BASE,
     defeatCondition: DEFEAT_CONDITIONS.PLAYER_DESTROYED,
@@ -88,20 +89,20 @@ export const MAP_MODE_CONFIGS = Object.freeze({
     hasEnemyFortifiedBase: true,
     enemyBaseMaxHp: 48,
     description:
-      'Breach the enemy defensive line and destroy the heavily fortified Enemy Command Stronghold guarded by hostile armor. Destroying the enemy stronghold immediately secures victory.',
+      N_('Breach the enemy defensive line and destroy the heavily fortified Enemy Command Stronghold guarded by hostile armor. Destroying the enemy stronghold immediately secures victory.'),
     objectiveBanner:
       'OBJECTIVE: BREACH DEFENSES & DESTROY THE FORTIFIED ENEMY STRONGHOLD',
     victoryBanner:
-      'ENEMY FORTIFIED STRONGHOLD DESTROYED! SECTOR SECURED & LOOT AUTO-COLLECTED!',
+      N_('ENEMY FORTIFIED STRONGHOLD DESTROYED! SECTOR SECURED & LOOT AUTO-COLLECTED!'),
     baseLostBanner:
-      'REPAIR BASE DESTROYED! FIELD REPAIR BAY OFFLINE — CONTINUE THE SIEGE!',
+      N_('REPAIR BASE DESTROYED! FIELD REPAIR BAY OFFLINE — CONTINUE THE SIEGE!'),
   }),
 
   [MAP_MODES.BASE_DEFENSE]: Object.freeze({
     id: MAP_MODES.BASE_DEFENSE,
     code: 'MODE-03 // HQ DEFENSE',
-    name: 'Fortified Base Defense',
-    shortLabel: 'DEFEND ALLIED HQ',
+    name: N_('Fortified Base Defense'),
+    shortLabel: N_('DEFEND ALLIED HQ'),
     accentHex: '#38BDF8',
     victoryCondition: VICTORY_CONDITIONS.DESTROY_ALL_ENEMIES,
     defeatCondition: DEFEAT_CONDITIONS.PLAYER_OR_BASE_DESTROYED,
@@ -114,19 +115,19 @@ export const MAP_MODE_CONFIGS = Object.freeze({
     hasEnemyFortifiedBase: false,
     enemyBaseMaxHp: 0,
     description:
-      'Hold the line against incoming armored waves. Both your tank and the Allied Command HQ must survive — if the HQ is destroyed, the mission fails immediately.',
+      N_('Hold the line against incoming armored waves. Both your tank and the Allied Command HQ must survive — if the HQ is destroyed, the mission fails immediately.'),
     objectiveBanner:
       'OBJECTIVE: DEFEND ALLIED COMMAND HQ & REPEL ALL ATTACKING WAVES',
     victoryBanner:
-      'ALL ATTACKING WAVES REPELLED! ALLIED HQ SECURED & LOOT AUTO-COLLECTED!',
-    baseLostBanner: 'COMMAND HQ DESTROYED! SECTOR DEFENSE BREACHED!',
+      N_('ALL ATTACKING WAVES REPELLED! ALLIED HQ SECURED & LOOT AUTO-COLLECTED!'),
+    baseLostBanner: N_('COMMAND HQ DESTROYED! SECTOR DEFENSE BREACHED!'),
   }),
 
   [MAP_MODES.CONTRACT]: Object.freeze({
     id: MAP_MODES.CONTRACT,
     code: 'MODE-04 // CONTRACT RAID',
-    name: 'Tactical Contract Raid',
-    shortLabel: 'RECOVER CARGO & EXTRACT',
+    name: N_('Tactical Contract Raid'),
+    shortLabel: N_('RECOVER CARGO & EXTRACT'),
     accentHex: '#38BDF8',
     victoryCondition: VICTORY_CONDITIONS.CONTRACT_EXTRACTION,
     defeatCondition: DEFEAT_CONDITIONS.PLAYER_DESTROYED,
@@ -140,20 +141,20 @@ export const MAP_MODE_CONFIGS = Object.freeze({
     hasEnemyFortifiedBase: false,
     enemyBaseMaxHp: 0,
     description:
-      'Logistics raid: recover at least two of three sealed data containers to the southern delivery pad and trigger extraction. Eliminating all hostiles never completes the contract; losing the repair HQ disables repairs and Garage access without causing defeat.',
+      N_('Logistics raid: recover at least two of three sealed data containers to the southern delivery pad and trigger extraction. Eliminating all hostiles never completes the contract; losing the repair HQ disables repairs and Garage access without causing defeat.'),
     objectiveBanner:
       'CONTRACT OBJECTIVE: DELIVER 2+ DATA CONTAINERS TO SOUTH PAD & EXTRACT',
     victoryBanner:
-      'CONTRACT COMPLETE! EXTRACTION CONFIRMED & PAYOUT COMMITTED!',
+      N_('CONTRACT COMPLETE! EXTRACTION CONFIRMED & PAYOUT COMMITTED!'),
     baseLostBanner:
-      'REPAIR HQ DESTROYED! FIELD REPAIRS & GARAGE OFFLINE — DELIVERY PAD REMAINS ACTIVE!',
+      N_('REPAIR HQ DESTROYED! FIELD REPAIRS & GARAGE OFFLINE — DELIVERY PAD REMAINS ACTIVE!'),
   }),
 
   [MAP_MODES.SURVIVAL]: Object.freeze({
     id: MAP_MODES.SURVIVAL,
     code: 'MODE-05 // SURVIVAL DEFENSE',
-    name: 'Paris: Last Stand',
-    shortLabel: 'DEFEND ÉLYSÉE HQ (7:00)',
+    name: N_('Paris: Last Stand'),
+    shortLabel: N_('DEFEND ÉLYSÉE HQ (7:00)'),
     accentHex: '#F97316',
     victoryCondition: VICTORY_CONDITIONS.ENDLESS_SURVIVAL,
     defeatCondition: DEFEAT_CONDITIONS.PLAYER_OR_BASE_DESTROYED,
@@ -167,13 +168,13 @@ export const MAP_MODE_CONFIGS = Object.freeze({
     hasEnemyFortifiedBase: false,
     enemyBaseMaxHp: 0,
     description:
-      'Timed 7-minute fortified capital holdout starting on a stock Tier I tank ($500). Defend the Élysée Palace Command HQ (120 HP) against timed waves every 60s and a 6:00 Sector Boss assault; after securing victory at 7:00, extract or continue into endless Overtime for records.',
+      N_('Timed 7-minute fortified capital holdout starting on a stock Tier I tank ($500). Defend the Élysée Palace Command HQ (120 HP) against timed waves every 60s and a 6:00 Sector Boss assault; after securing victory at 7:00, extract or continue into endless Overtime for records.'),
     objectiveBanner:
       'OBJECTIVE: DEFEND THE ÉLYSÉE PALACE HQ FOR 7:00 AGAINST TIMED ARMORED WAVES',
     victoryBanner:
-      'ÉLYSÉE PALACE HELD FOR 7:00! PARIS SECURED — EXTRACT OR CONTINUE IN OVERTIME!',
+      N_('ÉLYSÉE PALACE HELD FOR 7:00! PARIS SECURED — EXTRACT OR CONTINUE IN OVERTIME!'),
     baseLostBanner:
-      'ÉLYSÉE PALACE HQ DESTROYED! CAPITAL DEFENSE BREACHED!',
+      N_('ÉLYSÉE PALACE HQ DESTROYED! CAPITAL DEFENSE BREACHED!'),
   }),
 });
 
@@ -320,7 +321,7 @@ export function checkMapDefeat(rules, state) {
     return {
       isDefeat: true,
       reason: DEFEAT_CONDITIONS.PLAYER_DESTROYED,
-      banner: 'PLAYER TANK DESTROYED IN ACTION!',
+      banner: N_('PLAYER TANK DESTROYED IN ACTION!'),
     };
   }
   if (activeRules.defeatOnBaseLoss && state.baseAlive === false) {

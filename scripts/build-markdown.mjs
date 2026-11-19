@@ -364,7 +364,10 @@ export function htmlToMarkdown(html, { pageUrl, linkMap } = {}) {
 function listSitemapPages(siteDir) {
   const xml = fs.readFileSync(path.join(siteDir, 'sitemap.xml'), 'utf8');
   return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => {
-    const slug = new URL(loc).pathname.replace(/^\/|\/$/g, '') || 'index';
+    // `/` → index, `/es/` → es/index (a translated home), `/enemies` → enemies.
+    const { pathname } = new URL(loc);
+    const trimmed = pathname.replace(/^\/|\/$/g, '');
+    const slug = !trimmed ? 'index' : pathname.endsWith('/') ? `${trimmed}/index` : trimmed;
     return { url: loc, htmlFile: `${slug}.html`, mdFile: `${slug}.md` };
   });
 }
@@ -383,6 +386,7 @@ export function generateAgentMarkdown(srcDir, outDir = srcDir) {
   const result = pages.map((page) => {
     const html = fs.readFileSync(path.join(srcDir, page.htmlFile), 'utf8');
     const { markdown, body, url } = htmlToMarkdown(html, { pageUrl: page.url, linkMap });
+    fs.mkdirSync(path.dirname(path.join(outDir, page.mdFile)), { recursive: true });
     fs.writeFileSync(path.join(outDir, page.mdFile), markdown, 'utf8');
     sections.push(`${body}\n\nSource: ${url}`);
     return { ...page, mdUrl: `${SITE_ORIGIN}/${page.mdFile}` };

@@ -23,6 +23,7 @@ import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { isSurfaceType, setCellObject } from '../terrains/layers.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
 import { EnemyClass, GameStatus, TileType, resolveMapRules } from '../types.js';
+import { t } from '../../i18n/index.js';
 
 const BOSS_ESCORT_CLASSES = Object.freeze({
   [EnemyClass.BOSS_MAMMOTH]: MAMMOTH.ESCORT_CLASSES,
@@ -751,7 +752,7 @@ export class SectorLoaderController {
       engine.syncAudioPauseState();
       sound.startEngineLoop();
       engine.setStatusBanner(
-        `${authoredMission.code}: ${authoredMission.title.toUpperCase()} — ${authoredMission.subtitle.toUpperCase()}`,
+        `${t(authoredMission.code)}: ${t(authoredMission.title).toUpperCase()} — ${t(authoredMission.subtitle).toUpperCase()}`,
         3.2
       );
     } else {

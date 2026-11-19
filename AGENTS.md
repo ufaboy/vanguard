@@ -4,9 +4,11 @@
 
 - **User balance edits**: The user may change gameplay constants and code directly. Treat current implementation values as the runtime source of truth; documentation and pinned balance expectations may be stale. Preserve unrelated tuning and report mismatches rather than reverting game characteristics to match documentation or tests.
 
-1. **Language Policy (English-Only Content)**:
-   - **All application content, UI text, HUD labels, status banners, code comments, identifiers, and documentation MUST be written strictly in English.**
-   - **Chat Communication**: Agents may communicate with the user in the user's preferred language in the chat conversation, while keeping all source code, UI strings, and repository files in English.
+1. **Language Policy (English Source, Localized UI)**:
+   - **All source content — UI text, HUD labels, status banners, code comments, identifiers, and documentation — MUST be written in English.** English is the source language and the fallback.
+   - **Translations live only in the locale dictionaries**: game UI in `public/src/i18n/locales/<locale>/*.js` (merged by `<locale>.js`) and translated static pages in `i18n/pages/<locale>.mjs`. Generated pages in `public/<locale>/` are build output. Never hardcode a non-English string anywhere else.
+   - **Every new user-facing string goes through i18n**: wrap it in `t('English text', { param })` where it is rendered, or mark catalog / constant strings with `N_('English text')` and translate them on display with `t(value)`. Then add the Spanish entry (`node scripts/i18n-keys.mjs es` lists missing keys; `tests/i18n.test.js` fails until it is added). After editing `public/index.html` or `public/enemies.html`, run `node scripts/build-i18n-pages.mjs`.
+   - **Chat Communication**: Agents may communicate with the user in the user's preferred language in the chat conversation, while keeping all source code and repository files (other than the locale dictionaries) in English.
 2. **Pure Vanilla JavaScript Stack (Zero Bundler / No Vite)**:
    - The project is built strictly with **Vanilla JavaScript (Native ES Modules, `.js`)**, **HTML5 (`<script type="importmap">`)**, **Pure CSS (`src/index.css`)**, **Static Dev Server (`npx serve public -l 3000`)**, and **Three.js (`three` is the sole runtime dependency)**.
    - **Do NOT use TypeScript (`.ts`, `.tsx`), React, or Vite** anywhere in the project.
@@ -118,12 +120,15 @@ All files directly required to run and deploy the game reside inside `/public`, 
 ├── docs/                   # Engineering notes, SEO audit and map design notes (dev/docs)
 ├── codex/                  # Dev-only 3D Codex viewer for tanks, surfaces and effects (`npm run codex`, port 3001)
 ├── skills/                 # Agent skills (vanguard-map-creator)
+├── i18n/pages/             # Static page dictionaries (es.mjs) for scripts/build-i18n-pages.mjs
 ├── tests/                  # `npm test`: node:test suites (tank stats, AI behavior, bosses, maps, hangar, ...)
 ├── metadata.json           # AI Studio applet metadata (dev/config)
 ├── package.json            # Single runtime dependency ("three"); dev-only GLB tooling and wrangler in devDependencies
 ├── assets/                 # (git-ignored) Blender builds (assets/blender/<model>/) and source art
 ├── scripts/
 │   ├── lint.mjs            # `npm run lint` / `npm run build`: syntax check of every module in public/src/, then lint-methods.mjs and lint-dead-code.mjs
+│   ├── i18n-keys.mjs       # Collects every translatable UI string (t / N_ calls, map text, runtime enums); `node scripts/i18n-keys.mjs es` lists missing keys
+│   ├── build-i18n-pages.mjs # Generates public/<locale>/ pages (home, enemies) from the English HTML + i18n/pages/<locale>.mjs; `--check` verifies they are current
 │   ├── lint-methods.mjs    # Fails on calls to methods that do not exist (`// lint-methods-ignore` skips a line)
 │   ├── lint-dead-code.mjs  # Fails on unused imports, exports, methods and write-only fields (`// lint-dead-ignore` keeps one)
 │   ├── bump-version.mjs    # Patch / --minor version bump of package.json and package-lock.json
@@ -160,6 +165,7 @@ All files directly required to run and deploy the game reside inside `/public`, 
         ├── component-condition-ui.js # Component damage / repair UI
         ├── index.css       # Standalone compiled CSS stylesheet
         ├── app/            # Shared page shell: routes.js (PAGE_PATHS, legacy hash redirects), shell.js, state.js, ads.js, analyticsManager.js
+        ├── i18n/           # index.js (t, N_, formatNumber, locale resolution) + locales/<locale>.js dictionaries (Spanish: es/ui, banners, catalog, maps)
         ├── pages/          # One module per static page (home.js, campaign.js, survival.js, contracts.js, how-to-play.js, settings.js, ...)
         ├── ui/             # Battle HUD widgets: battle-hud, minimap, contract-hud, medals-modal, share-card, touch-controls, ...
         ├── sim/            # Pure simulation modules (catalog, ballistics, APS, jammer, component damage, hangar, missions, survival, contracts, medals)
@@ -190,7 +196,8 @@ All files directly required to run and deploy the game reside inside `/public`, 
 - **Adding/Editing Features**:
   - Keep state management decoupled: `TankGameEngine` (`public/src/game/engine/engineCore.js`, with subsystems split into sibling modules in `engine/`) owns the 3D scene and simulation state and emits HUD snapshots to `public/src/main.js` through the callback passed to its constructor.
   - Use DOM event delegation (`data-action` attributes) for UI interactions (`public/src/main.js` on the battlefield page, `public/src/pages/*.js` and `src/app/shell.js` on the static pages).
-  - **Static pages are the SEO surface**: every out-of-combat page (`index.html`, `campaign.html`, `how-to-play.html`, ...) ships its full text, meta tags and JSON-LD in static HTML. Keep visible copy, `<title>`, `meta description`, Open Graph / Twitter tags and JSON-LD consistent with each other and with the current game facts. `battlefield.html` and the contract mission pages are `noindex`. `scripts/deploy.mjs` syncs sitemap `<lastmod>` dates and the home JSON-LD `softwareVersion` on deploy.
+  - **Static pages are the SEO surface**: every out-of-combat page (`index.html`, `campaign.html`, `how-to-play.html`, ...) ships its full text, meta tags and JSON-LD in static HTML. Keep visible copy, `<title>`, `meta description`, Open Graph / Twitter tags and JSON-LD consistent with each other and with the current game facts. `battlefield.html` and the contract mission pages are `noindex`. `scripts/deploy.mjs` syncs sitemap `<lastmod>` dates and the home JSON-LD `softwareVersion` (also on translated homes) on deploy.
+  - **Localization (i18n)**: the battlefield UI is localized at runtime by `public/src/i18n/index.js` (gettext style: the English text is the key). `battlefield.html` has `<html data-locale="auto">`: it uses `?lang=`, then the saved preference (`iron_vanguard_locale_v1`), then the browser language. Static pages use their `<html lang>`; pages with hreflang alternates save it as the preference. The Settings modal has a Language row (reloads, or opens the translated twin). Spanish (`es`) is the only extra locale. Translated static pages exist for `index.html` → `/es/` and `enemies.html` → `/es/enemies`: they are generated, carry `hreflang` alternates (`en`, `es`, `x-default`) and `og:locale`, are listed in `sitemap.xml`, and their links point to Spanish twins where they exist, otherwise to the English pages. Every other static page stays English-only.
 - **Verification**:
   - Always run `compile_applet` (`npm run build`) and `lint_applet` (`npm run lint`) after making code changes to verify zero build or syntax errors. Lint also fails on calls to missing methods and on unused code: delete what it reports, or drop the needless `export`, instead of silencing it.
 - **Blender Builds (`assets/blender/`)**:

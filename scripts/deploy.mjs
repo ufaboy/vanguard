@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { publishAgentMarkdown } from './build-markdown.mjs';
+import { PAGE_LOCALES } from './build-i18n-pages.mjs';
 
 function loadDotEnv(filePath) {
   if (!fs.existsSync(filePath)) return {};
@@ -53,8 +54,9 @@ function lastCommitDate(relPath) {
 
 /** Maps a sitemap URL to the HTML file in public/ that serves it. */
 function sitemapUrlToFile(loc) {
-  const pathname = new URL(loc).pathname.replace(/\/$/, '');
-  return pathname ? `public${pathname}.html` : 'public/index.html';
+  const { pathname } = new URL(loc);
+  if (pathname.endsWith('/')) return `public${pathname}index.html`;
+  return `public${pathname}.html`;
 }
 
 /**
@@ -76,8 +78,11 @@ function refreshSeoMetadata(dir) {
   }
 
   const { version } = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf8'));
-  const homePath = path.join(dir, 'index.html');
-  if (version && fs.existsSync(homePath)) {
+  // The home page and its translated twins (public/<locale>/index.html) carry the version.
+  const homePaths = ['index.html', ...PAGE_LOCALES.map((locale) => path.join(locale, 'index.html'))];
+  for (const homeFile of homePaths) {
+    const homePath = path.join(dir, homeFile);
+    if (!version || !fs.existsSync(homePath)) continue;
     const html = fs.readFileSync(homePath, 'utf8')
       .replace(/("softwareVersion":\s*")[^"]*(")/, `$1${version}$2`);
     fs.writeFileSync(homePath, html, 'utf8');

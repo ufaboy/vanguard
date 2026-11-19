@@ -2,6 +2,7 @@
  * Bottom-left tactical tank damage silhouette (top-down paper-doll).
  * Reflects subsystem integrity, armor panel state, and persistent component faults.
  */
+import { t } from '../i18n/index.js';
 
 function getTier(ratio, status, hasFault) {
   if (hasFault) return 'crit';
@@ -66,7 +67,7 @@ export function renderTankSilhouette(hud) {
   const rightHullState = panelTier(panels.SOCKET_ARMOR_RIGHT, 70, Boolean(faults.armor));
 
   return `
-    <div class="hud-card hud-silhouette-card" aria-label="Tank Damage Silhouette">
+    <div class="hud-card hud-silhouette-card" aria-label="${t('Tank Damage Silhouette')}">
       <svg class="ts-svg" viewBox="0 0 124 170" width="116" height="159" fill="none" aria-hidden="true">
         <defs>
           <linearGradient id="ts-grad-ok" x1="0" y1="0" x2="0" y2="1">

@@ -24,6 +24,7 @@ import {
   buildSurvivalWaveSpec,
   recordSurvivalRun,
 } from '../../sim/survival.js';
+import { t } from '../../i18n/index.js';
 
 export class SurvivalDirector {
   constructor(engine) {
@@ -87,18 +88,18 @@ export class SurvivalDirector {
 
     if (isEarlyCall) {
       e.setStatusBanner(
-        `WAVE ${spec.wave}: ${spec.title} (+$${SURVIVAL_CONFIG.EARLY_CALL_BONUS} EARLY CALL BONUS)`,
+        t('WAVE {wave}: {title} (+${EARLY_CALL_BONUS} EARLY CALL BONUS)', { wave: spec.wave, title: t(spec.title), EARLY_CALL_BONUS: SURVIVAL_CONFIG.EARLY_CALL_BONUS }),
         3.6
       );
     } else if (spec.isBossWave) {
       sound.playBossAlarm();
       e.setStatusBanner(
-        `⚠ BOSS WAVE ${spec.wave}: ${spec.bossName} & ESCORT INBOUND!`,
+        t('⚠ BOSS WAVE {wave}: {bossName} & ESCORT INBOUND!', { wave: spec.wave, bossName: spec.bossName }),
         4.2
       );
     } else {
       e.setStatusBanner(
-        `WAVE ${spec.wave}: ${spec.title} (${spec.totalHostiles} HOSTILES)`,
+        t('WAVE {wave}: {title} ({totalHostiles} HOSTILES)', { wave: spec.wave, title: t(spec.title), totalHostiles: spec.totalHostiles }),
         3.4
       );
     }
@@ -178,9 +179,9 @@ export class SurvivalDirector {
     );
     sound.playPowerUp();
     e.setStatusBanner(
-      `WAVE ${e.survivalState.wave} CLEARED! +$${reward} CREDITS · NEXT WAVE IN ${Math.ceil(
+      t('WAVE {wave} CLEARED! +${reward} CREDITS · NEXT WAVE IN {waveTimer}s ([N] CALL NOW +${EARLY_CALL_BONUS})', { wave: e.survivalState.wave, reward, waveTimer: Math.ceil(
         e.survivalState.waveTimer || 0
-      )}s ([N] CALL NOW +$${SURVIVAL_CONFIG.EARLY_CALL_BONUS})`,
+      ), EARLY_CALL_BONUS: SURVIVAL_CONFIG.EARLY_CALL_BONUS }),
       4.5
     );
     e.emitHudUpdate();
@@ -223,7 +224,7 @@ export class SurvivalDirector {
     sound.stopEngineLoop();
     sound.playPowerUp();
     e.setStatusBanner(
-      'ÉLYSÉE PALACE HELD FOR 7:00! PARIS SECURED — EXTRACT OR CONTINUE IN OVERTIME!',
+      t('ÉLYSÉE PALACE HELD FOR 7:00! PARIS SECURED — EXTRACT OR CONTINUE IN OVERTIME!'),
       5.0
     );
     e.emitHudUpdate();
@@ -239,7 +240,7 @@ export class SurvivalDirector {
       this.startWave(8, false);
     } else {
       e.setStatusBanner(
-        'OVERTIME ENGAGED! HOLD THE ÉLYSÉE PALACE FOR A NEW SURVIVAL RECORD!',
+        t('OVERTIME ENGAGED! HOLD THE ÉLYSÉE PALACE FOR A NEW SURVIVAL RECORD!'),
         4.0
       );
       e.emitHudUpdate();
@@ -319,16 +320,14 @@ export class ContractDirector {
     if (res.started && !res.alreadyLoading) {
       sound.playCargoLoad();
       e.setStatusBanner(
-        isSabotage
-          ? 'ARMING DEMOLITION CHARGE — HOLD POSITION FOR 2.5s!'
-          : 'LOADING DATA CONTAINER — HOLD POSITION FOR 2.0s',
+        isSabotage ? t('ARMING DEMOLITION CHARGE — HOLD POSITION FOR 2.5s!') : t('LOADING DATA CONTAINER — HOLD POSITION FOR 2.0s'),
         2.2
       );
       e.emitHudUpdate();
       return true;
     }
     if (!res.started && res.reason) {
-      e.setStatusBanner(res.reason.toUpperCase(), 2.0);
+      e.setStatusBanner(t(res.reason).toUpperCase(), 2.0);
     }
     return false;
   }
@@ -339,12 +338,12 @@ export class ContractDirector {
     const res = startContractExtraction(e.contractState, e.playerX, e.playerZ);
     if (res.started && !res.alreadyActive) {
       sound.playContractExtract();
-      e.setStatusBanner('EXTRACTION INITIATED — STAY ON PAD FOR 3.0s!', 3.0);
+      e.setStatusBanner(t('EXTRACTION INITIATED — STAY ON PAD FOR 3.0s!'), 3.0);
       e.emitHudUpdate();
       return true;
     }
     if (!res.started && res.reason) {
-      e.setStatusBanner(res.reason.toUpperCase(), 2.0);
+      e.setStatusBanner(t(res.reason).toUpperCase(), 2.0);
     }
     return false;
   }
@@ -361,14 +360,12 @@ export class ContractDirector {
       return this.startExtract();
     }
     if (snap?.armedCargo) {
-      e.setStatusBanner('CHARGE ARMED — CLEAR THE 3-CELL BLAST ZONE BEFORE DETONATION!', 2.4);
+      e.setStatusBanner(t('CHARGE ARMED — CLEAR THE 3-CELL BLAST ZONE BEFORE DETONATION!'), 2.4);
     } else if (snap?.carriedCargo) {
-      e.setStatusBanner('DRIVE ONTO THE SOUTHERN DELIVERY PAD AND HOLD FOR 2.0s TO UNLOAD', 2.4);
+      e.setStatusBanner(t('DRIVE ONTO THE SOUTHERN DELIVERY PAD AND HOLD FOR 2.0s TO UNLOAD'), 2.4);
     } else {
       e.setStatusBanner(
-        isSabotage
-          ? 'STOP WITHIN 1.5 CELLS OF A RADAR RELAY AND PRESS [E] TO PLANT CHARGE'
-          : 'STOP WITHIN 1.5 CELLS OF A DATA CONTAINER AND PRESS [E] TO LOAD',
+        isSabotage ? t('STOP WITHIN 1.5 CELLS OF A RADAR RELAY AND PRESS [E] TO PLANT CHARGE') : t('STOP WITHIN 1.5 CELLS OF A DATA CONTAINER AND PRESS [E] TO LOAD'),
         2.4
       );
     }
@@ -444,9 +441,7 @@ export class ContractDirector {
 
     if (events.loadCancelled) {
       e.setStatusBanner(
-        isSabotage
-          ? 'CHARGE ARMING CANCELLED — REMAIN STATIONARY WITHIN 1.5 CELLS'
-          : 'CARGO LOADING CANCELLED — REMAIN STATIONARY WITHIN 1.5 CELLS',
+        isSabotage ? t('CHARGE ARMING CANCELLED — REMAIN STATIONARY WITHIN 1.5 CELLS') : t('CARGO LOADING CANCELLED — REMAIN STATIONARY WITHIN 1.5 CELLS'),
         2.2
       );
       e.emitHudUpdate();
@@ -456,12 +451,12 @@ export class ContractDirector {
       sound.playBossAlarm();
       const extra =
         events.triggeredGroup === 'G1'
-          ? ' · STEALTH HUNTERS alerted!'
+          ? ` · ${t('STEALTH HUNTERS alerted!')}`
           : events.triggeredGroup
-          ? ` · ${events.triggeredGroup} QRF INBOUND!`
+          ? ` · ${t('{group} QRF INBOUND!', { group: events.triggeredGroup })}`
           : '';
       e.setStatusBanner(
-        `CHARGE ARMED ON ${events.armedCargo.name.toUpperCase()} — DETONATION IN 8.0s! CLEAR 3-CELL RADIUS!${extra}`,
+        t('CHARGE ARMED ON {name} — DETONATION IN 8.0s! CLEAR 3-CELL RADIUS!{extra}', { name: t(events.armedCargo.name).toUpperCase(), extra }),
         4.2
       );
       e.emitHudUpdate();
@@ -471,19 +466,19 @@ export class ContractDirector {
       sound.playCargoLoad();
       const extra =
         events.triggeredGroup === 'G1'
-          ? ' · TERMINAL ALARM TRIGGERED!'
+          ? ` · ${t('TERMINAL ALARM TRIGGERED!')}`
           : events.triggeredGroup
-          ? ` · ${events.triggeredGroup} REINFORCEMENTS QUEUED!`
+          ? ` · ${t('{group} REINFORCEMENTS QUEUED!', { group: events.triggeredGroup })}`
           : '';
       e.setStatusBanner(
-        `${events.loadedCargo.name.toUpperCase()} LOADED — RETURN TO SOUTH DELIVERY PAD${extra}`,
+        t('{name} LOADED — RETURN TO SOUTH DELIVERY PAD{extra}', { name: t(events.loadedCargo.name).toUpperCase(), extra }),
         3.6
       );
       e.emitHudUpdate();
     }
 
     if (events.unloadReset) {
-      e.setStatusBanner('UNLOADING RESET — REMAIN ON DELIVERY PAD FOR 2.0s', 2.2);
+      e.setStatusBanner(t('UNLOADING RESET — REMAIN ON DELIVERY PAD FOR 2.0s'), 2.2);
       e.emitHudUpdate();
     }
 
@@ -507,21 +502,26 @@ export class ContractDirector {
         e.syncCampaignCredits();
       }
       const delivered = e.contractState.deliveredCount;
-      const objLabel = isSabotage ? 'RELAY' : 'CARGO';
-      const actionVerb = isSabotage ? 'DEMOLISHED' : 'DELIVERED';
+      const params = { code: events.deliveredCargo.code, amount: payout.amount };
       if (delivered === 1) {
         e.setStatusBanner(
-          `${objLabel} ${events.deliveredCargo.code} ${actionVerb} (+$${payout.amount} SECURED) — 1/2 ${actionVerb}!`,
+          isSabotage
+            ? t('RELAY {code} DEMOLISHED (+${amount} SECURED) — 1/2 DEMOLISHED!', params)
+            : t('CARGO {code} DELIVERED (+${amount} SECURED) — 1/2 DELIVERED!', params),
           3.6
         );
       } else if (delivered === 2) {
         e.setStatusBanner(
-          `${objLabel} ${events.deliveredCargo.code} ${actionVerb} (+$${payout.amount} SECURED) — EXTRACTION READY [E] OR RISK 3RD ${objLabel} (+$4,000)!`,
+          isSabotage
+            ? t('RELAY {code} DEMOLISHED (+${amount} SECURED) — EXTRACTION READY [E] OR RISK 3RD RELAY (+$4,000)!', params)
+            : t('CARGO {code} DELIVERED (+${amount} SECURED) — EXTRACTION READY [E] OR RISK 3RD CARGO (+$4,000)!', params),
           4.5
         );
       } else {
         e.setStatusBanner(
-          `ALL 3 ${objLabel}S ${actionVerb} (+$${payout.amount} SECURED) — HEAD SOUTH TO EXTRACTION PAD [E]!`,
+          isSabotage
+            ? t('ALL 3 RELAYS DEMOLISHED (+${amount} SECURED) — HEAD SOUTH TO EXTRACTION PAD [E]!', params)
+            : t('ALL 3 CARGOS DELIVERED (+${amount} SECURED) — HEAD SOUTH TO EXTRACTION PAD [E]!', params),
           4.5
         );
       }
@@ -529,7 +529,7 @@ export class ContractDirector {
     }
 
     if (events.extractCancelled) {
-      e.setStatusBanner('EXTRACTION CANCELLED — REMAIN ON THE EXTRACTION PAD!', 2.4);
+      e.setStatusBanner(t('EXTRACTION CANCELLED — REMAIN ON THE EXTRACTION PAD!'), 2.4);
       e.emitHudUpdate();
     }
 
@@ -555,7 +555,7 @@ export class ContractDirector {
       (group) => {
         sound.playBossAlarm();
         const gateLabel = LAST_CARGO_GATES[group.primaryGateId]?.label || 'NORTH GATE';
-        e.setStatusBanner(`${group.label} · ${gateLabel} IN 6s`, 3.6);
+        e.setStatusBanner(t('{label} · {gateLabel} IN 6s', { label: t(group.label), gateLabel }), 3.6);
       }
     );
     e.vanguardRemainingToSpawn =
