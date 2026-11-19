@@ -9,6 +9,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/" />
   </url>
   <url>
@@ -19,6 +20,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/" />
   </url>
   <url>
@@ -29,6 +31,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/" />
   </url>
   <url>
@@ -39,6 +53,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/campaign" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/campaign" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/campaign" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/campaign" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/campaign" />
   </url>
   <url>
@@ -49,6 +64,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/campaign" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/campaign" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/campaign" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/campaign" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/campaign" />
   </url>
   <url>
@@ -59,6 +75,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/campaign" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/campaign" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/campaign" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/campaign" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/campaign" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/campaign</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/campaign" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/campaign" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/campaign" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/campaign" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/campaign" />
   </url>
   <url>
@@ -69,6 +97,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/survival" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/survival" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/survival" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/survival" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/survival" />
   </url>
   <url>
@@ -79,6 +108,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/survival" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/survival" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/survival" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/survival" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/survival" />
   </url>
   <url>
@@ -89,6 +119,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/survival" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/survival" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/survival" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/survival" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/survival" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/survival</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/survival" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/survival" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/survival" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/survival" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/survival" />
   </url>
   <url>
@@ -99,6 +141,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/contracts" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/contracts" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/contracts" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/contracts" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/contracts" />
   </url>
   <url>
@@ -109,6 +152,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/contracts" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/contracts" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/contracts" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/contracts" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/contracts" />
   </url>
   <url>
@@ -119,6 +163,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/contracts" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/contracts" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/contracts" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/contracts" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/contracts" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/contracts</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/contracts" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/contracts" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/contracts" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/contracts" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/contracts" />
   </url>
   <url>
@@ -129,6 +185,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/how-to-play" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/how-to-play" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/how-to-play" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/how-to-play" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/how-to-play" />
   </url>
   <url>
@@ -139,6 +196,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/how-to-play" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/how-to-play" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/how-to-play" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/how-to-play" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/how-to-play" />
   </url>
   <url>
@@ -149,6 +207,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/how-to-play" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/how-to-play" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/how-to-play" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/how-to-play" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/how-to-play" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/how-to-play</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/how-to-play" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/how-to-play" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/how-to-play" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/how-to-play" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/how-to-play" />
   </url>
   <url>
@@ -159,6 +229,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/walkthrough" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/walkthrough" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/walkthrough" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/walkthrough" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/walkthrough" />
   </url>
   <url>
@@ -169,6 +240,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/walkthrough" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/walkthrough" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/walkthrough" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/walkthrough" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/walkthrough" />
   </url>
   <url>
@@ -179,6 +251,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/walkthrough" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/walkthrough" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/walkthrough" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/walkthrough" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/walkthrough" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/walkthrough</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/walkthrough" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/walkthrough" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/walkthrough" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/walkthrough" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/walkthrough" />
   </url>
   <url>
@@ -189,6 +273,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/enemies" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/enemies" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/enemies" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/enemies" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/enemies" />
   </url>
   <url>
@@ -199,6 +284,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/enemies" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/enemies" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/enemies" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/enemies" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/enemies" />
   </url>
   <url>
@@ -209,6 +295,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/enemies" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/enemies" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/enemies" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/enemies" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/enemies" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/enemies</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/enemies" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/enemies" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/enemies" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/enemies" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/enemies" />
   </url>
   <url>
@@ -219,6 +317,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/arsenal" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/arsenal" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/arsenal" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/arsenal" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/arsenal" />
   </url>
   <url>
@@ -229,6 +328,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/arsenal" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/arsenal" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/arsenal" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/arsenal" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/arsenal" />
   </url>
   <url>
@@ -239,6 +339,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/arsenal" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/arsenal" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/arsenal" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/arsenal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/arsenal" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/arsenal</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/arsenal" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/arsenal" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/arsenal" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/arsenal" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/arsenal" />
   </url>
   <url>
@@ -249,6 +361,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/destructible-terrain" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/destructible-terrain" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/destructible-terrain" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/destructible-terrain" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/destructible-terrain" />
   </url>
   <url>
@@ -259,6 +372,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/destructible-terrain" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/destructible-terrain" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/destructible-terrain" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/destructible-terrain" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/destructible-terrain" />
   </url>
   <url>
@@ -269,6 +383,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/destructible-terrain" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/destructible-terrain" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/destructible-terrain" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/destructible-terrain" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/destructible-terrain" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/destructible-terrain</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/destructible-terrain" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/destructible-terrain" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/destructible-terrain" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/destructible-terrain" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/destructible-terrain" />
   </url>
   <url>
@@ -279,6 +405,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/games-like-battle-city" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/games-like-battle-city" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/games-like-battle-city" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/games-like-battle-city" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/games-like-battle-city" />
   </url>
   <url>
@@ -289,6 +416,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/games-like-battle-city" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/games-like-battle-city" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/games-like-battle-city" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/games-like-battle-city" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/games-like-battle-city" />
   </url>
   <url>
@@ -299,6 +427,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/games-like-battle-city" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/games-like-battle-city" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/games-like-battle-city" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/games-like-battle-city" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/games-like-battle-city" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/games-like-battle-city</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/games-like-battle-city" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/games-like-battle-city" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/games-like-battle-city" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/games-like-battle-city" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/games-like-battle-city" />
   </url>
   <url>
@@ -309,6 +449,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/webgl-tank-game" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/webgl-tank-game" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/webgl-tank-game" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/webgl-tank-game" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/webgl-tank-game" />
   </url>
   <url>
@@ -319,6 +460,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/webgl-tank-game" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/webgl-tank-game" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/webgl-tank-game" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/webgl-tank-game" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/webgl-tank-game" />
   </url>
   <url>
@@ -329,6 +471,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/webgl-tank-game" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/webgl-tank-game" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/webgl-tank-game" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/webgl-tank-game" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/webgl-tank-game" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/webgl-tank-game</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/webgl-tank-game" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/webgl-tank-game" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/webgl-tank-game" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/webgl-tank-game" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/webgl-tank-game" />
   </url>
   <url>
@@ -339,6 +493,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/about" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/about" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/about" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/about" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/about" />
   </url>
   <url>
@@ -349,6 +504,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/about" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/about" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/about" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/about" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/about" />
   </url>
   <url>
@@ -359,6 +515,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/about" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/about" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/about" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/about" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/about</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/about" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/about" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/about" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/about" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/about" />
   </url>
   <url>
@@ -369,6 +537,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/privacy-policy" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/privacy-policy" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/privacy-policy" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/privacy-policy" />
   </url>
   <url>
@@ -379,6 +548,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/privacy-policy" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/privacy-policy" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/privacy-policy" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/privacy-policy" />
   </url>
   <url>
@@ -389,6 +559,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/privacy-policy" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/privacy-policy" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/privacy-policy" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/privacy-policy</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/privacy-policy" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/privacy-policy" />
   </url>
   <url>
@@ -399,6 +581,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/terms" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/terms" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/terms" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/terms" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/terms" />
   </url>
   <url>
@@ -409,6 +592,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/terms" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/terms" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/terms" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/terms" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/terms" />
   </url>
   <url>
@@ -419,6 +603,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/terms" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/terms" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/terms" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/terms" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/terms</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/terms" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/terms" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/terms" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/terms" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/terms" />
   </url>
   <url>
@@ -429,6 +625,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/contact" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/contact" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/contact" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/contact" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/contact" />
   </url>
   <url>
@@ -439,6 +636,7 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/contact" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/contact" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/contact" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/contact" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/contact" />
   </url>
   <url>
@@ -449,6 +647,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/contact" />
     <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/contact" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/contact" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/contact" />
+  </url>
+  <url>
+    <loc>https://battletank.online/de/contact</loc>
+    <lastmod>2026-11-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://battletank.online/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://battletank.online/es/contact" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://battletank.online/pt-br/contact" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://battletank.online/de/contact" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://battletank.online/contact" />
   </url>
   <url>

@@ -7,14 +7,15 @@
  */
 import es from '../../../i18n/pages/es.mjs';
 import ptBr from '../../../i18n/pages/pt-BR.mjs';
+import de from '../../../i18n/pages/de.mjs';
 
 export const SITE = 'https://battletank.online';
 export const DEFAULT_LOCALE = 'en';
-export const LOCALES = ['en', 'es', 'pt-br'];
-export const HTML_LANG = { en: 'en', es: 'es', 'pt-br': 'pt-BR' };
-export const LANGUAGE_NAMES = { en: 'English', es: 'Español', 'pt-br': 'Português (Brasil)' };
-export const OG_LOCALES = { en: 'en_US', es: 'es_ES', 'pt-br': 'pt_BR' };
-const DICTIONARIES = { es, 'pt-br': ptBr };
+export const LOCALES = ['en', 'es', 'pt-br', 'de'];
+export const HTML_LANG = { en: 'en', es: 'es', 'pt-br': 'pt-BR', de: 'de' };
+export const LANGUAGE_NAMES = { en: 'English', es: 'Español', 'pt-br': 'Português (Brasil)', de: 'Deutsch' };
+export const OG_LOCALES = { en: 'en_US', es: 'es_ES', 'pt-br': 'pt_BR', de: 'de_DE' };
+const DICTIONARIES = { es, 'pt-br': ptBr, de };
 
 /**
  * Pages built in every locale (`''` is the home page); every other page is English only.
