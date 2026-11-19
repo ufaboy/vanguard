@@ -5,7 +5,7 @@ import path from 'path';
 import { collectAllKeys, loadLocale, placeholders } from '../scripts/i18n-keys.mjs';
 import { formatNumber, getLocale, t } from '../public/src/i18n/index.js';
 
-const LOCALES = ['es', 'pt-BR', 'de'];
+const LOCALES = ['es', 'pt-BR', 'de', 'fr'];
 const allKeys = collectAllKeys();
 
 test('t() falls back to the English source and fills placeholders outside the browser', () => {
