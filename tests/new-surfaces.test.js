@@ -13,6 +13,7 @@ import {
   isBossHardSolid,
 } from '../public/src/sim/behavior/navgrid.js';
 import { TerrainDestructionController } from '../public/src/game/engine/terrain-destruction.js';
+import { PowerupsController } from '../public/src/game/engine/powerups-controller.js';
 import { ForestFireController } from '../public/src/game/terrains/forest-fire.js';
 import {
   canPlaceOnSurface,
@@ -201,6 +202,72 @@ test('igniteOilAt ignites OIL_SLICK cells within blast/explosion radius', () => 
 
   assert.equal(nearOil.isBurning, true);
   assert.equal(farOil.isBurning, false);
+});
+
+test('airDrop landing validation rejects occupied blocks and allows GRASS/STONE/EMPTY', () => {
+  const grid = createMockGrid(5, 5);
+  grid[1][1].type = TileType.BRICK;
+  grid[1][2].type = TileType.HOUSE_1;
+  grid[1][3].type = TileType.FOREST;
+  grid[2][1].type = TileType.GRASS;
+  grid[2][2].type = TileType.STONE;
+  grid[2][3].type = TileType.EMPTY;
+  grid[2][3].defenseTurret = { alive: true };
+
+  const engine = createMockEngine(grid);
+  engine.airDrops = [];
+  engine.powerups = [{ x: 2 * TILE_SIZE, z: 2 * TILE_SIZE }]; // occupies (2,2)
+  engine.mines = [];
+  const ctrl = new PowerupsController(engine);
+
+  assert.equal(ctrl.isAirDropLandingCell(grid[1][1]), false);
+  assert.equal(ctrl.isAirDropLandingCell(grid[1][2]), false);
+  assert.equal(ctrl.isAirDropLandingCell(grid[1][3]), false);
+  assert.equal(ctrl.isAirDropLandingCell(grid[2][3]), false); // live turret
+  assert.equal(ctrl.isAirDropLandingCell(grid[2][1]), true);
+  assert.equal(ctrl.isAirDropLandingCell(grid[2][2]), true);
+  assert.equal(ctrl.isAirDropPosFree(2 * TILE_SIZE, 2 * TILE_SIZE), false); // occupied by powerup
+  assert.equal(ctrl.isAirDropPosFree(1 * TILE_SIZE, 2 * TILE_SIZE), true);
+});
+
+test('descending airDrop shifts landing point when target cell becomes blocked by BRICK or tank', () => {
+  const grid = createMockGrid(5, 5);
+  const engine = createMockEngine(grid);
+  engine.worldToGrid = (x, z) => ({
+    row: Math.round(z / TILE_SIZE),
+    col: Math.round(x / TILE_SIZE),
+  });
+  engine.airDrops = [];
+  engine.powerups = [];
+  engine.mines = [];
+  engine.airDropQueue = [];
+  const startPos = engine.gridToWorld(2, 2);
+  const drop = {
+    x: startPos.x,
+    z: startPos.z,
+    targetX: startPos.x,
+    targetZ: startPos.z,
+    altitude: 10,
+    landed: false,
+    config: { shells: 10, aps: 0, missiles: 0 },
+    rig: {
+      root: { position: { set(x, _y, z) { this.x = x; this.z = z; } } },
+      crateGroup: { position: { y: 10 }, rotation: { z: 0 } },
+      landingRing: { scale: { setScalar() {} } },
+      chuteGroup: { visible: true },
+    },
+  };
+  engine.airDrops.push(drop);
+
+  // Engineer builds a BRICK on (2,2) while the airDrop is descending
+  grid[2][2].type = TileType.BRICK;
+  const ctrl = new PowerupsController(engine);
+  ctrl.updateAirDrops(0.2, 0.2);
+
+  assert.notDeepEqual({ x: drop.targetX, z: drop.targetZ }, startPos);
+  const targetGrid = engine.worldToGrid(drop.targetX, drop.targetZ);
+  assert.equal(grid[targetGrid.row][targetGrid.col].type, TileType.EMPTY);
+  assert.ok(drop.x !== startPos.x || drop.z !== startPos.z);
 });
 
 test('burning OIL_SLICK ignites adjacent FOREST and periodically damages adjacent HOUSE_1 and HOUSE_2', () => {

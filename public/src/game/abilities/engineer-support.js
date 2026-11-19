@@ -10,7 +10,7 @@
 import { sound } from '../sound.js';
 import { TileType } from '../terrains/surfaces.js';
 import { setCellObject } from '../terrains/layers.js';
-import { GRID_SIZE } from '../levels.js';
+import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { rollTankSpecial } from '../../sim/behavior/actions.js';
 
 export const ENGINEER_SUPPORT = Object.freeze({
@@ -77,7 +77,10 @@ function fortify(tank, game) {
       const occupied = game.enemies.some(
         (unit) => Math.hypot(unit.x - pos.x, unit.z - pos.z) < ENGINEER_SUPPORT.BUILD_CLEAR_TANK
       );
-      if (nearPlayer || occupied) continue;
+      const hasAirDrop = (game.airDrops || []).some(
+        (d) => Math.hypot(d.x - pos.x, d.z - pos.z) < TILE_SIZE * 0.75
+      );
+      if (nearPlayer || occupied || hasAirDrop) continue;
       const brick = game.modelFactory.createBrickBlock();
       brick.group.position.set(pos.x, 0, pos.z);
       game.mapGroup.add(brick.group);

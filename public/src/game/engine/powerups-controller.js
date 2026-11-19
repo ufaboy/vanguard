@@ -89,26 +89,30 @@ export class PowerupsController {
         ? engine.grid?.[row]?.[col]
         : null;
       if (cell && this.isAirDropLandingCell(cell)) {
-        dropPos = engine.gridToWorld(row, col);
+        const pos = engine.gridToWorld(row, col);
+        if (this.isAirDropPosFree(pos.x, pos.z)) {
+          dropPos = pos;
+        }
       }
     }
+    let fallbackPos = null;
     for (let attempt = 0; !dropPos && attempt < 35; attempt++) {
       const r = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
       const c = 4 + Math.floor(Math.random() * (GRID_SIZE - 8));
       const cell = engine.grid?.[r]?.[c];
-      if (!cell) continue;
-      if (this.isAirDropLandingCell(cell)) {
-        const pos = engine.gridToWorld(r, c);
-        const dist = Math.hypot(pos.x - engine.playerX, pos.z - engine.playerZ);
-        if (dist >= 4 * TILE_SIZE && dist <= 14 * TILE_SIZE) {
-          dropPos = pos;
-          break;
-        }
-        if (!dropPos && dist >= 2 * TILE_SIZE) {
-          dropPos = pos;
-        }
+      if (!cell || !this.isAirDropLandingCell(cell)) continue;
+      const pos = engine.gridToWorld(r, c);
+      if (!this.isAirDropPosFree(pos.x, pos.z)) continue;
+      const dist = Math.hypot(pos.x - engine.playerX, pos.z - engine.playerZ);
+      if (dist >= 4 * TILE_SIZE && dist <= 14 * TILE_SIZE) {
+        dropPos = pos;
+        break;
+      }
+      if (!fallbackPos && dist >= 2 * TILE_SIZE) {
+        fallbackPos = pos;
       }
     }
+    dropPos ||= fallbackPos;
     if (!dropPos) {
       let nearestPos = null;
       let nearestDistance = Infinity;
@@ -117,6 +121,7 @@ export class PowerupsController {
           const cell = engine.grid?.[r]?.[c];
           if (!cell || !this.isAirDropLandingCell(cell)) continue;
           const pos = engine.gridToWorld(r, c);
+          if (!this.isAirDropPosFree(pos.x, pos.z)) continue;
           const distance = Math.hypot(pos.x - engine.playerX, pos.z - engine.playerZ);
           if (distance >= 2 * TILE_SIZE && distance < nearestDistance) {
             nearestPos = pos;
@@ -135,6 +140,8 @@ export class PowerupsController {
     const drop = {
       x: dropPos.x,
       z: dropPos.z,
+      targetX: dropPos.x,
+      targetZ: dropPos.z,
       altitude: 18,
       landed: false,
       config,
@@ -147,7 +154,64 @@ export class PowerupsController {
   }
 
   isAirDropLandingCell(cell) {
-    return [TileType.EMPTY, TileType.ICE, TileType.ROAD, TileType.SAND, TileType.RUBBLE, TileType.CRATER].includes(cell?.type);
+    if (!cell || cell.defenseTurret?.alive || cell.isBurning) return false;
+    return [
+      TileType.EMPTY,
+      TileType.ICE,
+      TileType.ROAD,
+      TileType.SAND,
+      TileType.GRASS,
+      TileType.STONE,
+      TileType.RUBBLE,
+      TileType.CRATER,
+    ].includes(cell.type);
+  }
+
+  /** True when no active air-drop, powerup, mine, live enemy, or (optionally) player occupies `(x, z)`. */
+  isAirDropPosFree(x, z, { ignoreDrop = null, includePlayer = false } = {}) {
+    const { engine } = this;
+    const minGap = TILE_SIZE * 0.75;
+    const near = (item) => item && Math.hypot((item.x ?? 0) - x, (item.z ?? 0) - z) < minGap;
+    if ((engine.airDrops || []).some((d) => d !== ignoreDrop && near(d))) return false;
+    if ((engine.powerups || []).some(near)) return false;
+    if ((engine.mines || []).some(near)) return false;
+    if ((engine.enemies || []).some((e) => e && e.hp > 0 && near(e))) return false;
+    if (includePlayer && engine.playerHp > 0 && Math.hypot((engine.playerX ?? 0) - x, (engine.playerZ ?? 0) - z) < minGap) {
+      return false;
+    }
+    return true;
+  }
+
+  /** Finds the nearest open landing cell around `(x, z)` when a drop's target becomes occupied mid-flight. */
+  findNearestFreeAirDropPos(x, z, ignoreDrop = null) {
+    const { engine } = this;
+    if (!engine.grid?.length || !engine.worldToGrid) return null;
+    const size = engine.grid.length;
+    const center = engine.worldToGrid(x, z);
+    let bestPos = null;
+    let bestDist = Infinity;
+
+    for (let radius = 1; radius <= 6; radius++) {
+      for (let dr = -radius; dr <= radius; dr++) {
+        for (let dc = -radius; dc <= radius; dc++) {
+          if (Math.abs(dr) !== radius && Math.abs(dc) !== radius) continue;
+          const r = center.row + dr;
+          const c = center.col + dc;
+          if (r < 0 || r >= size || c < 0 || c >= size) continue;
+          const cell = engine.grid[r]?.[c];
+          if (!cell || !this.isAirDropLandingCell(cell)) continue;
+          const pos = engine.gridToWorld(r, c);
+          if (!this.isAirDropPosFree(pos.x, pos.z, { ignoreDrop, includePlayer: true })) continue;
+          const dist = Math.hypot(pos.x - x, pos.z - z);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestPos = pos;
+          }
+        }
+      }
+      if (bestPos) return bestPos;
+    }
+    return null;
   }
 
   /** Finds a passable landing cell near the Enemy HQ (2–6 cells away, preferring the approach side). */
@@ -238,11 +302,33 @@ export class PowerupsController {
       const drop = engine.airDrops[i];
       const { rig } = drop;
       if (!drop.landed) {
+        if (drop.targetX == null) drop.targetX = drop.x;
+        if (drop.targetZ == null) drop.targetZ = drop.z;
+        const gridPos = engine.worldToGrid?.(drop.targetX, drop.targetZ);
+        const targetCell = gridPos ? engine.grid?.[gridPos.row]?.[gridPos.col] : null;
+        const targetBlocked =
+          (targetCell && !this.isAirDropLandingCell(targetCell)) ||
+          !this.isAirDropPosFree(drop.targetX, drop.targetZ, { ignoreDrop: drop, includePlayer: true });
+        if (targetBlocked) {
+          const shifted = this.findNearestFreeAirDropPos(drop.targetX, drop.targetZ, drop);
+          if (shifted) {
+            drop.targetX = shifted.x;
+            drop.targetZ = shifted.z;
+          }
+        }
+        const driftAlpha = 1 - Math.exp(-4.0 * dt);
+        drop.x += (drop.targetX - drop.x) * driftAlpha;
+        drop.z += (drop.targetZ - drop.z) * driftAlpha;
+        rig.root?.position?.set?.(drop.x, 0, drop.z);
+
         drop.altitude = Math.max(0, drop.altitude - 5.2 * dt);
         rig.crateGroup.position.y = drop.altitude;
         rig.crateGroup.rotation.z = Math.sin(elapsed * 2.4) * 0.12;
         rig.landingRing.scale.setScalar(1 + Math.sin(elapsed * 5.0) * 0.08);
         if (drop.altitude <= 0) {
+          drop.x = drop.targetX;
+          drop.z = drop.targetZ;
+          rig.root?.position?.set?.(drop.x, 0, drop.z);
           drop.landed = true;
           rig.crateGroup.position.y = 0;
           rig.crateGroup.rotation.z = 0;

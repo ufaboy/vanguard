@@ -78,6 +78,12 @@
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">VERSION 1.25.2 // AIRDROP LANDING VALIDATION &amp; MID-FLIGHT DRIFT</span>
+            <strong>Prevent AirDrop Crates from Landing on Occupied Cells &amp; Shift Target Mid-Flight</strong>
+            <p>Updated <code>PowerupsController</code> and <code>engineerSupport</code> so parachute AirDrops avoid live turrets, burning tiles, mines, pickups, tanks, and newly built <code>BRICK</code> walls, allow landing on <code>GRASS</code> and <code>STONE</code>, and smoothly drift to the nearest clear cell if their target becomes occupied during descent.</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">VERSION 1.25.1 // FOREST GROUND ZONE DECORATION FIX</span>
             <strong>Paint Zone Surfaces Under FOREST &amp; Decoration Tiles on GROUND</strong>
             <p>Fixed <code>decorationCellAllowed</code> and <code>paintDecoration</code> in <code>decoration.js</code> and <code>urban-ground.js</code> to check <code>surfaceGrid</code> instead of the top-layer <code>grid</code>, preventing light-gray unmasked squares from appearing beneath <code>FOREST</code> clusters inside asphalt, concrete, and gravel decoration zones.</p>
