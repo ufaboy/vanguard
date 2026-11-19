@@ -1,9 +1,18 @@
-import { test } from 'node:test';
+import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { htmlToMarkdown, generateAgentMarkdown, publishAgentMarkdown } from '../scripts/build-markdown.mjs';
+import { buildSite } from '../scripts/site.mjs';
+
+// The static pages come from Astro: build the site once into a temp dir. The build also fails when a
+// translated page has text missing from i18n/pages/<locale>.mjs.
+let siteDir;
+before(() => {
+  siteDir = buildSite({ outDir: fs.mkdtempSync(path.join(os.tmpdir(), 'astro-site-')), quiet: true });
+});
+after(() => fs.rmSync(siteDir, { recursive: true, force: true }));
 
 const page = (body) => `<!doctype html><html><head>
 <title>Test Page — BATTLE TANK</title>
@@ -39,7 +48,7 @@ test('converts prerendered content to Markdown with front matter', () => {
 test('every sitemap page produces Markdown and llms-full.txt', () => {
   const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-md-'));
   try {
-    const pages = generateAgentMarkdown(path.resolve('public'), outDir);
+    const pages = generateAgentMarkdown(siteDir, outDir);
     const sitemap = fs.readFileSync('public/sitemap.xml', 'utf8');
     assert.equal(pages.length, [...sitemap.matchAll(/<loc>/g)].length);
     for (const { mdFile } of pages) {
@@ -59,7 +68,7 @@ test('llms.txt links point to generated Markdown copies', () => {
   const llms = fs.readFileSync('public/llms.txt', 'utf8');
   const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-md-'));
   try {
-    generateAgentMarkdown(path.resolve('public'), outDir);
+    generateAgentMarkdown(siteDir, outDir);
     for (const [, file] of llms.matchAll(/https:\/\/battletank\.online\/([\w-]+\.md|llms-full\.txt)/g)) {
       assert.ok(fs.existsSync(path.join(outDir, file)), `${file} is generated`);
     }
@@ -69,18 +78,18 @@ test('llms.txt links point to generated Markdown copies', () => {
 });
 
 test('publish step links pages to Markdown and adds headers', () => {
-  const siteDir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-site-'));
+  const publishDir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-site-'));
   try {
     for (const file of ['sitemap.xml', '_headers', 'index.html', 'enemies.html']) {
-      fs.copyFileSync(path.join('public', file), path.join(siteDir, file));
+      fs.copyFileSync(path.join(siteDir, file), path.join(publishDir, file));
     }
-    publishAgentMarkdown(siteDir);
-    const html = fs.readFileSync(path.join(siteDir, 'enemies.html'), 'utf8');
+    publishAgentMarkdown(publishDir);
+    const html = fs.readFileSync(path.join(publishDir, 'enemies.html'), 'utf8');
     assert.match(html, /<link rel="alternate" type="text\/markdown" href="https:\/\/battletank.online\/enemies.md" \/>\s*<\/head>/);
-    const headers = fs.readFileSync(path.join(siteDir, '_headers'), 'utf8');
+    const headers = fs.readFileSync(path.join(publishDir, '_headers'), 'utf8');
     assert.match(headers, /\/enemies\.md\n {2}Content-Type: text\/markdown; charset=utf-8\n {2}Link: <https:\/\/battletank.online\/enemies>; rel="canonical"/);
     assert.match(headers, /\/index\.md\n {2}Content-Type: text\/markdown; charset=utf-8\n {2}Link: <https:\/\/battletank.online\/>; rel="canonical"/);
   } finally {
-    fs.rmSync(siteDir, { recursive: true, force: true });
+    fs.rmSync(publishDir, { recursive: true, force: true });
   }
 });

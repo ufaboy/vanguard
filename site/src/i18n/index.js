@@ -3,10 +3,9 @@
  *
  * Reuses the existing static-page dictionaries (`i18n/pages/<locale>.mjs`, keyed by English text with
  * collapsed whitespace and HTML entities kept), so no translation has to be redone.
- * A missing translation fails the build, like `scripts/build-i18n-pages.mjs` does today.
+ * A missing translation fails the build.
  */
 import es from '../../../i18n/pages/es.mjs';
-import { LOCALIZED_PAGES } from '../../../scripts/build-i18n-pages.mjs';
 
 export const SITE = 'https://battletank.online';
 export const DEFAULT_LOCALE = 'en';
@@ -15,29 +14,63 @@ export const LANGUAGE_NAMES = { en: 'English', es: 'Español' };
 export const OG_LOCALES = { en: 'en_US', es: 'es_ES' };
 const DICTIONARIES = { es };
 
-/** Slugs that have a translated twin (`''` is the home page). */
-const TWINS = new Set(LOCALIZED_PAGES.map((p) => p.slug));
+/**
+ * Pages built in every locale (`''` is the home page); every other page is English only.
+ * Translated twins live under `/<locale>/` and carry hreflang alternates and a language menu.
+ */
+export const LOCALIZED_SLUGS = Object.freeze([
+  '', 'enemies', 'campaign', 'survival', 'contracts', 'how-to-play', 'walkthrough', 'arsenal',
+  'destructible-terrain', 'games-like-battle-city', 'webgl-tank-game', 'about', 'privacy-policy', 'terms', 'contact',
+]);
+const TWINS = new Set(LOCALIZED_SLUGS);
 
-/** `getStaticPaths` result for a page that exists in every locale (`/about`, `/es/about`). */
-export const localeStaticPaths = () =>
-  LOCALES.map((locale) => ({ params: { locale: locale === DEFAULT_LOCALE ? undefined : locale }, props: { locale } }));
+/** True when page `slug` has translated twins. */
+export const isLocalized = (slug) => TWINS.has(slug);
+
+/**
+ * `getStaticPaths` for page `slug`: every locale when the page is listed in LOCALIZED_SLUGS
+ * (`/about`, `/es/about`), otherwise English only.
+ */
+export const localeStaticPaths = (slug) =>
+  (TWINS.has(slug) ? LOCALES : [DEFAULT_LOCALE])
+    .map((locale) => ({ params: { locale: locale === DEFAULT_LOCALE ? undefined : locale }, props: { locale } }));
 
 const normalize = (text) => text.replace(/\s+/g, ' ').trim();
 const encode = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', times: '×', le: '≤', ge: '≥', mdash: '—', ndash: '–', hellip: '…', rarr: '→', larr: '←', middot: '·', copy: '©' };
 const decode = (text) =>
-  text.replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (m, e) => ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'", nbsp: ' ' })[e]);
+  text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, e) => {
+    if (e[0] !== '#') return ENTITIES[e.toLowerCase()] ?? m;
+    return String.fromCodePoint(e[1] === 'x' || e[1] === 'X' ? parseInt(e.slice(2), 16) : Number(e.slice(1)));
+  });
 
-/** Returns `t(englishText)` for `locale`; output is plain text (Astro escapes it). */
+/**
+ * Returns `t(englishText)` for `locale`. The key may be plain text or HTML text with entities (the
+ * dictionary format); internal whitespace is collapsed. Output is plain text (Astro escapes it).
+ */
 export function useTranslations(locale) {
   const dict = DICTIONARIES[locale];
   return (text) => {
-    if (!dict) return text;
     const key = normalize(text);
-    if (!/\p{L}{2,}/u.test(key)) return text;
+    if (!dict || !/\p{L}{2,}/u.test(key)) return decode(key);
     const value = dict[key] ?? dict[encode(key)];
     if (value === undefined) throw new Error(`[i18n:${locale}] missing translation: ${JSON.stringify(key)}`);
     return decode(value);
   };
+}
+
+/**
+ * Rewrites a relative link written for an English page (`./slug`, `./images/x.webp`) for `locale`,
+ * exactly like the former generator: translated pages keep twins in `./` and reach everything else
+ * through `../`.
+ */
+export function localHref(href, locale) {
+  // Links may be written as HTML (`&amp;`); Astro escapes attribute values itself.
+  const value = decode(href);
+  if (locale === DEFAULT_LOCALE || !value.startsWith('./')) return value;
+  const target = value.slice(2);
+  const [pathPart] = target.split(/[?#]/);
+  return TWINS.has(pathPart.replace(/\.html$/, '')) ? value : `../${target}`;
 }
 
 /** Absolute URL of a page (`slug` without extension, `''` for home). */
@@ -70,7 +103,7 @@ const JSONLD_TEXT_KEYS = new Set(['name', 'description', 'text', 'featureList', 
 /** Translates JSON-LD written in English: text fields, own page URLs and `inLanguage`. */
 export function localizeJsonLd(value, locale) {
   const t = useTranslations(locale);
-  const urls = new Map(LOCALIZED_PAGES.map((p) => [pageUrl(p.slug, DEFAULT_LOCALE), pageUrl(p.slug, locale)]));
+  const urls = new Map(LOCALIZED_SLUGS.map((slug) => [pageUrl(slug, DEFAULT_LOCALE), pageUrl(slug, locale)]));
   const walk = (v) => {
     if (Array.isArray(v)) return v.map(walk);
     if (!v || typeof v !== 'object') return v;

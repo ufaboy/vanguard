@@ -1,5 +1,5 @@
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
-import { CONTRACT_PAGE_PATHS, PAGE_PATHS, battlefieldUrl } from './app/routes.js';
+import { CONTRACT_IDS, PAGE_PATHS, battlefieldUrl } from './app/routes.js';
 import { attachSettingsModal } from './app/shell.js';
 import {
   CAMERA_LABELS,
@@ -597,7 +597,7 @@ function applyRoute(route) {
     state.showUpgradeDrawer = false;
     engine?.setHangarOpen(false);
   }
-  if (CONTRACT_PAGE_PATHS[route.page]) {
+  if (CONTRACT_IDS.includes(route.page)) {
     const index = SECTORS.findIndex(
       (sector) => sector.mapId === route.page || sector.contractId === route.page
     );

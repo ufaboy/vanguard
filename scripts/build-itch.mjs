@@ -5,9 +5,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { buildSite } from './site.mjs';
 
 const ROOT_DIR = process.cwd();
-const PUBLIC_DIR = path.resolve(ROOT_DIR, 'public');
+// The built site (Astro pages + public/), rebuilt so the package matches the current sources.
+const PUBLIC_DIR = buildSite();
 const OUT_DIR = path.resolve(ROOT_DIR, 'dist', 'itch');
 const ZIP_PATH = path.resolve(ROOT_DIR, 'dist', 'iron-vanguard-itch.zip');
 

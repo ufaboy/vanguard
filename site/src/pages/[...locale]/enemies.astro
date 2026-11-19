@@ -1,0 +1,196 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("enemies");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Enemies & Bosses",
+        "item": "https://battletank.online/enemies"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="enemies"
+  title={"Enemy Tanks &amp; Boss Fights Guide — BATTLE TANK"}
+  description={"Guide to tank boss fights and enemy AI in BATTLE TANK: 12 enemy tank classes, 4 Sector Bosses (Mammoth, Hydra, Titan, Cerberus-T), counters and weak points."}
+  ogDescription={"Tactical breakdown of all 12 enemy tank classes and 4 Sector Bosses in BATTLE TANK, including counters and weak points."}
+  twitterDescription={"All 12 enemy tank classes and 4 Sector Bosses with counters, directional armor tips, and phase mechanics."}
+  image={"https://battletank.online/images/home-hero.webp"}
+  ogLocale
+  jsonLd={jsonLd}
+  bodyPage="enemies"
+  script="src/pages/how-to-play.js"
+>
+        <h1 class="menu-page-title" tabindex="-1">{t("Enemy Tanks &amp; Boss Fights")}</h1>
+        <p class="menu-lead">
+          {t("Tactical intelligence on all 12 hostile tank classes and 4 Sector Boss fights in BATTLE TANK, a")} <a href={h("./")}>{t("free 3D Battle City-style tank game")}</a>{t(". Every enemy runs a dedicated role brain, directional armor model, and squad coordination director.")}
+        </p>
+
+        <h2 style="margin-top:32px;font-size:24px;font-weight:800;">{t("4 Sector Bosses")}</h2>
+        <figure class="menu-card" style="cursor:default;padding:14px;margin-top:16px;">
+          <img src={h("./images/home-hero.webp")} alt={t("VANGUARD player tank facing colossal Sector Bosses Mammoth, Hydra, and Titan")} loading="lazy" width="1920" height="1080" style="width:100%;height:auto;border-radius:4px;display:block;">
+          <figcaption style="margin-top:10px;color:#acbcbd;font-size:13px;">{t("Sector Bosses deploy multi-phase shields, directional armor, and combined-arms escorts.")}</figcaption>
+        </figure>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_boss_mammoth.webp")} alt={t("MAMMOTH MK-V Sector 01 Dreadnought Boss 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("BOSS-01 // SECTOR 01 DREADNOUGHT")}</span>
+            <strong>{t("MAMMOTH MK-V")}</strong>
+            <p>
+              {t("Super-heavy siege brawler armed with twin")} <code>{t("BOSS_DUAL")}</code> {t("cannons, a turret Homing ATGM pod, and onboard APS against player missiles. At 50% HP it activates a 2s phase shield, enters citadel overdrive, and calls an armored escort.")}
+            </p>
+            <p><strong>{t("Counter:")}</strong> {t("Bait its ATGM salvo or strip onboard APS charges, then flank its slower hull traverse.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_boss_hydra.webp")} alt={t("HYDRA MLRS-9 Sector 02 Amphibious Artillery Cruiser Boss 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("BOSS-02 // AMPHIBIOUS ARTILLERY CRUISER")}</span>
+            <strong>{t("HYDRA MLRS-9")}</strong>
+            <p>
+              {t("Stand-off rocket cruiser operating at 10–14 cells with telegraphed 3-rocket MLRS triangle salvos, amphibious water crossing, and a close-range flamethrower plus homing ATGM defense inside 6 cells. At 50% HP it overclocks its surviving heads.")}
+            </p>
+            <p><strong>{t("Counter:")}</strong> {t("Step out of ground salvo markers, watch the close-range flame arc, and use Tier IV/V chassis on water maps.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_boss_titan.webp")} alt={t("SUPREME DREADNOUGHT TITAN Sector 03 Twin-Turret Boss 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("BOSS-03 // TWIN-TURRET FORTRESS")}</span>
+            <strong>{t("SUPREME DREADNOUGHT (TITAN)")}</strong>
+            <p>
+              {t("Guarded by directional")} <em>{t("Aegis")}</em> {t("armor (60% front, 35% sides, 15% rear) and two independent dual-cannon turrets. At 60% HP it summons a Standard + Armor escort; at 30% HP it overloads—firing faster while rear radiator grilles open (0% rear armor).")}
+            </p>
+            <p><strong>{t("Counter:")}</strong> {t("Never trade shots into its front glacis. Flank behind cover and punish the rear during overload.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_boss_inferno.webp")} alt={t("CERBERUS-T INFERNO Thermobaric Siege Leviathan Boss 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("BOSS-04 // THERMOBARIC LEVIATHAN")}</span>
+            <strong>{t("CERBERUS-T (INFERNO)")}</strong>
+            <p>
+              {t("Siege leviathan equipped with a 240mm thermobaric cannon (2.5-cell blast that vaporizes brick, concrete, forest, ice, and water into sand), demolition dozer blade, rear mine dispenser, and nitro overdrive ram.")}
+            </p>
+            <p><strong>{t("Counter:")}</strong> {t("Keep distance from walls during thermobaric blasts, watch for rear mines, and dodge its linear overdrive ram.")}</p>
+          </article>
+        </div>
+
+        <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t("12 Enemy Tank Classes")}</h2>
+        <div class="menu-grid" style="margin-top:16px;">
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_standard.webp")} alt={t("Standard enemy battle tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("LINE INFANTRY // BALANCED")}</span>
+            <strong>{t("Standard")}</strong>
+            <p>{t("Core battle tank that peeks from firing lanes, ducks into cover after engagements, and retreats once below 35% HP.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_scout.webp")} alt={t("Scout fast flanking enemy tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("FLANKER // HIGH MOBILITY")}</span>
+            <strong>{t("Scout")}</strong>
+            <p>{t("Fast light tank that circles 6–10 cells toward your rear arc, kites when crowded, and evades after taking hits.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_armor.webp")} alt={t("Armor heavy spearhead enemy tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("SPEARHEAD // HEAVY ARMOR")}</span>
+            <strong>{t("Armor")}</strong>
+            <p>{t("Heavy glacis-first tank (40% front / 20% sides / 5% rear) that closes to 2–4 cells. Flank or use high-penetration cannons.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_howitzer.webp")} alt={t("Howitzer indirect-fire artillery tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("ARTILLERY // INDIRECT FIRE")}</span>
+            <strong>{t("Howitzer")}</strong>
+            <p>{t("Emplaces hidden behind walls 7–11 cells away and shells your position using allied spotter data. Push inside 5 cells to force relocation.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_sapper.webp")} alt={t("Sapper minelayer enemy tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("MINELAYER // AREA DENIAL")}</span>
+            <strong>{t("Sapper")}</strong>
+            <p>{t("Plants magnetic proximity mines in chokepoints along your recent trail before switching to line combat.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_hover.webp")} alt={t("Hover amphibious raider tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("RAIDER // AMPHIBIOUS")}</span>
+            <strong>{t("Hover")}</strong>
+            <p>{t("Grav-hover unit that strikes from deep water and shorelines impassable to standard Tier I–III chassis.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_kamikaze.webp")} alt={t("Kamikaze contact warhead enemy tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("HUNTER // CONTACT WARHEAD")}</span>
+            <strong>{t("Kamikaze")}</strong>
+            <p>{t("Unarmed stalker that approaches out of sight, then triggers a telegraphed red-spark zigzag charge inside 5 cells. Destroy before contact.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_flamethrower.webp")} alt={t("Flamethrower close-quarters ambush tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("AMBUSHER // CLOSE QUARTERS")}</span>
+            <strong>{t("Flamethrower")}</strong>
+            <p>{t("Lurks in forests and corners 3–6 cells away and rushes inside 5 cells. Napalm streams bypass APS completely.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_jammer.webp")} alt={t("Jammer electronic warfare enemy tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("EWAR // ELECTRONIC WARFARE")}</span>
+            <strong>{t("Jammer")}</strong>
+            <p>{t("Shadows out of sight while its passive ECM scrambles your radar within 20 cells, then screens allies from 3-5 cells, where it shuts down your APS and breaks ATGM lock.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_engineer.webp")} alt={t("Engineer field repair enemy tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("SUPPORT // FIELD REPAIR")}</span>
+            <strong>{t("Engineer")}</strong>
+            <p>{t("Welds damaged enemy tanks, repairs broken brick fortifications, and erects new brick walls. Prioritize in prolonged fights.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_striker.webp")} alt={t("Striker standoff missile carrier tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("STANDOFF // MISSILE CARRIER")}</span>
+            <strong>{t("Striker")}</strong>
+            <p>{t("Holds 7–10 cell line-of-sight lanes to launch guided missiles, shifting sideways after each salvo. Counter with APS or smoke.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <img src={h("./images/tanks/tank_stealth.webp")} alt={t("Stealth camouflaged sniper enemy tank 3D model")} loading="lazy" width="640" height="360" style="width:100%;height:auto;border-radius:4px;margin-bottom:14px;display:block;">
+            <span class="menu-kicker">{t("SNIPER // CAMOUFLAGE")}</span>
+            <strong>{t("Stealth")}</strong>
+            <p>{t("Overwatches from 8–11 cells with full camouflage while stationary, firing a single high-velocity shot before slipping into cover.")}</p>
+          </article>
+        </div>
+
+        <div class="menu-actions" style="margin-top:28px;">
+          <a class="menu-primary" href={h("./campaign")}>{t("Deploy to Campaign →")}</a>
+          <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
+          <a class="menu-secondary" href={h("./how-to-play")}>{t("How to Play")}</a>
+        </div>
+
+  <Fragment slot="noscript">
+      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+        <h1>{t("Enemy Tanks &amp; Boss Fights — BATTLE TANK")}</h1>
+        <p>{t("Field guide to all 12 enemy classes and 4 Sector Bosses in BATTLE TANK.")}</p>
+      </main>
+  </Fragment>
+</PageLayout>

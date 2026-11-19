@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import path from 'path';
 import { collectAllKeys, loadLocale, placeholders } from '../scripts/i18n-keys.mjs';
-import { buildI18nPages } from '../scripts/build-i18n-pages.mjs';
 import { formatNumber, getLocale, t } from '../public/src/i18n/index.js';
 
 const LOCALES = ['es'];
@@ -61,12 +60,3 @@ for (const code of LOCALES) {
     }
   });
 }
-
-test('translated static pages are complete and match their English sources', async () => {
-  const results = await buildI18nPages({ write: false });
-  assert.ok(results.length > 0);
-  for (const r of results) {
-    assert.deepEqual(r.missing, [], `${r.page} (${r.locale}) has untranslated text; add it to i18n/pages/${r.locale}.mjs`);
-    assert.equal(r.stale, false, `${r.outFile} is out of date: run node scripts/build-i18n-pages.mjs`);
-  }
-});

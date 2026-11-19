@@ -7,7 +7,7 @@
 import Analytics from '../components/Analytics.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import {
-  DEFAULT_LOCALE, LOCALES, OG_LOCALES, assetHref, localizeJsonLd, pageUrl, useTranslations,
+  DEFAULT_LOCALE, LOCALES, OG_LOCALES, assetHref, isLocalized, localizeJsonLd, pageUrl, useTranslations,
 } from '../i18n/index.js';
 
 interface Props {
@@ -15,7 +15,13 @@ interface Props {
   slug: string;
   title: string;
   description: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogType?: string;
+  twitterTitle?: string;
   twitterDescription?: string;
+  /** Absolute Open Graph / Twitter image URL. */
+  image?: string;
   imageAlt?: string;
   imageSize?: boolean;
   ogLocale?: boolean;
@@ -25,12 +31,13 @@ interface Props {
   script: string;
 }
 const {
-  locale, slug, title, description, twitterDescription = description, imageAlt, imageSize = false,
-  ogLocale = false, jsonLd = [], bodyPage, contentClass = 'menu-content', script,
+  locale, slug, title, description, ogTitle = title, ogDescription = description, ogType = 'website', twitterTitle = ogTitle,
+  twitterDescription = ogDescription, image = 'https://battletank.online/images/og-battle.jpg', imageAlt,
+  imageSize = false, ogLocale = false, jsonLd = [], bodyPage, contentClass = 'menu-content', script,
 } = Astro.props;
 const t = useTranslations(locale);
 const url = pageUrl(slug, locale);
-const image = 'https://battletank.online/images/og-battle.jpg';
+const alternates = isLocalized(slug);
 const importMap = {
   imports: {
     three: assetHref('vendor/three/build/three.module.js', locale),
@@ -49,15 +56,15 @@ const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, loca
     <meta name="theme-color" content="#0B1120" />
     <Analytics />
     <link rel="canonical" href={url} />
-    {LOCALES.map((lang) => <link rel="alternate" hreflang={lang} href={pageUrl(slug, lang)} />)}
-    <link rel="alternate" hreflang="x-default" href={pageUrl(slug, DEFAULT_LOCALE)} />
+    {alternates && LOCALES.map((lang) => <link rel="alternate" hreflang={lang} href={pageUrl(slug, lang)} />)}
+    {alternates && <link rel="alternate" hreflang="x-default" href={pageUrl(slug, DEFAULT_LOCALE)} />}
     <link rel="icon" type="image/svg+xml" href={assetHref('images/icon.svg', locale)} />
     <link rel="apple-touch-icon" sizes="180x180" href={assetHref('images/apple-touch-icon.png', locale)} />
     <link rel="manifest" href={assetHref('manifest.webmanifest', locale)} />
     <meta property="og:site_name" content="BATTLE TANK" />
-    <meta property="og:title" content={t(title)} />
-    <meta property="og:description" content={t(description)} />
-    <meta property="og:type" content="website" />
+    <meta property="og:title" content={t(ogTitle)} />
+    <meta property="og:description" content={t(ogDescription)} />
+    <meta property="og:type" content={ogType} />
     {ogLocale && <meta property="og:locale" content={OG_LOCALES[locale]} />}
     {ogLocale && LOCALES.filter((l) => l !== locale).map((l) => <meta property="og:locale:alternate" content={OG_LOCALES[l]} />)}
     <meta property="og:url" content={url} />
@@ -66,7 +73,7 @@ const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, loca
     {imageSize && <meta property="og:image:height" content="630" />}
     {imageAlt && <meta property="og:image:alt" content={t(imageAlt)} />}
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={t(title)} />
+    <meta name="twitter:title" content={t(twitterTitle)} />
     <meta name="twitter:description" content={t(twitterDescription)} />
     <meta name="twitter:image" content={image} />
     {ldBlocks.map((json) => <script is:inline type="application/ld+json" set:html={json} />)}
@@ -79,6 +86,7 @@ const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, loca
         <div class={contentClass}>
           <slot />
         </div>
+        <slot name="after" />
         <SiteFooter locale={locale} slug={slug} />
       </main>
     <Fragment set:html="<!-- prerender:end -->" /></div>

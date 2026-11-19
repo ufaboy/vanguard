@@ -1,80 +1,48 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tank Campaign: 35 Base Defense Missions — BATTLE TANK</title>
-    <meta name="description" content="Play a 35-mission 3D tank campaign in your browser, no download. Defend your HQ like in Battle City, cross 7 regions and defeat 4 Sector Bosses." />
-    <meta name="theme-color" content="#0B1120" />
-    <meta name="google-adsense-account" content="ca-pub-3217305527287787">
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      // Developer devices: ?internal=1 marks this browser as internal traffic (?internal=0 clears it).
-      try {
-        var internalFlag = new URLSearchParams(location.search).get('internal');
-        if (internalFlag === '1') localStorage.setItem('bt_internal_traffic', '1');
-        else if (internalFlag === '0') localStorage.removeItem('bt_internal_traffic');
-        if (localStorage.getItem('bt_internal_traffic') === '1') gtag('set', { traffic_type: 'internal' });
-      } catch (e) {}
-      // Google Analytics (GTM) and AdSense load only on the production domain,
-      // never on *.pages.dev deployments or localhost.
-      if (/^(www\.)?battletank\.online$/.test(location.hostname)) {
-        [
-          'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3217305527287787',
-          'https://www.googletagmanager.com/gtm.js?id=GTM-TB78X2F4',
-        ].forEach(function (src) {
-          var s = document.createElement('script');
-          s.async = true;
-          s.src = src;
-          if (src.indexOf('googlesyndication') !== -1) s.crossOrigin = 'anonymous';
-          document.head.appendChild(s);
-        });
-      }
-    </script>
-    <link rel="canonical" href="https://battletank.online/campaign" />
-    <link rel="alternate" hreflang="en" href="https://battletank.online/campaign" />
-    <link rel="alternate" hreflang="es" href="https://battletank.online/es/campaign" />
-    <link rel="alternate" hreflang="x-default" href="https://battletank.online/campaign" />
-    <link rel="icon" type="image/svg+xml" href="./images/icon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./images/apple-touch-icon.png" />
-    <link rel="manifest" href="./manifest.webmanifest" />
-    <meta property="og:site_name" content="BATTLE TANK" />
-    <meta property="og:title" content="Tank Campaign: 35 Base Defense Missions — BATTLE TANK" />
-    <meta property="og:description" content="35 base defense and assault tank missions across 7 regions, ending in 4 Sector Boss fights. Free in your browser." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://battletank.online/campaign" />
-    <meta property="og:image" content="https://battletank.online/images/campaign-map-clean.webp" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Tank Campaign: 35 Base Defense Missions — BATTLE TANK" />
-    <meta name="twitter:description" content="35 base defense tank missions across 7 regions in a free 3D Battle City-style browser game." />
-    <meta name="twitter:image" content="https://battletank.online/images/campaign-map-clean.webp" />
-    <script type="application/ld+json">
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("campaign");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale);
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
       {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://battletank.online/" },
-          { "@type": "ListItem", "position": 2, "name": "Campaign", "item": "https://battletank.online/campaign" }
-        ]
-      }
-    </script>
-    <link rel="stylesheet" href="./src/index.css" />
-    <script type="importmap">
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
       {
-        "imports": {
-          "three": "./vendor/three/build/three.module.js",
-          "three/addons/": "./vendor/three/examples/jsm/"
-        }
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Campaign",
+        "item": "https://battletank.online/campaign"
       }
-    </script>
-  </head>
-  <body data-page="campaign" class="text-slate-100 scrollable-page">
-    <div id="root"><!-- prerender:start -->
-<main class="menu-page">
-      <div class="menu-content campaign-content">
-        <h1 class="sr-only" tabindex="-1">Tank Campaign: 35 Base Defense Missions on the Road to the Capital</h1>
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="campaign"
+  title={"Tank Campaign: 35 Base Defense Missions — BATTLE TANK"}
+  description={"Play a 35-mission 3D tank campaign in your browser, no download. Defend your HQ like in Battle City, cross 7 regions and defeat 4 Sector Bosses."}
+  ogDescription={"35 base defense and assault tank missions across 7 regions, ending in 4 Sector Boss fights. Free in your browser."}
+  twitterDescription={"35 base defense tank missions across 7 regions in a free 3D Battle City-style browser game."}
+  image={"https://battletank.online/images/campaign-map-clean.webp"}
+  jsonLd={jsonLd}
+  bodyPage="campaign"
+  contentClass="menu-content campaign-content"
+  script="src/pages/campaign.js"
+>
+        <h1 class="sr-only" tabindex="-1">{t("Tank Campaign: 35 Base Defense Missions on the Road to the Capital")}</h1>
         
     <div class="cinematic-campaign">
       <!-- Main Map Board -->
@@ -102,37 +70,37 @@
           
     <div class="cinematic-region-badge" style="left:9.5%;top:13%;--region-color:#38bdf8;--region-glow:#38bdf866;" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M3 21h18M5 21V7l8-4v18M13 10h4v11M9 9h1M9 13h1M9 17h1M15 14h1M15 17h1"/></svg>
-      <span>City Outskirts</span>
+      <span>{t("City Outskirts")}</span>
     </div>
   
     <div class="cinematic-region-badge" style="left:10.5%;top:43.5%;--region-color:#4ade80;--region-glow:#4ade8066;" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M12 2L6 12h4l-3 7h10l-3-7h4L12 2zM12 19v3"/></svg>
-      <span>Forest Frontier</span>
+      <span>{t("Forest Frontier")}</span>
     </div>
   
     <div class="cinematic-region-badge" style="left:10.5%;top:64%;--region-color:#f59e0b;--region-glow:#f59e0b66;" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M12 3v18M8 8v4a4 4 0 008 0V7M5 12h3M16 11h3"/></svg>
-      <span>Desert Crossing</span>
+      <span>{t("Desert Crossing")}</span>
     </div>
   
     <div class="cinematic-region-badge" style="left:42%;top:63.5%;--region-color:#2dd4bf;--region-glow:#2dd4bf66;" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M2 20c3-1 6-1 9 0s6 1 9 0M2 16c3-1 6-1 9 0s6 1 9 0M6 4v10M12 2v12M18 6v8"/></svg>
-      <span>Coastal Wetlands</span>
+      <span>{t("Coastal Wetlands")}</span>
     </div>
   
     <div class="cinematic-region-badge" style="left:85%;top:69.5%;--region-color:#67e8f9;--region-glow:#67e8f966;" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93M8 4l4 4-4 4M16 4l-4 4 4 4M8 20l4-4-4-4M16 20l-4-4 4-4"/></svg>
-      <span>Frozen Highlands</span>
+      <span>{t("Frozen Highlands")}</span>
     </div>
   
     <div class="cinematic-region-badge" style="left:85%;top:41.5%;--region-color:#fb923c;--region-glow:#fb923c66;" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M2 20h20M4 20V10l6 4V10l6 4V4h4v16"/></svg>
-      <span>Industrial Belt</span>
+      <span>{t("Industrial Belt")}</span>
     </div>
   
     <div class="cinematic-region-badge" style="left:84%;top:13%;--region-color:#f43f5e;--region-glow:#f43f5e66;" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M3 21h18M5 21V10l7-5 7 5v11M10 21v-6h4v6M9 13h6"/></svg>
-      <span>Capital City</span>
+      <span>{t("Capital City")}</span>
     </div>
   
 
@@ -145,8 +113,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-01"
         aria-pressed="true"
-        aria-label="Mission 1: First Contact. available."
-        title="1. First Contact"
+        aria-label={t("Mission 1: First Contact. available.")}
+        title={t("1. First Contact")}
       >
         <div class="node-pulse" aria-hidden="true"><svg viewBox="0 0 100 86.6" aria-hidden="true"><polygon points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3"/></svg></div>
         <div class="node-badge">
@@ -168,8 +136,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-02"
         aria-pressed="false"
-        aria-label="Mission 2: Broken Avenue. locked."
-        title="2. Broken Avenue"
+        aria-label={t("Mission 2: Broken Avenue. locked.")}
+        title={t("2. Broken Avenue")}
       >
         
         <div class="node-badge">
@@ -191,8 +159,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-03"
         aria-pressed="false"
-        aria-label="Mission 3: Civic Shelter. locked."
-        title="3. Civic Shelter"
+        aria-label={t("Mission 3: Civic Shelter. locked.")}
+        title={t("3. Civic Shelter")}
       >
         
         <div class="node-badge">
@@ -214,8 +182,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-04"
         aria-pressed="false"
-        aria-label="Mission 4: Railway Cut. locked."
-        title="4. Railway Cut"
+        aria-label={t("Mission 4: Railway Cut. locked.")}
+        title={t("4. Railway Cut")}
       >
         
         <div class="node-badge">
@@ -237,8 +205,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-05"
         aria-pressed="false"
-        aria-label="Mission 5: Outer Gate. locked."
-        title="5. Outer Gate"
+        aria-label={t("Mission 5: Outer Gate. locked.")}
+        title={t("5. Outer Gate")}
       >
         
         <div class="node-badge">
@@ -260,8 +228,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-06"
         aria-pressed="false"
-        aria-label="Mission 6: Green Border. locked."
-        title="6. Green Border"
+        aria-label={t("Mission 6: Green Border. locked.")}
+        title={t("6. Green Border")}
       >
         
         <div class="node-badge">
@@ -283,8 +251,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-07"
         aria-pressed="false"
-        aria-label="Mission 7: Timberline. locked."
-        title="7. Timberline"
+        aria-label={t("Mission 7: Timberline. locked.")}
+        title={t("7. Timberline")}
       >
         
         <div class="node-badge">
@@ -306,8 +274,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-08"
         aria-pressed="false"
-        aria-label="Mission 8: Hidden Signals. locked."
-        title="8. Hidden Signals"
+        aria-label={t("Mission 8: Hidden Signals. locked.")}
+        title={t("8. Hidden Signals")}
       >
         
         <div class="node-badge">
@@ -329,8 +297,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-09"
         aria-pressed="false"
-        aria-label="Mission 9: River Watch. locked."
-        title="9. River Watch"
+        aria-label={t("Mission 9: River Watch. locked.")}
+        title={t("9. River Watch")}
       >
         
         <div class="node-badge">
@@ -352,8 +320,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-10"
         aria-pressed="false"
-        aria-label="Mission 10: Deepwood Bastion. locked."
-        title="10. Deepwood Bastion"
+        aria-label={t("Mission 10: Deepwood Bastion. locked.")}
+        title={t("10. Deepwood Bastion")}
       >
         
         <div class="node-badge">
@@ -375,8 +343,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-11"
         aria-pressed="false"
-        aria-label="Mission 11: Dust Frontier. locked."
-        title="11. Dust Frontier"
+        aria-label={t("Mission 11: Dust Frontier. locked.")}
+        title={t("11. Dust Frontier")}
       >
         
         <div class="node-badge">
@@ -398,8 +366,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-12"
         aria-pressed="false"
-        aria-label="Mission 12: Dry Wells. locked."
-        title="12. Dry Wells"
+        aria-label={t("Mission 12: Dry Wells. locked.")}
+        title={t("12. Dry Wells")}
       >
         
         <div class="node-badge">
@@ -421,8 +389,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-13"
         aria-pressed="false"
-        aria-label="Mission 13: Canyon Teeth. locked."
-        title="13. Canyon Teeth"
+        aria-label={t("Mission 13: Canyon Teeth. locked.")}
+        title={t("13. Canyon Teeth")}
       >
         
         <div class="node-badge">
@@ -444,8 +412,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-14"
         aria-pressed="false"
-        aria-label="Mission 14: Mirage Array. locked."
-        title="14. Mirage Array"
+        aria-label={t("Mission 14: Mirage Array. locked.")}
+        title={t("14. Mirage Array")}
       >
         
         <div class="node-badge">
@@ -467,8 +435,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-15"
         aria-pressed="false"
-        aria-label="Mission 15: Sunken Fortress. locked."
-        title="15. Sunken Fortress"
+        aria-label={t("Mission 15: Sunken Fortress. locked.")}
+        title={t("15. Sunken Fortress")}
       >
         
         <div class="node-badge">
@@ -490,8 +458,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-16"
         aria-pressed="false"
-        aria-label="Mission 16: Salt Approach. locked."
-        title="16. Salt Approach"
+        aria-label={t("Mission 16: Salt Approach. locked.")}
+        title={t("16. Salt Approach")}
       >
         
         <div class="node-badge">
@@ -513,8 +481,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-17"
         aria-pressed="false"
-        aria-label="Mission 17: Reed Ambush. locked."
-        title="17. Reed Ambush"
+        aria-label={t("Mission 17: Reed Ambush. locked.")}
+        title={t("17. Reed Ambush")}
       >
         
         <div class="node-badge">
@@ -536,8 +504,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-18"
         aria-pressed="false"
-        aria-label="Mission 18: Harbor Refuge. locked."
-        title="18. Harbor Refuge"
+        aria-label={t("Mission 18: Harbor Refuge. locked.")}
+        title={t("18. Harbor Refuge")}
       >
         
         <div class="node-badge">
@@ -559,8 +527,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-19"
         aria-pressed="false"
-        aria-label="Mission 19: Breakwater. locked."
-        title="19. Breakwater"
+        aria-label={t("Mission 19: Breakwater. locked.")}
+        title={t("19. Breakwater")}
       >
         
         <div class="node-badge">
@@ -582,8 +550,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-20"
         aria-pressed="false"
-        aria-label="Mission 20: Tidal Lock. locked."
-        title="20. Tidal Lock"
+        aria-label={t("Mission 20: Tidal Lock. locked.")}
+        title={t("20. Tidal Lock")}
       >
         
         <div class="node-badge">
@@ -605,8 +573,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-21"
         aria-pressed="false"
-        aria-label="Mission 21: Cold Ascent. locked."
-        title="21. Cold Ascent"
+        aria-label={t("Mission 21: Cold Ascent. locked.")}
+        title={t("21. Cold Ascent")}
       >
         
         <div class="node-badge">
@@ -628,8 +596,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-22"
         aria-pressed="false"
-        aria-label="Mission 22: White Relay. locked."
-        title="22. White Relay"
+        aria-label={t("Mission 22: White Relay. locked.")}
+        title={t("22. White Relay")}
       >
         
         <div class="node-badge">
@@ -651,8 +619,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-23"
         aria-pressed="false"
-        aria-label="Mission 23: Summit Refuge. locked."
-        title="23. Summit Refuge"
+        aria-label={t("Mission 23: Summit Refuge. locked.")}
+        title={t("23. Summit Refuge")}
       >
         
         <div class="node-badge">
@@ -674,8 +642,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-24"
         aria-pressed="false"
-        aria-label="Mission 24: Glacier Cut. locked."
-        title="24. Glacier Cut"
+        aria-label={t("Mission 24: Glacier Cut. locked.")}
+        title={t("24. Glacier Cut")}
       >
         
         <div class="node-badge">
@@ -697,8 +665,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-25"
         aria-pressed="false"
-        aria-label="Mission 25: Iron Avalanche. locked."
-        title="25. Iron Avalanche"
+        aria-label={t("Mission 25: Iron Avalanche. locked.")}
+        title={t("25. Iron Avalanche")}
       >
         
         <div class="node-badge">
@@ -720,8 +688,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-26"
         aria-pressed="false"
-        aria-label="Mission 26: Foundry Road. locked."
-        title="26. Foundry Road"
+        aria-label={t("Mission 26: Foundry Road. locked.")}
+        title={t("26. Foundry Road")}
       >
         
         <div class="node-badge">
@@ -743,8 +711,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-27"
         aria-pressed="false"
-        aria-label="Mission 27: Freight Spine. locked."
-        title="27. Freight Spine"
+        aria-label={t("Mission 27: Freight Spine. locked.")}
+        title={t("27. Freight Spine")}
       >
         
         <div class="node-badge">
@@ -766,8 +734,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-28"
         aria-pressed="false"
-        aria-label="Mission 28: Power Reserve. locked."
-        title="28. Power Reserve"
+        aria-label={t("Mission 28: Power Reserve. locked.")}
+        title={t("28. Power Reserve")}
       >
         
         <div class="node-badge">
@@ -789,8 +757,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-29"
         aria-pressed="false"
-        aria-label="Mission 29: Furnace District. locked."
-        title="29. Furnace District"
+        aria-label={t("Mission 29: Furnace District. locked.")}
+        title={t("29. Furnace District")}
       >
         
         <div class="node-badge">
@@ -812,8 +780,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-30"
         aria-pressed="false"
-        aria-label="Mission 30: Capital Breach. locked."
-        title="30. Capital Breach"
+        aria-label={t("Mission 30: Capital Breach. locked.")}
+        title={t("30. Capital Breach")}
       >
         
         <div class="node-badge">
@@ -835,8 +803,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-31"
         aria-pressed="false"
-        aria-label="Mission 31: Return to the Streets. locked."
-        title="31. Return to the Streets"
+        aria-label={t("Mission 31: Return to the Streets. locked.")}
+        title={t("31. Return to the Streets")}
       >
         
         <div class="node-badge">
@@ -858,8 +826,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-32"
         aria-pressed="false"
-        aria-label="Mission 32: Boulevard of Steel. locked."
-        title="32. Boulevard of Steel"
+        aria-label={t("Mission 32: Boulevard of Steel. locked.")}
+        title={t("32. Boulevard of Steel")}
       >
         
         <div class="node-badge">
@@ -881,8 +849,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-33"
         aria-pressed="false"
-        aria-label="Mission 33: Last Shelter. locked."
-        title="33. Last Shelter"
+        aria-label={t("Mission 33: Last Shelter. locked.")}
+        title={t("33. Last Shelter")}
       >
         
         <div class="node-badge">
@@ -904,8 +872,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-34"
         aria-pressed="false"
-        aria-label="Mission 34: Citadel Ring. locked."
-        title="34. Citadel Ring"
+        aria-label={t("Mission 34: Citadel Ring. locked.")}
+        title={t("34. Citadel Ring")}
       >
         
         <div class="node-badge">
@@ -927,8 +895,8 @@
         data-action="select-campaign-mission"
         data-mission="campaign-35"
         aria-pressed="false"
-        aria-label="Mission 35: Vanguard Dawn. locked."
-        title="35. Vanguard Dawn"
+        aria-label={t("Mission 35: Vanguard Dawn. locked.")}
+        title={t("35. Vanguard Dawn")}
       >
         
         <div class="node-badge">
@@ -948,7 +916,7 @@
           
     <aside
       class="cinematic-brief-drawer is-open"
-      aria-label="Selected mission briefing"
+      aria-label={t("Selected mission briefing")}
       style="--chapter-color:#d6e7a0;--region-color:#38bdf8;"
     >
       <div class="brief-card-chassis">
@@ -962,8 +930,8 @@
         <div class="brief-thumb-frame">
           <img
             class="brief-thumb-img"
-            src="./images/region-thumb-urban.jpg"
-            alt="City outskirts — 3D isometric tank campaign region preview"
+            src={h("./images/region-thumb-urban.jpg")}
+            alt={t("City outskirts — 3D isometric tank campaign region preview")}
             loading="lazy"
             width="360"
             height="200"
@@ -977,13 +945,13 @@
             <svg class="region-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M3 21h18M5 21V7l8-4v18M13 10h4v11M9 9h1M9 13h1M9 17h1M15 14h1M15 17h1"/>
             </svg>
-            <span class="region-badge-name">CITY OUTSKIRTS</span>
+            <span class="region-badge-name">{t("CITY OUTSKIRTS")}</span>
           </div>
 
           <div class="brief-mission-details">
-            <div class="brief-sector-code">SECTOR 01 // 35</div>
-            <h2 class="brief-mission-title">First Contact</h2>
-            <p class="brief-mission-desc">Clear the outer streets · 20 hostiles</p>
+            <div class="brief-sector-code">{t("SECTOR 01 // 35")}</div>
+            <h2 class="brief-mission-title">{t("First Contact")}</h2>
+            <p class="brief-mission-desc">{t("Clear the outer streets · 20 hostiles")}</p>
           </div>
 
           <!-- Subtle Background Tank Watermark Silhouette -->
@@ -1013,7 +981,7 @@
                 <svg class="start-tank-icon" viewBox="0 0 48 22" fill="currentColor" aria-hidden="true">
                   <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
                 </svg>
-                <span class="start-text">START MISSION »</span>
+                <span class="start-text">{t("START MISSION »")}</span>
               </span>
               <span class="start-glow" aria-hidden="true"></span>
             </button>
@@ -1026,106 +994,67 @@
       </div>
     </div>
 
-      </div>
-
+  <Fragment slot="after">
       <section class="menu-content page-briefing" aria-labelledby="campaign-briefing-title">
-        <h2 id="campaign-briefing-title">Campaign Briefing: Road to the Capital</h2>
-        <p class="menu-lead">Road to the Capital is the main story of BATTLE TANK, a <a href="./">free 3D tank game inspired by Battle City</a> you play in the browser: 35 base defense and assault missions across seven regions, fought on 40×40 destructible arenas from the city outskirts to the enemy's capital citadel. Every mission you clear unlocks the next checkpoint on the map above, pays out credits, and brings your modular VANGUARD tank one step closer to its final assault.</p>
+        <h2 id="campaign-briefing-title">{t("Campaign Briefing: Road to the Capital")}</h2>
+        <p class="menu-lead">{t("Road to the Capital is the main story of BATTLE TANK, a")} <a href={h("./")}>{t("free 3D tank game inspired by Battle City")}</a> {t("you play in the browser: 35 base defense and assault missions across seven regions, fought on 40×40 destructible arenas from the city outskirts to the enemy's capital citadel. Every mission you clear unlocks the next checkpoint on the map above, pays out credits, and brings your modular VANGUARD tank one step closer to its final assault.")}</p>
 
         <div class="menu-guide">
           <section>
-            <h3>Three kinds of missions</h3>
-            <p><strong>Extermination</strong> — destroy every hostile tank on the map, including the sector boss when one is present. <strong>Stronghold Assault</strong> — break through the defenses and destroy the fortified enemy stronghold core. <strong>Base Defense</strong> — hold off attacking waves while protecting your own Command Base HQ; losing either HQ cell ends the operation.</p>
-            <h3>Credits and upgrades between missions</h3>
-            <p>Mission rewards grow as you advance, from $250 for First Contact to $1,500 for the finale. Spend credits in the Garage to raise Cannon, Chassis, Frame, Engine and Armor from Tier I to Tier V, and add standalone modules such as the 4-corner APS and the homing ATGM pod. Your progress, credits and upgrades are saved in your browser.</p>
-            <h3>Tips for the long road</h3>
-            <p>Flank heavy armor instead of trading shots with its glacis, use forest canopy to break line of sight, and and consider a Tier IV Chassis for the Coastal Wetlands: All-Terrain tracks cross water and drive over ice and sand without slowing down. Smash brick walls to open new firing lanes, but remember that reinforced concrete takes 16 hits.</p>
+            <h3>{t("Three kinds of missions")}</h3>
+            <p><strong>{t("Extermination")}</strong> {t("— destroy every hostile tank on the map, including the sector boss when one is present.")} <strong>{t("Stronghold Assault")}</strong> {t("— break through the defenses and destroy the fortified enemy stronghold core.")} <strong>{t("Base Defense")}</strong> {t("— hold off attacking waves while protecting your own Command Base HQ; losing either HQ cell ends the operation.")}</p>
+            <h3>{t("Credits and upgrades between missions")}</h3>
+            <p>{t("Mission rewards grow as you advance, from $250 for First Contact to $1,500 for the finale. Spend credits in the Garage to raise Cannon, Chassis, Frame, Engine and Armor from Tier I to Tier V, and add standalone modules such as the 4-corner APS and the homing ATGM pod. Your progress, credits and upgrades are saved in your browser.")}</p>
+            <h3>{t("Tips for the long road")}</h3>
+            <p>{t("Flank heavy armor instead of trading shots with its glacis, use forest canopy to break line of sight, and and consider a Tier IV Chassis for the Coastal Wetlands: All-Terrain tracks cross water and drive over ice and sand without slowing down. Smash brick walls to open new firing lanes, but remember that reinforced concrete takes 16 hits.")}</p>
           </section>
           <section>
-            <h3>Seven regions, five missions each</h3>
+            <h3>{t("Seven regions, five missions each")}</h3>
             <ol>
-              <li><strong>City Outskirts (1–5)</strong> — First Contact, Broken Avenue, Civic Shelter, Railway Cut, Outer Gate.</li>
-              <li><strong>Forest Frontier (6–10)</strong> — Green Border, Timberline, Hidden Signals, River Watch, Deepwood Bastion.</li>
-              <li><strong>Desert Crossing (11–15)</strong> — Dust Frontier, Dry Wells, Canyon Teeth, Mirage Array, Sunken Fortress.</li>
-              <li><strong>Coastal Wetlands (16–20)</strong> — Salt Approach, Reed Ambush, Harbor Refuge, Breakwater, Tidal Lock.</li>
-              <li><strong>Frozen Highlands (21–25)</strong> — Cold Ascent, White Relay, Summit Refuge, Glacier Cut, Iron Avalanche.</li>
-              <li><strong>Industrial Belt (26–30)</strong> — Foundry Road, Freight Spine, Power Reserve, Furnace District, Capital Breach.</li>
-              <li><strong>Capital City (31–35)</strong> — Return to the Streets, Boulevard of Steel, Last Shelter, Citadel Ring, Vanguard Dawn.</li>
+              <li><strong>{t("City Outskirts (1–5)")}</strong> {t("— First Contact, Broken Avenue, Civic Shelter, Railway Cut, Outer Gate.")}</li>
+              <li><strong>{t("Forest Frontier (6–10)")}</strong> {t("— Green Border, Timberline, Hidden Signals, River Watch, Deepwood Bastion.")}</li>
+              <li><strong>{t("Desert Crossing (11–15)")}</strong> {t("— Dust Frontier, Dry Wells, Canyon Teeth, Mirage Array, Sunken Fortress.")}</li>
+              <li><strong>{t("Coastal Wetlands (16–20)")}</strong> {t("— Salt Approach, Reed Ambush, Harbor Refuge, Breakwater, Tidal Lock.")}</li>
+              <li><strong>{t("Frozen Highlands (21–25)")}</strong> {t("— Cold Ascent, White Relay, Summit Refuge, Glacier Cut, Iron Avalanche.")}</li>
+              <li><strong>{t("Industrial Belt (26–30)")}</strong> {t("— Foundry Road, Freight Spine, Power Reserve, Furnace District, Capital Breach.")}</li>
+              <li><strong>{t("Capital City (31–35)")}</strong> {t("— Return to the Streets, Boulevard of Steel, Last Shelter, Citadel Ring, Vanguard Dawn.")}</li>
             </ol>
           </section>
         </div>
 
-        <h2 class="briefing-heading">Sector Bosses on the road</h2>
+        <h2 class="briefing-heading">{t("Sector Bosses on the road")}</h2>
         <div class="menu-grid">
           <article class="menu-card">
-            <strong>Mission 15 — Sunken Fortress</strong>
-            <p>The MAMMOTH siege dreadnought guards the desert stronghold. It is a close-range brawler with twin heavy guns and a missile pod; keep moving and hit its flanks.</p>
+            <strong>{t("Mission 15 — Sunken Fortress")}</strong>
+            <p>{t("The MAMMOTH siege dreadnought guards the desert stronghold. It is a close-range brawler with twin heavy guns and a missile pod; keep moving and hit its flanks.")}</p>
           </article>
           <article class="menu-card">
-            <strong>Mission 20 — Tidal Lock</strong>
-            <p>HYDRA is an amphibious rocket-artillery cruiser that keeps its distance and fires telegraphed rocket salvos. Close the gap through cover and watch the warning markers.</p>
+            <strong>{t("Mission 20 — Tidal Lock")}</strong>
+            <p>{t("HYDRA is an amphibious rocket-artillery cruiser that keeps its distance and fires telegraphed rocket salvos. Close the gap through cover and watch the warning markers.")}</p>
           </article>
           <article class="menu-card">
-            <strong>Mission 25 — Iron Avalanche</strong>
-            <p>CERBERUS-T, the thermobaric siege leviathan, holds the summit fortress at the end of the Frozen Highlands.</p>
+            <strong>{t("Mission 25 — Iron Avalanche")}</strong>
+            <p>{t("CERBERUS-T, the thermobaric siege leviathan, holds the summit fortress at the end of the Frozen Highlands.")}</p>
           </article>
           <article class="menu-card">
-            <strong>Mission 35 — Vanguard Dawn</strong>
-            <p>The capital citadel finale. After a second MAMMOTH at Capital Breach, the last mission throws all four Sector Bosses at you, including the TITAN rail fortress, whose directional armor means you must get behind it.</p>
+            <strong>{t("Mission 35 — Vanguard Dawn")}</strong>
+            <p>{t("The capital citadel finale. After a second MAMMOTH at Capital Breach, the last mission throws all four Sector Bosses at you, including the TITAN rail fortress, whose directional armor means you must get behind it.")}</p>
           </article>
         </div>
 
         <div class="menu-actions">
-          <a class="menu-primary" href="./how-to-play">How to Play →</a>
-          <a class="menu-secondary" href="./walkthrough">Campaign Walkthrough</a>
-          <a class="menu-secondary" href="./enemies">Enemy &amp; Boss Guide</a>
-          <a class="menu-secondary" href="./arsenal">Tank Arsenal &amp; Upgrades</a>
+          <a class="menu-primary" href={h("./how-to-play")}>{t("How to Play →")}</a>
+          <a class="menu-secondary" href={h("./walkthrough")}>{t("Campaign Walkthrough")}</a>
+          <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
+          <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
         </div>
       </section>
+  </Fragment>
 
-      <footer class="armored-footer">
-        <div class="armored-footer-inner">
-          <div class="footer-right-zone">
-            <nav class="footer-links" aria-label="Footer navigation">
-              <a href="./">HOME</a>
-              <a class="is-active" aria-current="page" href="./campaign">CAMPAIGN</a>
-              <a href="./survival">SURVIVAL</a>
-              <a href="./contracts">CONTRACTS</a>
-              <span class="footer-sep" aria-hidden="true">|</span>
-              <a href="./how-to-play">HOW TO PLAY</a>
-              <a href="./walkthrough">WALKTHROUGH</a>
-              <a href="./enemies">ENEMIES</a>
-              <a href="./arsenal">ARSENAL</a>
-              <a href="./destructible-terrain">TERRAIN</a>
-              <a href="./webgl-tank-game">TECH</a>
-              <a href="./changelog">CHANGELOG</a>
-              <a href="./about">ABOUT</a>
-              <a href="./privacy-policy">PRIVACY POLICY</a>
-              <a href="./terms">TERMS</a>
-              <a href="./contact">CONTACT</a>
-              <span class="footer-sep" aria-hidden="true">|</span>
-              <details class="lang-menu" data-lang-menu>
-                <summary aria-label="Language"><span data-lang-current>EN</span></summary>
-                <div class="lang-menu-list">
-                  <a href="./campaign" hreflang="en" lang="en" aria-current="true"><b>EN</b> English</a>
-                  <a href="./es/campaign" hreflang="es" lang="es"><b>ES</b> Español</a>
-                </div>
-              </details>
-              <button type="button" class="footer-settings-btn" data-action="open-medals" aria-label="Medal Case"><span aria-hidden="true">🎖️</span> MEDAL CASE</button>
-              <button type="button" class="footer-settings-btn" data-action="open-settings" aria-label="Settings"><span aria-hidden="true">⚙</span> SETTINGS</button>
-            </nav>
-          </div>
-        </div>
-      </footer>
-    </main>
-    <!-- prerender:end --></div>
-    <noscript>
+  <Fragment slot="noscript">
       <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
-        <h1>Tank Campaign: 35 Base Defense Missions — BATTLE TANK</h1>
-        <p>Select a mission on the Road to the Capital and deploy into 3D tactical tank combat. JavaScript and WebGL are required.</p>
+        <h1>{t("Tank Campaign: 35 Base Defense Missions — BATTLE TANK")}</h1>
+        <p>{t("Select a mission on the Road to the Capital and deploy into 3D tactical tank combat. JavaScript and WebGL are required.")}</p>
       </main>
-    </noscript>
-    <script type="module" src="./src/pages/campaign.js"></script>
-  </body>
-</html>
-
+  </Fragment>
+</PageLayout>

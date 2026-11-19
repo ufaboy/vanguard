@@ -7,8 +7,6 @@ export const PAGE_PATHS = Object.freeze({
   campaign: './campaign.html',
   survival: './survival.html',
   contracts: './contracts.html',
-  contractLastCargo: './contract-last-cargo.html',
-  contractBlackoutProtocol: './contract-blackout-protocol.html',
   howToPlay: './how-to-play.html',
   walkthrough: './walkthrough.html',
   enemies: './enemies.html',
@@ -23,10 +21,8 @@ export const PAGE_PATHS = Object.freeze({
   contact: './contact.html',
 });
 
-export const CONTRACT_PAGE_PATHS = Object.freeze({
-  'contract-last-cargo': PAGE_PATHS.contractLastCargo,
-  'contract-blackout-protocol': PAGE_PATHS.contractBlackoutProtocol,
-});
+/** Contract ids that legacy URLs (`#/contract/<id>`) may name; they open the battlefield directly. */
+export const CONTRACT_IDS = Object.freeze(['contract-last-cargo', 'contract-blackout-protocol']);
 
 export function battlefieldUrl({ mode, mission, id, sector } = {}) {
   return pageUrl('battlefield', { mode, mission, id, sector });
@@ -72,7 +68,7 @@ export function resolveLegacyHashRedirect(hash) {
       return pageUrl('campaign', param ? { mission: param } : null);
     case 'contracts':
     case 'contract':
-      return CONTRACT_PAGE_PATHS[param] || PAGE_PATHS.contracts;
+      return CONTRACT_IDS.includes(param) ? battlefieldUrl({ mode: 'contract', id: param }) : PAGE_PATHS.contracts;
     case 'survival':
       return PAGE_PATHS.survival;
     case 'hangar':

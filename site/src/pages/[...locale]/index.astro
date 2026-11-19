@@ -3,7 +3,7 @@ import PageLayout from '../../layouts/PageLayout.astro';
 import { assetHref, localeStaticPaths, pageHref, useTranslations } from '../../i18n/index.js';
 import pkg from '../../../../package.json';
 
-export const getStaticPaths = localeStaticPaths;
+export const getStaticPaths = () => localeStaticPaths('');
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 const href = (slug) => pageHref(slug, locale);

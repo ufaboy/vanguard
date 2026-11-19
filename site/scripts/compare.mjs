@@ -1,14 +1,18 @@
 /**
- * Compares Astro-built pages (site/dist) with the current hand-written / generated pages (public/)
- * after normalizing formatting: whitespace, void-tag slashes, attribute quoting and JSON-LD layout.
+ * Compares Astro-built pages (dist/site) with reference HTML pages (for example the pre-Astro pages
+ * from git history) after normalizing formatting: whitespace, void-tag slashes, attribute quoting,
+ * entities and JSON-LD layout.
  *
- *   node scripts/compare.mjs about.html es/about.html index.html es/index.html
+ *   node site/scripts/compare.mjs <refDir> about.html es/about.html ...
  */
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const root = (p) => fileURLToPath(new URL(p, import.meta.url));
-const decode = (s) => s.replace(/&(amp|lt|gt|quot|#39|#x27);/g, (m, e) => ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'", '#x27': "'" })[e]);
+const NAMED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", times: '×', le: '≤', ge: '≥', nbsp: ' ' };
+const decode = (s) => s.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, e) => (e[0] === '#'
+  ? String.fromCodePoint(/^#x/i.test(e) ? parseInt(e.slice(2), 16) : Number(e.slice(1)))
+  : NAMED[e.toLowerCase()] ?? m));
 
 function canonical(html) {
   const out = [];
@@ -27,6 +31,8 @@ function canonical(html) {
     } else if (m[5]) {
       const [, name, rest = ''] = m[5].match(/^(\/?[\w!-]+)([\s\S]*)$/) || [, m[5]];
       out.push(`<${name.toLowerCase()}${tagAttrs(rest)}>`);
+      // `<path ... />` in SVG equals `<path ...></path>`.
+      if (/\/\s*$/.test(rest) && !/^(meta|link|br|img|input|hr|source)$/i.test(name)) out.push(`</${name.toLowerCase()}>`);
     } else {
       const text = decode(m[6]).replace(/\s+/g, ' ').trim();
       if (text) out.push(text);
@@ -44,9 +50,10 @@ function tagAttrs(raw) {
 }
 
 let total = 0;
-for (const file of process.argv.slice(2)) {
-  const a = canonical(fs.readFileSync(root(`../../public/${file}`), 'utf8'));
-  const b = canonical(fs.readFileSync(root(`../dist/${file}`), 'utf8'));
+const [refDir, ...files] = process.argv.slice(2);
+for (const file of files) {
+  const a = canonical(fs.readFileSync(`${refDir}/${file}`, 'utf8'));
+  const b = canonical(fs.readFileSync(root(`../../dist/site/${file}`), 'utf8'));
   const diffs = [];
   const len = Math.max(a.length, b.length);
   for (let i = 0, j = 0; i < len || j < len; i++, j++) {
