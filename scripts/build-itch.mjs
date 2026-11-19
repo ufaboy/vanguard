@@ -53,6 +53,19 @@ function sanitizeItchPrivacyPolicy(html) {
     );
 }
 
+function sanitizeItchTerms(html) {
+  return html
+    .replace(/, advertising,/g, ',')
+    .replace(/\s*<li>remove, hide or interfere with advertising[^<]*<\/li>/i, '')
+    .replace(
+      /<section>\s*<h2>4\. Advertising and Third Parties<\/h2>[\s\S]*?<\/section>/i,
+      `<section>
+          <h2>4. Third-Party Links</h2>
+          <p>This itch.io distribution does not load third-party advertising networks or analytics trackers. Links to external sites, such as GitHub, are provided for convenience; we are not responsible for their content.</p>
+        </section>`
+    );
+}
+
 function collectFiles(dir, baseDir = dir) {
   const results = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -116,6 +129,8 @@ for (const entry of outHtmlPages) {
   html = restoreHtmlLinksForItch(html, outHtmlPages);
   if (entry === 'privacy-policy.html') {
     html = sanitizeItchPrivacyPolicy(html);
+  } else if (entry === 'terms.html') {
+    html = sanitizeItchTerms(html);
   }
   fs.writeFileSync(htmlPath, html, 'utf8');
 }

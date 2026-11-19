@@ -13,9 +13,13 @@ export const PAGE_PATHS = Object.freeze({
   walkthrough: './walkthrough.html',
   enemies: './enemies.html',
   arsenal: './arsenal.html',
+  destructibleTerrain: './destructible-terrain.html',
+  gamesLikeBattleCity: './games-like-battle-city.html',
+  webglTankGame: './webgl-tank-game.html',
   changelog: './changelog.html',
   about: './about.html',
   privacyPolicy: './privacy-policy.html',
+  terms: './terms.html',
   contact: './contact.html',
 });
 
