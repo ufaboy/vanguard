@@ -8,6 +8,8 @@
  *   - sets `<html lang>`, the canonical URL, `og:url` and `og:locale`;
  *   - rewrites relative links: pages with a translated twin stay inside `/<locale>/`, every other
  *     page, asset and module path points one level up;
+ *   - points the footer language menu (`<details data-lang-menu>`) at the twins of this page and
+ *     marks this locale as current; language names inside the menu are never translated;
  *   - fails when any text has no translation (keep an English word by mapping it to itself).
  *
  *   node scripts/build-i18n-pages.mjs           # write public/es/*.html
@@ -114,9 +116,24 @@ export function translatePage(source, page, locale, dict) {
     return `../${target}`;
   };
 
+  // Language menu (`<details data-lang-menu>`): language names stay as written, the current-language
+  // marker shows this locale, and each option links to its twin of this page.
+  let inLangMenu = false;
+  let currentMarker = false;
+  const twinHref = (lang) => {
+    if (lang === locale) return page.slug ? `./${page.slug}` : './';
+    return page.slug ? `../${page.slug}` : '../';
+  };
+
   const tokens = tokenize(source);
   const out = tokens.map((token) => {
-    if (token.type === 'text') return translate(token.raw);
+    if (token.type === 'text') {
+      if (currentMarker) {
+        currentMarker = false;
+        return locale.toUpperCase();
+      }
+      return inLangMenu ? token.raw : translate(token.raw);
+    }
     if (token.type === 'raw') {
       if (/type="application\/ld\+json"/.test(token.raw)) {
         const [, open, body, close] = token.raw.match(/^(<script[^>]*>)([\s\S]*)(<\/script>)$/);
@@ -145,12 +162,13 @@ export function translatePage(source, page, locale, dict) {
     if (/^<link\b/i.test(tag) && /rel="canonical"/.test(tag)) {
       tag = tag.replace(/\bhref="([^"]*)"/, (m, value) => `href="${urls.get(value) || value}"`);
     }
-    if (/^<a\b/i.test(tag) && /\bdata-lang-switch\b/.test(tag)) {
-      // The switch on an English page points to this locale; on the translated page it points back.
-      tag = tag
-        .replace(/\bhref="[^"]*"/, `href="${page.slug ? `../${page.slug}` : '../'}"`)
-        .replace(/\bhreflang="[^"]*"/, 'hreflang="en"')
-        .replace(/\blang="[^"]*"/, 'lang="en"');
+    if (/^<details\b/i.test(tag) && /\bdata-lang-menu\b/.test(tag)) inLangMenu = true;
+    else if (inLangMenu && /^<\/details>/i.test(tag)) inLangMenu = false;
+    if (inLangMenu && /\bdata-lang-current\b/.test(tag)) currentMarker = true;
+    if (inLangMenu && /^<a\b/i.test(tag)) {
+      const lang = (tag.match(/\bhreflang="([^"]*)"/) || [])[1];
+      tag = tag.replace(/\s+aria-current="[^"]*"/, '').replace(/\bhref="[^"]*"/, `href="${twinHref(lang)}"`);
+      if (lang === locale) tag = tag.replace(/>$/, ' aria-current="true">');
     }
     return tag;
   });

@@ -1631,30 +1631,107 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   border-color: rgba(163, 196, 137, 0.45);
 }
 
-.footer-links a[data-lang-switch] {
+/* Footer language menu: a <details> dropdown that opens upwards. */
+.lang-menu {
+  position: relative;
+}
+
+.lang-menu > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
   color: #fcd34d;
   background: linear-gradient(180deg, rgba(245, 158, 11, 0.16) 0%, rgba(245, 158, 11, 0.06) 100%);
-  border-color: rgba(245, 158, 11, 0.45);
+  border: 1px solid rgba(245, 158, 11, 0.45);
   padding: 4px 10px;
   border-radius: 3px;
   box-shadow: inset 0 1px 0 rgba(254, 243, 199, 0.12);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
 }
 
-.footer-links a[data-lang-switch]::before {
+.lang-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.lang-menu > summary::before,
+.lang-menu > summary::after {
   content: "";
+  background-color: currentColor;
+}
+
+.lang-menu > summary::before {
   width: 12px;
   height: 12px;
   flex: 0 0 12px;
-  background-color: currentColor;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
-.footer-links a[data-lang-switch]:hover {
+/* Chevron: points up while closed (the list opens upwards), down while open. */
+.lang-menu > summary::after {
+  width: 7px;
+  height: 4px;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  transition: transform 0.15s ease;
+}
+
+.lang-menu[open] > summary::after {
+  transform: rotate(180deg);
+}
+
+.lang-menu > summary:hover,
+.lang-menu[open] > summary {
   color: #fef3c7;
   background: linear-gradient(180deg, rgba(245, 158, 11, 0.28) 0%, rgba(245, 158, 11, 0.14) 100%);
   border-color: #f59e0b;
   box-shadow: 0 0 10px rgba(245, 158, 11, 0.24), inset 0 1px 0 rgba(254, 243, 199, 0.2);
+}
+
+.lang-menu > summary:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.lang-menu-list {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 132px;
+  padding: 4px;
+  background: #0b0f17;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: 3px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+}
+
+.footer-links .lang-menu-list a {
+  justify-content: flex-start;
+  gap: 8px;
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  padding: 6px 10px;
+}
+
+.footer-links .lang-menu-list a b {
+  min-width: 2.2em;
+  color: #fcd34d;
+  letter-spacing: 0.12em;
+}
+
+.footer-links .lang-menu-list a[aria-current="true"] {
+  color: #f8fafc;
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.35);
 }
 
 .footer-sep {
@@ -1773,6 +1850,28 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   border-color: #f59e0b;
   background: #1e2d3f;
   color: #fcd34d;
+}
+
+.settings-modal-body .menu-select {
+  appearance: none;
+  -webkit-appearance: none;
+  justify-content: flex-start;
+  padding-right: 34px;
+  text-transform: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.settings-modal-body .menu-select:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.settings-modal-body .menu-select option {
+  background: #0b0f17;
+  color: #e2e8f0;
 }
 
 .settings-modal-body .menu-actions {
