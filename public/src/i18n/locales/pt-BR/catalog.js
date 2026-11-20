@@ -40,8 +40,6 @@ export default {
   "High-angle 152mm mortar cannon lobbing high-explosive shells over terrain obstacles.": "Morteiro-canhão de 152mm de tiro curvo que lança projéteis explosivos por cima dos obstáculos.",
   "Hydra Triple MLRS": "Lançador Múltiplo Triplo Hydra",
   "Three articulated 9-tube rocket launcher heads firing telegraphed 3-rocket salvos in a triangle around the target (6-14 cell range).": "Três cabeçotes articulados de 9 tubos que disparam salvas telegrafadas de 3 foguetes em triângulo ao redor do alvo (alcance de 6-14 células).",
-  "Supreme Twin Heavy Cannon": "Canhão Pesado Duplo Supremo",
-  "Twin-barrel high-caliber dreadnought cannons mounted in two independent rotating turrets (4 barrels total), firing dual concrete-breaching salvos.": "Canhões de encouraçado de alto calibre e cano duplo em duas torres giratórias independentes (4 canos no total), disparando salvas duplas que rompem concreto.",
   "Flamethrower": "Lança-chamas",
   "Short-range pressurized napalm projector that bypasses conventional armor and incinerates forest cover.": "Projetor de napalm pressurizado de curto alcance que ignora blindagem convencional e incinera a cobertura florestal.",
   "Dreadnought Twin Siege AP": "Cerco AP Duplo de Encouraçado",

@@ -40,8 +40,6 @@ export default {
   "High-angle 152mm mortar cannon lobbing high-explosive shells over terrain obstacles.": "Steilfeuer-152mm-Mörserkanone, die Sprenggranaten über Hindernisse hinweg feuert.",
   "Hydra Triple MLRS": "Hydra Dreifach-MLRS",
   "Three articulated 9-tube rocket launcher heads firing telegraphed 3-rocket salvos in a triangle around the target (6-14 cell range).": "Drei bewegliche 9-Rohr-Raketenwerferköpfe, die angekündigte 3-Raketen-Salven im Dreieck ums Ziel feuern (6-14 Felder Reichweite).",
-  "Supreme Twin Heavy Cannon": "Schwere Zwillings-Superkanone",
-  "Twin-barrel high-caliber dreadnought cannons mounted in two independent rotating turrets (4 barrels total), firing dual concrete-breaching salvos.": "Großkalibrige Zwillings-Dreadnoughtkanonen in zwei unabhängigen Drehtürmen (4 Rohre gesamt) mit betonbrechenden Doppelsalven.",
   "Flamethrower": "Flammenwerfer",
   "Short-range pressurized napalm projector that bypasses conventional armor and incinerates forest cover.": "Druck-Napalmwerfer für kurze Distanz, der herkömmliche Panzerung umgeht und Walddeckung einäschert.",
   "Dreadnought Twin Siege AP": "Dreadnought-Zwillings-Belagerungs-AP",
