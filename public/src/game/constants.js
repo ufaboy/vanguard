@@ -308,6 +308,27 @@ export const MISSILE = Object.freeze({
   RETARGET_RADIUS: 3, // World unit radius to seek alternative target if primary is lost
   POOL_SIZE: 6, // Maximum concurrent active missiles in the physics/rendering pool
   PLAYER_RESERVED_SLOTS: 2, // Reserved missile slots allocated exclusively for player fire
+  FPV_TIME_SCALE: 0.75, // Slow-motion simulation time scale while riding a player missile in FPV
+  FPV_POST_EXPLOSION_DELAY: 1.0, // Seconds to hold the FPV view on the explosion before returning
+  FPV_FOV: 62, // Vertical field of view (degrees) of the FPV chase camera
+  FPV_CHASE_DISTANCE: 3.0, // World units the chase camera trails behind the missile
+  FPV_CHASE_HEIGHT: 0.95, // World units the chase camera sits above the missile's flight altitude
+  FPV_MIN_HEIGHT: 1.1, // Lowest camera altitude so the chase cam never dips into the ground
+  FPV_FOLLOW_DAMP: 18, // Position smoothing rate of the chase camera (higher = tighter)
+  FPV_LOOK_AHEAD: 9.0, // World units ahead of the missile the camera looks at
+  FPV_LOOK_DROP: 0.15, // World units the look-at point sits below the missile's altitude
+  FPV_MIN_LOOK_HEIGHT: 0.4, // Lowest altitude of the look-at point
+});
+
+/** Victory cinematics: the camera frames the final kill, orbits 360° around it and holds the results modal back. */
+export const VICTORY_CINEMATICS = Object.freeze({
+  DURATION_SEC: 3.2, // Total cinematics time before the results modal opens
+  DETONATE_DELAY_SEC: 0.95, // Seconds into the orbit before the final target explodes
+  ZOOM_FACTOR: 0.72, // Frustum scale at the end of the push-in (smaller = closer)
+  MIN_FRUSTUM: 15, // Closest allowed frustum size during the push-in
+  LOOK_DAMP: 8.5, // Smoothing rate of the camera focus moving onto the final target
+  ZOOM_DAMP: 4.5, // Smoothing rate of the push-in zoom
+  SPARK_INTERVAL_SEC: 0.14, // Interval between sparks on the doomed target before it explodes
 });
 
 /** Maximum player APS intercept charges for the given purchased Frame tier (1..5). */

@@ -32,6 +32,7 @@ import {
   TITAN,
   CANNON_AMMO,
   MISSILE,
+  VICTORY_CINEMATICS,
   POWERUP_TYPES,
 } from '../constants.js';
 import { GameStatus } from '../types.js';
@@ -73,6 +74,8 @@ export class TankGameEngine {
 
     this.cameraPreset = 'ISOMETRIC';
     this.cameraAzimuth = Math.PI * 0.25;
+    this.missileFpvEnabled = false;
+    this.missileFpvHoldTimer = 0;
     this.cameraRotating = false;
     this.cameraDragPrevX = 0;
     this.aiDebugMode = false;
@@ -124,6 +127,8 @@ export class TankGameEngine {
     this.componentDamageCooldown = Math.max(0, Math.min(8, Number(this.playerSave.componentDamageCooldown) || 0));
     this.wasDefeated = false;
     this.defeatCinematicsTimer = 0;
+    this.victoryCinematicsTimer = 0;
+    this.victoryCinematics = null;
     this.playerDeathState = null;
     this.assembledTank = resolveAssembledTank(this.playerSave);
     this.subsystems = createTankSubsystems();
@@ -293,6 +298,7 @@ export class TankGameEngine {
     );
     this.camera.position.set(28, 34, 28);
     this.camera.lookAt(0, 0, 0);
+    this.fpvCamera = new THREE.PerspectiveCamera(MISSILE.FPV_FOV, aspect, 0.15, 250);
 
     this.modelFactory = new ModelFactory(this.renderer, this.isSoftwareGl, options.pregenerated);
     this.modelFactory.onConcreteModelsReady = () => {
@@ -472,6 +478,42 @@ export class TankGameEngine {
       });
   }
 
+  setMissileFpvEnabled(enabled) {
+    this.missileFpvEnabled = Boolean(enabled);
+    if (!this.missileFpvEnabled) {
+      this.missileFpvHoldTimer = 0;
+    }
+  }
+
+  getActivePlayerMissile() {
+    if (!Array.isArray(this.projectiles)) return null;
+    for (let i = this.projectiles.length - 1; i >= 0; i -= 1) {
+      const p = this.projectiles[i];
+      if (p?.fromPlayer && p?.isMissile) return p;
+    }
+    return null;
+  }
+
+  isMissileFpvActive() {
+    return (
+      Boolean(this.missileFpvEnabled) &&
+      this.status === GameStatus.PLAYING &&
+      !this.isHangarOpen &&
+      !this.inspectMode &&
+      !this.airSupportTargeting &&
+      Boolean(this.getActivePlayerMissile() || this.missileFpvHoldTimer > 0)
+    );
+  }
+
+  getActiveCamera() {
+    return this.isMissileFpvActive() && this.fpvCamera ? this.fpvCamera : this.camera;
+  }
+
+  /** Slow-motion time scale while riding a player missile in FPV chase cam. */
+  getTimeScale() {
+    return this.isMissileFpvActive() ? MISSILE.FPV_TIME_SCALE : 1;
+  }
+
   /** Frame-rate cap in fps (0 = unlimited, follow the display refresh rate). */
   setFpsCap(fps) {
     this.fpsCap = Math.max(0, Number(fps) || 0);
@@ -481,7 +523,7 @@ export class TankGameEngine {
   getFrameInterval() {
     const resultScreen =
       this.status === GameStatus.PAUSED ||
-      this.status === GameStatus.VICTORY ||
+      (this.status === GameStatus.VICTORY && !(this.victoryCinematicsTimer > 0)) ||
       (this.status === GameStatus.GAME_OVER && !(this.defeatCinematicsTimer > 0));
     if (resultScreen && !this.isHangarOpen && !this.inspectMode && !this.cameraRotating) {
       return 1000 / IDLE_SCREEN_FPS;
@@ -885,8 +927,9 @@ export class TankGameEngine {
       const dt = Math.min(rawDelta, 0.05);
 
       if (!this.sceneOccluded) {
-        this.update(dt);
-        this.modelFactory?.updateAnimatedTextures(dt);
+        const simDt = dt * this.getTimeScale();
+        this.update(simDt);
+        this.modelFactory?.updateAnimatedTextures(simDt);
         if (this.isHangarOpen) {
           if (!this._hangarWindowEl?.isConnected) {
             this._hangarWindowEl = document.querySelector('.hangar-stage-window');
@@ -894,7 +937,7 @@ export class TankGameEngine {
           this.hangarStage.render(this.renderer, this._hangarWindowEl?.getBoundingClientRect());
         } else {
           this.tileBatcher.sync();
-          this.renderer.render(this.scene, this.camera);
+          this.renderer.render(this.scene, this.getActiveCamera());
           // Skip long gaps (hidden tab, debugger) so they don't drag the average down.
           if (this.status === GameStatus.PLAYING && rawDelta > 0 && rawDelta < 1) {
             this.fpsSampleFrames += 1;
@@ -978,6 +1021,45 @@ export class TankGameEngine {
       this.terrainDestruction.updateBurningOil(dt);
       this.updateBrickRubble(dt);
       this.forestFire.update(dt, elapsed);
+    } else if (this.status === GameStatus.VICTORY && this.victoryCinematicsTimer > 0) {
+      this.victoryCinematicsTimer = Math.max(0, this.victoryCinematicsTimer - dt);
+      const vc = this.victoryCinematics;
+      if (vc && !vc.detonated) {
+        vc.detonateDelay -= dt;
+        vc.sparkAcc = (vc.sparkAcc || 0) + dt;
+        if (vc.sparkAcc >= VICTORY_CINEMATICS.SPARK_INTERVAL_SEC) {
+          vc.sparkAcc = 0;
+          this.spawnSparks?.(vc.x, 0.7, vc.z, 0xff8833, 2);
+        }
+        if (vc.detonateDelay <= 0) {
+          vc.detonated = true;
+          vc.onDetonate?.();
+        }
+      }
+      this.updateProjectiles(dt);
+      this.explosions.updateHazardZones(dt, elapsed);
+      this.updateBarrelExplosions(dt);
+      this.terrainDestruction.updateBurningOil(dt);
+      this.updateBrickRubble(dt);
+      this.forestFire.update(dt, elapsed);
+      if (this.playerRig && !this.playerDeathState) {
+        const canHover = Boolean(this.playerStats?.canHover);
+        const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
+        this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
+        this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
+      }
+      if (this.victoryCinematicsTimer <= 0) {
+        if (vc && !vc.detonated) {
+          vc.detonated = true;
+          vc.onDetonate?.();
+        }
+        if (vc?.baseFrustum) {
+          this.frustumSize = vc.baseFrustum;
+          this.updateCameraProjection?.();
+        }
+        this.victoryCinematics = null;
+        this.emitHudUpdate();
+      }
     } else if (this.status === GameStatus.GAME_OVER && this.defeatCinematicsTimer > 0) {
       this.defeatCinematicsTimer = Math.max(0, this.defeatCinematicsTimer - dt);
       this.playerController.updatePlayerDeathSequence(dt);
@@ -1002,7 +1084,7 @@ export class TankGameEngine {
 
     this.updateParticles(dt);
     this.inputCamera.updateCamera(dt, elapsed);
-    this.fx.update(dt, this.camera, this.renderer);
+    this.fx.update(dt, this.getActiveCamera(), this.renderer);
 
     if (!(this.status === GameStatus.PAUSED && this.airSupportTargeting)) {
       this.hudSyncAccumulator += dt;
@@ -1255,9 +1337,24 @@ export class TankGameEngine {
     return this.explosions.blastSideArmor(stats, tankX, tankZ, hullYaw, blastX, blastZ);
   }
 
-  triggerMissionVictory(bannerText) {
+  triggerMissionVictory(bannerText, focusTarget = null) {
     if (this.status === GameStatus.VICTORY) return;
     this.status = GameStatus.VICTORY;
+    const duration = VICTORY_CINEMATICS.DURATION_SEC;
+    this.victoryCinematicsTimer = duration;
+    const baseFrustum = this.victoryCinematics?.baseFrustum ?? (this.frustumSize || 32);
+    this.victoryCinematics = {
+      x: focusTarget?.x ?? this.playerX,
+      z: focusTarget?.z ?? this.playerZ,
+      duration,
+      startAzimuth: this.cameraAzimuth ?? Math.PI * 0.25,
+      baseFrustum,
+      targetFrustum: Math.max(VICTORY_CINEMATICS.MIN_FRUSTUM, baseFrustum * VICTORY_CINEMATICS.ZOOM_FACTOR),
+      detonateDelay: focusTarget?.detonateDelay ?? VICTORY_CINEMATICS.DETONATE_DELAY_SEC,
+      onDetonate: typeof focusTarget?.onDetonate === 'function' ? focusTarget.onDetonate : null,
+      detonated: !focusTarget?.onDetonate,
+      sparkAcc: 0,
+    };
     sound.stopEngineLoop();
     if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
       this.lastSettlementSummary = settleMission({

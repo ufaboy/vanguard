@@ -135,6 +135,20 @@ export function renderBattlefieldHud({
         </button>
 
         <button
+          data-action="toggle-missile-fpv"
+          aria-pressed="${Boolean(state.missileFpvEnabled)}"
+          class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border ${
+            state.missileFpvEnabled
+              ? 'border-cyan-400 text-cyan-300 ring-1 ring-cyan-400/40'
+              : 'border-slate-700/70 text-slate-300'
+          } px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+          title="${t('Missile Chase Camera [V]')}"
+          aria-label="${t('Missile Chase Camera [V]')}"
+        >
+          <span>${t('FPV [V]')}</span>
+        </button>
+
+        <button
           data-action="toggle-sound"
           aria-pressed="${state.soundEnabled}"
           class="bg-[#0B0F17]/95 hover:bg-slate-800 border ${

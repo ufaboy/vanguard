@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { getObservedEnemyCondition, normalizeAngleSigned } from '../../sim/ai.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
+import { MISSILE, VICTORY_CINEMATICS } from '../constants.js';
 import { GameStatus } from '../types.js';
 import { t } from '../../i18n/index.js';
 
@@ -23,6 +24,7 @@ export class InputCameraController {
 
   updateAimFromPointer(e) {
     const { engine } = this;
+    if (engine.isMissileFpvActive?.()) return;
     const rect = engine.renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     engine.mouseNdc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -246,18 +248,26 @@ export class InputCameraController {
       engine.onCameraZoomChange?.(engine.frustumSize);
     };
 
-    engine.handleResize = () => {
-      if (engine.isDisposed) return;
-      const width = engine.container.clientWidth || window.innerWidth;
-      const height = engine.container.clientHeight || window.innerHeight;
-      if (!width || !height) return;
-      const aspect = width / height;
-
+    engine.updateCameraProjection = () => {
+      const aspect = engine._viewAspect || 1;
       engine.camera.left = (-engine.frustumSize * aspect) / 2;
       engine.camera.right = (engine.frustumSize * aspect) / 2;
       engine.camera.top = engine.frustumSize / 2;
       engine.camera.bottom = -engine.frustumSize / 2;
       engine.camera.updateProjectionMatrix();
+      if (engine.fpvCamera) {
+        engine.fpvCamera.aspect = aspect;
+        engine.fpvCamera.updateProjectionMatrix();
+      }
+    };
+
+    engine.handleResize = () => {
+      if (engine.isDisposed) return;
+      const width = engine.container.clientWidth || window.innerWidth;
+      const height = engine.container.clientHeight || window.innerHeight;
+      if (!width || !height) return;
+      engine._viewAspect = width / height;
+      engine.updateCameraProjection();
 
       engine.renderer.setSize(width, height, false);
     };
@@ -302,6 +312,57 @@ export class InputCameraController {
 
   updateCamera(dt, elapsed) {
     const { engine } = this;
+    const canFpv =
+      Boolean(engine.missileFpvEnabled) &&
+      engine.status === GameStatus.PLAYING &&
+      !engine.isHangarOpen &&
+      !engine.inspectMode &&
+      !engine.airSupportTargeting &&
+      Boolean(engine.fpvCamera);
+    if (canFpv) {
+      const missile = engine.getActivePlayerMissile?.();
+      if (missile) {
+        engine.missileFpvHoldTimer = 0;
+        const speed = Math.hypot(missile.vx || 0, missile.vz || 0);
+        const dirX = speed > 0.001 ? missile.vx / speed : Math.sin(missile.mesh?.rotation?.y || 0);
+        const dirZ = speed > 0.001 ? missile.vz / speed : Math.cos(missile.mesh?.rotation?.y || 0);
+        const flightY = missile.flightY ?? 0.9;
+        const desiredX = missile.x - dirX * MISSILE.FPV_CHASE_DISTANCE;
+        const desiredY = Math.max(MISSILE.FPV_MIN_HEIGHT, flightY + MISSILE.FPV_CHASE_HEIGHT);
+        const desiredZ = missile.z - dirZ * MISSILE.FPV_CHASE_DISTANCE;
+
+        if (this._lastFpvMissile !== missile) {
+          this._lastFpvMissile = missile;
+          engine.fpvCamera.position.set(desiredX, desiredY, desiredZ);
+        } else {
+          const follow = MISSILE.FPV_FOLLOW_DAMP;
+          engine.fpvCamera.position.x = THREE.MathUtils.damp(engine.fpvCamera.position.x, desiredX, follow, dt);
+          engine.fpvCamera.position.y = THREE.MathUtils.damp(engine.fpvCamera.position.y, desiredY, follow, dt);
+          engine.fpvCamera.position.z = THREE.MathUtils.damp(engine.fpvCamera.position.z, desiredZ, follow, dt);
+        }
+        const lookX = missile.x + dirX * MISSILE.FPV_LOOK_AHEAD;
+        const lookY = Math.max(MISSILE.FPV_MIN_LOOK_HEIGHT, flightY - MISSILE.FPV_LOOK_DROP);
+        const lookZ = missile.z + dirZ * MISSILE.FPV_LOOK_AHEAD;
+        this._lastFpvLook = { x: lookX, y: lookY, z: lookZ };
+        engine.fpvCamera.lookAt(lookX, lookY, lookZ);
+        return;
+      }
+      if (this._lastFpvMissile) {
+        this._lastFpvMissile = null;
+        engine.missileFpvHoldTimer = MISSILE.FPV_POST_EXPLOSION_DELAY;
+      }
+      if (engine.missileFpvHoldTimer > 0) {
+        engine.missileFpvHoldTimer = Math.max(0, engine.missileFpvHoldTimer - dt);
+        if (this._lastFpvLook) {
+          engine.fpvCamera.lookAt(this._lastFpvLook.x, this._lastFpvLook.y, this._lastFpvLook.z);
+        }
+        return;
+      }
+    } else {
+      this._lastFpvMissile = null;
+      engine.missileFpvHoldTimer = 0;
+    }
+
     if (engine.inspectMode) {
       const orbitAngle = elapsed * 0.45;
       const radius = 14;
@@ -338,10 +399,18 @@ export class InputCameraController {
       return;
     }
 
+    const isVictoryOrbit =
+      engine.status === GameStatus.VICTORY &&
+      engine.victoryCinematicsTimer > 0 &&
+      Boolean(engine.victoryCinematics);
+
     const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
     let targetX;
     let targetZ;
-    if (engine.airSupportTargeting && engine.airCamTarget) {
+    if (isVictoryOrbit) {
+      targetX = engine.victoryCinematics.x;
+      targetZ = engine.victoryCinematics.z;
+    } else if (engine.airSupportTargeting && engine.airCamTarget) {
       const panSpeed = 34 * dt;
       const forwardX = -Math.sin(engine.cameraAzimuth);
       const forwardZ = -Math.cos(engine.cameraAzimuth);
@@ -400,18 +469,32 @@ export class InputCameraController {
       );
     }
 
+    const lookDamp = isVictoryOrbit ? VICTORY_CINEMATICS.LOOK_DAMP : 6.5;
     engine.camCurrentLook.x = THREE.MathUtils.damp(
       engine.camCurrentLook.x,
       targetX,
-      6.5,
+      lookDamp,
       dt
     );
     engine.camCurrentLook.z = THREE.MathUtils.damp(
       engine.camCurrentLook.z,
       targetZ,
-      6.5,
+      lookDamp,
       dt
     );
+
+    if (isVictoryOrbit) {
+      const prevFrustum = engine.frustumSize;
+      engine.frustumSize = THREE.MathUtils.damp(
+        engine.frustumSize,
+        engine.victoryCinematics.targetFrustum,
+        VICTORY_CINEMATICS.ZOOM_DAMP,
+        dt
+      );
+      if (Math.abs(engine.frustumSize - prevFrustum) > 0.005) {
+        engine.updateCameraProjection?.();
+      }
+    }
 
     let horizontalDist = 36.8;
     let offsetY = 32;
@@ -424,8 +507,19 @@ export class InputCameraController {
       offsetY = 22;
     }
 
-    const offsetX = Math.sin(engine.cameraAzimuth) * horizontalDist;
-    const offsetZ = Math.cos(engine.cameraAzimuth) * horizontalDist;
+    let azimuth = engine.cameraAzimuth;
+    if (isVictoryOrbit) {
+      const vc = engine.victoryCinematics;
+      const progress = THREE.MathUtils.clamp(
+        1 - engine.victoryCinematicsTimer / Math.max(0.01, vc.duration),
+        0,
+        1
+      );
+      azimuth = vc.startAzimuth + progress * Math.PI * 2;
+    }
+
+    const offsetX = Math.sin(azimuth) * horizontalDist;
+    const offsetZ = Math.cos(azimuth) * horizontalDist;
 
     let shakeX = 0;
     let shakeZ = 0;

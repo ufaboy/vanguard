@@ -121,12 +121,15 @@ export class TerrainDestructionController {
       engine.enemyBaseHp = 0;
       engine._enemyBaseCell = null;
       const { x, z } = engine.gridToWorld(cell.row, cell.col);
-      engine.destroyTileCell(cell);
-      sound.playExplosion(2.0);
-      engine.screenShake = Math.max(engine.screenShake, 1.0);
-      engine.fx.tankDestroyed(x, z, { boss: true, tint: 0xff5a2a });
+      const detonateEnemyBase = () => {
+        engine.destroyTileCell(cell);
+        sound.playExplosion(2.0);
+        engine.screenShake = Math.max(engine.screenShake, 1.0);
+        engine.fx.tankDestroyed(x, z, { boss: true, tint: 0xff5a2a });
+      };
 
       if (engine.activeMapRules?.spawnSectorBossOnClear && !engine.bossSpawned) {
+        detonateEnemyBase();
         engine.spawnSectorBoss();
         engine.setStatusBanner(
           t('ENEMY COMMAND CORE DESTROYED! ELIMINATE THE SECTOR BOSS!'),
@@ -141,8 +144,15 @@ export class TerrainDestructionController {
         bossDefeated: engine.bossSpawned && !engine.enemies.some((u) => u.isBoss),
       });
       if (victoryRes.isVictory) {
-        engine.triggerMissionVictory(victoryRes.banner);
+        engine.triggerMissionVictory(victoryRes.banner, {
+          x,
+          z,
+          onDetonate: detonateEnemyBase,
+        });
         return;
+      }
+      if (!(engine.activeMapRules?.spawnSectorBossOnClear && !engine.bossSpawned)) {
+        detonateEnemyBase();
       }
     }
     engine.emitHudUpdate();

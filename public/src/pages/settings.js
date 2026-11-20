@@ -20,6 +20,8 @@ export function renderSettings(state, cameraLabels) {
       `<button class="menu-secondary" data-action="cycle-fps">${t('Frame rate: {cap}', { cap: state.fpsCap ? `${state.fpsCap} FPS` : t('Unlimited') })} ↻</button>`),
     settingRow(t('Camera view'), t('Choose your starting perspective. Press C during combat to cycle views.'),
       `<button class="menu-secondary" data-action="cycle-camera">${t(cameraLabels[state.cameraPreset])} ↻</button>`),
+    settingRow(t('Missile FPV camera'), t('Follow launched ATGM missiles from a behind-the-missile chase perspective in slow motion. Press V during combat to toggle.'),
+      `<button class="menu-secondary" data-action="toggle-missile-fpv" aria-pressed="${Boolean(state.missileFpvEnabled)}">${state.missileFpvEnabled ? t('FPV: On') : t('FPV: Off')}</button>`),
     settingRow(t('Tablet touch controls'), t('On-screen virtual joystick and fire buttons for landscape tablets. Auto enables on touch devices.'),
       `<button class="menu-secondary" data-action="cycle-touch-controls">${t('Touch: {mode}', { mode: t(TOUCH_MODE_LABELS[state.touchControlsMode] || 'Auto') })} ↻</button>`),
     settingRow(t('Reset progress'), t('Clears campaign missions, credits, tank upgrades, survival records, and medals on this device. Preferences are kept.'),
