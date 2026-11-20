@@ -392,6 +392,7 @@ export class AirSupportController {
     if (variant === 'STRIKE_BOMBS') {
       const cfg = AIR_SUPPORT.STRIKE_BOMBS;
       const bomberCfg = AIRCRAFT_CONFIGS.STRATEGIC_BOMBER;
+      const halfSpan = (GRID_SIZE * TILE_SIZE) / 2;
       const dx = targetX - launch.x;
       const dz = targetZ - launch.z;
       const len = Math.hypot(dx, dz) || 1;
@@ -401,9 +402,14 @@ export class AirSupportController {
       const altitude = bomberCfg.altitude;
       const leadDist = bomberSpeed * cfg.flightSec * bomberCfg.leadFactor;
 
-      // High-altitude bomber flyby passing over the target zone
-      const bomberStartX = targetX - dirX * (leadDist + 24);
-      const bomberStartZ = targetZ - dirZ * (leadDist + 24);
+      // High-altitude bomber spawns off-map on the allied side and flies across the arena
+      const bomberStartX = launch.x - dirX * 10;
+      const bomberStartZ = launch.z - dirZ * 10;
+      const distToTarget = Math.hypot(targetX - bomberStartX, targetZ - bomberStartZ);
+      const flybySec = Math.max(
+        bomberCfg.flybySec,
+        (distToTarget + halfSpan + 28) / bomberSpeed
+      );
       const bomberMesh = this.createBomberMesh();
       if (bomberMesh && engine.fxGroup) {
         bomberMesh.position.set(bomberStartX, altitude, bomberStartZ);
@@ -417,7 +423,7 @@ export class AirSupportController {
         z: bomberStartZ,
         vx: dirX * bomberSpeed,
         vz: dirZ * bomberSpeed,
-        life: bomberCfg.flybySec,
+        life: flybySec,
         mesh: bomberMesh,
       });
 
@@ -426,9 +432,12 @@ export class AirSupportController {
         const lateral = (Math.random() - 0.5) * cfg.scatterCells * TILE_SIZE * 0.7;
         const bx = targetX + dirX * dropOffset - dirZ * lateral;
         const bz = targetZ + dirZ * dropOffset + dirX * lateral;
-        // Bomb releases from the bomber ahead of the target and falls along a ballistic curve
+        // Bomb releases from the bomber as it passes over the release point ahead of the target
         const releaseX = bx - dirX * leadDist;
         const releaseZ = bz - dirZ * leadDist;
+        const distToRelease =
+          (releaseX - bomberStartX) * dirX + (releaseZ - bomberStartZ) * dirZ;
+        const releaseDelay = Math.max(0.05, distToRelease / bomberSpeed);
         engine.airSupportMissions.push({
           kind: 'AIR_ORDNANCE',
           ordnanceType: 'BOMB',
@@ -440,7 +449,7 @@ export class AirSupportController {
           radius: cfg.radiusCells * TILE_SIZE,
           damage: cfg.damage,
           penetration: cfg.penetration,
-          delay: AIR_ORDNANCE.AIR_BOMB.releaseDelaySec + i * cfg.staggerSec,
+          delay: releaseDelay,
           timer: cfg.flightSec,
           maxTimer: cfg.flightSec,
           spawned: false,
@@ -477,20 +486,24 @@ export class AirSupportController {
       const zoneMesh = this.createAc130ZoneRing(targetX, targetZ, cfg.radiusCells * TILE_SIZE);
       const orbitRadius = (GRID_SIZE * TILE_SIZE) * acCfg.orbitRadiusRatio;
       const orbitHeight = acCfg.orbitHeight;
-      const orbitAngle = Math.random() * Math.PI * 2;
+      const startX = launch.x;
+      const startZ = launch.z + (launch.z >= 0 ? 10 : -10);
+      const orbitAngle = Math.atan2(startZ - targetZ, startX - targetX) - 0.35;
       const gunshipMesh = this.createAc130Mesh();
       if (gunshipMesh && engine.fxGroup) {
-        gunshipMesh.position.set(
-          targetX + Math.cos(orbitAngle) * orbitRadius,
-          orbitHeight,
-          targetZ + Math.sin(orbitAngle) * orbitRadius
-        );
+        gunshipMesh.position.set(startX, orbitHeight, startZ);
+        gunshipMesh.rotation.y = Math.atan2(targetX - startX, targetZ - startZ);
         engine.fxGroup.add(gunshipMesh);
       }
       engine.airSupportMissions.push({
         kind: 'AC130',
+        phase: 'approach',
         x: targetX,
         z: targetZ,
+        gunshipX: startX,
+        gunshipZ: startZ,
+        exitX: startX,
+        exitZ: startZ,
         radius: cfg.radiusCells * TILE_SIZE,
         orbitRadius,
         orbitHeight,
@@ -604,6 +617,7 @@ export class AirSupportController {
         m.z += m.vz * dt;
         if (m.mesh) {
           m.mesh.position.set(m.x, m.y, m.z);
+          this.spinAircraftProps(m.mesh, dt);
         }
         if (m.life <= 0) {
           this.disposeMissionVisuals(m);
@@ -856,31 +870,86 @@ export class AirSupportController {
 
   updateAc130(m, dt) {
     const acCfg = AIRCRAFT_CONFIGS.AC130_SPOOKY;
-    m.elapsed += dt;
-    // Clockwise orbit around the target zone
-    m.orbitAngle += dt * acCfg.orbitAngularSpeed;
     const orbitR = m.orbitRadius ?? (GRID_SIZE * TILE_SIZE) * acCfg.orbitRadiusRatio;
     const orbitH = m.orbitHeight ?? acCfg.orbitHeight;
-    const gunshipX = m.x + Math.cos(m.orbitAngle) * orbitR;
-    const gunshipZ = m.z + Math.sin(m.orbitAngle) * orbitR;
-    if (m.mesh) {
-      m.mesh.position.set(gunshipX, orbitH, gunshipZ);
-      m.mesh.rotation.order = 'YXZ';
-      m.mesh.rotation.y = Math.atan2(-Math.sin(m.orbitAngle), Math.cos(m.orbitAngle));
-      m.mesh.rotation.z = acCfg.bankAngleRad; // Bank wing inward during clockwise turn
-      this.spinAircraftProps(m.mesh, dt);
-    }
+    let gunshipX = m.gunshipX ?? (m.x + Math.cos(m.orbitAngle) * orbitR);
+    let gunshipZ = m.gunshipZ ?? (m.z + Math.sin(m.orbitAngle) * orbitR);
 
-    m.fireTimer -= dt;
-    if (m.fireTimer <= 0 && m.elapsed < m.duration) {
-      m.fireTimer = m.fireInterval;
-      const target = this.pickAc130Target(m.x, m.z, m.radius);
-      if (target) {
-        this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z, orbitH);
+    if (m.phase === 'approach') {
+      const entryX = m.x + Math.cos(m.orbitAngle) * orbitR;
+      const entryZ = m.z + Math.sin(m.orbitAngle) * orbitR;
+      const dx = entryX - gunshipX;
+      const dz = entryZ - gunshipZ;
+      const dist = Math.hypot(dx, dz);
+      const step = (acCfg.approachSpeed || 36) * dt;
+      if (dist <= step || dist < 0.5) {
+        gunshipX = entryX;
+        gunshipZ = entryZ;
+        m.phase = 'orbit';
+      } else {
+        gunshipX += (dx / dist) * step;
+        gunshipZ += (dz / dist) * step;
+        if (m.mesh) {
+          m.mesh.rotation.order = 'YXZ';
+          m.mesh.rotation.y = Math.atan2(dx, dz);
+          m.mesh.rotation.z = acCfg.bankAngleRad * 0.35;
+        }
+      }
+    } else if (m.phase === 'depart') {
+      const dx = m.exitX - gunshipX;
+      const dz = m.exitZ - gunshipZ;
+      const dist = Math.hypot(dx, dz);
+      const step = (acCfg.departSpeed || 38) * dt;
+      if (dist <= step || dist < 0.5) {
+        return true;
+      }
+      gunshipX += (dx / dist) * step;
+      gunshipZ += (dz / dist) * step;
+      if (m.mesh) {
+        m.mesh.rotation.order = 'YXZ';
+        m.mesh.rotation.y = Math.atan2(dx, dz);
+        m.mesh.rotation.z = THREE.MathUtils.lerp(m.mesh.rotation.z, 0, Math.min(1, dt * 4));
+      }
+    } else {
+      m.elapsed += dt;
+      // Clockwise orbit around the target zone
+      m.orbitAngle += dt * acCfg.orbitAngularSpeed;
+      gunshipX = m.x + Math.cos(m.orbitAngle) * orbitR;
+      gunshipZ = m.z + Math.sin(m.orbitAngle) * orbitR;
+      if (m.mesh) {
+        m.mesh.rotation.order = 'YXZ';
+        m.mesh.rotation.y = Math.atan2(-Math.sin(m.orbitAngle), Math.cos(m.orbitAngle));
+        m.mesh.rotation.z = acCfg.bankAngleRad; // Bank wing inward during clockwise turn
+      }
+      if (m.elapsed >= m.duration) {
+        m.phase = 'depart';
+        if (m.zoneMesh) {
+          this.engine.fxGroup?.remove?.(m.zoneMesh);
+          disposeOwned(m.zoneMesh);
+          m.zoneMesh = null;
+        }
       }
     }
 
-    return m.elapsed >= m.duration;
+    m.gunshipX = gunshipX;
+    m.gunshipZ = gunshipZ;
+    if (m.mesh) {
+      m.mesh.position.set(gunshipX, orbitH, gunshipZ);
+      this.spinAircraftProps(m.mesh, dt);
+    }
+
+    if (m.phase !== 'depart') {
+      m.fireTimer -= dt;
+      if (m.fireTimer <= 0 && m.elapsed < m.duration) {
+        m.fireTimer = m.fireInterval;
+        const target = this.pickAc130Target(m.x, m.z, m.radius);
+        if (target) {
+          this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z, orbitH);
+        }
+      }
+    }
+
+    return false;
   }
 
   pickAc130Target(zoneX, zoneZ, radius) {

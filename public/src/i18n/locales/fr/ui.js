@@ -217,7 +217,6 @@ export default {
   "Medals &amp; Ranks": "Médailles &amp; Grades",
   "Filter medals by grade": "Filtrer les médailles par niveau",
   "ECM JAMMED": "ECM BROUILLÉ",
-  "CAM": "CAM",
   "TACTICAL SORTIE REPORT": "RAPPORT TACTIQUE DE SORTIE",
   "CONTRACT EXTRACTED": "CONTRAT EXFILTRÉ",
   "VICTORY": "VICTOIRE",

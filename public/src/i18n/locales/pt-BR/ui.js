@@ -217,7 +217,6 @@ export default {
   "Medals &amp; Ranks": "Medalhas e patentes",
   "Filter medals by grade": "Filtrar medalhas por grau",
   "ECM JAMMED": "ECM INTERFERIDO",
-  "CAM": "CÂM",
   "TACTICAL SORTIE REPORT": "RELATÓRIO TÁTICO DA MISSÃO",
   "CONTRACT EXTRACTED": "CONTRATO EXTRAÍDO",
   "VICTORY": "VITÓRIA",

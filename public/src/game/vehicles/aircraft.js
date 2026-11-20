@@ -14,6 +14,8 @@ export const AIRCRAFT_CONFIGS = Object.freeze({
     id: 'AC130_SPOOKY',
     modelUrl: './models/air_ac130.glb',
     scale: 1,
+    approachSpeed: 36,
+    departSpeed: 38,
     orbitRadiusRatio: 0.3,
     orbitHeight: 14.5,
     orbitAngularSpeed: 0.55,
