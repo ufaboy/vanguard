@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { t } from '../../i18n/index.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { determineHitAspect } from '../../sim/ballistics.js';
@@ -44,6 +45,14 @@ const AC130_DESTRUCTIBLE_TILES = new Set([
   TileType.HOUSE_2,
 ]);
 
+const AIR_GLB_URLS = Object.freeze({
+  bomber: './models/air_bomber.glb',
+  ac130: './models/air_ac130.glb',
+  repairDrone: './models/air_repair_drone.glb',
+});
+
+let airGltfLoader = null;
+
 /**
  * Manages tactical Air Support calls (Air Strike, Air Repair, Air Mines, Air Drop),
  * paused map-targeting UI state, and active airborne entities.
@@ -51,6 +60,61 @@ const AC130_DESTRUCTIBLE_TILES = new Set([
 export class AirSupportController {
   constructor(engine) {
     this.engine = engine;
+    this.glbCache = new Map();
+    this.glbRequested = new Set();
+    this.preloadGlbModels();
+  }
+
+  preloadGlbModels() {
+    if (
+      typeof window === 'undefined' ||
+      typeof document === 'undefined' ||
+      this.engine?.isSoftwareGl ||
+      !this.engine?.fxGroup
+    ) {
+      return;
+    }
+    airGltfLoader ||= new GLTFLoader();
+    for (const [key, relPath] of Object.entries(AIR_GLB_URLS)) {
+      if (this.glbRequested.has(key) || this.glbCache.has(key)) continue;
+      this.glbRequested.add(key);
+      const url = document.baseURI ? new URL(relPath, document.baseURI).href : relPath;
+      airGltfLoader.load(
+        url,
+        (gltf) => {
+          if (gltf?.scene) {
+            this.glbCache.set(key, gltf.scene);
+          }
+        },
+        undefined,
+        () => {}
+      );
+    }
+  }
+
+  cloneGlbRig(key) {
+    const template = this.glbCache.get(key);
+    if (!template) return null;
+    const clone = template.clone(true);
+    const rotors = [];
+    const propellers = [];
+    clone.traverse((node) => {
+      if (node.name?.startsWith('Rotor_')) rotors.push(node);
+      if (node.name?.startsWith('Propeller_')) propellers.push(node);
+      if (!node.isMesh) return;
+      if (node.geometry) node.geometry = node.geometry.clone();
+      if (Array.isArray(node.material)) {
+        node.material = node.material.map((m) => m.clone());
+      } else if (node.material) {
+        node.material = node.material.clone();
+      }
+      node.castShadow = true;
+      node.receiveShadow = true;
+    });
+    if (rotors.length) clone.userData.rotors = rotors;
+    if (propellers.length) clone.userData.propellers = propellers;
+    markOwned(clone);
+    return clone;
   }
 
   getTargetingConfig(type, strikeVariant = 'STRIKE_BOMBS') {
@@ -1082,6 +1146,8 @@ export class AirSupportController {
 
   /** Builds a realistic swept-wing strategic jet bomber (B-1B / Tu-160 silhouette). */
   createBomberMesh() {
+    const glb = this.cloneGlbRig('bomber');
+    if (glb) return glb;
     const group = new THREE.Group();
     const hullMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.42, metalness: 0.62 });
     const wingMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.48, metalness: 0.55 });
@@ -1192,6 +1258,8 @@ export class AirSupportController {
 
   /** Builds a realistic AC-130 Spooky gunship (high-wing C-130 turboprop with port cannons). */
   createAc130Mesh() {
+    const glb = this.cloneGlbRig('ac130');
+    if (glb) return glb;
     const group = new THREE.Group();
     const hullMat = new THREE.MeshStandardMaterial({ color: 0x3b4454, roughness: 0.52, metalness: 0.5 });
     const wingMat = new THREE.MeshStandardMaterial({ color: 0x4b5563, roughness: 0.55, metalness: 0.45 });
@@ -1377,6 +1445,8 @@ export class AirSupportController {
   /** Builds a realistic tactical field-repair quadrotor UAV with skids, optical gimbal, and welder arm. */
   createRepairDroneMesh() {
     if (!this.engine.fxGroup) return null;
+    const glb = this.cloneGlbRig('repairDrone');
+    if (glb) return glb;
     const group = new THREE.Group();
     const carbonMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.38, metalness: 0.65 });
     const shellMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.42, metalness: 0.55 });
