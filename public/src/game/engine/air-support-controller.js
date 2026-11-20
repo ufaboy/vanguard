@@ -1176,10 +1176,12 @@ export class AirSupportController {
     return group;
   }
 
-  /** Clones the Blender-exported tactical repair quadrotor GLB rig. */
+  /** Clones the Blender-exported tactical repair quadrotor GLB rig (scaled down 25%). */
   createRepairDroneMesh() {
     if (!this.engine.fxGroup) return null;
-    return this.cloneGlbRig('repairDrone');
+    const rig = this.cloneGlbRig('repairDrone');
+    if (rig) rig.scale.setScalar(0.75);
+    return rig;
   }
 
   disposeMissionVisuals(m) {
