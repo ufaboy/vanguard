@@ -782,14 +782,14 @@ export class AirSupportController {
       if (!enemy || enemy.hp <= 0 || !(enemy.apsCharges >= cost)) continue;
       if (Math.hypot(enemy.x - targetX, enemy.z - targetZ) <= 2.8 * TILE_SIZE) {
         enemy.apsCharges -= cost;
-        engine.fx?.apsIntercept?.(targetX, 1.0, targetZ, { color: 0x38bdf8 });
+        engine.fx?.apsIntercept?.(enemy.x, 1.0, enemy.z, targetX, 1.0, targetZ);
         sound.playApsIntercept?.({ x: targetX, z: targetZ });
         return;
       }
     }
 
     sound.playCannon?.(false, { x: startX, z: startZ });
-    engine.projectilesCtrl?.spawnProjectile(
+    engine.spawnProjectile?.(
       startX,
       startZ,
       dirX,
@@ -798,7 +798,7 @@ export class AirSupportController {
       gun.damage,
       gun.penetration,
       BULLET_POWER.STANDARD,
-      gun.bulletSpeed,
+      Math.max(gun.bulletSpeed, 18),
       false,
       'CANNON_Mk2',
       {
@@ -875,7 +875,7 @@ export class AirSupportController {
     if (!cell) return;
     if (this.isWaterAtPoint(x, z)) {
       engine.fx?.shockwave?.(x, 0.1, z, 0.2, 1.1, 0x38bdf8, 0.35);
-      engine.fx?.smoke?.(x, 0.25, z, 4);
+      engine.fx?.shellSmokeTrail?.(x, 0.25, z, false);
       return;
     }
 

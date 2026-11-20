@@ -78,10 +78,8 @@ function createMockEngine(credits = 1000) {
         return 0;
       },
     },
-    projectilesCtrl: {
-      spawnProjectile(x, z, dirX, dirZ, fromPlayer, damage, penetration, bulletPower, speed, isHeavy, weaponId, opts) {
-        projectiles.push({ x, z, dirX, dirZ, fromPlayer, damage, weaponId, opts });
-      },
+    spawnProjectile(x, z, dirX, dirZ, fromPlayer, damage, penetration, bulletPower, speed, isHeavy, weaponId, opts) {
+      projectiles.push({ x, z, dirX, dirZ, fromPlayer, damage, weaponId, opts });
     },
     powerupsController: {
       isAirDropLandingCell: () => true,
