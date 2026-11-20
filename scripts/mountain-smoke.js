@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createMountainPerimeter } from '/src/game/terrains/mountains.js';
-import { disposeOwned } from '/src/game/dispose.js';
+import { disposeOwned } from '/src/game/render/dispose.js';
 
 try {
   const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });

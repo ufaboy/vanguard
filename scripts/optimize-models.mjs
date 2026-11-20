@@ -10,7 +10,7 @@
 //     (NORMAL_CODEC=uastc encodes normal maps as UASTC + Zstd: better relief, much larger files).
 //  4. Re-applies Draco geometry compression (custom running-gear attributes included).
 //
-// Usage: npm run optimize-models [-- tank_player tank_scout ...]   (default: every tank)
+// Usage: pnpm run optimize-models [-- tank_player tank_scout ...]   (default: every tank)
 //        --no-ktx2 keeps PNG textures and --no-draco keeps raw geometry (debugging);
 //        MODELS_OUT_DIR overrides the output directory.
 import fs from 'node:fs';

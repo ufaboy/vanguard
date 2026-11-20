@@ -89,6 +89,6 @@ Check graph connectivity, real tank turning clearance, spawn occupancy/exclusion
 
 Inspect decoration through the actual game camera when browser/computer tools are available: confirm alignment with geometry, landmark readability, clean threat silhouettes, and acceptable hardware/software WebGL performance. Do not bypass tool restrictions. If live inspection is unavailable, continue static/simulation checks and explicitly state that a visual or combat playtest did not happen.
 
-Run relevant existing/new tests, then `npm run build` and `npm run lint` after application code changes. Review playable geometry before spending time on fine decoration. Iterate on observed issues; do not claim a map is engaging because graph tests pass.
+Run relevant existing/new tests, then `pnpm run build` and `pnpm run lint` after application code changes. Review playable geometry before spending time on fine decoration. Iterate on observed issues; do not claim a map is engaging because graph tests pass.
 
 Deliver the concrete map or changes, how to reach it, roster and main tactical differences, validations performed, and remaining playtest limits. Update the matching mission brief/documentation to describe what actually exists. Do not create unrelated missions or publish externally unless requested.

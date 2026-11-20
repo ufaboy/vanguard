@@ -1,5 +1,5 @@
 import { TankGameEngine } from '/src/game/engine/engineCore.js';
-import { ModelFactory } from '/src/game/models.js';
+import { ModelFactory } from '/src/game/render/models.js';
 import { TileType, GameStatus } from '/src/game/types.js';
 
 const report = data => fetch('/__results', { method: 'POST', body: JSON.stringify(data) });

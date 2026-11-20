@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { TankGameEngine } from '/src/game/engine/engineCore.js';
-import { ModelFactory } from '/src/game/models.js';
+import { ModelFactory } from '/src/game/render/models.js';
 import { createWaterSurface } from '/src/game/terrains/water.js';
 import { createIceSurface } from '/src/game/terrains/ice.js';
 import { SECTORS } from '/src/game/levels.js';
 import { TileType } from '/src/game/types.js';
-import { disposeOwned } from '/src/game/dispose.js';
+import { disposeOwned } from '/src/game/render/dispose.js';
 
 const frozen = new URLSearchParams(location.search).get('surface') === 'ice';
 const surfaceType = frozen ? TileType.ICE : TileType.WATER;
@@ -76,8 +76,10 @@ try {
       engine.renderer.render(engine.scene, engine.camera);
       const surface = engine.mapGroup.children.find(child => child.name === surfaceName);
       if (!surface) throw Error('Missing sector surface');
-      const expected = engine.grid.flat().filter(cell => cell.type === surfaceType).length;
-      if ((surface.userData[countKey] || 0) !== expected) throw Error('Surface cell count mismatch');
+      // The sector loader renders water under bridges too (a BRIDGE cell counts as WATER for the surface mesh).
+      const expected = engine.grid.flat().filter(cell => cell.type === surfaceType || (!frozen && cell.type === TileType.BRIDGE)).length;
+      const actual = surface.userData[countKey] || 0;
+      if (actual !== expected) throw Error(`Surface cell count mismatch in sector ${index}: mesh ${actual}, grid ${expected}`);
       sectors.push({ index, cells: surface.userData[countKey] || 0, meshes: surface.children.length });
     }
     await fetch('/__results', { method: 'POST', body: JSON.stringify({ errors, checks, sectors, ...renderStats }) });

@@ -7,10 +7,10 @@
 1. **Language Policy (English Source, Localized UI)**:
    - **All source content — UI text, HUD labels, status banners, code comments, identifiers, and documentation — MUST be written in English.** English is the source language and the fallback.
    - **Translations live only in the locale dictionaries**: game UI in `public/src/i18n/locales/<locale>/*.js` (merged by `<locale>.js`) and static pages in `i18n/pages/<locale>.mjs` (keyed by the English text the Astro pages pass to `t()`). Built pages in `dist/site/` are build output. Never hardcode a non-English string anywhere else.
-   - **Every new user-facing string goes through i18n**: wrap it in `t('English text', { param })` where it is rendered, or mark catalog / constant strings with `N_('English text')` and translate them on display with `t(value)`. Then add the Spanish entry (`node scripts/i18n-keys.mjs es` lists missing keys; `tests/i18n.test.js` fails until it is added). On the static pages (`site/src/pages/`), wrap text in `t('English text')` and add its translation to `i18n/pages/<locale>/*.mjs`; `npm run build:site` (and `npm test`) fails on any missing key.
+   - **Every new user-facing string goes through i18n**: wrap it in `t('English text', { param })` where it is rendered, or mark catalog / constant strings with `N_('English text')` and translate them on display with `t(value)`. Then add the Spanish entry (`node scripts/i18n-keys.mjs es` lists missing keys; `tests/i18n.test.js` fails until it is added). On the static pages (`site/src/pages/`), wrap text in `t('English text')` and add its translation to `i18n/pages/<locale>/*.mjs`; `pnpm run build:site` (and `pnpm test`) fails on any missing key.
    - **Chat Communication**: Agents may communicate with the user in the user's preferred language in the chat conversation, while keeping all source code and repository files (other than the locale dictionaries) in English.
 2. **Pure Vanilla JavaScript Stack (Zero Bundler / No Vite)**:
-   - The project is built strictly with **Vanilla JavaScript (Native ES Modules, `.js`)**, **HTML5 (`<script type="importmap">`)**, **Pure CSS (`src/index.css`)**, **Static Dev Server (`npm run dev`: builds the site, then serves `dist/site` on port 3000)**, and **Three.js (`three` is the sole runtime dependency)**.
+   - The project is built strictly with **Vanilla JavaScript (Native ES Modules, `.js`)**, **HTML5 (`<script type="importmap">`)**, **Pure CSS (`src/index.css`)**, **Static Dev Server (`pnpm run dev`: builds the site, then serves `dist/site` on port 3000)**, and **Three.js (`three` is the sole runtime dependency)**.
    - **Do NOT use TypeScript (`.ts`, `.tsx`) or React** anywhere in the project.
    - **The game stays bundler-free**: `battlefield.html`, every module in `public/src/`, `public/vendor/` and all game assets are served exactly as written. Never import them through Vite, never add a bundler entry for them, and never add a build step the game needs to run.
    - **Astro (and the Vite it runs on) is allowed only as a build-time generator of the static SEO pages** in `site/` (layout, components and `[...locale]` pages built with `public/` into `dist/site`). Rules there: every `<script>` and `<style>` is `is:inline` so Vite never bundles or rewrites it; no client-side Astro islands or framework components; page behaviour stays in `public/src/pages/*.js` and is loaded as-is; `build.format: 'preserve'` keeps the current URLs (`about.html`, `es/index.html`); assets come from `../public` unchanged; translations still come from `i18n/pages/<locale>.mjs`, and a missing key fails the build. Do not use Vite or Astro for anything else.
@@ -41,10 +41,10 @@
    - Before creating or rebuilding any tank model (Blender or procedural), **always confirm with the user**: which additional / optional modules the tank carries, its intended size relative to other tanks, and any distinctive features or elements it must (or must not) have.
 7. **Release Before Deploy (On `main` After PR Merge)**:
    - Do **not** create Git tags or GitHub releases on a feature/PR branch or prior to PR merge.
-   - Only **after** a PR is merged/squashed into `main`, create the annotated Git tag matching the `package.json` version on the resulting squash commit on `main` (e.g., `git tag -a v1.4.1 -m "Release v1.4.1"`) and create the remote/GitHub release with a concise, human-readable **English-only** changelog (matching the `public/changelog.html` entry rather than raw commit messages alone), then run production deploy (`npm run deploy`). On Windows PowerShell, always pass `--notes-file -` (or `--body-file -` for PRs) via a single-quoted here-string (`@' ... '@ | gh release create ... --notes-file -`) instead of double-quoted `--notes "..."` so backticks are never interpreted as PowerShell escapes. Do not deploy uncommitted work directly to production without a release.
+   - Only **after** a PR is merged/squashed into `main`, create the annotated Git tag matching the `package.json` version on the resulting squash commit on `main` (e.g., `git tag -a v1.4.1 -m "Release v1.4.1"`) and create the remote/GitHub release with a concise, human-readable **English-only** changelog (matching the `public/changelog.html` entry rather than raw commit messages alone), then run production deploy (`pnpm run deploy`). On Windows PowerShell, always pass `--notes-file -` (or `--body-file -` for PRs) via a single-quoted here-string (`@' ... '@ | gh release create ... --notes-file -`) instead of double-quoted `--notes "..."` so backticks are never interpreted as PowerShell escapes. Do not deploy uncommitted work directly to production without a release.
 8. **Version Bump & Changelog Policy (SemVer, Branches & PRs)**:
    - **Patch (`x.y.Z`)**: Bug fixes, removing blocks/elements, or content/code cleanup (`node scripts/bump-version.mjs`).
-   - **Minor (`x.Y.0`)**: Adding new functionality or substantially changing existing functionality (`node scripts/bump-version.mjs --minor`, staging `package.json` and `package-lock.json` before committing so `.githooks/pre-commit` preserves the minor bump).
+   - **Minor (`x.Y.0`)**: Adding new functionality or substantially changing existing functionality (`node scripts/bump-version.mjs --minor`, staging `package.json` before committing so `.githooks/pre-commit` preserves the minor bump).
    - **Major (`X.0.0`)**: Never bumped automatically by agents; reserved strictly for the user to update manually in `package.json`.
    - The `.githooks/pre-commit` hook auto-bumps the patch version **only** on direct commits to `main` (it skips feature branches, merges/rebases, and commits where `package.json` version is already staged).
    - While working on a feature branch, do **not** bump the version on intermediate commits. Immediately before creating the Pull Request into `main`, bump the version (`node scripts/bump-version.mjs` or `node scripts/bump-version.mjs --minor`) if it has not already been bumped relative to `main`, and add a concise English changelog entry (`<article class="menu-card">`) for that version at the top of `public/changelog.html`, without creating any tag or release yet.
@@ -113,16 +113,16 @@
 
 ## 3. Directory & File Architecture
 
-The game and every file it needs reside inside `/public` and are served as written. The static SEO pages (each out-of-combat screen is its own HTML page) are Astro sources in `/site`; `npm run build:site` renders them and copies `/public` into `dist/site`, the multi-page static site deployed to Cloudflare Pages. Only `battlefield.html` runs the WebGL engine. Development, server, documentation, and configuration files remain in the project root `/`.
+The game and every file it needs reside inside `/public` and are served as written. The static SEO pages (each out-of-combat screen is its own HTML page) are Astro sources in `/site`; `pnpm run build:site` renders them and copies `/public` into `dist/site`, the multi-page static site deployed to Cloudflare Pages. Only `battlefield.html` runs the WebGL engine. Development, server, documentation, and configuration files remain in the project root `/`.
 
 ```text
 /
 ├── AGENTS.md               # Project architecture and engineering rules (dev/docs)
 ├── README.md
 ├── docs/                   # Engineering notes, SEO audit and map design notes (dev/docs)
-├── codex/                  # Dev-only 3D Codex viewer for tanks, surfaces and effects (`npm run codex`, port 3001)
+├── codex/                  # Dev-only 3D Codex viewer for tanks, surfaces and effects (`pnpm run codex`, port 3001)
 ├── skills/                 # Agent skills (vanguard-map-creator)
-├── site/                   # Astro sources of the static SEO pages (`npm run build:site` -> dist/site; see site/README.md)
+├── site/                   # Astro sources of the static SEO pages (`pnpm run build:site` -> dist/site; see site/README.md)
 │   ├── astro.config.mjs    # publicDir ../public, outDir ../dist/site, build.format 'preserve'
 │   ├── scripts/compare.mjs # Compares built pages with reference HTML (structure, text, JSON-LD) after formatting normalization
 │   └── src/
@@ -131,24 +131,25 @@ The game and every file it needs reside inside `/public` and are served as writt
 │       ├── i18n/index.js   # LOCALIZED_SLUGS, t() over i18n/pages dictionaries, localHref / pageHref / pageUrl, localizeJsonLd
 │       └── pages/[...locale]/  # One .astro file per page; localized pages build to /<slug> and /es/<slug>
 ├── i18n/pages/             # Static page dictionaries (es.mjs + es/*.mjs), keyed by English text
-├── tests/                  # `npm test`: node:test suites (tank stats, AI behavior, bosses, maps, hangar, ...)
+├── tests/                  # `pnpm test`: node:test suites (tank stats, AI behavior, bosses, maps, hangar, ...)
 ├── metadata.json           # AI Studio applet metadata (dev/config)
 ├── package.json            # Single runtime dependency ("three"); dev-only GLB tooling and wrangler in devDependencies
 ├── assets/                 # (git-ignored) Blender builds (assets/blender/<model>/) and source art
 ├── scripts/
-│   ├── lint.mjs            # `npm run lint` / `npm run build`: syntax check of every module in public/src/, then lint-methods.mjs and lint-dead-code.mjs
+│   ├── lint.mjs            # `pnpm run lint` / `pnpm run build`: syntax check of every module in public/src/, then lint-methods.mjs and lint-dead-code.mjs
 │   ├── i18n-keys.mjs       # Collects every translatable UI string (t / N_ calls, map text, runtime enums); `node scripts/i18n-keys.mjs es` lists missing keys
 │   ├── site.mjs            # SITE_DIR (dist/site), buildSite() and ensureSite() for deploy, itch, Markdown and smoke scripts
 │   ├── lint-methods.mjs    # Fails on calls to methods that do not exist (`// lint-methods-ignore` skips a line)
 │   ├── lint-dead-code.mjs  # Fails on unused imports, exports, methods and write-only fields (`// lint-dead-ignore` keeps one)
-│   ├── bump-version.mjs    # Patch / --minor version bump of package.json and package-lock.json
-│   ├── deploy.mjs          # `npm run deploy`: lint, tests, `astro build`, then Cloudflare Pages deploy of dist/site; syncs sitemap <lastmod> from the page sources, publishes Markdown for agents
-│   ├── build-markdown.mjs  # Markdown for agents: <page>.md for every sitemap page + llms-full.txt (`npm run build:md` previews into dist/agent-markdown)
-│   ├── build-itch.mjs      # `npm run build:itch`: ad-free, tracker-free itch.io package in dist/itch/
+│   ├── bump-version.mjs    # Patch / --minor version bump of package.json
+│   ├── deploy.mjs          # `pnpm run deploy`: lint, tests, `astro build`, then Cloudflare Pages deploy of dist/site; syncs sitemap <lastmod> from the page sources, publishes Markdown for agents
+│   ├── build-markdown.mjs  # Markdown for agents: <page>.md for every sitemap page + llms-full.txt (`pnpm run build:md` previews into dist/agent-markdown)
+│   ├── build-itch.mjs      # `pnpm run build:itch`: ad-free, tracker-free itch.io package in dist/itch/
 │   ├── audit-maps.mjs      # Map JSON consistency audit
-│   ├── sync-vendor.mjs     # `npm run vendor`: copies only the used Three.js files into public/vendor
-│   ├── optimize-models.mjs # `npm run optimize-models`: Blender GLBs -> public/models (player atlas, 512 px cap, KTX2, Draco)
-│   └── *-smoke.js, *-benchmark.*  # Browser smoke tests and brick / hangar benchmarks
+│   ├── sync-vendor.mjs     # `pnpm run vendor`: copies only the used Three.js files into public/vendor
+│   ├── optimize-models.mjs # `pnpm run optimize-models`: Blender GLBs -> public/models (player atlas, 512 px cap, KTX2, Draco)
+│   ├── browser-smoke.mjs   # `pnpm run smoke <mode> [--software] [--mobile]`: headless-Chrome runner for the page scripts below (bricks, damage, damage-ui, mountains, sand, water, ice, hero, home, hangar); output in artifacts/
+│   └── *-smoke.js, brick-benchmark.js, home-art.js, smoke-canvas.html  # Page scripts run by browser-smoke.mjs
 └── public/                 # Game and static assets, copied untouched into dist/site (the static SEO pages live in site/)
     ├── battlefield.html    # The WebGL game page (noindex); loads src/main.js
     ├── 404.html, robots.txt, sitemap.xml, llms.txt, ads.txt, manifest.webmanifest
@@ -204,6 +205,6 @@ The game and every file it needs reside inside `/public` and are served as writt
   - **Static pages are the SEO surface**: every out-of-combat page (`site/src/pages/[...locale]/index.astro`, `campaign.astro`, `how-to-play.astro`, ...) ships its full text, meta tags and JSON-LD in static HTML rendered at build time. Page props set title, descriptions, image and JSON-LD; `PageLayout.astro` writes the head and footer once for every page. Keep visible copy, `<title>`, `meta description`, Open Graph / Twitter tags and JSON-LD consistent with each other and with the current game facts. `battlefield.html` is `noindex`; contracts open directly as `battlefield?mode=contract&id=<contract id>`. The home JSON-LD `softwareVersion` is read from `package.json` at build time; `scripts/deploy.mjs` syncs sitemap `<lastmod>` dates from the last commit of each page's sources.
   - **Localization (i18n)**: the battlefield UI is localized at runtime by `public/src/i18n/index.js` (gettext style: the English text is the key). `battlefield.html` has `<html data-locale="auto">`: it uses `?lang=`, then the saved preference (`iron_vanguard_locale_v1`), then the browser language. Static pages use their `<html lang>`; pages with hreflang alternates save it as the preference. The Settings modal has a Language row (reloads, or opens the translated twin). Spanish (`es`) is the only extra locale. Pages listed in `LOCALIZED_SLUGS` (`site/src/i18n/index.js`) are built in English and Spanish (`/about` and `/es/about`); they carry `hreflang` alternates (`en`, `es`, `x-default`) and `og:locale`, are listed in `sitemap.xml`, and their links point to Spanish twins where they exist, otherwise to the English pages (`localHref`). Every other static page (changelog) stays English-only.
 - **Verification**:
-  - Always run `compile_applet` (`npm run build`: lint + Astro build) and `lint_applet` (`npm run lint`) after making code changes to verify zero build or syntax errors. Lint also fails on calls to missing methods and on unused code: delete what it reports, or drop the needless `export`, instead of silencing it.
+  - Always run `compile_applet` (`pnpm run build`: lint + Astro build) and `lint_applet` (`pnpm run lint`) after making code changes to verify zero build or syntax errors. Lint also fails on calls to missing methods and on unused code: delete what it reports, or drop the needless `export`, instead of silencing it.
 - **Blender Builds (`assets/blender/`)**:
   - Always pass an **absolute** output directory inside `assets/blender/<tank>/` after `--` (e.g. `-- C:/projects/.../assets/blender/armor`). On Windows, Blender resolves relative image/render paths against the drive root, so a relative path like `-- armor` writes to `C:\armor\`. The build and bake scripts refuse any output directory outside `assets/blender/`.

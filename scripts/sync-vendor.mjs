@@ -1,6 +1,6 @@
 // Copies only the Three.js files the game actually loads from node_modules/three into
 // public/vendor/three (the native import map serves them without a bundler).
-// Usage: npm run vendor   (after upgrading the "three" dependency)
+// Usage: pnpm run vendor   (after upgrading the "three" dependency)
 import fs from 'node:fs';
 import path from 'node:path';
 

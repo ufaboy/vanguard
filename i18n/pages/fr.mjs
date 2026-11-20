@@ -1,7 +1,7 @@
 /**
  * French dictionary for the static pages built by Astro (site/src/pages -> /fr/...).
  * Keys are the English text of the source page with collapsed whitespace (HTML entities kept);
- * `npm run build:site` fails on any text that still needs a translation.
+ * `pnpm run build:site` fails on any text that still needs a translation.
  */
 import common from './fr/common.mjs';
 import info from './fr/info.mjs';
