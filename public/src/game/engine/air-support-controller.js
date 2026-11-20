@@ -858,7 +858,7 @@ export class AirSupportController {
       'CANNON_Mk2',
       {
         flightY: startHeight,
-        targetFlightY: 0.75,
+        targetFlightY: 0.2,
         flightDist: dist,
         canHitPlayer: true,
       }

@@ -365,6 +365,22 @@ export class ProjectilesController {
         continue;
       }
 
+      if (p.flightDist > 0 && p.traveled >= p.flightDist) {
+        engine.detonateExplosionAt(
+          p.x,
+          p.z,
+          1.35,
+          p.damage * 0.5,
+          true,
+          null,
+          false,
+          p.penetration,
+          p.weaponId
+        );
+        engine.removeProjectile(i);
+        continue;
+      }
+
       if (
         p.isMissile &&
         p.fromPlayer &&
