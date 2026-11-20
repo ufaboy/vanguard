@@ -302,8 +302,6 @@ export class ExplosionsController {
           rebuildIce = true;
         } else if (cell.type === TileType.BOXES || cell.type === TileType.WATER_TOWER || cell.type === TileType.BRICK) {
           engine.damageTileCell(cell, tileDmg, pos.x, pos.z, fromPlayer);
-        } else if (cell.type === TileType.RUBBLE) {
-          engine.terrainDestruction?.clearRubbleCell?.(cell);
         } else if (cell.type === TileType.BARREL) {
           engine.explodeBarrel(cell, fromPlayer);
         } else if (cell.type === TileType.OIL_SLICK) {
@@ -332,7 +330,7 @@ export class ExplosionsController {
 
     const impactGrid = engine.worldToGrid(x, z);
     const impactCell = engine.grid[impactGrid.row]?.[impactGrid.col];
-    if (impactCell && radius >= TILE_SIZE * 1.1) {
+    if (impactCell && impactCell.type !== TileType.RUBBLE && radius >= TILE_SIZE * 1.1) {
       engine.terrainDestruction?.convertCellToCrater?.(impactCell);
     }
 
@@ -436,7 +434,7 @@ export class ExplosionsController {
 
     const impactGrid = engine.worldToGrid(x, z);
     const impactCell = engine.grid[impactGrid.row]?.[impactGrid.col];
-    if (impactCell && radius >= TILE_SIZE * 1.1) {
+    if (impactCell && impactCell.type !== TileType.RUBBLE && radius >= TILE_SIZE * 1.1) {
       engine.terrainDestruction?.convertCellToCrater?.(impactCell);
     }
 

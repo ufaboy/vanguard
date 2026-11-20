@@ -388,6 +388,7 @@ test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turn
   game.grid[19][20].type = TileType.ICE;
   game.grid[20][19].type = TileType.WATER;
   game.grid[20][22].type = TileType.OIL_SLICK;
+  game.grid[19][21].type = TileType.RUBBLE; // Must remain untouched by thermobaric blast
   game.grid[20][23].type = TileType.CONCRETE; // 3 cells = 6.0m -> near outer rim
   // Far outside 3.5-cell radius (5 cells away)
   game.grid[20][25].type = TileType.CONCRETE;
@@ -400,6 +401,7 @@ test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turn
   assert.equal(game.grid[20][20].type, TileType.CRATER);
   assert.equal(game.grid[19][20].type, TileType.WATER);
   assert.equal(game.grid[20][19].type, TileType.SWAMP);
+  assert.equal(game.grid[19][21].type, TileType.RUBBLE);
   assert.deepEqual(swamped, [{ row: 20, col: 19, allowWater: true }]);
   assert.deepEqual(melted, [{ row: 19, col: 20 }]);
   assert.deepEqual(ignitedForests, [{ row: 21, col: 20 }]);
