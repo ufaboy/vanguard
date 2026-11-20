@@ -109,7 +109,7 @@ function createMockEngine(credits = 1000) {
 }
 
 test('Air Support targeting pauses game, cancels cleanly, and spends credits on confirm', () => {
-  const { engine, ctrl, savedSnapshots } = createMockEngine(500);
+  const { engine, ctrl, savedSnapshots } = createMockEngine(5000);
 
   assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_BOMBS'), true);
   assert.equal(engine.status, GameStatus.PAUSED);
@@ -118,23 +118,23 @@ test('Air Support targeting pauses game, cancels cleanly, and spends credits on 
   assert.equal(ctrl.cancelTargeting(), true);
   assert.equal(engine.status, GameStatus.PLAYING);
   assert.equal(engine.airSupportTargeting, null);
-  assert.equal(engine.playerSave.credits, 500);
+  assert.equal(engine.playerSave.credits, 5000);
   assert.deepEqual(savedSnapshots, []);
 
   assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_BOMBS'), true);
   assert.equal(ctrl.confirmTargeting(10, 12), true);
   assert.equal(engine.status, GameStatus.PLAYING);
-  assert.equal(engine.playerSave.credits, 500 - AIR_SUPPORT.STRIKE_BOMBS.cost);
-  assert.deepEqual(savedSnapshots, [500 - AIR_SUPPORT.STRIKE_BOMBS.cost]);
+  assert.equal(engine.playerSave.credits, 5000 - AIR_SUPPORT.STRIKE_BOMBS.cost);
+  assert.deepEqual(savedSnapshots, [5000 - AIR_SUPPORT.STRIKE_BOMBS.cost]);
   const ordnance = engine.airSupportMissions.filter((m) => m.kind === 'AIR_ORDNANCE');
   assert.equal(ordnance.length, AIR_SUPPORT.STRIKE_BOMBS.bombCount);
 });
 
 test('Air Repair dispatches drone, repairs all damaged subsystems, and restores +20 HP', () => {
-  const { engine, ctrl } = createMockEngine(300);
+  const { engine, ctrl } = createMockEngine(5000);
 
   assert.equal(ctrl.callAirRepair(), true);
-  assert.equal(engine.playerSave.credits, 300 - AIR_SUPPORT.REPAIR.cost);
+  assert.equal(engine.playerSave.credits, 5000 - AIR_SUPPORT.REPAIR.cost);
   assert.equal(engine.airSupportMissions.length, 1);
 
   for (let i = 0; i < 60; i++) {
