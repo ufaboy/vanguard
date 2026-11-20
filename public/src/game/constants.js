@@ -430,7 +430,7 @@ export const HYDRA = Object.freeze({
 });
 
 export const INFERNO = Object.freeze({
-  BLAST_CELLS: 2.5, // Thermobaric shell detonation radius in grid cells (5.0 world units)
+  BLAST_CELLS: 3.5, // Thermobaric shell detonation radius in grid cells (7.0 world units)
   EDGE_DAMAGE_RATIO: 0.45, // Outer rim blast damage multiplier
   PHASE2_HP_RATIO: 0.5, // HP threshold (50%) triggering phase shield, overdrive, and incendiary escort
   PHASE2_RELOAD_MULT: 0.75, // 25% faster thermobaric mortar & ATGM reload in Phase 2
@@ -526,5 +526,64 @@ export const DEFENSE_TURRET_CONFIGS = Object.freeze({
     salvoInterval: 0.22, // Time delay between consecutive rocket launches in a salvo
     muzzleDist: 1.4, // Pod launcher forward spawn offset in world units
     modelUrl: './models/turret_mlrs.glb', // 3D GLTF asset path
+  }),
+});
+
+export const AIR_SUPPORT = Object.freeze({
+  STRIKE_BOMBS: Object.freeze({
+    id: 'STRIKE_BOMBS',
+    label: N_('3× Light Bombs'),
+    shortLabel: N_('3× BOMBS'),
+    cost: 250,
+    bombCount: 3,
+    radiusCells: 1.5,
+    scatterCells: 1.75,
+    damage: 24,
+    penetration: 15,
+    flightSec: 1.05,
+    staggerSec: 0.24,
+  }),
+  STRIKE_THERMO: Object.freeze({
+    id: 'STRIKE_THERMO',
+    label: N_('Thermobaric Missile'),
+    shortLabel: N_('THERMO'),
+    cost: 450,
+    radiusCells: 3.5,
+    damage: 25,
+    flightSec: 1.3,
+  }),
+  STRIKE_AC130: Object.freeze({
+    id: 'STRIKE_AC130',
+    label: N_('AC-130 Spooky (15s)'),
+    shortLabel: N_('AC-130'),
+    cost: 600,
+    durationSec: 15.0,
+    radiusCells: 5.5,
+    fireIntervalSec: 0.7,
+    weaponId: 'CANNON_Mk2',
+  }),
+  REPAIR: Object.freeze({
+    id: 'REPAIR',
+    label: N_('Air Repair Drone'),
+    cost: 200,
+    healAmount: 20,
+    durationSec: 3.5,
+  }),
+  MINES: Object.freeze({
+    id: 'MINES',
+    label: N_('Carpet Air Mines'),
+    cost: 220,
+    mineCount: 9,
+    zoneHalfCells: 2.2,
+    flightSec: 1.0,
+  }),
+  AIRDROP: Object.freeze({
+    id: 'AIRDROP',
+    label: N_('Supply Air Drop'),
+    cost: 180,
+    shells: 50,
+    aps: 8,
+    missiles: 4,
+    repairKits: 1,
   }),
 });

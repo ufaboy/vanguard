@@ -225,6 +225,7 @@ export function buildHudSnapshot(engine) {
     shotsHit: engine.shotsHit,
     medalTrackerState: engine.medalTracker?.snapshot() || null,
     statusMessage: engine.statusMessage,
+    airSupportTargeting: engine.airSupportTargeting ? { ...engine.airSupportTargeting } : null,
   };
 }
 

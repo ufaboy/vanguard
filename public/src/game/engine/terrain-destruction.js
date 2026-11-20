@@ -102,32 +102,6 @@ export class TerrainDestructionController {
     }
   }
 
-  /** Rebuilds the continuous water / ice surface meshes after thermobaric vaporization. */
-  rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce) {
-    const { engine } = this;
-    if (!engine.mapGroup || !engine.modelFactory) return;
-    if (rebuildWater) {
-      const waterGrid = engine.grid.map((row) =>
-        row.map((cell) => (cell.type === TileType.BRIDGE ? TileType.WATER : cell.type))
-      );
-      if (engine.waterSurfaceMesh) {
-        engine.mapGroup.remove(engine.waterSurfaceMesh);
-        disposeOwned(engine.waterSurfaceMesh);
-      }
-      engine.waterSurfaceMesh = engine.modelFactory.createWaterBlock(waterGrid, TileType.WATER);
-      engine.mapGroup.add(engine.waterSurfaceMesh);
-    }
-    if (rebuildIce) {
-      const iceGrid = engine.grid.map((row) => row.map((cell) => cell.type));
-      if (engine.iceSurfaceMesh) {
-        engine.mapGroup.remove(engine.iceSurfaceMesh);
-        disposeOwned(engine.iceSurfaceMesh);
-      }
-      engine.iceSurfaceMesh = engine.modelFactory.createIceBlock(iceGrid, TileType.ICE);
-      engine.mapGroup.add(engine.iceSurfaceMesh);
-    }
-  }
-
   damageEnemyBase(cell, dmg, hitX, hitZ) {
     const { engine } = this;
     if (!engine.enemyBaseAlive || cell.type !== TileType.ENEMY_BASE) return;
@@ -602,11 +576,11 @@ export class TerrainDestructionController {
   }
 
   /** Converts passable ground into deep swamp/mud (respecting facility surface lock). */
-  convertCellToSwamp(cell) {
+  convertCellToSwamp(cell, { allowWater = false } = {}) {
     const { engine } = this;
     if (!cell) return;
     syncCellType(cell);
-    if (!FLOODABLE_SURFACES.has(cell.surface)) {
+    if (!FLOODABLE_SURFACES.has(cell.surface) && !(allowWater && cell.surface === TileType.WATER)) {
       return;
     }
     if (cell.object != null && cell.object !== TileType.CRATER) {
@@ -634,6 +608,48 @@ export class TerrainDestructionController {
       engine.mapGroup.add(swampMesh);
       cell.surfaceMesh = swampMesh;
       cell.mesh = swampMesh;
+    }
+  }
+
+  /** Converts a melted ICE cell into WATER. */
+  convertCellToWater(cell) {
+    const { engine } = this;
+    if (!cell) return;
+    if (cell.surfaceMesh) {
+      engine.mapGroup?.remove(cell.surfaceMesh);
+      cell.surfaceMesh = null;
+    } else if (cell.mesh) {
+      engine.mapGroup?.remove(cell.mesh);
+      cell.mesh = null;
+    }
+    cell.surface = TileType.WATER;
+    syncCellType(cell);
+    cell.hp = 0;
+  }
+
+  /** Rebuilds the continuous water / ice surface meshes after thermobaric phase changes. */
+  rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce) {
+    const { engine } = this;
+    if (!engine.mapGroup || !engine.modelFactory) return;
+    if (rebuildWater) {
+      const waterGrid = engine.grid.map((row) =>
+        row.map((cell) => (cell.type === TileType.BRIDGE ? TileType.WATER : cell.type))
+      );
+      if (engine.waterSurfaceMesh) {
+        engine.mapGroup.remove(engine.waterSurfaceMesh);
+        disposeOwned(engine.waterSurfaceMesh);
+      }
+      engine.waterSurfaceMesh = engine.modelFactory.createWaterBlock(waterGrid, TileType.WATER);
+      engine.mapGroup.add(engine.waterSurfaceMesh);
+    }
+    if (rebuildIce) {
+      const iceGrid = engine.grid.map((row) => row.map((cell) => cell.type));
+      if (engine.iceSurfaceMesh) {
+        engine.mapGroup.remove(engine.iceSurfaceMesh);
+        disposeOwned(engine.iceSurfaceMesh);
+      }
+      engine.iceSurfaceMesh = engine.modelFactory.createIceBlock(iceGrid, TileType.ICE);
+      engine.mapGroup.add(engine.iceSurfaceMesh);
     }
   }
 

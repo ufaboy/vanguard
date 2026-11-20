@@ -121,7 +121,8 @@ export class ProjectilesController {
       length: isThermobaric ? 0.62 : isHeavy ? 0.5 : 0.38,
       glow: isThermobaric ? 1.55 : isHeavy ? 1.15 : 1,
     });
-    mesh.position.set(x, 0.75, z);
+    const startFlightY = opts.flightY ?? 0.75;
+    mesh.position.set(x, startFlightY, z);
     mesh.rotation.y = Math.atan2(dirX, dirZ);
     engine.fxGroup.add(mesh);
 
@@ -142,6 +143,11 @@ export class ProjectilesController {
       isThermobaric,
       blastCells: opts.blastCells || 0,
       detonateDist: opts.detonateDist || 0,
+      flightY: startFlightY,
+      startFlightY,
+      targetFlightY: opts.targetFlightY ?? startFlightY,
+      flightDist: opts.flightDist || 0,
+      canHitPlayer: Boolean(opts.canHitPlayer),
       weaponId,
       mesh,
       trailColor: color,
@@ -342,9 +348,38 @@ export class ProjectilesController {
       p.traveled = (p.traveled || 0) + Math.hypot(p.x - prevX, p.z - prevZ);
       const flightY = p.isMissile
         ? (p.fromPlayer ? updatePlayerMissileAltitude(p, missileTargetX, missileTargetZ, hasMissileTarget, dt) : 0.9)
-        : p.isFlame ? 0.72 : 0.75;
+        : p.isFlame
+        ? 0.72
+        : p.flightDist > 0
+        ? THREE.MathUtils.lerp(
+            p.startFlightY ?? 0.75,
+            p.targetFlightY ?? 0.75,
+            Math.min(1, p.traveled / p.flightDist)
+          )
+        : 0.75;
+      p.flightY = flightY;
       p.mesh.position.set(p.x, flightY, p.z);
       engine.emitProjectileTrail(p, prevX, prevZ, flightY);
+
+      if (p.flightDist > 0 && flightY > 2.2) {
+        continue;
+      }
+
+      if (p.flightDist > 0 && p.traveled >= p.flightDist) {
+        engine.detonateExplosionAt(
+          p.x,
+          p.z,
+          1.35,
+          p.damage * 0.5,
+          true,
+          null,
+          false,
+          p.penetration,
+          p.weaponId
+        );
+        engine.removeProjectile(i);
+        continue;
+      }
 
       if (
         p.isMissile &&
@@ -572,6 +607,23 @@ export class ProjectilesController {
           }
         }
         if (hitTurret) {
+          engine.removeProjectile(i);
+          continue;
+        }
+
+        if (
+          p.canHitPlayer &&
+          engine.playerHp > 0 &&
+          Math.hypot(engine.playerX - p.x, engine.playerZ - p.z) <= TANK_HIT_RADIUS.PLAYER
+        ) {
+          const eff = computeEffectiveDamage(
+            p.damage,
+            p.penetration,
+            engine.playerStats?.armor ?? 0
+          );
+          engine.damagePlayer(eff, { zone: 'hull', aspect: 'front' }, p.weaponId);
+          engine.fx.armorHit(p.x, 0.85, p.z, { scale: 0.9 });
+          sound.playArmorHit({ x: p.x, z: p.z });
           engine.removeProjectile(i);
           continue;
         }
