@@ -291,7 +291,7 @@ export class AirSupportController {
     this.spendCredits(cfg.cost);
 
     const launch = this.getAlliedSideLaunchPos(engine.playerX, engine.playerZ);
-    const droneRig = this.createDroneMesh(0x2dd4bf);
+    const droneRig = this.createRepairDroneMesh();
     if (droneRig && engine.fxGroup) {
       droneRig.position.set(launch.x, 7.5, launch.z);
       engine.fxGroup.add(droneRig);
@@ -374,23 +374,20 @@ export class AirSupportController {
     } else if (variant === 'STRIKE_AC130') {
       const cfg = AIR_SUPPORT.STRIKE_AC130;
       const zoneMesh = this.createAc130ZoneRing(targetX, targetZ, cfg.radiusCells * TILE_SIZE);
-      const gunshipRig = this.createDroneMesh(0x38bdf8, 1.55);
-      if (gunshipRig && engine.fxGroup) {
-        gunshipRig.position.set(targetX, 13, targetZ);
-        engine.fxGroup.add(gunshipRig);
-      }
       engine.airSupportMissions.push({
         kind: 'AC130',
         x: targetX,
         z: targetZ,
         radius: cfg.radiusCells * TILE_SIZE,
+        orbitRadius: (GRID_SIZE * TILE_SIZE) * 0.25, // Circle diameter = half the map
+        orbitHeight: 24,
         duration: cfg.durationSec,
         elapsed: 0,
         fireTimer: 0.25,
         fireInterval: cfg.fireIntervalSec,
-        orbitAngle: 0,
+        orbitAngle: Math.random() * Math.PI * 2,
         zoneMesh,
-        mesh: gunshipRig,
+        mesh: null,
       });
       engine.setStatusBanner(t('AC-130 SPOOKY ON STATION — 15s FIRE SUPPORT'), 3.0);
     }
@@ -491,8 +488,17 @@ export class AirSupportController {
     }
   }
 
+  spinDroneRotors(mesh, dt) {
+    if (!mesh?.userData?.rotors) return;
+    for (let i = 0; i < mesh.userData.rotors.length; i++) {
+      const dir = i % 2 === 0 ? 1 : -1;
+      mesh.userData.rotors[i].rotation.y += dir * dt * 28;
+    }
+  }
+
   updateRepairDrone(m, dt, elapsed) {
     const { engine } = this;
+    this.spinDroneRotors(m.mesh, dt);
     if (m.phase === 'approach') {
       const dx = engine.playerX - m.x;
       const dz = engine.playerZ - m.z;
@@ -605,11 +611,13 @@ export class AirSupportController {
         markOwned(m.ringMesh);
         engine.fxGroup.add(m.ringMesh);
 
-        m.mesh = createProjectileVisual(isThermo ? 0xff4500 : 0xffb030, {
-          radius: isThermo ? 0.28 : 0.22,
-          length: isThermo ? 0.7 : 0.45,
-          glow: isThermo ? 1.6 : 1.2,
-        });
+        m.mesh = isThermo
+          ? this.createThermobaricMissileMesh()
+          : createProjectileVisual(0xffb030, {
+              radius: 0.22,
+              length: 0.45,
+              glow: 1.2,
+            });
         m.mesh.position.set(m.startX, m.startY, m.startZ);
         markOwned(m.mesh);
         engine.fxGroup.add(m.mesh);
@@ -624,7 +632,11 @@ export class AirSupportController {
 
     if (m.mesh) {
       m.mesh.position.set(curX, curY, curZ);
+      m.mesh.rotation.order = 'YXZ';
       m.mesh.rotation.y = Math.atan2(m.targetX - m.startX, m.targetZ - m.startZ);
+      const horizDist = Math.hypot(m.targetX - m.startX, m.targetZ - m.startZ) || 1;
+      const dy = -2 * (m.startY - 0.4) * progress;
+      m.mesh.rotation.x = Math.atan2(-dy, horizDist);
     }
     if (m.ringMesh) {
       m.ringMesh.visible = Math.floor(elapsed * ARTILLERY.MARKER_BLINK_RATE * 2) % 2 === 0;
@@ -691,22 +703,19 @@ export class AirSupportController {
   }
 
   updateAc130(m, dt) {
-    const { engine } = this;
     m.elapsed += dt;
-    m.orbitAngle += dt * 1.1;
-    const gunshipX = m.x + Math.cos(m.orbitAngle) * Math.min(4.5, m.radius * 0.55);
-    const gunshipZ = m.z + Math.sin(m.orbitAngle) * Math.min(4.5, m.radius * 0.55);
-    if (m.mesh) {
-      m.mesh.position.set(gunshipX, 12.5, gunshipZ);
-      m.mesh.rotation.y = -m.orbitAngle;
-    }
+    // Clockwise orbit around the target zone at half-map diameter, high out of view
+    m.orbitAngle += dt * 0.55;
+    const orbitR = m.orbitRadius ?? (GRID_SIZE * TILE_SIZE) * 0.25;
+    const gunshipX = m.x + Math.cos(m.orbitAngle) * orbitR;
+    const gunshipZ = m.z + Math.sin(m.orbitAngle) * orbitR;
 
     m.fireTimer -= dt;
     if (m.fireTimer <= 0 && m.elapsed < m.duration) {
       m.fireTimer = m.fireInterval;
       const target = this.pickAc130Target(m.x, m.z, m.radius);
       if (target) {
-        this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z);
+        this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z, m.orbitHeight ?? 24);
       }
     }
 
@@ -767,7 +776,7 @@ export class AirSupportController {
     return null;
   }
 
-  fireAc130Shell(startX, startZ, targetX, targetZ) {
+  fireAc130Shell(startX, startZ, targetX, targetZ, startHeight = 24) {
     const { engine } = this;
     const gun = CANNONS.CANNON_Mk2;
     const dx = targetX - startX;
@@ -798,11 +807,11 @@ export class AirSupportController {
       gun.damage,
       gun.penetration,
       BULLET_POWER.STANDARD,
-      Math.max(gun.bulletSpeed, 18),
+      Math.max(gun.bulletSpeed, 34),
       false,
       'CANNON_Mk2',
       {
-        flightY: 8.5,
+        flightY: startHeight,
         targetFlightY: 0.75,
         flightDist: dist,
         canHitPlayer: true,
@@ -943,23 +952,94 @@ export class AirSupportController {
     return ringMesh;
   }
 
-  createDroneMesh(color, scale = 1.0) {
+  createThermobaricMissileMesh() {
+    const group = new THREE.Group();
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4, metalness: 0.65 });
+    const warheadMat = new THREE.MeshStandardMaterial({
+      color: 0xea580c,
+      emissive: 0x7c2d12,
+      emissiveIntensity: 0.45,
+      roughness: 0.35,
+      metalness: 0.4,
+    });
+    const finMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5, metalness: 0.7 });
+    const nozzleMat = new THREE.MeshBasicMaterial({ color: 0xff6b1a });
+
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 1.15, 12), bodyMat);
+    body.rotation.x = Math.PI / 2;
+
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.42, 12), warheadMat);
+    cone.rotation.x = Math.PI / 2;
+    cone.position.z = 0.78;
+
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(0.168, 0.168, 0.14, 12), warheadMat);
+    band.rotation.x = Math.PI / 2;
+    band.position.z = 0.42;
+
+    const nozzle = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.28, 10), nozzleMat);
+    nozzle.rotation.x = -Math.PI / 2;
+    nozzle.position.z = -0.68;
+
+    group.add(body, cone, band, nozzle);
+
+    for (let i = 0; i < 4; i++) {
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.34, 0.28), finMat);
+      const angle = (i * Math.PI) / 2 + Math.PI / 4;
+      fin.position.set(Math.cos(angle) * 0.2, Math.sin(angle) * 0.2, -0.42);
+      fin.rotation.z = angle + Math.PI / 2;
+      group.add(fin);
+    }
+
+    markOwned(group);
+    return group;
+  }
+
+  createRepairDroneMesh() {
     if (!this.engine.fxGroup) return null;
     const group = new THREE.Group();
-    const body = new THREE.Mesh(
-      new THREE.BoxGeometry(0.75 * scale, 0.26 * scale, 1.1 * scale),
-      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.45, metalness: 0.55 })
-    );
-    const wing = new THREE.Mesh(
-      new THREE.BoxGeometry(1.7 * scale, 0.08 * scale, 0.35 * scale),
-      new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.5, metalness: 0.5 })
-    );
-    const beacon = new THREE.Mesh(
-      new THREE.SphereGeometry(0.14 * scale, 8, 8),
-      new THREE.MeshBasicMaterial({ color })
-    );
-    beacon.position.y = 0.2 * scale;
-    group.add(body, wing, beacon);
+    const hullMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.6 });
+    const armorMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.45, metalness: 0.55 });
+    const tealMat = new THREE.MeshStandardMaterial({
+      color: 0x2dd4bf,
+      emissive: 0x0d9488,
+      emissiveIntensity: 0.65,
+      roughness: 0.3,
+    });
+    const rotorMat = new THREE.MeshBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.7 });
+
+    const chassis = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.22, 0.85), hullMat);
+    const topPod = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.16, 10), armorMat);
+    topPod.position.y = 0.16;
+
+    const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshBasicMaterial({ color: 0x2dd4bf }));
+    beacon.position.y = 0.28;
+
+    const weldPod = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.06, 0.22, 8), tealMat);
+    weldPod.position.set(0, -0.18, 0.15);
+
+    group.add(chassis, topPod, beacon, weldPod);
+
+    const rotors = [];
+    const armAngles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
+    for (const a of armAngles) {
+      const armX = Math.cos(a) * 0.62;
+      const armZ = Math.sin(a) * 0.62;
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.72), armorMat);
+      arm.position.set(armX * 0.5, 0.04, armZ * 0.5);
+      arm.rotation.y = Math.atan2(armX, armZ);
+
+      const shroud = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.035, 6, 16), hullMat);
+      shroud.rotation.x = Math.PI / 2;
+      shroud.position.set(armX, 0.06, armZ);
+
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.015, 0.07), rotorMat);
+      blade.position.set(armX, 0.08, armZ);
+      rotors.push(blade);
+
+      group.add(arm, shroud, blade);
+    }
+
+    group.userData.rotors = rotors;
     markOwned(group);
     return group;
   }
