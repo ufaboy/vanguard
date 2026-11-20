@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 2.3.5 // BUGFIX")}</span>
+            <strong>{t("Mammoth Slayer Medal Fix")}</strong>
+            <p>{t("Removed the")} <code>{t("isVictory")}</code> {t("requirement from the")} <code>{t("mammoth_slayer")}</code> {t("medal so defeating")} <code>{t("BOSS_MAMMOTH")}</code> {t("awards the medal regardless of battle outcome, and updated its description across all locales.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 2.3.4 // TOOLING")}</span>
             <strong>{t("Migration to pnpm")}</strong>
             <p>{t("Migrated repository package management from npm to pnpm (v12.21.0) with")} <code>{t("pnpm-lock.yaml")}</code>{t(",")} <code>{t("pnpm-workspace.yaml")}</code>{t(", and updated build, deploy, and git hook scripts.")}</p>

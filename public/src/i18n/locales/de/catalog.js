@@ -426,7 +426,7 @@ export default {
   "Destroy two different enemies with a single dual-salvo of Cannon Mk5.": "Zerstöre zwei verschiedene Feinde mit einer einzigen Doppelsalve der Kanone Mk5.",
   "Mammoth Slayer": "Mammoth-Bezwinger",
   "Bosses": "Bosse",
-  "Defeat BOSS_MAMMOTH in Sector 01.": "Besiege BOSS_MAMMOTH in Sektor 01.",
+  "Defeat BOSS_MAMMOTH.": "Besiege BOSS_MAMMOTH.",
   "Hydra Dodger": "Hydra-Ausweicher",
   "Defeat BOSS_HYDRA without taking a single hit from its MLRS rocket salvo.": "Besiege BOSS_HYDRA ohne einen einzigen Treffer seiner MLRS-Raketensalve.",
   "Titan Breaker": "Titan-Brecher",

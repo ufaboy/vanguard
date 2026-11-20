@@ -115,6 +115,15 @@ test('Gold and Vanguard medals evaluate HQ, Last Stand, Twin Thunder, Bosses, an
   assert.ok(!hitIds.includes('titan_breaker'));
   assert.ok(!hitIds.includes('untouchable'));
   assert.ok(!hitIds.includes('david_vs_goliath'));
+
+  // Mammoth Slayer is awarded on boss kill even if the battle ends in defeat (e.g. Survival)
+  const evalOnDefeat = evaluateMissionMedals({
+    trackerState: tracker.snapshot(),
+    hud: { blocksDestroyed: 10, baseHp: 0, baseMaxHp: 100 },
+    upgrades: { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 },
+    isVictory: false,
+  });
+  assert.ok(evalOnDefeat.earnedMedals.some((m) => m.id === 'mammoth_slayer'));
 });
 
 test('Rank progression enforces XP thresholds, repeat medal XP reduction, and Gold/Vanguard gates', () => {

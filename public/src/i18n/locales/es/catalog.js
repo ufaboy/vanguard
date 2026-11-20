@@ -426,7 +426,7 @@ export default {
   "Destroy two different enemies with a single dual-salvo of Cannon Mk5.": "Destruye a dos enemigos distintos con una sola salva doble del Cañón Mk5.",
   "Mammoth Slayer": "Matamamuts",
   "Bosses": "Jefes",
-  "Defeat BOSS_MAMMOTH in Sector 01.": "Derrota a BOSS_MAMMOTH en el Sector 01.",
+  "Defeat BOSS_MAMMOTH.": "Derrota a BOSS_MAMMOTH.",
   "Hydra Dodger": "Esquivahidras",
   "Defeat BOSS_HYDRA without taking a single hit from its MLRS rocket salvo.": "Derrota a BOSS_HYDRA sin recibir ni un impacto de sus salvas de cohetes MLRS.",
   "Titan Breaker": "Rompetitanes",

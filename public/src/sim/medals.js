@@ -218,8 +218,8 @@ export const MEDAL_CATALOG = Object.freeze([
     name: N_('Mammoth Slayer'),
     grade: 'gold',
     category: N_('Bosses'),
-    description: N_('Defeat BOSS_MAMMOTH in Sector 01.'),
-    evaluate: ({ isVictory, tracker }) => isVictory && tracker.defeatedBosses.includes('BOSS_MAMMOTH'),
+    description: N_('Defeat BOSS_MAMMOTH.'),
+    evaluate: ({ tracker }) => tracker.defeatedBosses.includes('BOSS_MAMMOTH'),
   }),
   Object.freeze({
     id: 'hydra_dodger',
