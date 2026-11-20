@@ -36,14 +36,14 @@ export function createProjectileVisual(colorHex, { radius = 0.14, length = 0.55,
   return group;
 }
 
-/** Missile palettes: player ATGM (ivory + red warhead, orange motor) and enemy (gunmetal + cyan). */
+/** Missile palettes: player ATGM (matte ivory + red warhead, bluish-scarlet exhaust) and enemy (gunmetal + cyan). */
 const MISSILE_STYLES = {
   player: {
-    body: 0xe9e4d4, warhead: 0xd8231f, warheadGlow: 0x7a0a08, band: 0xf4b400,
-    fin: 0x46523c, seeker: 0xff3b2f, flame: 0xffb347, flameCore: 0xfff3c8, halo: 0xff8a2a,
+    body: 0xd8d3c3, warhead: 0xb8201c, band: 0xd99b16,
+    fin: 0x46523c, seeker: 0xff4b3e, flame: 0xff2e24, flameCore: 0x7ec8ff, halo: 0xd9445c,
   },
   enemy: {
-    body: 0x2b3342, warhead: 0x1d6fd8, warheadGlow: 0x0b3a82, band: 0x38e8ff,
+    body: 0x2b3342, warhead: 0x1d6fd8, band: 0x38e8ff,
     fin: 0x161c27, seeker: 0x5ff3ff, flame: 0x64c8ff, flameCore: 0xe6fbff, halo: 0x3b8cff,
   },
 };
@@ -88,18 +88,18 @@ function missileAssets(style) {
   a = {
     geo: { body, nose, band, nozzle, seeker, fin, canard, flame, flameCore },
     mat: {
-      body: new THREE.MeshStandardMaterial({ color: s.body, metalness: 0.45, roughness: 0.38 }),
+      body: new THREE.MeshStandardMaterial({ color: s.body, metalness: 0.4, roughness: 0.48 }),
       warhead: new THREE.MeshStandardMaterial({
-        color: s.warhead, emissive: s.warheadGlow, emissiveIntensity: 0.9, metalness: 0.3, roughness: 0.3,
+        color: s.warhead, metalness: 0.25, roughness: 0.4,
       }),
-      band: new THREE.MeshStandardMaterial({ color: s.band, emissive: s.band, emissiveIntensity: 0.55, roughness: 0.4 }),
+      band: new THREE.MeshStandardMaterial({ color: s.band, metalness: 0.25, roughness: 0.42 }),
       fin: new THREE.MeshStandardMaterial({ color: s.fin, metalness: 0.5, roughness: 0.5 }),
       nozzle: new THREE.MeshStandardMaterial({
-        color: 0x2a2a2a, emissive: s.flame, emissiveIntensity: 0.6, metalness: 0.7, roughness: 0.35, side: THREE.DoubleSide,
+        color: 0x22262e, metalness: 0.7, roughness: 0.4, side: THREE.DoubleSide,
       }),
       seeker: new THREE.MeshBasicMaterial({ color: s.seeker, toneMapped: false }),
-      flame: additive(s.flame, 0.75),
-      flameCore: additive(s.flameCore, 0.95),
+      flame: additive(s.flame, 0.72),
+      flameCore: additive(s.flameCore, 0.85),
       halo: new THREE.SpriteMaterial({
         map: glowSpriteTexture(),
         color: s.halo,
@@ -107,7 +107,7 @@ function missileAssets(style) {
         transparent: true,
         depthWrite: false,
         toneMapped: false,
-        opacity: 0.9,
+        opacity: 0.34,
       }),
       seekerHalo: new THREE.SpriteMaterial({
         map: glowSpriteTexture(),
@@ -116,7 +116,7 @@ function missileAssets(style) {
         transparent: true,
         depthWrite: false,
         toneMapped: false,
-        opacity: 0.8,
+        opacity: 0.45,
       }),
     },
   };
@@ -173,13 +173,13 @@ export function createMissileVisual(style = 'player', scale = 1) {
   flameCore.renderOrder = 13;
   root.add(flameCore);
   const halo = new THREE.Sprite(mat.halo);
-  halo.position.z = -0.36;
-  halo.scale.set(0.95, 0.95, 1);
+  halo.position.z = -0.44;
+  halo.scale.set(0.38, 0.38, 1);
   halo.renderOrder = 11;
   root.add(halo);
   const seekerHalo = new THREE.Sprite(mat.seekerHalo);
   seekerHalo.position.z = 0.45;
-  seekerHalo.scale.set(0.28, 0.28, 1);
+  seekerHalo.scale.set(0.14, 0.14, 1);
   seekerHalo.renderOrder = 11;
   root.add(seekerHalo);
 
@@ -200,8 +200,8 @@ export function animateMissileVisual(root, dt, turnRate = 0) {
   const flick = 0.82 + Math.random() * 0.4;
   m.flame.scale.set(0.9 + Math.random() * 0.25, 0.9 + Math.random() * 0.25, flick);
   m.flameCore.scale.set(1, 1, 0.8 + Math.random() * 0.35);
-  const hs = 0.85 + Math.random() * 0.3;
+  const hs = 0.34 + Math.random() * 0.1;
   m.halo.scale.set(hs, hs, 1);
-  const blink = Math.sin(m.t * 18) > 0.2 ? 0.34 : 0.18;
+  const blink = Math.sin(m.t * 18) > 0.2 ? 0.18 : 0.1;
   m.seekerHalo.scale.set(blink, blink, 1);
 }
