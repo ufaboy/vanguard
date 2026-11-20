@@ -1,4 +1,4 @@
-import { POWERUP, getMaxMissileAmmo } from '../game/constants.js';
+import { AIR_SUPPORT, POWERUP, getMaxMissileAmmo } from '../game/constants.js';
 import { renderPowerUpBadgeSvg } from '../game/icons.js';
 import { GameStatus } from '../game/types.js';
 import { formatNumber, t } from '../i18n/index.js';
@@ -259,10 +259,64 @@ export function renderBattlefieldHud({
     }
   }
 
-  // 5. Active Modifiers Strip
+  // 5. Active Modifiers Strip & Air Support Targeting Banner
   if (modifiersStrip) {
     const items = [];
-    if (hud.status === GameStatus.PLAYING) {
+    if (hud.airSupportTargeting) {
+      const targeting = hud.airSupportTargeting;
+      const credits = hud.credits ?? 0;
+      const title =
+        targeting.type === 'STRIKE'
+          ? t('AIR STRIKE TARGETING — CLICK MAP TO STRIKE [RMB / ESC TO CANCEL]')
+          : targeting.type === 'MINES'
+          ? t('AIR MINES TARGETING — CLICK MAP TO DEPLOY [RMB / ESC TO CANCEL]')
+          : t('AIR DROP TARGETING — CLICK MAP TO DROP [RMB / ESC TO CANCEL]');
+
+      let variantHtml = '';
+      if (targeting.type === 'STRIKE') {
+        const variants = [
+          AIR_SUPPORT.STRIKE_BOMBS,
+          AIR_SUPPORT.STRIKE_THERMO,
+          AIR_SUPPORT.STRIKE_AC130,
+        ];
+        variantHtml = `
+          <div class="hud-air-variants">
+            ${variants
+              .map((v, idx) => {
+                const active = targeting.strikeVariant === v.id;
+                const affordable = credits >= v.cost;
+                return `
+                  <button
+                    data-action="air-strike-variant"
+                    data-variant="${v.id}"
+                    ${affordable ? '' : 'disabled'}
+                    class="hud-air-variant-btn${active ? ' is-active' : ''}${affordable ? '' : ' is-poor'}"
+                  >
+                    <span class="hud-mod-key">${idx + 1}</span>
+                    <span>${t(v.label)}</span>
+                    <strong>$${v.cost}</strong>
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+        `;
+      }
+
+      const stripKey = `air|${targeting.type}|${targeting.strikeVariant}|${credits}`;
+      if (modifiersStrip.__stripKey !== stripKey) {
+        modifiersStrip.__stripKey = stripKey;
+        setHtml(modifiersStrip, `
+          <div class="hud-air-targeting-bar pointer-events-auto">
+            <div class="hud-air-targeting-head">
+              <span>${title}</span>
+              <button data-action="air-support-cancel" class="hud-air-cancel-btn">${t('CANCEL')}</button>
+            </div>
+            ${variantHtml}
+          </div>
+        `);
+      }
+    } else if (hud.status === GameStatus.PLAYING) {
       if (hud.apsJammed) {
         items.push(`
           <div class="bg-purple-950/95 border border-purple-500/80 px-3.5 py-1.5 rounded flex items-center gap-2 text-xs font-mono text-purple-200 shadow-lg">
@@ -292,8 +346,15 @@ export function renderBattlefieldHud({
           </div>
         `);
       }
+      const html = items.join('');
+      if (modifiersStrip.__stripKey !== html) {
+        modifiersStrip.__stripKey = html;
+        setHtml(modifiersStrip, html);
+      }
+    } else if (modifiersStrip.__stripKey !== '') {
+      modifiersStrip.__stripKey = '';
+      setHtml(modifiersStrip, '');
     }
-    setHtml(modifiersStrip, items.join(''));
   }
 
   // 6. Bottom Docked Tactical HUD
@@ -391,32 +452,45 @@ export function renderBattlefieldHud({
       ).join('');
       const hpPctText = `${Math.max(0, Math.round(hpPercent))}%`;
       const hpPctColor = isLowHp ? 'text-red-400' : isOverhealed ? 'text-cyan-300' : 'text-emerald-400';
-      setHtml(silhouetteSection, `
-        <div class="hud-bottom-left">
-          ${renderTankSilhouette(hud)}
-          <div class="hud-card hud-hp-card${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}">
-            <div class="hud-icon-box" aria-hidden="true">
-              <svg viewBox="0 0 36 22" width="34" height="22" fill="none">
-                <path d="M5 12h24l3 4v3H3v-3l2-4z" fill="#4ade80" fill-opacity="0.25" stroke="#4ade80" stroke-width="1.5"/>
-                <path d="M11 7h11l3 5H9l2-5z" fill="#4ade80" fill-opacity="0.45" stroke="#86efac" stroke-width="1.4"/>
-                <path d="M22 9h12" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="hud-hp-body">
-              <div class="hud-hp-head">
-                <span class="hud-label">${t('HULL HP')}</span>
-                <span class="hud-hp-pct ${hpPctColor}">${hpPctText}</span>
+      const subKey = hud.subsystems
+        ? Object.entries(hud.subsystems).map(([k, s]) => `${k}:${s?.status || 'normal'}`).join(',')
+        : '';
+      const silhouetteKey = `${Math.ceil(hud.playerHp)}|${hud.playerMaxHp}|${isLowHp}|${isOverhealed}|${subKey}`;
+      if (silhouetteSection.__silhouetteKey !== silhouetteKey) {
+        silhouetteSection.__silhouetteKey = silhouetteKey;
+        setHtml(silhouetteSection, `
+          <div class="hud-bottom-left">
+            ${renderTankSilhouette(hud)}
+            <div class="hud-card hud-hp-card${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}">
+              <div class="hud-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 36 22" width="34" height="22" fill="none">
+                  <path d="M5 12h24l3 4v3H3v-3l2-4z" fill="#4ade80" fill-opacity="0.25" stroke="#4ade80" stroke-width="1.5"/>
+                  <path d="M11 7h11l3 5H9l2-5z" fill="#4ade80" fill-opacity="0.45" stroke="#86efac" stroke-width="1.4"/>
+                  <path d="M22 9h12" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+                </svg>
               </div>
-              <div class="hud-hp-segs" aria-hidden="true">${hpSegsHtml}</div>
-              <div class="hud-hp-val">${Math.ceil(hud.playerHp)} <small>/ ${hud.playerMaxHp}</small></div>
+              <div class="hud-hp-body">
+                <div class="hud-hp-head">
+                  <span class="hud-label">${t('HULL HP')}</span>
+                  <span class="hud-hp-pct ${hpPctColor}">${hpPctText}</span>
+                </div>
+                <div class="hud-hp-segs" aria-hidden="true">${hpSegsHtml}</div>
+                <div class="hud-hp-val">${Math.ceil(hud.playerHp)} <small>/ ${hud.playerMaxHp}</small></div>
+              </div>
             </div>
           </div>
-        </div>
-      `);
+        `);
+      }
 
       const reloadText = cannonAmmo <= 0 ? t('EMPTY') : reloadReady ? t('READY') : `${reloadRemaining.toFixed(1)}s`;
       const reloadStatusClass = cannonAmmo <= 0 ? ' is-empty' : reloadReady ? ' is-ready' : ' is-charging';
-      const staticKey = `${hud.cannonName}|${cannonAmmo}|${cannonMax}|${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canFireMissile}|${hud.missileAmmo}|${missileMax}|${apsValueText}|${apsStateClass}`;
+      const credits = hud.credits ?? 0;
+      const airTargetingType = hud.airSupportTargeting?.type || '';
+      const canStrike = credits >= AIR_SUPPORT.STRIKE_BOMBS.cost;
+      const canRepair = credits >= AIR_SUPPORT.REPAIR.cost;
+      const canMines = credits >= AIR_SUPPORT.MINES.cost;
+      const canDrop = credits >= AIR_SUPPORT.AIRDROP.cost;
+      const staticKey = `${hud.cannonName}|${cannonAmmo}|${cannonMax}|${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canFireMissile}|${hud.missileAmmo}|${missileMax}|${apsValueText}|${apsStateClass}|${canStrike}|${canRepair}|${canMines}|${canDrop}|${airTargetingType}`;
 
       if (centerSection.__staticKey === staticKey) {
         const segsEl = centerSection.querySelector('.hud-reload-segs');
@@ -435,8 +509,70 @@ export function renderBattlefieldHud({
       }
       centerSection.__staticKey = staticKey;
 
+      const airButtons = [
+        {
+          type: 'STRIKE',
+          key: '5',
+          label: t('AIR STRIKE'),
+          cost: `${AIR_SUPPORT.STRIKE_BOMBS.cost}+`,
+          ready: canStrike,
+          active: airTargetingType === 'STRIKE',
+          tone: 'tone-red',
+          title: t('Call Air Strike (Bombs, Thermobaric, AC-130) [Key 5]'),
+        },
+        {
+          type: 'REPAIR',
+          key: '6',
+          label: t('AIR REPAIR'),
+          cost: `${AIR_SUPPORT.REPAIR.cost}`,
+          ready: canRepair,
+          active: false,
+          tone: 'tone-teal',
+          title: t('Call Repair Drone (+20 HP & Fix Modules) [Key 6]'),
+        },
+        {
+          type: 'MINES',
+          key: '7',
+          label: t('AIR MINES'),
+          cost: `${AIR_SUPPORT.MINES.cost}`,
+          ready: canMines,
+          active: airTargetingType === 'MINES',
+          tone: 'tone-amber',
+          title: t('Call Carpet Air Mines [Key 7]'),
+        },
+        {
+          type: 'AIRDROP',
+          key: '8',
+          label: t('AIR DROP'),
+          cost: `${AIR_SUPPORT.AIRDROP.cost}`,
+          ready: canDrop,
+          active: airTargetingType === 'AIRDROP',
+          tone: 'tone-emerald',
+          title: t('Call Supply Air Drop [Key 8]'),
+        },
+      ];
+
       setHtml(centerSection, `
         <div class="flex flex-col items-center gap-1.5">
+          <div class="hud-card hud-air-support-card">
+            ${airButtons
+              .map(
+                (b) => `
+                  <button
+                    data-action="air-support-select"
+                    data-air-type="${b.type}"
+                    ${b.ready ? '' : 'disabled'}
+                    class="hud-air-btn ${b.tone}${b.ready ? ' is-ready' : ' is-empty'}${b.active ? ' is-active' : ''}"
+                    title="${b.title}"
+                  >
+                    <span class="hud-mod-key">${b.key}</span>
+                    <span class="hud-air-name">${b.label}</span>
+                    <span class="hud-air-cost">$${b.cost}</span>
+                  </button>
+                `
+              )
+              .join('')}
+          </div>
           <div class="flex flex-wrap items-center justify-center gap-2">
             <div class="hud-card hud-weapon-card">
               <div class="hud-ammo-block">

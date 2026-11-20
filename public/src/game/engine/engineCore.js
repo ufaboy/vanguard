@@ -15,6 +15,7 @@ import { buildHudSnapshot } from './hud-snapshot.js';
 import { ForestFireController } from '../terrains/forest-fire.js';
 import { ProfileSaveController } from './profile-save.js';
 import { PowerupsController } from './powerups-controller.js';
+import { AirSupportController } from './air-support-controller.js';
 import { InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
@@ -208,9 +209,11 @@ export class TankGameEngine {
     this.mines = [];
     this.lasers = [];
     this.hazardZones = [];
+    this.airSupportController.clear();
     this.burningForests = [];
     this.burningOilCells = [];
     this.enemySpawner.clearPendingTimeouts();
+    this.airSupportController.clear();
     this.pendingBarrelExplosions = [];
     this.particles = [];
     this.powerUps = [];
@@ -781,6 +784,10 @@ export class TankGameEngine {
   }
 
   togglePause() {
+    if (this.airSupportTargeting) {
+      this.airSupportController.cancelTargeting();
+      return;
+    }
     if (this.status === GameStatus.PLAYING) {
       this.status = GameStatus.PAUSED;
     } else if (this.status === GameStatus.PAUSED) {
@@ -788,6 +795,30 @@ export class TankGameEngine {
     }
     this.syncAudioPauseState();
     this.emitHudUpdate();
+  }
+
+  get airSupportController() {
+    return (this._airSupportController ||= new AirSupportController(this));
+  }
+
+  startAirSupportTargeting(type, variant) {
+    return this.airSupportController.startTargeting(type, variant);
+  }
+
+  setAirStrikeVariant(variant) {
+    return this.airSupportController.setStrikeVariant(variant);
+  }
+
+  confirmAirSupportAt(x, z) {
+    return this.airSupportController.confirmTargeting(x, z);
+  }
+
+  cancelAirSupportTargeting() {
+    return this.airSupportController.cancelTargeting();
+  }
+
+  callAirRepair() {
+    return this.airSupportController.callAirRepair();
   }
 
   firePlayerHomingMissile() { this.playerController.firePlayerHomingMissile(); }
@@ -942,6 +973,7 @@ export class TankGameEngine {
       this.explosions.updateHazardZones(dt, elapsed);
       this.updatePowerUps(dt, elapsed);
       this.powerupsController.updateAirDrops(dt, elapsed);
+      this.airSupportController.update(dt, elapsed);
       this.playerController.updateSmokeAndLoot(dt);
       this.updateBarrelExplosions(dt);
       this.terrainDestruction.updateBurningOil(dt);
@@ -973,11 +1005,13 @@ export class TankGameEngine {
     this.inputCamera.updateCamera(dt, elapsed);
     this.fx.update(dt, this.camera, this.renderer);
 
-    this.hudSyncAccumulator += dt;
-    const hudInterval = this.status === GameStatus.PLAYING ? (this.quality === 'low' ? 0.2 : 0.12) : 0.5;
-    if (this.hudSyncAccumulator >= hudInterval) {
-      this.hudSyncAccumulator = 0;
-      this.emitHudUpdate();
+    if (!(this.status === GameStatus.PAUSED && this.airSupportTargeting)) {
+      this.hudSyncAccumulator += dt;
+      const hudInterval = this.status === GameStatus.PLAYING ? (this.quality === 'low' ? 0.2 : 0.12) : 0.5;
+      if (this.hudSyncAccumulator >= hudInterval) {
+        this.hudSyncAccumulator = 0;
+        this.emitHudUpdate();
+      }
     }
   }
 
@@ -1375,6 +1409,7 @@ export class TankGameEngine {
     this.modelFactory?.dispose?.();
     this.tileBatcher?.reset?.();
     this.enemySpawner.clearPendingTimeouts();
+    this.airSupportController.clear();
     this.pendingBarrelExplosions = [];
     this._aiDebugOverlay?.clear();
     this.clock?.dispose();

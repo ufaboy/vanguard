@@ -528,3 +528,62 @@ export const DEFENSE_TURRET_CONFIGS = Object.freeze({
     modelUrl: './models/turret_mlrs.glb', // 3D GLTF asset path
   }),
 });
+
+export const AIR_SUPPORT = Object.freeze({
+  STRIKE_BOMBS: Object.freeze({
+    id: 'STRIKE_BOMBS',
+    label: N_('3× Light Bombs'),
+    shortLabel: N_('3× BOMBS'),
+    cost: 250,
+    bombCount: 3,
+    radiusCells: 1.5,
+    scatterCells: 1.75,
+    damage: 24,
+    penetration: 15,
+    flightSec: 1.05,
+    staggerSec: 0.24,
+  }),
+  STRIKE_THERMO: Object.freeze({
+    id: 'STRIKE_THERMO',
+    label: N_('Thermobaric Missile'),
+    shortLabel: N_('THERMO'),
+    cost: 450,
+    radiusCells: 2.5,
+    damage: 38,
+    flightSec: 1.3,
+  }),
+  STRIKE_AC130: Object.freeze({
+    id: 'STRIKE_AC130',
+    label: N_('AC-130 Spooky (15s)'),
+    shortLabel: N_('AC-130'),
+    cost: 600,
+    durationSec: 15.0,
+    radiusCells: 5.5,
+    fireIntervalSec: 0.7,
+    weaponId: 'CANNON_Mk2',
+  }),
+  REPAIR: Object.freeze({
+    id: 'REPAIR',
+    label: N_('Air Repair Drone'),
+    cost: 200,
+    healAmount: 20,
+    durationSec: 3.5,
+  }),
+  MINES: Object.freeze({
+    id: 'MINES',
+    label: N_('Carpet Air Mines'),
+    cost: 220,
+    mineCount: 9,
+    zoneHalfCells: 2.2,
+    flightSec: 1.0,
+  }),
+  AIRDROP: Object.freeze({
+    id: 'AIRDROP',
+    label: N_('Supply Air Drop'),
+    cost: 180,
+    shells: 50,
+    aps: 8,
+    missiles: 4,
+    repairKits: 1,
+  }),
+});

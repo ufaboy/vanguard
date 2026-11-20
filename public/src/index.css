@@ -3413,6 +3413,155 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   color: #94a3b8;
 }
 
+.hud-air-support-card {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(112px, 1fr));
+  gap: 6px;
+  padding: 5px 8px;
+}
+
+.hud-air-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(71, 85, 105, 0.7);
+  background: rgba(15, 23, 42, 0.94);
+  color: #e2e8f0;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.hud-air-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.hud-air-btn.tone-red.is-ready {
+  border-color: rgba(248, 113, 113, 0.65);
+  background: rgba(127, 29, 29, 0.42);
+  color: #fecaca;
+}
+
+.hud-air-btn.tone-red.is-ready:hover {
+  background: rgba(153, 27, 27, 0.62);
+}
+
+.hud-air-btn.tone-teal.is-ready {
+  border-color: rgba(45, 212, 191, 0.65);
+  background: rgba(17, 94, 89, 0.42);
+  color: #99f6e4;
+}
+
+.hud-air-btn.tone-teal.is-ready:hover {
+  background: rgba(15, 118, 110, 0.62);
+}
+
+.hud-air-btn.tone-amber.is-ready {
+  border-color: rgba(251, 191, 36, 0.72);
+  background: rgba(120, 53, 15, 0.42);
+  color: #fde68a;
+}
+
+.hud-air-btn.tone-amber.is-ready:hover {
+  background: rgba(146, 64, 14, 0.58);
+}
+
+.hud-air-btn.tone-emerald.is-ready {
+  border-color: rgba(52, 211, 153, 0.65);
+  background: rgba(6, 78, 59, 0.42);
+  color: #a7f3d0;
+}
+
+.hud-air-btn.tone-emerald.is-ready:hover {
+  background: rgba(6, 95, 70, 0.6);
+}
+
+.hud-air-btn.is-active {
+  outline: 2px solid #fbbf24;
+  outline-offset: 1px;
+}
+
+.hud-air-name {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.hud-air-cost {
+  color: #34d399;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-air-targeting-bar {
+  background: rgba(11, 15, 23, 0.96);
+  border: 1px solid rgba(251, 191, 36, 0.8);
+  border-radius: 4px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+}
+
+.hud-air-targeting-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  color: #fde68a;
+  letter-spacing: 0.05em;
+}
+
+.hud-air-cancel-btn {
+  background: rgba(127, 29, 29, 0.7);
+  border: 1px solid rgba(248, 113, 113, 0.75);
+  color: #fecaca;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.hud-air-variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hud-air-variant-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 3px;
+  border: 1px solid rgba(71, 85, 105, 0.8);
+  background: rgba(15, 23, 42, 0.95);
+  color: #e2e8f0;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.hud-air-variant-btn.is-active {
+  border-color: #fbbf24;
+  background: rgba(120, 53, 15, 0.55);
+  color: #fef3c7;
+}
+
+.hud-air-variant-btn.is-poor {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .hud-mod-top {
   display: flex;
   align-items: center;

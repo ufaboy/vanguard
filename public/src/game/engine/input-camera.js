@@ -55,6 +55,39 @@ export class InputCameraController {
         );
         return;
       }
+      if (engine.status !== GameStatus.PLAYING && !engine.airSupportTargeting) return;
+      if (engine.airSupportTargeting?.type === 'STRIKE') {
+        if (e.code === 'Digit1') {
+          e.preventDefault();
+          engine.setAirStrikeVariant('STRIKE_BOMBS');
+          return;
+        } else if (e.code === 'Digit2') {
+          e.preventDefault();
+          engine.setAirStrikeVariant('STRIKE_THERMO');
+          return;
+        } else if (e.code === 'Digit3') {
+          e.preventDefault();
+          engine.setAirStrikeVariant('STRIKE_AC130');
+          return;
+        }
+      }
+      if (e.code === 'Digit5') {
+        e.preventDefault();
+        engine.startAirSupportTargeting('STRIKE');
+        return;
+      } else if (e.code === 'Digit6') {
+        e.preventDefault();
+        engine.callAirRepair();
+        return;
+      } else if (e.code === 'Digit7') {
+        e.preventDefault();
+        engine.startAirSupportTargeting('MINES');
+        return;
+      } else if (e.code === 'Digit8') {
+        e.preventDefault();
+        engine.startAirSupportTargeting('AIRDROP');
+        return;
+      }
       if (engine.status !== GameStatus.PLAYING) return;
       if (e.code === 'Digit1') {
         engine.activateModuleSlot(1);
@@ -112,6 +145,12 @@ export class InputCameraController {
       }
 
       this.updateAimFromPointer(e);
+      this.pointerClientX = e.clientX;
+      this.pointerClientY = e.clientY;
+      this.hasPointerPos = true;
+      if (engine.airSupportTargeting) {
+        engine.airSupportController.updateReticlePosition(engine.aimWorld.x, engine.aimWorld.z);
+      }
     };
 
     engine.handlePointerDown = (e) => {
@@ -135,6 +174,16 @@ export class InputCameraController {
       }
 
       this.updateAimFromPointer(e);
+      if (engine.airSupportTargeting && !engine.isAdPaused) {
+        if (e.button === 0) {
+          e.preventDefault();
+          engine.confirmAirSupportAt(engine.aimWorld.x, engine.aimWorld.z);
+        } else if (e.button === 2) {
+          e.preventDefault();
+          engine.cancelAirSupportTargeting();
+        }
+        return;
+      }
       if (engine.status !== GameStatus.PLAYING || engine.isAdPaused) return;
 
       if (e.button === 2) {
@@ -191,7 +240,8 @@ export class InputCameraController {
       if (engine.isHangarOpen) return;
       e.preventDefault();
       const delta = Math.sign(e.deltaY) * 2.2;
-      engine.frustumSize = THREE.MathUtils.clamp(engine.frustumSize + delta, 14, 46);
+      const maxZoom = engine.airSupportTargeting ? 62 : 46;
+      engine.frustumSize = THREE.MathUtils.clamp(engine.frustumSize + delta, 14, maxZoom);
       engine.handleResize();
       engine.onCameraZoomChange?.(engine.frustumSize);
     };
@@ -289,17 +339,66 @@ export class InputCameraController {
     }
 
     const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
-    const panLimit = Math.max(8, halfArena - 9);
-    const targetX = THREE.MathUtils.clamp(
-      engine.playerX * 0.76 + engine.aimWorld.x * 0.24,
-      -panLimit,
-      panLimit
-    );
-    const targetZ = THREE.MathUtils.clamp(
-      engine.playerZ * 0.76 + engine.aimWorld.z * 0.24,
-      -panLimit,
-      panLimit
-    );
+    let targetX;
+    let targetZ;
+    if (engine.airSupportTargeting && engine.airCamTarget) {
+      const panSpeed = 34 * dt;
+      const forwardX = -Math.sin(engine.cameraAzimuth);
+      const forwardZ = -Math.cos(engine.cameraAzimuth);
+      const rightX = Math.cos(engine.cameraAzimuth);
+      const rightZ = -Math.sin(engine.cameraAzimuth);
+
+      let moveRight = 0;
+      let moveForward = 0;
+      if (engine.keys.KeyW || engine.keys.ArrowUp) moveForward += 1;
+      if (engine.keys.KeyS || engine.keys.ArrowDown) moveForward -= 1;
+      if (engine.keys.KeyD || engine.keys.ArrowRight) moveRight += 1;
+      if (engine.keys.KeyA || engine.keys.ArrowLeft) moveRight -= 1;
+
+      if (this.hasPointerPos && typeof window !== 'undefined') {
+        const edge = 72;
+        const w = window.innerWidth || 1280;
+        const h = window.innerHeight || 720;
+        if (this.pointerClientX < edge) moveRight -= 1;
+        else if (this.pointerClientX > w - edge) moveRight += 1;
+        if (this.pointerClientY < edge) moveForward += 1;
+        else if (this.pointerClientY > h - edge) moveForward -= 1;
+      }
+
+      if (moveRight !== 0 || moveForward !== 0) {
+        const len = Math.hypot(moveRight, moveForward) || 1;
+        const nr = moveRight / len;
+        const nf = moveForward / len;
+        engine.airCamTarget.x = THREE.MathUtils.clamp(
+          engine.airCamTarget.x + (rightX * nr + forwardX * nf) * panSpeed,
+          -halfArena + 2,
+          halfArena - 2
+        );
+        engine.airCamTarget.z = THREE.MathUtils.clamp(
+          engine.airCamTarget.z + (rightZ * nr + forwardZ * nf) * panSpeed,
+          -halfArena + 2,
+          halfArena - 2
+        );
+        if (this.hasPointerPos) {
+          this.updateAimFromPointer({ clientX: this.pointerClientX, clientY: this.pointerClientY });
+          engine.airSupportController.updateReticlePosition(engine.aimWorld.x, engine.aimWorld.z);
+        }
+      }
+      targetX = engine.airCamTarget.x;
+      targetZ = engine.airCamTarget.z;
+    } else {
+      const panLimit = Math.max(8, halfArena - 9);
+      targetX = THREE.MathUtils.clamp(
+        engine.playerX * 0.76 + engine.aimWorld.x * 0.24,
+        -panLimit,
+        panLimit
+      );
+      targetZ = THREE.MathUtils.clamp(
+        engine.playerZ * 0.76 + engine.aimWorld.z * 0.24,
+        -panLimit,
+        panLimit
+      );
+    }
 
     engine.camCurrentLook.x = THREE.MathUtils.damp(
       engine.camCurrentLook.x,

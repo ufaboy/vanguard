@@ -459,6 +459,10 @@ function initApp() {
     } else if (e.code === 'KeyC') {
       cycleCameraPreset();
     } else if (e.code === 'Escape' || e.code === 'KeyP') {
+      if (state.hud.airSupportTargeting && e.code === 'Escape') {
+        engine?.cancelAirSupportTargeting();
+        return;
+      }
       if (state.showUpgradeDrawer) {
         state.showUpgradeDrawer = false;
         engine?.setHangarOpen(false);

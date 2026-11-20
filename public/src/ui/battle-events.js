@@ -494,6 +494,23 @@ export function setupDelegatedEvents(
       case 'fire-missile':
         engine?.firePlayerHomingMissile();
         break;
+      case 'air-support-select': {
+        const type = btn.getAttribute('data-air-type');
+        if (type === 'REPAIR') {
+          engine?.callAirRepair();
+        } else if (type) {
+          engine?.startAirSupportTargeting(type);
+        }
+        break;
+      }
+      case 'air-strike-variant': {
+        const variant = btn.getAttribute('data-variant');
+        if (variant) engine?.setAirStrikeVariant(variant);
+        break;
+      }
+      case 'air-support-cancel':
+        engine?.cancelAirSupportTargeting();
+        break;
       case 'select-sector':
         state.selectedSector = Number(btn.getAttribute('data-sector'));
         renderUI(true);
