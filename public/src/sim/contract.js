@@ -36,6 +36,10 @@ export const CONTRACT_TYPES = Object.freeze({
   SABOTAGE_PROTOCOL: 'sabotage_protocol',
 });
 
+export const CONTRACT_CONFIG = Object.freeze({
+  STARTING_CREDITS: 500,
+});
+
 export const CONTRACT_PAYOUTS = Object.freeze({
   PER_CARGO: 1500,
   EXTRACTION_BASE: 3000,

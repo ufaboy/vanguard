@@ -531,16 +531,18 @@ test('Contract and Survival sessions use sessionStorage stock Tier-1 tank withou
       rebuildPlayerModel() {},
     });
 
-    // Enter Contract mode with stock Tier-1 tank in sessionStorage
+    // Enter Contract mode with stock Tier-1 tank and isolated session credits in sessionStorage
     engine.setProfileMode('contract', { resetTank: true });
     assert.equal(engine.profileMode, 'contract');
     assert.deepEqual(engine.upgrades, { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 });
+    assert.equal(engine.playerSave.credits, 500);
     assert.equal(engine.apsAmmo.reduce((a, b) => a + b, 0), 2);
     assert.equal(engine.missileAmmo, 2);
     assert.equal(engine.repairKitState.charges, 0);
 
     // Campaign localStorage must remain untouched
     assert.deepEqual(JSON.parse(mockLocal.getItem('iron_vanguard_upgrades_v3')), campaignUpgrades);
+    assert.equal(campaignSaveRepo.loadPlayerSave().credits, 1200);
     assert.equal(campaignSaveRepo.loadPlayerSave().missileAmmo, 6);
 
     // Earn contract credits and spend temporary supplies during contract
@@ -549,14 +551,14 @@ test('Contract and Survival sessions use sessionStorage stock Tier-1 tank withou
     engine.saveProgress();
     engine.syncCampaignCredits();
 
-    // Return to Campaign mode
+    // Return to Campaign mode — Campaign credits and upgrades stay isolated
     engine.setProfileMode('campaign');
     assert.equal(engine.profileMode, 'campaign');
     assert.deepEqual(engine.upgrades, campaignUpgrades);
     assert.deepEqual(engine.apsAmmo, [3, 3, 3, 3]);
     assert.equal(engine.missileAmmo, 6);
     assert.equal(engine.repairKitState.charges, 2);
-    assert.equal(engine.playerSave.credits, 4200, 'Earned contract credits are preserved in Campaign localStorage');
+    assert.equal(engine.playerSave.credits, 1200, 'Campaign credits remain isolated from Contract session credits');
 
     // Enter Survival mode with stock Tier-1 tank in sessionStorage
     engine.setProfileMode('survival', { resetTank: true });
@@ -566,7 +568,7 @@ test('Contract and Survival sessions use sessionStorage stock Tier-1 tank withou
     assert.equal(engine.missileAmmo, 2);
     assert.equal(engine.repairKitState.charges, 0);
     assert.deepEqual(JSON.parse(mockLocal.getItem('iron_vanguard_upgrades_v3')), campaignUpgrades);
-    assert.equal(campaignSaveRepo.loadPlayerSave().credits, 4200);
+    assert.equal(campaignSaveRepo.loadPlayerSave().credits, 1200);
   } finally {
     globalThis.localStorage = prevLocal;
     globalThis.sessionStorage = prevSession;

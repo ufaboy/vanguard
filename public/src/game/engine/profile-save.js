@@ -1,4 +1,5 @@
 import { COMPONENT_TRACKS, normalizeComponentDamage } from '../../sim/component-damage.js';
+import { CONTRACT_CONFIG } from '../../sim/contract.js';
 import { getSafeStorage } from '../../sim/hangar.js';
 import { createRepairKitState } from '../../sim/subsystems.js';
 import { SURVIVAL_CONFIG } from '../../sim/survival.js';
@@ -69,13 +70,8 @@ export class ProfileSaveController {
     }
   }
 
-  syncCampaignCredits() {
-    const { engine } = this;
-    if (engine.profileMode !== 'contract' || !engine.campaignSaveRepo) return;
-    const campaignSave = engine.campaignSaveRepo.loadPlayerSave();
-    campaignSave.credits = engine.playerSave?.credits ?? campaignSave.credits;
-    engine.campaignSaveRepo.savePlayerSave(campaignSave);
-  }
+  /** No-op: Contracts and Survival keep session credits isolated from Campaign. */
+  syncCampaignCredits() {}
 
   resetToStockTank() {
     const { engine } = this;
@@ -107,7 +103,7 @@ export class ProfileSaveController {
         engine.playerSave.credits =
           mode === 'survival'
             ? SURVIVAL_CONFIG.STARTING_CREDITS
-            : engine.campaignSaveRepo?.loadPlayerSave().credits ?? engine.playerSave.credits;
+            : CONTRACT_CONFIG.STARTING_CREDITS;
         engine.playerSave.apsAmmo = [...engine.apsAmmo];
         engine.playerSave.missileAmmo = engine.missileAmmo;
         engine.playerSave.repairKitCharges = 0;
