@@ -43,6 +43,15 @@ function createMockEngine(credits = 1000) {
       leftTrack: { hp: 0, maxHp: 20, status: 'destroyed', fieldRepairState: 'waiting', fieldRepairTimer: 2, fieldRepairProgress: 0 },
       cannon: { hp: 10, maxHp: 20, status: 'damaged', fieldRepairState: 'idle', fieldRepairTimer: 0, fieldRepairProgress: 0 },
     },
+    componentDamage: { cannon: true, chassis: true, frame: false, engine: false, armor: false },
+    playerArmorPanels: {
+      SOCKET_ARMOR_FRONT: { integrity: 20, maxIntegrity: 100, destroyed: true },
+    },
+    restoreAllComponents() {
+      for (const key of Object.keys(engine.componentDamage)) {
+        engine.componentDamage[key] = false;
+      }
+    },
     grid,
     enemies: [],
     mines: plantedMines,
@@ -136,6 +145,10 @@ test('Air Repair dispatches drone, repairs all damaged subsystems, and restores 
   assert.equal(engine.subsystems.leftTrack.status, 'normal');
   assert.equal(engine.subsystems.cannon.hp, 20);
   assert.equal(engine.subsystems.cannon.status, 'normal');
+  assert.equal(engine.componentDamage.cannon, false);
+  assert.equal(engine.componentDamage.chassis, false);
+  assert.equal(engine.playerArmorPanels.SOCKET_ARMOR_FRONT.integrity, 100);
+  assert.equal(engine.playerArmorPanels.SOCKET_ARMOR_FRONT.destroyed, false);
   assert.ok(Math.abs(engine.playerHp - 32) < 1e-6);
 });
 

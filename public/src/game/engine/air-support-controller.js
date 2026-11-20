@@ -709,6 +709,21 @@ export class AirSupportController {
       sub.fieldRepairTimer = 0;
       sub.fieldRepairProgress = 0;
     }
+    for (const panel of Object.values(engine.playerArmorPanels || {})) {
+      if (!panel) continue;
+      panel.integrity = panel.maxIntegrity || 100;
+      panel.destroyed = false;
+    }
+    if (engine.restoreAllComponents) {
+      const hp = engine.playerHp;
+      engine.restoreAllComponents();
+      engine.playerHp = hp;
+    } else if (engine.componentDamage) {
+      for (const key of Object.keys(engine.componentDamage)) {
+        engine.componentDamage[key] = false;
+      }
+      engine.emitHudUpdate?.();
+    }
   }
 
   updateAirOrdnance(m, dt, elapsed) {
