@@ -405,20 +405,33 @@ export class AirSupportController {
     } else if (variant === 'STRIKE_AC130') {
       const cfg = AIR_SUPPORT.STRIKE_AC130;
       const zoneMesh = this.createAc130ZoneRing(targetX, targetZ, cfg.radiusCells * TILE_SIZE);
+      const orbitRadius = (GRID_SIZE * TILE_SIZE) * 0.3;
+      const orbitHeight = 14.5;
+      const orbitAngle = Math.random() * Math.PI * 2;
+      const gunshipMesh = this.createBomberMesh();
+      if (gunshipMesh && engine.fxGroup) {
+        gunshipMesh.scale.setScalar(1.15);
+        gunshipMesh.position.set(
+          targetX + Math.cos(orbitAngle) * orbitRadius,
+          orbitHeight,
+          targetZ + Math.sin(orbitAngle) * orbitRadius
+        );
+        engine.fxGroup.add(gunshipMesh);
+      }
       engine.airSupportMissions.push({
         kind: 'AC130',
         x: targetX,
         z: targetZ,
         radius: cfg.radiusCells * TILE_SIZE,
-        orbitRadius: (GRID_SIZE * TILE_SIZE) * 0.25, // Circle diameter = half the map
-        orbitHeight: 24,
+        orbitRadius,
+        orbitHeight,
         duration: cfg.durationSec,
         elapsed: 0,
         fireTimer: 0.25,
         fireInterval: cfg.fireIntervalSec,
-        orbitAngle: Math.random() * Math.PI * 2,
+        orbitAngle,
         zoneMesh,
-        mesh: null,
+        mesh: gunshipMesh,
       });
       engine.setStatusBanner(t('AC-130 SPOOKY ON STATION — 15s FIRE SUPPORT'), 3.0);
     }
@@ -750,18 +763,25 @@ export class AirSupportController {
 
   updateAc130(m, dt) {
     m.elapsed += dt;
-    // Clockwise orbit around the target zone at half-map diameter, high out of view
+    // Clockwise orbit around the target zone
     m.orbitAngle += dt * 0.55;
-    const orbitR = m.orbitRadius ?? (GRID_SIZE * TILE_SIZE) * 0.25;
+    const orbitR = m.orbitRadius ?? (GRID_SIZE * TILE_SIZE) * 0.3;
+    const orbitH = m.orbitHeight ?? 14.5;
     const gunshipX = m.x + Math.cos(m.orbitAngle) * orbitR;
     const gunshipZ = m.z + Math.sin(m.orbitAngle) * orbitR;
+    if (m.mesh) {
+      m.mesh.position.set(gunshipX, orbitH, gunshipZ);
+      m.mesh.rotation.order = 'YXZ';
+      m.mesh.rotation.y = Math.atan2(-Math.sin(m.orbitAngle), Math.cos(m.orbitAngle));
+      m.mesh.rotation.z = 0.22; // Bank wing inward during clockwise turn
+    }
 
     m.fireTimer -= dt;
     if (m.fireTimer <= 0 && m.elapsed < m.duration) {
       m.fireTimer = m.fireInterval;
       const target = this.pickAc130Target(m.x, m.z, m.radius);
       if (target) {
-        this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z, m.orbitHeight ?? 24);
+        this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z, orbitH);
       }
     }
 
