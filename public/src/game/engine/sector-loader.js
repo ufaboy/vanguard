@@ -177,6 +177,7 @@ export class SectorLoaderController {
 
     engine.clearGroup(engine.mapGroup);
     engine.tileBatcher.reset();
+    engine.airSupportController?.clear?.();
     engine.clearGroup(engine.entityGroup);
     engine.clearGroup(engine.fxGroup);
     engine.fx.clear();

@@ -213,7 +213,6 @@ export class TankGameEngine {
     this.burningForests = [];
     this.burningOilCells = [];
     this.enemySpawner.clearPendingTimeouts();
-    this.airSupportController.clear();
     this.pendingBarrelExplosions = [];
     this.particles = [];
     this.powerUps = [];
