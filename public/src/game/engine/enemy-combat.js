@@ -956,7 +956,6 @@ export class EnemyCombatController {
             {
               x: enemy.x,
               z: enemy.z,
-              detonateDelay: 0.95,
               onDetonate: detonateEnemy,
             }
           );

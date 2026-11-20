@@ -509,7 +509,7 @@ export class SectorLoaderController {
     engine.missileFpvHoldTimer = 0;
     if (engine.victoryCinematics?.baseFrustum) {
       engine.frustumSize = engine.victoryCinematics.baseFrustum;
-      engine.handleResize?.();
+      engine.updateCameraProjection?.();
     }
     engine.victoryCinematics = null;
     engine.playerDeathState = null;

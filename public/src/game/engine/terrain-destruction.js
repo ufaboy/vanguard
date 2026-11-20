@@ -147,7 +147,6 @@ export class TerrainDestructionController {
         engine.triggerMissionVictory(victoryRes.banner, {
           x,
           z,
-          detonateDelay: 0.95,
           onDetonate: detonateEnemyBase,
         });
         return;

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { getObservedEnemyCondition, normalizeAngleSigned } from '../../sim/ai.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
-import { MISSILE } from '../constants.js';
+import { MISSILE, VICTORY_CINEMATICS } from '../constants.js';
 import { GameStatus } from '../types.js';
 import { t } from '../../i18n/index.js';
 
@@ -248,13 +248,8 @@ export class InputCameraController {
       engine.onCameraZoomChange?.(engine.frustumSize);
     };
 
-    engine.handleResize = () => {
-      if (engine.isDisposed) return;
-      const width = engine.container.clientWidth || window.innerWidth;
-      const height = engine.container.clientHeight || window.innerHeight;
-      if (!width || !height) return;
-      const aspect = width / height;
-
+    engine.updateCameraProjection = () => {
+      const aspect = engine._viewAspect || 1;
       engine.camera.left = (-engine.frustumSize * aspect) / 2;
       engine.camera.right = (engine.frustumSize * aspect) / 2;
       engine.camera.top = engine.frustumSize / 2;
@@ -264,6 +259,15 @@ export class InputCameraController {
         engine.fpvCamera.aspect = aspect;
         engine.fpvCamera.updateProjectionMatrix();
       }
+    };
+
+    engine.handleResize = () => {
+      if (engine.isDisposed) return;
+      const width = engine.container.clientWidth || window.innerWidth;
+      const height = engine.container.clientHeight || window.innerHeight;
+      if (!width || !height) return;
+      engine._viewAspect = width / height;
+      engine.updateCameraProjection();
 
       engine.renderer.setSize(width, height, false);
     };
@@ -323,22 +327,22 @@ export class InputCameraController {
         const dirX = speed > 0.001 ? missile.vx / speed : Math.sin(missile.mesh?.rotation?.y || 0);
         const dirZ = speed > 0.001 ? missile.vz / speed : Math.cos(missile.mesh?.rotation?.y || 0);
         const flightY = missile.flightY ?? 0.9;
-        const chaseDist = 3.0;
-        const desiredX = missile.x - dirX * chaseDist;
-        const desiredY = Math.max(1.1, flightY + 0.95);
-        const desiredZ = missile.z - dirZ * chaseDist;
+        const desiredX = missile.x - dirX * MISSILE.FPV_CHASE_DISTANCE;
+        const desiredY = Math.max(MISSILE.FPV_MIN_HEIGHT, flightY + MISSILE.FPV_CHASE_HEIGHT);
+        const desiredZ = missile.z - dirZ * MISSILE.FPV_CHASE_DISTANCE;
 
         if (this._lastFpvMissile !== missile) {
           this._lastFpvMissile = missile;
           engine.fpvCamera.position.set(desiredX, desiredY, desiredZ);
         } else {
-          engine.fpvCamera.position.x = THREE.MathUtils.damp(engine.fpvCamera.position.x, desiredX, 18, dt);
-          engine.fpvCamera.position.y = THREE.MathUtils.damp(engine.fpvCamera.position.y, desiredY, 18, dt);
-          engine.fpvCamera.position.z = THREE.MathUtils.damp(engine.fpvCamera.position.z, desiredZ, 18, dt);
+          const follow = MISSILE.FPV_FOLLOW_DAMP;
+          engine.fpvCamera.position.x = THREE.MathUtils.damp(engine.fpvCamera.position.x, desiredX, follow, dt);
+          engine.fpvCamera.position.y = THREE.MathUtils.damp(engine.fpvCamera.position.y, desiredY, follow, dt);
+          engine.fpvCamera.position.z = THREE.MathUtils.damp(engine.fpvCamera.position.z, desiredZ, follow, dt);
         }
-        const lookX = missile.x + dirX * 9.0;
-        const lookY = Math.max(0.4, flightY - 0.15);
-        const lookZ = missile.z + dirZ * 9.0;
+        const lookX = missile.x + dirX * MISSILE.FPV_LOOK_AHEAD;
+        const lookY = Math.max(MISSILE.FPV_MIN_LOOK_HEIGHT, flightY - MISSILE.FPV_LOOK_DROP);
+        const lookZ = missile.z + dirZ * MISSILE.FPV_LOOK_AHEAD;
         this._lastFpvLook = { x: lookX, y: lookY, z: lookZ };
         engine.fpvCamera.lookAt(lookX, lookY, lookZ);
         return;
@@ -465,7 +469,7 @@ export class InputCameraController {
       );
     }
 
-    const lookDamp = isVictoryOrbit ? 8.5 : 6.5;
+    const lookDamp = isVictoryOrbit ? VICTORY_CINEMATICS.LOOK_DAMP : 6.5;
     engine.camCurrentLook.x = THREE.MathUtils.damp(
       engine.camCurrentLook.x,
       targetX,
@@ -484,11 +488,11 @@ export class InputCameraController {
       engine.frustumSize = THREE.MathUtils.damp(
         engine.frustumSize,
         engine.victoryCinematics.targetFrustum,
-        4.5,
+        VICTORY_CINEMATICS.ZOOM_DAMP,
         dt
       );
       if (Math.abs(engine.frustumSize - prevFrustum) > 0.005) {
-        engine.handleResize?.();
+        engine.updateCameraProjection?.();
       }
     }
 

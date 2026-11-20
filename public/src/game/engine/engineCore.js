@@ -32,6 +32,7 @@ import {
   TITAN,
   CANNON_AMMO,
   MISSILE,
+  VICTORY_CINEMATICS,
   POWERUP_TYPES,
 } from '../constants.js';
 import { GameStatus } from '../types.js';
@@ -297,7 +298,7 @@ export class TankGameEngine {
     );
     this.camera.position.set(28, 34, 28);
     this.camera.lookAt(0, 0, 0);
-    this.fpvCamera = new THREE.PerspectiveCamera(62, aspect, 0.15, 250);
+    this.fpvCamera = new THREE.PerspectiveCamera(MISSILE.FPV_FOV, aspect, 0.15, 250);
 
     this.modelFactory = new ModelFactory(this.renderer, this.isSoftwareGl, options.pregenerated);
     this.modelFactory.onConcreteModelsReady = () => {
@@ -1026,7 +1027,7 @@ export class TankGameEngine {
       if (vc && !vc.detonated) {
         vc.detonateDelay -= dt;
         vc.sparkAcc = (vc.sparkAcc || 0) + dt;
-        if (vc.sparkAcc >= 0.14) {
+        if (vc.sparkAcc >= VICTORY_CINEMATICS.SPARK_INTERVAL_SEC) {
           vc.sparkAcc = 0;
           this.spawnSparks?.(vc.x, 0.7, vc.z, 0xff8833, 2);
         }
@@ -1054,7 +1055,7 @@ export class TankGameEngine {
         }
         if (vc?.baseFrustum) {
           this.frustumSize = vc.baseFrustum;
-          this.handleResize?.();
+          this.updateCameraProjection?.();
         }
         this.victoryCinematics = null;
         this.emitHudUpdate();
@@ -1339,7 +1340,7 @@ export class TankGameEngine {
   triggerMissionVictory(bannerText, focusTarget = null) {
     if (this.status === GameStatus.VICTORY) return;
     this.status = GameStatus.VICTORY;
-    const duration = 3.2;
+    const duration = VICTORY_CINEMATICS.DURATION_SEC;
     this.victoryCinematicsTimer = duration;
     const baseFrustum = this.victoryCinematics?.baseFrustum ?? (this.frustumSize || 32);
     this.victoryCinematics = {
@@ -1348,8 +1349,8 @@ export class TankGameEngine {
       duration,
       startAzimuth: this.cameraAzimuth ?? Math.PI * 0.25,
       baseFrustum,
-      targetFrustum: Math.max(15, baseFrustum * 0.72),
-      detonateDelay: focusTarget?.detonateDelay ?? 0,
+      targetFrustum: Math.max(VICTORY_CINEMATICS.MIN_FRUSTUM, baseFrustum * VICTORY_CINEMATICS.ZOOM_FACTOR),
+      detonateDelay: focusTarget?.detonateDelay ?? VICTORY_CINEMATICS.DETONATE_DELAY_SEC,
       onDetonate: typeof focusTarget?.onDetonate === 'function' ? focusTarget.onDetonate : null,
       detonated: !focusTarget?.onDetonate,
       sparkAcc: 0,
