@@ -13,7 +13,7 @@ export const SITE_DIR = path.join(ROOT, 'dist', 'site');
 
 /** Runs `astro build`; `outDir` overrides dist/site (absolute path). Throws when the build fails. */
 export function buildSite({ outDir = SITE_DIR, quiet = false } = {}) {
-  const command = `npx astro build --root site --outDir "${outDir}"${quiet ? ' --silent' : ''}`;
+  const command = `pnpm exec astro build --root site --outDir "${outDir}"${quiet ? ' --silent' : ''}`;
   const res = spawnSync(command, { cwd: ROOT, stdio: quiet ? 'pipe' : 'inherit', shell: true, encoding: 'utf8' });
   if (res.status !== 0) throw new Error(`astro build failed${quiet ? `:\n${res.stdout}\n${res.stderr}` : ''}`);
   return outDir;

@@ -2,7 +2,10 @@ import { TankGameEngine } from '/src/game/engine/engineCore.js';
 import { renderHangar } from '/src/hangar-ui.js';
 import { renderComponentCondition } from '/src/component-condition-ui.js';
 import { SaveRepository } from '/src/sim/hangar.js';
-import { normalizeComponentDamage, COMPONENT_REPAIR_COST } from '/src/sim/component-damage.js';
+import { normalizeComponentDamage, componentRepairCost } from '/src/sim/component-damage.js';
+
+// The damaged cannon is purchased at tier 5, and repair is priced by the purchased tier.
+const COMPONENT_REPAIR_COST = componentRepairCost(5);
 
 const assert = (condition, message) => { if (!condition) throw Error(message); };
 try {

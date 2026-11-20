@@ -27,7 +27,7 @@ A 3D isometric tactical tank assault game inspired by *Battle City*, built with 
 ├── public/              # Game and assets served as written (battlefield.html, src/, maps/, models/, vendor/)
 ├── site/                # Astro sources of the static pages (layout, footer, pages, i18n helpers)
 ├── i18n/pages/          # Translations of the static pages
-├── codex/               # Standalone 3D Codex studio (npm run codex -> http://localhost:3001/codex)
+├── codex/               # Standalone 3D Codex studio (pnpm run codex -> http://localhost:3001/codex)
 ├── tests/               # Node.js test runner suites (node --test)
 ├── scripts/             # Linter, Three.js vendor sync, GLB optimizer, itch.io packager, Cloudflare Pages deploy
 ├── assets/blender/      # Source Blender scripts for 3D models
@@ -38,65 +38,65 @@ A 3D isometric tactical tank assault game inspired by *Battle City*, built with 
 
 ## Run Locally
 
-**Prerequisites:** Node.js (v18+ recommended) and npm.
+**Prerequisites:** Node.js (v18+ recommended) and pnpm (the version pinned in `package.json` `packageManager`; `corepack enable` installs it).
 
 1. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 2. Build the site and start the local static server:
    ```bash
-   npm run dev
+   pnpm run dev
    ```
-   *(or `npm start`)*
+   *(or `pnpm start`)*
 3. Open [http://localhost:3000](http://localhost:3000) in your browser.
 4. *(Optional)* Start the standalone **3D Codex** studio:
    ```bash
-   npm run codex
+   pnpm run codex
    ```
    and open [http://localhost:3001/codex](http://localhost:3001/codex).
 
-The game needs no build step: the browser loads its ES modules directly. `npm run dev` only renders the static pages with Astro (`npm run build:site`) and serves `dist/site`; use `npm run dev:site` for the Astro dev server with live reload while editing pages.
+The game needs no build step: the browser loads its ES modules directly. `pnpm run dev` only renders the static pages with Astro (`pnpm run build:site`) and serves `dist/site`; use `pnpm run dev:site` for the Astro dev server with live reload while editing pages.
 
 ## Development & Testing
 
 - **Lint** (syntax check, method-call verification, and dead-code check across `public/src/`):
   ```bash
-  npm run lint
+  pnpm run lint
   ```
-  *(`npm run build` runs lint and the Astro site build.)*
+  *(`pnpm run build` runs lint and the Astro site build.)*
 - **Run tests** (uses Node's built-in test runner):
   ```bash
-  npm test
+  pnpm test
   ```
 - **Sync Three.js vendor files** into `public/vendor/` after updating `three`:
   ```bash
-  npm run vendor
+  pnpm run vendor
   ```
 - **Optimize 3D models** (converts Blender GLBs with KTX2/Draco into `public/models/`):
   ```bash
-  npm run optimize-models
+  pnpm run optimize-models
   ```
 - **Build itch.io bundle**:
   ```bash
-  npm run build:itch
+  pnpm run build:itch
   ```
 
 ## Deployment (Cloudflare Pages)
 
 The project includes a deployment script for Cloudflare Pages (`scripts/deploy.mjs`) that builds the site and deploys `dist/site`.
 
-1. Copy `.env.example` to `.env` and set your Cloudflare credentials (or authenticate via `npx wrangler login`):
+1. Copy `.env.example` to `.env` and set your Cloudflare credentials (or authenticate via `pnpm exec wrangler login`):
    ```env
    CLOUDFLARE_ACCOUNT_ID="your-account-id"
    CLOUDFLARE_API_TOKEN="your-api-token"
    ```
 2. Deploy to production or preview:
    ```bash
-   npm run deploy
-   npm run deploy:preview
+   pnpm run deploy
+   pnpm run deploy:preview
    ```
 3. Or test locally with Wrangler Pages:
    ```bash
-   npm run pages:dev
+   pnpm run pages:dev
    ```

@@ -19,7 +19,4 @@ fi
 
 node scripts/bump-version.mjs
 git add package.json
-if [ -f package-lock.json ]; then
-  git add package-lock.json
-fi
 

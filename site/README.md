@@ -5,9 +5,9 @@ build time. The game (`public/battlefield.html`, `public/src/`, `public/vendor/`
 Astro or Vite: `public/` is copied into the build untouched.
 
 ```bash
-npm run build:site      # -> dist/site (pages + a copy of public/)
-npm run dev             # build, then serve dist/site on http://localhost:3000
-npm run dev:site        # Astro dev server with live reload for page editing (port 4321)
+pnpm run build:site      # -> dist/site (pages + a copy of public/)
+pnpm run dev             # build, then serve dist/site on http://localhost:3000
+pnpm run dev:site        # Astro dev server with live reload for page editing (port 4321)
 ```
 
 - `src/layouts/PageLayout.astro`: head (meta, canonical, hreflang, Open Graph, Twitter, JSON-LD), import map,
