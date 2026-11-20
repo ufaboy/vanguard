@@ -16,6 +16,7 @@ import {
   getMaxApsAmmo,
   getMaxCannonAmmo,
   getMaxMissileAmmo,
+  getMaxRepairKitCharges,
 } from '../constants.js';
 import { PLAYER_TANK_CONFIG } from '../tanks.js';
 import { GameStatus, TileType } from '../types.js';
@@ -114,6 +115,10 @@ export class PlayerController {
       engine.playerSalvoResetTimer = 0;
     }
 
+    if (engine.repairKitState) {
+      engine.repairKitState.maxCharges = engine.getPlayerMaxRepairKitCharges();
+    }
+
     engine.playerController.syncPlayerVisuals(0, engine.clock ? engine.clock.getElapsed() : 0);
   }
 
@@ -127,6 +132,10 @@ export class PlayerController {
 
   getPlayerMaxMissileAmmo() {
     return getMaxMissileAmmo(this.engine.upgrades?.frame || 1);
+  }
+
+  getPlayerMaxRepairKitCharges() {
+    return getMaxRepairKitCharges(this.engine.upgrades?.frame || 1);
   }
 
   initApsLaunchers(rounds) {

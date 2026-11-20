@@ -1,6 +1,6 @@
 /** Decide whether a field supply can currently benefit the player. */
 import { POWERUP } from './powerups.js';
-import { APS, MISSILE, CANNON_AMMO, DURABILITY, getMaxApsAmmo, getMaxMissileAmmo, getMaxCannonAmmo } from './constants.js';
+import { APS, MISSILE, CANNON_AMMO, DURABILITY, getMaxApsAmmo, getMaxMissileAmmo, getMaxCannonAmmo, getMaxRepairKitCharges } from './constants.js';
 
 export function isUsefulPowerUp(type, state, pending = []) {
   const count = pending.filter((item) => item.type === type).length;
@@ -18,7 +18,7 @@ export function isUsefulPowerUp(type, state, pending = []) {
       return state.apsAmmo.reduce((sum, n) => sum + n, 0) + count * APS.PICKUP_ROUNDS < maxAps;
     }
     case POWERUP.REPAIR:
-      return count === 0 && (state.playerHp < state.playerMaxHp * DURABILITY.OVERHEAL_MAX_RATIO || (state.repairKitState?.charges ?? 0) < (state.repairKitState?.maxCharges ?? 2));
+      return count === 0 && (state.playerHp < state.playerMaxHp * DURABILITY.OVERHEAL_MAX_RATIO || (state.repairKitState?.charges ?? 0) < (state.repairKitState?.maxCharges ?? getMaxRepairKitCharges(state.upgrades?.frame || 1)));
     case POWERUP.BASE_RESTORE:
       return count === 0 && state.baseAlive === false;
     case POWERUP.EMP:

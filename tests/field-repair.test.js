@@ -5,6 +5,7 @@ import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { GameStatus } from '../public/src/game/types.js';
 import { POWERUP } from '../public/src/game/powerups.js';
 import { isUsefulPowerUp } from '../public/src/game/powerup-drops.js';
+import { getMaxRepairKitCharges } from '../public/src/game/constants.js';
 
 test('RM-1 consumes one earned charge and regenerates exactly 25 HP over 10 seconds', () => {
   const state = createRepairKitState();
@@ -81,4 +82,46 @@ test('RM-1 charges persist in playerSave on pickup/use and restore across missio
   assert.equal(engine.repairKitState.charges, 0);
   assert.equal(engine.playerSave.repairKitCharges, 0);
   assert.equal(saved.repairKitCharges, 0);
+});
+
+test('RM-1 maxCharges scales 1..5 with Frame tier and cooldownDuration is reduced to 32s', () => {
+  for (let tier = 1; tier <= 5; tier++) {
+    assert.equal(getMaxRepairKitCharges(tier), tier);
+  }
+  const f1 = createRepairKitState(5, getMaxRepairKitCharges(1));
+  assert.equal(f1.maxCharges, 1);
+  assert.equal(f1.charges, 1);
+  assert.equal(f1.cooldownDuration, 32);
+
+  const f5 = createRepairKitState(5, getMaxRepairKitCharges(5));
+  assert.equal(f5.maxCharges, 5);
+  assert.equal(f5.charges, 5);
+});
+
+test('Air drop repairKits restores RM-1 charges up to frame cap', () => {
+  const engine = Object.create(TankGameEngine.prototype);
+  let persisted = null;
+  Object.assign(engine, {
+    upgrades: { cannon: 5, chassis: 5, frame: 5, engine: 5, armor: 5 },
+    cannonAmmo: 30,
+    apsAmmo: [3, 3, 3, 3],
+    missileAmmo: 6,
+    repairKitState: createRepairKitState(0, getMaxRepairKitCharges(5)),
+    playerSave: { credits: 0 },
+    saveRepo: { savePlayerSave(s) { persisted = { ...s }; } },
+    recomputePlayerStats() {},
+    setStatusBanner() {},
+    emitHudUpdate() {},
+    getPlayerMaxCannonAmmo: () => 30,
+    getPlayerMaxApsAmmo: () => 12,
+    getPlayerMaxMissileAmmo: () => 6,
+    getPlayerMaxRepairKitCharges: () => 5,
+  });
+  const ctrl = engine.powerupsController;
+  const dropCfg = { shells: 50, aps: 12, missiles: 6, repairKits: 5 };
+  assert.equal(ctrl.isAirDropUseful(dropCfg), true);
+  ctrl.applyAirDrop(dropCfg);
+  assert.equal(engine.repairKitState.charges, 5);
+  assert.equal(persisted.repairKitCharges, 5);
+  assert.equal(ctrl.isAirDropUseful(dropCfg), false);
 });

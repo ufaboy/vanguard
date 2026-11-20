@@ -129,7 +129,7 @@ export class TankGameEngine {
     const savedRepairCharges = Number.isInteger(this.playerSave?.repairKitCharges)
       ? this.playerSave.repairKitCharges
       : 0;
-    this.repairKitState = createRepairKitState(savedRepairCharges);
+    this.repairKitState = createRepairKitState(savedRepairCharges, this.getPlayerMaxRepairKitCharges());
     this.playerArmorPanels = {
       SOCKET_ARMOR_FRONT: { ...ARMOR_PANEL_CATALOG.sb_40, integrity: 100, destroyed: false },
       SOCKET_ARMOR_LEFT: { ...ARMOR_PANEL_CATALOG.ekran_b25_left, integrity: 70, destroyed: false },
@@ -518,6 +518,8 @@ export class TankGameEngine {
   getPlayerMaxApsAmmo() { return this.playerController.getPlayerMaxApsAmmo(); }
 
   getPlayerMaxMissileAmmo() { return this.playerController.getPlayerMaxMissileAmmo(); }
+
+  getPlayerMaxRepairKitCharges() { return this.playerController.getPlayerMaxRepairKitCharges(); }
 
   addApsRounds(count) { this.playerController.addApsRounds(count); }
 

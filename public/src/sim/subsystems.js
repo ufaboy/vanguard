@@ -194,13 +194,13 @@ export function stepAutomaticTrackRepair(subsystems, dt) {
   }
 }
 
-export function createRepairKitState(initialCharges = 0) {
-  const maxCharges = 2;
+export function createRepairKitState(initialCharges = 0, maxCharges = 1) {
+  const cap = Math.max(1, Math.floor(maxCharges || 1));
   const charges = Number.isFinite(initialCharges)
-    ? Math.max(0, Math.min(maxCharges, Math.floor(initialCharges)))
+    ? Math.max(0, Math.min(cap, Math.floor(initialCharges)))
     : 0;
   return {
-    charges, maxCharges, cooldown: 0, cooldownDuration: 45,
+    charges, maxCharges: cap, cooldown: 0, cooldownDuration: 32,
     channeling: false, channelProgress: 0, channelDuration: 10,
     restoreAmount: 25,
   };

@@ -2,7 +2,7 @@ import { COMPONENT_TRACKS, normalizeComponentDamage } from '../../sim/component-
 import { getSafeStorage } from '../../sim/hangar.js';
 import { createRepairKitState } from '../../sim/subsystems.js';
 import { SURVIVAL_CONFIG } from '../../sim/survival.js';
-import { APS, MISSILE, UPGRADE_MAX_LEVEL, getMaxCannonAmmo } from '../constants.js';
+import { APS, MISSILE, UPGRADE_MAX_LEVEL, getMaxCannonAmmo, getMaxRepairKitCharges } from '../constants.js';
 
 /** Manages player profile persistence, mode saves, upgrades, and credit grants. */
 export class ProfileSaveController {
@@ -86,7 +86,7 @@ export class ProfileSaveController {
     engine.playerController.initApsLaunchers(APS.START_ROUNDS);
     engine.missileAmmo = 2;
     engine.cannonAmmo = getMaxCannonAmmo(1);
-    engine.repairKitState = createRepairKitState(0);
+    engine.repairKitState = createRepairKitState(0, getMaxRepairKitCharges(1));
   }
 
   setProfileMode(mode = 'campaign', { resetTank = false } = {}) {
@@ -133,7 +133,7 @@ export class ProfileSaveController {
       const savedRepairCharges = Number.isInteger(engine.playerSave?.repairKitCharges)
         ? engine.playerSave.repairKitCharges
         : 0;
-      engine.repairKitState = createRepairKitState(savedRepairCharges);
+      engine.repairKitState = createRepairKitState(savedRepairCharges, getMaxRepairKitCharges(engine.upgrades?.frame || 1));
       engine.cannonAmmo = engine.getPlayerMaxCannonAmmo();
     }
     engine.recomputePlayerStats(false);

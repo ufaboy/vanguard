@@ -354,7 +354,10 @@ export class PowerupsController {
     const curAps = engine.apsAmmo.reduce((sum, r) => sum + r, 0);
     const needsAps = (Number(config.aps) || 0) > 0 && curAps < engine.getPlayerMaxApsAmmo();
     const needsMissiles = (Number(config.missiles) || 0) > 0 && engine.missileAmmo < engine.getPlayerMaxMissileAmmo();
-    return needsShells || needsAps || needsMissiles;
+    const maxRepairKits = engine.repairKitState?.maxCharges ?? engine.getPlayerMaxRepairKitCharges();
+    const needsRepairKits =
+      (Number(config.repairKits) || 0) > 0 && (engine.repairKitState?.charges ?? 0) < maxRepairKits;
+    return needsShells || needsAps || needsMissiles || needsRepairKits;
   }
 
   applyAirDrop(config) {
@@ -388,6 +391,15 @@ export class PowerupsController {
     if (addMissiles > 0) {
       engine.missileAmmo = Math.min(maxMissiles, engine.missileAmmo + addMissiles);
       parts.push(`ATGM ${engine.missileAmmo}/${maxMissiles}`);
+    }
+
+    const addRepairKits = Math.max(0, Math.floor(Number(config.repairKits) || 0));
+    if (addRepairKits > 0 && engine.repairKitState) {
+      const maxRepairKits = engine.repairKitState.maxCharges ?? engine.getPlayerMaxRepairKitCharges();
+      engine.repairKitState.maxCharges = maxRepairKits;
+      engine.repairKitState.charges = Math.min(maxRepairKits, (engine.repairKitState.charges || 0) + addRepairKits);
+      engine.playerController?.persistRepairKitCharges?.();
+      parts.push(`RM-1 ${engine.repairKitState.charges}/${maxRepairKits}`);
     }
 
     if (engine.playerSave) {

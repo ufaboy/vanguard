@@ -9,7 +9,6 @@ import {
   HYDRA,
   INFERNO,
   MAMMOTH,
-  REPAIR_KIT,
   TITAN,
 } from '../constants.js';
 import { createEncounterState, remainingEncounterEnemies } from '../encounters.js';
@@ -539,7 +538,7 @@ export class SectorLoaderController {
       : Number.isInteger(engine.playerSave?.repairKitCharges)
       ? engine.playerSave.repairKitCharges
       : 0;
-    engine.repairKitState = createRepairKitState(savedRepairCharges);
+    engine.repairKitState = createRepairKitState(savedRepairCharges, engine.getPlayerMaxRepairKitCharges());
     engine.playerArmorPanels = {
       SOCKET_ARMOR_FRONT: {
         ...ARMOR_PANEL_CATALOG.sb_40,
@@ -618,7 +617,7 @@ export class SectorLoaderController {
     engine.cannonAmmo = engine.getPlayerMaxCannonAmmo();
     engine.cannonBaseRearmTimer = 0;
     engine.missileCooldown = 0;
-    engine.repairKitCount = REPAIR_KIT.MAX;
+    engine.repairKitCount = engine.getPlayerMaxRepairKitCharges();
 
     engine.playerRig.root.position.set(engine.playerX, 0, engine.playerZ);
     engine.playerController.syncPlayerVisuals(0, 0);

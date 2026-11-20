@@ -90,31 +90,36 @@
       "delaySec": 10,
       "shells": 50,
       "aps": 12,
-      "missiles": 6
+      "missiles": 6,
+      "repairKits": 5
     },
     {
       "progress": 0.14,
       "shells": 50,
       "aps": 12,
-      "missiles": 6
+      "missiles": 6,
+      "repairKits": 5
     },
     {
       "progress": 0.34,
       "shells": 50,
       "aps": 12,
-      "missiles": 6
+      "missiles": 6,
+      "repairKits": 5
     },
     {
       "progress": 0.54,
       "shells": 50,
       "aps": 12,
-      "missiles": 6
+      "missiles": 6,
+      "repairKits": 5
     },
     {
       "progress": 0.74,
       "shells": 50,
       "aps": 12,
-      "missiles": 6
+      "missiles": 6,
+      "repairKits": 5
     }
   ],
   "bossSequence": [

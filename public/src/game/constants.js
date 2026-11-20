@@ -60,9 +60,11 @@ export const DURABILITY = Object.freeze({
 });
 
 export const REPAIR_KIT = Object.freeze({
-  MAX: 2, // Maximum number of emergency repair kit charges carried
+  MAX: 2, // Legacy default emergency repair kit charges
+  MAX_BY_FRAME: Object.freeze([1, 2, 3, 4, 5]), // Max repair kit capacity per Frame tier 1..5
   RESTORE_AMOUNT: 20, // Hull HP instantly restored when emergency kit triggers
   TRIGGER_RATIO: 0.33, // HP fraction threshold (33%) that triggers automatic repair kit use
+  COOLDOWN_SEC: 30, // RM-1 Field Repair Kit cooldown in seconds
 });
 
 export const BASE_REPAIR = Object.freeze({
@@ -323,6 +325,12 @@ export function getMaxMissileAmmo(frameTier = 1) {
 export function getMaxCannonAmmo(frameTier = 1) {
   const idx = Math.max(0, Math.min(CANNON_AMMO.MAX_AMMO_BY_FRAME.length - 1, Math.floor(frameTier || 1) - 1));
   return CANNON_AMMO.MAX_AMMO_BY_FRAME[idx];
+}
+
+/** Maximum player repair kit charges for the given purchased Frame tier (1..5). */
+export function getMaxRepairKitCharges(frameTier = 1) {
+  const idx = Math.max(0, Math.min(REPAIR_KIT.MAX_BY_FRAME.length - 1, Math.floor(frameTier || 1) - 1));
+  return REPAIR_KIT.MAX_BY_FRAME[idx];
 }
 
 export const FLAME_STREAM = Object.freeze({
