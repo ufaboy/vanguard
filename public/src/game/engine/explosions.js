@@ -414,6 +414,8 @@ export class ExplosionsController {
             engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
           } else if (cell.type === TileType.OIL_SLICK) {
             engine.terrainDestruction?.igniteOilSlick?.(cell);
+          } else if (cell.type === TileType.FOREST) {
+            engine.forestFire?.startBurning?.(cell, pos.x, pos.z);
           } else if (cell.type === TileType.CONCRETE) {
             const hit = breachPointToward(pos.x, pos.z, x, z);
             engine.damageTileCell(cell, 6, hit.x, hit.z);
