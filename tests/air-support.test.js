@@ -20,6 +20,7 @@ function createMockEngine(credits = 1000) {
   const thermoExplosions = [];
   const projectiles = [];
   const airDrops = [];
+  const savedSnapshots = [];
 
   const engine = {
     status: GameStatus.PLAYING,
@@ -33,7 +34,11 @@ function createMockEngine(credits = 1000) {
     isHangarOpen: false,
     isAdPaused: false,
     playerSave: { credits },
-    profileSave: { save() {} },
+    saveRepo: {
+      savePlayerSave(save) {
+        savedSnapshots.push(save.credits);
+      },
+    },
     subsystems: {
       leftTrack: { hp: 0, maxHp: 20, status: 'destroyed', fieldRepairState: 'waiting', fieldRepairTimer: 2, fieldRepairProgress: 0 },
       cannon: { hp: 10, maxHp: 20, status: 'damaged', fieldRepairState: 'idle', fieldRepairTimer: 0, fieldRepairProgress: 0 },
@@ -91,11 +96,11 @@ function createMockEngine(credits = 1000) {
   };
 
   const ctrl = new AirSupportController(engine);
-  return { engine, ctrl, plantedMines, explosions, thermoExplosions, projectiles, airDrops };
+  return { engine, ctrl, plantedMines, explosions, thermoExplosions, projectiles, airDrops, savedSnapshots };
 }
 
 test('Air Support targeting pauses game, cancels cleanly, and spends credits on confirm', () => {
-  const { engine, ctrl } = createMockEngine(500);
+  const { engine, ctrl, savedSnapshots } = createMockEngine(500);
 
   assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_BOMBS'), true);
   assert.equal(engine.status, GameStatus.PAUSED);
@@ -105,11 +110,13 @@ test('Air Support targeting pauses game, cancels cleanly, and spends credits on 
   assert.equal(engine.status, GameStatus.PLAYING);
   assert.equal(engine.airSupportTargeting, null);
   assert.equal(engine.playerSave.credits, 500);
+  assert.deepEqual(savedSnapshots, []);
 
   assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_BOMBS'), true);
   assert.equal(ctrl.confirmTargeting(10, 12), true);
   assert.equal(engine.status, GameStatus.PLAYING);
   assert.equal(engine.playerSave.credits, 500 - AIR_SUPPORT.STRIKE_BOMBS.cost);
+  assert.deepEqual(savedSnapshots, [500 - AIR_SUPPORT.STRIKE_BOMBS.cost]);
   const ordnance = engine.airSupportMissions.filter((m) => m.kind === 'AIR_ORDNANCE');
   assert.equal(ordnance.length, AIR_SUPPORT.STRIKE_BOMBS.bombCount);
 });

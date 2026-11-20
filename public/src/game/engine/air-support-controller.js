@@ -79,7 +79,7 @@ export class AirSupportController {
     const { engine } = this;
     if (!engine.playerSave || (engine.playerSave.credits ?? 0) < cost) return false;
     engine.playerSave.credits -= cost;
-    engine.profileSave?.save?.();
+    engine.saveRepo?.savePlayerSave?.(engine.playerSave);
     return true;
   }
 
@@ -679,9 +679,8 @@ export class AirSupportController {
     const progress = Math.min(1, Math.max(0, 1 - m.timer / m.maxTimer));
     const isBomb = m.ordnanceType === 'BOMB';
     // Bombs decelerate slightly horizontally and accelerate downward under gravity (y = y0 - g*t^2/2)
-    const horizT = isBomb ? 1 - (1 - progress) * (1 - progress) * 0.25 - progress * 0.25 + progress * 0.25 : progress;
-    const curX = THREE.MathUtils.lerp(m.startX, m.targetX, isBomb ? Math.pow(progress, 0.85) : horizT);
-    const curZ = THREE.MathUtils.lerp(m.startZ, m.targetZ, isBomb ? Math.pow(progress, 0.85) : horizT);
+    const curX = THREE.MathUtils.lerp(m.startX, m.targetX, isBomb ? Math.pow(progress, 0.85) : progress);
+    const curZ = THREE.MathUtils.lerp(m.startZ, m.targetZ, isBomb ? Math.pow(progress, 0.85) : progress);
     const curY = THREE.MathUtils.lerp(m.startY, 0.35, progress * progress);
 
     if (m.mesh) {
