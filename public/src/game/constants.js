@@ -1,6 +1,7 @@
 /** Core Physics Formulas, Combat Constants, and Catalog Re-Exports. */
 
-import { TANK_TYPES, TANK_CONFIGS, EnemyClass, tankBase } from './tanks.js';
+import { TANK_TYPES, TANK_CONFIGS, EnemyClass, tankBase } from './vehicles/tanks.js';
+import { AIR_ORDNANCE } from './components/ordnance.js';
 import {
   POWERUP,
   POWERUP_MAX_ON_MAP,
@@ -531,26 +532,18 @@ export const DEFENSE_TURRET_CONFIGS = Object.freeze({
 
 export const AIR_SUPPORT = Object.freeze({
   STRIKE_BOMBS: Object.freeze({
+    ...AIR_ORDNANCE.AIR_BOMB,
     id: 'STRIKE_BOMBS',
     label: N_('3× Light Bombs'),
     shortLabel: N_('3× BOMBS'),
     cost: 250,
-    bombCount: 3,
-    radiusCells: 1.5,
-    scatterCells: 1.75,
-    damage: 24,
-    penetration: 15,
-    flightSec: 1.05,
-    staggerSec: 0.24,
   }),
   STRIKE_THERMO: Object.freeze({
+    ...AIR_ORDNANCE.THERMOBARIC_MISSILE,
     id: 'STRIKE_THERMO',
     label: N_('Thermobaric Missile'),
     shortLabel: N_('THERMO'),
     cost: 450,
-    radiusCells: 3.5,
-    damage: 25,
-    flightSec: 1.3,
   }),
   STRIKE_AC130: Object.freeze({
     id: 'STRIKE_AC130',
@@ -570,12 +563,10 @@ export const AIR_SUPPORT = Object.freeze({
     durationSec: 3.5,
   }),
   MINES: Object.freeze({
+    ...AIR_ORDNANCE.AIR_MINE,
     id: 'MINES',
     label: N_('Carpet Air Mines'),
     cost: 220,
-    mineCount: 9,
-    zoneHalfCells: 2.2,
-    flightSec: 1.0,
   }),
   AIRDROP: Object.freeze({
     id: 'AIRDROP',

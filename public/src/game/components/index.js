@@ -5,5 +5,6 @@ export * from './frames.js';
 export * from './engines.js';
 export * from './armors.js';
 export * from './modules.js';
+export * from './ordnance.js';
 export * from './upgrades.js';
 

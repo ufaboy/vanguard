@@ -4,6 +4,7 @@ import { t } from '../../i18n/index.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { determineHitAspect } from '../../sim/ballistics.js';
 import { CANNONS } from '../components/cannons.js';
+import { AIR_ORDNANCE } from '../components/ordnance.js';
 import {
   AIR_SUPPORT,
   ARTILLERY,
@@ -18,6 +19,8 @@ import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { disposeOwned, markOwned } from '../render/dispose.js';
 import { sound } from '../sound.js';
 import { GameStatus, TileType } from '../types.js';
+import { AIRCRAFT_CONFIGS } from '../vehicles/aircraft.js';
+import { DRONE_CONFIGS } from '../vehicles/drones.js';
 
 const STRIKE_VARIANTS = Object.freeze({
   STRIKE_BOMBS: AIR_SUPPORT.STRIKE_BOMBS,
@@ -46,9 +49,9 @@ const AC130_DESTRUCTIBLE_TILES = new Set([
 ]);
 
 const AIR_GLB_URLS = Object.freeze({
-  bomber: './models/air_bomber.glb',
-  ac130: './models/air_ac130.glb',
-  repairDrone: './models/air_repair_drone.glb',
+  bomber: AIRCRAFT_CONFIGS.STRATEGIC_BOMBER.modelUrl,
+  ac130: AIRCRAFT_CONFIGS.AC130_SPOOKY.modelUrl,
+  repairDrone: DRONE_CONFIGS.REPAIR_DRONE.modelUrl,
 });
 
 let airGltfLoader = null;
@@ -347,6 +350,7 @@ export class AirSupportController {
       return false;
     }
     const cfg = AIR_SUPPORT.REPAIR;
+    const droneCfg = DRONE_CONFIGS.REPAIR_DRONE;
     if (!this.canAfford(cfg.cost)) {
       engine.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost: cfg.cost }), 2.0);
       return false;
@@ -356,7 +360,7 @@ export class AirSupportController {
     const launch = this.getAlliedSideLaunchPos(engine.playerX, engine.playerZ);
     const droneRig = this.createRepairDroneMesh();
     if (droneRig && engine.fxGroup) {
-      droneRig.position.set(launch.x, 7.5, launch.z);
+      droneRig.position.set(launch.x, droneCfg.approachAltitude, launch.z);
       engine.fxGroup.add(droneRig);
     }
 
@@ -364,14 +368,14 @@ export class AirSupportController {
     engine.airSupportMissions.push({
       kind: 'REPAIR_DRONE',
       x: launch.x,
-      y: 7.5,
+      y: droneCfg.approachAltitude,
       z: launch.z,
       exitX: launch.x,
       exitZ: launch.z,
       phase: 'approach',
       timer: 0,
-      duration: cfg.durationSec,
-      healRemaining: cfg.healAmount,
+      duration: droneCfg.durationSec,
+      healRemaining: droneCfg.healAmount,
       subsystemsRepaired: false,
       sparkAcc: 0,
       mesh: droneRig,
@@ -388,14 +392,15 @@ export class AirSupportController {
 
     if (variant === 'STRIKE_BOMBS') {
       const cfg = AIR_SUPPORT.STRIKE_BOMBS;
+      const bomberCfg = AIRCRAFT_CONFIGS.STRATEGIC_BOMBER;
       const dx = targetX - launch.x;
       const dz = targetZ - launch.z;
       const len = Math.hypot(dx, dz) || 1;
       const dirX = dx / len;
       const dirZ = dz / len;
-      const bomberSpeed = 28;
-      const altitude = 20;
-      const leadDist = bomberSpeed * cfg.flightSec * 0.45;
+      const bomberSpeed = bomberCfg.speed;
+      const altitude = bomberCfg.altitude;
+      const leadDist = bomberSpeed * cfg.flightSec * bomberCfg.leadFactor;
 
       // High-altitude bomber flyby passing over the target zone
       const bomberStartX = targetX - dirX * (leadDist + 24);
@@ -413,7 +418,7 @@ export class AirSupportController {
         z: bomberStartZ,
         vx: dirX * bomberSpeed,
         vz: dirZ * bomberSpeed,
-        life: 3.6,
+        life: bomberCfg.flybySec,
         mesh: bomberMesh,
       });
 
@@ -436,7 +441,7 @@ export class AirSupportController {
           radius: cfg.radiusCells * TILE_SIZE,
           damage: cfg.damage,
           penetration: cfg.penetration,
-          delay: 0.75 + i * cfg.staggerSec,
+          delay: AIR_ORDNANCE.AIR_BOMB.releaseDelaySec + i * cfg.staggerSec,
           timer: cfg.flightSec,
           maxTimer: cfg.flightSec,
           spawned: false,
@@ -447,17 +452,18 @@ export class AirSupportController {
       engine.setStatusBanner(t('AIR STRIKE INBOUND — 3× BOMBS ON TARGET'), 2.8);
     } else if (variant === 'STRIKE_THERMO') {
       const cfg = AIR_SUPPORT.STRIKE_THERMO;
+      const thermoCfg = AIR_ORDNANCE.THERMOBARIC_MISSILE;
       engine.airSupportMissions.push({
         kind: 'AIR_ORDNANCE',
         ordnanceType: 'THERMO',
         startX: launch.x,
-        startY: 11,
+        startY: thermoCfg.launchAltitude,
         startZ: launch.z,
         targetX,
         targetZ,
         radius: cfg.radiusCells * TILE_SIZE,
         damage: cfg.damage,
-        penetration: 25,
+        penetration: thermoCfg.penetration,
         delay: 0,
         timer: cfg.flightSec,
         maxTimer: cfg.flightSec,
@@ -468,9 +474,10 @@ export class AirSupportController {
       engine.setStatusBanner(t('THERMOBARIC MISSILE LAUNCHED — STAND CLEAR'), 2.8);
     } else if (variant === 'STRIKE_AC130') {
       const cfg = AIR_SUPPORT.STRIKE_AC130;
+      const acCfg = AIRCRAFT_CONFIGS.AC130_SPOOKY;
       const zoneMesh = this.createAc130ZoneRing(targetX, targetZ, cfg.radiusCells * TILE_SIZE);
-      const orbitRadius = (GRID_SIZE * TILE_SIZE) * 0.3;
-      const orbitHeight = 14.5;
+      const orbitRadius = (GRID_SIZE * TILE_SIZE) * acCfg.orbitRadiusRatio;
+      const orbitHeight = acCfg.orbitHeight;
       const orbitAngle = Math.random() * Math.PI * 2;
       const gunshipMesh = this.createAc130Mesh();
       if (gunshipMesh && engine.fxGroup) {
@@ -488,10 +495,10 @@ export class AirSupportController {
         radius: cfg.radiusCells * TILE_SIZE,
         orbitRadius,
         orbitHeight,
-        duration: cfg.durationSec,
+        duration: acCfg.durationSec,
         elapsed: 0,
         fireTimer: 0.25,
-        fireInterval: cfg.fireIntervalSec,
+        fireInterval: acCfg.fireIntervalSec,
         orbitAngle,
         zoneMesh,
         mesh: gunshipMesh,
@@ -503,6 +510,7 @@ export class AirSupportController {
   launchAirMines(targetX, targetZ) {
     const { engine } = this;
     const cfg = AIR_SUPPORT.MINES;
+    const mineCfg = AIR_ORDNANCE.AIR_MINE;
     const launch = this.getAlliedSideLaunchPos(targetX, targetZ);
     const half = cfg.zoneHalfCells * TILE_SIZE;
     engine.airSupportMissions ||= [];
@@ -513,11 +521,11 @@ export class AirSupportController {
       for (let gx = -1; gx <= 1; gx++) {
         const mx = targetX + gx * (half * 0.68) + (Math.random() - 0.5) * TILE_SIZE * 0.65;
         const mz = targetZ + gy * (half * 0.68) + (Math.random() - 0.5) * TILE_SIZE * 0.65;
-        const flight = cfg.flightSec + index * 0.06;
+        const flight = cfg.flightSec + index * mineCfg.staggerSec;
         engine.airSupportMissions.push({
           kind: 'AIR_MINE',
           startX: launch.x,
-          startY: 16,
+          startY: mineCfg.launchAltitude,
           startZ: launch.z,
           targetX: mx,
           targetZ: mz,
@@ -624,12 +632,13 @@ export class AirSupportController {
 
   updateRepairDrone(m, dt, elapsed) {
     const { engine } = this;
+    const droneCfg = DRONE_CONFIGS.REPAIR_DRONE;
     this.spinDroneRotors(m.mesh, dt);
     if (m.phase === 'approach') {
       const dx = engine.playerX - m.x;
       const dz = engine.playerZ - m.z;
       const dist = Math.hypot(dx, dz);
-      const speed = 22;
+      const speed = droneCfg.approachSpeed;
       if (dist <= 1.2 || engine.playerHp <= DURABILITY.ZERO_HP) {
         m.phase = 'repairing';
         m.timer = 0;
@@ -655,7 +664,7 @@ export class AirSupportController {
       if (engine.playerHp > DURABILITY.ZERO_HP) {
         const healStep = Math.min(
           m.healRemaining,
-          (AIR_SUPPORT.REPAIR.healAmount / m.duration) * dt
+          (droneCfg.healAmount / m.duration) * dt
         );
         if (healStep > 0) {
           m.healRemaining -= healStep;
@@ -663,7 +672,7 @@ export class AirSupportController {
         }
         m.x = engine.playerX;
         m.z = engine.playerZ;
-        m.y = 2.6 + Math.sin(elapsed * 5) * 0.15;
+        m.y = droneCfg.hoverAltitude + Math.sin(elapsed * 5) * 0.15;
         if (m.mesh) {
           m.mesh.position.set(m.x, m.y, m.z);
           m.mesh.rotation.y = elapsed * 2.5;
@@ -690,9 +699,9 @@ export class AirSupportController {
     const dx = m.exitX - m.x;
     const dz = m.exitZ - m.z;
     const dist = Math.hypot(dx, dz) || 1;
-    m.x += (dx / dist) * 26 * dt;
-    m.z += (dz / dist) * 26 * dt;
-    m.y += 6 * dt;
+    m.x += (dx / dist) * droneCfg.departSpeed * dt;
+    m.z += (dz / dist) * droneCfg.departSpeed * dt;
+    m.y += droneCfg.departClimbSpeed * dt;
     if (m.mesh) {
       m.mesh.position.set(m.x, m.y, m.z);
       m.mesh.rotation.y = Math.atan2(dx, dz);
@@ -847,18 +856,19 @@ export class AirSupportController {
   }
 
   updateAc130(m, dt) {
+    const acCfg = AIRCRAFT_CONFIGS.AC130_SPOOKY;
     m.elapsed += dt;
     // Clockwise orbit around the target zone
-    m.orbitAngle += dt * 0.55;
-    const orbitR = m.orbitRadius ?? (GRID_SIZE * TILE_SIZE) * 0.3;
-    const orbitH = m.orbitHeight ?? 14.5;
+    m.orbitAngle += dt * acCfg.orbitAngularSpeed;
+    const orbitR = m.orbitRadius ?? (GRID_SIZE * TILE_SIZE) * acCfg.orbitRadiusRatio;
+    const orbitH = m.orbitHeight ?? acCfg.orbitHeight;
     const gunshipX = m.x + Math.cos(m.orbitAngle) * orbitR;
     const gunshipZ = m.z + Math.sin(m.orbitAngle) * orbitR;
     if (m.mesh) {
       m.mesh.position.set(gunshipX, orbitH, gunshipZ);
       m.mesh.rotation.order = 'YXZ';
       m.mesh.rotation.y = Math.atan2(-Math.sin(m.orbitAngle), Math.cos(m.orbitAngle));
-      m.mesh.rotation.z = 0.22; // Bank wing inward during clockwise turn
+      m.mesh.rotation.z = acCfg.bankAngleRad; // Bank wing inward during clockwise turn
       this.spinAircraftProps(m.mesh, dt);
     }
 
@@ -930,15 +940,16 @@ export class AirSupportController {
 
   fireAc130Shell(startX, startZ, targetX, targetZ, startHeight = 24) {
     const { engine } = this;
-    const gun = CANNONS.CANNON_Mk2;
+    const weaponId = AIRCRAFT_CONFIGS.AC130_SPOOKY.weaponId;
+    const gun = CANNONS[weaponId];
     const dx = targetX - startX;
     const dz = targetZ - startZ;
     const dist = Math.hypot(dx, dz) || 1;
     const dirX = dx / dist;
     const dirZ = dz / dist;
 
-    // Check if an enemy APS intercepts this CANNON_Mk2 shell
-    const cost = apsInterceptCost({ weaponId: 'CANNON_Mk2', isMissile: false });
+    // Check if an enemy APS intercepts this shell
+    const cost = apsInterceptCost({ weaponId, isMissile: false });
     for (const enemy of engine.enemies || []) {
       if (!enemy || enemy.hp <= 0 || !(enemy.apsCharges >= cost)) continue;
       if (Math.hypot(enemy.x - targetX, enemy.z - targetZ) <= 2.8 * TILE_SIZE) {
@@ -1141,12 +1152,20 @@ export class AirSupportController {
 
   /** Clones the Blender-exported strategic jet bomber GLB rig. */
   createBomberMesh() {
-    return this.cloneGlbRig('bomber');
+    const rig = this.cloneGlbRig('bomber');
+    if (rig && AIRCRAFT_CONFIGS.STRATEGIC_BOMBER.scale !== 1) {
+      rig.scale.setScalar(AIRCRAFT_CONFIGS.STRATEGIC_BOMBER.scale);
+    }
+    return rig;
   }
 
   /** Clones the Blender-exported AC-130 Spooky gunship GLB rig. */
   createAc130Mesh() {
-    return this.cloneGlbRig('ac130');
+    const rig = this.cloneGlbRig('ac130');
+    if (rig && AIRCRAFT_CONFIGS.AC130_SPOOKY.scale !== 1) {
+      rig.scale.setScalar(AIRCRAFT_CONFIGS.AC130_SPOOKY.scale);
+    }
+    return rig;
   }
 
   createThermobaricMissileMesh() {
@@ -1191,11 +1210,13 @@ export class AirSupportController {
     return group;
   }
 
-  /** Clones the Blender-exported tactical repair quadrotor GLB rig (scaled down 25%). */
+  /** Clones the Blender-exported tactical repair quadrotor GLB rig. */
   createRepairDroneMesh() {
     if (!this.engine.fxGroup) return null;
     const rig = this.cloneGlbRig('repairDrone');
-    if (rig) rig.scale.setScalar(0.75);
+    if (rig && DRONE_CONFIGS.REPAIR_DRONE.scale !== 1) {
+      rig.scale.setScalar(DRONE_CONFIGS.REPAIR_DRONE.scale);
+    }
     return rig;
   }
 

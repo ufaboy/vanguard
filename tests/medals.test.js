@@ -196,7 +196,7 @@ test('recordMedalsAndRank tracks first-time vs repeat XP and promotion', () => {
 });
 
 test('recordEnemyKill normalizes runtime EnemyClass values (bossMammoth, sapper, etc.)', async () => {
-  const { EnemyClass } = await import('../public/src/game/tanks.js');
+  const { EnemyClass } = await import('../public/src/game/vehicles/tanks.js');
   const tracker = createBattleMedalTracker();
   tracker.recordEnemyKill({ enemyClass: EnemyClass.BOSS_MAMMOTH });
   tracker.recordEnemyKill({ enemyClass: EnemyClass.BOSS_HYDRA });

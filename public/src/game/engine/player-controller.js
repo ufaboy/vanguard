@@ -18,7 +18,7 @@ import {
   getMaxMissileAmmo,
   getMaxRepairKitCharges,
 } from '../constants.js';
-import { PLAYER_TANK_CONFIG } from '../tanks.js';
+import { PLAYER_TANK_CONFIG } from '../vehicles/tanks.js';
 import { GameStatus, TileType } from '../types.js';
 import { SECTORS } from '../levels.js';
 import { sound } from '../sound.js';

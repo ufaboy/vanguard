@@ -7,7 +7,7 @@ import { SECTORS } from '../public/src/game/levels.js';
 import { EnemyClass, TileType } from '../public/src/game/types.js';
 import { MAP_MODES, MAP_MODE_CONFIGS } from '../public/src/game/mapRules.js';
 import { bossApsCanIntercept } from '../public/src/sim/aps.js';
-import { SECTOR_BOSS_CONFIGS } from '../public/src/game/tanks.js';
+import { SECTOR_BOSS_CONFIGS } from '../public/src/game/vehicles/tanks.js';
 import { createBrain, findPath, resolveBehaviorActions } from '../public/src/sim/behavior/index.js';
 
 function fakeBossEngine(enemies = []) {

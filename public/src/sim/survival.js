@@ -13,7 +13,7 @@
  *   to the main Campaign/Contracts profile.
  */
 
-import { EnemyClass } from '../game/tanks.js';
+import { EnemyClass } from '../game/vehicles/tanks.js';
 import { N_, t } from '../i18n/index.js';
 
 export const SURVIVAL_CONFIG = Object.freeze({

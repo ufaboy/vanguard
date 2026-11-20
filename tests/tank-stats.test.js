@@ -4,7 +4,7 @@ import {
   ARMORS, CANNONS, CHASSIS, ENGINES, FRAMES, OPTIONAL_EQUIPMENT, SPEED_FORMULA,
   computeEffectiveDamage, computeTankStats,
 } from '../public/src/game/constants.js';
-import { PLAYER_TANK_CONFIG, SECTOR_BOSS_CONFIGS, TANK_CONFIGS, TANK_TYPES, tankBase } from '../public/src/game/tanks.js';
+import { PLAYER_TANK_CONFIG, SECTOR_BOSS_CONFIGS, TANK_CONFIGS, TANK_TYPES, tankBase } from '../public/src/game/vehicles/tanks.js';
 
 const loadout = { gun: 'CANNON_Mk1', chassis: 'CH2', frame: 'F2', engine: 'E2', armor: 'A2' };
 

@@ -8,7 +8,7 @@ import {
   isPointWithinJammerRadius,
 } from '../public/src/sim/jammer.js';
 import { TILE_SIZE } from '../public/src/game/constants.js';
-import { EnemyClass } from '../public/src/game/tanks.js';
+import { EnemyClass } from '../public/src/game/vehicles/tanks.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 
 test('hasJammerModule detects living JAMMER tanks and optionalEquipment JAMMER', () => {

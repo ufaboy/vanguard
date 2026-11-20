@@ -33,7 +33,7 @@ import { createMissileVisual } from '../effects/index.js';
 import { GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { analyticsManager } from '../../app/analyticsManager.js';
-import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
+import { SECTOR_BOSS_CONFIGS } from '../vehicles/tanks.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';
 import { EnemyClass, TANK_CONFIGS, TileType, checkMapVictory } from '../types.js';
 import { t } from '../../i18n/index.js';

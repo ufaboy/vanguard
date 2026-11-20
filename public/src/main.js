@@ -14,7 +14,7 @@ import { TankGameEngine } from './game/engine/engineCore.js';
 import { pregenerateTextures } from './game/render/texture-gen.js';
 import { SECTORS } from './game/levels.js';
 import { GameStatus } from './game/types.js';
-import { PLAYER_TANK_CONFIG } from './game/tanks.js';
+import { PLAYER_TANK_CONFIG } from './game/vehicles/tanks.js';
 import {
   APS,
   computeTankStats,

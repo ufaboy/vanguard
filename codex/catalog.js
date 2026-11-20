@@ -22,7 +22,7 @@ import {
   SECTOR_BOSS_CONFIGS,
   TANK_CONFIGS,
   TANK_TYPES,
-} from '../public/src/game/tanks.js';
+} from '../public/src/game/vehicles/tanks.js';
 import { SURFACE_CATALOG } from '../public/src/game/terrains/surfaces.js';
 import { POWERUP_TYPES } from '../public/src/game/powerups.js';
 

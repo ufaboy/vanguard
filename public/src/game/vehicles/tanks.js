@@ -1,7 +1,7 @@
 /** Tank Types, Characteristics, Loadouts, and Descriptions. */
 
-import { defineBehavior } from '../sim/behavior/actions.js';
-import { N_ } from '../i18n/index.js';
+import { defineBehavior } from '../../sim/behavior/actions.js';
+import { N_ } from '../../i18n/index.js';
 
 /**
  * Base ("hull") of a tank type: its own durability, mass, per-side armour, sight and radio range.

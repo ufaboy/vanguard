@@ -7,7 +7,7 @@ import {
   TITAN,
 } from '../constants.js';
 import { EnemyClass, TileType } from '../types.js';
-import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
+import { SECTOR_BOSS_CONFIGS } from '../vehicles/tanks.js';
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { deckClearance } from '../render/models.js';
 import { cellMovement } from '../terrains/layers.js';

@@ -35,7 +35,7 @@ import {
   POWERUP_TYPES,
 } from '../constants.js';
 import { GameStatus } from '../types.js';
-import { PLAYER_TANK_CONFIG } from '../tanks.js';
+import { PLAYER_TANK_CONFIG } from '../vehicles/tanks.js';
 import {
   GRID_SIZE,
   SECTORS,
