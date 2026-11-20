@@ -235,7 +235,7 @@ export const CANNONS = Object.freeze({
     description:
       N_('Heavy direct-fire fuel-air siege cannon launching thermobaric shells that detonate in a 3.5-cell blast radius, shattering fortifications and igniting forest and oil.'),
     mass: 28,
-    damage: 23,
+    damage: 35,
     penetration: 25,
     bulletSpeed: 9.2,
     bulletPower: BULLET_POWER.HEAVY,
