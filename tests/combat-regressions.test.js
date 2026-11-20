@@ -7,7 +7,7 @@ import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { PlayerController } from '../public/src/game/engine/player-controller.js';
 import { findBorderIngressCell } from '../public/src/game/campaign-navigation.js';
 import { TileType, GameStatus } from '../public/src/game/types.js';
-import { computeTankStats, computeEffectiveDamage, CANNONS } from '../public/src/game/constants.js';
+import { computeTankStats, computeEffectiveDamage, CANNONS, MISSILE } from '../public/src/game/constants.js';
 import { TANK_CONFIGS, TANK_TYPES } from '../public/src/game/vehicles/tanks.js';
 
 test('ARMOR directional protection comes from its base plus the A3 component', () => {
@@ -641,4 +641,49 @@ test('triggerMissionVictory starts victory cinematics delay, focus, and deferred
   }
   assert.equal(detonated, 1);
   assert.ok(engine.getFrameInterval() > 0, 'frame rate throttles once victory cinematics finish');
+});
+
+test('missile FPV switches active camera to fpvCamera only while a player missile is in flight', () => {
+  const orthoCam = { isOrthographicCamera: true };
+  const fpvCam = { isPerspectiveCamera: true };
+  const enemyMissile = { fromPlayer: false, isMissile: true, x: 1, z: 1 };
+  const playerShell = { fromPlayer: true, isMissile: false, x: 2, z: 2 };
+  const playerMissile = { fromPlayer: true, isMissile: true, x: 5, z: 6, vx: 0, vz: 10, flightY: 1.2 };
+
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    status: GameStatus.PLAYING,
+    missileFpvEnabled: false,
+    isHangarOpen: false,
+    inspectMode: false,
+    airSupportTargeting: false,
+    camera: orthoCam,
+    fpvCamera: fpvCam,
+    projectiles: [enemyMissile, playerShell],
+  });
+
+  assert.equal(engine.isMissileFpvActive(), false);
+  assert.equal(engine.getActiveCamera(), orthoCam);
+  assert.equal(engine.getTimeScale(), 1);
+
+  engine.setMissileFpvEnabled(true);
+  assert.equal(engine.isMissileFpvActive(), false, 'no player missile in flight yet');
+  assert.equal(engine.getActiveCamera(), orthoCam);
+  assert.equal(engine.getTimeScale(), 1);
+
+  engine.projectiles.push(playerMissile);
+  assert.equal(engine.getActivePlayerMissile(), playerMissile);
+  assert.equal(engine.isMissileFpvActive(), true);
+  assert.equal(engine.getActiveCamera(), fpvCam);
+  assert.equal(engine.getTimeScale(), MISSILE.FPV_TIME_SCALE);
+  assert.equal(MISSILE.FPV_TIME_SCALE, 0.75);
+
+  engine.projectiles.pop();
+  engine.missileFpvHoldTimer = MISSILE.FPV_POST_EXPLOSION_DELAY;
+  assert.equal(engine.isMissileFpvActive(), true, 'holds FPV view during post-explosion delay');
+  assert.equal(engine.getActiveCamera(), fpvCam);
+
+  engine.missileFpvHoldTimer = 0;
+  assert.equal(engine.isMissileFpvActive(), false);
+  assert.equal(engine.getActiveCamera(), orthoCam);
+  assert.equal(engine.getTimeScale(), 1);
 });

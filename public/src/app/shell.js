@@ -144,6 +144,10 @@ export function attachSettingsModal(root, onSettingsChange = null) {
         prefs.cameraPreset = order[(order.indexOf(prefs.cameraPreset) + 1) % order.length];
         settingName = 'camera_preset';
         settingValue = prefs.cameraPreset;
+      } else if (action === 'toggle-missile-fpv') {
+        prefs.missileFpvEnabled = !prefs.missileFpvEnabled;
+        settingName = 'missile_fpv';
+        settingValue = prefs.missileFpvEnabled;
       } else if (action === 'cycle-touch-controls') {
         prefs.touchControlsMode =
           TOUCH_CONTROLS_MODES[(TOUCH_CONTROLS_MODES.indexOf(prefs.touchControlsMode) + 1) % TOUCH_CONTROLS_MODES.length];

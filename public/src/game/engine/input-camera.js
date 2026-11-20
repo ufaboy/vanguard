@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { getObservedEnemyCondition, normalizeAngleSigned } from '../../sim/ai.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
+import { MISSILE } from '../constants.js';
 import { GameStatus } from '../types.js';
 import { t } from '../../i18n/index.js';
 
@@ -23,6 +24,7 @@ export class InputCameraController {
 
   updateAimFromPointer(e) {
     const { engine } = this;
+    if (engine.isMissileFpvActive?.()) return;
     const rect = engine.renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     engine.mouseNdc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -258,6 +260,10 @@ export class InputCameraController {
       engine.camera.top = engine.frustumSize / 2;
       engine.camera.bottom = -engine.frustumSize / 2;
       engine.camera.updateProjectionMatrix();
+      if (engine.fpvCamera) {
+        engine.fpvCamera.aspect = aspect;
+        engine.fpvCamera.updateProjectionMatrix();
+      }
 
       engine.renderer.setSize(width, height, false);
     };
@@ -302,6 +308,57 @@ export class InputCameraController {
 
   updateCamera(dt, elapsed) {
     const { engine } = this;
+    const canFpv =
+      Boolean(engine.missileFpvEnabled) &&
+      engine.status === GameStatus.PLAYING &&
+      !engine.isHangarOpen &&
+      !engine.inspectMode &&
+      !engine.airSupportTargeting &&
+      Boolean(engine.fpvCamera);
+    if (canFpv) {
+      const missile = engine.getActivePlayerMissile?.();
+      if (missile) {
+        engine.missileFpvHoldTimer = 0;
+        const speed = Math.hypot(missile.vx || 0, missile.vz || 0);
+        const dirX = speed > 0.001 ? missile.vx / speed : Math.sin(missile.mesh?.rotation?.y || 0);
+        const dirZ = speed > 0.001 ? missile.vz / speed : Math.cos(missile.mesh?.rotation?.y || 0);
+        const flightY = missile.flightY ?? 0.9;
+        const chaseDist = 3.0;
+        const desiredX = missile.x - dirX * chaseDist;
+        const desiredY = Math.max(1.1, flightY + 0.95);
+        const desiredZ = missile.z - dirZ * chaseDist;
+
+        if (this._lastFpvMissile !== missile) {
+          this._lastFpvMissile = missile;
+          engine.fpvCamera.position.set(desiredX, desiredY, desiredZ);
+        } else {
+          engine.fpvCamera.position.x = THREE.MathUtils.damp(engine.fpvCamera.position.x, desiredX, 18, dt);
+          engine.fpvCamera.position.y = THREE.MathUtils.damp(engine.fpvCamera.position.y, desiredY, 18, dt);
+          engine.fpvCamera.position.z = THREE.MathUtils.damp(engine.fpvCamera.position.z, desiredZ, 18, dt);
+        }
+        const lookX = missile.x + dirX * 9.0;
+        const lookY = Math.max(0.4, flightY - 0.15);
+        const lookZ = missile.z + dirZ * 9.0;
+        this._lastFpvLook = { x: lookX, y: lookY, z: lookZ };
+        engine.fpvCamera.lookAt(lookX, lookY, lookZ);
+        return;
+      }
+      if (this._lastFpvMissile) {
+        this._lastFpvMissile = null;
+        engine.missileFpvHoldTimer = MISSILE.FPV_POST_EXPLOSION_DELAY;
+      }
+      if (engine.missileFpvHoldTimer > 0) {
+        engine.missileFpvHoldTimer = Math.max(0, engine.missileFpvHoldTimer - dt);
+        if (this._lastFpvLook) {
+          engine.fpvCamera.lookAt(this._lastFpvLook.x, this._lastFpvLook.y, this._lastFpvLook.z);
+        }
+        return;
+      }
+    } else {
+      this._lastFpvMissile = null;
+      engine.missileFpvHoldTimer = 0;
+    }
+
     if (engine.inspectMode) {
       const orbitAngle = elapsed * 0.45;
       const radius = 14;

@@ -506,6 +506,7 @@ export class SectorLoaderController {
     engine.playerRig = engine.modelFactory.createPlayerTank();
     engine.defeatCinematicsTimer = 0;
     engine.victoryCinematicsTimer = 0;
+    engine.missileFpvHoldTimer = 0;
     if (engine.victoryCinematics?.baseFrustum) {
       engine.frustumSize = engine.victoryCinematics.baseFrustum;
       engine.handleResize?.();

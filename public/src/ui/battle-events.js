@@ -65,6 +65,7 @@ export function setupDelegatedEvents(
     syncRoute,
     startSector,
     cycleCameraPreset,
+    toggleMissileFpv,
     toggleCodexStudio,
     savePreferences,
   }
@@ -217,6 +218,9 @@ export function setupDelegatedEvents(
         break;
       case 'cycle-camera':
         cycleCameraPreset();
+        break;
+      case 'toggle-missile-fpv':
+        toggleMissileFpv();
         break;
       case 'toggle-upgrades': {
         const willOpen = !state.showUpgradeDrawer;

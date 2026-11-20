@@ -72,6 +72,7 @@ const state = {
   selectedContract: '',
   selectedSector: 0,
   cameraPreset: 'ISOMETRIC',
+  missileFpvEnabled: false,
   soundEnabled: true,
   graphicsQuality: 'high',
   fpsCap: 60,
@@ -174,6 +175,7 @@ const initialPrefs = loadPreferences();
 state.soundEnabled = initialPrefs.soundEnabled;
 state.cameraPreset = initialPrefs.cameraPreset;
 state.cameraZoom = initialPrefs.cameraZoom;
+state.missileFpvEnabled = Boolean(initialPrefs.missileFpvEnabled);
 state.graphicsQuality = initialPrefs.graphicsQuality;
 state.fpsCap = initialPrefs.fpsCap;
 state.touchControlsMode = initialPrefs.touchControlsMode;
@@ -183,6 +185,7 @@ function savePreferences() {
     soundEnabled: state.soundEnabled,
     cameraPreset: state.cameraPreset,
     cameraZoom: state.cameraZoom,
+    missileFpvEnabled: state.missileFpvEnabled,
     graphicsQuality: state.graphicsQuality,
     fpsCap: state.fpsCap,
     touchControlsMode: state.touchControlsMode,
@@ -416,6 +419,7 @@ function initApp() {
     }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated });
     engine.applyUpgrades(state.upgrades);
     engine.setCameraPreset(state.cameraPreset);
+    engine.setMissileFpvEnabled(state.missileFpvEnabled);
     if (typeof state.cameraZoom === 'number') {
       engine.setCameraZoom(state.cameraZoom);
     }
@@ -463,6 +467,8 @@ function initApp() {
       }
     } else if (e.code === 'KeyC') {
       cycleCameraPreset();
+    } else if (e.code === 'KeyV') {
+      toggleMissileFpv();
     } else if (e.code === 'Escape' || e.code === 'KeyP') {
       if (state.hud.airSupportTargeting && e.code === 'Escape') {
         engine?.cancelAirSupportTargeting();
@@ -491,15 +497,18 @@ function initApp() {
     syncRoute,
     startSector,
     cycleCameraPreset,
+    toggleMissileFpv,
     savePreferences,
   });
   attachSettingsModal(root, (prefs) => {
     state.soundEnabled = prefs.soundEnabled;
     state.cameraPreset = prefs.cameraPreset;
+    state.missileFpvEnabled = Boolean(prefs.missileFpvEnabled);
     state.graphicsQuality = prefs.graphicsQuality;
     state.fpsCap = prefs.fpsCap;
     state.touchControlsMode = prefs.touchControlsMode;
     engine?.setCameraPreset(prefs.cameraPreset);
+    engine?.setMissileFpvEnabled(state.missileFpvEnabled);
     engine?.setQuality(prefs.graphicsQuality);
     engine?.setFpsCap(prefs.fpsCap);
     renderUI(true);
@@ -633,6 +642,17 @@ function cycleCameraPreset() {
   savePreferences();
   engine?.setCameraPreset(next);
   analyticsManager.trackEvent('setting_change', { setting: 'camera_preset', value: next });
+  renderUI(true);
+}
+
+function toggleMissileFpv() {
+  state.missileFpvEnabled = !state.missileFpvEnabled;
+  savePreferences();
+  engine?.setMissileFpvEnabled(state.missileFpvEnabled);
+  analyticsManager.trackEvent('setting_change', {
+    setting: 'missile_fpv',
+    value: state.missileFpvEnabled,
+  });
   renderUI(true);
 }
 

@@ -308,6 +308,8 @@ export const MISSILE = Object.freeze({
   RETARGET_RADIUS: 3, // World unit radius to seek alternative target if primary is lost
   POOL_SIZE: 6, // Maximum concurrent active missiles in the physics/rendering pool
   PLAYER_RESERVED_SLOTS: 2, // Reserved missile slots allocated exclusively for player fire
+  FPV_TIME_SCALE: 0.75, // Slow-motion simulation time scale while riding a player missile in FPV
+  FPV_POST_EXPLOSION_DELAY: 1.0, // Seconds to hold the FPV view on the explosion before returning
 });
 
 /** Maximum player APS intercept charges for the given purchased Frame tier (1..5). */
