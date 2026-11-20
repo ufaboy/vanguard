@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 2.3.7 // BUGFIX")}</span>
+            <strong>{t("Flamethrower Pathing &amp; Medal Accuracy Fixes")}</strong>
+            <p>{t("Prevented")} <code>{t("FLAMETHROWER")}</code> {t("tanks from stalling on")} <code>{t("breachTarget")}</code> {t("obstacles when the player is beyond flame range, restricted their breaching to")} <code>{t("BOXES")}</code>{t(", passed explosion hit aspect for")} <code>{t("flank_master")}</code> {t("and")} <code>{t("exploit_the_gap")}</code>{t(", fixed")} <code>{t("STEALTH")}</code> {t("stationary detection for")} <code>{t("ghost_hunter")}</code>{t(", and aligned")} <code>{t("hydra_dodger")}</code> {t("and")} <code>{t("titan_breaker")}</code> {t("with")} <code>{t("mammoth_slayer")}</code>{t(".")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 2.3.6 // BUGFIX")}</span>
             <strong>{t("Enemy Class Normalization in Medal Tracker")}</strong>
             <p>{t("Fixed an")} <code>{t("enemyClass")}</code> {t("case mismatch in")} <code>{t("createBattleMedalTracker")}</code> {t("where runtime")} <code>{t("EnemyClass")}</code> {t("identifiers (such as")} <code>{t("bossMammoth")}</code>{t(",")} <code>{t("bossHydra")}</code>{t(",")} <code>{t("bossTitan")}</code>{t(", and")} <code>{t("sapper")}</code>{t(") did not match uppercase medal keys, blocking boss and class-specific medals and kill XP.")}</p>

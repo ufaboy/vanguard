@@ -252,8 +252,8 @@ export const MEDAL_CATALOG = Object.freeze([
     grade: 'gold',
     category: N_('Bosses'),
     description: N_('Defeat BOSS_HYDRA without taking a single hit from its MLRS rocket salvo.'),
-    evaluate: ({ isVictory, tracker }) =>
-      isVictory && tracker.defeatedBosses.includes('BOSS_HYDRA') && tracker.hydraMlrsHitsTaken === 0,
+    evaluate: ({ tracker }) =>
+      tracker.defeatedBosses.includes('BOSS_HYDRA') && tracker.hydraMlrsHitsTaken === 0,
   }),
   Object.freeze({
     id: 'titan_breaker',
@@ -261,8 +261,8 @@ export const MEDAL_CATALOG = Object.freeze([
     grade: 'gold',
     category: N_('Bosses'),
     description: N_('Defeat BOSS_TITAN without taking a single hit from its TITAN_RAIL cannon.'),
-    evaluate: ({ isVictory, tracker }) =>
-      isVictory && tracker.defeatedBosses.includes('BOSS_TITAN') && tracker.titanRailHitsTaken === 0,
+    evaluate: ({ tracker }) =>
+      tracker.defeatedBosses.includes('BOSS_TITAN') && tracker.titanRailHitsTaken === 0,
   }),
 
   // --- VANGUARD ---

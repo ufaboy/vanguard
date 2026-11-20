@@ -86,6 +86,9 @@ export class EnemyCombatController {
         const player = { x: engine.playerX, z: engine.playerZ };
         if (s.canSeePlayer) {
           if (indirect && !this.inArtilleryRange(e, player.x, player.z, ARTILLERY.MAX_RANGE)) return null;
+          if (e.enemyClass === EnemyClass.FLAMETHROWER && Math.hypot(player.x - e.x, player.z - e.z) > FLAME_STREAM.RANGE) {
+            return null;
+          }
           return { kind: 'player', key: 'player', target: player, radius: TANK_HIT_RADIUS.PLAYER, react: true };
         }
         // Indirect fire also works on spotter data or on the remembered position
@@ -862,10 +865,10 @@ export class EnemyCombatController {
         playerInWater,
         salvoId: hitMeta?.salvoId ?? null,
         minesPlaced: enemy.minesPlaced || 0,
-        engineerActing: Boolean(enemy.isRepairing || enemy.isBuilding || (enemy.specialCooldown || 0) > 0),
+        engineerActing: Boolean((enemy.specialCooldown || 0) > 0),
         kamikazeChargingClose: enemy.enemyClass === EnemyClass.KAMIKAZE && distToPlayer <= TILE_SIZE * 5.5,
         howitzerBarrages: enemy.howitzerBarrages || 0,
-        stealthCamouflaged: enemy.enemyClass === EnemyClass.STEALTH && Math.hypot(enemy.vx || 0, enemy.vz || 0) < 0.05,
+        stealthCamouflaged: enemy.enemyClass === EnemyClass.STEALTH && Math.hypot(enemy.targetDirX || 0, enemy.targetDirZ || 0) <= 0.05,
         // The kill counts while the player sits inside the jammer's APS / ATGM disruption bubble.
         jammerPulsing:
           enemy.enemyClass === EnemyClass.JAMMER && distToPlayer <= JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE,

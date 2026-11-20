@@ -111,7 +111,9 @@ export class ExplosionsController {
             LAND_MINE.PENETRATION,
             engine.blastSideArmor(e.stats, e.x, e.z, e.hullAngle, m.x, m.z)
           );
-          engine.damageEnemy(e, eff, m.x, m.z);
+          engine.damageEnemy(e, eff, {
+            aspect: determineHitAspect(e.x, e.z, e.hullAngle, m.x, m.z),
+          });
         }
       }
     }
@@ -320,7 +322,9 @@ export class ExplosionsController {
             25,
             engine.blastSideArmor(e.stats, e.x, e.z, e.hullAngle, x, z)
           );
-          engine.damageEnemy(e, eff);
+          engine.damageEnemy(e, eff, {
+            aspect: determineHitAspect(e.x, e.z, e.hullAngle, x, z),
+          });
         }
       }
     } else if (engine.playerHp > DURABILITY.ZERO_HP) {
@@ -425,7 +429,9 @@ export class ExplosionsController {
             penetration,
             engine.blastSideArmor(e.stats, e.x, e.z, e.hullAngle, x, z)
           );
-          engine.damageEnemy(e, eff);
+          engine.damageEnemy(e, eff, {
+            aspect: determineHitAspect(e.x, e.z, e.hullAngle, x, z),
+          });
         }
       }
     } else {

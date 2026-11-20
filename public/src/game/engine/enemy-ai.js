@@ -483,6 +483,8 @@ export class EnemyAiController {
     const cell = engine.grid[waypoint.row]?.[waypoint.col];
     const shouldBreach = e.isBoss
       ? cell?.type === TileType.CONCRETE || cell?.type === TileType.HOUSE_2
+      : e.enemyClass === EnemyClass.FLAMETHROWER
+      ? cell?.type === TileType.BOXES
       : cell?.type === TileType.BOXES ||
         cell?.type === TileType.BRICK ||
         cell?.type === TileType.CONCRETE ||
@@ -1126,13 +1128,15 @@ export class EnemyAiController {
             const aheadZ = e.z + (e.targetDirZ || Math.cos(e.hullAngle)) * checkDist;
             const aheadGrid = engine.worldToGrid(aheadX, aheadZ);
             const aheadCell = engine.grid[aheadGrid.row]?.[aheadGrid.col];
+            const canFlameBreach = e.enemyClass !== EnemyClass.FLAMETHROWER;
             if (
               aheadCell &&
               (aheadCell.type === TileType.BOXES ||
-                aheadCell.type === TileType.BRICK ||
-                aheadCell.type === TileType.CONCRETE ||
-                aheadCell.type === TileType.HOUSE_1 ||
-                aheadCell.type === TileType.HOUSE_2) &&
+                (canFlameBreach &&
+                  (aheadCell.type === TileType.BRICK ||
+                    aheadCell.type === TileType.CONCRETE ||
+                    aheadCell.type === TileType.HOUSE_1 ||
+                    aheadCell.type === TileType.HOUSE_2))) &&
               aheadCell.hp > 0
             ) {
               const cellCenter = engine.gridToWorld(aheadGrid.row, aheadGrid.col);
