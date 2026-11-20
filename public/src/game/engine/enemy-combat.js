@@ -850,7 +850,6 @@ export class EnemyCombatController {
       }
       engine.clearInfernoDashBeam(enemy);
       engine.sensorContacts.delete(enemy.id);
-      engine.entityGroup.remove(enemy.rig.root);
       engine.kills++;
       const playerGrid = engine.worldToGrid?.(engine.playerX, engine.playerZ);
       const playerCell = playerGrid ? engine.grid?.[playerGrid.row]?.[playerGrid.col] : null;
@@ -888,20 +887,27 @@ export class EnemyCombatController {
       engine.syncCampaignCredits();
       engine.saveRepo.savePlayerSave(engine.playerSave);
       engine.setStatusBanner(t('+ ${bounty} CREDITS ({unitName})', { bounty, unitName }), 1.8);
-      engine.screenShake = Math.max(engine.screenShake, enemy.isBoss ? 0.9 : 0.35);
-      engine.fx.tankDestroyed(enemy.x, enemy.z, { boss: enemy.isBoss });
-      sound.playExplosion(enemy.isBoss ? 2.0 : 1.7, { x: enemy.x, z: enemy.z });
-      engine.checkAndIgniteForestOnEnemyKill(enemy);
-      engine.terrainDestruction?.igniteOilAt?.(enemy.x, enemy.z, enemy.isBoss ? 2.6 : 1.8);
       if (enemy.isBoss) {
-        engine.powerupsController?.dropBossPowerUps?.(enemy.x, enemy.z);
         analyticsManager.trackEvent('boss_defeated', {
           boss_id: enemy.enemyClass,
           sector_id: engine.currentSectorIndex,
         });
       }
 
+      const detonateEnemy = () => {
+        if (enemy.rig?.root) engine.entityGroup.remove(enemy.rig.root);
+        engine.screenShake = Math.max(engine.screenShake, enemy.isBoss ? 0.9 : 0.35);
+        engine.fx.tankDestroyed(enemy.x, enemy.z, { boss: enemy.isBoss });
+        sound.playExplosion(enemy.isBoss ? 2.0 : 1.7, { x: enemy.x, z: enemy.z });
+        engine.checkAndIgniteForestOnEnemyKill(enemy);
+        engine.terrainDestruction?.igniteOilAt?.(enemy.x, enemy.z, enemy.isBoss ? 2.6 : 1.8);
+        if (enemy.isBoss) {
+          engine.powerupsController?.dropBossPowerUps?.(enemy.x, enemy.z);
+        }
+      };
+
       if (engine.survivalState) {
+        detonateEnemy();
         if (enemy.isBoss) {
           engine.survivalState.bossesDefeated = (engine.survivalState.bossesDefeated || 0) + 1;
         }
@@ -926,6 +932,7 @@ export class EnemyCombatController {
           engine.bossStageIndex + 1 < sector.bossSequence.length &&
           !engine.enemies.some((u) => u.isBoss);
         if (hasPendingBossStage && engine.vanguardRemainingToSpawn === 0 && engine.enemies.length === 0) {
+          detonateEnemy();
           engine.enemySpawner.spawnBossStage(engine.bossStageIndex + 1);
           engine.saveProgress();
           return;
@@ -945,9 +952,16 @@ export class EnemyCombatController {
         });
         if (victoryRes.isVictory) {
           engine.triggerMissionVictory(
-            enemy.isBoss ? t('SECTOR BOSS DESTROYED! CREDITS SECURED!') : victoryRes.banner
+            enemy.isBoss ? t('SECTOR BOSS DESTROYED! CREDITS SECURED!') : victoryRes.banner,
+            {
+              x: enemy.x,
+              z: enemy.z,
+              detonateDelay: 0.95,
+              onDetonate: detonateEnemy,
+            }
           );
         } else {
+          detonateEnemy();
           if (enemy.isBoss) {
             const msg =
               engine.activeMapRules?.victoryOnEnemyBaseDestroyed && engine.enemyBaseAlive

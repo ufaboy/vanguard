@@ -580,3 +580,65 @@ test('ForestFireController destroys an enemy whose HP reaches zero in burning fo
   assert.equal(engine.enemies.length, 0, 'Enemy killed by burning forest must be removed from engine.enemies');
   assert.equal(engine.kills, 1, 'Enemy kill should be recorded');
 });
+
+test('triggerMissionVictory starts victory cinematics delay, focus, and deferred detonation before throttling FPS', () => {
+  let bannerCalls = 0;
+  let hudUpdates = 0;
+  let detonated = 0;
+  let resizeCalls = 0;
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    status: GameStatus.PLAYING,
+    victoryCinematicsTimer: 0,
+    victoryCinematics: null,
+    defeatCinematicsTimer: 0,
+    fpsCap: 0,
+    frustumSize: 32,
+    cameraAzimuth: 0.5,
+    playerX: 1,
+    playerZ: 2,
+    isHangarOpen: false,
+    inspectMode: false,
+    cameraRotating: false,
+    activeMissionRun: null,
+    activeMapRules: { victoryBanner: 'SECTOR SECURED!' },
+    handleResize() {
+      resizeCalls += 1;
+    },
+    syncCampaignCredits() {},
+    setStatusBanner() {
+      bannerCalls += 1;
+    },
+    saveProgress() {},
+    emitHudUpdate() {
+      hudUpdates += 1;
+    },
+  });
+
+  engine.triggerMissionVictory('SECTOR SECURED!', {
+    x: 12,
+    z: -8,
+    detonateDelay: 0.95,
+    onDetonate: () => {
+      detonated += 1;
+    },
+  });
+  assert.equal(engine.status, GameStatus.VICTORY);
+  assert.equal(engine.victoryCinematicsTimer, 3.2);
+  assert.equal(engine.victoryCinematics.x, 12);
+  assert.equal(engine.victoryCinematics.z, -8);
+  assert.equal(engine.victoryCinematics.baseFrustum, 32);
+  assert.ok(engine.victoryCinematics.targetFrustum < 32);
+  assert.equal(engine.victoryCinematics.detonated, false);
+  assert.equal(detonated, 0);
+  assert.equal(bannerCalls, 1);
+  assert.equal(hudUpdates, 1);
+  assert.equal(engine.getFrameInterval(), 0, 'frame rate stays uncapped during victory cinematics');
+
+  engine.victoryCinematicsTimer = 0;
+  if (engine.victoryCinematics && !engine.victoryCinematics.detonated) {
+    engine.victoryCinematics.detonated = true;
+    engine.victoryCinematics.onDetonate?.();
+  }
+  assert.equal(detonated, 1);
+  assert.ok(engine.getFrameInterval() > 0, 'frame rate throttles once victory cinematics finish');
+});

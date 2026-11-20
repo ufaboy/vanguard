@@ -338,10 +338,18 @@ export class InputCameraController {
       return;
     }
 
+    const isVictoryOrbit =
+      engine.status === GameStatus.VICTORY &&
+      engine.victoryCinematicsTimer > 0 &&
+      Boolean(engine.victoryCinematics);
+
     const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
     let targetX;
     let targetZ;
-    if (engine.airSupportTargeting && engine.airCamTarget) {
+    if (isVictoryOrbit) {
+      targetX = engine.victoryCinematics.x;
+      targetZ = engine.victoryCinematics.z;
+    } else if (engine.airSupportTargeting && engine.airCamTarget) {
       const panSpeed = 34 * dt;
       const forwardX = -Math.sin(engine.cameraAzimuth);
       const forwardZ = -Math.cos(engine.cameraAzimuth);
@@ -400,18 +408,32 @@ export class InputCameraController {
       );
     }
 
+    const lookDamp = isVictoryOrbit ? 8.5 : 6.5;
     engine.camCurrentLook.x = THREE.MathUtils.damp(
       engine.camCurrentLook.x,
       targetX,
-      6.5,
+      lookDamp,
       dt
     );
     engine.camCurrentLook.z = THREE.MathUtils.damp(
       engine.camCurrentLook.z,
       targetZ,
-      6.5,
+      lookDamp,
       dt
     );
+
+    if (isVictoryOrbit) {
+      const prevFrustum = engine.frustumSize;
+      engine.frustumSize = THREE.MathUtils.damp(
+        engine.frustumSize,
+        engine.victoryCinematics.targetFrustum,
+        4.5,
+        dt
+      );
+      if (Math.abs(engine.frustumSize - prevFrustum) > 0.005) {
+        engine.handleResize?.();
+      }
+    }
 
     let horizontalDist = 36.8;
     let offsetY = 32;
@@ -424,8 +446,19 @@ export class InputCameraController {
       offsetY = 22;
     }
 
-    const offsetX = Math.sin(engine.cameraAzimuth) * horizontalDist;
-    const offsetZ = Math.cos(engine.cameraAzimuth) * horizontalDist;
+    let azimuth = engine.cameraAzimuth;
+    if (isVictoryOrbit) {
+      const vc = engine.victoryCinematics;
+      const progress = THREE.MathUtils.clamp(
+        1 - engine.victoryCinematicsTimer / Math.max(0.01, vc.duration),
+        0,
+        1
+      );
+      azimuth = vc.startAzimuth + progress * Math.PI * 2;
+    }
+
+    const offsetX = Math.sin(azimuth) * horizontalDist;
+    const offsetZ = Math.cos(azimuth) * horizontalDist;
 
     let shakeX = 0;
     let shakeZ = 0;

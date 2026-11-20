@@ -505,6 +505,12 @@ export class SectorLoaderController {
 
     engine.playerRig = engine.modelFactory.createPlayerTank();
     engine.defeatCinematicsTimer = 0;
+    engine.victoryCinematicsTimer = 0;
+    if (engine.victoryCinematics?.baseFrustum) {
+      engine.frustumSize = engine.victoryCinematics.baseFrustum;
+      engine.handleResize?.();
+    }
+    engine.victoryCinematics = null;
     engine.playerDeathState = null;
     const pSpawnCell = sector.playerSpawnCell || {
       row: BASE_CELL.row,

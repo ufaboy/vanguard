@@ -284,6 +284,7 @@ function initApp() {
     engine = new TankGameEngine(mountEl, (snapshot, syncedUpgrades) => {
       const prevStatus = state.hud.status;
       const prevDefeatCinematics = Boolean(state.hud.defeatCinematicsActive);
+      const prevVictoryCinematics = Boolean(state.hud.victoryCinematicsActive);
       state.hud = snapshot;
       if (syncedUpgrades) {
         state.upgrades = syncedUpgrades;
@@ -375,7 +376,7 @@ function initApp() {
             fps_cap: state.fpsCap,
           });
           syncCampaignProgressProperty();
-          if (!snapshot.defeatCinematicsActive) {
+          if (!snapshot.defeatCinematicsActive && !snapshot.victoryCinematicsActive) {
             adManager.onBattleEnd({
               outcome,
               mode: snapshot.gameMode,
@@ -384,12 +385,15 @@ function initApp() {
           }
         }
       } else if (
-        prevDefeatCinematics &&
-        !snapshot.defeatCinematicsActive &&
-        snapshot.status === GameStatus.GAME_OVER
+        (prevDefeatCinematics &&
+          !snapshot.defeatCinematicsActive &&
+          snapshot.status === GameStatus.GAME_OVER) ||
+        (prevVictoryCinematics &&
+          !snapshot.victoryCinematicsActive &&
+          snapshot.status === GameStatus.VICTORY)
       ) {
         adManager.onBattleEnd({
-          outcome: 'defeat',
+          outcome: snapshot.status === GameStatus.VICTORY ? 'victory' : 'defeat',
           mode: snapshot.gameMode,
           sectorId: snapshot.sectorId,
         });
@@ -406,7 +410,8 @@ function initApp() {
       }
       renderUI(
         prevStatus !== snapshot.status ||
-          prevDefeatCinematics !== Boolean(snapshot.defeatCinematicsActive)
+          prevDefeatCinematics !== Boolean(snapshot.defeatCinematicsActive) ||
+          prevVictoryCinematics !== Boolean(snapshot.victoryCinematicsActive)
       );
     }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated });
     engine.applyUpgrades(state.upgrades);

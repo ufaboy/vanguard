@@ -510,6 +510,7 @@ export function renderStatusModal({ statusModal, state, hud, currentSector, accu
     hud.status === GameStatus.PLAYING ||
     hud.status === GameStatus.BOSS_INTRO ||
     (hud.status === GameStatus.PAUSED && hud.airSupportTargeting) ||
+    (hud.status === GameStatus.VICTORY && hud.victoryCinematicsActive) ||
     (hud.status === GameStatus.GAME_OVER && hud.defeatCinematicsActive) ||
     state.showUpgradeDrawer
   ) {
