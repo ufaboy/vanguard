@@ -2330,8 +2330,6 @@ export class ModelFactory extends TextureGenerator {
         color: 0xdfeedd,
         roughness: 0.8,
         metalness: 0,
-        transparent: true,
-        opacity: 0.9,
       }),
       foliage2: new THREE.MeshStandardMaterial({
         map: tex.foliage,
@@ -2340,8 +2338,6 @@ export class ModelFactory extends TextureGenerator {
         color: 0xffffff,
         roughness: 0.75,
         metalness: 0,
-        transparent: true,
-        opacity: 0.9,
       }),
       floor: new THREE.MeshStandardMaterial({
         map: tex.floor,
