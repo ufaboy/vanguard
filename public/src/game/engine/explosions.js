@@ -19,7 +19,7 @@ import { TileType } from '../types.js';
  * - 0 -> 0.5*radius: 100% -> 75% of `damage`
  * - 0.5*radius -> radius: 75% of `damage` -> minimum 2
  */
-export function computeThermobaricDamage(damage, dist, radius) {
+function computeThermobaricDamage(damage, dist, radius) {
   const base = Math.max(2, damage || 0);
   if (!(radius > 0) || dist <= 0) return base;
   const half = radius * 0.5;
