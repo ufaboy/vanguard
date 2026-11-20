@@ -49,7 +49,7 @@ export default {
   "30mm Rapid Autocannon": "Autocanon Rapide 30mm",
   "High-rate light autocannon firing rapid 30mm rounds that drain APS charges and shred brick cover.": "Autocanon léger à cadence rapide de 30mm drainant l'APS et pulvérisant la brique.",
   "240mm Thermobaric Siege Mortar": "Mortier de Siège Thermobarique 240mm",
-  "Heavy direct-fire fuel-air siege cannon launching thermobaric shells that detonate in a 2.5-cell blast radius, vaporizing forest, brick, concrete, ice, and water into scorched sand.": "Canon lourd de siège à tir direct tirant des obus thermobariques sur un rayon de 2.5 cases, vaporisant forêt, brique, béton, glace et eau en sable calciné.",
+  "Heavy direct-fire fuel-air siege cannon launching thermobaric shells that detonate in a 3.5-cell blast radius, shattering fortifications and igniting forest and oil.": "Canon lourd de siège à tir direct tirant des obus thermobariques sur un rayon de 3.5 cases, détruisant les fortifications et enflammant la forêt et le pétrole.",
   // Chassis
   "CH1 Standard Tracks": "CH1 Chenilles Standard",
   "Standard 5-roadwheel steel caterpillar suspension.": "Suspension chenillée en acier standard à 5 galets.",

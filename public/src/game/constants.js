@@ -430,7 +430,7 @@ export const HYDRA = Object.freeze({
 });
 
 export const INFERNO = Object.freeze({
-  BLAST_CELLS: 2.5, // Thermobaric shell detonation radius in grid cells (5.0 world units)
+  BLAST_CELLS: 3.5, // Thermobaric shell detonation radius in grid cells (7.0 world units)
   EDGE_DAMAGE_RATIO: 0.45, // Outer rim blast damage multiplier
   PHASE2_HP_RATIO: 0.5, // HP threshold (50%) triggering phase shield, overdrive, and incendiary escort
   PHASE2_RELOAD_MULT: 0.75, // 25% faster thermobaric mortar & ATGM reload in Phase 2
@@ -548,8 +548,8 @@ export const AIR_SUPPORT = Object.freeze({
     label: N_('Thermobaric Missile'),
     shortLabel: N_('THERMO'),
     cost: 450,
-    radiusCells: 2.5,
-    damage: 38,
+    radiusCells: 3.5,
+    damage: 25,
     flightSec: 1.3,
   }),
   STRIKE_AC130: Object.freeze({

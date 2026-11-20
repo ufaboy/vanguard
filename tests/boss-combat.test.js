@@ -324,10 +324,13 @@ test('BOSS_INFERNO enforces 50% HP-gate with phase shield and incendiary escort'
   assert.deepEqual(game.escorts, [...INFERNO.ESCORT_CLASSES]);
 });
 
-test('detonateThermobaricAt converts FOREST, BRICK, CONCRETE, ICE, WATER within 2.5 cells into SAND', () => {
+test('detonateThermobaricAt destroys obstacles, ignites forest/oil, creates crater, and preserves WATER/ICE within 3.5 cells', () => {
   let thermoFxCalls = 0;
-  let rebuiltWater = false;
-  let rebuiltIce = false;
+  let brickDestroyed = 0;
+  const damagedCells = [];
+  const ignitedForests = [];
+  const ignitedOil = [];
+  const cratered = [];
   const game = fakeBossEngine([]);
   game.grid = Array.from({ length: 40 }, (_, r) =>
     Array.from({ length: 40 }, (__, c) => ({ row: r, col: c, type: TileType.EMPTY, hp: 0 }))
@@ -335,13 +338,31 @@ test('detonateThermobaricAt converts FOREST, BRICK, CONCRETE, ICE, WATER within 
   game.worldToGrid = TankGameEngine.prototype.worldToGrid;
   game.gridToWorld = TankGameEngine.prototype.gridToWorld;
   game.fx.thermobaricExplosion = () => { thermoFxCalls++; };
-  game.mapGroup = { add() {}, remove() {} };
-  game.modelFactory = { createSandBlock: () => ({}) };
-  game.tileBatcher = { sync() {} };
-  game.rebuildWaterAndIceSurfaces = (w, i) => {
-    rebuiltWater = rebuiltWater || w;
-    rebuiltIce = rebuiltIce || i;
+  game.destroyTileCell = (cell) => {
+    brickDestroyed++;
+    cell.type = TileType.EMPTY;
   };
+  game.damageTileCell = (cell, dmg) => {
+    damagedCells.push({ row: cell.row, col: cell.col, dmg });
+  };
+  Object.defineProperty(game, 'forestFire', {
+    value: {
+      startBurning(cell) {
+        ignitedForests.push({ row: cell.row, col: cell.col });
+      },
+    },
+  });
+  Object.defineProperty(game, 'terrainDestruction', {
+    value: {
+      igniteOilSlick(cell) {
+        ignitedOil.push({ row: cell.row, col: cell.col });
+      },
+      convertCellToCrater(cell) {
+        cratered.push({ row: cell.row, col: cell.col });
+        cell.type = TileType.CRATER;
+      },
+    },
+  });
   game.playerHp = 100;
   game.playerMaxHp = 100;
   game.playerStats = { armor: 0, directionalArmor: false, armorByAspect: { front: 0, left: 0, right: 0, rear: 0 } };
@@ -350,26 +371,28 @@ test('detonateThermobaricAt converts FOREST, BRICK, CONCRETE, ICE, WATER within 
   game.playerHullAngle = 0;
   game.damagePlayer = (dmg) => { game.playerHp -= dmg; };
 
-  // Center at cell (20, 20) -> world (1.0, 1.0); radius = 2.5 cells = 5.0m
-  game.grid[20][20].type = TileType.FOREST;
+  // Center at cell (20, 20) -> world (1.0, 1.0); radius = 3.5 cells = 7.0m
   game.grid[20][21].type = TileType.BRICK;
-  game.grid[21][20].type = TileType.CONCRETE;
+  game.grid[21][20].type = TileType.FOREST;
   game.grid[19][20].type = TileType.ICE;
   game.grid[20][19].type = TileType.WATER;
-  // Far outside 2.5-cell radius (4 cells away)
-  game.grid[20][24].type = TileType.CONCRETE;
+  game.grid[20][22].type = TileType.OIL_SLICK;
+  game.grid[20][23].type = TileType.CONCRETE; // 3 cells away -> inside 3.5-cell radius
+  // Far outside 3.5-cell radius (5 cells away)
+  game.grid[20][25].type = TileType.CONCRETE;
 
-  game.detonateThermobaricAt(1.0, 1.0, INFERNO.BLAST_CELLS * TILE_SIZE, 34, false);
+  game.detonateThermobaricAt(1.0, 1.0, INFERNO.BLAST_CELLS * TILE_SIZE, 23, false);
 
   assert.equal(thermoFxCalls, 1);
-  assert.equal(rebuiltWater, true);
-  assert.equal(rebuiltIce, true);
-  assert.equal(game.grid[20][20].type, TileType.SAND);
-  assert.equal(game.grid[20][21].type, TileType.SAND);
-  assert.equal(game.grid[21][20].type, TileType.SAND);
-  assert.equal(game.grid[19][20].type, TileType.SAND);
-  assert.equal(game.grid[20][19].type, TileType.SAND);
-  assert.equal(game.grid[20][24].type, TileType.CONCRETE);
+  assert.equal(brickDestroyed, 1);
+  assert.equal(game.grid[20][20].type, TileType.CRATER);
+  assert.equal(game.grid[20][21].type, TileType.EMPTY);
+  assert.equal(game.grid[19][20].type, TileType.ICE);
+  assert.equal(game.grid[20][19].type, TileType.WATER);
+  assert.deepEqual(ignitedForests, [{ row: 21, col: 20 }]);
+  assert.deepEqual(ignitedOil, [{ row: 20, col: 22 }]);
+  assert.deepEqual(cratered, [{ row: 20, col: 20 }]);
+  assert.deepEqual(damagedCells, [{ row: 20, col: 23, dmg: 6 }]);
   assert.ok(game.playerHp < 100, 'player in epicenter takes thermobaric blast damage');
 });
 

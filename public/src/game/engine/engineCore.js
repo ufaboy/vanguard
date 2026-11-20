@@ -1233,15 +1233,10 @@ export class TankGameEngine {
     this.terrainDestruction.convertCellToSand(cell);
   }
 
-  /** Rebuilds the continuous water / ice surface meshes after thermobaric vaporization. */
-  rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce) {
-    this.terrainDestruction.rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce);
-  }
-
   /**
-   * Thermobaric shell detonation (radius 2.5 cells = 5.0m):
-   * triggers realistic fuel-air blast FX, sweeps FOREST/BRICK/CONCRETE/ICE/WATER into SAND,
-   * and deals radial blast damage to vehicles.
+   * Thermobaric shell detonation (radius 3.5 cells = 7.0m):
+   * triggers fuel-air blast FX, shatters fortifications, ignites forest/oil,
+   * creates a crater at the epicenter, and deals radial blast damage to vehicles.
    */
   detonateThermobaricAt(x, z, radius, damage, fromPlayer = false) {
     this.explosions.detonateThermobaricAt(x, z, radius, damage, fromPlayer);

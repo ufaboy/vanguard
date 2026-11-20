@@ -102,32 +102,6 @@ export class TerrainDestructionController {
     }
   }
 
-  /** Rebuilds the continuous water / ice surface meshes after thermobaric vaporization. */
-  rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce) {
-    const { engine } = this;
-    if (!engine.mapGroup || !engine.modelFactory) return;
-    if (rebuildWater) {
-      const waterGrid = engine.grid.map((row) =>
-        row.map((cell) => (cell.type === TileType.BRIDGE ? TileType.WATER : cell.type))
-      );
-      if (engine.waterSurfaceMesh) {
-        engine.mapGroup.remove(engine.waterSurfaceMesh);
-        disposeOwned(engine.waterSurfaceMesh);
-      }
-      engine.waterSurfaceMesh = engine.modelFactory.createWaterBlock(waterGrid, TileType.WATER);
-      engine.mapGroup.add(engine.waterSurfaceMesh);
-    }
-    if (rebuildIce) {
-      const iceGrid = engine.grid.map((row) => row.map((cell) => cell.type));
-      if (engine.iceSurfaceMesh) {
-        engine.mapGroup.remove(engine.iceSurfaceMesh);
-        disposeOwned(engine.iceSurfaceMesh);
-      }
-      engine.iceSurfaceMesh = engine.modelFactory.createIceBlock(iceGrid, TileType.ICE);
-      engine.mapGroup.add(engine.iceSurfaceMesh);
-    }
-  }
-
   damageEnemyBase(cell, dmg, hitX, hitZ) {
     const { engine } = this;
     if (!engine.enemyBaseAlive || cell.type !== TileType.ENEMY_BASE) return;

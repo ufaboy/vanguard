@@ -49,7 +49,7 @@ export default {
   "30mm Rapid Autocannon": "Cañón automático rápido de 30mm",
   "High-rate light autocannon firing rapid 30mm rounds that drain APS charges and shred brick cover.": "Cañón automático ligero de alta cadencia con proyectiles de 30mm que agotan las cargas APS y destrozan la cobertura de ladrillo.",
   "240mm Thermobaric Siege Mortar": "Mortero de asedio termobárico de 240mm",
-  "Heavy direct-fire fuel-air siege cannon launching thermobaric shells that detonate in a 2.5-cell blast radius, vaporizing forest, brick, concrete, ice, and water into scorched sand.": "Cañón pesado de asedio de combustible-aire de tiro directo que lanza proyectiles termobáricos con un radio de explosión de 2.5 casillas, convirtiendo bosque, ladrillo, hormigón, hielo y agua en arena calcinada.",
+  "Heavy direct-fire fuel-air siege cannon launching thermobaric shells that detonate in a 3.5-cell blast radius, shattering fortifications and igniting forest and oil.": "Cañón pesado de asedio de combustible-aire de tiro directo que lanza proyectiles termobáricos con un radio de explosión de 3.5 casillas, destruyendo fortificaciones e incendiando bosque y petróleo.",
   // Chassis
   "CH1 Standard Tracks": "CH1 Orugas estándar",
   "Standard 5-roadwheel steel caterpillar suspension.": "Suspensión de orugas de acero estándar con 5 ruedas de rodaje.",

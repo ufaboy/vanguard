@@ -259,9 +259,6 @@ export class ExplosionsController {
       engine.fx?.explosion?.(x, 0.55, z, { scale: 2.0, tint: 0xff4500 });
     }
 
-    let rebuildWater = false;
-    let rebuildIce = false;
-    let touchedSand = false;
     let hitCommandBase = false;
 
     for (let r = 0; r < engine.grid.length; r++) {
@@ -269,30 +266,30 @@ export class ExplosionsController {
       if (!row) continue;
       for (let c = 0; c < row.length; c++) {
         const cell = row[c];
-        if (!cell) continue;
+        if (!cell || cell.type === TileType.EMPTY) continue;
         const pos = engine.gridToWorld(r, c);
-        if (Math.hypot(pos.x - x, pos.z - z) > radius + 0.35) continue;
+        if (Math.hypot(pos.x - x, pos.z - z) > radius + 0.5) continue;
 
-        if (
-          cell.type === TileType.FOREST ||
-          cell.type === TileType.BRICK ||
-          cell.type === TileType.CONCRETE ||
-          cell.type === TileType.HOUSE_1 ||
-          cell.type === TileType.HOUSE_2 ||
-          cell.type === TileType.ICE ||
-          cell.type === TileType.WATER ||
-          cell.type === TileType.RUBBLE
-        ) {
-          if (cell.type === TileType.WATER) rebuildWater = true;
-          if (cell.type === TileType.ICE) rebuildIce = true;
-          engine.convertCellToSand(cell);
-          touchedSand = true;
+        if (cell.type === TileType.BOXES) {
+          engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
+        } else if (cell.type === TileType.RUBBLE) {
+          engine.terrainDestruction?.clearRubbleCell?.(cell);
+        } else if (cell.type === TileType.BRICK) {
+          engine.destroyTileCell(cell);
         } else if (cell.type === TileType.BARREL) {
           engine.explodeBarrel(cell, fromPlayer);
+        } else if (cell.type === TileType.WATER_TOWER) {
+          engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
         } else if (cell.type === TileType.OIL_SLICK) {
           engine.terrainDestruction?.igniteOilSlick?.(cell);
-        } else if (cell.type === TileType.BOXES) {
-          engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
+        } else if (cell.type === TileType.FOREST) {
+          engine.forestFire?.startBurning?.(cell, pos.x, pos.z);
+        } else if (cell.type === TileType.CONCRETE) {
+          const hit = breachPointToward(pos.x, pos.z, x, z);
+          engine.damageTileCell(cell, 6, hit.x, hit.z);
+        } else if (cell.type === TileType.HOUSE_1 || cell.type === TileType.HOUSE_2) {
+          const hit = breachPointToward(pos.x, pos.z, x, z);
+          engine.damageTileCell(cell, 15, hit.x, hit.z);
         } else if (cell.type === TileType.BASE && !fromPlayer) {
           hitCommandBase = true;
         } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
@@ -304,9 +301,10 @@ export class ExplosionsController {
       engine.terrainDestruction.damageCommandBase(Math.min(damage || 22, 24), x, z);
     }
 
-    if (touchedSand) {
-      engine.tileBatcher?.sync();
-      engine.rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce);
+    const impactGrid = engine.worldToGrid(x, z);
+    const impactCell = engine.grid[impactGrid.row]?.[impactGrid.col];
+    if (impactCell && radius >= TILE_SIZE * 1.1) {
+      engine.terrainDestruction?.convertCellToCrater?.(impactCell);
     }
 
     if (fromPlayer) {
