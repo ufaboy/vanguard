@@ -324,12 +324,12 @@ test('BOSS_INFERNO enforces 50% HP-gate with phase shield and incendiary escort'
   assert.deepEqual(game.escorts, [...INFERNO.ESCORT_CLASSES]);
 });
 
-test('detonateThermobaricAt destroys obstacles, ignites forest/oil, creates crater, and preserves WATER/ICE within 3.5 cells', () => {
+test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turns WATER to SWAMP, and preserves ICE', () => {
   let thermoFxCalls = 0;
-  let brickDestroyed = 0;
   const damagedCells = [];
   const ignitedForests = [];
   const ignitedOil = [];
+  const swamped = [];
   const cratered = [];
   const game = fakeBossEngine([]);
   game.grid = Array.from({ length: 40 }, (_, r) =>
@@ -338,10 +338,6 @@ test('detonateThermobaricAt destroys obstacles, ignites forest/oil, creates crat
   game.worldToGrid = TankGameEngine.prototype.worldToGrid;
   game.gridToWorld = TankGameEngine.prototype.gridToWorld;
   game.fx.thermobaricExplosion = () => { thermoFxCalls++; };
-  game.destroyTileCell = (cell) => {
-    brickDestroyed++;
-    cell.type = TileType.EMPTY;
-  };
   game.damageTileCell = (cell, dmg) => {
     damagedCells.push({ row: cell.row, col: cell.col, dmg });
   };
@@ -356,6 +352,10 @@ test('detonateThermobaricAt destroys obstacles, ignites forest/oil, creates crat
     value: {
       igniteOilSlick(cell) {
         ignitedOil.push({ row: cell.row, col: cell.col });
+      },
+      convertCellToSwamp(cell, opts) {
+        swamped.push({ row: cell.row, col: cell.col, allowWater: Boolean(opts?.allowWater) });
+        cell.type = TileType.SWAMP;
       },
       convertCellToCrater(cell) {
         cratered.push({ row: cell.row, col: cell.col });
@@ -372,28 +372,32 @@ test('detonateThermobaricAt destroys obstacles, ignites forest/oil, creates crat
   game.damagePlayer = (dmg) => { game.playerHp -= dmg; };
 
   // Center at cell (20, 20) -> world (1.0, 1.0); radius = 3.5 cells = 7.0m
-  game.grid[20][21].type = TileType.BRICK;
+  game.grid[20][21].type = TileType.BRICK; // 1 cell = 2.0m
   game.grid[21][20].type = TileType.FOREST;
   game.grid[19][20].type = TileType.ICE;
   game.grid[20][19].type = TileType.WATER;
   game.grid[20][22].type = TileType.OIL_SLICK;
-  game.grid[20][23].type = TileType.CONCRETE; // 3 cells away -> inside 3.5-cell radius
+  game.grid[20][23].type = TileType.CONCRETE; // 3 cells = 6.0m -> near outer rim
   // Far outside 3.5-cell radius (5 cells away)
   game.grid[20][25].type = TileType.CONCRETE;
 
   game.detonateThermobaricAt(1.0, 1.0, INFERNO.BLAST_CELLS * TILE_SIZE, 23, false);
 
   assert.equal(thermoFxCalls, 1);
-  assert.equal(brickDestroyed, 1);
   assert.equal(game.grid[20][20].type, TileType.CRATER);
-  assert.equal(game.grid[20][21].type, TileType.EMPTY);
   assert.equal(game.grid[19][20].type, TileType.ICE);
-  assert.equal(game.grid[20][19].type, TileType.WATER);
+  assert.equal(game.grid[20][19].type, TileType.SWAMP);
+  assert.deepEqual(swamped, [{ row: 20, col: 19, allowWater: true }]);
   assert.deepEqual(ignitedForests, [{ row: 21, col: 20 }]);
   assert.deepEqual(ignitedOil, [{ row: 20, col: 22 }]);
   assert.deepEqual(cratered, [{ row: 20, col: 20 }]);
-  assert.deepEqual(damagedCells, [{ row: 20, col: 23, dmg: 6 }]);
-  assert.ok(game.playerHp < 100, 'player in epicenter takes thermobaric blast damage');
+  // BRICK at 1 cell (2.0m) gets > 75% damage; CONCRETE at 3 cells (6.0m) gets lower rim damage (>= 2)
+  assert.equal(damagedCells.length, 2);
+  assert.equal(damagedCells[0].col, 21);
+  assert.ok(damagedCells[0].dmg >= 17 && damagedCells[0].dmg <= 23);
+  assert.equal(damagedCells[1].col, 23);
+  assert.ok(damagedCells[1].dmg >= 2 && damagedCells[1].dmg <= 10);
+  assert.equal(game.playerHp, 100 - 23);
 });
 
 test('Mission 35 bossSequence escalates through all 4 bosses before victory', () => {

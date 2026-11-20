@@ -3,7 +3,6 @@ import { determineHitAspect } from '../../sim/ballistics.js';
 import {
   ARTILLERY,
   DURABILITY,
-  INFERNO,
   LAND_MINE,
   TANK_HIT_RADIUS,
   computeEffectiveDamage,
@@ -14,6 +13,23 @@ import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { breachPointToward } from '../terrains/breach-models.js';
 import { TileType } from '../types.js';
+
+/**
+ * Computes thermobaric blast damage at distance `dist` within `radius`:
+ * - 0 -> 0.5*radius: 100% -> 75% of `damage`
+ * - 0.5*radius -> radius: 75% of `damage` -> minimum 2
+ */
+export function computeThermobaricDamage(damage, dist, radius) {
+  const base = Math.max(2, damage || 0);
+  if (!(radius > 0) || dist <= 0) return base;
+  const half = radius * 0.5;
+  const minDmg = Math.min(2, base);
+  if (dist <= half) {
+    return base * (1 - 0.25 * (dist / half));
+  }
+  const t = Math.min(1, (dist - half) / half);
+  return base * 0.75 * (1 - t) + minDmg * t;
+}
 
 /** Manages land mines, artillery hazard zones, and area-of-effect explosions. */
 export class ExplosionsController {
@@ -259,7 +275,8 @@ export class ExplosionsController {
       engine.fx?.explosion?.(x, 0.55, z, { scale: 2.0, tint: 0xff4500 });
     }
 
-    let hitCommandBase = false;
+    let baseHitDmg = 0;
+    let swampedWater = false;
 
     for (let r = 0; r < engine.grid.length; r++) {
       const row = engine.grid[r];
@@ -268,37 +285,39 @@ export class ExplosionsController {
         const cell = row[c];
         if (!cell || cell.type === TileType.EMPTY) continue;
         const pos = engine.gridToWorld(r, c);
-        if (Math.hypot(pos.x - x, pos.z - z) > radius + 0.5) continue;
+        const dist = Math.hypot(pos.x - x, pos.z - z);
+        if (dist > radius + 0.5) continue;
 
-        if (cell.type === TileType.BOXES) {
-          engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
+        const tileDmg = Math.max(2, Math.round(computeThermobaricDamage(damage, dist, radius)));
+
+        if (cell.type === TileType.WATER) {
+          engine.terrainDestruction?.convertCellToSwamp?.(cell, { allowWater: true });
+          swampedWater = true;
+        } else if (cell.type === TileType.BOXES || cell.type === TileType.WATER_TOWER || cell.type === TileType.BRICK) {
+          engine.damageTileCell(cell, tileDmg, pos.x, pos.z, fromPlayer);
         } else if (cell.type === TileType.RUBBLE) {
           engine.terrainDestruction?.clearRubbleCell?.(cell);
-        } else if (cell.type === TileType.BRICK) {
-          engine.destroyTileCell(cell);
         } else if (cell.type === TileType.BARREL) {
           engine.explodeBarrel(cell, fromPlayer);
-        } else if (cell.type === TileType.WATER_TOWER) {
-          engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
         } else if (cell.type === TileType.OIL_SLICK) {
           engine.terrainDestruction?.igniteOilSlick?.(cell);
         } else if (cell.type === TileType.FOREST) {
           engine.forestFire?.startBurning?.(cell, pos.x, pos.z);
-        } else if (cell.type === TileType.CONCRETE) {
+        } else if (cell.type === TileType.CONCRETE || cell.type === TileType.HOUSE_1 || cell.type === TileType.HOUSE_2) {
           const hit = breachPointToward(pos.x, pos.z, x, z);
-          engine.damageTileCell(cell, 6, hit.x, hit.z);
-        } else if (cell.type === TileType.HOUSE_1 || cell.type === TileType.HOUSE_2) {
-          const hit = breachPointToward(pos.x, pos.z, x, z);
-          engine.damageTileCell(cell, 15, hit.x, hit.z);
+          engine.damageTileCell(cell, tileDmg, hit.x, hit.z, fromPlayer);
         } else if (cell.type === TileType.BASE && !fromPlayer) {
-          hitCommandBase = true;
+          baseHitDmg = Math.max(baseHitDmg, tileDmg);
         } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
-          engine.damageEnemyBase(cell, 16, pos.x, pos.z);
+          engine.damageEnemyBase(cell, tileDmg, pos.x, pos.z);
         }
       }
     }
-    if (hitCommandBase) {
-      engine.terrainDestruction.damageCommandBase(Math.min(damage || 22, 24), x, z);
+    if (baseHitDmg > 0) {
+      engine.terrainDestruction.damageCommandBase(baseHitDmg, x, z);
+    }
+    if (swampedWater) {
+      engine.tileBatcher?.sync?.();
     }
 
     const impactGrid = engine.worldToGrid(x, z);
@@ -314,9 +333,9 @@ export class ExplosionsController {
         if (!e || e.hp <= 0) continue;
         const dist = Math.hypot(e.x - x, e.z - z);
         if (dist <= radius + (e.isBoss ? 1.2 : 0.7)) {
-          const edgeRatio = dist > radius * 0.5 ? INFERNO.EDGE_DAMAGE_RATIO : 1.0;
+          const blastDmg = computeThermobaricDamage(damage, dist, radius);
           const eff = computeEffectiveDamage(
-            damage * edgeRatio,
+            blastDmg,
             25,
             engine.blastSideArmor(e.stats, e.x, e.z, e.hullAngle, x, z)
           );
@@ -328,9 +347,9 @@ export class ExplosionsController {
     } else if (engine.playerHp > DURABILITY.ZERO_HP) {
       const dist = Math.hypot(engine.playerX - x, engine.playerZ - z);
       if (dist <= radius + TANK_HIT_RADIUS.PLAYER) {
-        const edgeRatio = dist > radius * 0.5 ? INFERNO.EDGE_DAMAGE_RATIO : 1.0;
+        const blastDmg = computeThermobaricDamage(damage, dist, radius);
         const eff = computeEffectiveDamage(
-          damage * edgeRatio,
+          blastDmg,
           25,
           engine.blastSideArmor(
             engine.playerStats,

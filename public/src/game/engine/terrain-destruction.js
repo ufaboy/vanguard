@@ -576,11 +576,11 @@ export class TerrainDestructionController {
   }
 
   /** Converts passable ground into deep swamp/mud (respecting facility surface lock). */
-  convertCellToSwamp(cell) {
+  convertCellToSwamp(cell, { allowWater = false } = {}) {
     const { engine } = this;
     if (!cell) return;
     syncCellType(cell);
-    if (!FLOODABLE_SURFACES.has(cell.surface)) {
+    if (!FLOODABLE_SURFACES.has(cell.surface) && !(allowWater && cell.surface === TileType.WATER)) {
       return;
     }
     if (cell.object != null && cell.object !== TileType.CRATER) {
