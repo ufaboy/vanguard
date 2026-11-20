@@ -277,6 +277,8 @@ export class ExplosionsController {
 
     let baseHitDmg = 0;
     let swampedWater = false;
+    let rebuildWater = false;
+    let rebuildIce = false;
 
     for (let r = 0; r < engine.grid.length; r++) {
       const row = engine.grid[r];
@@ -293,6 +295,11 @@ export class ExplosionsController {
         if (cell.type === TileType.WATER) {
           engine.terrainDestruction?.convertCellToSwamp?.(cell, { allowWater: true });
           swampedWater = true;
+          rebuildWater = true;
+        } else if (cell.type === TileType.ICE) {
+          engine.terrainDestruction?.convertCellToWater?.(cell);
+          rebuildWater = true;
+          rebuildIce = true;
         } else if (cell.type === TileType.BOXES || cell.type === TileType.WATER_TOWER || cell.type === TileType.BRICK) {
           engine.damageTileCell(cell, tileDmg, pos.x, pos.z, fromPlayer);
         } else if (cell.type === TileType.RUBBLE) {
@@ -318,6 +325,9 @@ export class ExplosionsController {
     }
     if (swampedWater) {
       engine.tileBatcher?.sync?.();
+    }
+    if (rebuildWater || rebuildIce) {
+      engine.rebuildWaterAndIceSurfaces?.(rebuildWater, rebuildIce);
     }
 
     const impactGrid = engine.worldToGrid(x, z);

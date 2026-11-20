@@ -1232,6 +1232,11 @@ export class TankGameEngine {
     this.terrainDestruction.convertCellToSand(cell);
   }
 
+  /** Rebuilds the continuous water / ice surface meshes after thermobaric phase changes. */
+  rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce) {
+    this.terrainDestruction.rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce);
+  }
+
   /**
    * Thermobaric shell detonation (radius 3.5 cells = 7.0m):
    * triggers fuel-air blast FX, shatters fortifications, ignites forest/oil,

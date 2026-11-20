@@ -611,6 +611,48 @@ export class TerrainDestructionController {
     }
   }
 
+  /** Converts a melted ICE cell into WATER. */
+  convertCellToWater(cell) {
+    const { engine } = this;
+    if (!cell) return;
+    if (cell.surfaceMesh) {
+      engine.mapGroup?.remove(cell.surfaceMesh);
+      cell.surfaceMesh = null;
+    } else if (cell.mesh) {
+      engine.mapGroup?.remove(cell.mesh);
+      cell.mesh = null;
+    }
+    cell.surface = TileType.WATER;
+    syncCellType(cell);
+    cell.hp = 0;
+  }
+
+  /** Rebuilds the continuous water / ice surface meshes after thermobaric phase changes. */
+  rebuildWaterAndIceSurfaces(rebuildWater, rebuildIce) {
+    const { engine } = this;
+    if (!engine.mapGroup || !engine.modelFactory) return;
+    if (rebuildWater) {
+      const waterGrid = engine.grid.map((row) =>
+        row.map((cell) => (cell.type === TileType.BRIDGE ? TileType.WATER : cell.type))
+      );
+      if (engine.waterSurfaceMesh) {
+        engine.mapGroup.remove(engine.waterSurfaceMesh);
+        disposeOwned(engine.waterSurfaceMesh);
+      }
+      engine.waterSurfaceMesh = engine.modelFactory.createWaterBlock(waterGrid, TileType.WATER);
+      engine.mapGroup.add(engine.waterSurfaceMesh);
+    }
+    if (rebuildIce) {
+      const iceGrid = engine.grid.map((row) => row.map((cell) => cell.type));
+      if (engine.iceSurfaceMesh) {
+        engine.mapGroup.remove(engine.iceSurfaceMesh);
+        disposeOwned(engine.iceSurfaceMesh);
+      }
+      engine.iceSurfaceMesh = engine.modelFactory.createIceBlock(iceGrid, TileType.ICE);
+      engine.mapGroup.add(engine.iceSurfaceMesh);
+    }
+  }
+
   /** Ignites an OIL_SLICK cell so it burns for 7 seconds with fire damage and smoke. */
   igniteOilSlick(cell) {
     const { engine } = this;

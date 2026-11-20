@@ -324,12 +324,15 @@ test('BOSS_INFERNO enforces 50% HP-gate with phase shield and incendiary escort'
   assert.deepEqual(game.escorts, [...INFERNO.ESCORT_CLASSES]);
 });
 
-test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turns WATER to SWAMP, and preserves ICE', () => {
+test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turns WATER to SWAMP and ICE to WATER', () => {
   let thermoFxCalls = 0;
+  let rebuiltWater = false;
+  let rebuiltIce = false;
   const damagedCells = [];
   const ignitedForests = [];
   const ignitedOil = [];
   const swamped = [];
+  const melted = [];
   const cratered = [];
   const game = fakeBossEngine([]);
   game.grid = Array.from({ length: 40 }, (_, r) =>
@@ -338,6 +341,10 @@ test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turn
   game.worldToGrid = TankGameEngine.prototype.worldToGrid;
   game.gridToWorld = TankGameEngine.prototype.gridToWorld;
   game.fx.thermobaricExplosion = () => { thermoFxCalls++; };
+  game.rebuildWaterAndIceSurfaces = (w, i) => {
+    rebuiltWater = rebuiltWater || w;
+    rebuiltIce = rebuiltIce || i;
+  };
   game.damageTileCell = (cell, dmg) => {
     damagedCells.push({ row: cell.row, col: cell.col, dmg });
   };
@@ -356,6 +363,10 @@ test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turn
       convertCellToSwamp(cell, opts) {
         swamped.push({ row: cell.row, col: cell.col, allowWater: Boolean(opts?.allowWater) });
         cell.type = TileType.SWAMP;
+      },
+      convertCellToWater(cell) {
+        melted.push({ row: cell.row, col: cell.col });
+        cell.type = TileType.WATER;
       },
       convertCellToCrater(cell) {
         cratered.push({ row: cell.row, col: cell.col });
@@ -384,10 +395,13 @@ test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turn
   game.detonateThermobaricAt(1.0, 1.0, INFERNO.BLAST_CELLS * TILE_SIZE, 23, false);
 
   assert.equal(thermoFxCalls, 1);
+  assert.equal(rebuiltWater, true);
+  assert.equal(rebuiltIce, true);
   assert.equal(game.grid[20][20].type, TileType.CRATER);
-  assert.equal(game.grid[19][20].type, TileType.ICE);
+  assert.equal(game.grid[19][20].type, TileType.WATER);
   assert.equal(game.grid[20][19].type, TileType.SWAMP);
   assert.deepEqual(swamped, [{ row: 20, col: 19, allowWater: true }]);
+  assert.deepEqual(melted, [{ row: 19, col: 20 }]);
   assert.deepEqual(ignitedForests, [{ row: 21, col: 20 }]);
   assert.deepEqual(ignitedOil, [{ row: 20, col: 22 }]);
   assert.deepEqual(cratered, [{ row: 20, col: 20 }]);
