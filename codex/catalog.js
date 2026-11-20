@@ -249,7 +249,7 @@ export const CODEX_ITEMS = Object.freeze([
     accentHex: '#10B981',
     effectType: 'APS',
     summary:
-      'Standalone non-leveled active protection module. Four corner-mounted radar pods (FR, FL, RR, RL) scan for incoming threats. Light shells and all missiles cost 1 charge; Cannon Mk4/Mk5, HOWITZER and each BOSS_DUAL shell cost 2. Insufficient charges are preserved. Flames and TITAN_RAIL bypass APS.',
+      'Standalone non-leveled active protection module. Four corner-mounted radar pods (FR, FL, RR, RL) scan for incoming threats. Light shells and all missiles cost 1 charge; Cannon Mk4/Mk5, HOWITZER and each BOSS_DUAL shell cost 2. Insufficient charges are preserved. Flames bypass APS.',
     specs: [
       { label: 'DETECTION RADIUS', value: `${APS.DETECT_RADIUS} cells (360° coverage)` },
       { label: 'REARM COOLDOWN', value: `${APS.REARM_TIME}s between intercepts` },

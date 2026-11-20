@@ -297,8 +297,7 @@ export class EnemyCombatController {
     const flashScale = e.isBoss ? 1.35 : 1.05;
     const worldSpeed = (e.stats.bulletSpeed || 7.2) * TILE_SIZE;
     const isHeavy = e.stats.bulletPower === BULLET_POWER.HEAVY;
-    const rawGunId = (TANK_CONFIGS[e.enemyClass] || SECTOR_BOSS_CONFIGS[e.enemyClass])?.loadout.gun;
-    const weaponId = rawGunId === 'TITAN_RAIL' ? 'BOSS_DUAL' : rawGunId;
+    const weaponId = (TANK_CONFIGS[e.enemyClass] || SECTOR_BOSS_CONFIGS[e.enemyClass])?.loadout.gun;
 
     if (e.stats.barrels === 2) {
       const offsetWorld = (e.stats.barrelOffset || 0.3) * TILE_SIZE * 0.5;

@@ -597,14 +597,14 @@ export const SECTOR_BOSS_CONFIGS = Object.freeze({
     role: N_('Sector 03 Supreme Dreadnought'),
     accentHex: '#2563EB',
     base: tankBase({ hp: 362, sightRadius: 28.0, radioAlertRadius: 32.0 }),
-    loadoutSummary: 'TITAN_RAIL (×2 Turrets) · CH_COLOSSUS · F_BASTION · E_SINGULARITY · A_AEGIS',
+    loadoutSummary: 'BOSS_DUAL (×2 Turrets) · CH_COLOSSUS · F_BASTION · E_SINGULARITY · A_AEGIS',
     sizeClass: 'Super-heavy · 1.9× STANDARD footprint (twin-turret dreadnought)',
     specialFeatureLabel: 'SPECIAL ABILITY',
     specialFeatureValue: '2 Independent Dual-Cannon Turrets (4 Barrels) + Aegis Directional Armor; Escort at 60%, Overload at 30%',
     description:
       N_('Ultimate super-heavy dreadnought guarding the Sector 03 citadel. Armed with two independent rotating turrets — front and rear — each carrying twin high-caliber heavy cannons (4 barrels total) separated by a central armored command citadel. Its Aegis glacis and modular side skirts shrug off frontal fire (60% front, 35% sides, 15% rear), forcing attackers to flank. At 60% hull integrity it calls an armored escort, and at 30% it enters reactor overload: both turrets reload faster and hull traverse accelerates, while rear radiator grilles open and rear armor drops to 0%.'),
     loadout: Object.freeze({
-      gun: 'TITAN_RAIL',
+      gun: 'BOSS_DUAL',
       chassis: 'CH_COLOSSUS',
       frame: 'F_BASTION',
       engine: 'E_SINGULARITY',

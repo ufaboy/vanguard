@@ -115,7 +115,7 @@ export default {
   "Super-heavy ramming leviathan chassis frame reinforced for overdrive plow impacts (+36 HP).": "Châssis super-lourd de léviathan d'éperonnage renforcé pour les impacts en surpuissance (+36 PV).",
   // Modules
   "4-Corner \"Arena\" APS": "APS « Arena » 4 Coins",
-  "Standalone radar protection: 1 charge per light shell or missile; 2 per Cannon Mk4/Mk5, HOWITZER or BOSS_DUAL shell. Cannot stop flames or TITAN_RAIL.": "Protection radar autonome : 1 charge par obus léger ou missile ; 2 par obus Canon Mk4/Mk5, HOWITZER ou BOSS_DUAL. N'arrête ni flammes ni TITAN_RAIL.",
+  "Standalone radar protection: 1 charge per light shell or missile; 2 per Cannon Mk4/Mk5, HOWITZER or BOSS_DUAL shell. Cannot stop flames.": "Protection radar autonome : 1 charge par obus léger ou missile ; 2 par obus Canon Mk4/Mk5, HOWITZER ou BOSS_DUAL. N'arrête ni les flammes.",
   "Homing ATGM Pod": "Nacelle ATGM Guidée",
   "Standalone turret-mounted guided anti-tank missile launcher.": "Lance-missiles antichar guidés autonome monté sur tourelle.",
   "Emergency Auto-Repair Kit": "Kit d'Auto-Réparation d'Urgence",
@@ -430,7 +430,7 @@ export default {
   "Hydra Dodger": "Esquiveur d'Hydre",
   "Defeat BOSS_HYDRA without taking a single hit from its MLRS rocket salvo.": "Vainquez BOSS_HYDRA sans subir un seul impact de ses salves MLRS.",
   "Titan Breaker": "Briseur de Titan",
-  "Defeat BOSS_TITAN without taking a single hit from its TITAN_RAIL cannon.": "Vainquez BOSS_TITAN sans subir un seul tir de son canon TITAN_RAIL.",
+  "Defeat BOSS_TITAN without taking a single hit from its BOSS_DUAL cannons.": "Vainquez BOSS_TITAN sans subir un seul tir de ses canons BOSS_DUAL.",
   "Untouchable": "Intouchable",
   "Challenge": "Défi",
   "Win a mission without taking any hull damage.": "Gagnez une mission sans subir aucun dégât de caisse.",

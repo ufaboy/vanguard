@@ -100,9 +100,9 @@ test('Gold and Vanguard medals evaluate HQ, Last Stand, Twin Thunder, Bosses, an
   assert.ok(ids.includes('exploit_the_gap'));
   assert.ok(ids.includes('david_vs_goliath'));
 
-  // Taking railgun or MLRS hits blocks Titan Breaker / Hydra Dodger / Untouchable; firing ATGM blocks David vs Goliath
+  // Taking BOSS_DUAL or MLRS hits blocks Titan Breaker / Hydra Dodger / Untouchable; firing ATGM blocks David vs Goliath
   tracker.recordPlayerDamage({ amount: 15, sourceWeapon: 'HYDRA_MLRS' });
-  tracker.recordPlayerDamage({ amount: 30, sourceWeapon: 'TITAN_RAIL' });
+  tracker.recordPlayerDamage({ amount: 30, sourceWeapon: 'BOSS_DUAL' });
   tracker.recordPlayerMissileFired();
   const evalWithHits = evaluateMissionMedals({
     trackerState: tracker.snapshot(),

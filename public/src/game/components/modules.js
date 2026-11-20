@@ -8,7 +8,7 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
   APS_MODULE: Object.freeze({
     id: 'APS_MODULE',
     name: N_('4-Corner "Arena" APS'),
-    description: N_('Standalone radar protection: 1 charge per light shell or missile; 2 per Cannon Mk4/Mk5, HOWITZER or BOSS_DUAL shell. Cannot stop flames or TITAN_RAIL.'),
+    description: N_('Standalone radar protection: 1 charge per light shell or missile; 2 per Cannon Mk4/Mk5, HOWITZER or BOSS_DUAL shell. Cannot stop flames.'),
     leveled: false,
     installMass: 4,
     ammoCount: 12,
