@@ -24,7 +24,7 @@ import {
   zoneOf,
 } from '../public/src/sim/behavior/index.js';
 import { SeededRng } from '../public/src/sim/rng.js';
-import { SECTOR_BOSS_CONFIGS, TANK_CONFIGS } from '../public/src/game/tanks.js';
+import { SECTOR_BOSS_CONFIGS, TANK_CONFIGS } from '../public/src/game/vehicles/tanks.js';
 import { SECTORS } from '../public/src/game/levels.js';
 
 const seeded = (seed) => {

@@ -260,7 +260,7 @@ export const MEDAL_CATALOG = Object.freeze([
     name: N_('Titan Breaker'),
     grade: 'gold',
     category: N_('Bosses'),
-    description: N_('Defeat BOSS_TITAN without taking a single hit from its TITAN_RAIL cannon.'),
+    description: N_('Defeat BOSS_TITAN without taking a single hit from its BOSS_DUAL cannons.'),
     evaluate: ({ tracker }) =>
       tracker.defeatedBosses.includes('BOSS_TITAN') && tracker.titanRailHitsTaken === 0,
   }),
@@ -365,7 +365,7 @@ export function createBattleMedalTracker() {
       const dmg = Math.max(0, Number(amount) || 0);
       if (dmg > 0) state.playerDamageTaken += dmg;
       if (sourceWeapon === 'HYDRA_MLRS') state.hydraMlrsHitsTaken += 1;
-      if (sourceWeapon === 'TITAN_RAIL') state.titanRailHitsTaken += 1;
+      if (sourceWeapon === 'BOSS_DUAL') state.titanRailHitsTaken += 1;
     },
 
     recordEnemyKill({

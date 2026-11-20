@@ -806,7 +806,7 @@ export class ProjectilesController {
             engine.damagePlayer(
               effDamage,
               p.isFlame ? null : { zone: hitZone, aspect: aspectStr },
-              p.sourceWeapon || (p.isRail ? 'TITAN_RAIL' : null)
+              p.sourceWeapon || null
             );
             if (p.isFlame) {
               engine.fx.flameJet(p.x, 0.8, p.z, p.vx * 0.3, p.vz * 0.3, 1);

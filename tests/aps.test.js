@@ -8,7 +8,7 @@ test('APS cost follows weapon identity and missiles override heavy classificatio
   for (const weaponId of ['CANNON_Mk4', 'CANNON_Mk5', 'HOWITZER', 'BOSS_DUAL']) assert.equal(apsInterceptCost({ weaponId }), 2);
   assert.equal(apsInterceptCost({ isMissile: true, isHeavy: true }), 1);
   assert.equal(apsInterceptCost({ weaponId: 'HYDRA_MLRS' }), 1);
-  for (const weaponId of ['TITAN_RAIL', 'FLAMETHROWER']) assert.equal(apsInterceptCost({ weaponId }), 0);
+  assert.equal(apsInterceptCost({ weaponId: 'FLAMETHROWER' }), 0);
   assert.equal(apsInterceptCost({ isFlame: true }), 0);
 });
 
@@ -34,11 +34,11 @@ test('Heavy interceptions spend two charges atomically across launchers', () => 
   assert.equal(scarce.apsRearmTimer, 0);
 });
 
-test('Rail and flame pass through APS without spending charges', () => {
+test('Flame passes through APS without spending charges', () => {
   const game = engine([3, 3, 3, 3]);
-  game.projectiles = ['TITAN_RAIL', 'FLAMETHROWER'].map(weaponId => ({ weaponId, x: 0, z: 2, vx: 0, vz: -1 }));
+  game.projectiles = ['FLAMETHROWER'].map(weaponId => ({ weaponId, x: 0, z: 2, vx: 0, vz: -1 }));
   game.updateApsInterception();
-  assert.equal(game.projectiles.length, 2);
+  assert.equal(game.projectiles.length, 1);
   assert.deepEqual(game.apsAmmo, [3, 3, 3, 3]);
 });
 

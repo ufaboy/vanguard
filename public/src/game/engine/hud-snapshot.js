@@ -7,7 +7,7 @@ import {
   UPGRADE,
 } from '../constants.js';
 import { SECTORS, GRID_SIZE, TILE_SIZE } from '../levels.js';
-import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
+import { SECTOR_BOSS_CONFIGS } from '../vehicles/tanks.js';
 import { getObservedEnemyCondition } from '../../sim/ai.js';
 import { buildContractHudSnapshot } from '../../sim/contract.js';
 import {

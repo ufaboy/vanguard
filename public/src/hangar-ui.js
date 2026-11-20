@@ -2,7 +2,7 @@ import { effectiveUpgradeTiers, componentRepairCost } from './sim/component-dama
 import { PLAYER_UPGRADES } from './game/components/index.js';
 import { computeTankStats, APS, MISSILE, CANNON_AMMO, getMaxApsAmmo, getMaxMissileAmmo, getMaxCannonAmmo } from './game/constants.js';
 import { renderTrackBadgeSvg } from './game/icons.js';
-import { PLAYER_TANK_CONFIG } from './game/tanks.js';
+import { PLAYER_TANK_CONFIG } from './game/vehicles/tanks.js';
 import { N_, formatNumber, t } from './i18n/index.js';
 
 export const HANGAR_TRACKS = [

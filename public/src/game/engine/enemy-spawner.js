@@ -20,7 +20,7 @@ import {
 import { remainingEncounterEnemies, updateEncounters } from '../encounters.js';
 import { GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
-import { SECTOR_BOSS_CONFIGS } from '../tanks.js';
+import { SECTOR_BOSS_CONFIGS } from '../vehicles/tanks.js';
 import {
   EnemyClass,
   GameStatus,

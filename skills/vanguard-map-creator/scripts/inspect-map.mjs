@@ -65,7 +65,7 @@ export async function inspectMap(projectRoot, mapPath) {
   const initial = cfg.initialSpawnCount ?? 4;
   const cap = cfg.maxConcurrent ?? 8;
   check(Number.isInteger(initial) && initial > 0 && Number.isInteger(cap) && cap >= initial, 'Initial/live enemy limits must be positive integers and initial <= live cap.');
-  const { EnemyClass } = await import(pathToFileURL(path.join(projectRoot, 'public/src/game/tanks.js')));
+  const { EnemyClass } = await import(pathToFileURL(path.join(projectRoot, 'public/src/game/vehicles/tanks.js')));
   const { CAMPAIGN_MISSIONS } = await import(pathToFileURL(path.join(projectRoot, 'public/src/game/campaign.js')));
   const { normalizeMapDefinition } = await import(pathToFileURL(path.join(projectRoot, 'public/src/game/levels.js')));
   const runtime = normalizeMapDefinition(map);

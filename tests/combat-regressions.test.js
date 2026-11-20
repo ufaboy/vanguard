@@ -8,7 +8,7 @@ import { PlayerController } from '../public/src/game/engine/player-controller.js
 import { findBorderIngressCell } from '../public/src/game/campaign-navigation.js';
 import { TileType, GameStatus } from '../public/src/game/types.js';
 import { computeTankStats, computeEffectiveDamage, CANNONS } from '../public/src/game/constants.js';
-import { TANK_CONFIGS, TANK_TYPES } from '../public/src/game/tanks.js';
+import { TANK_CONFIGS, TANK_TYPES } from '../public/src/game/vehicles/tanks.js';
 
 test('ARMOR directional protection comes from its base plus the A3 component', () => {
   const config = TANK_CONFIGS[TANK_TYPES.ARMOR];

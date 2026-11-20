@@ -19,7 +19,7 @@
  */
 
 import { GRID_SIZE, TILE_SIZE } from '../game/constants.js';
-import { EnemyClass } from '../game/tanks.js';
+import { EnemyClass } from '../game/vehicles/tanks.js';
 import { N_, t } from '../i18n/index.js';
 
 export const CARGO_STATUS = Object.freeze({

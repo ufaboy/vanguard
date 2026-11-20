@@ -260,7 +260,7 @@ test('Stealth sniper overwatches from range and slips away after its shot', () =
 });
 
 test('Boss configs carry their own role brains', async () => {
-  const { SECTOR_BOSS_CONFIGS } = await import('../public/src/game/tanks.js');
+  const { SECTOR_BOSS_CONFIGS } = await import('../public/src/game/vehicles/tanks.js');
   assert.equal(SECTOR_BOSS_CONFIGS.bossMammoth.behavior.role, 'dreadnought');
   assert.equal(SECTOR_BOSS_CONFIGS.bossHydra.behavior.role, 'cruiser');
   assert.equal(SECTOR_BOSS_CONFIGS.bossInferno.behavior.role, 'juggernaut');

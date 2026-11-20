@@ -10,7 +10,7 @@ import {
   notifyBrainFired,
   stepBrain,
 } from '../public/src/sim/behavior/index.js';
-import { TANK_CONFIGS } from '../public/src/game/tanks.js';
+import { TANK_CONFIGS } from '../public/src/game/vehicles/tanks.js';
 import { SECTORS } from '../public/src/game/levels.js';
 
 const E = NAV_TILE.EMPTY;

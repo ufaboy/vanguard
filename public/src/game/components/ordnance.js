@@ -1,3 +1,5 @@
+/** Ordnance & Weapon Definitions (tank cannons, enemy artillery/rails, and air-dropped munitions). */
+
 import { BULLET_POWER, WEAPON } from './types.js';
 import { N_ } from '../../i18n/index.js';
 
@@ -161,24 +163,6 @@ export const CANNONS = Object.freeze({
     barrelOffset: 0,
     playerAvailable: false,
   }),
-  TITAN_RAIL: Object.freeze({
-    id: 'TITAN_RAIL',
-    name: N_('Supreme Twin Heavy Cannon'),
-    description:
-      N_('Twin-barrel high-caliber dreadnought cannons mounted in two independent rotating turrets (4 barrels total), firing dual concrete-breaching salvos.'),
-    mass: 28,
-    damage: 24,
-    penetration: 45,
-    bulletSpeed: 12.0,
-    bulletPower: BULLET_POWER.HEAVY,
-    maxBullets: 8,
-    fireCooldown: 1.85,
-    weapon: WEAPON.CANNON,
-    blastCells: 0,
-    barrels: 2,
-    barrelOffset: 0.32,
-    playerAvailable: false,
-  }),
   FLAMETHROWER: Object.freeze({
     id: 'FLAMETHROWER',
     name: N_('Flamethrower'),
@@ -249,3 +233,34 @@ export const CANNONS = Object.freeze({
   }),
 });
 
+/** Air-dropped ordnance & munition component definitions (bombs, thermobaric missiles, air mines). */
+
+export const AIR_ORDNANCE = Object.freeze({
+  AIR_BOMB: Object.freeze({
+    id: 'AIR_BOMB',
+    bombCount: 3,
+    radiusCells: 1.5,
+    scatterCells: 1.75,
+    damage: 24,
+    penetration: 15,
+    flightSec: 1.05,
+    staggerSec: 0.24,
+    releaseDelaySec: 0.75,
+  }),
+  THERMOBARIC_MISSILE: Object.freeze({
+    id: 'THERMOBARIC_MISSILE',
+    radiusCells: 3.5,
+    damage: 25,
+    penetration: 25,
+    flightSec: 1.3,
+    launchAltitude: 11,
+  }),
+  AIR_MINE: Object.freeze({
+    id: 'AIR_MINE',
+    mineCount: 9,
+    zoneHalfCells: 2.2,
+    flightSec: 1.0,
+    staggerSec: 0.06,
+    launchAltitude: 16,
+  }),
+});

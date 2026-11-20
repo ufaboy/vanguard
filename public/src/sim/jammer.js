@@ -1,6 +1,6 @@
 /** Passive JAMMER ECM helpers: 20-cell radar interference and 5-cell APS / ATGM disruption. */
 
-import { EnemyClass } from '../game/tanks.js';
+import { EnemyClass } from '../game/vehicles/tanks.js';
 
 export const JAMMER_ECM = Object.freeze({
   /** Radar interference radius in grid cells. */

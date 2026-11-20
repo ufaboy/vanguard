@@ -13,7 +13,7 @@ import {
   TANK_CONFIGS,
   SECTOR_BOSS_CONFIGS,
   SPECIAL_ENEMY_CATALOG,
-} from './tanks.js';
+} from './vehicles/tanks.js';
 
 import {
   MAP_MODES,

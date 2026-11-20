@@ -4,7 +4,7 @@ import { computeTankStats } from '../public/src/game/constants.js';
 import { CANNONS, CHASSIS, FRAMES, ENGINES, ARMORS, OPTIONAL_EQUIPMENT, PLAYER_UPGRADES } from '../public/src/game/components/index.js';
 import { renderPowerUpBadgeSvg, renderTrackBadgeSvg } from '../public/src/game/icons.js';
 import { SECTORS } from '../public/src/game/levels.js';
-import { PLAYER_TANK_CONFIG } from '../public/src/game/tanks.js';
+import { PLAYER_TANK_CONFIG } from '../public/src/game/vehicles/tanks.js';
 import { GameStatus } from '../public/src/game/types.js';
 
 export function renderCodex(state, selectedItem) {
