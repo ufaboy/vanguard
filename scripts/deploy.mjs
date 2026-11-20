@@ -79,8 +79,8 @@ function refreshSeoMetadata(dir) {
   }
 }
 
-runCheck('npm', ['run', 'lint'], 'lint');
-runCheck('npm', ['test'], 'tests');
+runCheck('pnpm', ['run', 'lint'], 'lint');
+runCheck('pnpm', ['test'], 'tests');
 // Astro builds the static pages into dist/site (JSON-LD softwareVersion comes from package.json).
 buildSite();
 
@@ -102,7 +102,7 @@ try {
     ...(isPreview ? ['--commit-dirty=true'] : ['--branch=main']),
   ];
 
-  const res = spawnSync('npx', args, { stdio: 'inherit', shell: true, env });
+  const res = spawnSync('pnpm', ['exec', ...args], { stdio: 'inherit', shell: true, env });
   exitCode = res.status ?? 1;
 } finally {
   fs.rmSync(stagingDir, { recursive: true, force: true });
