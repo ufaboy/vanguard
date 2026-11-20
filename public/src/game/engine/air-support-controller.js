@@ -3,8 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { t } from '../../i18n/index.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { determineHitAspect } from '../../sim/ballistics.js';
-import { CANNONS } from '../components/cannons.js';
-import { AIR_ORDNANCE } from '../components/ordnance.js';
+import { AIR_ORDNANCE, CANNONS } from '../components/ordnance.js';
 import {
   AIR_SUPPORT,
   ARTILLERY,

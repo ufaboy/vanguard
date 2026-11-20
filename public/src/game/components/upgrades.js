@@ -1,5 +1,5 @@
 import { UPGRADE } from './types.js';
-import { CANNONS } from './cannons.js';
+import { CANNONS } from './ordnance.js';
 import { CHASSIS } from './chassis.js';
 import { FRAMES } from './frames.js';
 import { ENGINES } from './engines.js';
