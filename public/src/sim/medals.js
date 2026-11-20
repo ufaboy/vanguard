@@ -62,6 +62,31 @@ export const RANK_LADDER = Object.freeze([
 
 const BOSS_CLASSES = new Set(['BOSS_MAMMOTH', 'BOSS_HYDRA', 'BOSS_INFERNO', 'BOSS_TITAN']);
 
+const ENEMY_CLASS_CANONICAL = Object.freeze({
+  scout: 'SCOUT',
+  standard: 'STANDARD',
+  sapper: 'SAPPER',
+  kamikaze: 'KAMIKAZE',
+  hover: 'HOVER',
+  flamethrower: 'FLAMETHROWER',
+  jammer: 'JAMMER',
+  engineer: 'ENGINEER',
+  striker: 'STRIKER',
+  stealth: 'STEALTH',
+  howitzer: 'HOWITZER',
+  armor: 'ARMOR',
+  bossmammoth: 'BOSS_MAMMOTH',
+  bosshydra: 'BOSS_HYDRA',
+  bossinferno: 'BOSS_INFERNO',
+  bosstitan: 'BOSS_TITAN',
+});
+
+function normalizeEnemyClass(raw) {
+  if (!raw) return '';
+  const key = String(raw).trim();
+  return ENEMY_CLASS_CANONICAL[key.toLowerCase()] || key.toUpperCase();
+}
+
 const KILL_XP_BY_CLASS = Object.freeze({
   SCOUT: 10,
   STANDARD: 15,
@@ -358,26 +383,27 @@ export function createBattleMedalTracker() {
       jammerPulsing = false,
       bossOverloaded = false,
     } = {}) {
-      if (!enemyClass) return;
-      state.killsByClass[enemyClass] = (state.killsByClass[enemyClass] || 0) + 1;
+      const normalizedClass = normalizeEnemyClass(enemyClass);
+      if (!normalizedClass) return;
+      state.killsByClass[normalizedClass] = (state.killsByClass[normalizedClass] || 0) + 1;
       state.killsByClassTotal += 1;
 
-      if (enemyClass === 'SAPPER' && minesPlaced === 0) {
+      if (normalizedClass === 'SAPPER' && minesPlaced === 0) {
         state.sapperKilledBeforeMining += 1;
       }
-      if (enemyClass === 'ENGINEER' && engineerActing) {
+      if (normalizedClass === 'ENGINEER' && engineerActing) {
         state.engineerKilledWhileActing += 1;
       }
-      if ((enemyClass === 'ARMOR' || BOSS_CLASSES.has(enemyClass)) && (aspect === 'side' || aspect === 'left' || aspect === 'right' || aspect === 'rear')) {
+      if ((normalizedClass === 'ARMOR' || BOSS_CLASSES.has(normalizedClass)) && (aspect === 'side' || aspect === 'left' || aspect === 'right' || aspect === 'rear')) {
         state.flankHeavyKills += 1;
       }
-      if (enemyClass === 'KAMIKAZE' && kamikazeChargingClose) {
+      if (normalizedClass === 'KAMIKAZE' && kamikazeChargingClose) {
         state.matadorKills += 1;
       }
-      if (enemyClass === 'HOWITZER' && howitzerBarrages < 2) {
+      if (normalizedClass === 'HOWITZER' && howitzerBarrages < 2) {
         state.counterBatteryKills += 1;
       }
-      if ((enemyClass === 'STEALTH' && stealthCamouflaged) || (enemyClass === 'JAMMER' && jammerPulsing)) {
+      if ((normalizedClass === 'STEALTH' && stealthCamouflaged) || (normalizedClass === 'JAMMER' && jammerPulsing)) {
         state.ghostHunterKills += 1;
       }
       if (playerInWater) {
@@ -402,11 +428,11 @@ export function createBattleMedalTracker() {
           state.salvoHistory.set(salvoId, { count: 1, timeMs: nowMs });
         }
       }
-      if (BOSS_CLASSES.has(enemyClass)) {
-        if (!state.defeatedBosses.includes(enemyClass)) {
-          state.defeatedBosses.push(enemyClass);
+      if (BOSS_CLASSES.has(normalizedClass)) {
+        if (!state.defeatedBosses.includes(normalizedClass)) {
+          state.defeatedBosses.push(normalizedClass);
         }
-        if (enemyClass === 'BOSS_TITAN' && bossOverloaded && aspect === 'rear') {
+        if (normalizedClass === 'BOSS_TITAN' && bossOverloaded && aspect === 'rear') {
           state.titanOverloadRearKill = true;
         }
       }

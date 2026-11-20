@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 2.3.6 // BUGFIX")}</span>
+            <strong>{t("Enemy Class Normalization in Medal Tracker")}</strong>
+            <p>{t("Fixed an")} <code>{t("enemyClass")}</code> {t("case mismatch in")} <code>{t("createBattleMedalTracker")}</code> {t("where runtime")} <code>{t("EnemyClass")}</code> {t("identifiers (such as")} <code>{t("bossMammoth")}</code>{t(",")} <code>{t("bossHydra")}</code>{t(",")} <code>{t("bossTitan")}</code>{t(", and")} <code>{t("sapper")}</code>{t(") did not match uppercase medal keys, blocking boss and class-specific medals and kill XP.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 2.3.5 // BUGFIX")}</span>
             <strong>{t("Mammoth Slayer Medal Fix")}</strong>
             <p>{t("Removed the")} <code>{t("isVictory")}</code> {t("requirement from the")} <code>{t("mammoth_slayer")}</code> {t("medal so defeating")} <code>{t("BOSS_MAMMOTH")}</code> {t("awards the medal regardless of battle outcome, and updated its description across all locales.")}</p>

@@ -194,3 +194,35 @@ test('recordMedalsAndRank tracks first-time vs repeat XP and promotion', () => {
   assert.equal(save.medals.mammoth_slayer.count, 2);
   assert.equal(rec2.newlyUnlockedIds.length, 0);
 });
+
+test('recordEnemyKill normalizes runtime EnemyClass values (bossMammoth, sapper, etc.)', async () => {
+  const { EnemyClass } = await import('../public/src/game/tanks.js');
+  const tracker = createBattleMedalTracker();
+  tracker.recordEnemyKill({ enemyClass: EnemyClass.BOSS_MAMMOTH });
+  tracker.recordEnemyKill({ enemyClass: EnemyClass.BOSS_HYDRA });
+  tracker.recordEnemyKill({ enemyClass: EnemyClass.BOSS_TITAN, aspect: 'rear', bossOverloaded: true });
+  tracker.recordEnemyKill({ enemyClass: EnemyClass.SAPPER, minesPlaced: 0 });
+  tracker.recordEnemyKill({ enemyClass: EnemyClass.ENGINEER, engineerActing: true });
+  tracker.recordEnemyKill({ enemyClass: EnemyClass.ARMOR, aspect: 'side' });
+  tracker.recordEnemyKill({ enemyClass: EnemyClass.KAMIKAZE, kamikazeChargingClose: true });
+  tracker.recordEnemyKill({ enemyClass: EnemyClass.HOWITZER, howitzerBarrages: 0 });
+  tracker.recordEnemyKill({ enemyClass: EnemyClass.JAMMER, jammerPulsing: true });
+
+  const evalResult = evaluateMissionMedals({
+    trackerState: tracker.snapshot(),
+    hud: { blocksDestroyed: 0, baseHp: 0, baseMaxHp: 100 },
+    upgrades: { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 },
+    isVictory: true,
+  });
+  const ids = evalResult.earnedMedals.map((m) => m.id);
+  assert.ok(ids.includes('mammoth_slayer'));
+  assert.ok(ids.includes('hydra_dodger'));
+  assert.ok(ids.includes('titan_breaker'));
+  assert.ok(ids.includes('exploit_the_gap'));
+  assert.ok(ids.includes('mine_sweeper'));
+  assert.ok(ids.includes('saboteur'));
+  assert.ok(ids.includes('flank_master'));
+  assert.ok(ids.includes('matador'));
+  assert.ok(ids.includes('counter_battery'));
+  assert.ok(ids.includes('ghost_hunter'));
+});
