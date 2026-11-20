@@ -110,7 +110,8 @@ test('Air Support targeting pauses game, cancels cleanly, and spends credits on 
   assert.equal(ctrl.confirmTargeting(10, 12), true);
   assert.equal(engine.status, GameStatus.PLAYING);
   assert.equal(engine.playerSave.credits, 500 - AIR_SUPPORT.STRIKE_BOMBS.cost);
-  assert.equal(engine.airSupportMissions.length, AIR_SUPPORT.STRIKE_BOMBS.bombCount);
+  const ordnance = engine.airSupportMissions.filter((m) => m.kind === 'AIR_ORDNANCE');
+  assert.equal(ordnance.length, AIR_SUPPORT.STRIKE_BOMBS.bombCount);
 });
 
 test('Air Repair dispatches drone, repairs all damaged subsystems, and restores +20 HP', () => {

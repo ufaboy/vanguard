@@ -13,7 +13,6 @@ import {
   TANK_HIT_RADIUS,
   computeEffectiveDamage,
 } from '../constants.js';
-import { createProjectileVisual } from '../effects/index.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { disposeOwned, markOwned } from '../render/dispose.js';
 import { sound } from '../sound.js';
@@ -325,23 +324,55 @@ export class AirSupportController {
 
     if (variant === 'STRIKE_BOMBS') {
       const cfg = AIR_SUPPORT.STRIKE_BOMBS;
+      const dx = targetX - launch.x;
+      const dz = targetZ - launch.z;
+      const len = Math.hypot(dx, dz) || 1;
+      const dirX = dx / len;
+      const dirZ = dz / len;
+      const bomberSpeed = 28;
+      const altitude = 20;
+      const leadDist = bomberSpeed * cfg.flightSec * 0.45;
+
+      // High-altitude bomber flyby passing over the target zone
+      const bomberStartX = targetX - dirX * (leadDist + 24);
+      const bomberStartZ = targetZ - dirZ * (leadDist + 24);
+      const bomberMesh = this.createBomberMesh();
+      if (bomberMesh && engine.fxGroup) {
+        bomberMesh.position.set(bomberStartX, altitude, bomberStartZ);
+        bomberMesh.rotation.y = Math.atan2(dirX, dirZ);
+        engine.fxGroup.add(bomberMesh);
+      }
+      engine.airSupportMissions.push({
+        kind: 'BOMBER_FLYBY',
+        x: bomberStartX,
+        y: altitude,
+        z: bomberStartZ,
+        vx: dirX * bomberSpeed,
+        vz: dirZ * bomberSpeed,
+        life: 3.6,
+        mesh: bomberMesh,
+      });
+
       for (let i = 0; i < cfg.bombCount; i++) {
-        const angle = (i / cfg.bombCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.7;
-        const dist = (0.35 + Math.random() * 0.65) * cfg.scatterCells * TILE_SIZE;
-        const bx = targetX + Math.cos(angle) * dist;
-        const bz = targetZ + Math.sin(angle) * dist;
+        const dropOffset = (i - 1) * cfg.scatterCells * TILE_SIZE * 0.85;
+        const lateral = (Math.random() - 0.5) * cfg.scatterCells * TILE_SIZE * 0.7;
+        const bx = targetX + dirX * dropOffset - dirZ * lateral;
+        const bz = targetZ + dirZ * dropOffset + dirX * lateral;
+        // Bomb releases from the bomber ahead of the target and falls along a ballistic curve
+        const releaseX = bx - dirX * leadDist;
+        const releaseZ = bz - dirZ * leadDist;
         engine.airSupportMissions.push({
           kind: 'AIR_ORDNANCE',
           ordnanceType: 'BOMB',
-          startX: launch.x + (i - 1) * 1.4,
-          startY: 14,
-          startZ: launch.z,
+          startX: releaseX,
+          startY: altitude - 0.5,
+          startZ: releaseZ,
           targetX: bx,
           targetZ: bz,
           radius: cfg.radiusCells * TILE_SIZE,
           damage: cfg.damage,
           penetration: cfg.penetration,
-          delay: i * cfg.staggerSec,
+          delay: 0.75 + i * cfg.staggerSec,
           timer: cfg.flightSec,
           maxTimer: cfg.flightSec,
           spawned: false,
@@ -484,6 +515,17 @@ export class AirSupportController {
           this.disposeMissionVisuals(m);
           missions.splice(i, 1);
         }
+      } else if (m.kind === 'BOMBER_FLYBY') {
+        m.life -= dt;
+        m.x += m.vx * dt;
+        m.z += m.vz * dt;
+        if (m.mesh) {
+          m.mesh.position.set(m.x, m.y, m.z);
+        }
+        if (m.life <= 0) {
+          this.disposeMissionVisuals(m);
+          missions.splice(i, 1);
+        }
       }
     }
   }
@@ -613,11 +655,7 @@ export class AirSupportController {
 
         m.mesh = isThermo
           ? this.createThermobaricMissileMesh()
-          : createProjectileVisual(0xffb030, {
-              radius: 0.22,
-              length: 0.45,
-              glow: 1.2,
-            });
+          : this.createBombMesh();
         m.mesh.position.set(m.startX, m.startY, m.startZ);
         markOwned(m.mesh);
         engine.fxGroup.add(m.mesh);
@@ -626,23 +664,31 @@ export class AirSupportController {
 
     m.timer -= dt;
     const progress = Math.min(1, Math.max(0, 1 - m.timer / m.maxTimer));
-    const curX = THREE.MathUtils.lerp(m.startX, m.targetX, progress);
-    const curZ = THREE.MathUtils.lerp(m.startZ, m.targetZ, progress);
-    const curY = THREE.MathUtils.lerp(m.startY, 0.4, progress * progress);
+    const isBomb = m.ordnanceType === 'BOMB';
+    // Bombs decelerate slightly horizontally and accelerate downward under gravity (y = y0 - g*t^2/2)
+    const horizT = isBomb ? 1 - (1 - progress) * (1 - progress) * 0.25 - progress * 0.25 + progress * 0.25 : progress;
+    const curX = THREE.MathUtils.lerp(m.startX, m.targetX, isBomb ? Math.pow(progress, 0.85) : horizT);
+    const curZ = THREE.MathUtils.lerp(m.startZ, m.targetZ, isBomb ? Math.pow(progress, 0.85) : horizT);
+    const curY = THREE.MathUtils.lerp(m.startY, 0.35, progress * progress);
 
     if (m.mesh) {
       m.mesh.position.set(curX, curY, curZ);
       m.mesh.rotation.order = 'YXZ';
       m.mesh.rotation.y = Math.atan2(m.targetX - m.startX, m.targetZ - m.startZ);
-      const horizDist = Math.hypot(m.targetX - m.startX, m.targetZ - m.startZ) || 1;
-      const dy = -2 * (m.startY - 0.4) * progress;
-      m.mesh.rotation.x = Math.atan2(-dy, horizDist);
+      if (isBomb) {
+        // Pitch gradually from horizontal at release toward near-vertical at impact
+        m.mesh.rotation.x = THREE.MathUtils.lerp(0.15, Math.PI * 0.44, progress);
+      } else {
+        const horizDist = Math.hypot(m.targetX - m.startX, m.targetZ - m.startZ) || 1;
+        const dy = -2 * (m.startY - 0.35) * progress;
+        m.mesh.rotation.x = Math.atan2(-dy, horizDist);
+      }
     }
     if (m.ringMesh) {
       m.ringMesh.visible = Math.floor(elapsed * ARTILLERY.MARKER_BLINK_RATE * 2) % 2 === 0;
     }
-    if (progress > 0.05) {
-      engine.fx?.shellSmokeTrail?.(curX, curY, curZ, m.ordnanceType === 'THERMO');
+    if (!isBomb && progress > 0.05) {
+      engine.fx?.shellSmokeTrail?.(curX, curY, curZ, true);
     }
 
     if (m.timer <= 0) {
@@ -950,6 +996,71 @@ export class AirSupportController {
     markOwned(ringMesh);
     engine.fxGroup.add(ringMesh);
     return ringMesh;
+  }
+
+  createBombMesh() {
+    const group = new THREE.Group();
+    const oliveMat = new THREE.MeshStandardMaterial({ color: 0x3f4a3c, roughness: 0.5, metalness: 0.55 });
+    const bandMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.4, metalness: 0.35 });
+    const finMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.55, metalness: 0.65 });
+
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.16, 0.72, 10), oliveMat);
+    body.rotation.x = Math.PI / 2;
+
+    const nose = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 8), oliveMat);
+    nose.scale.set(1, 1, 1.3);
+    nose.position.z = 0.36;
+
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(0.185, 0.185, 0.09, 10), bandMat);
+    band.rotation.x = Math.PI / 2;
+    band.position.z = 0.24;
+
+    const tailCone = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.26, 10), finMat);
+    tailCone.rotation.x = -Math.PI / 2;
+    tailCone.position.z = -0.46;
+
+    group.add(body, nose, band, tailCone);
+
+    for (let i = 0; i < 4; i++) {
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.28, 0.22), finMat);
+      const angle = (i * Math.PI) / 2 + Math.PI / 4;
+      fin.position.set(Math.cos(angle) * 0.16, Math.sin(angle) * 0.16, -0.44);
+      fin.rotation.z = angle + Math.PI / 2;
+      group.add(fin);
+    }
+
+    markOwned(group);
+    return group;
+  }
+
+  createBomberMesh() {
+    const group = new THREE.Group();
+    const hullMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.45, metalness: 0.6 });
+    const wingMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.5, metalness: 0.55 });
+    const cockpitMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.4 });
+
+    const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.24, 3.6, 10), hullMat);
+    fuselage.rotation.x = Math.PI / 2;
+
+    const nose = new THREE.Mesh(new THREE.ConeGeometry(0.32, 0.85, 10), hullMat);
+    nose.rotation.x = Math.PI / 2;
+    nose.position.z = 2.2;
+
+    const cockpit = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.22, 0.65), cockpitMat);
+    cockpit.position.set(0, 0.24, 1.35);
+
+    const mainWing = new THREE.Mesh(new THREE.BoxGeometry(5.8, 0.12, 1.15), wingMat);
+    mainWing.position.set(0, 0.06, 0.15);
+
+    const tailWing = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.08, 0.6), wingMat);
+    tailWing.position.set(0, 0.1, -1.55);
+
+    const tailFin = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.85, 0.75), hullMat);
+    tailFin.position.set(0, 0.45, -1.5);
+
+    group.add(fuselage, nose, cockpit, mainWing, tailWing, tailFin);
+    markOwned(group);
+    return group;
   }
 
   createThermobaricMissileMesh() {
