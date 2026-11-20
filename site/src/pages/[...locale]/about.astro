@@ -23,6 +23,29 @@ const actions = [
   ['games-like-battle-city', 'Compared to Battle City'],
   ['webgl-tank-game', 'Three.js & WebGL Tech'],
 ];
+const modes = [
+  ['35-MISSION CAMPAIGN', 'Road to the Capital', 'Battle across 7 distinct regions — from city outskirts and frozen highlands to the industrial belt — completing extermination, stronghold assault, and HQ base-defense missions.'],
+  ['ENDLESS SURVIVAL', 'Iron Crucible & Paris Last Stand', 'Hold out against escalating armored waves and rotating Sector Bosses on dedicated survival arenas, pushing your score and tactical endurance as far as possible.'],
+  ['SPECIAL CONTRACTS', 'High-Risk Operations', 'Take on focused tactical operations such as Blackout Protocol and Last Cargo with unique map rules, tight corridors, and specialized enemy rosters.'],
+];
+const faqs = [
+  [
+    'Can I play BATTLE TANK for free without downloading or creating an account?',
+    'Yes. BATTLE TANK is a free online browser tank game that launches directly in your browser with no download, no installation, and no registration required. Your campaign progress, upgrades, credits, and service medals are saved locally in your browser.',
+  ],
+  [
+    'Does BATTLE TANK work on a Chromebook or tablet?',
+    'Yes. Because the game runs on lightweight native ES Modules and Three.js WebGL with automatic software WebGL fallback, it runs smoothly on desktop PCs, laptops, Chromebooks, and landscape tablets with optional touch controls.',
+  ],
+  [
+    'How is BATTLE TANK different from classic Battle City (Tank 1990)?',
+    'While it preserves the classic HQ base defense, destructible brick and concrete walls, forest stealth, water, and ice, BATTLE TANK adds a 3D isometric camera, independent mouse-aimed turret rotation, directional front/side/rear armor, and a 5×5 modular upgrade system.',
+  ],
+  [
+    'How do tank upgrades, directional armor, and medals work?',
+    'Between battles you spend earned credits in the Hangar to upgrade Cannon, Chassis, Frame, Engine, and Armor from Tier I to Tier V, and equip standalone modules like APS or homing ATGMs. Flanking enemies to hit weaker side or rear armor deals bonus damage and earns tactical Service Medals and military ranks.',
+  ],
+];
 const breadcrumbs = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -31,18 +54,27 @@ const breadcrumbs = {
     { '@type': 'ListItem', position: 2, name: 'About', item: 'https://battletank.online/about' },
   ],
 };
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(([q, a]) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
 ---
 <PageLayout
   locale={locale}
   slug={slug}
   title="About — BATTLE TANK"
-  description="Learn about BATTLE TANK: 40x40 destructible arenas, 5-track modular VANGUARD tank engineering, 12 enemy classes, and 4 sector bosses."
-  twitterDescription="40x40 destructible arenas, 5-track modular tank engineering, 12 enemy classes, and 4 sector bosses."
-  jsonLd={[breadcrumbs]}
+  description="Learn about BATTLE TANK: a free 3D online browser tank game with no download, 40x40 destructible arenas, 5-track modular upgrades, 35 campaign missions, and 4 sector bosses."
+  twitterDescription="Free 3D online browser tank game with no download: 40x40 destructible arenas, 5-track modular tank engineering, 12 enemy classes, and 4 sector bosses."
+  jsonLd={[breadcrumbs, faqSchema]}
   script="src/pages/about.js"
 >
   <h1 class="menu-page-title" tabindex="-1">{t('About Battle Tank')}</h1>
-  <p class="menu-lead">{t('BATTLE TANK is a 3D isometric tactical tank assault game inspired by classic Battle City, engineered with modular armored warfare and destructible 40×40 arenas.')}</p>
+  <p class="menu-lead">{t('BATTLE TANK is a free 3D isometric online tank game inspired by classic Battle City (Tank 1990). Play directly in your browser with no download or sign-up across destructible 40×40 arenas, 35 campaign missions, and endless survival.')}</p>
   <div class="menu-grid">
     {cards.map(([kicker, title, text]) => (
       <article class="menu-card" style="cursor:default">
@@ -52,6 +84,32 @@ const breadcrumbs = {
       </article>
     ))}
   </div>
+
+  <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t('Three Tactical Game Modes')}</h2>
+  <p style="margin-top:12px;">{t('Whether you want a structured single-player campaign, endless wave defense, or focused tactical contracts, every mode uses the same physics-driven ballistics, directional armor, and destructible cover.')}</p>
+  <div class="menu-grid" style="margin-top:16px;">
+    {modes.map(([kicker, title, text]) => (
+      <article class="menu-card" style="cursor:default">
+        <span class="menu-kicker">{t(kicker)}</span>
+        <strong>{t(title)}</strong>
+        <p>{t(text)}</p>
+      </article>
+    ))}
+  </div>
+
+  <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t('Instant Browser Play With Zero Friction')}</h2>
+  <p style="margin-top:12px;">{t('Designed for fast loading on desktop browsers, Chromebooks, and landscape tablets, BATTLE TANK starts immediately without installers, launchers, or mandatory accounts. Earn credits, unlock 20 graded Service Medals from Bronze to Vanguard, and climb the 10-tier military rank ladder from Recruit to Vanguard Marshal.')}</p>
+
+  <h2 style="margin-top:40px;font-size:24px;font-weight:800;">{t('Frequently Asked Questions')}</h2>
+  <div class="menu-grid" style="margin-top:16px;">
+    {faqs.map(([q, a]) => (
+      <article class="menu-card" style="cursor:default">
+        <strong>{t(q)}</strong>
+        <p>{t(a)}</p>
+      </article>
+    ))}
+  </div>
+
   <div class="menu-actions" style="margin-top:28px;">
     {actions.map(([target, label, primary]) => (
       <a class={primary ? 'menu-primary' : 'menu-secondary'} href={pageHref(target, locale)}>{t(label)}</a>
