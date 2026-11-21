@@ -47,6 +47,12 @@ The grid is small, so pick the 3–5 most characteristic elements of the place a
 10. **No mirrors, no grids.** The map is asymmetric but fair, with each route having a different character. Repeated identical blocks and mirrored halves read as artificial.
 11. **Labels are English; real places use real names** (`decoration.landmarks` of kind `label`: district, street, landmark names).
 
+## Elements the catalog has no tile for
+
+- **Hills, cliffs, rock massifs**: draw the body as forest (`F`) on grass (`V`) or ground, with stone (`^`) only for scree patches. Use `C` only as thin rock faces (a cliff edge, the walls of a cut or a gorge). A large solid mass of `C` always reads as concrete buildings, not rock.
+- **Railways**: there is no rail tile. Draw the track bed as ground (`.`) and add a `decoration.paths` ribbon (`surface: "gravel"`, `width: 2`, `marking: "edges"`) along it. Do not use `^`: stone looks like rubble and caps tank speed.
+- **Tunnels**: there is no roof, so show a tunnel as an open cut between two `C` walls that leads to a map edge or a portal in the rock face.
+
 **Dominant landmark:** every map has at least one recognisable landmark visible from the game camera, such as a water tower, a bridge, a large factory hall, a dam, a station square, a harbour crane quay, or a Paris monument (`landmarks3d`) where it belongs. Place it where routes meet or where the player can orient by it.
 
 ## Theme palettes

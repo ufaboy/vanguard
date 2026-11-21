@@ -102,6 +102,8 @@ Both must report no errors. Also check by reading the grid: entrance gaps on row
 3. Take screenshots from the top view and the isometric 3D view. Check: does it read as the intended place? Are roads continuous, buildings plausible, water banks natural, vegetation organic, the dominant landmark visible? Are firing lanes, entrances and the base readable?
 4. Fix what looks wrong in the JSON, reload, repeat. Show the final screenshots to the user.
 
+The editor's 3D view renders tiles, buildings and landmarks but **not** the 2D `decoration` layer (zones, paths, markings, labels), and its viewport crops the map edges (zoom out with the mouse wheel; top view via `Iso / Top`). Say which decoration you could not see instead of calling it verified.
+
 If the browser is unavailable, say plainly that no visual check happened.
 
 ## Deliver
