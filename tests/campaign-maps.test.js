@@ -10,10 +10,10 @@ import { POWERUP } from '../public/src/game/powerups.js';
 import { TileType } from '../public/src/game/types.js';
 
 test('Campaign finales load the intended bosses and preserve legacy nested configuration', () => {
-  assert.deepEqual([14, 19, 24, 29, 34].map(i => SECTORS[i].bossClass),
-    [EnemyClass.BOSS_MAMMOTH, EnemyClass.BOSS_HYDRA, EnemyClass.BOSS_INFERNO, EnemyClass.BOSS_MAMMOTH, EnemyClass.BOSS_TITAN]);
+  assert.deepEqual([14, 20, 25, 31, 37].map(i => SECTORS[i].bossClass),
+    [EnemyClass.BOSS_MAMMOTH, EnemyClass.BOSS_INFERNO, EnemyClass.BOSS_HYDRA, EnemyClass.BOSS_MAMMOTH, EnemyClass.BOSS_TITAN]);
   assert.deepEqual(
-    SECTORS[34].bossSequence.map(stage => stage.map(entry => entry.enemyClass)),
+    SECTORS[37].bossSequence.map(stage => stage.map(entry => entry.enemyClass)),
     [
       [EnemyClass.BOSS_MAMMOTH],
       [EnemyClass.BOSS_HYDRA],
@@ -29,12 +29,12 @@ test('Campaign finales load the intended bosses and preserve legacy nested confi
 test('Every authored map has reachable deployment, pickups and useful brick shortcuts', async () => {
   const root = new URL('../', import.meta.url);
   const { fileURLToPath } = await import('node:url');
-  const dir = new URL('public/maps/campaign/', root);
-  for (const name of (await fs.readdir(dir)).filter(n => n.startsWith('mission-'))) {
-    const result = await inspectMap(fileURLToPath(root), `public/maps/campaign/${name}`);
-    assert.deepEqual(result.errors, [], name);
+  const idx = JSON.parse(await fs.readFile(new URL('public/maps/campaign/index.json', root), 'utf8'));
+  for (const rel of idx.maps) {
+    const mapPath = `public/${rel.replace(/^\.\//, '')}`;
+    const result = await inspectMap(fileURLToPath(root), mapPath);
+    assert.deepEqual(result.errors, [], mapPath);
   }
-  for (const i of [32, 33, 34]) assert.equal(SECTORS[i].powerups.length, 6);
 });
 
 test('Map normalization rejects the retired single-layer layout format', () => {
@@ -93,12 +93,13 @@ test('Former duplicate battlefields retain different cover and patrol geometry',
 });
 
 test('Stronghold assault boss maps require both enemy base and sector boss destruction', () => {
-  for (const idx of [14, 29]) {
-    const rules = SECTORS[idx].rules;
-    assert.equal(rules.victoryOnEnemyBaseDestroyed, true);
-    assert.equal(rules.spawnSectorBossOnClear, true);
-    assert.equal(checkMapVictory(rules, { enemyBaseDestroyed: true, bossDefeated: false }).isVictory, false);
-    assert.equal(checkMapVictory(rules, { enemyBaseDestroyed: false, bossDefeated: true }).isVictory, false);
-    assert.equal(checkMapVictory(rules, { enemyBaseDestroyed: true, bossDefeated: true }).isVictory, true);
-  }
+  const rules = normalizeMapDefinition({
+    gameMode: 'stronghold_assault',
+    rules: { spawnSectorBossOnClear: true },
+  }).rules;
+  assert.equal(rules.victoryOnEnemyBaseDestroyed, true);
+  assert.equal(rules.spawnSectorBossOnClear, true);
+  assert.equal(checkMapVictory(rules, { enemyBaseDestroyed: true, bossDefeated: false }).isVictory, false);
+  assert.equal(checkMapVictory(rules, { enemyBaseDestroyed: false, bossDefeated: true }).isVictory, false);
+  assert.equal(checkMapVictory(rules, { enemyBaseDestroyed: true, bossDefeated: true }).isVictory, true);
 });

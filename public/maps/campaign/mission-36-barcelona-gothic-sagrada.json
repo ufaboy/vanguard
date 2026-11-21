@@ -56,28 +56,6 @@
         "purpose": "Blast through the cloister brick wall to link Placa del Rei directly to the southern Gothic alleys."
       },
       {
-        "name": "Sagrada Familia West Nave Gate",
-        "cells": [
-          {
-            "row": 16,
-            "col": 17
-          },
-          {
-            "row": 16,
-            "col": 18
-          }
-        ],
-        "start": {
-          "row": 16,
-          "col": 16
-        },
-        "end": {
-          "row": 16,
-          "col": 20
-        },
-        "purpose": "Breach the western basilica scaffold wall to cut straight across the Sagrada Familia transept."
-      },
-      {
         "name": "Eixample Courtyard Passage",
         "cells": [
           {
@@ -548,7 +526,7 @@
     ".PPP...AAAAA......T....T...P...P..A....A",
     ".............F....C....C.....F.P....F..A",
     "..................C....C...P.F.P..A..F.A",
-    ".AAA...Q.PPP.F...BB........P...P..A....A",
+    ".AAA...Q.PPP.F.............P...P..A....A",
     ".AAA..F..PPP......C....C....P.P....A.AA.",
     ".AAA..BB.PPP.F....CPPPPC................",
     "..................T....T................",

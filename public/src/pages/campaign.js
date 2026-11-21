@@ -262,7 +262,7 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
 
   const sectorEl = document.querySelector('.campaign-brief-sector');
   if (sectorEl) {
-    sectorEl.textContent = `${t('SECTOR {n} // 35', { n: String(selected.number).padStart(2, '0') })} · ${t(chapter.name).toUpperCase()}`;
+    sectorEl.textContent = `${t('SECTOR {n} // 38', { n: String(selected.number).padStart(2, '0') })} · ${t(chapter.name).toUpperCase()}`;
   }
   const diffEl = document.querySelector('.campaign-brief-difficulty');
   if (diffEl) {

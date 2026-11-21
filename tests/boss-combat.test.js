@@ -416,9 +416,9 @@ test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turn
   assert.equal(game.playerHp, 100 - 23);
 });
 
-test('Mission 35 bossSequence escalates through all 4 bosses before victory', () => {
+test('Mission 38 bossSequence escalates through all 4 bosses before victory', () => {
   const game = fakeBossEngine([]);
-  game.currentSectorIndex = 34; // mission-35-vanguard-dawn
+  game.currentSectorIndex = 37; // mission-38-barcelona-port
   game.activeMapRules = {
     ...MAP_MODE_CONFIGS[MAP_MODES.EXTERMINATION],
     spawnSectorBossOnClear: true,
@@ -427,7 +427,7 @@ test('Mission 35 bossSequence escalates through all 4 bosses before victory', ()
   game.bossSpawned = false;
   game.bossSequenceStarted = false;
   game.bossStageIndex = 0;
-  game.grid = SECTORS[34].grid.map((row, r) => row.map((type, c) => ({ row: r, col: c, type, hp: 4 })));
+  game.grid = SECTORS[37].grid.map((row, r) => row.map((type, c) => ({ row: r, col: c, type, hp: 4 })));
   game.worldToGrid = TankGameEngine.prototype.worldToGrid;
   game.gridToWorld = TankGameEngine.prototype.gridToWorld;
   game.createEnemyAt = (enemyClass) => {
@@ -496,12 +496,12 @@ test('stepBossSequenceSpawning counts destroyed enemies rather than merely spawn
     return true;
   };
 
-  spawner.stepBossSequenceSpawning(SECTORS[34]);
+  spawner.stepBossSequenceSpawning(SECTORS[37]);
   assert.deepEqual(spawnedStages, [], 'no boss should spawn when 8 enemies are only spawned and still alive');
 
   // Destroy 8 enemies (still 21 remaining to spawn, 0 alive non-boss) -> 8/29 = 27.6% >= 20%
   game.enemies.length = 0;
-  spawner.stepBossSequenceSpawning(SECTORS[34]);
+  spawner.stepBossSequenceSpawning(SECTORS[37]);
   assert.deepEqual(spawnedStages, [0], 'Stage 0 spawns once 20% of the enemy pool is destroyed');
 });
 

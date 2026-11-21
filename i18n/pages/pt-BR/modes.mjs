@@ -320,5 +320,8 @@ export default {
   "6. France (Missions 27–32)": "6. França (Missões 27–32)",
   "Paris, Versailles, Lyon, Mont Blanc, Provence, and Nice: grand boulevards, glaciers, and a Mammoth rematch on the Riviera.": "Paris, Versalhes, Lyon, Mont Blanc, Provença e Nice: grandes avenidas, geleiras e revanche contra Mammoth na Riviera.",
   "7. Pyrenees & Catalonia (Missions 33–38)": "7. Pirineus e Catalunha (Missões 33–38)",
-  "Andorra, Bardenas Reales, Montserrat, and Barcelona: Pyrenean passes leading to the Port All-Boss Escalation and Titan.": "Andorra, Bardenas Reales, Montserrat e Barcelona: passos pirenaicos até a Escalada de Chefes e Titan no porto."
+  "Andorra, Bardenas Reales, Montserrat, and Barcelona: Pyrenean passes leading to the Port All-Boss Escalation and Titan.": "Andorra, Bardenas Reales, Montserrat e Barcelona: passos pirenaicos até a Escalada de Chefes e Titan no porto.",
+  "Italy": "Itália",
+  "Next: Alps · 2/7": "Próxima: Alpes · 2/7",
+  "SECTOR 01 // 38 · ITALY": "SETOR 01 // 38 · ITÁLIA"
 };

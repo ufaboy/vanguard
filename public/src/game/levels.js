@@ -1,40 +1,43 @@
 /** Sector map loading, parsing, and grid normalization. */
 
-import vanguardDawn from '../../maps/campaign/mission-35-vanguard-dawn.json' with { type: 'json' };
-import citadelRing from '../../maps/campaign/mission-34-citadel-ring.json' with { type: 'json' };
-import lastShelter from '../../maps/campaign/mission-33-last-shelter.json' with { type: 'json' };
-import boulevardOfSteel from '../../maps/campaign/mission-32-boulevard-of-steel.json' with { type: 'json' };
-import returnToTheStreets from '../../maps/campaign/mission-31-return-to-the-streets.json' with { type: 'json' };
-import capitalBreach from '../../maps/campaign/mission-30-capital-breach.json' with { type: 'json' };
-import furnaceDistrict from '../../maps/campaign/mission-29-furnace-district.json' with { type: 'json' };
-import powerReserve from '../../maps/campaign/mission-28-power-reserve.json' with { type: 'json' };
-import freightSpine from '../../maps/campaign/mission-27-freight-spine.json' with { type: 'json' };
-import foundryRoad from '../../maps/campaign/mission-26-foundry-road.json' with { type: 'json' };
-import ironAvalanche from '../../maps/campaign/mission-25-iron-avalanche.json' with { type: 'json' };
-import glacierCut from '../../maps/campaign/mission-24-glacier-cut.json' with { type: 'json' };
-import summitRefuge from '../../maps/campaign/mission-23-summit-refuge.json' with { type: 'json' };
-import whiteRelay from '../../maps/campaign/mission-22-white-relay.json' with { type: 'json' };
-import coldAscent from '../../maps/campaign/mission-21-cold-ascent.json' with { type: 'json' };
-import tidalLock from '../../maps/campaign/mission-20-tidal-lock.json' with { type: 'json' };
-import breakwater from '../../maps/campaign/mission-19-breakwater.json' with { type: 'json' };
-import harborRefuge from '../../maps/campaign/mission-18-harbor-refuge.json' with { type: 'json' };
-import reedAmbush from '../../maps/campaign/mission-17-reed-ambush.json' with { type: 'json' };
-import saltApproach from '../../maps/campaign/mission-16-salt-approach.json' with { type: 'json' };
-import sunkenFortress from '../../maps/campaign/mission-15-sunken-fortress.json' with { type: 'json' };
-import mirageArray from '../../maps/campaign/mission-14-mirage-array.json' with { type: 'json' };
-import canyonTeeth from '../../maps/campaign/mission-13-canyon-teeth.json' with { type: 'json' };
-import dryWells from '../../maps/campaign/mission-12-dry-wells.json' with { type: 'json' };
-import dustFrontier from '../../maps/campaign/mission-11-dust-frontier.json' with { type: 'json' };
-import deepwoodBastion from '../../maps/campaign/mission-10-deepwood-bastion.json' with { type: 'json' };
-import riverWatch from '../../maps/campaign/mission-09-river-watch.json' with { type: 'json' };
-import hiddenSignals from '../../maps/campaign/mission-08-hidden-signals.json' with { type: 'json' };
-import timberline from '../../maps/campaign/mission-07-timberline.json' with { type: 'json' };
-import greenBorder from '../../maps/campaign/mission-06-green-border.json' with { type: 'json' };
-import placeholder05 from '../../maps/campaign/mission-05-placeholder.json' with { type: 'json' };
-import placeholder04 from '../../maps/campaign/mission-04-placeholder.json' with { type: 'json' };
-import placeholder03 from '../../maps/campaign/mission-03-placeholder.json' with { type: 'json' };
-import placeholder02 from '../../maps/campaign/mission-02-placeholder.json' with { type: 'json' };
-import romeForumColosseum from '../../maps/campaign/mission-01-rome-forum-colosseum.json' with { type: 'json' };
+import mission01 from '../../maps/campaign/mission-01-rome-forum-colosseum.json' with { type: 'json' };
+import mission02 from '../../maps/campaign/mission-02-apennine-gorge.json' with { type: 'json' };
+import mission03 from '../../maps/campaign/mission-03-milan-industrial.json' with { type: 'json' };
+import mission04 from '../../maps/campaign/mission-04-lake-garda-verona.json' with { type: 'json' };
+import mission05 from '../../maps/campaign/mission-05-dolomites-pass.json' with { type: 'json' };
+import mission06 from '../../maps/campaign/mission-06-fussen-neuschwanstein.json' with { type: 'json' };
+import mission07 from '../../maps/campaign/mission-07-innsbruck-rail-tunnel.json' with { type: 'json' };
+import mission08 from '../../maps/campaign/mission-08-hohensalzburg-fortress.json' with { type: 'json' };
+import mission09 from '../../maps/campaign/mission-09-wachau-danube-valley.json' with { type: 'json' };
+import mission10 from '../../maps/campaign/mission-10-vienna-hofburg.json' with { type: 'json' };
+import mission11 from '../../maps/campaign/mission-11-moravian-karst.json' with { type: 'json' };
+import mission12 from '../../maps/campaign/mission-12-konopiste-castle.json' with { type: 'json' };
+import mission13 from '../../maps/campaign/mission-13-prague-charles-bridge.json' with { type: 'json' };
+import mission14 from '../../maps/campaign/mission-14-bohemian-forest.json' with { type: 'json' };
+import mission15 from '../../maps/campaign/mission-15-dresden-elbe.json' with { type: 'json' };
+import mission16 from '../../maps/campaign/mission-16-berlin-brandenburg-gate.json' with { type: 'json' };
+import mission17 from '../../maps/campaign/mission-17-berlin-reichstag-spree.json' with { type: 'json' };
+import mission18 from '../../maps/campaign/mission-18-east-berlin-rail-yards.json' with { type: 'json' };
+import mission19 from '../../maps/campaign/mission-19-harz-mountains.json' with { type: 'json' };
+import mission20 from '../../maps/campaign/mission-20-remagen-bridgehead.json' with { type: 'json' };
+import mission21 from '../../maps/campaign/mission-21-ruhr-coal-steel.json' with { type: 'json' };
+import mission22 from '../../maps/campaign/mission-22-amsterdam-canals.json' with { type: 'json' };
+import mission23 from '../../maps/campaign/mission-23-rotterdam-europoort.json' with { type: 'json' };
+import mission24 from '../../maps/campaign/mission-24-brussels-cinquantenaire.json' with { type: 'json' };
+import mission25 from '../../maps/campaign/mission-25-antwerp-docks.json' with { type: 'json' };
+import mission26 from '../../maps/campaign/mission-26-scheldt-delta-dams.json' with { type: 'json' };
+import mission27 from '../../maps/campaign/mission-27-paris-champs-elysees.json' with { type: 'json' };
+import mission28 from '../../maps/campaign/mission-28-versailles.json' with { type: 'json' };
+import mission29 from '../../maps/campaign/mission-29-lyon-industrial.json' with { type: 'json' };
+import mission30 from '../../maps/campaign/mission-30-mont-blanc.json' with { type: 'json' };
+import mission31 from '../../maps/campaign/mission-31-provence-lavender.json' with { type: 'json' };
+import mission32 from '../../maps/campaign/mission-32-nice-cote-dazur.json' with { type: 'json' };
+import mission33 from '../../maps/campaign/mission-33-andorra-pas-de-la-casa.json' with { type: 'json' };
+import mission34 from '../../maps/campaign/mission-34-bardenas-reales-range.json' with { type: 'json' };
+import mission35 from '../../maps/campaign/mission-35-montserrat.json' with { type: 'json' };
+import mission36 from '../../maps/campaign/mission-36-barcelona-gothic-sagrada.json' with { type: 'json' };
+import mission37 from '../../maps/campaign/mission-37-barcelona-montjuic.json' with { type: 'json' };
+import mission38 from '../../maps/campaign/mission-38-barcelona-port.json' with { type: 'json' };
 import remagenBridgehead from '../../maps/contracts/remagen-bridgehead.json' with { type: 'json' };
 import brussels from '../../maps/contracts/brussels.json' with { type: 'json' };
 import versailles from '../../maps/contracts/versailles.json' with { type: 'json' };
@@ -415,7 +418,7 @@ export function normalizeMapDefinition(rawMap, index = 0) {
   };
 }
 
-export const SECTORS = [romeForumColosseum, placeholder02, placeholder03, placeholder04, placeholder05, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, charlesBridge, brandenburgGate, versailles, brussels, remagenBridgehead, parisLastStand].map(normalizeMapDefinition);
+export const SECTORS = [mission01, mission02, mission03, mission04, mission05, mission06, mission07, mission08, mission09, mission10, mission11, mission12, mission13, mission14, mission15, mission16, mission17, mission18, mission19, mission20, mission21, mission22, mission23, mission24, mission25, mission26, mission27, mission28, mission29, mission30, mission31, mission32, mission33, mission34, mission35, mission36, mission37, mission38, lastCargo, blackoutProtocol, charlesBridge, brandenburgGate, versailles, brussels, remagenBridgehead, parisLastStand].map(normalizeMapDefinition);
 
 /**
  * True for every map launched from the Contracts board: the cargo / sabotage raids
