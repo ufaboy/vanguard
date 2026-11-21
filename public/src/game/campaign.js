@@ -9,27 +9,22 @@ export const CAMPAIGN_CHAPTERS = [
       {
         "id": "campaign-01",
         "number": 1,
-        "name": "First Contact",
-        "objective": "Clear the outer streets",
-        "layout": "An offset entry street leads to a broken market, civic square, and workshop court. Breach brick partitions for short flanks or follow the covered outer loop.",
+        "name": "Charles Bridge",
+        "objective": "Clear the Charles Bridge crossings",
+        "layout": "Prague: columns come down from Mala Strana over Charles Bridge, the modern road bridge and the Kampa channel toward the Old Town bank, past fuel drums, collapsing houses and the Old Town Square.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 12,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 8,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 3, "phase": "regular" },
+          { "type": "STANDARD", "count": 14, "phase": "regular" },
+          { "type": "HOVER", "count": 2, "phase": "regular" },
+          { "type": "HOWITZER", "count": 1, "phase": "regular" },
+          { "type": "ENGINEER", "count": 1, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Introduce only basic units; keep the first engagement free of crossfire."
+          "initialCount": 5,
+          "maxConcurrent": 5,
+          "notes": "Five waves of four to five tanks; each wave starts three seconds after the previous one is destroyed and introduces one new idea at a time."
         }
       },
       {

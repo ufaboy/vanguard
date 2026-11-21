@@ -165,7 +165,7 @@ The game and every file it needs reside inside `/public` and are served as writt
     ├── models/             # Optimized GLBs: tanks, bosses, turrets, air drop, terrain/, landmarks/
     ├── maps/               # JSON maps (40x40 surface/object layouts, enemy pools, entrances, bosses)
     │   ├── index.json      # Map registry, game modes and tile/enemy legend
-    │   ├── campaign/       # mission-01-first-contact.json .. mission-35-vanguard-dawn.json (+ index.json)
+    │   ├── campaign/       # mission-01-charles-bridge.json .. mission-35-vanguard-dawn.json (+ index.json)
     │   ├── survival/       # iron-crucible.json, paris-last-stand.json
     │   └── contracts/      # blackout-protocol.json, last-cargo.json
     ├── vendor/

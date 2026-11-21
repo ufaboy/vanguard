@@ -1,0 +1,555 @@
+{
+  "id": 1,
+  "mapId": "campaign-01",
+  "code": "MISSION 01 // CITY OUTSKIRTS",
+  "name": "Charles Bridge",
+  "subtitle": "SECTOR 01 // PRAGUE: CLEAR THE CHARLES BRIDGE CROSSINGS",
+  "objective": "Clear the Charles Bridge crossings",
+  "gameMode": "extermination",
+  "rules": {
+    "spawnSectorBossOnClear": false
+  },
+  "gridSize": 40,
+  "tileSize": 2,
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "playerSpawnCell": {
+    "row": 34,
+    "col": 20
+  },
+  "environment": {
+    "theme": "urban",
+    "tint": "#e8d9b8",
+    "fogColor": "#1c2430",
+    "groundColor": "#6e6a62"
+  },
+  "completionReward": {
+    "credits": 250
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "A first battle over the Vltava: hold the Old Town bank while columns come down from Mala Strana over Charles Bridge, the modern road bridge and the Kampa channel. Fuel drums, collapsing houses, hovercraft and a lone howitzer show what the battlefield can do.",
+    "reference": {
+      "place": "Charles Bridge, Prague (Czech Republic)",
+      "kind": "real",
+      "kept": [
+        "Charles Bridge between the Mala Strana and Old Town bridge towers",
+        "Kampa island cut off by the Certovka channel, with its footbridge",
+        "Old Town water tower beside the bridgehead",
+        "Old Town Square with the Old Town Hall, the Jan Hus memorial and the Tyn church",
+        "St. Nicholas church on the Mala Strana square and the Petrin slope"
+      ],
+      "simplified": [
+        "Map rotated: the Vltava runs west-east, Mala Strana is north, Old Town south",
+        "The river and every district are compressed to game scale",
+        "A modern road bridge stands east of Charles Bridge to give a second crossing",
+        "The Prague Castle hill is suggested only by the forested Petrin corner"
+      ]
+    },
+    "breaches": [
+      {
+        "name": "Bridge tower barricade",
+        "cells": [
+          {
+            "row": 15,
+            "col": 21
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 21
+        },
+        "end": {
+          "row": 13,
+          "col": 21
+        },
+        "purpose": "A brick barricade half-closes the gate between the Mala Strana bridge towers; blast it to open the full width of Charles Bridge."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 1357,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "petrin-slope",
+        "bounds": [
+          0,
+          0,
+          9,
+          8
+        ],
+        "surface": "dirt",
+        "density": 0.3,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "mala-strana",
+        "bounds": [
+          0,
+          9,
+          11,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "leaves"
+        ]
+      },
+      {
+        "id": "fuel-depot",
+        "bounds": [
+          7,
+          27,
+          11,
+          33
+        ],
+        "surface": "concrete",
+        "density": 0.35,
+        "details": [
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "kampa-park",
+        "bounds": [
+          12,
+          0,
+          15,
+          10
+        ],
+        "surface": "dirt",
+        "density": 0.3,
+        "details": [
+          "leaves"
+        ]
+      },
+      {
+        "id": "bridgeheads",
+        "bounds": [
+          12,
+          13,
+          15,
+          33
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "old-town",
+        "bounds": [
+          22,
+          0,
+          39,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "old-town-square",
+        "bounds": [
+          29,
+          13,
+          35,
+          23
+        ],
+        "surface": "pavers",
+        "density": 0.15,
+        "details": [
+          "cracks"
+        ]
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-mala-strana",
+        "kind": "label",
+        "row": 6,
+        "col": 13,
+        "size": 1.8,
+        "text": "MALA STRANA"
+      },
+      {
+        "id": "label-kampa",
+        "kind": "label",
+        "row": 12,
+        "col": 5,
+        "size": 1.6,
+        "text": "KAMPA"
+      },
+      {
+        "id": "label-charles-bridge",
+        "kind": "label",
+        "row": 24,
+        "col": 28,
+        "size": 2,
+        "text": "CHARLES BRIDGE"
+      },
+      {
+        "id": "label-vltava",
+        "kind": "label",
+        "row": 22,
+        "col": 7,
+        "size": 1.6,
+        "text": "VLTAVA"
+      },
+      {
+        "id": "label-old-town-square",
+        "kind": "label",
+        "row": 31,
+        "col": 18,
+        "size": 1.8,
+        "text": "OLD TOWN SQUARE"
+      },
+      {
+        "id": "label-tyn",
+        "kind": "label",
+        "row": 35,
+        "col": 27,
+        "size": 1.6,
+        "text": "TYN CHURCH"
+      },
+      {
+        "id": "karlova-crossing",
+        "kind": "crosswalk",
+        "row": 28,
+        "col": 21,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "depot-hazard",
+        "kind": "hazard_zone",
+        "row": 11,
+        "col": 30,
+        "size": 2
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 5,
+    "maxConcurrent": 5,
+    "spawnIntervalSec": 2.4,
+    "nextWave": {
+      "when": "cleared",
+      "delaySec": 3
+    },
+    "entrances": [
+      {
+        "id": "petrin-lane",
+        "row": 0,
+        "col": 9
+      },
+      {
+        "id": "mostecka",
+        "row": 0,
+        "col": 21
+      },
+      {
+        "id": "east-road",
+        "row": 0,
+        "col": 34
+      }
+    ],
+    "encounters": [
+      {
+        "id": "mala-strana-probe",
+        "label": "MALA STRANA: Scouts race down to the bridge. Hold the Old Town bank.",
+        "enemies": [
+          "SCOUT",
+          "SCOUT",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "initialCells": [
+          {
+            "row": 2,
+            "col": 21
+          },
+          {
+            "row": 4,
+            "col": 9
+          },
+          {
+            "row": 6,
+            "col": 15
+          },
+          {
+            "row": 6,
+            "col": 28
+          },
+          {
+            "row": 3,
+            "col": 34
+          }
+        ],
+        "entrances": [
+          "mostecka",
+          "petrin-lane",
+          "east-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 22
+          },
+          {
+            "row": 25,
+            "col": 21
+          },
+          {
+            "row": 31,
+            "col": 20
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "depot-column",
+        "label": "FUEL DEPOT: A column rolls past the fuel drums on the east road. One shot can set them off.",
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 6,
+            "col": 30
+          },
+          {
+            "row": 12,
+            "col": 34
+          },
+          {
+            "row": 25,
+            "col": 34
+          },
+          {
+            "row": 33,
+            "col": 30
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "kampa-crossing",
+        "label": "KAMPA: Hovercraft slip down the Certovka and cross the Vltava. Water does not stop them.",
+        "enemies": [
+          "HOVER",
+          "STANDARD",
+          "HOVER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "petrin-lane",
+          "mostecka"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 6
+          },
+          {
+            "row": 24,
+            "col": 8
+          },
+          {
+            "row": 32,
+            "col": 14
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "artillery-cover",
+        "label": "ARTILLERY: A howitzer shells the Old Town from Mala Strana. Cross the bridge and silence it.",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "east-road",
+          "mostecka"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 34
+          },
+          {
+            "row": 25,
+            "col": 34
+          },
+          {
+            "row": 32,
+            "col": 23
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "last-push",
+        "label": "LAST PUSH: An engineer leads the final column over Charles Bridge. Clear the crossing.",
+        "enemies": [
+          "STANDARD",
+          "ENGINEER",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "mostecka",
+          "petrin-lane",
+          "east-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 21
+          },
+          {
+            "row": 24,
+            "col": 21
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "recoverySec": 0
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "SCOUT",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "ENGINEER",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVVVVVVVR...........RR...........RR....",
+    "VVVVVVVVVR...........RR...........RR....",
+    "VVVVVVVVVR...........RR...........RR....",
+    "VVVVVVVVVR...........RR...........RR....",
+    "VVVVVVVVVR...........RR...........RR....",
+    "VVVVVVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "VVVVVVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "VVVVVVVVVR...........RR...........RRVVVV",
+    "VVVVVVVVVR...........RR.....LLLL..RRVVVV",
+    "VVVVVVVVVR...........RR.....LLLL..RRVVVV",
+    "WWWWWWWWWWWWW........RR.....LLLL..RRVVVV",
+    "WWWWWWWWWWWWW........RR...........RR....",
+    "VVVVVVVVVVVWWRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVVVVVVVVWWRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVVVVVVVVWW........RR...........RRSSSS",
+    "SSSSSSSSSSSWW........RR...........RRSSSS",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "SSSSSSVVVVVVVVV......RR...........RR....",
+    "VVVVVVVVVVVVVVV......RR...........RR....",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "........R............RR...........RRVVVV",
+    "........R............RR...........RRVVVV",
+    "....RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "........R............RR...........RRVVVV",
+    "........R.........................RRVVVV",
+    "........R.........................RRVVVV",
+    "........R.........................RRVVVV",
+    "........R.........................RRVVVV",
+    "........R.........................RRVVVV",
+    "........R.........................RRVVVV",
+    "........RRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "........R.........................RRVVVV",
+    "........R.........................RRVVVV",
+    "........R.........................RRVVVV"
+  ],
+  "objectLayout": [
+    "FFFFFFFFF..PPPP.AAAA.....PPPPP.AA.......",
+    "FFFFFFFFF..PPPP.AAAA.....PPPPP.AA....AA.",
+    "FFFFF.FFF...........F....PPPPP.......AA.",
+    "FFFFFFFFF..AAA.FF.AA.....PPPPP.AAA...AA.",
+    "FFF.FFF....AAA.FF.AA...........AAA......",
+    "FFFF.FF.................................",
+    "FFFFFFF.................................",
+    "FFFF.......AAAA.PPPP....AAA.....PP...FFF",
+    "FFFF.......AAAA.PPPP....AAA.D.D.PP...FFF",
+    "...........Q....PPPP....AAA..D..PP...FFF",
+    ".........=....AAAAUU...FF......D.....FFF",
+    ".........=....AAAAUU...FF.XX.Q.......XX.",
+    ".FFFF..FFF..............................",
+    ".FFFFAAFFF..............................",
+    ".....AA.Q.....AAAA.PP..PP.FFFFF......K..",
+    "..............AAAA.PPB.PP.FFFFF.Q.......",
+    ".....................==...........==....",
+    ".....................==...........==....",
+    ".....................==...........==....",
+    ".....................==...........==....",
+    ".....................==...........==....",
+    ".....................==...........==....",
+    "..FFF....FFF.AAA.T.PP..PP..K.FF......AA.",
+    "..FFF.Q..FFF.AAA...PP..PP.....QFFF...AA.",
+    "........................................",
+    "........................................",
+    "PPPPPPP...AAAA.PPPPP....PPPPPU.AA....AA.",
+    "PPPPPPP...AAAA.PPPPP....PPPPP..AA....AA.",
+    ".....................................AA.",
+    ".AAA.FF...PPP...........AA.....AAA......",
+    ".AAA.FF...PPP..Q.....FF.AAPPPP.AAA..FFF.",
+    ".AAA......PPP.............PPPP.AAA..FFF.",
+    "......Q...........CC......PPPP......FFF.",
+    ".AAAA.AA..AA..............PPPP.FF.......",
+    ".AAAA.AA..AA.FF.......FFQ.PPPP.FF....AA.",
+    ".AAAA.AA..AA.FF.......FF.........Q...AA.",
+    "........................................",
+    ".PPPPP....AAAAA...CCCC...FFFFFAAAA......",
+    ".PPPPP....AAAAA..........FFFFFAAAA......",
+    ".FFFFF....FFFF.....HH....FFFFF.........."
+  ]
+}

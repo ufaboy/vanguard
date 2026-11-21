@@ -74,7 +74,7 @@ Use a recent map of the same mode as the template. Typical top-level keys:
 - `environment` (`theme`, `tint`, `fogColor`, `groundColor`)
 - `design` (`enemySide`, `tacticalIdentity`, `breaches[]`, `reference`)
 - `decoration` (see decoration.md), `landmarks3d`, optional `mines`, `mineSigns`
-- `enemies` (`initialSpawnCount`, `maxConcurrent`, `spawnIntervalSec`, `entrances[{id,row,col}]`, `encounters[{id,label,enemies[],initialCells?,entrances[],patrolRoute[],recoverySec}]`) and `enemyPool`
+- `enemies` (`initialSpawnCount`, `maxConcurrent`, `spawnIntervalSec`, `entrances[{id,row,col}]`, `encounters[{id,label,enemies[],initialCells?,entrances[],patrolRoute[],recoverySec}]`, optional `nextWave: { when: "cleared", delaySec }` to start each group exactly `delaySec` after the previous one is fully destroyed; without it the next group starts when at most one tank is left and `recoverySec` is halved) and `enemyPool`
 - `surfaceLayout`, `objectLayout`
 
 Map text (`name`, `subtitle`, `objective`, encounter labels, decoration labels) is English. The skill does not add i18n entries; that happens when the map is integrated.

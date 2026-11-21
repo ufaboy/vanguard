@@ -728,7 +728,7 @@ export class SectorLoaderController {
         engine.createEnemyAt(enemyClass, spawn.spawnPos.x, spawn.spawnPos.z, false, spawn.entryTarget);
         engine.enemies.at(-1).campaignPatrolRoute = opening.patrolRoute;
       }
-      engine.encounterState = createEncounterState(sector.encounters, count);
+      engine.encounterState = createEncounterState(sector.encounters, count, sector.nextWave);
       engine.vanguardRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
       engine.initialVanguardCount = engine.vanguardRemainingToSpawn + count;
       engine.enemySpawnQueue = [];

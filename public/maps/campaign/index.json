@@ -1,7 +1,7 @@
 {
   "version": 1,
   "maps": [
-    "./maps/campaign/mission-01-first-contact.json",
+    "./maps/campaign/mission-01-charles-bridge.json",
     "./maps/campaign/mission-02-broken-avenue.json",
     "./maps/campaign/mission-03-civic-shelter.json",
     "./maps/campaign/mission-04-outer-gate.json",
