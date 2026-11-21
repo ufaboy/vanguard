@@ -1,7 +1,8 @@
 /**
  * Landmark catalog and 3D model loader (Paris monuments for Survival S-01
  * "Paris: Last Stand", Berlin monuments for campaign mission 02 "Brandenburg Gate",
- * Versailles palace and fountains for campaign mission 03 "Versailles").
+ * Versailles palace and fountains for campaign mission 03 "Versailles", Brussels
+ * monuments for campaign mission 04 "Brussels").
  *
  * Footprints: 1 cell = 2 world units, +X east, +Z south, model origin at the
  * footprint centre on the ground. Blocked cells become TileType.LANDMARK
@@ -26,6 +27,7 @@ const LANDMARK_PACKS = Object.freeze({
   paris: '../../../models/landmarks/paris_landmarks.glb',
   berlin: '../../../models/landmarks/berlin_landmarks.glb',
   versailles: '../../../models/landmarks/versailles_landmarks.glb',
+  brussels: '../../../models/landmarks/brussels_landmarks.glb',
 });
 
 /** Cells `cols` of every row in a `cols` x `rows` footprint. */
@@ -48,6 +50,13 @@ const LANDMARK_SPECS = Object.freeze({
   VERSAILLES_PALACE: Object.freeze({ cols: 16, rows: 3, blocked: ALL(16, 3), height: 6.0, pack: 'versailles' }),
   LATONA_FOUNTAIN: Object.freeze({ cols: 2, rows: 2, blocked: ALL(2, 2), height: 2.5, pack: 'versailles' }),
   APOLLO_FOUNTAIN: Object.freeze({ cols: 2, rows: 2, blocked: ALL(2, 2), height: 1.6, pack: 'versailles' }),
+  // Nine steel spheres on a central tube and three bipods; the whole 3x3 plaza footprint blocks.
+  ATOMIUM: Object.freeze({ cols: 3, rows: 3, blocked: ALL(3, 3), height: 12.5, pack: 'brussels' }),
+  // Colonnade wings (cols 0-1, 9-10) and arch piers (cols 2, 4, 6, 8) block; cols 3, 5, 7 are the three arches.
+  CINQUANTENAIRE_ARCH: Object.freeze({ cols: 11, rows: 2, blocked: COLUMNS([0, 1, 2, 4, 6, 8, 9, 10], 2), height: 9.0, pack: 'brussels' }),
+  // Gothic town hall, square front facing north, belfry spire in the middle; fully blocked.
+  BRUSSELS_TOWN_HALL: Object.freeze({ cols: 6, rows: 2, blocked: ALL(6, 2), height: 12.0, pack: 'brussels' }),
+  MANNEKEN_PIS: Object.freeze({ cols: 1, rows: 1, blocked: [[0, 0]], height: 1.8, pack: 'brussels' }),
 });
 
 const packOf = (kind) => LANDMARK_SPECS[kind]?.pack || 'paris';
@@ -65,6 +74,10 @@ export const PLACEABLE_LANDMARKS = Object.freeze([
   'VERSAILLES_PALACE',
   'LATONA_FOUNTAIN',
   'APOLLO_FOUNTAIN',
+  'ATOMIUM',
+  'CINQUANTENAIRE_ARCH',
+  'BRUSSELS_TOWN_HALL',
+  'MANNEKEN_PIS',
 ]);
 
 /** Grid cells blocked by a `{ kind, row, col }` landmark entry. */
@@ -500,6 +513,7 @@ export class LandmarkModels {
       blue: new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.55 }),
       sandstone: applyLandmarkFinish(new THREE.MeshStandardMaterial({ color: 0xc2b293, map: stoneTex, roughness: 0.8, metalness: 0.04 })),
       patina: new THREE.MeshStandardMaterial({ color: 0x45766a, roughness: 0.55, metalness: 0.5 }),
+      steel: new THREE.MeshStandardMaterial({ color: 0xd8dee6, roughness: 0.22, metalness: 0.9 }),
       asphalt: new THREE.MeshStandardMaterial({ color: 0x4a4f58, roughness: 0.92, metalness: 0.02 }),
       roadPaint: new THREE.MeshStandardMaterial({ color: 0xe0b23a, roughness: 0.7 }),
     };
@@ -653,6 +667,69 @@ export class LandmarkModels {
         addBox(1.1, 0.52, 0.7, m.gold, 0, 0.54, 0.45);
         for (const x of [-0.75, -0.25, 0.25, 0.75]) addBox(0.22, 0.6, 0.7, m.gold, x, 0.6, -0.6);
         addCyl(0.12, 0.17, 0.7, 10, m.gold, 0, 1.15, 0.55);
+        break;
+      }
+      case 'ATOMIUM': {
+        addBox(5.9, 0.14, 5.9, m.darkStone, 0, 0.07, 0);
+        // A cube of nine spheres standing on one corner: top, bottom, centre and six around the middle.
+        const centre = 6.2;
+        const points = [[0, centre + 4.6, 0], [0, centre - 4.6, 0], [0, centre, 0]];
+        for (let k = 0; k < 3; k++) {
+          const a = (k / 3) * Math.PI * 2;
+          points.push([Math.cos(a) * 2.6, centre + 1.5, Math.sin(a) * 2.6]);
+          points.push([Math.cos(a + Math.PI / 3) * 2.6, centre - 1.5, Math.sin(a + Math.PI / 3) * 2.6]);
+        }
+        for (const [x, y, z] of points) {
+          const ball = new THREE.Mesh(new THREE.SphereGeometry(0.78, 18, 12), m.steel);
+          ball.position.set(x, y, z);
+          ball.castShadow = true;
+          ball.receiveShadow = true;
+          group.add(ball);
+        }
+        addCyl(0.24, 0.24, centre - 4.6, 10, m.steel, 0, (centre - 4.6) / 2, 0);
+        addCyl(0.12, 0.12, 9.2, 8, m.steel, 0, centre, 0);
+        for (let k = 0; k < 3; k++) {
+          const a = (k / 3) * Math.PI * 2 + Math.PI / 3;
+          const leg = addCyl(0.16, 0.16, 4.6, 8, m.slate, Math.cos(a) * 1.7, 2.1, Math.sin(a) * 1.7);
+          leg.rotation.set(Math.sin(a) * 0.45, 0, -Math.cos(a) * 0.45);
+        }
+        break;
+      }
+      case 'CINQUANTENAIRE_ARCH': {
+        // Piers at x = -6, -2, 2, 6 (cells 2, 4, 6, 8); colonnade wings over cells 0-1 and 9-10.
+        addBox(21.8, 0.16, 3.9, m.darkStone, 0, 0.08, 0);
+        for (const x of [-6, -2, 2, 6]) addBox(1.7, 5.2, 3.4, m.sandstone, x, 2.6, 0);
+        addBox(13.8, 1.6, 3.6, m.sandstone, 0, 6.0, 0);
+        addBox(14.2, 0.24, 3.9, m.darkStone, 0, 6.92, 0);
+        addBox(5.0, 1.0, 2.6, m.patina, 0, 7.54, 0);
+        addCyl(0.14, 0.2, 1.1, 8, m.patina, 0, 8.6, 0);
+        for (const side of [-1, 1]) {
+          addBox(3.6, 0.5, 3.6, m.sandstone, side * 9, 4.3, 0);
+          for (const x of [7.6, 8.6, 9.6, 10.5]) addCyl(0.2, 0.24, 4.0, 10, m.whiteStone, side * x, 2.1, 1.1);
+          addBox(3.8, 4.0, 0.6, m.sandstone, side * 9, 2.0, -1.4);
+        }
+        break;
+      }
+      case 'BRUSSELS_TOWN_HALL': {
+        addBox(11.8, 0.14, 3.9, m.darkStone, 0, 0.07, 0);
+        for (const x of [-3.3, 3.3]) {
+          addBox(4.8, 4.4, 3.4, m.sandstone, x, 2.2, 0);
+          addBox(4.6, 1.6, 3.0, m.slate, x, 5.2, 0.1);
+          for (let i = 0; i < 7; i++) addBox(0.36, 0.9, 0.05, m.glass, x - 2.0 + i * 0.66, 2.6, -1.73);
+        }
+        addBox(1.8, 6.6, 1.8, m.sandstone, 0, 3.3, -0.4);
+        addCyl(0.75, 0.9, 1.6, 8, m.sandstone, 0, 7.4, -0.4);
+        addCyl(0.08, 0.7, 2.8, 8, m.sandstone, 0, 9.6, -0.4);
+        addCyl(0.03, 0.08, 0.9, 6, m.gold, 0, 11.4, -0.4);
+        break;
+      }
+      case 'MANNEKEN_PIS': {
+        addBox(1.6, 0.18, 1.6, m.darkStone, 0, 0.09, 0);
+        addBox(1.2, 0.3, 1.0, m.whiteStone, 0, 0.33, 0.1);
+        addBox(1.1, 0.03, 0.9, m.glass, 0, 0.5, 0.1);
+        addBox(0.7, 1.0, 0.4, m.stone, 0, 0.98, -0.4);
+        addCyl(0.08, 0.07, 0.32, 8, m.patina, 0, 1.48, -0.3);
+        addCyl(0.07, 0.07, 0.1, 8, m.patina, 0, 1.85, -0.3);
         break;
       }
       case 'MINE_SIGN': {

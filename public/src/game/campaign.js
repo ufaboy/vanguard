@@ -73,21 +73,21 @@ export const CAMPAIGN_CHAPTERS = [
       {
         "id": "campaign-04",
         "number": 4,
-        "name": "Outer Gate",
-        "objective": "Destroy the gate stronghold",
-        "layout": "Two breach lanes and a rear service road lead to the screened gate core.",
-        "difficulty": "Moderate",
+        "name": "Brussels",
+        "objective": "Destroy the enemy HQ behind the arch",
+        "layout": "Brussels: leave the Grand-Place and the Town Hall, pass the Royal Palace and cross the Parc de Bruxelles or the Ixelles ponds to Rue de la Loi. The enemy HQ hides behind the Cinquantenaire arch, between the museums and the Atomium; its three arches and the side avenues all lead to it.",
+        "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          { "type": "SCOUT", "count": 4, "phase": "regular" },
-          { "type": "STANDARD", "count": 12, "phase": "regular" },
-          { "type": "ARMOR", "count": 5, "phase": "regular" },
-          { "type": "HOWITZER", "count": 3, "phase": "regular" }
+          { "type": "SCOUT", "count": 6, "phase": "regular" },
+          { "type": "STANDARD", "count": 11, "phase": "regular" },
+          { "type": "ARMOR", "count": 2, "phase": "regular" },
+          { "type": "HOWITZER", "count": 1, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Use armor at the gate and standard tanks in side streets; artillery stays reachable from a flank."
+          "initialCount": 4,
+          "maxConcurrent": 4,
+          "notes": "Four light waves; each starts three seconds after the previous one is destroyed. Patrols in the Cinquantenaire park, a column through the Parc de Bruxelles, a flank around the Ixelles ponds, then two heavy tanks and a howitzer guard the arch."
         }
       },
       {

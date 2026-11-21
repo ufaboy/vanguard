@@ -67,6 +67,7 @@ Nothing except a bridge stands on water, swamp, ice or oil (barrels may stand on
 - Paris: `EIFFEL_TOWER`, `ARC_DE_TRIOMPHE`, `NOTRE_DAME`, `LOUVRE_PYRAMID`, `SACRE_COEUR`, `CONCORDE_OBELISK`.
 - Berlin: `BRANDENBURG_GATE` (7×2; cells 0, 2, 4, 6 block, cells 1, 3, 5 are drivable passages running north-south; an object such as `B` may close a passage) and `VICTORY_COLUMN` (2×2, fully blocked).
 - Versailles: `VERSAILLES_PALACE` (16×3, fully blocked, garden front facing north), `LATONA_FOUNTAIN` and `APOLLO_FOUNTAIN` (2×2, fully blocked).
+- Brussels: `CINQUANTENAIRE_ARCH` (11×2; colonnade cells 0-1 and 9-10 and piers 2, 4, 6, 8 block, cells 3, 5, 7 are drivable arches running north-south), `ATOMIUM` (3×3, fully blocked), `BRUSSELS_TOWN_HALL` (6×2, fully blocked, front facing north) and `MANNEKEN_PIS` (1×1, blocked).
 
 The map scripts treat landmark footprints as solid walls (`#` in `layered-layout.mjs`).
 

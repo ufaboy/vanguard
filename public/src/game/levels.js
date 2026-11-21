@@ -31,7 +31,7 @@ import hiddenSignals from '../../maps/campaign/mission-08-hidden-signals.json' w
 import timberline from '../../maps/campaign/mission-07-timberline.json' with { type: 'json' };
 import greenBorder from '../../maps/campaign/mission-06-green-border.json' with { type: 'json' };
 import remagenBridgehead from '../../maps/campaign/mission-05-remagen-bridgehead.json' with { type: 'json' };
-import outerGate from '../../maps/campaign/mission-04-outer-gate.json' with { type: 'json' };
+import brussels from '../../maps/campaign/mission-04-brussels.json' with { type: 'json' };
 import versailles from '../../maps/campaign/mission-03-versailles.json' with { type: 'json' };
 import brandenburgGate from '../../maps/campaign/mission-02-brandenburg-gate.json' with { type: 'json' };
 import charlesBridge from '../../maps/campaign/mission-01-charles-bridge.json' with { type: 'json' };
@@ -410,4 +410,4 @@ export function normalizeMapDefinition(rawMap, index = 0) {
   };
 }
 
-export const SECTORS = [charlesBridge, brandenburgGate, versailles, outerGate, remagenBridgehead, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, parisLastStand].map(normalizeMapDefinition);
+export const SECTORS = [charlesBridge, brandenburgGate, versailles, brussels, remagenBridgehead, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, parisLastStand].map(normalizeMapDefinition);
