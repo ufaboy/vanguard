@@ -94,9 +94,9 @@ Gameplay wins over realism, but resolve conflicts by moving, compressing or addi
 ### 8. Verify with scripts
 
 ```text
-node skills/create-map/scripts/inspect-map.mjs . <map-json-path>
-node skills/create-map/scripts/audit-map.mjs <map-json-path>
-node skills/create-map/scripts/tactics-check.mjs <map-json-path>
+node .agents/skills/create-map/scripts/inspect-map.mjs . <map-json-path>
+node .agents/skills/create-map/scripts/audit-map.mjs <map-json-path>
+node .agents/skills/create-map/scripts/tactics-check.mjs <map-json-path>
 ```
 
 All three must report no errors / issues. `tactics-check` measures the tactical minimum: object-free squares (`open_area`), the best single overwatch cell in the player half (`overwatch`, using player sight and shot-blocking tiles), and ambush cover near routes per sector (`ambush`). It is a heuristic: if you keep a flagged feature on purpose, say why in the delivery report. Also check by reading the grid: entrance gaps on row 0, no full-width water line, breaches listed in `design` really exist, `enemyPool` matches the encounters. Scripts are evidence, not proof of realism or fun.

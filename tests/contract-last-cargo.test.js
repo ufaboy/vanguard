@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { inspectMap } from '../skills/create-map/scripts/inspect-map.mjs';
-import { effectiveLayout } from '../skills/create-map/scripts/layered-layout.mjs';
+import { inspectMap } from '../.agents/skills/create-map/scripts/inspect-map.mjs';
+import { effectiveLayout } from '../.agents/skills/create-map/scripts/layered-layout.mjs';
 import {
   MAP_MODES,
   VICTORY_CONDITIONS,

@@ -1,5 +1,5 @@
 // Read-only tactical heuristics for a 40x40 map: empty areas, single-spot overwatch, ambush cover per sector.
-// Usage: node skills/create-map/scripts/tactics-check.mjs <map-json-path>
+// Usage: node .agents/skills/create-map/scripts/tactics-check.mjs <map-json-path>
 import fs from 'node:fs';
 import { effectiveLayout } from './layered-layout.mjs';
 

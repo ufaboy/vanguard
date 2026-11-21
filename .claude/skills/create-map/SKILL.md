@@ -4,4 +4,4 @@ description: Create a new BATTLE TANK (Vanguard) battlefield map JSON from a the
 argument-hint: <theme> [mode] [output path]
 ---
 
-The full skill lives in `skills/create-map/SKILL.md` (shared with other agents). Read it and its `references/` now and follow it exactly with the user's arguments: $ARGUMENTS
+The full skill lives in `.agents/skills/create-map/SKILL.md` (shared with other agents). Read it and its `references/` now and follow it exactly with the user's arguments: $ARGUMENTS

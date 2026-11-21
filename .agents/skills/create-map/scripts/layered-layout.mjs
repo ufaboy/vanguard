@@ -1,4 +1,4 @@
-import { landmarkBlockedCells } from '../../../public/src/game/terrains/landmarks.js';
+import { landmarkBlockedCells } from '../../../../public/src/game/terrains/landmarks.js';
 
 /** Token for cells blocked by a `landmarks3d` monument (an indestructible wall at runtime). */
 export const LANDMARK_TOKEN = '#';
