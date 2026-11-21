@@ -126,7 +126,8 @@ The game and every file it needs reside inside `/public` and are served as writt
 ├── README.md
 ├── docs/                   # Engineering notes, SEO audit and map design notes (dev/docs)
 ├── codex/                  # Dev-only 3D Codex viewer for tanks, surfaces and effects (`pnpm run codex`, port 3001)
-├── skills/                 # Agent skills (vanguard-map-creator)
+├── editor/                 # Dev-only 3D map editor (`pnpm run editor`, port 3002; `/editor/?map=/public/maps/<file>.json` opens any map JSON)
+├── skills/                 # Agent skills (create-map: realistic themed map JSON from a theme; `.claude/skills/create-map/` is a thin Claude Code wrapper)
 ├── site/                   # Astro sources of the static SEO pages (`pnpm run build:site` -> dist/site; see site/README.md)
 │   ├── astro.config.mjs    # publicDir ../public, outDir ../dist/site, build.format 'preserve'
 │   ├── scripts/compare.mjs # Compares built pages with reference HTML (structure, text, JSON-LD) after formatting normalization

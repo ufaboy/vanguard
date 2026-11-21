@@ -58,6 +58,29 @@ class MapEditorApp {
     this._renderPalette();
     this._loadState(this.state, { resetHistory: true, fileName: 'custom-map.json' });
     this._loadCatalog();
+    this._loadMapFromQuery();
+  }
+
+  /** Loads a map JSON served by the editor's static server (catalog entry or `?map=` path). */
+  async _loadMapUrl(url, fileName) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const relPath = url.replace(/^\//, '');
+      this._loadState(parseMapState(json), { resetHistory: true, fileName, relPath });
+      this._toast(`Loaded ${fileName}`);
+    } catch (err) {
+      this._toast(`Failed to load map: ${err.message}`);
+    }
+  }
+
+  /** `?map=/public/maps/drafts/foo.json` opens any map under the repository root on startup. */
+  _loadMapFromQuery() {
+    const raw = new URLSearchParams(location.search).get('map');
+    if (!raw) return;
+    const url = raw.startsWith('/') ? raw : `/${raw}`;
+    this._loadMapUrl(url, url.split('/').pop() || 'map.json');
   }
 
   async _loadCatalog() {
@@ -798,16 +821,7 @@ class MapEditorApp {
       const url = e.target.value;
       if (!url) return;
       const opt = e.target.selectedOptions[0];
-      const fileName = opt?.dataset?.filename || 'map.json';
-      try {
-        const res = await fetch(url);
-        const json = await res.json();
-        const relPath = url.replace(/^\//, '');
-        this._loadState(parseMapState(json), { resetHistory: true, fileName, relPath });
-        this._toast(`Loaded ${fileName}`);
-      } catch (err) {
-        this._toast(`Failed to load map: ${err.message}`);
-      }
+      await this._loadMapUrl(url, opt?.dataset?.filename || 'map.json');
     };
 
     $('btn-new').onclick = () => {

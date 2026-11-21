@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { inspectMap } from '../skills/vanguard-map-creator/scripts/inspect-map.mjs';
-import { effectiveLayout } from '../skills/vanguard-map-creator/scripts/layered-layout.mjs';
+import { inspectMap } from '../skills/create-map/scripts/inspect-map.mjs';
+import { effectiveLayout } from '../skills/create-map/scripts/layered-layout.mjs';
 import {
   MAP_MODES,
   VICTORY_CONDITIONS,

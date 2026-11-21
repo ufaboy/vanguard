@@ -1,5 +1,7 @@
 # Campaign map integration
 
+Notes for wiring a finished map (for example a draft made with the `create-map` skill) into a game mode. Moved here from the retired `vanguard-map-creator` skill; file paths may be stale (the engine now lives in `public/src/game/engine/`, catalogs in `components/` and `vehicles/`), so check the current code first.
+
 This is a navigation guide to the current repository, not a promise that every API remains unchanged. Read implementations before patching them.
 
 | Concern | Inspect |
