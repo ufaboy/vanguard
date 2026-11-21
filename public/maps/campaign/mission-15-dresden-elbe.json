@@ -1,0 +1,559 @@
+{
+  "mapId": "campaign-15",
+  "id": 15,
+  "name": "Dresden & the Elbe",
+  "subtitle": "SECTOR 15 // ELBE CROSSINGS & ALTSTADT",
+  "objective": "Destroy all Consortium forces and defeat the Mammoth dreadnought guarding the Elbe",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": true,
+    "defeatOnBaseLoss": true
+  },
+  "boss": {
+    "enemyClass": "BOSS_MAMMOTH",
+    "name": "MAMMOTH MK-V",
+    "title": "Super-Heavy Command Dreadnought",
+    "spawnCell": {
+      "row": 3,
+      "col": 19
+    }
+  },
+  "completionReward": {
+    "credits": 750
+  },
+  "environment": {
+    "theme": "urban",
+    "tint": "#d6cbb8",
+    "fogColor": "#484a50",
+    "groundColor": "#767a78"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Cross the Elbe via Augustus Bridge, Marienbrücke, or the eastern sand fords to clear Consortium artillery in the meadows and prepare an open-ground ambush for the Mammoth dreadnought.",
+    "breaches": [
+      {
+        "name": "Brühl's Terrace Gate",
+        "cells": [
+          {
+            "row": 19,
+            "col": 23
+          },
+          {
+            "row": 19,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 18,
+          "col": 23
+        },
+        "end": {
+          "row": 21,
+          "col": 24
+        },
+        "purpose": "Breach the terrace wall directly into Neumarkt and the Frauenkirche plaza."
+      },
+      {
+        "name": "Zwinger Courtyard Wall",
+        "cells": [
+          {
+            "row": 24,
+            "col": 12
+          },
+          {
+            "row": 24,
+            "col": 13
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 12
+        },
+        "end": {
+          "row": 26,
+          "col": 13
+        },
+        "purpose": "Punch through the Zwinger garden wall to flank between the western avenue and central square."
+      },
+      {
+        "name": "Neumarkt Barricade",
+        "cells": [
+          {
+            "row": 29,
+            "col": 26
+          },
+          {
+            "row": 29,
+            "col": 27
+          }
+        ],
+        "start": {
+          "row": 27,
+          "col": 26
+        },
+        "end": {
+          "row": 31,
+          "col": 26
+        },
+        "purpose": "Open a rapid southern cut between Neumarkt and the South Ring avenue."
+      }
+    ],
+    "reference": {
+      "place": "Dresden & the Elbe, Saxony",
+      "kind": "real",
+      "kept": [
+        "East-west Elbe river dividing Neustadt (north) and Altstadt (south)",
+        "Elbe Meadows (Elbwiesen) open grassy riverbank on the north shore",
+        "Augustus Bridge (central) and Marienbrücke (west) crossings plus shallow sand/gravel fords",
+        "Baroque Altstadt with Zwinger courtyard blocks and Frauenkirche spire (T) on Neumarkt"
+      ],
+      "simplified": [
+        "Compressed river bend and Neustadt street grid to 40x40 scale",
+        "Combined Semperoper, Residenzschloss, and Zwinger into west-central baroque blocks",
+        "Replaced Carolabrücke with a shallow sand/gravel ford on the eastern flank"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 15042026,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "elbe-meadows",
+        "bounds": [
+          7,
+          0,
+          12,
+          39
+        ],
+        "surface": "dirt",
+        "density": 0.25,
+        "details": [
+          "weeds",
+          "tracks",
+          "leaves"
+        ]
+      },
+      {
+        "id": "neustadt-pavers",
+        "bounds": [
+          0,
+          0,
+          6,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "neumarkt-plaza",
+        "bounds": [
+          19,
+          21,
+          23,
+          29
+        ],
+        "surface": "pavers",
+        "density": 0.3,
+        "details": [
+          "cracks",
+          "rubble",
+          "leaves"
+        ]
+      },
+      {
+        "id": "zwinger-court",
+        "bounds": [
+          19,
+          9,
+          23,
+          16
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "leaves",
+          "cracks"
+        ]
+      },
+      {
+        "id": "altstadt-south",
+        "bounds": [
+          26,
+          2,
+          37,
+          37
+        ],
+        "surface": "asphalt",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "terrace-promenade",
+        "points": [
+          [
+            17,
+            5
+          ],
+          [
+            17,
+            34
+          ]
+        ],
+        "width": 2,
+        "surface": "pavers",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "lbl-meadows",
+        "kind": "label",
+        "row": 9,
+        "col": 20,
+        "size": 3,
+        "text": "ELBE MEADOWS"
+      },
+      {
+        "id": "lbl-augustus",
+        "kind": "label",
+        "row": 12,
+        "col": 20,
+        "size": 2.5,
+        "text": "AUGUSTUS BRIDGE"
+      },
+      {
+        "id": "lbl-frauenkirche",
+        "kind": "label",
+        "row": 21,
+        "col": 25,
+        "size": 2.5,
+        "text": "NEUMARKT"
+      },
+      {
+        "id": "lbl-zwinger",
+        "kind": "label",
+        "row": 21,
+        "col": 13,
+        "size": 2.5,
+        "text": "ZWINGER"
+      },
+      {
+        "id": "cw-augustus",
+        "kind": "crosswalk",
+        "row": 18,
+        "col": 20,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "cw-marien",
+        "kind": "crosswalk",
+        "row": 18,
+        "col": 7,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "manhole-1",
+        "kind": "manhole",
+        "row": 25,
+        "col": 20,
+        "size": 1,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [
+    {
+      "kind": "FRAUENKIRCHE",
+      "row": 26,
+      "col": 22
+    }
+  ],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "neustadt-west-road",
+        "row": 1,
+        "col": 7
+      },
+      {
+        "id": "albertplatz-north",
+        "row": 1,
+        "col": 20
+      },
+      {
+        "id": "elbwiesen-east-road",
+        "row": 1,
+        "col": 32
+      }
+    ],
+    "encounters": [
+      {
+        "id": "elbe-meadows-vanguard",
+        "label": "ELBE MEADOWS: Consortium recon and hovercraft probing the northern riverbanks.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "HOVER",
+          "SCOUT",
+          "STANDARD",
+          "HOVER"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 7
+          },
+          {
+            "row": 4,
+            "col": 20
+          },
+          {
+            "row": 4,
+            "col": 32
+          },
+          {
+            "row": 7,
+            "col": 20
+          }
+        ],
+        "entrances": [
+          "neustadt-west-road",
+          "albertplatz-north",
+          "elbwiesen-east-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 20
+          },
+          {
+            "row": 18,
+            "col": 20
+          },
+          {
+            "row": 18,
+            "col": 12
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "augustus-bridge-assault",
+        "label": "AUGUSTUS BRIDGE: Armored assault, sappers, and howitzers contesting the Elbe crossings.",
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "HOWITZER",
+          "SAPPER",
+          "HOVER",
+          "STANDARD",
+          "STEALTH",
+          "ARMOR",
+          "HOWITZER"
+        ],
+        "entrances": [
+          "neustadt-west-road",
+          "albertplatz-north",
+          "elbwiesen-east-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 7
+          },
+          {
+            "row": 25,
+            "col": 12
+          },
+          {
+            "row": 25,
+            "col": 26
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "altstadt-siege-column",
+        "label": "ALTSTADT SIEGE: Heavy Consortium column pushing through Neumarkt and the Zwinger.",
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "FLAMETHROWER",
+          "STANDARD",
+          "ENGINEER",
+          "ARMOR",
+          "HOWITZER",
+          "FLAMETHROWER",
+          "STRIKER"
+        ],
+        "entrances": [
+          "albertplatz-north",
+          "elbwiesen-east-road",
+          "neustadt-west-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 32
+          },
+          {
+            "row": 25,
+            "col": 26
+          },
+          {
+            "row": 31,
+            "col": 20
+          }
+        ],
+        "recoverySec": 10
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "SAPPER",
+    "HOVER",
+    "STANDARD",
+    "STEALTH",
+    "ARMOR",
+    "HOWITZER",
+    "ARMOR",
+    "STRIKER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "ENGINEER",
+    "ARMOR",
+    "HOWITZER",
+    "FLAMETHROWER",
+    "STRIKER"
+  ],
+  "surfaceLayout": [
+    "......RR...........RR..........RR.......",
+    "......RR...........RR..........RR.......",
+    "......RR...........RR..........RR.......",
+    "......RR...........RR..........RR.......",
+    "......RR...........RR..........RR.......",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "VVVVVVRRVVVSSSSVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "......RR...WSSWWWWWWWWWWWW....SRRS......",
+    "WWWWWWWWWWWWSSWWWWWWWWWWWWWWWWWSSWWWWWWW",
+    "WWWWWWWWWWWWSSW....RR.....WWWWWSSWWWWWWW",
+    "VVVVVVRRVVVSSSSVVVVRRVVVVVVVVVSRRSVVVVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..",
+    ".VVVVVRR...........RR..........RR.......",
+    ".VVVVVRR...........RR..........RR.......",
+    ".VVVVVRR...........RR..........RR.......",
+    ".VVVVVRR...........RR..........RR.......",
+    ".VVVVVRR...........RR..........RR.......",
+    "..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..",
+    "..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..",
+    "..VVVVRR...........RR..........RR.VVVVV.",
+    "..VVVVRR...........RR..........RR.VVVVV.",
+    "..VVVVRR...........RR..........RR.VLLVV.",
+    "..VVVVRR...........RR..........RR.VVVVV.",
+    "..VVVVRR...........RR..........RR.VVVVV.",
+    "....RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVV.",
+    "......RR...........RR..........RR.......",
+    "..VVVVRRVVV........RR........VVRRVVVVV..",
+    "..VVVVRRVVV........RR........VVRRVVVVV..",
+    "..VVVVRRVVV..................VVRRVVVVV..",
+    "..VVVVVVVVV..................VVVVVVVVV..",
+    "..VVVVVVVVV..................VVVVVVVVV..",
+    "........................................",
+    "........................................"
+  ],
+  "objectLayout": [
+    "........................................",
+    "..PPP.....AAA..AA......PPP.AAA.....PPP..",
+    "..PPP.....AAA..AA......PPP.AAA.....PPP..",
+    "..PPP.....AAA..AA......PPP.AAA.....PPP..",
+    "............................D...........",
+    "........................................",
+    "........................................",
+    ".........FBBB..............FF...........",
+    "..AAA....FF....AAA....PPP.QFFF.....AAA..",
+    "..AAA....FFQ...AAA....PPP...F......AAA..",
+    "...FF....F......D..........BBB..........",
+    "..FF....................................",
+    "..................X..X...K.......U......",
+    ".......K...........==...................",
+    "......==...........==...................",
+    "......==................................",
+    "..FF.X..X.........X..X.............FF...",
+    "..FFF..........U........K..........FFF..",
+    "........................................",
+    "..FF.....PPP..PPP.....CBBC.PPP..........",
+    ".FAAA....PPP..PPP....U.....PPP....PPP...",
+    ".FAAA......QFF.......K....T.Q.....PPP...",
+    ".FAAA....AAAF..AA.....AAA...PP....PPP...",
+    ".........AAA...AA.....AAA...PP..........",
+    "...........CBBC.........................",
+    ".................K...........U..........",
+    ".........PPP......K................AAA..",
+    "..FF.....PPP..AAA...........AA....FAAA..",
+    "..FF.....PPP..AAA........U..AA....FDDA..",
+    "...FF.......FFAAA........CBBCA....FF....",
+    "............FF........FF...........F....",
+    "........................................",
+    ".............AA..........AA.............",
+    "...F.....AAA..BBB......BBB..AAA....F....",
+    "...FF....AAA.ABBB......BBBA.AAA....FF...",
+    "...FF.........BB........BB.........FF...",
+    "....AAA.....Q....................AAA....",
+    "....AAA...........CCCC...........AAA....",
+    "........................................",
+    "...................HH..................."
+  ]
+}

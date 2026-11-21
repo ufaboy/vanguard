@@ -1,0 +1,637 @@
+{
+  "id": 22,
+  "mapId": "campaign-22",
+  "code": "SECTOR 05 // 40×40",
+  "name": "Amsterdam Canals",
+  "subtitle": "SECTOR 22 // AMSTERDAM CANAL RING",
+  "objective": "Chase and destroy all Consortium units across the Amsterdam canal ring",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 920
+  },
+  "environment": {
+    "theme": "urban",
+    "tint": "#d8cfc0",
+    "fogColor": "#3d454a",
+    "groundColor": "#666b68"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Pursue mobile Consortium forces through Amsterdam's concentric Grachtengordel canals, narrow quays, and gabled canal-house blocks across seven canal bridges, Westerkerk square, and Dam Square.",
+    "breaches": [
+      {
+        "name": "Jordaan Courtyard Wall",
+        "cells": [
+          {
+            "row": 19,
+            "col": 1
+          },
+          {
+            "row": 19,
+            "col": 2
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 1
+        },
+        "end": {
+          "row": 21,
+          "col": 1
+        },
+        "purpose": "Blast through the Jordaan garden wall to link the western back-alley directly without detouring onto the Prinsengracht quay."
+      },
+      {
+        "name": "Royal Palace Courtyard Gate",
+        "cells": [
+          {
+            "row": 13,
+            "col": 16
+          },
+          {
+            "row": 13,
+            "col": 17
+          }
+        ],
+        "start": {
+          "row": 13,
+          "col": 15
+        },
+        "end": {
+          "row": 13,
+          "col": 19
+        },
+        "purpose": "Breach the Royal Palace courtyard wall to cut straight from the inner west quay onto Damrak."
+      },
+      {
+        "name": "Nieuwmarkt Warehouse Gate",
+        "cells": [
+          {
+            "row": 19,
+            "col": 37
+          },
+          {
+            "row": 19,
+            "col": 38
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 37
+        },
+        "end": {
+          "row": 21,
+          "col": 37
+        },
+        "purpose": "Open the eastern warehouse brick wall to reach the Nieuwmarkt supply cache and bypass the Oosterdok quay choke."
+      },
+      {
+        "name": "Rokin Lock Wall",
+        "cells": [
+          {
+            "row": 26,
+            "col": 23
+          },
+          {
+            "row": 27,
+            "col": 23
+          }
+        ],
+        "start": {
+          "row": 26,
+          "col": 21
+        },
+        "end": {
+          "row": 26,
+          "col": 25
+        },
+        "purpose": "Break the brick partition east of Rokin to cut between the central boulevard and the southern canal quay."
+      }
+    ],
+    "reference": {
+      "place": "Grachtengordel (Prinsengracht, Keizersgracht, Brouwersgracht), Westerkerk & Dam Square, Amsterdam, Netherlands",
+      "kind": "real",
+      "kept": [
+        "Concentric U-shaped canal rings (Prinsengracht and Keizersgracht) plus northern Brouwersgracht",
+        "Multiple small bridges crossing the canals between narrow paved quays",
+        "Gabled canal-house blocks lining the quays in Jordaan, the central island, and Nieuwmarkt",
+        "Westerkerk spire (represented by tower) on the western canal island and Dam Square with the Royal Palace and National Monument"
+      ],
+      "simplified": [
+        "Compressed the four-canal ring into two concentric 2-cell-wide canal arcs and a northern cross-canal",
+        "Represented Westerkerk spire with the generic tower tile (T) and Dam Square / bicycle parking with 2D decoration zones and markings",
+        "Widened main radial avenues (Damrak, West Quay, East Quay) to 2 cells for armored maneuverability"
+      ]
+    }
+  },
+  "landmarks3d": [
+    {
+      "kind": "WESTERKERK",
+      "row": 17,
+      "col": 9
+    },
+    {
+      "kind": "AMSTERDAM_CANAL_HOUSES",
+      "row": 32,
+      "col": 14
+    }
+  ],
+  "decoration": {
+    "version": 1,
+    "seed": 221665,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "dam-square",
+        "bounds": [
+          15,
+          16,
+          20,
+          23
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "westermarkt",
+        "bounds": [
+          16,
+          9,
+          20,
+          12
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "leaves",
+          "cracks"
+        ]
+      },
+      {
+        "id": "jordaan-quarter",
+        "bounds": [
+          5,
+          0,
+          29,
+          3
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "nieuwmarkt-quarter",
+        "bounds": [
+          5,
+          36,
+          29,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "oil"
+        ]
+      },
+      {
+        "id": "hq-amstel-plaza",
+        "bounds": [
+          36,
+          15,
+          39,
+          24
+        ],
+        "surface": "concrete",
+        "density": 0.15,
+        "details": [
+          "cracks",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "prinsengracht-west-quay",
+        "points": [
+          [
+            11,
+            9
+          ],
+          [
+            22,
+            9
+          ]
+        ],
+        "width": 1,
+        "surface": "pavers",
+        "marking": "none"
+      },
+      {
+        "id": "prinsengracht-east-quay",
+        "points": [
+          [
+            11,
+            30
+          ],
+          [
+            22,
+            30
+          ]
+        ],
+        "width": 1,
+        "surface": "pavers",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "crosswalk-damrak",
+        "kind": "crosswalk",
+        "row": 15,
+        "col": 19,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "crosswalk-west-quay",
+        "kind": "crosswalk",
+        "row": 22,
+        "col": 5,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "bike-parking-westerkerk",
+        "kind": "parking",
+        "row": 16,
+        "col": 10,
+        "size": 1.5,
+        "rotation": 0
+      },
+      {
+        "id": "bike-parking-dam",
+        "kind": "parking",
+        "row": 16,
+        "col": 19,
+        "size": 1.5,
+        "rotation": 90
+      },
+      {
+        "id": "loading-nieuwmarkt",
+        "kind": "loading",
+        "row": 15,
+        "col": 37,
+        "size": 1.5,
+        "rotation": 0
+      },
+      {
+        "id": "label-westerkerk",
+        "kind": "label",
+        "row": 18,
+        "col": 11,
+        "size": 1.4,
+        "text": "WESTERKERK"
+      },
+      {
+        "id": "label-dam-square",
+        "kind": "label",
+        "row": 19,
+        "col": 20,
+        "size": 1.6,
+        "text": "DAM SQUARE"
+      },
+      {
+        "id": "label-prinsengracht",
+        "kind": "label",
+        "row": 28,
+        "col": 11,
+        "size": 1.5,
+        "text": "PRINSENGRACHT"
+      },
+      {
+        "id": "label-brouwersgracht",
+        "kind": "label",
+        "row": 4,
+        "col": 20,
+        "size": 1.5,
+        "text": "BROUWERSGRACHT"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear-lane",
+        "bounds": [
+          36,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "west-brouwersgracht",
+        "row": 1,
+        "col": 5
+      },
+      {
+        "id": "center-damrak",
+        "row": 1,
+        "col": 20
+      },
+      {
+        "id": "east-oosterdok",
+        "row": 1,
+        "col": 34
+      }
+    ],
+    "encounters": [
+      {
+        "id": "canal-recon",
+        "label": "CANAL RECON: Consortium scouts and standard patrols are probing the northern canal bridges.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "SCOUT",
+          "HOWITZER",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "initialCells": [
+          {
+            "row": 1,
+            "col": 5
+          },
+          {
+            "row": 1,
+            "col": 20
+          },
+          {
+            "row": 1,
+            "col": 34
+          },
+          {
+            "row": 8,
+            "col": 19
+          }
+        ],
+        "entrances": [
+          "west-brouwersgracht",
+          "center-damrak",
+          "east-oosterdok"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 20
+          },
+          {
+            "row": 16,
+            "col": 20
+          },
+          {
+            "row": 23,
+            "col": 20
+          },
+          {
+            "row": 30,
+            "col": 20
+          },
+          {
+            "row": 34,
+            "col": 20
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "gracht-assault",
+        "label": "GRACHT ASSAULT: Howitzers, jammers and strikers are pushing through Westerkerk and the eastern quays.",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "JAMMER",
+          "STANDARD",
+          "STRIKER",
+          "STANDARD",
+          "HOWITZER",
+          "STANDARD",
+          "JAMMER"
+        ],
+        "entrances": [
+          "west-brouwersgracht",
+          "east-oosterdok"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 5
+          },
+          {
+            "row": 16,
+            "col": 11
+          },
+          {
+            "row": 22,
+            "col": 5
+          },
+          {
+            "row": 22,
+            "col": 34
+          },
+          {
+            "row": 34,
+            "col": 28
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "consortium-ring-guard",
+        "label": "RING GUARD: Heavy howitzer batteries, missile strikers and ECM units are converging across the canal ring.",
+        "enemies": [
+          "STANDARD",
+          "HOWITZER",
+          "STRIKER",
+          "STANDARD",
+          "JAMMER",
+          "HOWITZER",
+          "STANDARD",
+          "STRIKER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "center-damrak",
+          "west-brouwersgracht",
+          "east-oosterdok"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 34
+          },
+          {
+            "row": 16,
+            "col": 28
+          },
+          {
+            "row": 23,
+            "col": 20
+          },
+          {
+            "row": 30,
+            "col": 12
+          },
+          {
+            "row": 35,
+            "col": 19
+          }
+        ],
+        "recoverySec": 8
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "HOWITZER",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "HOWITZER",
+    "JAMMER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD",
+    "HOWITZER",
+    "STANDARD",
+    "JAMMER",
+    "STANDARD",
+    "HOWITZER",
+    "STRIKER",
+    "STANDARD",
+    "JAMMER",
+    "HOWITZER",
+    "STANDARD",
+    "STRIKER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVVRR.............RR.............RRVVVV",
+    "VVVVRR.............RR.............RRVVVV",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "VVVVRR.............RR.............RRVVVV",
+    "....RR.WW..........RR..........WW.RR....",
+    "....RR.WW.WWWWWWWWWWWWWWWWWWWW.WW.RR....",
+    "....RR.WW.WWWWWWWWWWWWWWWWWWWW.WW.RR....",
+    "....RR.WW..........RR..........WW.RRL...",
+    "..L.RR.WW....WW....RR....WW....WW.RRL...",
+    "RRRRRRRWWRRRRRRRRRRRRRRRRRRRRRRWWRRRRRRR",
+    "RRRRRRRWWRRRRRRRRRRRRRRRRRRRRRRWWRRRRRRR",
+    "....RR.WWRVVVWWR...RR...RWWVVVRWW.RR....",
+    "....RR.WWRVVVWWR...RR...RWWVVVRWW.RR....",
+    "....RR.WWRVVVWWR...RR...RWWVVVRWW.RR....",
+    "....RRRRRRRRRWWRRRRRRRRRRWWRRRRRRRRR....",
+    "....RRRRRRRRRWWRRRRRRRRRRWWRRRRRRRRR....",
+    "....RR.WWR.VVWWR.RRRRRR.RWWVVVRWW.RR....",
+    "....RR.WWR.VVWWR.RRRRRR.RWWVVVRWW.RR....",
+    "....RR.WWRVVVWWR.RRRRRR.RWWVVVRWW.RR....",
+    "....RR.WWRVVVWWR.RRRRRR.RWWVVVRWW.RR....",
+    "....RR.WWRVVVWWR...RR...RWWVVVRWW.RR....",
+    "RRRRRRRWWRRRRWWRRRRRRRRRRWWRRRRWWRRRRRRR",
+    "RRRRRRRWWRRRRWWRRRRWWRRRRWWRRRRWWRRRRRRR",
+    "....RR.WW....WWWWWWWWWWWWWW....WW.RR....",
+    "....RR.WW..RR.VVVVVRRVVVVV.RR..WW.RR....",
+    "....RR.WW..RR.VVVVVRRVVVVV.RR..WW.RR....",
+    "....RR.WW..RR.VVVVVRRVVVVV.RR..WW.RR....",
+    "L...RR.WW..RR.VVVVVRRVVVVV.RR..WW.RR....",
+    "....RR.WWWWWWWWWWWWWWWWWWWWWWWWWW.RR....",
+    "....RR.WWWWWWWWWWWWWWWWWWWWWWWWWW.RR....",
+    "VVVVRR.....RR......RR......RR.....RRVVVV",
+    "VVVVRR.....RR......RR......RR.....RRVVVV",
+    "VVVVRR.....RR......RR......RR.....RRVVVV",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "VVVV................................VVVV",
+    "VVVV................................VVVV",
+    "VVVV................................VVVV",
+    "VVVV................................VVVV"
+  ],
+  "objectLayout": [
+    "FF.......PPP.AAA........AAA.PPP.......FF",
+    "AAAF.....PPP.AAA........AAA.PPP.....FAAA",
+    "AAQ..................................QAA",
+    "FF....................................FF",
+    ".FF......AAA.PPP........PPP.AAA......FF.",
+    ".........AAAF...F.....F....FAAA.........",
+    "PPP............==..==..==............PPP",
+    "PPP...F........==..==..==........F...PPP",
+    "PPP.............AAX..XAA............DPPP",
+    "..D...F.........AA....AA.........F..D...",
+    ".......==......................==.......",
+    ".......==......................==.......",
+    "AAA...X...AAA...PPP...PP...PPP...X...AAA",
+    "AAA...F...AAA...BB....PP...PPP...F...AAA",
+    "AAA.......FF....PPP...PP....FF.......AAA",
+    ".............==..........==.............",
+    "A..P.........==...K..K...==.........P..A",
+    "A..P..F.....F...F..PP..F...AAA...F..P..A",
+    "A.UP........Q......PP......AAA......PU.A",
+    "ABBP.......PP...AA....AA....F.......PBBA",
+    "A..P......FPP...AA....AA...PPP......P.QA",
+    "A..P..F....PP...F......F...PPP...F..P..A",
+    ".......==....==..........==....==.......",
+    ".......==....==....==....==....==.......",
+    ".................K.==.K.................",
+    "PPP......PP...AAA.....AAA....PP......PPP",
+    "PPP...F..PP...AAAFF..F.B.....PP..F...PPP",
+    "PPP......PP...AAA......B.....PP......PPP",
+    "D.....F........U..X..XAAA........F......",
+    "AAA........==......==......==........AAA",
+    "AAA........==......==......==........AAA",
+    ".......AAA....PPPPX..XPPPP....AAA.......",
+    "FF....QAAA............PPPP....AAA.....FF",
+    ".FF...................PPPP...........FF.",
+    "........................................",
+    "FF....................................FF",
+    "..F....PPP.AAA............AAA.PPP....F..",
+    ".AAA...PPP.AAA.FF.CCCC.FF.AAA.PPP...AAA.",
+    "FAAA...PPP.AAA.F........F.AAA.PPP...AAAF",
+    ".AAA...............HH...............AAA."
+  ]
+}

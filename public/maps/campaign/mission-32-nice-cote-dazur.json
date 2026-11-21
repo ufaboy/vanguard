@@ -1,0 +1,605 @@
+{
+  "mapId": "campaign-32",
+  "id": 32,
+  "name": "Nice: Côte d'Azur",
+  "subtitle": "SECTOR 32 // PROMENADE DES ANGLAIS & PORT LYMPIA",
+  "objective": "Clear Consortium coastal forces and defeat the rebuilt Mammoth dreadnought",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": true,
+    "defeatOnBaseLoss": true
+  },
+  "boss": {
+    "enemyClass": "BOSS_MAMMOTH",
+    "name": "MAMMOTH MK-V",
+    "title": "Rebuilt Siege Dreadnought",
+    "spawnCell": {
+      "row": 3,
+      "col": 19
+    }
+  },
+  "completionReward": {
+    "credits": 1250
+  },
+  "environment": {
+    "theme": "coast",
+    "tint": "#8ec5d6",
+    "fogColor": "#27414e",
+    "groundColor": "#53676c"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Fight through the palm-lined Promenade des Anglais, the narrow alleys of Vieux Nice, and the yacht piers of Port Lympia. Break coastal barricades to flank artillery batteries before facing the rebuilt Mammoth MK-V dreadnought.",
+    "breaches": [
+      {
+        "name": "Vieux Nice Courtyard Wall",
+        "cells": [
+          {
+            "row": 18,
+            "col": 16
+          },
+          {
+            "row": 18,
+            "col": 17
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 16
+        },
+        "end": {
+          "row": 16,
+          "col": 16
+        },
+        "purpose": "Blast through the old-town courtyard fence to open a direct central lane through Vieux Nice."
+      },
+      {
+        "name": "Promenade Seafront Barricade",
+        "cells": [
+          {
+            "row": 20,
+            "col": 27
+          },
+          {
+            "row": 20,
+            "col": 28
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 27
+        },
+        "end": {
+          "row": 18,
+          "col": 27
+        },
+        "purpose": "Clear the war-layer barricade blocking the mid-Promenade des Anglais."
+      },
+      {
+        "name": "Port Lympia Customs Gate",
+        "cells": [
+          {
+            "row": 14,
+            "col": 29
+          },
+          {
+            "row": 14,
+            "col": 30
+          }
+        ],
+        "start": {
+          "row": 14,
+          "col": 27
+        },
+        "end": {
+          "row": 14,
+          "col": 31
+        },
+        "purpose": "Breach the port customs wall to access the Port Lympia yacht piers and breakwater supply cache."
+      },
+      {
+        "name": "Castle Hill Bastion Cut",
+        "cells": [
+          {
+            "row": 26,
+            "col": 21
+          },
+          {
+            "row": 26,
+            "col": 22
+          }
+        ],
+        "start": {
+          "row": 27,
+          "col": 21
+        },
+        "end": {
+          "row": 25,
+          "col": 22
+        },
+        "purpose": "Open a southern flank between Vieux Nice and the Promenade beneath Castle Hill."
+      }
+    ],
+    "reference": {
+      "place": "Nice, Côte d'Azur, France",
+      "kind": "real",
+      "kept": [
+        "Promenade des Anglais coastal boulevard",
+        "Baie des Anges sandy beach and Mediterranean Sea",
+        "Port Lympia harbor basin with concrete quays and yacht piers",
+        "Vieux Nice old-town alleys and Place Masséna",
+        "Colline du Château (Castle Hill) wooded bluff and palm groves"
+      ],
+      "simplified": [
+        "Rotated coast to run along the east edge so enemies attack from the north toward the southern HQ",
+        "Merged inland tram corridors into Avenue Jean Médecin on the west flank"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 320401,
+    "theme": "coast",
+    "zones": [
+      {
+        "id": "vieux-nice-pavers",
+        "bounds": [
+          9,
+          13,
+          26,
+          21
+        ],
+        "surface": "pavers",
+        "density": 0.35,
+        "details": [
+          "cracks",
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "place-massena",
+        "bounds": [
+          14,
+          7,
+          24,
+          12
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "tracks"
+        ]
+      },
+      {
+        "id": "port-lympia-quay",
+        "bounds": [
+          1,
+          29,
+          22,
+          32
+        ],
+        "surface": "concrete",
+        "density": 0.35,
+        "details": [
+          "oil",
+          "cracks",
+          "tracks"
+        ]
+      },
+      {
+        "id": "baie-des-anges-beach",
+        "bounds": [
+          22,
+          29,
+          39,
+          33
+        ],
+        "surface": "sand",
+        "density": 0.25,
+        "details": [
+          "weeds",
+          "rubble"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "cours-saleya-lane",
+        "points": [
+          [
+            19,
+            13
+          ],
+          [
+            19,
+            21
+          ]
+        ],
+        "width": 2,
+        "surface": "pavers",
+        "marking": "none"
+      },
+      {
+        "id": "quai-des-etats-unis",
+        "points": [
+          [
+            30,
+            28
+          ],
+          [
+            30,
+            32
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "lbl-promenade",
+        "kind": "label",
+        "row": 25,
+        "col": 27,
+        "text": "PROMENADE DES ANGLAIS"
+      },
+      {
+        "id": "lbl-vieux-nice",
+        "kind": "label",
+        "row": 17,
+        "col": 15,
+        "text": "VIEUX NICE"
+      },
+      {
+        "id": "lbl-port-lympia",
+        "kind": "label",
+        "row": 8,
+        "col": 31,
+        "text": "PORT LYMPIA"
+      },
+      {
+        "id": "lbl-castle-hill",
+        "kind": "label",
+        "row": 19,
+        "col": 23,
+        "text": "CASTLE HILL"
+      },
+      {
+        "id": "crosswalk-promenade",
+        "kind": "crosswalk",
+        "row": 19,
+        "col": 27,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "crosswalk-avenue",
+        "kind": "crosswalk",
+        "row": 19,
+        "col": 4,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "loading-port",
+        "kind": "loading",
+        "row": 5,
+        "col": 30,
+        "size": 2,
+        "rotation": 90
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 4.5,
+    "entrances": [
+      {
+        "id": "west_avenue",
+        "row": 1,
+        "col": 4
+      },
+      {
+        "id": "old_town_gate",
+        "row": 1,
+        "col": 15
+      },
+      {
+        "id": "promenade_north",
+        "row": 1,
+        "col": 28
+      },
+      {
+        "id": "port_quay",
+        "row": 2,
+        "col": 31
+      }
+    ],
+    "encounters": [
+      {
+        "id": "enc_1_coastal_vanguard",
+        "label": "Wave 1: Coastal Vanguard",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "HOVER",
+          "SCOUT",
+          "STANDARD",
+          "FLAMETHROWER",
+          "HOVER",
+          "ARMOR"
+        ],
+        "initialCells": [
+          {
+            "row": 1,
+            "col": 4
+          },
+          {
+            "row": 1,
+            "col": 15
+          },
+          {
+            "row": 1,
+            "col": 28
+          },
+          {
+            "row": 2,
+            "col": 31
+          }
+        ],
+        "entrances": [
+          "promenade_north",
+          "west_avenue"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 28
+          },
+          {
+            "row": 19,
+            "col": 28
+          },
+          {
+            "row": 19,
+            "col": 19
+          },
+          {
+            "row": 30,
+            "col": 19
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "enc_2_old_town_harbor",
+        "label": "Wave 2: Old Town & Harbor Assault",
+        "enemies": [
+          "SAPPER",
+          "STANDARD",
+          "ENGINEER",
+          "HOWITZER",
+          "HOVER",
+          "STEALTH",
+          "ARMOR",
+          "FLAMETHROWER",
+          "JAMMER"
+        ],
+        "entrances": [
+          "old_town_gate",
+          "port_quay",
+          "west_avenue"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 15
+          },
+          {
+            "row": 15,
+            "col": 31
+          },
+          {
+            "row": 19,
+            "col": 16
+          },
+          {
+            "row": 30,
+            "col": 9
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "recoverySec": 10
+      },
+      {
+        "id": "enc_3_cote_dazur_siege",
+        "label": "Wave 3: Côte d'Azur Siege",
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "HOWITZER",
+          "STEALTH",
+          "ENGINEER",
+          "HOVER",
+          "STANDARD",
+          "STRIKER",
+          "ARMOR"
+        ],
+        "entrances": [
+          "west_avenue",
+          "old_town_gate",
+          "promenade_north",
+          "port_quay"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 5
+          },
+          {
+            "row": 19,
+            "col": 5
+          },
+          {
+            "row": 30,
+            "col": 12
+          },
+          {
+            "row": 30,
+            "col": 27
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "recoverySec": 10
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "STANDARD",
+    "FLAMETHROWER",
+    "HOVER",
+    "ARMOR",
+    "SAPPER",
+    "STANDARD",
+    "ENGINEER",
+    "HOWITZER",
+    "HOVER",
+    "STEALTH",
+    "ARMOR",
+    "FLAMETHROWER",
+    "JAMMER",
+    "ARMOR",
+    "STRIKER",
+    "HOWITZER",
+    "STEALTH",
+    "ENGINEER",
+    "HOVER",
+    "STANDARD",
+    "STRIKER",
+    "ARMOR"
+  ],
+  "surfaceLayout": [
+    "VVVVRR.........RR..........RR.RR.SSWWWWW",
+    "VVVVRR.........RR..........RR.RR.SSWWWWW",
+    "VVVVRR.........RR..........RR.RR.SSWWWWW",
+    "VVVVRR.........RR........VVRR.RR.SSWWWWW",
+    "VVVVRR.........RR........VVRR.RRLSSWWWWW",
+    "VVVVRR.........RR........VVRR.RRLSSWWWWW",
+    "VVVVRR.VVVVVV..RR........VVRR.RR.SSWWWWW",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRR..WWWWWWWW",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRR..WWWWWWWW",
+    "VVVVRR.VVVVVV..RR........VVRR...WWWWWWWW",
+    "VVVVRR.VVVVVV..RR........VVRR..WWWWWWWWW",
+    "VVVVRR.VVVVVV..RR........VVRR..WWWWWWWWW",
+    "VVVVRR...................VVRR..WWWWWWWWW",
+    "VVVVRR...................VVRR...WWWWWWWW",
+    "VVVVRR...................VVRR...WW..WWWW",
+    "VVVVRR...................VVRR...WW..WWWW",
+    "VVVVRR...................VVRR..WWWWWWWWW",
+    "VVVVRR...............VVVVVVRR..WWWWWWWWW",
+    "VVVVRR...............V^^VVVRR..WWWWWWWWW",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRR...WWWWWWWW",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRR...WWWWWWWW",
+    "VVVVRR...............VV^VVVRR...WWWWWWWW",
+    "VVVVRR...............V^VVVVRRSSSSSSWWWWW",
+    "VVVVRR...............VVVVVVRRSSSSSSWWWWW",
+    "VVVVRR............RR.VVVVVVRRSSSSSWWWWWW",
+    "VVVVRR............RR.....VVRRSSSSSWWWWWW",
+    "VVVVRR............RR.....VVRRSSSSSWWWWWW",
+    "VVVVRR.VVVVVV.....RR.....VVRRSSSSSWWWWWW",
+    "VVVVRR.VVVVVV.....RR.....VVRRSSSSSWWWWWW",
+    "VVVVRR.VVVVVV.....RR.....VVRRLSSSSWWWWWW",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRSSSSSWWWWWW",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRSSSSSWWWWWW",
+    "VVVVRR.VVVVVV.....RR.....VVRRSSSSSWWWWWW",
+    "VVVVRR.VVVVVV.....RR.....VVRRSSSSSWWWWWW",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRSSSSSWWWWWW",
+    "VVVVVVVVVVVVVVVV..RR.....VVVVSSSSSWWWWWW",
+    "VVVVVVVVVVVVVVVV.........VVVVSSSSSWWWWWW",
+    "VVVVVVVVVVVVVVVV.........VVVVSSSSSWWWWWW",
+    "VVVVVVVVVVVVVVVV.........VVVVSSSSSWWWWWW",
+    "VVVVVVVVVVVVVVVV.........VVVVSSSSSWWWWWW"
+  ],
+  "objectLayout": [
+    "........................................",
+    "F........................F..............",
+    "FAA....PPP.AAA....AAA.PPP.F..P..........",
+    ".AA....PPP.AQA....A...PPPFF..P..........",
+    ".......PPP.AAA....A.A.PPPA......D.......",
+    "F.................FF.....A......DQ......",
+    "FFF....FF.F..........FF..F......QD......",
+    ".F.........F....................CCCC....",
+    "..F........F..................C.........",
+    ".......FF.F...AAA........F....C.........",
+    ".AA....AAA....AAA.PPP.AAA.F....=........",
+    ".AA....AAA....AAA.PPP.AAA..K...=........",
+    ".AAX...AAA........PPP...PP.....=........",
+    "F....K....BB.....B......PP....C.........",
+    ".FF....PPP.AA.AA..PPP...PPX..BB.==QC....",
+    ".......PPP.AA.AA.BPPP......K..C...CC....",
+    ".AA....PPP.AA.AA.UPPP....F.....=........",
+    ".AA....PPP......K.U..CCC..F....=........",
+    "F...............BB...F..T......=........",
+    ".F...................F..F.....C.........",
+    "F....................F..F.CBBCC.........",
+    ".....K........QUBB...FQ.FF......CCC.....",
+    ".AA....PPP.AA.AA..AA.F..FFF.............",
+    ".AA....PPP.AA.AA..AA.F..FF....X.........",
+    ".AA....PPP.AA.....AA..CCCF..KK.X........",
+    ".F....X...BB..BB........C.FU.B..X.......",
+    "..F....AAA....PPP.U.CBBCCA...BB.........",
+    "....K..AAA.Q..PPP....AAA.AX...KQ........",
+    ".AA....FF.....PPP....AAA.A...K.X........",
+    ".AA....F..FF................KD..X.......",
+    "F..............................K........",
+    ".F......F.F..............F....B.........",
+    "...F...AAA.PPP.AAA...PPP..F...B.........",
+    ".AAF...AAA.PPP.XAA...PPX.F...DX.........",
+    ".AA............................X........",
+    ".F....F..................F....K.........",
+    "..F....FF.......Q.....BB..F..K..........",
+    ".FFB.......FF.....CCCC...F.F...B........",
+    "F...B.F......F............F.F..B........",
+    "...................HH..................."
+  ]
+}

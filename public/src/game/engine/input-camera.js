@@ -327,24 +327,34 @@ export class InputCameraController {
         const dirX = speed > 0.001 ? missile.vx / speed : Math.sin(missile.mesh?.rotation?.y || 0);
         const dirZ = speed > 0.001 ? missile.vz / speed : Math.cos(missile.mesh?.rotation?.y || 0);
         const flightY = missile.flightY ?? 0.9;
-        const desiredX = missile.x - dirX * MISSILE.FPV_CHASE_DISTANCE;
-        const desiredY = Math.max(MISSILE.FPV_MIN_HEIGHT, flightY + MISSILE.FPV_CHASE_HEIGHT);
-        const desiredZ = missile.z - dirZ * MISSILE.FPV_CHASE_DISTANCE;
+        const pitch = THREE.MathUtils.clamp(missile.pitch ?? 0, -0.75, 0.95);
+        const chaseDist = MISSILE.FPV_CHASE_DISTANCE * (0.78 + 0.22 * Math.cos(pitch));
+        const desiredX = missile.x - dirX * chaseDist;
+        const desiredY = Math.max(
+          MISSILE.FPV_MIN_HEIGHT,
+          flightY + MISSILE.FPV_CHASE_HEIGHT + Math.sin(pitch) * chaseDist * 0.85
+        );
+        const desiredZ = missile.z - dirZ * chaseDist;
+
+        const lookX = missile.x + dirX * MISSILE.FPV_LOOK_AHEAD;
+        const rawLookY = flightY - MISSILE.FPV_LOOK_DROP - Math.sin(pitch) * MISSILE.FPV_LOOK_AHEAD * 0.6;
+        const lookY = Math.max(MISSILE.FPV_MIN_LOOK_HEIGHT, rawLookY);
+        const lookZ = missile.z + dirZ * MISSILE.FPV_LOOK_AHEAD;
 
         if (this._lastFpvMissile !== missile) {
           this._lastFpvMissile = missile;
+          this._lastFpvLook = { x: lookX, y: lookY, z: lookZ };
           engine.fpvCamera.position.set(desiredX, desiredY, desiredZ);
         } else {
           const follow = MISSILE.FPV_FOLLOW_DAMP;
           engine.fpvCamera.position.x = THREE.MathUtils.damp(engine.fpvCamera.position.x, desiredX, follow, dt);
           engine.fpvCamera.position.y = THREE.MathUtils.damp(engine.fpvCamera.position.y, desiredY, follow, dt);
           engine.fpvCamera.position.z = THREE.MathUtils.damp(engine.fpvCamera.position.z, desiredZ, follow, dt);
+          this._lastFpvLook.x = THREE.MathUtils.damp(this._lastFpvLook.x, lookX, follow, dt);
+          this._lastFpvLook.y = THREE.MathUtils.damp(this._lastFpvLook.y, lookY, follow, dt);
+          this._lastFpvLook.z = THREE.MathUtils.damp(this._lastFpvLook.z, lookZ, follow, dt);
         }
-        const lookX = missile.x + dirX * MISSILE.FPV_LOOK_AHEAD;
-        const lookY = Math.max(MISSILE.FPV_MIN_LOOK_HEIGHT, flightY - MISSILE.FPV_LOOK_DROP);
-        const lookZ = missile.z + dirZ * MISSILE.FPV_LOOK_AHEAD;
-        this._lastFpvLook = { x: lookX, y: lookY, z: lookZ };
-        engine.fpvCamera.lookAt(lookX, lookY, lookZ);
+        engine.fpvCamera.lookAt(this._lastFpvLook.x, this._lastFpvLook.y, this._lastFpvLook.z);
         return;
       }
       if (this._lastFpvMissile) {

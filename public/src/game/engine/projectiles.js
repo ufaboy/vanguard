@@ -26,6 +26,53 @@ const MISSILE_CRUISE_Y = 4.4;
 const MISSILE_IMPACT_Y = 0.85;
 const MISSILE_CLIMB_DIST = 3.2;
 const MISSILE_DIVE_DIST = 4.8;
+const LANDMARK_LOOKAHEAD = 8.0;
+const LANDMARK_CLEARANCE = 1.2;
+
+/** Returns true if any cell near (wx, wz) is a tall 3D landmark that the missile should skirt around. */
+function isNearLandmark(engine, wx, wz) {
+  if (!engine.grid || !engine.worldToGrid) return false;
+  const r = LANDMARK_CLEARANCE;
+  for (const [ox, oz] of [[0, 0], [r, 0], [-r, 0], [0, r], [0, -r]]) {
+    const { row, col } = engine.worldToGrid(wx + ox, wz + oz);
+    if (engine.grid[row]?.[col]?.type === TileType.LANDMARK) return true;
+  }
+  return false;
+}
+
+/** True when a ray along `angle` hits a LANDMARK cell within `maxDist` world units. */
+function rayHitsLandmark(engine, x, z, angle, maxDist) {
+  const dx = Math.sin(angle);
+  const dz = Math.cos(angle);
+  for (let d = 1.0; d <= maxDist; d += 1.0) {
+    if (isNearLandmark(engine, x + dx * d, z + dz * d)) return true;
+  }
+  return false;
+}
+
+/** Steers `desiredAngle` left or right around tall landmarks while staying as close as possible to the target bearing. */
+function avoidLandmarkHeading(engine, x, z, curAngle, desiredAngle) {
+  if (!engine.grid || !engine.worldToGrid) return desiredAngle;
+  if (!rayHitsLandmark(engine, x, z, desiredAngle, LANDMARK_LOOKAHEAD) &&
+      !rayHitsLandmark(engine, x, z, curAngle, LANDMARK_LOOKAHEAD * 0.6)) {
+    return desiredAngle;
+  }
+  const offsets = [0.3, 0.55, 0.85, 1.15, 1.45, 1.8];
+  for (const off of offsets) {
+    const left = desiredAngle + off;
+    const right = desiredAngle - off;
+    const leftOk = !rayHitsLandmark(engine, x, z, left, LANDMARK_LOOKAHEAD);
+    const rightOk = !rayHitsLandmark(engine, x, z, right, LANDMARK_LOOKAHEAD);
+    if (leftOk && rightOk) {
+      const diffL = Math.abs(Math.atan2(Math.sin(left - curAngle), Math.cos(left - curAngle)));
+      const diffR = Math.abs(Math.atan2(Math.sin(right - curAngle), Math.cos(right - curAngle)));
+      return diffL <= diffR ? left : right;
+    }
+    if (leftOk) return left;
+    if (rightOk) return right;
+  }
+  return desiredAngle;
+}
 
 /** Computes lofted cruise altitude (above 2-story buildings) and steep terminal dive for player missiles. */
 function updatePlayerMissileAltitude(p, targetX, targetZ, hasTarget, dt) {
@@ -310,11 +357,13 @@ export class ProjectilesController {
           }
           if (!p.jammedTarget) {
             const curAngle = Math.atan2(p.vx, p.vz);
-            const targetAngle = Math.atan2(missileTargetX - p.x, missileTargetZ - p.z);
+            const rawAngle = Math.atan2(missileTargetX - p.x, missileTargetZ - p.z);
+            const targetAngle = avoidLandmarkHeading(engine, p.x, p.z, curAngle, rawAngle);
+            const turnRate = targetAngle !== rawAngle ? MISSILE.TURN_RATE * 1.35 : MISSILE.TURN_RATE;
             const nextAngle = engine.lerpAngle(
               curAngle,
               targetAngle,
-              MISSILE.TURN_RATE * dt
+              turnRate * dt
             );
             p.vx = Math.sin(nextAngle) * p.speed;
             p.vz = Math.cos(nextAngle) * p.speed;

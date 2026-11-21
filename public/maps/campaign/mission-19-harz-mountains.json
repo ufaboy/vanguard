@@ -1,0 +1,405 @@
+{
+  "mapId": "campaign-19",
+  "id": 19,
+  "name": "Harz Mountains",
+  "subtitle": "SECTOR 19 // BROCKEN SLOPES & RAIL",
+  "objective": "Hunt down the Consortium convoy scouts across the Brocken slopes",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 800
+  },
+  "environment": {
+    "theme": "forest",
+    "tint": "#b2c2b8",
+    "fogColor": "#3e4c46",
+    "groundColor": "#586652"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Hunt mobile convoy scouts across the wooded Brocken slopes along three distinct corridors: a granite-rimmed western logging road, the central Brockenbahn narrow-gauge rail cut past the mountain station, and an eastern valley timber road.",
+    "reference": {
+      "place": "Brocken slopes and Brockenbahn narrow-gauge railway, Harz Mountains, Germany",
+      "kind": "real",
+      "kept": [
+        "Brockenbahn narrow-gauge rail line climbing through the forest with a timber mountain station and steam water tower",
+        "Dense Harz spruce forest masses broken by winding mountain logging roads",
+        "Granite tors and scree outcrops on the upper Brocken slopes",
+        "Cool misty mountain-forest atmosphere"
+      ],
+      "simplified": [
+        "Compressed the Brocken ascent and Harz valleys into a 40x40 north-to-south tactical slope",
+        "Represented the Brockenbahn track bed as a gravel path ribbon on ground tiles with a station yard and water tower",
+        "Added front-line brick timber-yard fences, concrete retaining walls, hedgehogs, fuel barrels, and craters along contested routes"
+      ]
+    },
+    "breaches": [
+      {
+        "name": "West Granite Ridge Wall",
+        "cells": [
+          { "row": 12, "col": 12 },
+          { "row": 12, "col": 13 }
+        ],
+        "start": { "row": 12, "col": 10 },
+        "end": { "row": 12, "col": 15 },
+        "purpose": "Shortcut between the western logging road and the central Brockenbahn rail approach."
+      },
+      {
+        "name": "Station Yard Brick Fence",
+        "cells": [
+          { "row": 18, "col": 17 },
+          { "row": 19, "col": 17 }
+        ],
+        "start": { "row": 18, "col": 15 },
+        "end": { "row": 18, "col": 19 },
+        "purpose": "Flank entry from the central forest trail straight into the Brockenbahn station apron."
+      },
+      {
+        "name": "East Sawmill Retaining Wall",
+        "cells": [
+          { "row": 23, "col": 27 },
+          { "row": 23, "col": 28 }
+        ],
+        "start": { "row": 23, "col": 25 },
+        "end": { "row": 23, "col": 30 },
+        "purpose": "Fast lateral cut between the eastern timber road and the Brockenbahn rail corridor."
+      },
+      {
+        "name": "South-West Timber Yard Wall",
+        "cells": [
+          { "row": 29, "col": 13 },
+          { "row": 29, "col": 14 }
+        ],
+        "start": { "row": 29, "col": 11 },
+        "end": { "row": 29, "col": 16 },
+        "purpose": "Direct breach between the south-west logging approach and the southern HQ road."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 19052026,
+    "theme": "forest",
+    "zones": [
+      {
+        "id": "harz-spruce-floor",
+        "bounds": [0, 0, 39, 39],
+        "surface": "dirt",
+        "density": 0.24,
+        "details": ["leaves", "weeds"]
+      },
+      {
+        "id": "brocken-station-yard",
+        "bounds": [15, 18, 22, 27],
+        "surface": "gravel",
+        "density": 0.34,
+        "details": ["tracks", "patches", "oil"]
+      },
+      {
+        "id": "east-sawmill-yard",
+        "bounds": [13, 30, 18, 37],
+        "surface": "dirt",
+        "density": 0.3,
+        "details": ["tracks", "oil"]
+      },
+      {
+        "id": "west-granite-clearing",
+        "bounds": [9, 2, 14, 7],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": ["rubble", "weeds"]
+      },
+      {
+        "id": "hq-camp-apron",
+        "bounds": [32, 14, 38, 25],
+        "surface": "gravel",
+        "density": 0.28,
+        "details": ["tracks", "rubble"]
+      }
+    ],
+    "paths": [
+      {
+        "id": "brockenbahn-main-line",
+        "points": [
+          [0, 19],
+          [8, 19],
+          [14, 20],
+          [19, 20],
+          [25, 22],
+          [31, 27],
+          [36, 33],
+          [39, 36]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "brockenbahn-station-siding",
+        "points": [
+          [15, 20],
+          [18, 22],
+          [21, 23]
+        ],
+        "width": 1.6,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "station-label",
+        "kind": "label",
+        "row": 21,
+        "col": 20,
+        "size": 3,
+        "text": "BROCKENBAHN STATION"
+      },
+      {
+        "id": "granite-tor-label",
+        "kind": "label",
+        "row": 11,
+        "col": 6,
+        "size": 2.5,
+        "text": "GRANITE TOR"
+      },
+      {
+        "id": "hq-label",
+        "kind": "label",
+        "row": 34,
+        "col": 19,
+        "size": 2.5,
+        "text": "VALLEY OUTPOST HQ"
+      },
+      {
+        "id": "water-tower-hazard",
+        "kind": "hazard_zone",
+        "row": 19,
+        "col": 22,
+        "size": 1.2
+      },
+      {
+        "id": "sawmill-loading",
+        "kind": "loading",
+        "row": 15,
+        "col": 34,
+        "size": 1.5,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-apron-clear",
+        "bounds": [37, 17, 39, 22]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      { "id": "west-ridge", "row": 2, "col": 7 },
+      { "id": "central-track", "row": 2, "col": 19 },
+      { "id": "east-logging", "row": 2, "col": 32 }
+    ],
+    "encounters": [
+      {
+        "id": "brocken-scouts",
+        "label": "BROCKEN SCOUTS: Fast recon patrols probing the northern spruce ridges and rail cut.",
+        "enemies": [
+          "SCOUT",
+          "SCOUT",
+          "STANDARD",
+          "STEALTH",
+          "SCOUT",
+          "STANDARD",
+          "SAPPER"
+        ],
+        "entrances": ["west-ridge", "central-track"],
+        "patrolRoute": [
+          { "row": 12, "col": 8 },
+          { "row": 22, "col": 9 },
+          { "row": 32, "col": 12 }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          { "row": 4, "col": 7 },
+          { "row": 4, "col": 19 },
+          { "row": 5, "col": 32 },
+          { "row": 6, "col": 18 }
+        ]
+      },
+      {
+        "id": "timber-convoy",
+        "label": "TIMBER CONVOY: Escorted convoy column pushing down the eastern logging road and rail siding.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STEALTH",
+          "FLAMETHROWER",
+          "ARMOR",
+          "SAPPER",
+          "HOWITZER",
+          "STANDARD"
+        ],
+        "entrances": ["east-logging", "central-track"],
+        "patrolRoute": [
+          { "row": 15, "col": 32 },
+          { "row": 25, "col": 32 },
+          { "row": 33, "col": 25 }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "summit-escort",
+        "label": "SUMMIT ESCORT: Heavy armour, rocket strikers, and jammer support converging from all three slopes.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "STEALTH",
+          "HOWITZER",
+          "STRIKER",
+          "FLAMETHROWER",
+          "JAMMER",
+          "ARMOR",
+          "SCOUT"
+        ],
+        "entrances": ["west-ridge", "central-track", "east-logging"],
+        "patrolRoute": [
+          { "row": 14, "col": 20 },
+          { "row": 23, "col": 20 },
+          { "row": 31, "col": 19 }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "SCOUT",
+    "STANDARD",
+    "STEALTH",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "SCOUT",
+    "STANDARD",
+    "STEALTH",
+    "FLAMETHROWER",
+    "ARMOR",
+    "SAPPER",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "STEALTH",
+    "HOWITZER",
+    "STRIKER",
+    "FLAMETHROWER",
+    "JAMMER",
+    "ARMOR",
+    "SCOUT"
+  ],
+  "surfaceLayout": [
+    "VVVVVVVRRVVVVVVVVV..VVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVV..VVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVV..VVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVV^^^VVV..VVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVV^^^^VVV..VVVVV^^VVVVVRRVVVVVV",
+    "VVVVVVVRRVVV^^VVVV..VVVV^^^VVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVV..VVVVVVVVVVVVRRVVVVVV",
+    "VVV^^VVRRVVVVVVVVV..VVVVVVVVVVVVRRVVVVVV",
+    "VV^^^VVRRVVVVVVVVV..VVVVVVVVVVVVRRVVVVVV",
+    "VV..VVVRRVVVVVVVVV...VVVVVVVVVVVRRVVVVVV",
+    "VV..VVVRRVVVVV..VV...VVV...VVVVVRRVVVVVV",
+    "VV..VVVRRVV.......^..VVV...VVVVVRRVVVVVV",
+    "VV..VVVRRVV.......^..VVV...VVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVV...VVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVV....VVVVVVVVVVRR..VVVV",
+    "VVVVVVVRRVVVVVVVVV....VVVVVVVVVVRR....VV",
+    "VVVVVVVRRVVVVVVVV.......VVVVVVVVRR....VV",
+    "VVVVVVVRRVVVVVVVV........VVVVVVVRR....VV",
+    "VVVVVVVRRVVVVVVVV........VVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVV........VVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVV........VVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVV........VVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVV......VVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVV......VVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVV^^VVVVV....VVVVV^^VVRRVVVVVV",
+    "VVVVVVVRRVV^^^^VVVV....VVVV^^^VVRRVVVVVV",
+    "VVVVVVVRRVVV^^VVVVVV....VVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVVVV.....VVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVVVV......VVVVVVRRVVVVVV",
+    "VVVVVVVRRVV.......VV.......VVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVVVVV.......VVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVVVVVV.......VVVRRVVVVVV",
+    "VVVVVVVRRVVVVV......VVVV......VVRRVVVVVV",
+    "VVVVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVVV",
+    "VVVVVVVVVRRRRRRRRRRRRRRRRRR....VV..VVVVV",
+    "VVVVVVVVVVVVVV.....RRR....VV...VV...VVVV",
+    "VVVVVVVVVVVVVV.....RR.....VVV..VV....VVV",
+    "VVVVVVVVVVVVVV............VVVVVVVV....VV",
+    "VVVVVVVVVVVVVV............VVVVVVVVV...VV",
+    "VVVVVVVVVVVVVV............VVVVVVVVVV..VV"
+  ],
+  "objectLayout": [
+    "FF.FF.....FF..FF..........FF..FF....FF.F",
+    "FF..F.....FF..F...........FF...FF...F..F",
+    ".F..F.....F...FF.....F....F....FF....FFF",
+    "FF..F.....F....F.....FF...FF...FF....F.F",
+    "F...FF....F.....FF....F....F....F....FF.",
+    "FF..FF...FF.....F.....FF..FF....FF...F.F",
+    ".F..F....FF..FF.F.....F...FF....F....FF.",
+    "F...F....FF.FFF.FF...FF..FFF...FF....F.F",
+    "FF.......FF.FF..FF....F..FFF...FF...FF.F",
+    "F..Q.....FF..F..F....FF...F....FF...F..F",
+    "FF..F....FF..F...FF.......AA...FF..FF..F",
+    "FF.AA....FF..F....F..F...DFF...FF..FF.FF",
+    "FF.AA....FF.BB....F..F....F....FF..FF.FF",
+    "FF..F.....F.FF...FF..F...FFF....F..FF.FF",
+    "FF..FF....F.FF...FF..FF..FFF....F...AA.F",
+    "F...FF....F.CC...FF..FF..CCC....F...AA..",
+    "FF..F.....F.FF........PPPP.F...FF...Q..F",
+    "FF.AA.....F.FF........PPPP.F...FF..FF..F",
+    "F..AA....FF..F...B....PPPP.FF..FF..FF.FF",
+    "FF..F....FF..F...B...T..FFF.F..FF..FF.FF",
+    "FF..FF...FF..F...F......AAA.F..FF...F.FF",
+    "F...FF...FF.FF...FF.....AAA.F...F...F..F",
+    "FF..F....FF.FF...FF..F..FF..F...F..FF.FF",
+    "FF..F.....F.CC....F..F..FF.BB...F..FF.FF",
+    "FF..FF....F.......F..F...FF.FF..F..FF.FF",
+    "F...FF....F.......FF.FF..FF..F..F...F.FF",
+    "FF..F....FF..FF...FF..F..FF..FF.F...F..F",
+    "FF..FF...FF..FF...K...F..FF..FF.F..FFQ.F",
+    "FF..FF...FF.FF...FF...F..FF..FF.F..FF.FF",
+    "F...F....FF..BB..FF...K...F..FF.F..FF.FF",
+    "FF..FF...FF..FF...F.......F...F.F...F.FF",
+    "FF.AA....FF..FF...X...X...FF..F.F..FF.FF",
+    "FF.AA....FF..FF...K.......FF..F.F..FF.FF",
+    "F...F...........................F..FF..F",
+    "FF..FF............K..............FF.FF.F",
+    "FF..FF.FF.....FF......FF.....FF..FF.FF.F",
+    "F...F..FF.FF..F........F..FF.FF...F..F.F",
+    "FF..FF.FF.FF......CCCC....FF.FF..FF.FF.F",
+    "FF..FF.FF..F...............F.FF..FF..F.F",
+    "F...F..FF..F.......HH......F.FF...F..F.F"
+  ]
+}

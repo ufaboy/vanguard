@@ -1,0 +1,750 @@
+{
+  "mapId": "campaign-38",
+  "id": 38,
+  "name": "Barcelona: Port",
+  "subtitle": "SECTOR 38 // PYRENEES & CATALONIA — PORT VELL FINALE",
+  "objective": "Clear the port defenders and defeat the surviving Sector Bosses and Titan",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": true,
+    "defeatOnBaseLoss": false
+  },
+  "boss": {
+    "enemyClass": "BOSS_TITAN",
+    "name": "SUPREME DREADNOUGHT",
+    "title": "Twin-Turret Heavy Battle Tank",
+    "spawnCell": {
+      "row": 3,
+      "col": 20
+    },
+    "breachCells": [
+      {
+        "row": 10,
+        "col": 18
+      },
+      {
+        "row": 10,
+        "col": 19
+      },
+      {
+        "row": 17,
+        "col": 12
+      },
+      {
+        "row": 18,
+        "col": 12
+      },
+      {
+        "row": 15,
+        "col": 27
+      },
+      {
+        "row": 16,
+        "col": 27
+      }
+    ]
+  },
+  "bossSequence": [
+    [
+      {
+        "enemyClass": "BOSS_MAMMOTH",
+        "name": "MAMMOTH MK-V",
+        "title": "Sector 01 Siege Dreadnought",
+        "spawnCell": {
+          "row": 3,
+          "col": 14
+        }
+      }
+    ],
+    [
+      {
+        "enemyClass": "BOSS_HYDRA",
+        "name": "HYDRA MLRS-9",
+        "title": "Sector 02 Artillery Cruiser",
+        "spawnCell": {
+          "row": 3,
+          "col": 22
+        }
+      }
+    ],
+    [
+      {
+        "enemyClass": "BOSS_INFERNO",
+        "name": "CERBERUS-T",
+        "title": "Sector 04 Thermobaric Leviathan",
+        "spawnCell": {
+          "row": 3,
+          "col": 34
+        }
+      }
+    ],
+    [
+      {
+        "enemyClass": "BOSS_TITAN",
+        "name": "SUPREME DREADNOUGHT",
+        "title": "Final Port Dreadnought",
+        "spawnCell": {
+          "row": 3,
+          "col": 20
+        }
+      }
+    ]
+  ],
+  "airDrop": [
+    {
+      "delaySec": 10,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6,
+      "repairKits": 5
+    },
+    {
+      "progress": 0.16,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6,
+      "repairKits": 5
+    },
+    {
+      "progress": 0.36,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6,
+      "repairKits": 5
+    },
+    {
+      "progress": 0.56,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6,
+      "repairKits": 5
+    },
+    {
+      "progress": 0.76,
+      "shells": 50,
+      "aps": 12,
+      "missiles": 6,
+      "repairKits": 5
+    }
+  ],
+  "completionReward": {
+    "credits": 1600
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#d9c6b0",
+    "fogColor": "#2d3742",
+    "groundColor": "#5c6268"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Fight through the Port of Barcelona container terminal, gantry crane quays, and Columbus Monument plaza against 24 elite port defenders, then survive the All-Boss Escalation culminating in the Supreme Dreadnought Titan.",
+    "breaches": [
+      {
+        "name": "North Container Gatehouse",
+        "cells": [
+          {
+            "row": 10,
+            "col": 18
+          },
+          {
+            "row": 10,
+            "col": 19
+          }
+        ],
+        "start": {
+          "row": 9,
+          "col": 18
+        },
+        "end": {
+          "row": 11,
+          "col": 18
+        },
+        "purpose": "Breach the northern container stack to open a direct central lane to the freighter yard."
+      },
+      {
+        "name": "West Customs Yard Wall",
+        "cells": [
+          {
+            "row": 17,
+            "col": 12
+          },
+          {
+            "row": 18,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 10
+        },
+        "end": {
+          "row": 17,
+          "col": 14
+        },
+        "purpose": "Shortcut between the West Port Vell quay road and the central container terminal."
+      },
+      {
+        "name": "East Freighter Siding Wall",
+        "cells": [
+          {
+            "row": 15,
+            "col": 27
+          },
+          {
+            "row": 16,
+            "col": 27
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 25
+        },
+        "end": {
+          "row": 15,
+          "col": 29
+        },
+        "purpose": "Flank between the central container terminal and the East Breakwater causeway."
+      }
+    ],
+    "reference": {
+      "place": "Port of Barcelona (Port Vell, Container Terminal & Columbus Monument)",
+      "kind": "real",
+      "kept": [
+        "Container terminal with stacked cargo bays, customs sheds, and gantry crane masts",
+        "Harbor basins with concrete quays, bridges, and breakwater causeways",
+        "Columbus Monument plaza at Port Vell with surrounding ring road and palm parks"
+      ],
+      "simplified": [
+        "Compressed multiple piers and terminals into three distinct harbor basins",
+        "Represented the Columbus Monument with a water tower column on a paved roundabout plaza (landmarks3d empty)"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 38042026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "terminal-concrete-apron",
+        "bounds": [
+          2,
+          8,
+          22,
+          28
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "columbus-plaza-pavers",
+        "bounds": [
+          24,
+          14,
+          28,
+          20
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "leaves"
+        ]
+      },
+      {
+        "id": "port-vell-promenade",
+        "bounds": [
+          20,
+          1,
+          37,
+          12
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "leaves",
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "east-breakwater-apron",
+        "bounds": [
+          2,
+          33,
+          36,
+          38
+        ],
+        "surface": "gravel",
+        "density": 0.28,
+        "details": [
+          "tracks",
+          "rubble",
+          "oil"
+        ]
+      },
+      {
+        "id": "south-dockyard-floor",
+        "bounds": [
+          29,
+          13,
+          39,
+          32
+        ],
+        "surface": "asphalt",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "cracks",
+          "oil"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "freighter-rail-siding",
+        "points": [
+          [
+            4,
+            23
+          ],
+          [
+            22,
+            23
+          ],
+          [
+            22,
+            29
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "columbus-monument-label",
+        "kind": "label",
+        "row": 25,
+        "col": 17,
+        "size": 3,
+        "text": "COLUMBUS MONUMENT"
+      },
+      {
+        "id": "port-vell-label",
+        "kind": "label",
+        "row": 21,
+        "col": 6,
+        "size": 3,
+        "text": "PORT VELL"
+      },
+      {
+        "id": "container-terminal-label",
+        "kind": "label",
+        "row": 13,
+        "col": 19,
+        "size": 3,
+        "text": "CONTAINER TERMINAL"
+      },
+      {
+        "id": "breakwater-label",
+        "kind": "label",
+        "row": 10,
+        "col": 35,
+        "size": 3,
+        "text": "BREAKWATER"
+      },
+      {
+        "id": "crane-hazard-north",
+        "kind": "hazard_zone",
+        "row": 7,
+        "col": 25,
+        "size": 1.5
+      },
+      {
+        "id": "crane-hazard-central",
+        "kind": "hazard_zone",
+        "row": 16,
+        "col": 19,
+        "size": 1.5
+      },
+      {
+        "id": "crane-hazard-south",
+        "kind": "hazard_zone",
+        "row": 29,
+        "col": 36,
+        "size": 1.5
+      },
+      {
+        "id": "nw-loading-bay",
+        "kind": "loading",
+        "row": 9,
+        "col": 11,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "central-loading-bay",
+        "kind": "loading",
+        "row": 19,
+        "col": 20,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "plaza-crosswalk-north",
+        "kind": "crosswalk",
+        "row": 24,
+        "col": 17,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "hq-approach-crosswalk",
+        "kind": "crosswalk",
+        "row": 33,
+        "col": 19,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "south-helipad",
+        "kind": "helipad",
+        "row": 31,
+        "col": 27,
+        "size": 2
+      },
+      {
+        "id": "dock-drain-west",
+        "kind": "drain_grate",
+        "row": 12,
+        "col": 7,
+        "size": 1
+      },
+      {
+        "id": "dock-drain-east",
+        "kind": "drain_grate",
+        "row": 24,
+        "col": 32,
+        "size": 1
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "columbus-ring-clear",
+        "bounds": [
+          25,
+          15,
+          27,
+          19
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [
+    {
+      "kind": "COLUMBUS_MONUMENT",
+      "row": 26,
+      "col": 16
+    },
+    {
+      "kind": "W_HOTEL_BARCELONA",
+      "row": 30,
+      "col": 31
+    }
+  ],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "entrances": [
+      {
+        "id": "west-quay-gate",
+        "row": 1,
+        "col": 5
+      },
+      {
+        "id": "nw-terminal-gate",
+        "row": 2,
+        "col": 14
+      },
+      {
+        "id": "central-freighter-ramp",
+        "row": 2,
+        "col": 22
+      },
+      {
+        "id": "east-breakwater-gate",
+        "row": 1,
+        "col": 34
+      },
+      {
+        "id": "port-crane-spur",
+        "row": 6,
+        "col": 34
+      }
+    ],
+    "encounters": [
+      {
+        "id": "port-outer-screen",
+        "label": "PORT OUTER RECON & AMPHIBIOUS SCREEN",
+        "recoverySec": 0,
+        "entrances": [
+          "west-quay-gate",
+          "nw-terminal-gate",
+          "central-freighter-ramp"
+        ],
+        "initialCells": [
+          {
+            "row": 5,
+            "col": 5
+          },
+          {
+            "row": 6,
+            "col": 14
+          },
+          {
+            "row": 6,
+            "col": 22
+          },
+          {
+            "row": 5,
+            "col": 34
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 5
+          },
+          {
+            "row": 23,
+            "col": 5
+          },
+          {
+            "row": 28,
+            "col": 14
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "HOVER",
+          "STANDARD",
+          "SAPPER",
+          "SCOUT",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "terminal-heavy-push",
+        "label": "CONTAINER TERMINAL HEAVY ASSAULT",
+        "recoverySec": 8,
+        "entrances": [
+          "central-freighter-ramp",
+          "east-breakwater-gate",
+          "port-crane-spur"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 22
+          },
+          {
+            "row": 12,
+            "col": 34
+          },
+          {
+            "row": 24,
+            "col": 34
+          },
+          {
+            "row": 33,
+            "col": 20
+          }
+        ],
+        "enemies": [
+          "HOWITZER",
+          "HOVER",
+          "ENGINEER",
+          "ARMOR",
+          "STRIKER",
+          "STANDARD",
+          "JAMMER",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "port-vell-vanguard",
+        "label": "PORT VELL ELITE VANGUARD",
+        "recoverySec": 9,
+        "entrances": [
+          "west-quay-gate",
+          "nw-terminal-gate",
+          "central-freighter-ramp",
+          "east-breakwater-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 21
+          },
+          {
+            "row": 23,
+            "col": 21
+          },
+          {
+            "row": 28,
+            "col": 19
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "STEALTH",
+          "ARMOR",
+          "HOWITZER",
+          "STRIKER",
+          "JAMMER",
+          "HOVER",
+          "ARMOR",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "STANDARD",
+    "SAPPER",
+    "SCOUT",
+    "ARMOR",
+    "HOWITZER",
+    "HOVER",
+    "ENGINEER",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "JAMMER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "STEALTH",
+    "ARMOR",
+    "HOWITZER",
+    "STRIKER",
+    "JAMMER",
+    "HOVER",
+    "ARMOR",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    ".....RR.......R......RR...........RR....",
+    ".....RR....V..R......RR....V......RR.V..",
+    ".VV..RR....V..R......RR....V......RR..V.",
+    ".VV..RR.....V.R......RR....SSSSSSSRRSSS.",
+    "..V..RR...^^^^R^^^^^^RR^^..SWWWWWSRRSSS.",
+    ".V...RR...^^^^R^^^^^VRR^^..SWWWWWSRRSSS.",
+    "..V..RR...^^^^R^^^^^VRR^^..SWWWWWSRRSSS.",
+    ".V...RR...^^^^R^^^^^^RR^^..SWWWWWSRRSSS.",
+    "..V..RR...^^^VR^^^^^^RR^L..SWWWWWSRRSSS.",
+    ".VV..RR...^^^VR^^^^^^RR^L..SWWWWWSRRSSS.",
+    "VVVV.RR...^^^^R^^^^^^RR^^..SSSSSSSRRSVS.",
+    "VVVV.RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRSVV.",
+    "VVVV.RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "VSSSSRRSSSSS.........RR...........RR....",
+    "VSWWWRRWWWSS.........RR.....V.....RR....",
+    "VSWWWRRWWWSS.........RR.....V.....RR....",
+    "VSWWWRRWWWSS.V....L..RR.....V.SSSSRRSSSS",
+    "VSWWWRRWWWSS.V.......RR.......SSSSRRSSSS",
+    "VSWWWRRWWWSS.........RR.......SWWWRRWWWS",
+    "VSWWWRRWWWSS.........RR.......SWWWRRWWWS",
+    "VSSSSRRSSSSS.........RR.......SWWWRRWWWS",
+    "VVSSSRRSSSSS...V.....RRV......SWWWRRWWWS",
+    "VVVSSRRSSSSSV..V.....RRV......SWWWRRWWWS",
+    "VVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRSSSS",
+    "VVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "VVVVVRRVVVVVV.R.....R.......V.....RR....",
+    "VVVVVRRVVVVVV.R.....R.......V.....RR....",
+    "VVVVVRRVVVVVV.R.....R.....VVVVVVVVRRVVVV",
+    "VVVVVRRVVVVLV.RRRRRRR.....VVVVVVVVRRVVVV",
+    "VVVVVRRVVVVVV.V....RR.....VVVVVVVVRLVVVV",
+    "VVVVVRRVVVVVV.V....RR........VVVVVRLVVVV",
+    "VVVVVRRVVVVVV..V...RRV.......VVVVVRRVVVV",
+    "VVVVVRRVVVVVV......RR.V......VVVVVRRVVVV",
+    "VVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "VVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "VVVVVRRVVVVVV..V...RR..V..VVVVVVVVRRVVVV",
+    "VVVVVRRVVVVVV......RR.....VVVVVVVVRRVVVV",
+    "VVVV...............RR.....VVVVVVVVVVVVVV",
+    "VVVV......................VVVVVVVVVVVVVV",
+    "VVVV......................VVVVVVVVVVVVVV"
+  ],
+  "objectLayout": [
+    "........................................",
+    "...........F...............F.........F..",
+    ".FF........F...............F..........F.",
+    ".FF.....PPP.F...............CCCCC....AA.",
+    "..F.....PPP.....BBB.....PP.C.....C...AA.",
+    ".F..............BBB.F...PP.C.....C...AA.",
+    "..F.................F......C............",
+    ".F......AAA.....CCCC.....T.C.....C...CC.",
+    "..F.....AAAQ.F..CCCC....DC.C.....C...CC.",
+    ".FF.....AAA..F..........D.QC.....C......",
+    "..FF............CCBBC.......CCCCC....F..",
+    ".FF.....................K............FF.",
+    "................U.......................",
+    "..CCC..CCC.......XX.....................",
+    ".C...==...C.C..BBB......PP.CF..AA.......",
+    ".C...==...C.C..BBB......PP.BF..AA.......",
+    ".C...==...C.CF....DT....PP.BF...........",
+    ".C...==...C.BF.............C...CCC..CCC.",
+    ".C...==...C.B..AAA..Q......C..C...==...C",
+    ".C...==...C.C..AAA......BB.C..C...==...C",
+    "..CCC..CCC..C...........BB.C..C...==...C",
+    ".F..........C..F.......F......C...==...C",
+    ".FFQ...........F..K.U..F......C...==...C",
+    ".FF.....................................",
+    "..F.....................................",
+    "..FF....X...................F..X........",
+    "........PPP............PPP..F.......Q...",
+    "........PPP............PPP.AA...AA......",
+    ".FF.....PPPD...............AA...AA...F..",
+    ".FF...........F........BB..AA......DTF..",
+    "..F.....AA....F........BB............F..",
+    ".FF.....AA.Q...F.....F...............F..",
+    "..F..........X....K..UF.................",
+    "........................................",
+    "........................................",
+    "..FF...........F.......F.............F..",
+    "..F.....AAA.BB...........BB.PPP..AAA.F..",
+    "..F.....AAA.BB....CCCC...BB.PPP..AAA.F..",
+    "...F................................F...",
+    "...................HH..................."
+  ]
+}

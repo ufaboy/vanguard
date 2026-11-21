@@ -1,0 +1,576 @@
+{
+  "mapId": "campaign-21",
+  "id": 21,
+  "name": "Ruhr: Coal & Steel",
+  "subtitle": "SECTOR 21 // RUHR STEELWORKS",
+  "objective": "Clear the steelworks and defeat Cerberus-T",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": true,
+    "defeatOnBaseLoss": false
+  },
+  "boss": {
+    "enemyClass": "BOSS_INFERNO",
+    "name": "CERBERUS-T",
+    "title": "Thermobaric Siege Leviathan",
+    "spawnCell": {
+      "row": 3,
+      "col": 19
+    }
+  },
+  "completionReward": {
+    "credits": 900
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#d89a76",
+    "fogColor": "#3b3532",
+    "groundColor": "#575552"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Fight through a fortified Ruhr steelworks with a central blast-furnace spine, western coal yard, and eastern barge-canal bridge, then use brick partitions, concrete furnace piers, and outer birch scrub to kite Cerberus-T's 2.5-cell thermobaric blasts and overdrive rams.",
+    "breaches": [
+      {
+        "name": "South foundry loading gate",
+        "cells": [
+          {
+            "row": 27,
+            "col": 19
+          },
+          {
+            "row": 27,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 29,
+          "col": 19
+        },
+        "end": {
+          "row": 25,
+          "col": 19
+        },
+        "purpose": "Blast the southern brick loading gate to open a direct central firing lane from the marshaling road into the furnace yard."
+      },
+      {
+        "name": "West coal-tip partition",
+        "cells": [
+          {
+            "row": 17,
+            "col": 10
+          },
+          {
+            "row": 18,
+            "col": 10
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 8
+        },
+        "end": {
+          "row": 17,
+          "col": 12
+        },
+        "purpose": "Breach the western brick partition to cut directly between the West Coal-Yard Haul Road and the central rolling mill."
+      },
+      {
+        "name": "East rolling-mill siding wall",
+        "cells": [
+          {
+            "row": 17,
+            "col": 25
+          },
+          {
+            "row": 18,
+            "col": 25
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 27
+        },
+        "end": {
+          "row": 17,
+          "col": 23
+        },
+        "purpose": "Punch through the eastern mill wall to flank defenders guarding the central furnace plaza from the barge-canal approach."
+      },
+      {
+        "name": "North coking-yard gate",
+        "cells": [
+          {
+            "row": 9,
+            "col": 19
+          },
+          {
+            "row": 9,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 11,
+          "col": 19
+        },
+        "end": {
+          "row": 7,
+          "col": 19
+        },
+        "purpose": "Shatter the northern brick coking-yard gate to complete a 360-degree kiting loop around the blast furnaces against Cerberus-T."
+      }
+    ],
+    "reference": {
+      "place": "Ruhr Steelworks & Colliery Complex (Germany)",
+      "kind": "generic",
+      "kept": [
+        "Central blast-furnace halls and cooling water tower",
+        "Western coal yard with slag/coal scree and fuel drums",
+        "Eastern canalized barge slip with conveyor/haul bridge",
+        "Industrial rail siding and southern marshaling road",
+        "Perimeter birch scrub and brick yard walls"
+      ],
+      "simplified": [
+        "Multi-kilometer coking batteries and rail yards compressed into a 40x40 compound",
+        "Canalized Ruhr spur shortened to an eastern barge slip so north-south tank routes remain open"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 21212026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "west-coal-yard",
+        "bounds": [
+          3,
+          2,
+          28,
+          12
+        ],
+        "surface": "dirt",
+        "density": 0.3,
+        "details": [
+          "tracks",
+          "cracks",
+          "oil"
+        ]
+      },
+      {
+        "id": "central-furnace-plaza",
+        "bounds": [
+          3,
+          13,
+          27,
+          26
+        ],
+        "surface": "concrete",
+        "density": 0.28,
+        "details": [
+          "cracks",
+          "oil",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-slag-and-quay",
+        "bounds": [
+          3,
+          27,
+          28,
+          37
+        ],
+        "surface": "gravel",
+        "density": 0.28,
+        "details": [
+          "rubble",
+          "tracks",
+          "cracks"
+        ]
+      },
+      {
+        "id": "south-marshaling-apron",
+        "bounds": [
+          28,
+          8,
+          38,
+          31
+        ],
+        "surface": "asphalt",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "tracks",
+          "oil"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "works-rail-siding",
+        "points": [
+          [
+            2,
+            12
+          ],
+          [
+            28,
+            12
+          ],
+          [
+            28,
+            27
+          ],
+          [
+            2,
+            27
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-furnace",
+        "kind": "label",
+        "row": 16,
+        "col": 19,
+        "text": "BLAST FURNACE"
+      },
+      {
+        "id": "label-coal-yard",
+        "kind": "label",
+        "row": 12,
+        "col": 8,
+        "text": "COAL YARD"
+      },
+      {
+        "id": "label-barge-slip",
+        "kind": "label",
+        "row": 13,
+        "col": 32,
+        "text": "BARGE SLIP"
+      },
+      {
+        "id": "loading-south",
+        "kind": "loading",
+        "row": 25,
+        "col": 19,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "hazard-west-oil",
+        "kind": "hazard_zone",
+        "row": 13,
+        "col": 5,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "hazard-east-slag",
+        "kind": "hazard_zone",
+        "row": 6,
+        "col": 26,
+        "size": 2,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear-lane",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [
+    {
+      "kind": "ZOLLVEREIN_TOWER",
+      "row": 4,
+      "col": 14
+    }
+  ],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "west-coal-gate",
+        "row": 0,
+        "col": 6
+      },
+      {
+        "id": "north-furnace-west",
+        "row": 0,
+        "col": 19
+      },
+      {
+        "id": "north-furnace-east",
+        "row": 0,
+        "col": 20
+      },
+      {
+        "id": "east-slag-gate",
+        "row": 0,
+        "col": 29
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-coking-garrison",
+        "label": "STEELWORKS PERIMETER GARRISON ENGAGED",
+        "recoverySec": 0,
+        "entrances": [
+          "west-coal-gate",
+          "north-furnace-west",
+          "north-furnace-east",
+          "east-slag-gate"
+        ],
+        "initialCells": [
+          {
+            "row": 3,
+            "col": 6
+          },
+          {
+            "row": 3,
+            "col": 19
+          },
+          {
+            "row": 4,
+            "col": 20
+          },
+          {
+            "row": 3,
+            "col": 29
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 19
+          },
+          {
+            "row": 18,
+            "col": 19
+          },
+          {
+            "row": 29,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "ENGINEER",
+          "FLAMETHROWER",
+          "STANDARD",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "slag-yard-flank-assault",
+        "label": "COAL YARD & BARGE SLIP FLANKING ASSAULT",
+        "recoverySec": 8,
+        "entrances": [
+          "west-coal-gate",
+          "east-slag-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 7
+          },
+          {
+            "row": 20,
+            "col": 7
+          },
+          {
+            "row": 29,
+            "col": 13
+          }
+        ],
+        "enemies": [
+          "FLAMETHROWER",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "SAPPER",
+          "STEALTH",
+          "STRIKER",
+          "STANDARD",
+          "ENGINEER"
+        ]
+      },
+      {
+        "id": "furnace-guard-counterattack",
+        "label": "FURNACE GUARD — CERBERUS-T INBOUND ON CLEAR",
+        "recoverySec": 9,
+        "entrances": [
+          "west-coal-gate",
+          "north-furnace-west",
+          "north-furnace-east",
+          "east-slag-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 29
+          },
+          {
+            "row": 19,
+            "col": 34
+          },
+          {
+            "row": 29,
+            "col": 25
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "HOWITZER",
+          "FLAMETHROWER",
+          "STANDARD",
+          "ARMOR",
+          "STRIKER",
+          "STEALTH",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "ENGINEER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "ARMOR",
+    "FLAMETHROWER",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "SAPPER",
+    "STEALTH",
+    "STRIKER",
+    "STANDARD",
+    "ENGINEER",
+    "ARMOR",
+    "STRIKER",
+    "HOWITZER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER",
+    "STEALTH",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVV..RR....VV.....RR........RR....VVVVV",
+    "VVV...RR....VV.....RR........RR....^VVVV",
+    "VV....RR...........RR........RR....^^VVV",
+    "......RR...........RR........RR.....^VVV",
+    "......RR...L.......RR........RR......VV.",
+    "VV....RR...........RR........RR.........",
+    "VVV...RR...........RR...L....RR....^^...",
+    "VV....RR...........RR........RR....^^^..",
+    "......RR...^^......RR........RR.....^...",
+    "......RR...^^......RR........RR.........",
+    "......RR...........RR........RR...VV....",
+    "VV....RR...........RR........RR...VVV...",
+    "VVV...RR...........RR........RR...VV....",
+    "VV....RR.....L.....RR........RR.........",
+    "......RR...........RR........RR..WWWW...",
+    "......RR..^^.......RR........RR..WWWW...",
+    "......RR..^^.......RR........RR..WWWW...",
+    "VV....RR...........RR........RR..WWWW...",
+    "VVV...RR...........RR........RR..WWWW...",
+    "VV....RR...........RR........RRRRWWWW...",
+    "......RR...........RR........RRRRWWWW...",
+    "......RR...........RR........RR..WWWW...",
+    "......RR....L......RR........RR..WWWW...",
+    "VV....RR...........RR........RR..WWWW...",
+    "VVV...RR...........RR........RR..WWWW...",
+    "VV....RR...........RR........RR.........",
+    "......RR...........RR........RR...VV....",
+    "......RR...........RR........RR...VVV...",
+    "......RR...........RR........RR...VV....",
+    "VV....RRRRRRRRRRRRRRRRRRRRRRRRR.........",
+    "VVV...RR...........RR........RR.........",
+    "VV....RR.....L.....RR........RR....^^...",
+    "......RR...........RR........RR....^^...",
+    "......RR...........RR........RR.........",
+    "......RR...........RR........RR...VV....",
+    "VV....RR...........RR........RR...VVV...",
+    "VVV...RR.....................RR...VV....",
+    "VV....RR.....................RR.........",
+    "......RR.....................RR.........",
+    "......RR.....................RR....VV..."
+  ],
+  "objectLayout": [
+    "FFF.........FF..............B.......FFFF",
+    "FF..........FF........T.....B........FFF",
+    "F....B............B.........B.........FF",
+    ".....B............B..................FFF",
+    "..AA.......D.........PPP..D....AA.......",
+    "..AA.................PPP.......AA.......",
+    "..........Q...PPP....PPP..Q.............",
+    "....C.....B...............B.....C....F..",
+    "....C.....B...............B.....C....FF.",
+    "..........CC.C..BBBBBB..CCC.............",
+    "FF............K......K..................",
+    "FFF..K........C......C.......K.......FF.",
+    "FF............C......C...............FFF",
+    ".....D..AA....C..UU..C....AA........FF..",
+    "........AA................AA....C....C..",
+    "..B.......C...C......C...C......C....C..",
+    "..B.....Q.C...C......C...C..Q...C....C..",
+    "..B.......B...P......P...B......C....C..",
+    "FF........B...P......P...B......C....C..",
+    "FFF.......C...P......P...C.......====...",
+    "FF........C...P......P...C.......====...",
+    "....C.....C..............C......C....C..",
+    "....C......D.....KK.....D.......C....C..",
+    "FF........B..............B......C....C..",
+    "FFF..AA.......C......C......AA..C....C..",
+    "FF...AA..Q....C......C......AA..........",
+    "..............B......B...............FF.",
+    "....CC..BBB...CCCCCBBCCCCC......CC...FFF",
+    "....CC.........................QCC...FF.",
+    "FF......................................",
+    "FFF..K......X..........X......K.........",
+    "..AA.........D........D..........AA.....",
+    "..AA.............................AA..F..",
+    ".........B.....BB....BB.....B........FF.",
+    "....FF...B..................B..FF....F..",
+    "FFF.FF.........................FF.......",
+    "FF.......Q..K..........K..........FF....",
+    ".....B............CCCC............FF....",
+    ".....B............................F.....",
+    "...................HH...............FF.."
+  ]
+}

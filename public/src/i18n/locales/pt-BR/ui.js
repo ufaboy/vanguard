@@ -347,8 +347,6 @@ export default {
   "START MISSION »": "INICIAR MISSÃO »",
   "LOCKED": "BLOQUEADO",
   "Pass Sector {n}": "Conclua o Setor {n}",
-  "3D isometric tank campaign region preview": "Pré-visualização 3D isométrica da região de campanha",
-  "{n} hostiles": "{n} inimigos",
   "3× Light Bombs": "3× Bombas Leves",
   "3× BOMBS": "3× BOMBAS",
   "Thermobaric Missile": "Míssil Termobárico",

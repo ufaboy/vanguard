@@ -1,0 +1,566 @@
+{
+  "mapId": "campaign-05",
+  "id": 5,
+  "name": "Dolomites Pass",
+  "subtitle": "SECTOR 05 // ALPINE BORDER FORT",
+  "objective": "Destroy the Consortium pass fort",
+  "gameMode": "stronghold_assault",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 5,
+      "col": 20
+    },
+    "name": "Consortium Pass Fort",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 450
+  },
+  "environment": {
+    "theme": "alpine",
+    "tint": "#c5dcf2",
+    "fogColor": "#435366",
+    "groundColor": "#7d8891"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Climb the switchback mountain road, flank through conifer-covered scree, or blast through rubble slides to storm the Consortium concrete fort blocking the Austrian border.",
+    "breaches": [
+      {
+        "name": "South fort sally wall",
+        "cells": [
+          {
+            "row": 10,
+            "col": 19
+          },
+          {
+            "row": 10,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 20
+        },
+        "end": {
+          "row": 8,
+          "col": 20
+        },
+        "purpose": "Breach the southern curtain wall of the Consortium fort for a direct shot at the command core."
+      },
+      {
+        "name": "West rubble slide",
+        "cells": [
+          {
+            "row": 15,
+            "col": 5
+          },
+          {
+            "row": 15,
+            "col": 6
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 5
+        },
+        "end": {
+          "row": 13,
+          "col": 5
+        },
+        "purpose": "Clear the collapsed rock slide to cut directly up the western alpine flank toward the fort."
+      },
+      {
+        "name": "East rubble slide",
+        "cells": [
+          {
+            "row": 22,
+            "col": 33
+          },
+          {
+            "row": 22,
+            "col": 34
+          }
+        ],
+        "start": {
+          "row": 24,
+          "col": 33
+        },
+        "end": {
+          "row": 20,
+          "col": 33
+        },
+        "purpose": "Blast through the eastern landslide to link the lower switchback with the east glacier approach."
+      },
+      {
+        "name": "Lower hairpin cut",
+        "cells": [
+          {
+            "row": 28,
+            "col": 15
+          },
+          {
+            "row": 28,
+            "col": 16
+          }
+        ],
+        "start": {
+          "row": 30,
+          "col": 15
+        },
+        "end": {
+          "row": 26,
+          "col": 15
+        },
+        "purpose": "Open a shortcut through the customs retaining wall between the south valley and mid-pass."
+      }
+    ],
+    "reference": {
+      "place": "Dolomites Pass (Italian-Austrian Alpine Border)",
+      "kind": "generic",
+      "kept": [
+        "Switchback mountain road climbing from the valley to the summit pass",
+        "Concrete border fort blocking the northern pass to Austria",
+        "Snow, ice shelves, stone scree outcrops, and conifer timber belts",
+        "Rubble slides closing alternative mountain cuts"
+      ],
+      "simplified": [
+        "Compressed multi-kilometer hairpin grades into a 3-tier 40x40 switchback",
+        "Represented steep cliff faces as conifer-capped stone spurs and thin concrete retaining walls"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 5052026,
+    "theme": "alpine",
+    "zones": [
+      {
+        "id": "alpine-snow-pack",
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
+        "surface": "snow",
+        "density": 0.2,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "fort-concrete-apron",
+        "bounds": [
+          3,
+          16,
+          10,
+          24
+        ],
+        "surface": "concrete",
+        "density": 0.35,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "customs-yard-gravel",
+        "bounds": [
+          30,
+          10,
+          34,
+          15
+        ],
+        "surface": "gravel",
+        "density": 0.3,
+        "details": [
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "depot-asphalt-pad",
+        "bounds": [
+          24,
+          24,
+          28,
+          28
+        ],
+        "surface": "asphalt",
+        "density": 0.3,
+        "details": [
+          "oil",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [],
+    "landmarks": [
+      {
+        "id": "fort-label",
+        "kind": "label",
+        "row": 12,
+        "col": 20,
+        "size": 3,
+        "text": "CONSORTIUM PASS FORT"
+      },
+      {
+        "id": "customs-label",
+        "kind": "label",
+        "row": 34,
+        "col": 12,
+        "size": 3,
+        "text": "VALLEY CUSTOMS"
+      },
+      {
+        "id": "glacier-label",
+        "kind": "label",
+        "row": 14,
+        "col": 34,
+        "size": 3,
+        "text": "EAST GLACIER"
+      },
+      {
+        "id": "helipad-hq",
+        "kind": "helipad",
+        "row": 36,
+        "col": 14,
+        "size": 1.8
+      },
+      {
+        "id": "depot-loading",
+        "kind": "loading",
+        "row": 24,
+        "col": 26,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "pass-chevron",
+        "kind": "chevron",
+        "row": 21,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
+      },
+      {
+        "id": "wt-hazard",
+        "kind": "hazard_zone",
+        "row": 22,
+        "col": 22,
+        "size": 1.3
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "fort-gate-clear",
+        "bounds": [
+          11,
+          18,
+          13,
+          21
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 4,
+    "spawnIntervalSec": 3.8,
+    "entrances": [
+      {
+        "id": "north-west-pass",
+        "row": 1,
+        "col": 5
+      },
+      {
+        "id": "north-fort-west",
+        "row": 1,
+        "col": 13
+      },
+      {
+        "id": "north-fort-east",
+        "row": 1,
+        "col": 25
+      },
+      {
+        "id": "north-east-glacier",
+        "row": 1,
+        "col": 31
+      },
+      {
+        "id": "upper-west-ledge",
+        "row": 6,
+        "col": 4
+      },
+      {
+        "id": "upper-east-ridge",
+        "row": 6,
+        "col": 35
+      }
+    ],
+    "encounters": [
+      {
+        "id": "pass-picket",
+        "label": "FORT PICKET: Patrols descending the summit switchback.",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-pass",
+          "north-fort-west",
+          "north-fort-east",
+          "north-east-glacier"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 6
+          },
+          {
+            "row": 4,
+            "col": 14
+          },
+          {
+            "row": 4,
+            "col": 26
+          },
+          {
+            "row": 4,
+            "col": 31
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 11
+          },
+          {
+            "row": 21,
+            "col": 11
+          },
+          {
+            "row": 21,
+            "col": 29
+          },
+          {
+            "row": 29,
+            "col": 29
+          },
+          {
+            "row": 30,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "pass-flankers",
+        "label": "ALPINE FLANKERS: Reinforcements sweeping the west and east pass trails.",
+        "recoverySec": 8,
+        "entrances": [
+          "north-west-pass",
+          "north-east-glacier",
+          "upper-west-ledge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 14,
+            "col": 6
+          },
+          {
+            "row": 25,
+            "col": 5
+          },
+          {
+            "row": 34,
+            "col": 11
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "fort-garrison",
+        "label": "CONSORTIUM GARRISON: Main fort defenders deploying down the pass.",
+        "recoverySec": 9,
+        "entrances": [
+          "north-fort-west",
+          "north-fort-east",
+          "upper-east-ridge",
+          "north-west-pass"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 20
+          },
+          {
+            "row": 21,
+            "col": 29
+          },
+          {
+            "row": 29,
+            "col": 29
+          },
+          {
+            "row": 30,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD"
+        ]
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVVVRRVVV...RR..........RR...VVVVVVVVVV",
+    "VVVVVRRVVV...RR..........RR...VVIIIIIVVV",
+    "VVVVVRRVVV^^^RR^^^^^^^^^^RR^^^VVIIIIIVVV",
+    "VVVVVRRVVV^^^RR^^^^^^^^^^RR^^^VVIIIIIVVV",
+    "VVVVVRRVVV^^^^^^^^^^^^^^^^^^^^VVIIIIIVVV",
+    "VVVVVVVVVV^^^^^^^^^^^^^^^^^^^^VVVVVVVVVV",
+    "VVIIIIVVVV^^^^^^^^^^^^^^^^^.....VVVVVVVV",
+    "VVIIII.....^^^^^^^^^^^^^^^^.....VVVVVVVV",
+    "VVIIII.....^^^^^^^^^^^^^^^^.....VVVVVVVV",
+    "VVIIII.............^^...........VIIIIVVV",
+    "VVVVVV.............RR.........VVVIIIIVVV",
+    "VVVVVV.....RRRRRRRRRR.........VVVIII.VVV",
+    "VVVVVVVVVVRRRRRRRRRRR.........VVVIIIIVVV",
+    "V^^^^^^^VVRR..................VVVVVVVVVV",
+    "V^^^^^^^^VRR..................VVVVVVVVVV",
+    "V^^^^^^^^^^^^^^...VVVVVV......VVVVVVVVVV",
+    "V^^^^^^^^^^^^^^...VVVVVV......VVVIIIIVVV",
+    "V^^^^^^^V^^^^^^...VVVVVV......VVVIIIIVVV",
+    "V^VV^^^^VVRR......VVVVVV......VVVIIIIVVV",
+    "V^V^V^^^VVRR......VVVVVV......VVVIIIIVVV",
+    "V^^V^^^^VVRRRRRRRRRRRRRRRRRRRRRVVIIIIVVV",
+    "VVVVVVVVVVRRRRRRRRRRRRRRRRRRRRR^^^^^^^^V",
+    "VVVVVVVVVV...................RR^^^^^^^^V",
+    "VVVVVVVVVV.....III...........RR^^^^^^^^V",
+    "VVVVVVVVVV.....IIIII.........RR^^^^^^^^V",
+    "VVVVVVVVVV.....IIIII.........RR^^^^^^^^V",
+    "VVVVVVVVVV...................RR^^^^^^^^V",
+    "VVVVVVVVVV...................RR^^^^^^^^V",
+    "VVVVVVVVVV...................RR^^^^^^^^V",
+    "VVVVVVVVVV.........RRRRRRRRRRRR^^^^^^^^V",
+    "VVVVVVVVVV.........RRRRRRRRRRRR^^^^^^^^V",
+    "VVVVVVVVVV.........RR...IIIII.V^^^^VV^^V",
+    "VVVVVVVVVV.........RR...IIIII.V.....VVVV",
+    "VVVVVVVVVV.....VVRRRR......II.V.....VVVV",
+    "VVVVVVVVVVRRRRRRRRRRR.........V.....VVVV",
+    "VVVVVVVVVV.........RR.........V.....VVVV",
+    "VVVVVVVVVV.........RR.........VVVVVVVVVV",
+    "VVVVVVVVVV....................VVVVVVVVVV",
+    "VVVVVVVVVV....................VVVVVVVVVV",
+    "VVVVVVVVVV....................VVVVVVVVVV"
+  ],
+  "objectLayout": [
+    ".FFF.................................FF.",
+    ".FF..................................FF.",
+    ".FF..................................FF.",
+    ".FF.....K......XCC.....CX...............",
+    "..FF.......CC...CCCC.CCCC...CC..........",
+    "...........CC.....CCECC.....CC..........",
+    "..................CBBBC.............FF..",
+    "........Q.......Q.......D...AAA.....FFF.",
+    ".......PPP.......D.....X....AAAQ........",
+    ".......PPP...K..CCC..CCC..K.............",
+    "..FF...PPP....XUCCCBBCCX................",
+    ".FFF.....................CCC........K...",
+    "..FFF....................CCC............",
+    ".........K........K...K........FF.......",
+    ".....U......U......CCCC........FF.......",
+    ".CCCCBBCC............K...AA....FF...FF..",
+    "......U............FF....AA.............",
+    "...............AA..FFF...AA.............",
+    "..FF.....F....DAA...FF..U...............",
+    "..F.F....F.........K...K................",
+    "...Q....................................",
+    "..FF.............................U......",
+    "..FFF.........X......T..X......CCBBCCCC.",
+    "..................CCCCC...........U.....",
+    ".....FF.....K...........................",
+    "....FFF.......U..........PPPD.......Q...",
+    ".....FF...FF.........CC..PPP............",
+    "..........FFF.......K...XPPP.U..........",
+    "............CCCBBCC......K..............",
+    "..FF....................................",
+    "..FFF...................................",
+    "..FF.......AAA.X..K....X...........FF...",
+    "...........AAA.FF....U..............FF..",
+    ".............Q.FF.......CCC.....AAA.FF..",
+    "........................CCC.....AAA.....",
+    "...FF....................K..............",
+    "...FFF.....X.............X...FF.........",
+    "....FF...FF.......CCCC.......FFF...FF...",
+    ".........FFF.......................FF...",
+    "...................HH..................."
+  ]
+}

@@ -1,0 +1,553 @@
+{
+  "mapId": "campaign-10",
+  "id": 10,
+  "name": "Vienna: Hofburg",
+  "subtitle": "SECTOR 10 // RINGSTRASSE & HELDENPLATZ",
+  "objective": "Break the Consortium hold on the Ring before the convoy turns north",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 525
+  },
+  "environment": {
+    "theme": "capital",
+    "tint": "#dda4a1",
+    "fogColor": "#3c3538",
+    "groundColor": "#646866"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Contest the grand Ringstrasse boulevards and Heldenplatz statues, or use the Volksgarten-Burggarten parks and three destructible breaches to flank Consortium artillery and jammers.",
+    "breaches": [
+      {
+        "name": "Hofburg Archway",
+        "cells": [
+          {
+            "row": 17,
+            "col": 18
+          },
+          {
+            "row": 17,
+            "col": 19
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 19
+        },
+        "end": {
+          "row": 19,
+          "col": 19
+        },
+        "purpose": "Breach the central palace archway to connect Michaelerplatz directly to Heldenplatz."
+      },
+      {
+        "name": "Heldenplatz Barricade",
+        "cells": [
+          {
+            "row": 24,
+            "col": 11
+          },
+          {
+            "row": 25,
+            "col": 11
+          }
+        ],
+        "start": {
+          "row": 24,
+          "col": 9
+        },
+        "end": {
+          "row": 24,
+          "col": 13
+        },
+        "purpose": "Open a lateral shortcut between the western Ringstrasse parks and Heldenplatz."
+      },
+      {
+        "name": "Graben Passage Wall",
+        "cells": [
+          {
+            "row": 21,
+            "col": 26
+          },
+          {
+            "row": 22,
+            "col": 26
+          }
+        ],
+        "start": {
+          "row": 21,
+          "col": 24
+        },
+        "end": {
+          "row": 21,
+          "col": 28
+        },
+        "purpose": "Cut through the old-town partition between Heldenplatz and Kaerntner Strasse."
+      }
+    ],
+    "reference": {
+      "place": "Hofburg & Ringstrasse, Vienna",
+      "kind": "real",
+      "kept": [
+        "Ringstrasse tree-lined boulevard",
+        "Heldenplatz ceremonial plaza",
+        "Hofburg palace wings and inner courtyard",
+        "Volksgarten and Burggarten parks",
+        "Stephansplatz and St. Stephen's Cathedral block to the east",
+        "Michaelertor dome gate, outer Burgtor and the two Heldenplatz equestrian statues"
+      ],
+      "simplified": [
+        "Danube Canal omitted; northern Ringstrasse forms the enemy approach",
+        "Hofburg reduced to the Michaelertrakt dome gate, one palace wing and generic courtyard blocks; Neue Burg built from generic tiles",
+        "Surrounding Innere Stadt alleys compressed into asymmetric urban blocks"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 10102026,
+    "theme": "capital",
+    "zones": [
+      {
+        "id": "ringstrasse-pavers",
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.16,
+        "details": [
+          "cracks",
+          "leaves",
+          "patches"
+        ]
+      },
+      {
+        "id": "heldenplatz-plaza",
+        "bounds": [
+          19,
+          17,
+          29,
+          25
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble",
+          "leaves"
+        ]
+      },
+      {
+        "id": "hofburg-courtyard",
+        "bounds": [
+          8,
+          17,
+          16,
+          21
+        ],
+        "surface": "concrete",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "stephansplatz-square",
+        "bounds": [
+          14,
+          26,
+          20,
+          33
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "rubble",
+          "leaves"
+        ]
+      }
+    ],
+    "paths": [],
+    "landmarks": [
+      {
+        "id": "label-heldenplatz",
+        "kind": "label",
+        "row": 23,
+        "col": 21,
+        "size": 3,
+        "text": "HELDENPLATZ"
+      },
+      {
+        "id": "label-hofburg",
+        "kind": "label",
+        "row": 12,
+        "col": 19,
+        "size": 3,
+        "text": "HOFBURG"
+      },
+      {
+        "id": "label-ring",
+        "kind": "label",
+        "row": 32,
+        "col": 21,
+        "size": 3,
+        "text": "RINGSTRASSE"
+      },
+      {
+        "id": "label-stephans",
+        "kind": "label",
+        "row": 13,
+        "col": 29,
+        "size": 3,
+        "text": "STEPHANSPLATZ"
+      },
+      {
+        "id": "cross-west",
+        "kind": "crosswalk",
+        "row": 24,
+        "col": 4,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "cross-east",
+        "kind": "crosswalk",
+        "row": 21,
+        "col": 34,
+        "size": 2,
+        "rotation": 90
+      }
+    ]
+  },
+  "landmarks3d": [
+    {
+      "kind": "HOFBURG_PALACE",
+      "row": 1,
+      "col": 20
+    },
+    {
+      "kind": "ST_STEPHENS_CATHEDRAL",
+      "row": 17,
+      "col": 28
+    },
+    {
+      "kind": "MICHAELERTRAKT",
+      "row": 6,
+      "col": 16
+    },
+    {
+      "kind": "BURGTOR",
+      "row": 30,
+      "col": 15
+    },
+    {
+      "kind": "HELDENPLATZ_STATUE",
+      "row": 20,
+      "col": 19
+    },
+    {
+      "kind": "HELDENPLATZ_STATUE",
+      "row": 20,
+      "col": 23
+    }
+  ],
+  "enemies": {
+    "vanguardCount": 24,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 4,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "north-volksgarten",
+        "row": 1,
+        "col": 6
+      },
+      {
+        "id": "north-schottentor",
+        "row": 1,
+        "col": 15
+      },
+      {
+        "id": "north-stephansplatz",
+        "row": 1,
+        "col": 29
+      },
+      {
+        "id": "upper-west-ring",
+        "row": 7,
+        "col": 3
+      },
+      {
+        "id": "upper-east-graben",
+        "row": 8,
+        "col": 35
+      }
+    ],
+    "encounters": [
+      {
+        "id": "ring-vanguard-probe",
+        "label": "CONSORTIUM RING VANGUARD PROBE",
+        "recoverySec": 0,
+        "entrances": [
+          "north-volksgarten",
+          "north-schottentor",
+          "north-stephansplatz"
+        ],
+        "initialCells": [
+          {
+            "row": 3,
+            "col": 6
+          },
+          {
+            "row": 3,
+            "col": 16
+          },
+          {
+            "row": 3,
+            "col": 29
+          },
+          {
+            "row": 8,
+            "col": 4
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 5,
+            "col": 15
+          },
+          {
+            "row": 12,
+            "col": 19
+          },
+          {
+            "row": 24,
+            "col": 19
+          },
+          {
+            "row": 32,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "SCOUT"
+        ]
+      },
+      {
+        "id": "palace-flank-pressure",
+        "label": "VOLKSGARTEN & STEPHANSPLATZ FLANK PUSH",
+        "recoverySec": 8,
+        "entrances": [
+          "upper-west-ring",
+          "north-volksgarten",
+          "north-stephansplatz",
+          "upper-east-graben"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 4
+          },
+          {
+            "row": 24,
+            "col": 8
+          },
+          {
+            "row": 24,
+            "col": 20
+          },
+          {
+            "row": 32,
+            "col": 12
+          }
+        ],
+        "enemies": [
+          "STEALTH",
+          "STANDARD",
+          "ARMOR",
+          "HOWITZER",
+          "FLAMETHROWER",
+          "STANDARD",
+          "SCOUT",
+          "ENGINEER"
+        ]
+      },
+      {
+        "id": "hofburg-convoy-holdout",
+        "label": "CONSORTIUM CONVOY ESCORT HOLDOUT",
+        "recoverySec": 9,
+        "entrances": [
+          "north-schottentor",
+          "north-stephansplatz",
+          "upper-west-ring",
+          "upper-east-graben"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 34
+          },
+          {
+            "row": 22,
+            "col": 34
+          },
+          {
+            "row": 22,
+            "col": 23
+          },
+          {
+            "row": 32,
+            "col": 28
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "STANDARD",
+          "JAMMER",
+          "HOWITZER",
+          "STEALTH",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "SCOUT",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "SCOUT",
+    "ENGINEER",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD",
+    "JAMMER",
+    "HOWITZER",
+    "STEALTH",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    ".....RR........RR............RR.........",
+    "VVVV.RR........RR............RR.....VVVV",
+    "VVVV.RR........RR............RR.....VVVV",
+    "VVVV.RR......V.RR............RR.....VVVV",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRR....VVVV",
+    "VVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "...RRVVVVVVVVVV...RR...........RRRRRVVVV",
+    "RRRRRVVVVVVVVVV...RR...........RRRRR....",
+    "RRRRRVVVVVVVVVV...RR..............RRRRRR",
+    "..VRRVVVVVVVVVV...................RRRRRR",
+    "...RRVVVVVVVVVV...................RR....",
+    "...RRVVVVVVVVVV...................RR....",
+    "...RRVVVVVVVVVV........RRRRRRRRRRRRR....",
+    "...RRVVVVVVVVVV........RRRRRRRRRRRRR....",
+    "...RRVVVVVVVVVV...........^^^^^^^^RR....",
+    "...RRVVVVVVVVVV...........^^^^^^^^RR....",
+    "...RRVVVVVVVVVV...........^^^^^^^^RR....",
+    "...RR.VVVVVVV.............^^^^^^^^RR....",
+    "...RR.VVVVVVV.............^^^^^^^^RR....",
+    "...RR.VVVVVVV....^^^^L^^^^^^^^^^^^RR....",
+    "...RR.VVVVVVV....^^^^^^^^^^^^^^^^^RR....",
+    "...RR.VVVVVVV....^^^^^^^RRRRRRRRRRRR....",
+    "...RR.VVVVVVV....^^^^^^^RRRRRRRRRRRR....",
+    "...RR............^^^^^^^^^........RR....",
+    "...RRRRRRRRRRRRRR^^^^^^^^^........RR....",
+    "...RRRRRRRRRRRRRR^^^^^^^^^........RR....",
+    "...RRVVVVVVVVVV..^^^^^^^^^........RR....",
+    "...RRVVVVVVVVVV..^^^^^^^^^........RR....",
+    "...RRVVWWWVVVVV..^^^^^^^^^........RR....",
+    "...RRVVWWWVVVVV..^^^^^^^^^......L.RR....",
+    "...RRVVWWWVVVVV...RR..............RR....",
+    "...RRVVVVVVVVVV...RR..............RR....",
+    "...RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "...RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    ".VVVVVVVVVVVV......RR......VVVVVVVVVVVV.",
+    ".VVVVVVVVVVVV......RR......VVVVVVVVVVVV.",
+    ".VVVVVVVVVVVV......RR......VVVVVVVVVVVV.",
+    ".VVVVVVVVVVVV..............VVVVVVVVVVVV.",
+    ".VVVVVVVVVVVV..............VVVVVVVVVVVV.",
+    "........................................"
+  ],
+  "objectLayout": [
+    "........................................",
+    "........AAAAA....AA.....................",
+    "..F.....AAAAA....AA.............PPP.....",
+    "AA...........F......PPPPPP......PPP..F..",
+    "AA...................................F..",
+    "AA...................................F..",
+    ".......FF.......................K....F..",
+    ".......FFF..............PPPP............",
+    ".......F..F.AAA.PP...PP.PPPP...AA.......",
+    "..F.....QF..AAA.PP...PP.PPPP.X.AA.......",
+    "........FF..AAA.PP.X.PP.PPPP...AA....AA.",
+    "AA....FF........PP...PP...U..........AA.",
+    "AA.....FF.......PP...PP.................",
+    "AA.......F......PP...PP..............PPP",
+    "AA.....FF.......PPXQ.PP.....PPPP.....PPP",
+    "AA.......FF.....PP..KPP.AA.PPPPPP....PPP",
+    "........................AA.PPPPPPQ...PPP",
+    "..F........F......BB....AA...........PPP",
+    "..F....PPP.F.PPP........AA..............",
+    "PP.....PPP...PPP.....DD..K...........F..",
+    "PP.....PPP...PPP.....................F..",
+    "PP....F......PPPP.......K.B.............",
+    "PP....FF.....PPPP....CC...B..........AAA",
+    "PP................K......U...........AAA",
+    "PP.........B......X.....X..PPPPP.....AAA",
+    "...........B...............PPPPP.....AAA",
+    "..F...FF...F........CC.....PPPPP.....AAA",
+    "..F...F....FF....U....AAKA.PPPPP.....AAA",
+    "AA.........F.......X..AXAA.PPPPP........",
+    "AA...Q.....F....X.....AAAA......D.......",
+    "AA.........FF.........AAAAU.....D....F..",
+    "AA.....FF.F..........................F..",
+    "AA......................................",
+    "........................................",
+    "................BB......Q...............",
+    "...AAAA.F.PPPP..........F.PPPP.FAAAAA...",
+    "...AAAA.F.PPPP..........F.PPPP.FAAAAA...",
+    "...AAAA...PPPP....CCCC....PPPP..AAAAA...",
+    "........................................",
+    "...................HH..................."
+  ]
+}

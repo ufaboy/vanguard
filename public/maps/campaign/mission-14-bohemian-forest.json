@@ -1,0 +1,514 @@
+{
+  "mapId": "campaign-14",
+  "id": 14,
+  "name": "Bohemian Forest",
+  "subtitle": "SECTOR 14 // BOHEMIAN CROSSROADS CAMP",
+  "objective": "Hold the forest crossroads camp at dawn against flanking patrols",
+  "gameMode": "base_defense",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 680
+  },
+  "environment": {
+    "theme": "forest",
+    "tint": "#a8b8c0",
+    "fogColor": "#3a4850",
+    "groundColor": "#566454"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Hold a rain-soaked Bohemian Forest crossroads camp at dawn, rotating between three logging corridors separated by dense spruce groves and peat bogs.",
+    "reference": {
+      "place": "Bohemian Forest (Sumava) logging crossroads and timber camp, Bohemia",
+      "kind": "generic",
+      "kept": [
+        "Dense spruce woodland framing three converging logging roads",
+        "Rain-soaked peat bogs and marshy hollows flanking the trails",
+        "Central sawmill hall, timber cabins, and camp water tower at the main crossroads",
+        "Cool misty dawn-after-rain fog and damp forest floor palette"
+      ],
+      "simplified": [
+        "Compressed miles of Sumava timberland into a 40x40 tactical basin oriented north-to-south",
+        "Represented shallow forest creeks and wet hollows as impassable-to-objects swamp patches",
+        "Added front-line brick barricades, concrete bunkers, hedgehogs, and craters along the approaches"
+      ]
+    },
+    "breaches": [
+      {
+        "name": "North-West Timber Wall",
+        "cells": [
+          {
+            "row": 14,
+            "col": 12
+          },
+          {
+            "row": 14,
+            "col": 13
+          },
+          {
+            "row": 14,
+            "col": 14
+          }
+        ],
+        "start": {
+          "row": 13,
+          "col": 13
+        },
+        "end": {
+          "row": 15,
+          "col": 13
+        },
+        "purpose": "Shortcut between the west logging road and the central highway north of the sawmill."
+      },
+      {
+        "name": "Sawmill Yard Gate",
+        "cells": [
+          {
+            "row": 22,
+            "col": 24
+          },
+          {
+            "row": 23,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 23
+        },
+        "end": {
+          "row": 23,
+          "col": 25
+        },
+        "purpose": "Fast flank cut from the central crossroads into the east bog trail."
+      },
+      {
+        "name": "South-West Camp Barricade",
+        "cells": [
+          {
+            "row": 30,
+            "col": 12
+          },
+          {
+            "row": 30,
+            "col": 13
+          }
+        ],
+        "start": {
+          "row": 29,
+          "col": 12
+        },
+        "end": {
+          "row": 31,
+          "col": 13
+        },
+        "purpose": "Direct breach between the south-west approach and the HQ defensive apron."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 14052026,
+    "theme": "forest",
+    "zones": [
+      {
+        "id": "spruce-floor",
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
+        "surface": "dirt",
+        "density": 0.25,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "sawmill-yard",
+        "bounds": [
+          16,
+          15,
+          23,
+          25
+        ],
+        "surface": "gravel",
+        "density": 0.35,
+        "details": [
+          "tracks",
+          "patches",
+          "oil"
+        ]
+      },
+      {
+        "id": "west-timber-yard",
+        "bounds": [
+          18,
+          5,
+          24,
+          11
+        ],
+        "surface": "dirt",
+        "density": 0.3,
+        "details": [
+          "tracks",
+          "leaves"
+        ]
+      },
+      {
+        "id": "east-outpost-yard",
+        "bounds": [
+          15,
+          29,
+          20,
+          35
+        ],
+        "surface": "gravel",
+        "density": 0.25,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "camp-apron",
+        "bounds": [
+          32,
+          14,
+          38,
+          25
+        ],
+        "surface": "gravel",
+        "density": 0.3,
+        "details": [
+          "tracks",
+          "rubble"
+        ]
+      }
+    ],
+    "paths": [],
+    "landmarks": [
+      {
+        "id": "crossroads-label",
+        "kind": "label",
+        "row": 21,
+        "col": 19,
+        "size": 3,
+        "text": "TIMBER CROSSROADS"
+      },
+      {
+        "id": "camp-label",
+        "kind": "label",
+        "row": 33,
+        "col": 19,
+        "size": 3,
+        "text": "DAWN CAMP HQ"
+      },
+      {
+        "id": "tower-hazard",
+        "kind": "hazard_zone",
+        "row": 22,
+        "col": 20,
+        "size": 1.2
+      },
+      {
+        "id": "sawmill-loading",
+        "kind": "loading",
+        "row": 19,
+        "col": 22,
+        "size": 1.6,
+        "rotation": 0
+      },
+      {
+        "id": "camp-chevron",
+        "kind": "chevron",
+        "row": 31,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-apron-clear",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "entrances": [
+      {
+        "id": "west-logging",
+        "row": 2,
+        "col": 7
+      },
+      {
+        "id": "north-ridge",
+        "row": 2,
+        "col": 20
+      },
+      {
+        "id": "east-trail",
+        "row": 2,
+        "col": 32
+      }
+    ],
+    "encounters": [
+      {
+        "id": "dawn-scouts",
+        "label": "DAWN PROBE: Recon and stealth tanks emerging from the northern spruce fog.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STEALTH",
+          "SCOUT",
+          "STANDARD",
+          "STEALTH",
+          "SAPPER"
+        ],
+        "entrances": [
+          "west-logging",
+          "north-ridge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 8
+          },
+          {
+            "row": 28,
+            "col": 9
+          },
+          {
+            "row": 35,
+            "col": 14
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 8,
+            "col": 7
+          },
+          {
+            "row": 8,
+            "col": 20
+          },
+          {
+            "row": 9,
+            "col": 32
+          },
+          {
+            "row": 10,
+            "col": 19
+          }
+        ]
+      },
+      {
+        "id": "bog-flankers",
+        "label": "BOG FLANK: Flamethrower and armoured columns pushing past the eastern peat bogs.",
+        "enemies": [
+          "STANDARD",
+          "FLAMETHROWER",
+          "STEALTH",
+          "ARMOR",
+          "SAPPER",
+          "STANDARD",
+          "FLAMETHROWER",
+          "HOWITZER"
+        ],
+        "entrances": [
+          "east-trail",
+          "north-ridge"
+        ],
+        "patrolRoute": [
+          {
+            "row": 17,
+            "col": 32
+          },
+          {
+            "row": 28,
+            "col": 34
+          },
+          {
+            "row": 33,
+            "col": 26
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "crossroads-assault",
+        "label": "CROSSROADS ASSAULT: Heavy armour, artillery, and jammer support converging on the camp.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "STEALTH",
+          "FLAMETHROWER",
+          "JAMMER",
+          "ARMOR",
+          "STRIKER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-logging",
+          "north-ridge",
+          "east-trail"
+        ],
+        "patrolRoute": [
+          {
+            "row": 19,
+            "col": 18
+          },
+          {
+            "row": 26,
+            "col": 19
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "STEALTH",
+    "SCOUT",
+    "STANDARD",
+    "STEALTH",
+    "SAPPER",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STEALTH",
+    "ARMOR",
+    "SAPPER",
+    "STANDARD",
+    "FLAMETHROWER",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "STEALTH",
+    "FLAMETHROWER",
+    "JAMMER",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVVVVVRRVVVVVVVVVVRRVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVVVRRVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVVVRRVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVVVRRVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVMMMVVVVRRVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVMMMMMVVVRRVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVMMMMV.VVRRVVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVMMVVV..RR...VVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVV..RR...VVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVV..RR...VVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVV..RR...VVVVVVVVRRVVVVVV",
+    "VVMMMVVRRVVVVVVVV..RR...VVVVVVVVRRVVVVVV",
+    "VVMMMMVRRVVVVVVVVVVRRVVVVVVVVVVVRRVVVVVV",
+    "VMMMMMVRRVVVVVVVVVVRRVVVVVVVVVVVRRVVVVVV",
+    "VMMMMVVRRVV......VVRRVVVVVVVVVVVRRVVVVVV",
+    "VVMMMVVRRVVVVVVVVRRRRVVVVVVVV...RR..VVVV",
+    "VVVVVVVRRVVVVVV..RRR......VVV...RR..VVVV",
+    "VVVVVVVRRVVVVVV..RR.......VVV...RRRRRRRR",
+    "VVVVV..RR...VVV..RRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVV..RR...VVV..RRRRRRRRRRRRRRRRR..VVVV",
+    "RRRRRRRRRRRRRRRRRRR.......VVV...RR..VVVV",
+    "RRRRRRRRRRRRRRRRRRRR......VVVMMMRRVVVVVV",
+    "VVVVV..RR...VVV..RRR......VVMMMMRRVVVVVV",
+    "VVVVV..RR...VVV...RR......VVMMMMRRVVVVVV",
+    "VVVVV..RR...VVVVVVRRVVVV.VVVVMMMRRRRVVVV",
+    "VVVVVVVRRVVVVVVVVVRRVVVVVVVVVMMVRRRRVVVV",
+    "VVVVVVVRRVVVVVVVVVRRVVVVVVVVVVVVVVRRVVVV",
+    "VVVVVVVRRRRVVVVVVVRRVVVVVVV.VVVVVVRRVVVV",
+    "VVVMMMVRRRRVVVVVVVRRVVVVVVVVVVVVVVRRVVVV",
+    "VVVMMMMVVRRVVVVVVVRRVVVVVVVVVVVVVVRRVVVV",
+    "VVVVMMMVVRR....VVVRRRRVVVVVVVVVVVVRRVVVV",
+    "VVVVMMVVVRRVVVVVVVRRRRVVVVVVVVVVVVRRVVVV",
+    "VVVVVVVVVRRVVV......RR....VVVVVVVVRRVVVV",
+    "VVVVVVVVVRRVVV......RRRRRRRRRRRRRRRRVVVV",
+    "VVVVVVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRVVVVV",
+    "VVVVVVVVVRRRRRRRRRRRRR....VVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVV.....RRR....VVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVV.....RR.....VVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVV............VVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVV............VVVVVVVVVVVVVV"
+  ],
+  "objectLayout": [
+    "FF..FF....FF..FF.F......FF.FF.F....F.FF.",
+    "FF.FF......FF.F.F......F...F.FF....F..FF",
+    ".F..F.....F..FF.FF....F.F...FFF.....FFFF",
+    ".FFFF.....FF..F.F.....FF.F.FFFF....FF..F",
+    "F..F.......F...FFF......F.FFFFF....FF...",
+    "F.F...F..FF......F....FFFF..F.....F.F..F",
+    "....FF.........FQ.F...FF.F.FFF.....F..F.",
+    "F........FF....FF.......FF.....F..FF..F.",
+    "FF.FF.F..FFF.F.FAA....AA.....FF....F...F",
+    "..FF.FF..FFFF.F.AA....AA.F.F.FFF..FFF..F",
+    "FFFF..F....FF..FF.........FFFFF...F.FFFF",
+    "F....FF....F.F..F.X..X..FFFFFFF....FF.F.",
+    "..........FF..FFF....BBFF..FFFFF..FF.F.F",
+    "......F....F....F.F..FFFFFF.FF.......FFF",
+    "F....FF..F.CBBBCFFF..F.FF..F.FFF..FFF..F",
+    "FF...FF..FFF...FF....DDFFF.F.AA....QF.F.",
+    "..FF..F..F..FF.......PPPP.FFFAAD.....F.F",
+    "F.FFFFD..F...FFAA....PPPP.F.............",
+    "FFF.FAA.....FF.AA....PPPP.....K.........",
+    "..FFFDA...K.F.F....K..............CC..F.",
+    "..........................F.F.....CCF...",
+    "........................C..F......F.F.F.",
+    ".F..F.....AAFFF.X....T..B.........F...FF",
+    ".F...Q....AAFFF.........B.FF......F.F.FF",
+    "FF.............FFF..FFFFC.F.F.........FF",
+    "F.FFFFF..FFF.FFFFF.K.F...F.FF..F....F.FF",
+    ".F.F.FF..F.FF.F.CB.....FF...FFF.FF..FF.F",
+    "FF...F.....FF.FF.F..FFBCFF.QF.F......FF.",
+    "F.F.........FF.F....K..F.FFF..F..F..FFFF",
+    "..F....FF..F..F.FF...FF..FF....FF....F.F",
+    "FFF....FF..CBBCF......FFFF.FF.FF.....FF.",
+    "FF.F....F..F..FF.X....X.FFFFFFFFFF..F...",
+    ".FFFFFF.F..FFF....K.....D.F..FFF.F..F...",
+    ".....FF......FAA.......QAA...........FF.",
+    "FFFFFFFFF.....AA........AA...........F..",
+    "FFFF.F.FF.......K......B...FFFFFF.FFFF..",
+    ".FF.FF..FFF...............FFF.F.F..FF.F.",
+    "F..FF..F..FFF.....CCCC....FFFF.F.FFFF.F.",
+    "FFFFFF.FFFFF.F.............FFFFF..FF.FFF",
+    "....FFFF.FF........HH.....FF..F.FFFFF..F"
+  ]
+}
