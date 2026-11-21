@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Editor (Dev) — BATTLE TANK</title>
+    <link rel="stylesheet" href="./editor.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/public/vendor/three/build/three.module.js",
+          "three/addons/": "/public/vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Top Toolbar -->
+      <header id="toolbar">
+        <div class="tb-group">
+          <span class="brand">VANGUARD <span class="badge">MAP EDITOR</span></span>
+          <select id="map-select" title="Load existing map from public/maps/">
+            <option value="">-- Select Map --</option>
+          </select>
+          <button id="btn-new" title="New blank 40x40 map">New</button>
+          <button id="btn-import" title="Import local JSON file">Import</button>
+          <input id="file-input" type="file" accept=".json,application/json" hidden />
+          <button id="btn-save" class="primary" title="Save JSON (Ctrl+S)">Save</button>
+          <button id="btn-export" title="Download JSON copy">Export</button>
+          <span id="dirty-indicator" class="dirty-dot hidden" title="Unsaved changes">●</span>
+        </div>
+
+        <div class="tb-sep"></div>
+
+        <div class="tb-group" id="tool-buttons">
+          <button data-tool="brush" class="active" title="Brush (B)">Brush</button>
+          <button data-tool="move" title="Move Object / Marker / Landmark (M)">Move</button>
+          <button data-tool="eraser" title="Eraser (X)">Eraser</button>
+          <button data-tool="eyedropper" title="Eyedropper (I or Alt+Click)">Pick</button>
+          <button data-tool="rect" title="Rectangle Fill (R)">Rect</button>
+          <button data-tool="fill" title="Flood Fill (F)">Fill</button>
+        </div>
+
+        <div class="tb-group" id="brush-sizes" title="Brush Size">
+          <button data-size="1" class="active">1×1</button>
+          <button data-size="2">2×2</button>
+          <button data-size="3">3×3</button>
+        </div>
+
+        <div class="tb-sep"></div>
+
+        <div class="tb-group">
+          <button id="btn-undo" title="Undo (Ctrl+Z)" disabled>Undo</button>
+          <button id="btn-redo" title="Redo (Ctrl+Y)" disabled>Redo</button>
+        </div>
+
+        <div class="tb-sep"></div>
+
+        <div class="tb-group">
+          <button id="btn-cam-mode" title="Toggle Isometric / Top-Down (T)">Iso / Top</button>
+          <button id="btn-cam-reset" title="Reset Camera (Home)">Reset Cam</button>
+          <button id="btn-toggle-grid" class="active" title="Toggle Grid (G)">Grid</button>
+          <button id="btn-toggle-surface" class="active" title="Toggle Surface Layer">Surface</button>
+          <button id="btn-toggle-objects" class="active" title="Toggle Object Layer">Objects</button>
+        </div>
+      </header>
+
+      <!-- Main Workspace -->
+      <div id="workspace">
+        <!-- Left Palette -->
+        <aside id="palette" class="sidebar">
+          <div class="panel-tabs">
+            <button class="tab-btn active" data-tab="surfaces">Surfaces</button>
+            <button class="tab-btn" data-tab="objects">Objects</button>
+            <button class="tab-btn" data-tab="markers">Markers</button>
+            <button class="tab-btn" data-tab="landmarks">Landmarks</button>
+            <button class="tab-btn" data-tab="decorations">Deco</button>
+          </div>
+          <div id="palette-list" class="palette-list"></div>
+        </aside>
+
+        <!-- 3D Viewport -->
+        <main id="viewport-wrap">
+          <div id="viewport"></div>
+          <div id="toast" class="toast hidden"></div>
+        </main>
+
+        <!-- Right Inspector -->
+        <aside id="inspector" class="sidebar">
+          <section class="insp-section">
+            <h3>Cell Inspector</h3>
+            <div id="cell-info" class="kv-grid">
+              <span class="k">Coords</span><span id="info-coords">—</span>
+              <span class="k">Surface</span><span id="info-surface">—</span>
+              <span class="k">Object</span><span id="info-object">—</span>
+              <span class="k">Extra</span><span id="info-extra">—</span>
+            </div>
+          </section>
+
+          <section class="insp-section">
+            <h3>Map Metadata</h3>
+            <label class="field">
+              <span>Name</span>
+              <input id="meta-name" type="text" />
+            </label>
+            <label class="field">
+              <span>Code</span>
+              <input id="meta-code" type="text" />
+            </label>
+            <label class="field">
+              <span>Subtitle</span>
+              <textarea id="meta-subtitle" rows="2"></textarea>
+            </label>
+            <label class="field">
+              <span>Game Mode</span>
+              <select id="meta-gamemode">
+                <option value="extermination">extermination</option>
+                <option value="stronghold_assault">stronghold_assault</option>
+                <option value="base_defense">base_defense</option>
+                <option value="contract">contract</option>
+                <option value="survival">survival</option>
+              </select>
+            </label>
+          </section>
+
+          <section class="insp-section">
+            <h3>Environment</h3>
+            <label class="field">
+              <span>Theme</span>
+              <select id="env-theme">
+                <option value="urban">urban</option>
+                <option value="forest">forest</option>
+                <option value="desert">desert</option>
+                <option value="coastal">coastal</option>
+                <option value="arctic">arctic</option>
+                <option value="industrial">industrial</option>
+                <option value="capital">capital</option>
+              </select>
+            </label>
+            <div class="color-row">
+              <label class="field">
+                <span>Tint</span>
+                <input id="env-tint" type="color" value="#d6e7a0" />
+              </label>
+              <label class="field">
+                <span>Fog</span>
+                <input id="env-fog" type="color" value="#18212a" />
+              </label>
+              <label class="field">
+                <span>Ground</span>
+                <input id="env-ground" type="color" value="#687478" />
+              </label>
+            </div>
+          </section>
+
+          <section class="insp-section">
+            <h3>Powerups (<span id="powerup-count">0</span>/16)</h3>
+            <div id="powerup-list" class="item-list"></div>
+          </section>
+
+          <section class="insp-section">
+            <h3>Landmarks (<span id="landmark-count">0</span>)</h3>
+            <div id="landmark-list" class="item-list"></div>
+          </section>
+
+          <section class="insp-section">
+            <h3>Decorations (<span id="deco-count">0</span>)</h3>
+            <div id="deco-list" class="item-list"></div>
+          </section>
+        </aside>
+      </div>
+
+      <!-- Status Bar -->
+      <footer id="statusbar">
+        <span id="status-coords">Row: —, Col: —</span>
+        <span id="status-active">Active: Ground (.)</span>
+        <span id="status-cam">Camera: Isometric</span>
+        <span class="status-help">LMB: Paint | RMB Drag: Pan | Wheel: Zoom | Alt+LMB Drag: Orbit | Q/E: Rotate | T: Top-Down</span>
+      </footer>
+    </div>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

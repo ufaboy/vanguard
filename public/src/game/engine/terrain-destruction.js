@@ -520,7 +520,8 @@ export class TerrainDestructionController {
           chainBarrels.push(neighbor);
         } else if (neighbor.type === TileType.WATER_TOWER) {
           engine.damageTileCell(neighbor, 2, nPos.x, nPos.z, fromPlayer);
-        } else if (neighbor.type === TileType.OIL_SLICK) {
+        }
+        if ((neighbor.surface === TileType.OIL_SLICK || neighbor.type === TileType.OIL_SLICK) && !neighbor.isBurning) {
           this.igniteOilSlick(neighbor);
         }
       }
@@ -756,7 +757,7 @@ export class TerrainDestructionController {
         ];
         for (const nb of neighbors) {
           if (!nb) continue;
-          if (nb.type === TileType.OIL_SLICK && !nb.isBurning) {
+          if ((nb.surface === TileType.OIL_SLICK || nb.type === TileType.OIL_SLICK) && !nb.isBurning) {
             this.igniteOilSlick(nb);
           } else if (nb.type === TileType.FOREST && !nb.isBurning) {
             const nbPos = engine.gridToWorld(nb.row, nb.col);
@@ -830,6 +831,9 @@ export class TerrainDestructionController {
         cell.surface = TileType.EMPTY;
         syncCellType(cell);
         engine.fx?.scorch?.(pos.x, pos.z, 2.1);
+        if (cell.object === TileType.BARREL && !cell._exploding) {
+          this.explodeBarrel(cell);
+        }
       }
     }
   }

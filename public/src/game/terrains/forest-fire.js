@@ -138,7 +138,7 @@ export class ForestFireController {
         if (r != null && c != null) {
           for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
             const nb = e.grid?.[r + dr]?.[c + dc];
-            if (nb && nb.type === TileType.OIL_SLICK && !nb.isBurning) {
+            if (nb && (nb.surface === TileType.OIL_SLICK || nb.type === TileType.OIL_SLICK) && !nb.isBurning) {
               e.terrainDestruction?.igniteOilSlick?.(nb);
             }
           }
