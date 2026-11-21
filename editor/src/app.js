@@ -282,7 +282,7 @@ class MapEditorApp {
       if (this.selectedMarker === 'playerSpawn') {
         this.state.playerSpawnCell = { row: cell.row, col: cell.col };
       } else if (this.selectedMarker === 'baseCell') {
-        this.state.baseCell = { row: cell.row, col: cell.col };
+        this.state.baseCell = { row: cell.row, col: Math.min(cell.col, this.state.size - 2) };
       } else if (this.selectedMarker.startsWith('powerup:')) {
         const type = MARKERS.find((m) => m.id === this.selectedMarker)?.powerupType || 'REPAIR';
         const existingIdx = this.state.powerups.findIndex(
@@ -376,7 +376,15 @@ class MapEditorApp {
       return;
     }
 
-    // 2. Powerup crate
+    // 2. Decoration landmark
+    const deco = this.state.decoration?.landmarks?.find((d) => d.row === row && d.col === col);
+    if (deco) {
+      this.moveDrag = { kind: 'decoration', item: deco, fromRow: row, fromCol: col, snapshot: this._snapshot() };
+      this._toast(`Moving decoration ${deco.kind}`);
+      return;
+    }
+
+    // 3. Powerup crate
     const pw = this.state.powerups.find((p) => p.row === row && p.col === col);
     if (pw) {
       this.moveDrag = { kind: 'powerup', item: pw, fromRow: row, fromCol: col, snapshot: this._snapshot() };
@@ -452,6 +460,10 @@ class MapEditorApp {
         this.moveDrag.item.row = cell.row;
         this.moveDrag.item.col = cell.col;
         this.viewport.rebuildLandmarks();
+      } else if (this.moveDrag.kind === 'decoration') {
+        this.moveDrag.item.row = cell.row;
+        this.moveDrag.item.col = cell.col;
+        this.viewport.rebuildDecorations();
       } else if (this.moveDrag.kind === 'powerup') {
         this.moveDrag.item.row = cell.row;
         this.moveDrag.item.col = cell.col;
@@ -460,7 +472,7 @@ class MapEditorApp {
         this.state.playerSpawnCell = { row: cell.row, col: cell.col };
         this.viewport.rebuildMarkers();
       } else if (this.moveDrag.kind === 'baseCell') {
-        this.state.baseCell = { row: cell.row, col: cell.col };
+        this.state.baseCell = { row: cell.row, col: Math.min(cell.col, this.state.size - 2) };
         this.viewport.rebuildMarkers();
       }
       return;
@@ -755,7 +767,11 @@ class MapEditorApp {
       const res = await saveJsonWithPicker(jsonText, this.currentFileName, this.fileHandle);
       if (res.handle) this.fileHandle = res.handle;
       this._setDirty(false);
-      this._toast(res.method === 'fs' ? `Saved ${this.currentFileName}` : `Downloaded ${this.currentFileName}`);
+      if (res.fallbackError) {
+        this._toast(`Direct save failed (${res.fallbackError}); downloaded ${this.currentFileName}`);
+      } else {
+        this._toast(res.method === 'fs' ? `Saved ${this.currentFileName}` : `Downloaded ${this.currentFileName}`);
+      }
     } catch (err) {
       if (err?.name !== 'AbortError') {
         this._toast(`Save failed: ${err.message}`);

@@ -533,3 +533,41 @@ test('runtime objects placed through setCellObject survive later layer syncs', (
   assert.equal(boxes.type, TileType.BOXES);
   assert.equal(boxes.surface, TileType.SAND);
 });
+
+test('burning OIL_SLICK chain-ignites adjacent layered OIL_SLICK with an object on top', () => {
+  const grid = createMockGrid(3, 3);
+  for (const row of grid) for (const cell of row) Object.assign(cell, { surface: TileType.EMPTY, object: null });
+  const oil = Object.assign(grid[1][1], { surface: TileType.OIL_SLICK, type: TileType.OIL_SLICK });
+  const layeredOil = Object.assign(grid[1][2], {
+    surface: TileType.OIL_SLICK,
+    object: TileType.CRATER,
+    type: TileType.CRATER,
+  });
+
+  const engine = createMockEngine(grid);
+  engine.terrainDestruction.igniteOilSlick(oil);
+  engine.terrainDestruction.updateBurningOil(0.4);
+
+  assert.equal(layeredOil.isBurning, true);
+});
+
+test('BARREL standing on burning OIL_SLICK detonates when the oil burns out', () => {
+  const grid = createMockGrid(3, 3);
+  for (const row of grid) for (const cell of row) Object.assign(cell, { surface: TileType.EMPTY, object: null });
+  const cell = Object.assign(grid[1][1], {
+    surface: TileType.OIL_SLICK,
+    object: TileType.BARREL,
+    type: TileType.BARREL,
+    hp: 1,
+    maxHp: 1,
+  });
+
+  const engine = createMockEngine(grid);
+  engine.terrainDestruction.igniteOilSlick(cell);
+  engine.terrainDestruction.updateBurningOil(7.1);
+
+  assert.equal(cell.isBurning, false);
+  assert.equal(cell.surface, TileType.EMPTY);
+  assert.equal(cell.object, TileType.CRATER);
+  assert.equal(cell.type, TileType.CRATER);
+});
