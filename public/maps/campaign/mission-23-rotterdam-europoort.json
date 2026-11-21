@@ -1,0 +1,625 @@
+{
+  "mapId": "campaign-23",
+  "id": 23,
+  "name": "Rotterdam Europoort",
+  "subtitle": "SECTOR 23 // EUROPOORT CONTAINER TERMINAL",
+  "objective": "Seize the prototype crates and destroy the terminal stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 3,
+      "col": 20
+    },
+    "name": "Europoort Prototype Terminal",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 520
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#b8c8d4",
+    "fogColor": "#2e353d",
+    "groundColor": "#4e5358"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Assault the fortified Europoort container terminal from the southern marshaling apron across three distinct port corridors: the western Maashaven container quay and bridge, the central gantry-crane freight spine with breachable container stacks, and the eastern oil tank farm and barge slip.",
+    "breaches": [
+      {
+        "name": "West Quay Container Gate",
+        "cells": [
+          {
+            "row": 13,
+            "col": 8
+          },
+          {
+            "row": 13,
+            "col": 9
+          }
+        ],
+        "start": {
+          "row": 14,
+          "col": 8
+        },
+        "end": {
+          "row": 11,
+          "col": 8
+        },
+        "purpose": "Blast the brick container barricade east of the Maashaven quay to open a fast bypass onto the port ring road."
+      },
+      {
+        "name": "Central Gantry Yard Gate",
+        "cells": [
+          {
+            "row": 21,
+            "col": 16
+          },
+          {
+            "row": 21,
+            "col": 17
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 16
+        },
+        "end": {
+          "row": 20,
+          "col": 16
+        },
+        "purpose": "Breach the brick container stack beside the central gantry spine to open a flanking assault lane."
+      },
+      {
+        "name": "East Tank-Farm Partition",
+        "cells": [
+          {
+            "row": 17,
+            "col": 29
+          },
+          {
+            "row": 18,
+            "col": 29
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 27
+        },
+        "end": {
+          "row": 17,
+          "col": 31
+        },
+        "purpose": "Punch through the brick bund wall between the central container yard and the eastern oil tank farm."
+      },
+      {
+        "name": "South Marshaling Yard Wall",
+        "cells": [
+          {
+            "row": 27,
+            "col": 13
+          },
+          {
+            "row": 27,
+            "col": 14
+          }
+        ],
+        "start": {
+          "row": 29,
+          "col": 13
+        },
+        "end": {
+          "row": 25,
+          "col": 13
+        },
+        "purpose": "Open a southern shortcut from the western container yard into the central terminal approach."
+      }
+    ],
+    "reference": {
+      "place": "Rotterdam Europoort Container Terminal & Maasvlakte Port Complex (Netherlands)",
+      "kind": "real",
+      "kept": [
+        "Deep-water container harbour basin on the west quay and barge slip on the east quay with concrete quay walls and road bridges",
+        "Rows of stacked shipping containers (brick and concrete blocks) and prototype supply crates",
+        "Gantry crane piers and port water tower along the central terminal spine",
+        "Oil tank farm with fuel drums on oil slicks in the eastern port sector",
+        "Fortified northern terminal stronghold and port rail freight siding"
+      ],
+      "simplified": [
+        "Compressed the multi-kilometer Maasvlakte and Europoort docks into a 40x40 tactical sector",
+        "Represented overhead container gantry cranes with concrete/building piers and loading-zone markings instead of custom 3D crane meshes",
+        "Replaced wide Rhine-Meuse shipping channels with bridged port basins and dry causeways so tank routes stay open"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 23052026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "north-terminal-stronghold",
+        "bounds": [
+          1,
+          16,
+          8,
+          24
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-container-quay",
+        "bounds": [
+          9,
+          1,
+          29,
+          11
+        ],
+        "surface": "concrete",
+        "density": 0.28,
+        "details": [
+          "tracks",
+          "cracks",
+          "oil"
+        ]
+      },
+      {
+        "id": "central-gantry-yard",
+        "bounds": [
+          12,
+          12,
+          29,
+          27
+        ],
+        "surface": "asphalt",
+        "density": 0.3,
+        "details": [
+          "tracks",
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "east-tank-farm",
+        "bounds": [
+          9,
+          28,
+          29,
+          38
+        ],
+        "surface": "gravel",
+        "density": 0.28,
+        "details": [
+          "oil",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "south-marshaling-apron",
+        "bounds": [
+          30,
+          6,
+          38,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "port-rail-west",
+        "points": [
+          [
+            2,
+            12
+          ],
+          [
+            29,
+            12
+          ]
+        ],
+        "width": 1.5,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "port-rail-east",
+        "points": [
+          [
+            2,
+            27
+          ],
+          [
+            29,
+            27
+          ]
+        ],
+        "width": 1.5,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-europoort-quay",
+        "kind": "label",
+        "row": 13,
+        "col": 19,
+        "text": "EUROPOORT TERMINAL"
+      },
+      {
+        "id": "label-maashaven",
+        "kind": "label",
+        "row": 13,
+        "col": 7,
+        "text": "MAASHAVEN QUAY"
+      },
+      {
+        "id": "label-tank-farm",
+        "kind": "label",
+        "row": 13,
+        "col": 31,
+        "text": "OIL TANK FARM"
+      },
+      {
+        "id": "loading-gantry-central",
+        "kind": "loading",
+        "row": 19,
+        "col": 19,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "loading-west-pier",
+        "kind": "loading",
+        "row": 24,
+        "col": 6,
+        "size": 1.5,
+        "rotation": 90
+      },
+      {
+        "id": "hazard-oil-farm",
+        "kind": "hazard_zone",
+        "row": 15,
+        "col": 30,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "hazard-south-depot",
+        "kind": "hazard_zone",
+        "row": 26,
+        "col": 32,
+        "size": 1.5,
+        "rotation": 0
+      },
+      {
+        "id": "drain-south-apron",
+        "kind": "drain_grate",
+        "row": 33,
+        "col": 22,
+        "size": 1
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear-lane",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [
+    {
+      "kind": "ERASMUS_BRIDGE",
+      "row": 19,
+      "col": 31
+    }
+  ],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "north-west-quay",
+        "row": 0,
+        "col": 4
+      },
+      {
+        "id": "north-rail-west",
+        "row": 0,
+        "col": 13
+      },
+      {
+        "id": "north-rail-east",
+        "row": 0,
+        "col": 25
+      },
+      {
+        "id": "north-east-depot",
+        "row": 0,
+        "col": 34
+      },
+      {
+        "id": "upper-west-gate",
+        "row": 8,
+        "col": 1
+      },
+      {
+        "id": "upper-east-gate",
+        "row": 8,
+        "col": 38
+      }
+    ],
+    "encounters": [
+      {
+        "id": "quay-perimeter-probe",
+        "label": "QUAY PERIMETER PATROL ENGAGED",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-quay",
+          "north-rail-west",
+          "north-rail-east",
+          "north-east-depot"
+        ],
+        "initialCells": [
+          {
+            "row": 3,
+            "col": 4
+          },
+          {
+            "row": 3,
+            "col": 13
+          },
+          {
+            "row": 3,
+            "col": 25
+          },
+          {
+            "row": 3,
+            "col": 34
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 4
+          },
+          {
+            "row": 22,
+            "col": 4
+          },
+          {
+            "row": 30,
+            "col": 11
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "HOVER",
+          "SCOUT",
+          "SAPPER",
+          "ENGINEER",
+          "STANDARD",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "oil-slip-flank-push",
+        "label": "OIL TANK FARM & BARGE SLIP COUNTERATTACK",
+        "recoverySec": 8,
+        "entrances": [
+          "north-rail-east",
+          "north-east-depot",
+          "upper-east-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 34
+          },
+          {
+            "row": 24,
+            "col": 34
+          },
+          {
+            "row": 30,
+            "col": 26
+          }
+        ],
+        "enemies": [
+          "HOVER",
+          "FLAMETHROWER",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "SAPPER",
+          "JAMMER",
+          "STRIKER",
+          "ENGINEER"
+        ]
+      },
+      {
+        "id": "stronghold-prototype-guard",
+        "label": "EUROPOORT PROTOTYPE GARRISON",
+        "recoverySec": 9,
+        "entrances": [
+          "north-rail-west",
+          "north-rail-east",
+          "upper-west-gate",
+          "upper-east-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 19
+          },
+          {
+            "row": 19,
+            "col": 19
+          },
+          {
+            "row": 30,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "HOWITZER",
+          "STEALTH",
+          "HOVER",
+          "JAMMER",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "SAPPER",
+    "ENGINEER",
+    "STANDARD",
+    "ARMOR",
+    "HOVER",
+    "FLAMETHROWER",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "SAPPER",
+    "JAMMER",
+    "STRIKER",
+    "ENGINEER",
+    "ARMOR",
+    "STRIKER",
+    "HOWITZER",
+    "STEALTH",
+    "HOVER",
+    "JAMMER",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VV..RR.......RR..........RR.......RR..VV",
+    "VV..RR.......RR..........RR.......RR..VV",
+    "....RR.......RR..........RR.......RR....",
+    "....RR.......RR..........RR.......RR....",
+    "....RR.......RR..........RR.......RR....",
+    "....RR.......RR..........RR.......RR....",
+    "....RR.......RR..........RR.......RR....",
+    "VV..RR.......RR..........RR.......RR..VV",
+    "VV..RR.......RR..........RR.......RR..VV",
+    "....RR.......RR..........RR.......RR....",
+    "....RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "....RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "....RR.............RR.............RR....",
+    "....RR.............RR.............RR....",
+    "VV..RR.............RR........LL...RR..VV",
+    "VVWWWWWW...........RR........LL...RR..VV",
+    "VVWWWWWW...........RR.............RR..VV",
+    "VVWWWWWW...........RR.............RR..VV",
+    "VVWWWWWW...........RR.............RR..VV",
+    "....RR.............RR...........WWWWWWW.",
+    "....RR.............RR...........WWWWWWW.",
+    "....RR.............RR...........WWWWWWW.",
+    "....RR.............RR...........WWWWWWW.",
+    "....RR.......RRRRRRRRRRRRRR.......RR....",
+    "VV..RR.............RR.............RR..VV",
+    "VV..RR.............RR........LL...RR..VV",
+    "....RR.............RR........LL...RR....",
+    "....RR.............RR.............RR....",
+    "....RR.............RR.............RR....",
+    "....RR.............RR.............RR....",
+    "....RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "....RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "....RR.............RR.............RR....",
+    "VV..RR.............RR.............RR..VV",
+    "VV..RR.............RR.............RR..VV",
+    "....RR............................RR....",
+    "....RR............................RR....",
+    "........................................",
+    "........................................",
+    "VV....................................VV"
+  ],
+  "objectLayout": [
+    "FF....................................FF",
+    "F.........B.....B.......B.....B........F",
+    "..........PP.....CCC.CCC.....PP.........",
+    "..AA......PP.....C..E..C.....PP.....AA..",
+    "..AA......PP.....C.....C.....PP.....AA..",
+    "..........PP.....CCBBBCC.....PP.........",
+    "....K...........C.......C...........K...",
+    "FF.......Q.B.................B.Q......FF",
+    "F.....AA...........K..BB.........AA....F",
+    "......AA.......B......K......B...AA.....",
+    "........................................",
+    "........................................",
+    "..FF.......B.....T...........B....FF....",
+    "........BB.......................B......",
+    "..CC..CC..B..BB.........BB....D.CC....FF",
+    ".C..==....A..PP.BB...BB.PP....D..C....F.",
+    ".C..==....A..PP.........PP.......C......",
+    ".C..==.......PP.........PP...B........Q.",
+    ".C..==....Q..................B..CCCCCCC.",
+    "..CC..CC.....BB...K.U...BB.....C..==....",
+    "....K........B....B............C..==....",
+    "..FF......PP.CCCBB.............C..==....",
+    "..........PP...................C..==....",
+    "..AA..Q...PP...................CCCCCCC..",
+    "..AA..K...PP..K........K...PP...........",
+    "......B.......BB.......BB..PP..D..K...FF",
+    "FF....B...B................PP..D..Q...F.",
+    "F.........B..BB...PPP...BB.PP...........",
+    "..AA......X.......PPP.......X.....AA....",
+    "..AA......Q.......PPP.............AA..FF",
+    "........................................",
+    "........................................",
+    "..FF....AA....BB.......BB.....AA......FF",
+    "F.......AA........X...........AA.......F",
+    "......Q.....B.............B.....Q.......",
+    "......B.....B.............B.....B.......",
+    "..FF....AA.........K..........AA......FF",
+    "..F...........F...CCCC...F............F.",
+    "........................................",
+    "FF.................HH.................FF"
+  ]
+}

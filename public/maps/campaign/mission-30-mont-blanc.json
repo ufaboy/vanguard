@@ -1,0 +1,422 @@
+{
+  "mapId": "campaign-30",
+  "id": 30,
+  "name": "Mont Blanc",
+  "subtitle": "SECTOR 30 // MONT BLANC HIGH COL",
+  "objective": "Destroy the Consortium radar station on the high col",
+  "gameMode": "stronghold_assault",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 4,
+      "col": 20
+    },
+    "name": "Consortium High Col Radar",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 1200
+  },
+  "environment": {
+    "theme": "alpine",
+    "tint": "#c5dcf2",
+    "fogColor": "#435366",
+    "groundColor": "#7d8891"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Ascend the glaciated Mont Blanc approaches across bridged crevasses and stone moraines, using conifer ambush pockets and breachable avalanche barriers to storm the fortified radar station on the high col.",
+    "breaches": [
+      {
+        "name": "Radar Station South Wall",
+        "cells": [
+          { "row": 5, "col": 19 },
+          { "row": 5, "col": 20 },
+          { "row": 5, "col": 21 }
+        ],
+        "start": { "row": 7, "col": 20 },
+        "end": { "row": 4, "col": 19 },
+        "purpose": "Breach the southern brick sally wall of the fortified high col radar station for direct fire on the command core."
+      },
+      {
+        "name": "West Moraine Retaining Wall",
+        "cells": [
+          { "row": 18, "col": 9 },
+          { "row": 19, "col": 9 }
+        ],
+        "start": { "row": 18, "col": 7 },
+        "end": { "row": 18, "col": 11 },
+        "purpose": "Blast through the moraine retaining wall to cut between the west cable-car road and the central glacier valley."
+      },
+      {
+        "name": "East Avalanche Barrier",
+        "cells": [
+          { "row": 23, "col": 29 },
+          { "row": 23, "col": 30 }
+        ],
+        "start": { "row": 25, "col": 29 },
+        "end": { "row": 22, "col": 29 },
+        "purpose": "Clear the brick avalanche barrier to link the eastern glacier flank directly to the mid-mountain plateau."
+      },
+      {
+        "name": "Lower Valley Checkpoint Wall",
+        "cells": [
+          { "row": 29, "col": 22 },
+          { "row": 29, "col": 23 }
+        ],
+        "start": { "row": 31, "col": 22 },
+        "end": { "row": 28, "col": 22 },
+        "purpose": "Punch through the lower valley checkpoint wall to bypass the main road choke."
+      }
+    ],
+    "reference": {
+      "place": "Mont Blanc Massif High Col, Vallee Blanche Glacier, and Cable-Car Line, France",
+      "kind": "real",
+      "kept": [
+        "Fortified high-altitude radar station on the northern col",
+        "Glacier ice fields cut by bridged crevasse fissures and stone moraine passes",
+        "Three-pylon cable-car alignment from the lower valley terminal up to the summit col",
+        "Lower-slope conifer timber belts and alpine chalets along the valley road"
+      ],
+      "simplified": [
+        "Compressed the multi-kilometer Aiguille du Midi / Vallee Blanche ascent into a 40x40 tactical grid",
+        "Represented cable-car pylons with tower landmarks and ground markings rather than overhead cables",
+        "Crevasses use shallow meltwater fissures with bridges and stone passes so all routes remain drivable"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 30202601,
+    "theme": "alpine",
+    "zones": [
+      {
+        "id": "mont-blanc-snow",
+        "bounds": [0, 0, 39, 39],
+        "surface": "snow",
+        "density": 0.22,
+        "details": ["patches", "cracks"]
+      },
+      {
+        "id": "radar-col-apron",
+        "bounds": [2, 16, 8, 25],
+        "surface": "concrete",
+        "density": 0.35,
+        "details": ["cracks", "rubble"]
+      },
+      {
+        "id": "cable-terminal-yard",
+        "bounds": [25, 10, 29, 15],
+        "surface": "gravel",
+        "density": 0.3,
+        "details": ["tracks", "rubble"]
+      },
+      {
+        "id": "valley-depot-pad",
+        "bounds": [30, 26, 34, 31],
+        "surface": "asphalt",
+        "density": 0.28,
+        "details": ["tracks", "patches"]
+      }
+    ],
+    "paths": [],
+    "landmarks": [
+      {
+        "id": "radar-col-label",
+        "kind": "label",
+        "row": 9,
+        "col": 20,
+        "size": 3,
+        "text": "HIGH COL RADAR"
+      },
+      {
+        "id": "glacier-label",
+        "kind": "label",
+        "row": 15,
+        "col": 27,
+        "size": 3,
+        "text": "VALLEE BLANCHE"
+      },
+      {
+        "id": "terminal-label",
+        "kind": "label",
+        "row": 29,
+        "col": 12,
+        "size": 3,
+        "text": "CABLE TERMINAL"
+      },
+      {
+        "id": "base-helipad",
+        "kind": "helipad",
+        "row": 35,
+        "col": 13,
+        "size": 1.8
+      },
+      {
+        "id": "terminal-loading",
+        "kind": "loading",
+        "row": 26,
+        "col": 15,
+        "size": 1.6,
+        "rotation": 0
+      },
+      {
+        "id": "col-chevron",
+        "kind": "chevron",
+        "row": 14,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
+      },
+      {
+        "id": "pylon-hazard",
+        "kind": "hazard_zone",
+        "row": 19,
+        "col": 16,
+        "size": 1.2
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "radar-gate-clear",
+        "bounds": [6, 18, 8, 22]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.2,
+    "entrances": [
+      { "id": "north-west-col", "row": 1, "col": 5 },
+      { "id": "north-radar-west", "row": 1, "col": 13 },
+      { "id": "north-radar-east", "row": 1, "col": 26 },
+      { "id": "north-east-glacier", "row": 1, "col": 34 },
+      { "id": "upper-west-shelf", "row": 6, "col": 3 },
+      { "id": "upper-east-shelf", "row": 6, "col": 36 }
+    ],
+    "encounters": [
+      {
+        "id": "col-picket",
+        "label": "HIGH COL PICKET: Forward scouts and patrols descending the glacier passes.",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-col",
+          "north-radar-west",
+          "north-radar-east",
+          "north-east-glacier"
+        ],
+        "initialCells": [
+          { "row": 3, "col": 5 },
+          { "row": 3, "col": 14 },
+          { "row": 3, "col": 26 },
+          { "row": 3, "col": 34 }
+        ],
+        "patrolRoute": [
+          { "row": 11, "col": 12 },
+          { "row": 16, "col": 17 },
+          { "row": 24, "col": 22 },
+          { "row": 32, "col": 19 }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "HOWITZER",
+          "SCOUT",
+          "STANDARD",
+          "STEALTH",
+          "STANDARD",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "glacier-flankers",
+        "label": "GLACIER STRIKE GROUP: Hover and stealth units sweeping the crevasse bridges.",
+        "recoverySec": 8,
+        "entrances": [
+          "north-west-col",
+          "north-east-glacier",
+          "upper-west-shelf",
+          "upper-east-shelf"
+        ],
+        "patrolRoute": [
+          { "row": 14, "col": 5 },
+          { "row": 20, "col": 5 },
+          { "row": 27, "col": 16 },
+          { "row": 27, "col": 30 },
+          { "row": 33, "col": 27 }
+        ],
+        "enemies": [
+          "HOVER",
+          "STEALTH",
+          "STRIKER",
+          "STANDARD",
+          "SAPPER",
+          "HOVER",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "radar-garrison",
+        "label": "RADAR GARRISON: Heavy armor, ECM jammers, and artillery defending the summit col.",
+        "recoverySec": 9,
+        "entrances": [
+          "north-radar-west",
+          "north-radar-east",
+          "upper-west-shelf",
+          "upper-east-shelf"
+        ],
+        "patrolRoute": [
+          { "row": 9, "col": 20 },
+          { "row": 11, "col": 25 },
+          { "row": 20, "col": 32 },
+          { "row": 28, "col": 26 },
+          { "row": 32, "col": 19 }
+        ],
+        "enemies": [
+          "ARMOR",
+          "HOWITZER",
+          "JAMMER",
+          "STRIKER",
+          "ENGINEER",
+          "STANDARD",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "HOWITZER",
+    "SCOUT",
+    "STANDARD",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "HOVER",
+    "STEALTH",
+    "STRIKER",
+    "STANDARD",
+    "SAPPER",
+    "HOVER",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "JAMMER",
+    "STRIKER",
+    "ENGINEER",
+    "STANDARD",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVVRRVVVV..RR..........RR..VVVVRRVVVVVV",
+    "VVVVRRVVVV..RR..........RR..VVVVRRVVVVVV",
+    "VVVVRRVVVV^^RR^^^^^^^^^^RR^^VVVVRRVVVVVV",
+    "VVVVRRVVVV^^^^^^^^^^^^^^^^^^VVVVRRVVVVVV",
+    "VVVVRRVVVV^^^^^^^^^^^^^^^^^^VVVVRRVVVVVV",
+    "VVVVVVVVVV^^^^^^^^^^^^^^^^^^VVVVRRVVVVVV",
+    "VVIIIIVVVV^^^^^^^^^^^^^^^^^^VVVVRRVVVVVV",
+    "VVIIIIVVVV..^^^^^....^^^^^..VVVVRRVVVVVV",
+    "VVIIIIVVVV..^^^^^....^^^^^..VVIIIIIVVVVV",
+    "VVVVRRVVVV..RR..........RR..VVIIIIIVVVVV",
+    "VVVVRRVVVV..RR..........RR..VVIIIIIVVVVV",
+    "VVVVRRVVWWWWWWWWW....WWWWWWWWWVVRRVVVVVV",
+    "VVVVRRVVWWWWWWWWW....WWWWWWWWWVVRRVVVVVV",
+    "VVVVRRVVVV..RR...RRRR...RR..VVVVRRVVVVVV",
+    "VVVVRRVVVV..RR...RRRR...RR..VVVVRRVVVVVV",
+    "VVVVRRVVVV.......RR.........VVIIIIIVVVVV",
+    "VVVVRRVVVV.......RR...IIIIIIVVIIIIIVVVVV",
+    "VVVVRRVVVV^^^^...RR...IIIIIIVVVVRRVVVVVV",
+    "VVVVRRVVVV^^^^...RR.........VVVVRRVVVVVV",
+    "VVVVRRVVVV.......RR...^^^^^^VVVVRRVVVVVV",
+    "VWWWWWWVVV.......RR...^^^^^^WWWWWWWWWWVV",
+    "VWWWWWWVVV.......RR.........WWWWWWWWWWVV",
+    "VVVVRRVVVV.......RRRRRRR........RRVVVVVV",
+    "VVVVRRVVVV............RR........RRVVVVVV",
+    "VVVVRRVVVV............RR........RRVVVVVV",
+    "VVVVRRVVVV............RR........RRVVVVVV",
+    "VVVVRRVVVV............RR........RRVVVVVV",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVVVV",
+    "VVVVVVVVVV............RR........VVVVVVVV",
+    "VVVVVVVVVV............RR........VVVVVVVV",
+    "VVVVVVVVVV............RR........VVVVVVVV",
+    "VVVVVVVVVV............RR........VVVVVVVV",
+    "VVVVVVVVVV......RRRRRRRR........VVVVVVVV",
+    "VVVVVVVVVV......RR..............VVVVVVVV",
+    "VVVVVVVVVV......RRRRRR..........VVVVVVVV",
+    "VVVVVVVVVV..........RR..........VVVVVVVV",
+    "VVVVVVVVVV..........RR..........VVVVVVVV",
+    "VVVVVVVVVV......................VVVVVVVV",
+    "VVVVVVVVVV......................VVVVVVVV",
+    "VVVVVVVVVV......................VVVVVVVV"
+  ],
+  "objectLayout": [
+    ".FF.................C..................F",
+    ".FF....................................F",
+    "..FF......FF........................FF.F",
+    "........CCFFF......CCC......PP.........F",
+    "....Q...CC.......C..E..C....PP......Q..F",
+    ".................CCBBBCC...............F",
+    "........AA......................AA.....F",
+    "..FF....AA.....T................AA..FF..",
+    "..FFF......K.........K......K.......FFF.",
+    ".......FF......................FF.......",
+    "..FF...FFF....X..........X.....FFF..FF..",
+    "............==..........==..............",
+    "............==..........==..............",
+    "..FF...FF.......C....C..........FF..FF..",
+    ".......FFF......C....C..........FFF.....",
+    "..FF.........K..........K...............",
+    "........AA.........CC........FF....Q....",
+    "........AA...X.....CC...K....FFF........",
+    "..FF.....B....................FF........",
+    ".........B.....TD.....CCC..........FF...",
+    "....==..........................==......",
+    "....==..........................==......",
+    "..FF.....C.....K..FF............FF......",
+    ".........C........FFF......CCBBCC.FFF...",
+    "..FF........K......C....K...............",
+    "..FFF...AA.........C..............FF....",
+    "........AAQPPP....X......X..Q.....FFF...",
+    "...........PPP....K.............AA......",
+    "..............T........FF.......AA......",
+    "..FF................CCBBCC..FF..........",
+    "..FFF.........X.............FFF...PP....",
+    "..FF....AA......CC..............K.PP.FF.",
+    "........AA...K..CC........X..........FF.",
+    "....Q.......................AA..........",
+    "..FF.....FF............FF...AA.....FF...",
+    "..FFF....FFF....X......FFF.........FFF..",
+    "................K.......................",
+    "..................CCCC..................",
+    "........................................",
+    "...................HH..................."
+  ]
+}

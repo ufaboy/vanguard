@@ -1,0 +1,576 @@
+{
+  "mapId": "campaign-25",
+  "id": 25,
+  "name": "Antwerp Docks",
+  "subtitle": "SECTOR 25 // SCHELDT QUAY & DOCK WORKSHOP",
+  "objective": "Hold the Antwerp dock workshop against the Consortium landing",
+  "gameMode": "base_defense",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 650
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#c8b69e",
+    "fogColor": "#2a3036",
+    "groundColor": "#56595c"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Defend the southern dock workshop across two Scheldt dock basins and three lock crossings: a central haul pier, a western lock bridge past fuel depots, and an eastern rail-siding lock. Warehouses, brick yard walls, and quay scrub break sightlines so no single position can watch all three approaches.",
+    "breaches": [
+      {
+        "name": "Central Freight Gate",
+        "cells": [
+          {
+            "row": 26,
+            "col": 18
+          },
+          {
+            "row": 26,
+            "col": 19
+          }
+        ],
+        "start": {
+          "row": 28,
+          "col": 18
+        },
+        "end": {
+          "row": 24,
+          "col": 18
+        },
+        "purpose": "Blast the brick loading gate to open a direct central firing lane along the haul spine."
+      },
+      {
+        "name": "West Lock Customs Wall",
+        "cells": [
+          {
+            "row": 18,
+            "col": 9
+          },
+          {
+            "row": 19,
+            "col": 9
+          },
+          {
+            "row": 20,
+            "col": 9
+          }
+        ],
+        "start": {
+          "row": 19,
+          "col": 7
+        },
+        "end": {
+          "row": 19,
+          "col": 10
+        },
+        "purpose": "Breach the brick customs partition to flank between the West Quay Road and the bonded warehouse yard."
+      },
+      {
+        "name": "East Siding Yard Wall",
+        "cells": [
+          {
+            "row": 25,
+            "col": 28
+          },
+          {
+            "row": 25,
+            "col": 29
+          }
+        ],
+        "start": {
+          "row": 23,
+          "col": 28
+        },
+        "end": {
+          "row": 27,
+          "col": 28
+        },
+        "purpose": "Punch through the brick yard wall to cut between the East Lock Road and the south-east gantry yard."
+      }
+    ],
+    "reference": {
+      "place": "Port of Antwerp, Scheldt Quays & Locks (Belgium)",
+      "kind": "generic",
+      "kept": [
+        "Scheldt dock basins with concrete quay walls and lock bridges",
+        "Port warehouses, customs sheds, and southern dock workshop",
+        "Fuel tank farm with oil spills, cargo crates, and port water tower",
+        "North-south rail siding and marshaling roads"
+      ],
+      "simplified": [
+        "Extensive Antwerp dock complex compressed into two northern basins and three lock crossings",
+        "Multi-track port rail yard simplified to a single eastern siding"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 25252026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "north-quay-apron",
+        "bounds": [
+          0,
+          0,
+          11,
+          39
+        ],
+        "surface": "concrete",
+        "density": 0.28,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "west-fuel-yard",
+        "bounds": [
+          18,
+          2,
+          32,
+          16
+        ],
+        "surface": "asphalt",
+        "density": 0.3,
+        "details": [
+          "oil",
+          "tracks",
+          "cracks"
+        ]
+      },
+      {
+        "id": "central-cargo-yard",
+        "bounds": [
+          18,
+          17,
+          32,
+          27
+        ],
+        "surface": "concrete",
+        "density": 0.26,
+        "details": [
+          "cracks",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-rail-yard",
+        "bounds": [
+          18,
+          28,
+          32,
+          38
+        ],
+        "surface": "gravel",
+        "density": 0.28,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "south-workshop-apron",
+        "bounds": [
+          33,
+          4,
+          39,
+          35
+        ],
+        "surface": "asphalt",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "east-rail-north",
+        "points": [
+          [
+            2,
+            32
+          ],
+          [
+            10,
+            32
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "east-rail-south",
+        "points": [
+          [
+            18,
+            36
+          ],
+          [
+            32,
+            36
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-scheldt-quay",
+        "kind": "label",
+        "row": 9,
+        "col": 19,
+        "text": "SCHELDT QUAY"
+      },
+      {
+        "id": "label-west-lock",
+        "kind": "label",
+        "row": 17,
+        "col": 4,
+        "text": "WEST LOCK"
+      },
+      {
+        "id": "label-east-lock",
+        "kind": "label",
+        "row": 17,
+        "col": 34,
+        "text": "EAST LOCK"
+      },
+      {
+        "id": "label-dock-workshop",
+        "kind": "label",
+        "row": 34,
+        "col": 19,
+        "text": "DOCK WORKSHOP"
+      },
+      {
+        "id": "loading-central",
+        "kind": "loading",
+        "row": 23,
+        "col": 19,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "hazard-west-fuel",
+        "kind": "hazard_zone",
+        "row": 25,
+        "col": 3,
+        "size": 2,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear-lane",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "west-quay-road",
+        "row": 0,
+        "col": 4
+      },
+      {
+        "id": "central-pier",
+        "row": 0,
+        "col": 19
+      },
+      {
+        "id": "east-rail-gate",
+        "row": 0,
+        "col": 34
+      }
+    ],
+    "encounters": [
+      {
+        "id": "dock-landing-probe",
+        "label": "DOCK LANDING PROBE: Consortium scouts test the West Quay and Central Pier.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "HOVER",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "initialCells": [
+          {
+            "row": 1,
+            "col": 4
+          },
+          {
+            "row": 1,
+            "col": 19
+          },
+          {
+            "row": 2,
+            "col": 34
+          },
+          {
+            "row": 6,
+            "col": 19
+          }
+        ],
+        "entrances": [
+          "west-quay-road",
+          "central-pier"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 19
+          },
+          {
+            "row": 21,
+            "col": 19
+          },
+          {
+            "row": 33,
+            "col": 19
+          },
+          {
+            "row": 36,
+            "col": 19
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "quay-pressure",
+        "label": "QUAY PRESSURE: Hovercraft cross the Scheldt basins while artillery shells the workshop.",
+        "enemies": [
+          "HOVER",
+          "STANDARD",
+          "HOWITZER",
+          "SAPPER",
+          "HOVER",
+          "FLAMETHROWER",
+          "STANDARD",
+          "HOVER",
+          "STRIKER",
+          "ENGINEER"
+        ],
+        "entrances": [
+          "central-pier",
+          "east-rail-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 34
+          },
+          {
+            "row": 21,
+            "col": 34
+          },
+          {
+            "row": 29,
+            "col": 28
+          },
+          {
+            "row": 33,
+            "col": 24
+          },
+          {
+            "row": 36,
+            "col": 21
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "consortium-assault",
+        "label": "CONSORTIUM ASSAULT: Heavy armor and ECM jammers push every lock and siding.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOVER",
+          "JAMMER",
+          "ARMOR",
+          "HOWITZER",
+          "SAPPER",
+          "STRIKER",
+          "STEALTH",
+          "ARMOR"
+        ],
+        "entrances": [
+          "west-quay-road",
+          "central-pier",
+          "east-rail-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 5
+          },
+          {
+            "row": 21,
+            "col": 5
+          },
+          {
+            "row": 33,
+            "col": 5
+          },
+          {
+            "row": 33,
+            "col": 16
+          },
+          {
+            "row": 36,
+            "col": 18
+          }
+        ],
+        "recoverySec": 9
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "HOVER",
+    "STANDARD",
+    "SCOUT",
+    "HOVER",
+    "STANDARD",
+    "HOWITZER",
+    "SAPPER",
+    "HOVER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "HOVER",
+    "STRIKER",
+    "ENGINEER",
+    "ARMOR",
+    "STANDARD",
+    "HOVER",
+    "JAMMER",
+    "ARMOR",
+    "HOWITZER",
+    "SAPPER",
+    "STRIKER",
+    "STEALTH",
+    "ARMOR"
+  ],
+  "surfaceLayout": [
+    "VVV.RR............RR..............RR.VVV",
+    "VVV.RR............RR..............RR.VVV",
+    "VVV.RR............RR..............RR.VVV",
+    "VVV.RR............RR..............RR.VVV",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVV.RR......VVVV..RR..VVVVV.......RR.VVV",
+    "VVV.RR......VVVV..RR..VVVVV.......RR.VVV",
+    "VVV.RR......VVVV..RR..VVVLL.......RR.VVV",
+    "VVV.RR......VVVV..RR..VVVVV.......RR.VVV",
+    "VVV.RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR.VVV",
+    "VVV.RRSSSSSSSSSS..RR..SSSSRRSSSSSSRR.VVV",
+    "WWWWRRWWWWWWWWWW..RR..WWWWRRWWWWWWRRWWW.",
+    "WWWWRRWWWWWWWWWW..RR..WWWWRRWWWWWWRRWWW.",
+    "WWWWRRWWWWWWWWWW..RR..WWWWRRWWWWWWRRWWW.",
+    "WWWWRRWWWWWWWWWW..RR..WWWWRRWWWWWWRRWWW.",
+    "WWWWRRWWWWWWWWWW..RR..WWWWRRWWWWWWRRWWW.",
+    "VVV.RRSSSSSSSSSS..RR..SSSSRRSSSSSSRR.VVV",
+    "VVV.RR............RR......RR......RR.VVV",
+    "VVV.RR............RR......RR......RR.VVV",
+    "VVV.RR............RR......RR......RR.VVV",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVV.RR............RR..............RR.VVV",
+    "VVV.RR............RR..............RR.VVV",
+    "VVLLRR............RR..............RR.VVV",
+    "VVLLRR............RR..............RR.VVV",
+    "VVV.RR............RR..............RR.VVV",
+    "VVV.RR............RR..............RR.VVV",
+    "VVV.RR..VVVVVV....RR......VVVVVV..RR.VVV",
+    "VVV.RR..VVVVVV....RR......VVVVVV..RR.VVV",
+    "VVV.RR..VVVVVV....RR......VVVVVV..RR.VVV",
+    "VVV.RR..VVVVVV....RR......VVVVVV..RR.VVV",
+    "VVV.RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR.VVV",
+    "VVV...............RR.................VVV",
+    "VVV...............RR.................VVV",
+    "VVV..................................VVV",
+    "VVV..................................VVV",
+    "VVV..................................VVV",
+    "VVV..................................VVV"
+  ],
+  "objectLayout": [
+    "FF...................................FF.",
+    "FFQ....AAAA..PPPP.....PPPP..AAAA....QFF.",
+    "FF.....AAAAB.PPPP.....PPPPB.AAAA......FF",
+    "FF.....AAAAB.PPPP.....PPPPB.AAAA......F.",
+    "........................................",
+    "........................................",
+    ".......PPPP.FF.........FF...PPPP........",
+    ".AA....PPPP.FF......K..FF...PPPP.....AA.",
+    ".AA....PPPP..FF.U.......FDD.PPPP.....AA.",
+    ".AA..........BB.X....X......PPPP.....AA.",
+    "........................................",
+    ".......CCC...CCC......CCC....CCC........",
+    "....==....................==......==....",
+    "....==....................==......==....",
+    "....==....................==......==....",
+    "....==....................==......==....",
+    "....==....................==......==....",
+    "FF.....CCC...CCC......CCC....CCC........",
+    "FF.......B.PPPP..K....AAA....AAAA....FF.",
+    "FFQ......B.PPPP.......AAA....AAAA....FF.",
+    ".........B.PPPP.X....XAAA....AAAA....F..",
+    "........................................",
+    "........................................",
+    "...........U.....K......................",
+    "FF....PPPP..AAAA....T.PPPP.....AAA...FF.",
+    "FFDD..PPPP..AAAA......PPPPBBBBBAAA...FF.",
+    ".FD...PPPP..AAAA..BB..PPPP.....AAA....F.",
+    "FF....PPPP............PPPP.....AAA...FF.",
+    "......AAA.....PPP.....AAA..U..PPP.....Q.",
+    "......AAAFF...PPP...K.AAA.FF..PPP.......",
+    "......AAAFF...PPP.....AAA.FF..PPP.......",
+    ".........FFF....BB...BB...FFF.PPP.......",
+    "...X..................................X.",
+    "........................................",
+    "........................................",
+    "FF....PPPP.AAA...........AAA.PPPP....FF.",
+    "FF....PPPP.AAA.........DDAAA.PPPP....FF.",
+    ".F....PPPP...Q....CCCC.......PPPP.....F.",
+    "FF...................................FF.",
+    "...................HH..................."
+  ]
+}

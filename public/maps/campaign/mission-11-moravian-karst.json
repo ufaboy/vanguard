@@ -1,0 +1,368 @@
+{
+  "mapId": "campaign-11",
+  "id": 11,
+  "name": "Moravian Karst",
+  "subtitle": "SECTOR 11 // MACOCHA ABYSS",
+  "objective": "Flush out enemy units around the Macocha Abyss",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 650
+  },
+  "environment": {
+    "theme": "forest",
+    "tint": "#9cb388",
+    "fogColor": "#27352c",
+    "groundColor": "#6e745b"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Split around the impassable Macocha Abyss through dense karst woodland, narrow ravine roads, and concrete-lined cave mouths.",
+    "breaches": [
+      {
+        "name": "Katerinska Cut",
+        "cells": [
+          { "row": 18, "col": 10 },
+          { "row": 19, "col": 10 },
+          { "row": 20, "col": 10 }
+        ],
+        "start": { "row": 19, "col": 8 },
+        "end": { "row": 19, "col": 12 },
+        "purpose": "Breach the limestone barricade at Katerinska Cave to flank the abyss rim from the western forest road."
+      },
+      {
+        "name": "Abyss Rim Checkpoint",
+        "cells": [
+          { "row": 13, "col": 18 },
+          { "row": 13, "col": 19 },
+          { "row": 13, "col": 20 }
+        ],
+        "start": { "row": 11, "col": 19 },
+        "end": { "row": 15, "col": 19 },
+        "purpose": "Smash the northern rim wall to open a direct firing lane past the abyss."
+      },
+      {
+        "name": "Punkva Gorge Wall",
+        "cells": [
+          { "row": 22, "col": 27 },
+          { "row": 23, "col": 27 },
+          { "row": 24, "col": 27 }
+        ],
+        "start": { "row": 23, "col": 25 },
+        "end": { "row": 23, "col": 29 },
+        "purpose": "Cut between the eastern ravine road and the central lookout plateau."
+      }
+    ],
+    "reference": {
+      "place": "Moravian Karst & Macocha Abyss, Czechia",
+      "kind": "real",
+      "kept": [
+        "Macocha Abyss as a central impassable sinkhole basin with stone rims and lookout pavilion",
+        "Forested limestone plateau with scattered stone sinkholes",
+        "Narrow ravine roads winding from north entrances to the southern valley",
+        "Surface cave mouths (Punkva and Katerinska) framed by concrete rock-cut walls and bunkers"
+      ],
+      "simplified": [
+        "Subterranean Punkva cave passages represented as surface rock-cut portals and ravine corridors",
+        "Cableway and multiple visitor trails merged into three main tactical ravine and forest routes"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 11112026,
+    "theme": "forest",
+    "zones": [
+      {
+        "id": "karst-plateau",
+        "bounds": [0, 0, 39, 39],
+        "surface": "dirt",
+        "density": 0.18,
+        "details": ["leaves", "weeds"]
+      },
+      {
+        "id": "macocha-rim",
+        "bounds": [14, 15, 22, 26],
+        "surface": "gravel",
+        "density": 0.25,
+        "details": ["cracks", "rubble"]
+      },
+      {
+        "id": "punkva-depot",
+        "bounds": [25, 31, 30, 37],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": ["oil", "tracks"]
+      },
+      {
+        "id": "ranger-yard",
+        "bounds": [29, 10, 34, 17],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": ["tracks", "patches"]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-cave-track",
+        "points": [[19, 4], [19, 7], [19, 9]],
+        "width": 1.4,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "abyss-overlook-apron",
+        "points": [[21, 22], [23, 23], [24, 24]],
+        "width": 2,
+        "surface": "pavers",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-macocha",
+        "kind": "label",
+        "row": 14,
+        "col": 19,
+        "text": "Macocha Abyss"
+      },
+      {
+        "id": "label-punkva",
+        "kind": "label",
+        "row": 7,
+        "col": 32,
+        "text": "Punkva Cave"
+      },
+      {
+        "id": "label-katerinska",
+        "kind": "label",
+        "row": 18,
+        "col": 7,
+        "text": "Katerinska Cave"
+      },
+      {
+        "id": "label-lookout",
+        "kind": "label",
+        "row": 23,
+        "col": 23,
+        "text": "Abyss Lookout"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-lane",
+        "bounds": [36, 17, 39, 22]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 4,
+    "entrances": [
+      { "id": "nw-ravine", "row": 0, "col": 7 },
+      { "id": "north-rim", "row": 0, "col": 19 },
+      { "id": "ne-punkva", "row": 0, "col": 32 }
+    ],
+    "encounters": [
+      {
+        "id": "karst-probe",
+        "label": "KARST PROBE: Recon and stealth units emerging from the northern sinkholes.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "STEALTH",
+          "SCOUT",
+          "STANDARD",
+          "FLAMETHROWER",
+          "STANDARD"
+        ],
+        "entrances": ["nw-ravine", "north-rim", "ne-punkva"],
+        "patrolRoute": [
+          { "row": 8, "col": 6 },
+          { "row": 20, "col": 3 },
+          { "row": 32, "col": 15 }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          { "row": 7, "col": 6 },
+          { "row": 8, "col": 18 },
+          { "row": 7, "col": 31 },
+          { "row": 10, "col": 13 }
+        ]
+      },
+      {
+        "id": "abyss-ambush",
+        "label": "ABYSS AMBUSH: Sappers, flamethrowers, and jammer support closing around the rim.",
+        "enemies": [
+          "STANDARD",
+          "SAPPER",
+          "FLAMETHROWER",
+          "STEALTH",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "JAMMER",
+          "SAPPER"
+        ],
+        "entrances": ["nw-ravine", "ne-punkva"],
+        "patrolRoute": [
+          { "row": 10, "col": 31 },
+          { "row": 22, "col": 31 },
+          { "row": 30, "col": 24 }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "gorge-counterattack",
+        "label": "GORGE COUNTERATTACK: Heavy armor and missile support pushing through all ravines.",
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "STEALTH",
+          "FLAMETHROWER",
+          "HOWITZER",
+          "ENGINEER",
+          "STANDARD",
+          "ARMOR",
+          "STRIKER"
+        ],
+        "entrances": ["nw-ravine", "north-rim", "ne-punkva"],
+        "patrolRoute": [
+          { "row": 11, "col": 18 },
+          { "row": 24, "col": 16 },
+          { "row": 33, "col": 19 }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "STEALTH",
+    "SCOUT",
+    "STANDARD",
+    "FLAMETHROWER",
+    "STANDARD",
+    "STANDARD",
+    "SAPPER",
+    "FLAMETHROWER",
+    "STEALTH",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "JAMMER",
+    "SAPPER",
+    "ARMOR",
+    "STRIKER",
+    "STEALTH",
+    "FLAMETHROWER",
+    "HOWITZER",
+    "ENGINEER",
+    "STANDARD",
+    "ARMOR",
+    "STRIKER"
+  ],
+  "surfaceLayout": [
+    "VVVVV..R...VVVVVV..R...VVVVVVV..R...VVVV",
+    "VVVVV..R...VVVVVV..R...VVVVVVV..R...VVVV",
+    "VVVV...R..VVVVVV...R...VVVVVV...R...VVVV",
+    "VVV....R..VVVVV....R....VVVV....R....VVV",
+    "VV..^^.R..VVVV.....R....VVV..^^.R....VVV",
+    "VV..^^.R...VV......R....VV...^^.R.....VV",
+    "VVV...RR...VV.....RR....VV.....RR.....VV",
+    "VVVV..R....VV.....R.....VV.....R......VV",
+    "VVVV..R...VVV.....R....VVV.....R...^^.VV",
+    "VVV...R...VVV.....R....VVV.....R...^^.VV",
+    "VV...RR...VVVV....R....VVVV....R......VV",
+    "V...RR...VVVVV....R....VVVV....R......VV",
+    "V..RR....VVVVV....R.....VV.....R.....VVV",
+    "V..R....VVVVVV....R.....VV.....R.....VVV",
+    "V..R...VVVV..^RRRRR...^^VVV....R....VVVV",
+    "V..R...VVV..^^RWWWW..^^^.VV....R....VVVV",
+    "V..R...VV...^^RWWWWW.^^^.VV....R....VVVV",
+    "V..R...VV...^^RWWWWW.^^..VV....R....VVVV",
+    "V..R...VV...^^RWWWWW.^^..VV....R....VVVV",
+    "V..R...VVV...^RWWWW..^^..VV....R....VVVV",
+    "VV.R...VVVV...R^^^^..^...VV....R....VVVV",
+    "VV.R....VVVV..R..........VV....R....VVVV",
+    "VV.R....VVVVV.RRR.......VVV....R.....VVV",
+    "VV.RR....VVVVV..R.......VVV....R.....VVV",
+    "VV..RR...VVVVVV.R......VVVV...RR.....VVV",
+    "VV...R....VVVVV.R......VVVV...R...LL..VV",
+    "VVV..R....VVVVV.R......VVV....R...LL..VV",
+    "VVV..RR....VVVV.R......VVV....R.......VV",
+    "VVVV..R....VVVV.R......VV....RR.......VV",
+    "VVVV..RR....VVV.R......VV....R...^^...VV",
+    "VVVV...RR...VV..R......V....RR...^^...VV",
+    "VVVVV...RR......R..........RR.........VV",
+    "VVVVV....RRRRRRRRRRRRRRRRRRR.........VVV",
+    "VVVVVV...........R...................VVV",
+    "VVVVVV...........R..................VVVV",
+    "VVVVVV...........R..................VVVV",
+    "VVVVV............R..................VVVV",
+    "VVVVV...............................VVVV",
+    "VVVVV...............................VVVV",
+    "VVVVVV............................VVVVVV"
+  ],
+  "objectLayout": [
+    "FFFFF......FFFFFF......FFFFFFF......FFFF",
+    "FFFFF......FFFFFF......FFFFFFF......FFFF",
+    "FFFF.......FFFFFF.......FFFFFF......FFFF",
+    "FFF........FFFFF........FFFF........FFFF",
+    "FF..BB.....FFFF..CC..CC.FFF..BB......FFF",
+    "FF.........FF....C....C.FF....C...C...FF",
+    "FFF...F....FF....C....C.FF....C...C...FF",
+    "FFFF......BFF....B....B.FF....C...C...FF",
+    "FFFF......FF.....F....F.FFF...B...B...FF",
+    "FFF..F.F..FFF....F....F.FFF.......F..FFF",
+    "FF.....Q..FFFF...F....F.FFFF..F...F...FF",
+    "F.........FFFFF..F....F.FFFF..F.......FF",
+    "F....FFF..FFFFF..X....X.FF...FF..FFF..FF",
+    "F....FFF..FFFFF..BBBBBB.FF...FF..FFF..FF",
+    "F.........FFF..........CFFF..FF.......FF",
+    "F.....CC..C......CC.....C.FF..FF..CC..FF",
+    "F.....C...C.....C........C.F..FF...C..FF",
+    "F.....C...C.....C........C.F..FF...C..FF",
+    "F.....C...B.....C........C.F..FF...C..FF",
+    "F.........B.....C........C.F..FF..C...FF",
+    "FF....CC..B......CC....CC..C..FF..C..QFF",
+    "FF........C......B.....B...C..FF..C...FF",
+    "FF.......FC........PPP.F...B......C...FF",
+    "FF.......FC........PPP.F...B......F...FF",
+    "FF........C........PPP.F...B......F...FF",
+    "FF...F....FF........Q..F...C.....ADD..FF",
+    "FFF..F...FFF.....F.....F...C.....ADD..FF",
+    "FFF......FFF..C..FF...FF...C.F...AAQ..FF",
+    "FFFF.....FFF..C...F...F...F...........FF",
+    "FFFF....AA....C...B...B...F.....BB....FF",
+    "FFFF....AA..T.....F...F..F......UK....FF",
+    "FFFFF...BB........F...F..F..F...BB....FF",
+    "FFFFF................F...F.....FFF...FFF",
+    "FFFFFF.......FF....F.F........FFFF...FFF",
+    "FFFFFF...FF..FF..........FF..FFFFF..FFFF",
+    "FFFFFF...FF..FFF........FFF..FFFFF..FFFF",
+    "FFFFF....FF..FFF..K..K..FFF..FFFF...FFFF",
+    "FFFFF....F........CCCC.......FFF....FFFF",
+    "FFFFF........................FF.....FFFF",
+    "FFFFFF.............HH...............FFFF"
+  ]
+}

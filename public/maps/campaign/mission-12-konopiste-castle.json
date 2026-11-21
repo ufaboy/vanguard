@@ -1,0 +1,605 @@
+{
+  "mapId": "campaign-12",
+  "id": 12,
+  "name": "Konopiště Castle",
+  "subtitle": "SECTOR 12 // BOHEMIA WOODED STRONGHOLD",
+  "objective": "Breach the castle and destroy the Consortium document depot",
+  "gameMode": "stronghold_assault",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 4,
+      "col": 20
+    },
+    "name": "Konopiště Document Depot",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 700
+  },
+  "environment": {
+    "theme": "forest",
+    "tint": "#9fb484",
+    "fogColor": "#27342b",
+    "groundColor": "#72755b"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Assault Konopiště Castle on its wooded hill via the central pond causeway, the western Obora deer park, or the eastern estate road, then breach the curtain wall.",
+    "breaches": [
+      {
+        "name": "South Gatehouse",
+        "cells": [
+          {
+            "row": 10,
+            "col": 19
+          },
+          {
+            "row": 10,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 19
+        },
+        "end": {
+          "row": 8,
+          "col": 19
+        },
+        "purpose": "Breach the main southern castle gatehouse directly into the courtyard."
+      },
+      {
+        "name": "West Postern",
+        "cells": [
+          {
+            "row": 8,
+            "col": 13
+          },
+          {
+            "row": 9,
+            "col": 13
+          }
+        ],
+        "start": {
+          "row": 8,
+          "col": 11
+        },
+        "end": {
+          "row": 8,
+          "col": 15
+        },
+        "purpose": "Slip from the Obora deer park road into the western castle bailey."
+      },
+      {
+        "name": "East Rampart",
+        "cells": [
+          {
+            "row": 8,
+            "col": 27
+          },
+          {
+            "row": 9,
+            "col": 27
+          }
+        ],
+        "start": {
+          "row": 8,
+          "col": 29
+        },
+        "end": {
+          "row": 8,
+          "col": 25
+        },
+        "purpose": "Cut from the eastern approach directly into the castle courtyard behind the keep."
+      },
+      {
+        "name": "Estate Yard Wall",
+        "cells": [
+          {
+            "row": 25,
+            "col": 24
+          },
+          {
+            "row": 25,
+            "col": 25
+          }
+        ],
+        "start": {
+          "row": 27,
+          "col": 24
+        },
+        "end": {
+          "row": 23,
+          "col": 24
+        },
+        "purpose": "Open a shortcut between the central staging road and the eastern estate farm."
+      }
+    ],
+    "reference": {
+      "place": "Konopiště Castle, Benešov (Central Bohemia)",
+      "kind": "real",
+      "kept": [
+        "Konopiště Castle on the wooded hill in the north housing the document depot",
+        "Konopiště Pond (Konopišťský rybník) in the west-central valley crossed by a road causeway",
+        "Obora deer park woodland and hunter outposts on the western flank",
+        "Rose Garden terraces, Upper Garden Pond, and estate farm buildings on the eastern flank"
+      ],
+      "simplified": [
+        "Generic 2-storey castle wings and concrete curtain walls used in place of custom Konopiště 3D geometry",
+        "Surrounding Benešov town merged into the southern approach cottages and estate farm"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 12122026,
+    "theme": "forest",
+    "zones": [
+      {
+        "id": "obora-deer-park",
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
+        "surface": "dirt",
+        "density": 0.16,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "castle-courtyard",
+        "bounds": [
+          3,
+          14,
+          9,
+          26
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "rose-garden",
+        "bounds": [
+          12,
+          14,
+          19,
+          26
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "estate-yard",
+        "bounds": [
+          22,
+          24,
+          28,
+          30
+        ],
+        "surface": "dirt",
+        "density": 0.24,
+        "details": [
+          "tracks",
+          "oil"
+        ]
+      },
+      {
+        "id": "south-staging",
+        "bounds": [
+          28,
+          15,
+          36,
+          24
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "castle-causeway-path",
+        "points": [
+          [
+            35,
+            19
+          ],
+          [
+            23,
+            19
+          ],
+          [
+            11,
+            19
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "obora-trail",
+        "points": [
+          [
+            30,
+            6
+          ],
+          [
+            16,
+            6
+          ],
+          [
+            6,
+            6
+          ],
+          [
+            6,
+            12
+          ]
+        ],
+        "width": 2,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "estate-lane",
+        "points": [
+          [
+            30,
+            31
+          ],
+          [
+            18,
+            31
+          ],
+          [
+            6,
+            33
+          ],
+          [
+            6,
+            28
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "lbl-castle",
+        "kind": "label",
+        "row": 2,
+        "col": 20,
+        "text": "KONOPISTE CASTLE"
+      },
+      {
+        "id": "lbl-pond",
+        "kind": "label",
+        "row": 20,
+        "col": 13,
+        "text": "KONOPISTE POND"
+      },
+      {
+        "id": "lbl-obora",
+        "kind": "label",
+        "row": 14,
+        "col": 6,
+        "text": "OBORA DEER PARK"
+      },
+      {
+        "id": "lbl-garden",
+        "kind": "label",
+        "row": 15,
+        "col": 21,
+        "text": "ROSE GARDEN"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear",
+        "bounds": [
+          37,
+          18,
+          39,
+          21
+        ]
+      },
+      {
+        "id": "core-clear",
+        "bounds": [
+          3,
+          19,
+          5,
+          21
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "north-gate",
+        "row": 1,
+        "col": 20
+      },
+      {
+        "id": "west-deerpark",
+        "row": 2,
+        "col": 5
+      },
+      {
+        "id": "east-causeway",
+        "row": 2,
+        "col": 34
+      }
+    ],
+    "encounters": [
+      {
+        "id": "outer-park-patrol",
+        "label": "DEER PARK OUTPOST: Consortium recon units and hovercraft are patrolling the Konopiště parklands.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "HOVER",
+          "STANDARD",
+          "STEALTH",
+          "SCOUT"
+        ],
+        "entrances": [
+          "north-gate",
+          "west-deerpark"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 20
+          },
+          {
+            "row": 21,
+            "col": 20
+          },
+          {
+            "row": 30,
+            "col": 19
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 8,
+            "col": 19
+          },
+          {
+            "row": 5,
+            "col": 6
+          },
+          {
+            "row": 6,
+            "col": 33
+          },
+          {
+            "row": 9,
+            "col": 25
+          }
+        ]
+      },
+      {
+        "id": "pond-flankers",
+        "label": "POND CAUSEWAYS: Amphibious flankers and flame tanks are advancing across the Obora woods and Upper Pond.",
+        "enemies": [
+          "STANDARD",
+          "SAPPER",
+          "HOVER",
+          "FLAMETHROWER",
+          "HOWITZER",
+          "STANDARD",
+          "STEALTH",
+          "SCOUT"
+        ],
+        "entrances": [
+          "west-deerpark",
+          "east-causeway"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 31
+          },
+          {
+            "row": 28,
+            "col": 31
+          },
+          {
+            "row": 30,
+            "col": 19
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "castle-garrison",
+        "label": "CASTLE GARRISON: Heavy armour and siege artillery are defending the Konopiště document depot. Breach the curtain wall!",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "SAPPER",
+          "HOWITZER",
+          "FLAMETHROWER",
+          "ARMOR",
+          "ENGINEER",
+          "STANDARD",
+          "STRIKER"
+        ],
+        "entrances": [
+          "north-gate",
+          "east-causeway"
+        ],
+        "patrolRoute": [
+          {
+            "row": 8,
+            "col": 14
+          },
+          {
+            "row": 14,
+            "col": 19
+          },
+          {
+            "row": 24,
+            "col": 24
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "HOVER",
+    "STANDARD",
+    "STEALTH",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "HOVER",
+    "FLAMETHROWER",
+    "HOWITZER",
+    "STANDARD",
+    "STEALTH",
+    "SCOUT",
+    "ARMOR",
+    "STANDARD",
+    "SAPPER",
+    "HOWITZER",
+    "FLAMETHROWER",
+    "ARMOR",
+    "ENGINEER",
+    "STANDARD",
+    "STRIKER"
+  ],
+  "surfaceLayout": [
+    "VVVVVRRVVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVV",
+    "VVVVVRRVVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVV",
+    "VVVVVRRVVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVV",
+    "VVVVVRRVVVVVV^^^^^^^RR^^^^^^VVVVVVRRVVVV",
+    "VVVVVRRVVVVVV^.............^VVVVVVRRVVVV",
+    "VVVVVRRVVVVVV^.............^VVVVVVRRVVVV",
+    "VVVVVRRRRRRRRR.............RRRRRRRRRVVVV",
+    "VVVVVVRRRRRRRR.............RRRRRRRRVVVVV",
+    "VVVVVVRRVVVVV^.............^VVVRRVVVVVVV",
+    "VVVVVVRRVVVVV^.............^VVVRRVVVVVVV",
+    "VVVVVVRRVVVVV^^^^^^RR^^^^^^^VVVRRVVVVVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSSMRRSSSSVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSWWWWWWWSVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSWWWWWWWSVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSWWWWWWWSVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSWWWWWWWSVVV",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSSSRRMMSSVVV",
+    "VVVVVSRRMMMMMMMSSSSRRVVVVVVVVVVRRVVVVVVV",
+    "VVVVVSWWWWWWWWWWWWWWWVVV.......RRVVVVVVV",
+    "VVVVVSWWWWWWWWWWWWWWWVVV.......RRVVVVVVV",
+    "VVVVVSWWWWWWWWWWWWWWWVVV.......RRVVVVVVV",
+    "VVVVVSWWWWWWWWWWWWWRRVVV.......RRVVVVVVV",
+    "VVVVVSRRSMMMMSSSSSSRRVVV.....LLRRVVVVVVV",
+    "VVVVVVRRVVVVVVV....RR........L.RRVVVVVVV",
+    "VVVVVVRRVVVVVVV....RR..........RRVVVVVVV",
+    "VVVVVVRRVVVVVVV....RR....VVVVVVRRVVVVVVV",
+    "VVVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVVVVV",
+    "VVVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVVVVV",
+    "VVVVVVVVVVVVVVV....RR....VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVV....RR....VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVV....RR....VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVV....RR....VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVV..........VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
+  ],
+  "objectLayout": [
+    "..FF..........FFFF......FFFF..FFF.......",
+    ".FFF.....FFF..FFFF......FFFF.FFFF.....FF",
+    ".FFF....FFFF................FFFFF....FFF",
+    ".FF.....FFFF.CCCC..CCC..CCCC.FFF.....FFF",
+    "..FF....FFF..C.....CEC.....C.FFF.....FFF",
+    ".FFF.........C.PP..CBC..PP.C.FF......FF.",
+    ".FFF.........C.PP.......PP.C............",
+    ".FFF.........C.PP.......PP.C............",
+    ".FF......FFF.B......K......B.FF......FF.",
+    "........FFFF.B.DX......XQ..B.FF.....FFF.",
+    "..QB....FFF..CCCCCCBBCCCCCCC.FF.....FFF.",
+    "..B.............F......F....AAF.....FFF.",
+    "..FFF....AA...F..........F..AA......FFF.",
+    ".FFFF....AA.......X..X...FF.........FFF.",
+    ".FFFF.....FFF..BBB....BBBFF.........FFF.",
+    ".FFFF....FFFF......K.F...FF..........FF.",
+    ".FFF.....FFFF..C..U...F.CFF....==....F..",
+    ".........FFFF..C....K...C......==.......",
+    "..AA.....FFFF....X....XU.......==.......",
+    "..AU.....FFF..FFF.K............==.......",
+    "..FF..........FFF....K..FF..............",
+    ".FFF...............................FFFF.",
+    ".FFF..==...........==.....AAA.....FFFFF.",
+    ".FFF..==...........==.....AAA.....FFFFF.",
+    ".FF...==...........==....T...Q....FFFFF.",
+    "......==..............CCBBC.......FFFF..",
+    ".............................DD.........",
+    "..FKF.....FFF...F....F.......D.....FFFF.",
+    ".FFFB....FFFFFFF.F....F.FFFF......FFFFF.",
+    ".FFFB....FFFFFFF........FFFF......FFFFF.",
+    ".FFFF.............................FFFFF.",
+    ".FFFF.............................FFFFF.",
+    ".FFF........AAD..F....F..AA.......FFFF..",
+    "..FFFFF..FF.AA...........AA.Q.......FFF.",
+    ".FFFFFF.FFF....X........X.....FFFF.FFFF.",
+    ".FFFFFF.FFF..F...........F...FFFFF.FFFF.",
+    ".FFFFFF.FF...................FFFFF.FFFF.",
+    ".FFFFF............CCCC.......FFFFF.FFF..",
+    ".............................FFFF.......",
+    "...................HH..................."
+  ]
+}

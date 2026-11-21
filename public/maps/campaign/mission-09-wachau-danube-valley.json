@@ -1,0 +1,584 @@
+{
+  "id": 9,
+  "mapId": "campaign-09",
+  "name": "Wachau: Danube Valley",
+  "subtitle": "SECTOR 09 // DANUBE TERRACES & ABBEY BLUFF",
+  "objective": "Eliminate Consortium patrols along the Danube terraces and abbey road",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 480
+  },
+  "environment": {
+    "theme": "forest",
+    "tint": "#9fb484",
+    "fogColor": "#27342b",
+    "groundColor": "#72755b"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Three distinct crossings over the winding Danube — the Melk Abbey stone bridge, the central Dürnstein gravel ford, and the eastern Krems bridge — connect wooded hills in the north to terraced vineyards in the south. Breach the abbey postern, ferry barricade, vineyard wall, or depot gate to flank artillery and amphibious patrols.",
+    "breaches": [
+      {
+        "name": "Abbey South Postern",
+        "cells": [
+          {
+            "row": 10,
+            "col": 7
+          },
+          {
+            "row": 10,
+            "col": 8
+          },
+          {
+            "row": 10,
+            "col": 9
+          }
+        ],
+        "start": {
+          "row": 9,
+          "col": 8
+        },
+        "end": {
+          "row": 11,
+          "col": 8
+        },
+        "purpose": "Punch straight out of the Melk Abbey courtyard onto the bridge approach."
+      },
+      {
+        "name": "Dürnstein Ferry Barricade",
+        "cells": [
+          {
+            "row": 13,
+            "col": 19
+          },
+          {
+            "row": 13,
+            "col": 20
+          },
+          {
+            "row": 13,
+            "col": 21
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 20
+        },
+        "end": {
+          "row": 14,
+          "col": 20
+        },
+        "purpose": "Clear the brick roadblock guarding the central Danube gravel ford."
+      },
+      {
+        "name": "Vineyard Terrace Wall",
+        "cells": [
+          {
+            "row": 25,
+            "col": 10
+          },
+          {
+            "row": 25,
+            "col": 11
+          },
+          {
+            "row": 25,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 25,
+          "col": 9
+        },
+        "end": {
+          "row": 25,
+          "col": 13
+        },
+        "purpose": "Cut between the western vineyard road and the central valley ruins."
+      },
+      {
+        "name": "Krems Depot Gate",
+        "cells": [
+          {
+            "row": 24,
+            "col": 31
+          },
+          {
+            "row": 24,
+            "col": 32
+          },
+          {
+            "row": 24,
+            "col": 33
+          }
+        ],
+        "start": {
+          "row": 23,
+          "col": 32
+        },
+        "end": {
+          "row": 25,
+          "col": 32
+        },
+        "purpose": "Break through the riverside depot wall into the eastern orchard flank."
+      }
+    ],
+    "reference": {
+      "place": "Wachau Valley, Danube River & Melk Abbey, Lower Austria",
+      "kind": "real",
+      "kept": [
+        "Danube River winding west-to-east across the valley with stone bridges and a shallow gravel ford",
+        "Melk Abbey complex perched on a rocky northern bluff overlooking the river bend",
+        "Terraced vineyards (hedge rows and low stone walls) on the southern valley slopes",
+        "Dunkelsteiner forest slopes on the northeastern hills and Dürnstein riverside village"
+      ],
+      "simplified": [
+        "Melk Abbey baroque wings and tower represented with the generic 2-storey building and tower kit",
+        "Multiple Wachau wine villages merged into the central Dürnstein cluster and eastern Krems depot"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 9092026,
+    "theme": "forest",
+    "zones": [
+      {
+        "id": "valley-floor",
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
+        "surface": "dirt",
+        "density": 0.16,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "abbey-courtyard",
+        "bounds": [
+          4,
+          3,
+          10,
+          13
+        ],
+        "surface": "pavers",
+        "density": 0.28,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "vineyard-terraces",
+        "bounds": [
+          20,
+          1,
+          31,
+          15
+        ],
+        "surface": "dirt",
+        "density": 0.24,
+        "details": [
+          "weeds",
+          "tracks"
+        ]
+      },
+      {
+        "id": "krems-depot",
+        "bounds": [
+          19,
+          31,
+          25,
+          38
+        ],
+        "surface": "gravel",
+        "density": 0.26,
+        "details": [
+          "oil",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "abbey-ridge-track",
+        "points": [
+          [
+            2,
+            7
+          ],
+          [
+            7,
+            14
+          ],
+          [
+            12,
+            14
+          ],
+          [
+            12,
+            8
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "danube-ford-track",
+        "points": [
+          [
+            15,
+            20
+          ],
+          [
+            20,
+            20
+          ]
+        ],
+        "width": 2,
+        "surface": "sand",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "lbl-abbey",
+        "kind": "label",
+        "row": 3,
+        "col": 8,
+        "text": "MELK ABBEY"
+      },
+      {
+        "id": "lbl-danube",
+        "kind": "label",
+        "row": 19,
+        "col": 14,
+        "text": "DANUBE RIVER"
+      },
+      {
+        "id": "lbl-durnstein",
+        "kind": "label",
+        "row": 9,
+        "col": 21,
+        "text": "DURNSTEIN"
+      },
+      {
+        "id": "lbl-vineyards",
+        "kind": "label",
+        "row": 24,
+        "col": 5,
+        "text": "VINEYARDS"
+      },
+      {
+        "id": "lbl-krems",
+        "kind": "label",
+        "row": 19,
+        "col": 34,
+        "text": "KREMS DEPOT"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear",
+        "bounds": [
+          37,
+          18,
+          39,
+          21
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "west-bluff",
+        "row": 1,
+        "col": 7
+      },
+      {
+        "id": "center-valley",
+        "row": 1,
+        "col": 20
+      },
+      {
+        "id": "east-slopes",
+        "row": 1,
+        "col": 32
+      }
+    ],
+    "encounters": [
+      {
+        "id": "danube-vanguard",
+        "label": "DANUBE VANGUARD: Consortium recon and artillery probes are advancing from the abbey bluff and valley road.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "HOWITZER"
+        ],
+        "entrances": [
+          "west-bluff",
+          "center-valley"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 14
+          },
+          {
+            "row": 16,
+            "col": 20
+          },
+          {
+            "row": 25,
+            "col": 18
+          },
+          {
+            "row": 32,
+            "col": 18
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 9
+          },
+          {
+            "row": 3,
+            "col": 20
+          },
+          {
+            "row": 5,
+            "col": 33
+          },
+          {
+            "row": 7,
+            "col": 15
+          }
+        ]
+      },
+      {
+        "id": "terrace-flankers",
+        "label": "TERRACE FLANKERS: Amphibious hover tanks and forest flamers are crossing the Danube and Dunkelsteiner slopes.",
+        "enemies": [
+          "HOVER",
+          "FLAMETHROWER",
+          "STANDARD",
+          "SAPPER",
+          "HOVER",
+          "STEALTH",
+          "SCOUT",
+          "STANDARD",
+          "HOWITZER"
+        ],
+        "entrances": [
+          "center-valley",
+          "east-slopes"
+        ],
+        "patrolRoute": [
+          {
+            "row": 16,
+            "col": 31
+          },
+          {
+            "row": 23,
+            "col": 31
+          },
+          {
+            "row": 25,
+            "col": 29
+          },
+          {
+            "row": 28,
+            "col": 20
+          },
+          {
+            "row": 32,
+            "col": 19
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "abbey-assault",
+        "label": "ABBEY ASSAULT: Heavy armor, missile strikers, and engineers are pushing across all three Danube crossings.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "STRIKER",
+          "FLAMETHROWER",
+          "HOVER",
+          "ENGINEER",
+          "ARMOR",
+          "STEALTH",
+          "HOWITZER"
+        ],
+        "entrances": [
+          "west-bluff",
+          "center-valley",
+          "east-slopes"
+        ],
+        "patrolRoute": [
+          {
+            "row": 15,
+            "col": 8
+          },
+          {
+            "row": 24,
+            "col": 8
+          },
+          {
+            "row": 32,
+            "col": 12
+          },
+          {
+            "row": 33,
+            "col": 19
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "HOWITZER",
+    "HOVER",
+    "FLAMETHROWER",
+    "STANDARD",
+    "SAPPER",
+    "HOVER",
+    "STEALTH",
+    "SCOUT",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "STRIKER",
+    "FLAMETHROWER",
+    "HOVER",
+    "ENGINEER",
+    "ARMOR",
+    "STEALTH",
+    "HOWITZER"
+  ],
+  "surfaceLayout": [
+    "VVVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVV",
+    "VVVVVVVRRVVVVVVVVVVVRRVVVVVV^^^VRRVVVVVV",
+    "VVVVVVVRRRRRRRRRVVVVRRVVVVVV^^^VRRVVVVVV",
+    "VVV.....RRRRRRRRVVVVRRVVVVVV^VVVRRVVVVVV",
+    "VVV...........RRVVVVRRVVVVVV^VVVRRRVVVVV",
+    "VVV..^^^^.....RRVVVVRRVVVVVV^^^VVRRVVVVV",
+    "VVV..^^^^.....RRVVVVRRVVVVVV^^^VVRRVVVVV",
+    "VVV..^^^^.....RRRRRRRRRRRRRRRRRRRRRVVVVV",
+    "VVV..^^^^.....RRVVVVRRVVVVVVVVVVVRRVVVVV",
+    "VVV...........RRVVVVRRVVVVVVVVVRRRRVVVVV",
+    "VVV.....RRRRRRRRVVVVRRVVVVVVVVVRRRRVVVVV",
+    "VVV.....RRRRRRRRVVVVRRVVVVVVVVVRRVVVVVVV",
+    "SSSSSSSSRRSSVVVVVVVVRRVVVVVVVVSRRSSSVVVV",
+    "WWWWWWWWWWWWSSSSSVVVRRVVVSSSSSWWWWWWSSSS",
+    "WWWWWWWWWWWWWWWWWSMMRRMMSWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWSSWWWWWWWWWWWWWWWWWW",
+    "SSSSSSSSRRSSWWWWWWWWSSWWWWWWWWWWWWWWWWWW",
+    "VVVVVVVVRRVVWWWWWWWWSSWWWWWWWWSRRSSSSSSS",
+    "VVVVVVVVRRVVSSSSSWWWSSWWWSSSSSVRRVVVVVVV",
+    "VVVVVVVVRRVVVVVVVSMMRRMMSVVVVVVRR......V",
+    "VVVVVVVVRRVVVVVVVVVVRRVVVVVVVVVRR......V",
+    "VVVVVVVVRRVVVVVVVVVVRRVVVVVVVRRRR......V",
+    "VVVVVVVVRRVVVVVVVVVVRRVVVVVVVRRRRL.....V",
+    "VVVVVVVVRRVVVVVVVVRRRRVVVVVVVRR........V",
+    "VVVVVVVVRRVVVVVVVVRRRRVVVVVVVRR........V",
+    "VVVVVVVVRRVVVVVVVVRRVVVVVVVVVRRVVVVVVVVV",
+    "VVVVVVVVRRVVVVVVVVRRVVVVVVVVVRRVVVVVVVVV",
+    "VVVVVVVVRRRRRRRRRRRRRRRRRRRRRRRVVVVVVVVV",
+    "VVVVVVVVRRVVVVVVVVRRVVVVVVVVVRRVVVVVVVVV",
+    "VVVVVVVVRRVVVVVVVVRRVVVVVVVVVRRVVVVVVVVV",
+    "VVVVVVVVRRVVVVVVVVRRVVVVVVVVVRRVVVVVVVVV",
+    "VVVVVVVVRRRRRRRRRRRRRRRRRRRRRRRVVVVVVVVV",
+    "VVVVVVVVRRRRRRRRRRRRRRRRRRRRRRRVVVVVVVVV",
+    "VVVVVVVVVVVVVVV...RR.....VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVV...RR.....VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVV...RR.....VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVV..........VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVV..........VVVVVVVVVVVVVVV",
+    "VVVVVVVVVVVVVVV..........VVVVVVVVVVVVVVV"
+  ],
+  "objectLayout": [
+    "FFFFF...................FFFF............",
+    "FFFFFF.....FFFFFF.......FFFF.......FFFF.",
+    "FFFFFF.....FFFFFF.......FFFF.AA....FFFF.",
+    "FFFFF...................FFFF.AA....FFFF.",
+    "FF...............AA......FFF.FF....FFFF.",
+    "FF..PPPP..PPP...FAA......FFF.FF....FFFF.",
+    "FF..PPPP..PPP...FF.....AAAFF........FFF.",
+    "FF...T....PPPB.........AAA..........FFF.",
+    "FF.....Q..PPP.......................FFF.",
+    "..........................FFFBK.....FFF.",
+    "...CCCCBBBCCC....AA....AD.FFFF......FFF.",
+    ".................AA....AQ.FFFF.....FFFFF",
+    "..................K....U..FFFF.....FFFFF",
+    "..................XBBBX.................",
+    "........==.....................==.......",
+    "........==.....................==.......",
+    "........==.....................==.......",
+    "..........BK...................==.......",
+    "........................................",
+    "FFFFFF....K...U..............K....U.....",
+    "FFFFFF............................PPP...",
+    "..AAA......BBBB.AA.....AAA..FF....PPP...",
+    "..AAA...........AAB....AAA..FF....PPP...",
+    "..DQ........FFF...................DQ....",
+    "FFF............................BBBD.....",
+    "FFF.......BBB..........BBB..............",
+    "..FFFFF........AA......QU..FF.......FFFF",
+    "....BBB........AA.....B.............FFFF",
+    "..................................AAA...",
+    "..FFFF...............K............AAA...",
+    "...........FFFFF......FFFFF.............",
+    "FFFFFF..........B.....F..........FFFF...",
+    "FFFAAA...........................FFFF...",
+    "FFFAAA........F.........................",
+    "FFFFFFFFFFFF..F.......AA.FFFFFF.........",
+    "FFFFFFFFFFFF.FFF........FFFFFFF.AAFFFFF.",
+    "......FFFFFF.FFF........FFFFFFF.AAFFFFF.",
+    "..FF..FFFFFF.FFF..CCCC..FFFFFFF..FFFFFF.",
+    "..FF....BB...................BB..FFFFFF.",
+    "...................HH..................."
+  ]
+}

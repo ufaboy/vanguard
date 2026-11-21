@@ -1,0 +1,669 @@
+{
+  "id": 24,
+  "mapId": "campaign-24",
+  "code": "SECTOR 05 // 40×40",
+  "name": "Brussels: Cinquantenaire",
+  "subtitle": "SECTOR 04 // BRUSSELS: STORM THE CINQUANTENAIRE",
+  "objective": "Destroy the enemy HQ behind the arch",
+  "gameMode": "stronghold_assault",
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "gridSize": 40,
+  "tileSize": 2,
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "playerSpawnCell": {
+    "row": 34,
+    "col": 20
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 3,
+      "col": 19
+    },
+    "name": "Cinquantenaire Command Post",
+    "maxHp": 40,
+    "fortifyPerimeter": true
+  },
+  "environment": {
+    "theme": "capital",
+    "tint": "#f1e6cf",
+    "fogColor": "#1f2630",
+    "groundColor": "#6c7462"
+  },
+  "completionReward": {
+    "credits": 450
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "A light assault across Brussels on a clear autumn day: leave the Grand-Place, cross the Parc de Bruxelles past the Royal Palace and storm the command post hidden behind the Cinquantenaire arch. Mostly light tanks; a heavy guard and a howitzer hold the arch.",
+    "reference": {
+      "place": "Brussels (Belgium)",
+      "kind": "real",
+      "kept": [
+        "Grand-Place with the Gothic Town Hall and the Maison du Roi",
+        "Manneken Pis on its street corner",
+        "Galeries Royales Saint-Hubert and the Mont des Arts garden",
+        "Royal Palace facing the Parc de Bruxelles across the Place des Palais",
+        "Parc de Bruxelles with its railing, bosquets, Grand Bassin and two basins",
+        "Rue Royale, Rue Ducale and Rue de la Loi with the EU quarter",
+        "Cinquantenaire arch with its colonnades, the two museum halls and the park pond",
+        "Atomium on its plaza",
+        "Ixelles ponds"
+      ],
+      "simplified": [
+        "Districts several kilometres apart are compressed into one strip from the Grand-Place (south) to the Cinquantenaire (north)",
+        "The Atomium (Heysel, far north) stands beside the Cinquantenaire, and the Ixelles ponds sit east of the park",
+        "There is no river or canal crossing: only ponds and basins"
+      ]
+    },
+    "breaches": [
+      {
+        "name": "Royal Palace gate",
+        "cells": [
+          {
+            "row": 28,
+            "col": 19
+          },
+          {
+            "row": 28,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 27,
+          "col": 19
+        },
+        "end": {
+          "row": 30,
+          "col": 20
+        },
+        "purpose": "The palace courtyard gate is closed; blow it open to drive straight from the Grand-Place quarter into the park."
+      },
+      {
+        "name": "Park north gate",
+        "cells": [
+          {
+            "row": 14,
+            "col": 19
+          },
+          {
+            "row": 14,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 19
+        },
+        "end": {
+          "row": 13,
+          "col": 19
+        },
+        "purpose": "The central park gate is chained shut; breach it to run the park axis straight onto Rue de la Loi and the arch."
+      },
+      {
+        "name": "Galeries arcade",
+        "cells": [
+          {
+            "row": 32,
+            "col": 22
+          },
+          {
+            "row": 32,
+            "col": 23
+          }
+        ],
+        "start": {
+          "row": 32,
+          "col": 21
+        },
+        "end": {
+          "row": 32,
+          "col": 24
+        },
+        "purpose": "A barricade closes the glazed arcade of the Galeries Saint-Hubert; shoot through it for a short cut between the HQ forecourt and the Mont des Arts."
+      }
+    ]
+  },
+  "landmarks3d": [
+    {
+      "kind": "CINQUANTENAIRE_ARCH",
+      "row": 6,
+      "col": 14
+    },
+    {
+      "kind": "ATOMIUM",
+      "row": 2,
+      "col": 35
+    },
+    {
+      "kind": "BRUSSELS_TOWN_HALL",
+      "row": 35,
+      "col": 6
+    },
+    {
+      "kind": "MANNEKEN_PIS",
+      "row": 37,
+      "col": 3
+    }
+  ],
+  "decoration": {
+    "version": 1,
+    "seed": 41042026,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "cinquantenaire",
+        "bounds": [
+          0,
+          0,
+          11,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.16,
+        "details": [
+          "leaves",
+          "tracks"
+        ]
+      },
+      {
+        "id": "eu-quarter",
+        "bounds": [
+          12,
+          0,
+          16,
+          39
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "patches",
+          "cracks"
+        ]
+      },
+      {
+        "id": "parc-de-bruxelles",
+        "bounds": [
+          14,
+          10,
+          26,
+          29
+        ],
+        "surface": "gravel",
+        "density": 0.14,
+        "details": [
+          "leaves"
+        ]
+      },
+      {
+        "id": "old-town",
+        "bounds": [
+          27,
+          0,
+          39,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "park-axis",
+        "points": [
+          [
+            20,
+            19
+          ],
+          [
+            25,
+            19
+          ]
+        ],
+        "width": 1,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "park-cross",
+        "points": [
+          [
+            21,
+            14
+          ],
+          [
+            21,
+            25
+          ]
+        ],
+        "width": 1,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "esplanade",
+        "points": [
+          [
+            8,
+            13
+          ],
+          [
+            8,
+            25
+          ]
+        ],
+        "width": 1,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-cinquantenaire",
+        "kind": "label",
+        "row": 9,
+        "col": 19,
+        "size": 1.8,
+        "text": "CINQUANTENAIRE"
+      },
+      {
+        "id": "label-atomium",
+        "kind": "label",
+        "row": 6,
+        "col": 36,
+        "size": 1.5,
+        "text": "ATOMIUM"
+      },
+      {
+        "id": "label-rue-de-la-loi",
+        "kind": "label",
+        "row": 12,
+        "col": 28,
+        "size": 1.3,
+        "text": "RUE DE LA LOI"
+      },
+      {
+        "id": "label-parc",
+        "kind": "label",
+        "row": 21,
+        "col": 19,
+        "size": 1.6,
+        "text": "PARC DE BRUXELLES"
+      },
+      {
+        "id": "label-ixelles",
+        "kind": "label",
+        "row": 22,
+        "col": 35,
+        "size": 1.3,
+        "text": "IXELLES PONDS"
+      },
+      {
+        "id": "label-palace",
+        "kind": "label",
+        "row": 27,
+        "col": 19,
+        "size": 1.5,
+        "text": "ROYAL PALACE"
+      },
+      {
+        "id": "label-grand-place",
+        "kind": "label",
+        "row": 32,
+        "col": 9,
+        "size": 1.6,
+        "text": "GRAND-PLACE"
+      },
+      {
+        "id": "label-galeries",
+        "kind": "label",
+        "row": 32,
+        "col": 24,
+        "size": 1.1,
+        "text": "GALERIES ST-HUBERT"
+      },
+      {
+        "id": "label-mont-des-arts",
+        "kind": "label",
+        "row": 34,
+        "col": 31,
+        "size": 1.2,
+        "text": "MONT DES ARTS"
+      },
+      {
+        "id": "parking-tervuren",
+        "kind": "parking",
+        "row": 1,
+        "col": 30,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "manhole-hq",
+        "kind": "manhole",
+        "row": 38,
+        "col": 21
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 4,
+    "maxAttackers": 3,
+    "spawnIntervalSec": 2.6,
+    "nextWave": {
+      "when": "cleared",
+      "delaySec": 3
+    },
+    "entrances": [
+      {
+        "id": "tervuren-west",
+        "row": 0,
+        "col": 3
+      },
+      {
+        "id": "merode-gate",
+        "row": 0,
+        "col": 12
+      },
+      {
+        "id": "nerviens",
+        "row": 0,
+        "col": 26
+      },
+      {
+        "id": "heysel",
+        "row": 0,
+        "col": 34
+      }
+    ],
+    "encounters": [
+      {
+        "id": "esplanade-patrol",
+        "label": "CINQUANTENAIRE: Light patrols guard the park in front of the arch. Push through toward the museums.",
+        "enemies": [
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "initialCells": [
+          {
+            "row": 9,
+            "col": 13
+          },
+          {
+            "row": 9,
+            "col": 25
+          },
+          {
+            "row": 10,
+            "col": 2
+          },
+          {
+            "row": 12,
+            "col": 34
+          }
+        ],
+        "entrances": [
+          "tervuren-west",
+          "merode-gate",
+          "nerviens",
+          "heysel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 19
+          },
+          {
+            "row": 15,
+            "col": 9
+          },
+          {
+            "row": 22,
+            "col": 19
+          },
+          {
+            "row": 15,
+            "col": 30
+          },
+          {
+            "row": 9,
+            "col": 19
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "park-counterattack",
+        "label": "PARC DE BRUXELLES: A column strikes through the park toward the Grand-Place. Hold the palace gates.",
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "tervuren-west",
+          "merode-gate",
+          "nerviens"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 9
+          },
+          {
+            "row": 27,
+            "col": 9
+          },
+          {
+            "row": 32,
+            "col": 8
+          },
+          {
+            "row": 27,
+            "col": 30
+          },
+          {
+            "row": 20,
+            "col": 31
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "ixelles-flank",
+        "label": "IXELLES PONDS: Tanks circle the ponds to hit your flank. The arch garrison is thinning.",
+        "enemies": [
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "entrances": [
+          "nerviens",
+          "heysel"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 34
+          },
+          {
+            "row": 22,
+            "col": 37
+          },
+          {
+            "row": 27,
+            "col": 33
+          },
+          {
+            "row": 33,
+            "col": 30
+          },
+          {
+            "row": 27,
+            "col": 20
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "arch-guard",
+        "label": "ARCH GUARD: Heavy tanks and a howitzer defend the court. Breach the screen and destroy the HQ.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD"
+        ],
+        "entrances": [
+          "merode-gate",
+          "nerviens",
+          "tervuren-west"
+        ],
+        "patrolRoute": [
+          {
+            "row": 9,
+            "col": 17
+          },
+          {
+            "row": 9,
+            "col": 21
+          },
+          {
+            "row": 13,
+            "col": 26
+          },
+          {
+            "row": 13,
+            "col": 12
+          }
+        ],
+        "recoverySec": 0
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "...R........RR...........RR.......RVVVVV",
+    "...R........RR...........RR.......R.....",
+    "VVVRVVVVVVVVRR...........RRVVVVVV.R.....",
+    "VVVRVVVVVVVVRR...........RRVVVVVV.R.....",
+    "VVVRVVVVVVVVRR...........RRVVVVVV.R.....",
+    "VVVRVVVVVVVVRR...........RRVVVVVV.R.....",
+    "VVVRVVVVVVVVRR...........RRVVVVVV.R.....",
+    "VVVRVVVVVVVVRR...........RRVVVVVVVRVVVVV",
+    "VVVRVVVVVVVVV.............VVVVVVVVRVVVVV",
+    "VVVRWWWVVVVVV.............VVVVVVVVRVVVVV",
+    "VVVRWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVRVVVVV",
+    "VVVRWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVRVVVVV",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVVVVVVRVVVVVVVVVVVVVVVVVVVVRVVVVVVVVV",
+    "VVVVVVVVVRVVVVVVVVVVVVVVVVVVVVRVVVVVVVVV",
+    "VVVVVVVVVRVVVVVVVVVVVVVVVVVVVVRVVVVVVVVV",
+    "VVVVVVVVVRVVVVVVVVVWWVVVVVVVVVRVVWWWVVVV",
+    "VVVVVVVVVRVVVVVVVVWWWWVVVVVVVVRVVWWWWVVV",
+    "VVVVVVVVVRVVVVVVVVVWWVVVVVVVVVRVVVWWWVVV",
+    "VVVVVVVVVRVVVVVVVVVVVVVVVVVVVVRVVVVWVVVV",
+    "VVVVVVVVVRVVVVVVVVVVVVVVVVVVVVRVVVVVVVVV",
+    "VVVVVVVVVRVVVVVWWVVVVVVWWVVVVVRVVVVVVVVV",
+    "VVVVVVVVVRVVVVVWWVVVVVVWWVVVVVRVVVWWVVVV",
+    "VVVVVVVVVRVVVVVVVVVVVVVVVVVVVVRVVVWWWVVV",
+    "VVVVVVVVVRVVVVVVVVVVVVVVVVVVVVRVVVVWWVVV",
+    "VVVVVVVVVRVVVVVVVVVVVVVVVVVVVVRVVVVVVVVV",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    ".............R.......................R..",
+    ".............R.............VVVVVVVVVVR..",
+    ".............R.............VVVVVVVVVVR..",
+    ".............R.............VVVVVVVVVVR..",
+    ".............R.............VVVVWWVVVVR..",
+    ".............R.............VVVVWWVVVVR..",
+    ".............R.............VVVVVVVVVVR..",
+    ".............R............LVVVVVVVVVVR..",
+    "RRRRRR......RRRRR......RRRRRRRRRRRRRRRRR",
+    ".....................................R..",
+    ".....................................R..",
+    ".....................................R.."
+  ],
+  "objectLayout": [
+    "FF....................................FF",
+    "F....................................AA.",
+    ".....PPPPPP...B...BBB...B...PPPPP.......",
+    ".....PPPPPP...B...BEB...B...PPPPP.......",
+    ".....PPPPPP......CCCCC......PPPPP.......",
+    ".....PPPPPP.................PPPPP.......",
+    ".....PPPPPP.................PPPPPF......",
+    ".....PPPPPP.................PPPPP...AAA.",
+    "FFF.....FFF...............FF........AAA.",
+    "FFF.....FFF.................AAA..F.FFFF.",
+    ".........FFF..FFF..K..FFF...AAA....FFFF.",
+    "FFF......FFF.XFFF.....FFFX.FFFFFF..FFFF.",
+    "........................................",
+    "........................................",
+    "PPPPXAAAX.BBB..BBB.BB.BBB..BBB..PPPPXAAA",
+    "PPPP.AAA...FFFFF........FFFFF...PPPP.AAA",
+    "PPPP.Q.....FFFFF...K....FFFFF..FFPPPFAAA",
+    ".....FFF...FFFFF........FFFFF...........",
+    "PPPP.AAA................................",
+    "PPPP.AAA...FFF............FFF.........PP",
+    "PPPP..K....FFF...F....F...FFF.......F.PP",
+    ".....AAA...FFF............FFF...FF....PP",
+    "FFFF...........................AA.....FF",
+    "AAA.PPPP.......................AA.....FF",
+    "AAA.PPPP...FFFF..........FFFF.........FF",
+    "AAA.PPPP...FFFF.Q........FFFF...Q.......",
+    "FFF.......BBB..BB......BB..BBB..FFF..AAA",
+    "........................................",
+    "AAA..PPPPPPP..PPPPPBBPPPPPP.AA..........",
+    "AAA..PPPPPPP..PPPPP..PPPPPP.AA.FF.......",
+    ".PPP..........AA.AAA..PP....FF.FF.PPP...",
+    ".PPP..........AA.AAA..PP....FF....PPP...",
+    ".PPP..................BB................",
+    ".PPP..........AAA.....PP....FF........Q.",
+    ".PPP..........AAA.....PP....FF....FF....",
+    "........................DD........FF....",
+    "........................................",
+    "AA............AAA.CCCC..AAAA.PPPPP.AA...",
+    "AA...AAAAAAA..AAA.......AAAA.PPPPP.AA.AA",
+    "AA...AAAAAAA..AAA..HH...AAAA.......AA.AA"
+  ]
+}

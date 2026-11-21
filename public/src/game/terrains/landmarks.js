@@ -31,6 +31,13 @@ const LANDMARK_PACKS = Object.freeze({
   versailles: '../../../models/landmarks/versailles_landmarks.glb',
   brussels: '../../../models/landmarks/brussels_landmarks.glb',
   rome: '../../../models/landmarks/rome_landmarks.glb',
+  vienna: '../../../models/landmarks/vienna_landmarks.glb',
+  amsterdam: '../../../models/landmarks/amsterdam_landmarks.glb',
+  barcelona: '../../../models/landmarks/barcelona_landmarks.glb',
+  alps: '../../../models/landmarks/alps_landmarks.glb',
+  italy: '../../../models/landmarks/italy_landmarks.glb',
+  germany: '../../../models/landmarks/germany_landmarks.glb',
+  rotterdam: '../../../models/landmarks/rotterdam_landmarks.glb',
 });
 
 /** Cells `cols` of every row in a `cols` x `rows` footprint. */
@@ -67,6 +74,27 @@ const LANDMARK_SPECS = Object.freeze({
   ].flatMap((line, row) => [...line].flatMap((cell, col) => cell === '#' ? [[row, col]] : [])), height: 8.7, pack: 'rome' }),
   ARCH_OF_CONSTANTINE: Object.freeze({ cols: 7, rows: 2, blocked: COLUMNS([0, 2, 4, 6], 2), height: 7.4, pack: 'rome' }),
   FORUM_COLUMNS: Object.freeze({ cols: 3, rows: 1, blocked: ALL(3, 1), height: 5.1, pack: 'rome' }),
+  HOFBURG_PALACE: Object.freeze({ cols: 6, rows: 2, blocked: ALL(6, 2), height: 6.92, pack: 'vienna' }),
+  ST_STEPHENS_CATHEDRAL: Object.freeze({ cols: 4, rows: 2, blocked: ALL(4, 2), height: 12.0, pack: 'vienna' }),
+  AMSTERDAM_CANAL_HOUSES: Object.freeze({ cols: 4, rows: 2, blocked: ALL(4, 2), height: 5.94, pack: 'amsterdam' }),
+  WESTERKERK: Object.freeze({ cols: 3, rows: 2, blocked: ALL(3, 2), height: 11.36, pack: 'amsterdam' }),
+  SAGRADA_FAMILIA: Object.freeze({ cols: 4, rows: 4, blocked: ALL(4, 4), height: 13.0, pack: 'barcelona' }),
+  BARCELONA_CATHEDRAL: Object.freeze({ cols: 3, rows: 2, blocked: ALL(3, 2), height: 9.55, pack: 'barcelona' }),
+  MONTJUIC_CASTLE: Object.freeze({ cols: 5, rows: 3, blocked: ALL(5, 3), height: 6.16, pack: 'barcelona' }),
+  COLUMBUS_MONUMENT: Object.freeze({ cols: 2, rows: 2, blocked: ALL(2, 2), height: 11.02, pack: 'barcelona' }),
+  W_HOTEL_BARCELONA: Object.freeze({ cols: 3, rows: 2, blocked: ALL(3, 2), height: 11.25, pack: 'barcelona' }),
+  NEUSCHWANSTEIN: Object.freeze({ cols: 5, rows: 3, blocked: ALL(5, 3), height: 10.5, pack: 'alps' }),
+  HOHENSALZBURG: Object.freeze({ cols: 5, rows: 3, blocked: ALL(5, 3), height: 8.09, pack: 'alps' }),
+  MONTSERRAT_MONASTERY: Object.freeze({ cols: 5, rows: 2, blocked: ALL(5, 2), height: 6.5, pack: 'alps' }),
+  MILAN_DUOMO: Object.freeze({ cols: 4, rows: 3, blocked: ALL(4, 3), height: 9.5, pack: 'italy' }),
+  VERONA_ARENA: Object.freeze({ cols: 6, rows: 5, blocked: [
+    '.#..#.', '##..##', '#....#', '##..##', '.#..#.',
+  ].flatMap((line, row) => [...line].flatMap((cell, col) => cell === '#' ? [[row, col]] : [])), height: 6.0, pack: 'italy' }),
+  PANTHEON: Object.freeze({ cols: 4, rows: 4, blocked: ALL(4, 4), height: 7.5, pack: 'italy' }),
+  REICHSTAG_DOME: Object.freeze({ cols: 5, rows: 3, blocked: ALL(5, 3), height: 8.46, pack: 'germany' }),
+  FRAUENKIRCHE: Object.freeze({ cols: 3, rows: 3, blocked: ALL(3, 3), height: 10.5, pack: 'germany' }),
+  ZOLLVEREIN_TOWER: Object.freeze({ cols: 3, rows: 2, blocked: ALL(3, 2), height: 11.0, pack: 'germany' }),
+  ERASMUS_BRIDGE: Object.freeze({ cols: 7, rows: 2, blocked: [], height: 11.53, pack: 'rotterdam' }),
 });
 
 const packOf = (kind) => LANDMARK_SPECS[kind]?.pack || 'paris';
@@ -91,6 +119,25 @@ export const PLACEABLE_LANDMARKS = Object.freeze([
   'COLOSSEUM',
   'ARCH_OF_CONSTANTINE',
   'FORUM_COLUMNS',
+  'HOFBURG_PALACE',
+  'ST_STEPHENS_CATHEDRAL',
+  'AMSTERDAM_CANAL_HOUSES',
+  'WESTERKERK',
+  'SAGRADA_FAMILIA',
+  'BARCELONA_CATHEDRAL',
+  'MONTJUIC_CASTLE',
+  'COLUMBUS_MONUMENT',
+  'W_HOTEL_BARCELONA',
+  'NEUSCHWANSTEIN',
+  'HOHENSALZBURG',
+  'MONTSERRAT_MONASTERY',
+  'MILAN_DUOMO',
+  'VERONA_ARENA',
+  'PANTHEON',
+  'REICHSTAG_DOME',
+  'FRAUENKIRCHE',
+  'ZOLLVEREIN_TOWER',
+  'ERASMUS_BRIDGE',
 ]);
 
 /** Grid cells blocked by a `{ kind, row, col }` landmark entry. */
@@ -754,6 +801,136 @@ export class LandmarkModels {
         addBox(0.7, 1.0, 0.4, m.stone, 0, 0.98, -0.4);
         addCyl(0.08, 0.07, 0.32, 8, m.patina, 0, 1.48, -0.3);
         addCyl(0.07, 0.07, 0.1, 8, m.patina, 0, 1.85, -0.3);
+        break;
+      }
+      case 'HOFBURG_PALACE': {
+        addBox(11.6, 3.8, 3.4, m.whiteStone, 0, 1.9, 0);
+        addBox(11.4, 1.3, 3.1, m.slate, 0, 4.45, 0);
+        addBox(3.4, 4.4, 3.8, m.whiteStone, 0, 2.2, 0);
+        addCyl(0.9, 1.1, 1.4, 10, m.patina, 0, 5.6, 0);
+        break;
+      }
+      case 'ST_STEPHENS_CATHEDRAL': {
+        addBox(7.4, 4.0, 3.4, m.stone, 0, 2.0, 0);
+        addBox(7.0, 2.2, 3.0, m.patina, 0, 5.1, 0);
+        addBox(1.5, 6.2, 1.5, m.stone, -1.6, 3.1, 1.1);
+        addCyl(0.08, 0.7, 5.6, 8, m.stone, -1.6, 9.0, 1.1);
+        addBox(1.3, 4.6, 1.3, m.stone, -1.6, 2.3, -1.1);
+        addCyl(0.55, 0.7, 1.3, 8, m.patina, -1.6, 5.2, -1.1);
+        break;
+      }
+      case 'AMSTERDAM_CANAL_HOUSES': {
+        const colors = [m.darkStone, m.stone, m.slate, m.darkStone, m.whiteStone];
+        for (let i = 0; i < 5; i++) {
+          const x = -3.1 + i * 1.55;
+          const h = 3.6 + (i % 3) * 0.5;
+          addBox(1.42, h, 3.4, colors[i], x, h / 2, 0);
+          addBox(1.2, 0.9, 2.8, m.stone, x, h + 0.45, 0);
+        }
+        break;
+      }
+      case 'WESTERKERK': {
+        addBox(5.6, 3.8, 3.4, m.darkStone, 0, 1.9, 0);
+        addBox(5.2, 1.6, 2.8, m.slate, 0, 4.6, 0);
+        addBox(1.6, 6.4, 1.6, m.darkStone, -1.9, 3.2, 0);
+        addBox(1.3, 2.0, 1.3, m.whiteStone, -1.9, 7.4, 0);
+        addCyl(0.08, 0.65, 2.6, 8, m.gold, -1.9, 9.7, 0);
+        break;
+      }
+      case 'SAGRADA_FAMILIA': {
+        addBox(7.2, 3.6, 7.2, m.stone, 0, 1.8, 0);
+        addBox(3.4, 6.0, 3.4, m.sandstone, 0, 3.0, 0);
+        addCyl(0.25, 0.85, 6.8, 8, m.sandstone, 0, 9.4, 0);
+        for (const sx of [-1.4, 1.4]) for (const sz of [-2.4, 2.4]) {
+          addCyl(0.14, 0.52, 7.6, 8, m.sandstone, sx, 4.8, sz);
+        }
+        break;
+      }
+      case 'BARCELONA_CATHEDRAL': {
+        addBox(5.6, 4.2, 3.4, m.stone, 0, 2.1, 0);
+        addBox(5.2, 1.2, 3.0, m.slate, 0, 4.8, 0);
+        for (const sx of [-1.6, 1.6]) addCyl(0.45, 0.55, 6.4, 8, m.stone, sx, 3.2, 1.2);
+        addCyl(0.08, 0.6, 4.2, 8, m.sandstone, 0, 7.2, 0);
+        break;
+      }
+      case 'MONTJUIC_CASTLE': {
+        addBox(9.4, 2.6, 5.4, m.stone, 0, 1.3, 0);
+        addBox(5.0, 3.4, 3.0, m.sandstone, 0, 1.7, 0);
+        addBox(1.8, 5.6, 1.8, m.stone, -3.2, 2.8, -1.2);
+        break;
+      }
+      case 'COLUMBUS_MONUMENT': {
+        addBox(3.4, 1.8, 3.4, m.stone, 0, 0.9, 0);
+        addCyl(0.38, 0.52, 7.2, 12, m.patina, 0, 5.4, 0);
+        addCyl(0.22, 0.25, 1.4, 8, m.gold, 0, 9.7, 0);
+        break;
+      }
+      case 'W_HOTEL_BARCELONA': {
+        addBox(5.6, 1.4, 3.6, m.stone, 0, 0.7, 0);
+        addBox(3.8, 9.4, 2.2, m.glass, -0.4, 5.4, 0);
+        break;
+      }
+      case 'NEUSCHWANSTEIN': {
+        addBox(9.4, 1.4, 5.4, m.darkStone, 0, 0.7, 0);
+        addBox(7.2, 4.0, 3.6, m.whiteStone, 0, 3.4, 0);
+        addBox(7.0, 1.6, 3.2, m.slate, 0, 6.2, 0);
+        addCyl(0.7, 0.85, 8.2, 10, m.whiteStone, -2.6, 4.8, 0.8);
+        addCyl(0.08, 0.9, 2.0, 10, m.slate, -2.6, 9.8, 0.8);
+        break;
+      }
+      case 'HOHENSALZBURG': {
+        addBox(9.4, 2.8, 5.4, m.whiteStone, 0, 1.4, 0);
+        addBox(5.4, 4.2, 3.4, m.whiteStone, 0, 3.5, 0);
+        addBox(5.2, 1.8, 3.0, m.red, 0, 6.5, 0);
+        break;
+      }
+      case 'MONTSERRAT_MONASTERY': {
+        addBox(9.4, 1.6, 3.6, m.stone, 0, 0.8, 0);
+        addBox(8.6, 3.0, 3.0, m.sandstone, 0, 2.9, 0);
+        addBox(3.0, 4.2, 2.8, m.sandstone, 0, 3.6, 0);
+        break;
+      }
+      case 'MILAN_DUOMO': {
+        addBox(7.4, 4.2, 5.4, m.whiteStone, 0, 2.1, 0);
+        addBox(5.0, 1.8, 3.6, m.whiteStone, 0, 5.1, 0);
+        addCyl(0.12, 0.6, 3.2, 8, m.gold, 0, 7.6, 0);
+        break;
+      }
+      case 'VERONA_ARENA': {
+        for (let i = 0; i < 16; i++) {
+          const a = (i / 16) * Math.PI * 2;
+          if (Math.abs(Math.cos(a)) < 0.25) continue;
+          addBox(1.8, 4.2, 1.2, m.sandstone, Math.cos(a) * 4.8, 2.1, Math.sin(a) * 3.8);
+        }
+        break;
+      }
+      case 'PANTHEON': {
+        addCyl(3.6, 3.6, 4.6, 20, m.stone, 0, 2.3, 0.4);
+        addBox(5.2, 4.2, 2.4, m.whiteStone, 0, 2.1, -2.5);
+        addCyl(0.9, 3.5, 2.6, 20, m.slate, 0, 5.8, 0.4);
+        break;
+      }
+      case 'REICHSTAG_DOME': {
+        addBox(9.4, 4.2, 5.4, m.sandstone, 0, 2.1, 0);
+        addCyl(1.9, 2.1, 3.4, 16, m.glass, 0, 5.9, 0);
+        break;
+      }
+      case 'FRAUENKIRCHE': {
+        addBox(5.4, 4.2, 5.4, m.sandstone, 0, 2.1, 0);
+        addCyl(1.4, 2.2, 3.6, 16, m.sandstone, 0, 6.0, 0);
+        addCyl(0.3, 0.7, 2.2, 8, m.patina, 0, 8.9, 0);
+        break;
+      }
+      case 'ZOLLVEREIN_TOWER': {
+        addBox(5.4, 3.6, 3.4, m.red, 0, 1.8, 0);
+        addBox(2.2, 6.4, 1.6, m.darkStone, 0, 6.8, 0);
+        addCyl(1.1, 1.1, 0.3, 12, m.slate, 0, 9.8, 0);
+        break;
+      }
+      case 'ERASMUS_BRIDGE': {
+        addBox(13.8, 0.22, 3.8, m.slate, 0, 0.11, 0);
+        addBox(1.2, 10.6, 0.8, m.whiteStone, 3.5, 5.3, 1.7);
+        addBox(1.2, 10.6, 0.8, m.whiteStone, 3.5, 5.3, -1.7);
         break;
       }
       case 'MINE_SIGN': {

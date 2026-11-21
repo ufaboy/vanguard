@@ -1,0 +1,620 @@
+{
+  "id": 17,
+  "mapId": "campaign-17",
+  "code": "SECTOR 04 // 40×40",
+  "name": "Berlin: Reichstag & Spree",
+  "subtitle": "SECTOR 17 // BERLIN: STORM THE GOVERNMENT QUARTER",
+  "objective": "Cross the Spree and destroy the Consortium command post in the Reichstag",
+  "gameMode": "stronghold_assault",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 20
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 4,
+      "col": 20
+    },
+    "name": "Consortium Reichstag Command",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 820
+  },
+  "environment": {
+    "theme": "capital",
+    "tint": "#eadbc0",
+    "fogColor": "#1d2825",
+    "groundColor": "#676b5e"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Assault the fortified Consortium command post inside the Reichstag across the Spree river bend. Three bridges and two shallow sand fords cross the Spree toward the Platz der Republik lawn, the Victory Column in the Tiergarten woods, and the Friedrichstrasse ministry courtyards.",
+    "breaches": [
+      {
+        "name": "Reichstag South Gate",
+        "cells": [
+          {
+            "row": 8,
+            "col": 19
+          },
+          {
+            "row": 8,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 10,
+          "col": 19
+        },
+        "end": {
+          "row": 6,
+          "col": 19
+        },
+        "purpose": "Blast the brick barricade in the southern Reichstag curtain wall to push directly into the command courtyard."
+      },
+      {
+        "name": "Reichstag West Postern",
+        "cells": [
+          {
+            "row": 5,
+            "col": 14
+          },
+          {
+            "row": 6,
+            "col": 14
+          }
+        ],
+        "start": {
+          "row": 5,
+          "col": 12
+        },
+        "end": {
+          "row": 5,
+          "col": 17
+        },
+        "purpose": "Breach the western Chancellery wall to flank the Reichstag courtyard from the Moltke Bridge approach."
+      },
+      {
+        "name": "Reichstag East Postern",
+        "cells": [
+          {
+            "row": 5,
+            "col": 26
+          },
+          {
+            "row": 6,
+            "col": 26
+          }
+        ],
+        "start": {
+          "row": 5,
+          "col": 28
+        },
+        "end": {
+          "row": 5,
+          "col": 23
+        },
+        "purpose": "Breach the eastern Paul-Loebe wall to strike the command post from the Marschall Bridge sector."
+      },
+      {
+        "name": "Ministry Courtyard Wall",
+        "cells": [
+          {
+            "row": 25,
+            "col": 30
+          },
+          {
+            "row": 26,
+            "col": 30
+          }
+        ],
+        "start": {
+          "row": 25,
+          "col": 28
+        },
+        "end": {
+          "row": 25,
+          "col": 31
+        },
+        "purpose": "Open the brick courtyard wall between the Platz der Republik and Friedrichstrasse to bypass the main avenue."
+      }
+    ],
+    "reference": {
+      "place": "Reichstag, Spreebogen, Platz der Republik & Grosser Stern, Berlin (Germany)",
+      "kind": "real",
+      "kept": [
+        "Reichstag building and fortified courtyard in the northern government quarter",
+        "Spree river bend flowing east-west across the sector with Moltke, Kronprinzen and Marschall bridges",
+        "Platz der Republik lawn south of the Reichstag with tree borders and battle scars",
+        "Victory Column on the Grosser Stern roundabout in the Tiergarten woods",
+        "Friedrichstrasse ministry and embassy blocks on the eastern flank"
+      ],
+      "simplified": [
+        "Reichstag building and dome represented with 2-storey P wings and concrete C fortifications around the E command post",
+        "Grosser Stern and Victory Column shifted closer to the south-west approach",
+        "Two shallow sand fords added across the Spree so stock chassis can cross without waiting for bridges"
+      ]
+    }
+  },
+  "landmarks3d": [
+    {
+      "kind": "VICTORY_COLUMN",
+      "row": 24,
+      "col": 8
+    },
+    {
+      "kind": "REICHSTAG_DOME",
+      "row": 32,
+      "col": 28
+    }
+  ],
+  "decoration": {
+    "version": 1,
+    "seed": 171945,
+    "theme": "capital",
+    "zones": [
+      {
+        "id": "regierungsviertel",
+        "bounds": [
+          0,
+          0,
+          12,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "reichstag-courtyard",
+        "bounds": [
+          3,
+          15,
+          7,
+          25
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "tracks"
+        ]
+      },
+      {
+        "id": "platz-der-republik",
+        "bounds": [
+          18,
+          12,
+          27,
+          28
+        ],
+        "surface": "dirt",
+        "density": 0.22,
+        "details": [
+          "leaves",
+          "cracks"
+        ]
+      },
+      {
+        "id": "grosser-stern",
+        "bounds": [
+          22,
+          6,
+          27,
+          11
+        ],
+        "surface": "pavers",
+        "density": 0.14,
+        "details": [
+          "leaves",
+          "cracks"
+        ]
+      },
+      {
+        "id": "friedrichstrasse-quarter",
+        "bounds": [
+          19,
+          29,
+          34,
+          39
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "hq-plaza",
+        "bounds": [
+          36,
+          15,
+          39,
+          24
+        ],
+        "surface": "concrete",
+        "density": 0.15,
+        "details": [
+          "cracks",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "spree-promenade-west",
+        "points": [
+          [
+            18,
+            2
+          ],
+          [
+            18,
+            11
+          ]
+        ],
+        "width": 1,
+        "surface": "gravel",
+        "marking": "none"
+      },
+      {
+        "id": "republic-lawn-walk",
+        "points": [
+          [
+            23,
+            14
+          ],
+          [
+            23,
+            18
+          ]
+        ],
+        "width": 1,
+        "surface": "pavers",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-reichstag",
+        "kind": "label",
+        "row": 9,
+        "col": 20,
+        "size": 1.6,
+        "text": "REICHSTAG"
+      },
+      {
+        "id": "label-spree",
+        "kind": "label",
+        "row": 16,
+        "col": 20,
+        "size": 1.5,
+        "text": "SPREE RIVER"
+      },
+      {
+        "id": "label-platz-republik",
+        "kind": "label",
+        "row": 23,
+        "col": 20,
+        "size": 1.6,
+        "text": "PLATZ DER REPUBLIK"
+      },
+      {
+        "id": "label-victory-column",
+        "kind": "label",
+        "row": 27,
+        "col": 8,
+        "size": 1.4,
+        "text": "VICTORY COLUMN"
+      },
+      {
+        "id": "label-friedrichstrasse",
+        "kind": "label",
+        "row": 29,
+        "col": 34,
+        "size": 1.5,
+        "text": "FRIEDRICHSTRASSE"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear-lane",
+        "bounds": [
+          36,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "west-chancellery",
+        "row": 1,
+        "col": 5
+      },
+      {
+        "id": "reichstag-north",
+        "row": 1,
+        "col": 20
+      },
+      {
+        "id": "east-spreebogen",
+        "row": 1,
+        "col": 34
+      }
+    ],
+    "encounters": [
+      {
+        "id": "spree-recon",
+        "label": "SPREE CROSSINGS: Consortium recon units and amphibious hovercraft are probing the river bridges.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "HOVER",
+          "SCOUT",
+          "STANDARD",
+          "STEALTH",
+          "HOVER",
+          "STANDARD"
+        ],
+        "initialCells": [
+          {
+            "row": 1,
+            "col": 5
+          },
+          {
+            "row": 1,
+            "col": 20
+          },
+          {
+            "row": 1,
+            "col": 34
+          },
+          {
+            "row": 9,
+            "col": 6
+          }
+        ],
+        "entrances": [
+          "west-chancellery",
+          "reichstag-north",
+          "east-spreebogen"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 20
+          },
+          {
+            "row": 15,
+            "col": 19
+          },
+          {
+            "row": 21,
+            "col": 20
+          },
+          {
+            "row": 28,
+            "col": 20
+          },
+          {
+            "row": 35,
+            "col": 20
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "tiergarten-flank",
+        "label": "FLANK ASSAULT: Flame tanks, sappers and howitzers are pushing through the Tiergarten and Friedrichstrasse.",
+        "enemies": [
+          "STANDARD",
+          "FLAMETHROWER",
+          "SAPPER",
+          "HOVER",
+          "HOWITZER",
+          "STEALTH",
+          "STANDARD",
+          "ARMOR"
+        ],
+        "entrances": [
+          "west-chancellery",
+          "east-spreebogen"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 6
+          },
+          {
+            "row": 21,
+            "col": 6
+          },
+          {
+            "row": 28,
+            "col": 12
+          },
+          {
+            "row": 28,
+            "col": 33
+          },
+          {
+            "row": 35,
+            "col": 26
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "reichstag-garrison",
+        "label": "REICHSTAG GARRISON: Heavy armour and missile strikers are defending the Consortium command post. Breach the walls!",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "HOWITZER",
+          "ENGINEER",
+          "STRIKER",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "reichstag-north",
+          "west-chancellery",
+          "east-spreebogen"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 34
+          },
+          {
+            "row": 21,
+            "col": 34
+          },
+          {
+            "row": 28,
+            "col": 34
+          },
+          {
+            "row": 35,
+            "col": 20
+          }
+        ],
+        "recoverySec": 8
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "STANDARD",
+    "STEALTH",
+    "HOVER",
+    "STANDARD",
+    "STANDARD",
+    "FLAMETHROWER",
+    "SAPPER",
+    "HOVER",
+    "HOWITZER",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "ARMOR",
+    "STANDARD",
+    "HOWITZER",
+    "ENGINEER",
+    "STRIKER",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVVVRRVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVV....RR....VVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVV..........VVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVV..........VVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVV..........VVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVV..........VVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVV..........VVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVV....RR....VVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVVV",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVVRRVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVSSWWWWWWWWWWWWSSVVVVVVRRVVVVV",
+    "SSSSSRRSSSSSSWWWWWWWWWWWWSSSSSSSSRRSSSSS",
+    "WWWWWWWWWWWSSWWWWWWWWWWWWSSWWWWWWWWWWWWW",
+    "WWWWWWWWWWWSSSSSSSSSSSSSSSSWWWWWWWWWWWWW",
+    "WWWWWWWWWWWSSVVVVVVRRVVVVSSWWWWWWWWWWWWW",
+    "SSSSSSSSSSSSSVVVVVVRRVVVVVVSSSSSSSSSSSSS",
+    "VVVVVRRVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVVV",
+    "VVVVVRRVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVVV",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVVRRRRRRVVVVVVVVRRVVVVVV.............",
+    "VVVVVRRRRRRVVVVVVVVRRVVVVVV.............",
+    "VVVVVRR..RRVVVVVVVVRRVVVVVV.............",
+    "VVVVVRR..RRVVVVVVVVRRVVVVVV.............",
+    "VVVVVRRRRRRVVVVVVVVRRVVVVVV.............",
+    "VVVVVRRRRRRVVVVVVVVRRVVVVVV.............",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVVRRVVVVVVVV....RR....VV......RR.....",
+    "VVVVVRRVVVVVVVV....RR....VV......RR.....",
+    "VVVVVRRVVVVVVVV....RR....VV......RR.....",
+    "VVVVVRRVVVVVVVV....RR....VV......RR.....",
+    "VVVVVRRVVVVVVVV....RR....VV......RR.....",
+    "VVVVVRRVVVVVVVV....RR....VV......RR.....",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "......VV......VV........VV......VV......",
+    "......VV......VV........VV......VV......",
+    "......VVVVVVVVVV........VVVVVVVVVV......"
+  ],
+  "objectLayout": [
+    "FF.........FFFFF........FFFFF.........FF",
+    "F..Q.......F..FF........FF..F.......Q..F",
+    "AAA....AAA....CCCC.....CCCC...AAA....AAA",
+    "AAA....AAA....CPP..CCC..PPC...AAA....AAA",
+    "FFF....FFF....CPP...E...PPC...FFF....FFF",
+    "F.............B...........B............F",
+    "F..PP....PP...B...........B..PP....PP..F",
+    "F..PP....PP...CPP.......PPC..PP....PP..F",
+    "F.............CCCCCBBCCCCCC............F",
+    "FF.X....X..FF.............FF..X....X..FF",
+    "........................................",
+    "........................................",
+    "FFF....FFFF....X........X....FFFF..D..FF",
+    "...................==...................",
+    "...................==...................",
+    ".....==............==............==.....",
+    ".....==..........................==.....",
+    ".....==..........................==.....",
+    "........................................",
+    "FFF....FFFFF..FFF......FFF..FFFFF....FFF",
+    "FF.A...FF.FF....K......K....FF.FF...A.FF",
+    "........................................",
+    "FFF.........FFFFF......FFFFF..PPPP..AAAA",
+    "FFF.........FF.FF..K...FF.FF..PPPP..AAAA",
+    "FF...........F....F..F....F...B.....AAAA",
+    "FF...........F............F...B.Q...PPPP",
+    "FFF.........FF.K........K.FF..B.....PPPP",
+    "FFFD........FFFF........FFFF..PPPP..PPPP",
+    "........................................",
+    "FF.....FFFFF........K.......AAAA....PPPP",
+    "FF.AA..FF.FF...AA......AA...AAQA....PPPP",
+    "FF.AA..FF.FF...AA......AA...AAAA....PP.P",
+    "FF.....FFFFF............................",
+    "FF.Q...FF.FF...PP......PP...........AAAA",
+    "FF.....FF.FF...PP......PP...........AAAA",
+    "........................................",
+    "........................................",
+    "PPPPPPFFAAAAAAFF..CCCC..FFAAAAAAFFPPPPPP",
+    "PPPPPPFFAAAAAAFF........FFAAAAAAFFPPPPPP",
+    "PPPPPPFFFFFFFFFF...HH...FFFFFFFF..PPPPPP"
+  ]
+}

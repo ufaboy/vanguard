@@ -1,0 +1,538 @@
+{
+  "mapId": "campaign-08",
+  "id": 8,
+  "name": "Hohensalzburg Fortress",
+  "subtitle": "SECTOR 08 // SALZBURG OLD TOWN",
+  "objective": "Hold the Old Town HQ against counter-attacks from the fortress hill",
+  "gameMode": "base_defense",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 520
+  },
+  "environment": {
+    "theme": "urban",
+    "tint": "#d6d0c4",
+    "fogColor": "#5a6368",
+    "groundColor": "#75776e"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Defend Salzburg Old Town across three Salzach crossings—West Bridge, Staatsbrucke, and the East Ford—while using Old Town alleyways and breachable courtyard walls to flank fortress counterattacks.",
+    "reference": {
+      "place": "Hohensalzburg Fortress, Salzach River, and Salzburg Old Town (Altstadt), Austria",
+      "kind": "real",
+      "kept": [
+        "Festungsberg fortress ridge with concrete curtain walls and keep overlooking the town from the north",
+        "Salzach River cutting across the valley with stone bridges and an eastern shallow ford",
+        "Compact Old Town (Altstadt) residential blocks, Residenzplatz square, and Getreidegasse cross-streets south of the river",
+        "Hillside conifer groves flanking the fortress approaches"
+      ],
+      "simplified": [
+        "Oriented with the fortress ridge in the north and Old Town in the south so enemies descend toward the southern HQ",
+        "Compressed the baroque Old Town into distinct playable blocks with alleyways and breachable garden walls",
+        "Generic clock/watchtower and urban blocks represent Hohensalzburg and Salzburg cathedral quarter without custom 3D monuments",
+        "Riverbank hedgehogs, craters, and supply caches are war-layer additions"
+      ]
+    },
+    "breaches": [
+      {
+        "name": "West Quay Brick Wall",
+        "cells": [
+          {
+            "row": 19,
+            "col": 12
+          },
+          {
+            "row": 20,
+            "col": 12
+          },
+          {
+            "row": 21,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 11
+        },
+        "end": {
+          "row": 20,
+          "col": 13
+        },
+        "purpose": "Break through the West Quay courtyard wall to flank west-bridge attackers without looping around Quay Avenue."
+      },
+      {
+        "name": "Cathedral Alley Wall",
+        "cells": [
+          {
+            "row": 24,
+            "col": 13
+          },
+          {
+            "row": 25,
+            "col": 13
+          },
+          {
+            "row": 26,
+            "col": 13
+          }
+        ],
+        "start": {
+          "row": 25,
+          "col": 12
+        },
+        "end": {
+          "row": 25,
+          "col": 14
+        },
+        "purpose": "Open a direct mid-town cut between West Old Town and Central Square."
+      },
+      {
+        "name": "Nonntal Courtyard Wall",
+        "cells": [
+          {
+            "row": 24,
+            "col": 27
+          },
+          {
+            "row": 25,
+            "col": 27
+          },
+          {
+            "row": 26,
+            "col": 27
+          }
+        ],
+        "start": {
+          "row": 25,
+          "col": 26
+        },
+        "end": {
+          "row": 25,
+          "col": 28
+        },
+        "purpose": "Shortcut between Central Square and East Old Town to intercept East Ford pushes."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 8082026,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "fortress-ridge",
+        "bounds": [
+          0,
+          0,
+          10,
+          39
+        ],
+        "surface": "gravel",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "old-town-paving",
+        "bounds": [
+          16,
+          1,
+          34,
+          38
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "leaves"
+        ]
+      },
+      {
+        "id": "hq-apron",
+        "bounds": [
+          35,
+          14,
+          39,
+          25
+        ],
+        "surface": "asphalt",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "patches"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "fortress-approach",
+        "points": [
+          [
+            1,
+            20
+          ],
+          [
+            10,
+            20
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-fortress",
+        "kind": "label",
+        "row": 5,
+        "col": 17,
+        "text": "HOHENSALZBURG"
+      },
+      {
+        "id": "label-river",
+        "kind": "label",
+        "row": 11,
+        "col": 14,
+        "text": "SALZACH"
+      },
+      {
+        "id": "label-oldtown",
+        "kind": "label",
+        "row": 22,
+        "col": 17,
+        "text": "ALTSTADT"
+      },
+      {
+        "id": "crosswalk-west",
+        "kind": "crosswalk",
+        "row": 18,
+        "col": 7,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "crosswalk-main",
+        "kind": "crosswalk",
+        "row": 23,
+        "col": 19,
+        "size": 2,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [
+    {
+      "kind": "HOHENSALZBURG",
+      "row": 3,
+      "col": 16
+    }
+  ],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "west-gate",
+        "row": 2,
+        "col": 7
+      },
+      {
+        "id": "fortress-courtyard",
+        "row": 2,
+        "col": 20
+      },
+      {
+        "id": "east-slope",
+        "row": 2,
+        "col": 33
+      }
+    ],
+    "encounters": [
+      {
+        "id": "fortress-probe",
+        "label": "FORTRESS PROBE: Enemy scouts and vanguard descending from Hohensalzburg ridge.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-gate",
+          "east-slope"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 7
+          },
+          {
+            "row": 13,
+            "col": 7
+          },
+          {
+            "row": 21,
+            "col": 7
+          },
+          {
+            "row": 28,
+            "col": 14
+          },
+          {
+            "row": 35,
+            "col": 19
+          }
+        ],
+        "recoverySec": 0,
+        "initialCells": [
+          {
+            "row": 7,
+            "col": 7
+          },
+          {
+            "row": 8,
+            "col": 20
+          },
+          {
+            "row": 7,
+            "col": 33
+          },
+          {
+            "row": 10,
+            "col": 20
+          }
+        ]
+      },
+      {
+        "id": "salzach-push",
+        "label": "SALZACH ASSAULT: Hover armor and artillery pushing across the bridges and river.",
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "HOWITZER",
+          "ARMOR",
+          "STANDARD",
+          "HOVER",
+          "FLAMETHROWER",
+          "SCOUT",
+          "ENGINEER"
+        ],
+        "entrances": [
+          "fortress-courtyard",
+          "east-slope",
+          "west-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 20
+          },
+          {
+            "row": 13,
+            "col": 20
+          },
+          {
+            "row": 23,
+            "col": 20
+          },
+          {
+            "row": 32,
+            "col": 20
+          },
+          {
+            "row": 35,
+            "col": 19
+          }
+        ],
+        "recoverySec": 9
+      },
+      {
+        "id": "citadel-counterattack",
+        "label": "CITADEL COUNTERATTACK: Heavy armor and stealth flankers converging on Old Town HQ.",
+        "enemies": [
+          "ARMOR",
+          "HOWITZER",
+          "STEALTH",
+          "STANDARD",
+          "STRIKER",
+          "HOVER",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west-gate",
+          "fortress-courtyard",
+          "east-slope"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 33
+          },
+          {
+            "row": 13,
+            "col": 33
+          },
+          {
+            "row": 23,
+            "col": 33
+          },
+          {
+            "row": 32,
+            "col": 27
+          },
+          {
+            "row": 35,
+            "col": 19
+          }
+        ],
+        "recoverySec": 10
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "STANDARD",
+    "HOVER",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "HOVER",
+    "FLAMETHROWER",
+    "SCOUT",
+    "ENGINEER",
+    "ARMOR",
+    "HOWITZER",
+    "STEALTH",
+    "STANDARD",
+    "STRIKER",
+    "HOVER",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVV...^RR...VVVV...RR^...VVVV...^RV...VV",
+    "VV..^^^RR^^..VVV..^RR^V..VVVV..^^RR^..VV",
+    "V..^^^^RR^^^..V..^^RR^V^..VV..^^^RR^^..V",
+    "V..^^.^RR.^^.....^^RR^^^......^^^RR^^..V",
+    "V..^..^R...^..^..^.RR^.^..^...^.^RR.^..V",
+    "V.....^R.....^^^...RR^...^^^....^RR....V",
+    "VV....RRRRRRRRRRRRRRRRRRRRRRRRRRRRR...VV",
+    "VV..^..RR....^^....RR.....^^.....VV.^.VV",
+    "V...^..RR..........RR............RV.^..V",
+    "V..VV..RR.VV....VV.RR..VV....VV..RR.VV.V",
+    "VV.VV..RR.VVV..VVV.RR..VVV..VVV..RR.VVVV",
+    "SS.SS.SRR.SSS..SSS.RRS.SSS..SSS.SRR.SSSS",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW^RR^WWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW^RR^WWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW^RR^WWWW",
+    "SS.SS.SRR.SSS..SSS.RRS.SSS..SSS.SRR.SSSS",
+    "VV.VV..RR.VVV..VVV.RR..VVV..VVV..RR.VVVV",
+    "V......RR........................RR....V",
+    "V.....RRRRRRRRRRRRRRRRRRRRRRRRRRRRR....V",
+    "V......RR..........R.............RR....V",
+    "V......RR....V.....R.......V.....RR....V",
+    "V......RR....V.....R.......V.....RR....V",
+    "V......RV..........RR............RR....V",
+    "V.....RRRRRRRRRRRRRRRRRRRRRRRRRRRRR....V",
+    "V......RR..........RR............RR....V",
+    "V......RR...VV.....RR.....VV.....RR....V",
+    "V......RR...VV.....RR.....VV.....RR....V",
+    "V......RR..........RR............RR....V",
+    "V.....RRRRRRRRRRRRRRRRRRRRRRRRRRRRR....V",
+    "V......RR........................RR....V",
+    "V......RR........................RR....V",
+    "V......RR..........RR............RR....V",
+    "V.....RRRRRRRRRRRRRRRRRRRRRRRRRRRRR....V",
+    "VV.....VR..........RR............RR...VV",
+    "VV.....VR..........RR............RR...VV",
+    "VV.................RRR................VV",
+    "VV....................................VV",
+    "VV....................................VV",
+    "VV....................................VV",
+    "VV....................................VV"
+  ],
+  "objectLayout": [
+    "FF..........FF........FF...........F..FF",
+    "F..AA......F..........F......AA........F",
+    "F..AA.................F......AA........F",
+    "..CCCC...CCC..CC......CCCC..CCCC...CCC..",
+    "F.C..P.....C..C.......C..P..P..C.....C.F",
+    "F....P........C..........P..P........C.F",
+    "........................................",
+    ".FF..........Q..CC....Q.....B...........",
+    ".F..AA...BB..B.........BB...AA.......D..",
+    "....AA..........FF..........AA.......D..",
+    ".FF......FF.....FF.....FF......FF.......",
+    "....X........X...............X..........",
+    ".......==..........==...................",
+    ".......==..........==...................",
+    ".......==..........==...................",
+    "....X........X...............X..........",
+    ".FF...B..FF.....FF.....FF..B...FF.......",
+    "..AA.........AA...............AA....AA..",
+    "........................................",
+    ".Q.P..B..AA.BP.........AA..B..PP....AA..",
+    ".D.P..B..AA.B...T......AA..B..PP....AA..",
+    "...P..B.....BP.............B..PP........",
+    ".FF......FF.....FF.....FFF.....FF...Q...",
+    "........................................",
+    "..AA..P..AA..B..PP.....AA..B..AA....DD..",
+    "..AA..P..AA..B..PP.....AA..B..AA........",
+    "..FF.....FF..B..B......FF..B..FF....FF..",
+    "....K.U....AAA.......AA....A.K..........",
+    "........................................",
+    ".AA..PP..B...AA.FF......B..PP..AA...FF..",
+    ".AA..PP..B...AA.FF......B..PP..AA...F...",
+    ".FF......K......UU......K......FF.......",
+    "........................................",
+    "..AA..F...AA..........AA..FF..AA....Q...",
+    "..AA..F...AA...BBBB...AA..FF..AA........",
+    "........................................",
+    ".FF...AA....FF......FF....AA...FF...FF..",
+    ".F....AA..........CCCC..........AA...F..",
+    "....B........F..........F........B......",
+    "...................HH..................."
+  ]
+}

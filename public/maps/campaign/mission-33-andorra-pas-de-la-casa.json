@@ -1,0 +1,448 @@
+{
+  "mapId": "campaign-33",
+  "id": 33,
+  "name": "Andorra: Pas de la Casa",
+  "subtitle": "SECTOR 33 // PYRENEAN SKI RESORT",
+  "objective": "Hold the Pas de la Casa resort HQ against snowbound assault columns",
+  "gameMode": "base_defense",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 1350
+  },
+  "environment": {
+    "theme": "alpine",
+    "tint": "#c5dcf2",
+    "fogColor": "#435366",
+    "groundColor": "#7d8891"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Defend the southern Pas de la Casa resort HQ against multi-column armored assaults descending the CG-2 Pyrenean pass road, the Grandvalira ski pistes, and the eastern conifer ridge. Use ski-lift pylons, resort chalets, and breachable snow-shed walls to intercept sappers and flank long-range artillery.",
+    "breaches": [
+      {
+        "name": "Snow-shed gallery cut",
+        "cells": [
+          { "row": 13, "col": 15 },
+          { "row": 13, "col": 16 }
+        ],
+        "start": { "row": 13, "col": 13 },
+        "end": { "row": 13, "col": 18 },
+        "purpose": "Breach the snow-shed wall between the west ski lift corridor and the central CG-2 pass road."
+      },
+      {
+        "name": "Gondola plaza retaining wall",
+        "cells": [
+          { "row": 20, "col": 24 },
+          { "row": 20, "col": 25 }
+        ],
+        "start": { "row": 20, "col": 22 },
+        "end": { "row": 20, "col": 27 },
+        "purpose": "Punch through the plaza retaining wall to flank directly between the central resort road and the eastern hotel quarter."
+      },
+      {
+        "name": "West chalet service wall",
+        "cells": [
+          { "row": 26, "col": 10 },
+          { "row": 26, "col": 11 }
+        ],
+        "start": { "row": 26, "col": 8 },
+        "end": { "row": 26, "col": 13 },
+        "purpose": "Open a shortcut through the western resort chalets to intercept columns descending the west ski piste."
+      },
+      {
+        "name": "East ridge yard wall",
+        "cells": [
+          { "row": 27, "col": 29 },
+          { "row": 27, "col": 30 }
+        ],
+        "start": { "row": 27, "col": 27 },
+        "end": { "row": 27, "col": 32 },
+        "purpose": "Clear the eastern lodge yard wall for rapid rotation from the HQ defense apron to the east conifer ridge."
+      }
+    ],
+    "reference": {
+      "place": "Pas de la Casa, Encamp, Andorra (Pyrenean Border Pass & Ski Resort)",
+      "kind": "real",
+      "kept": [
+        "CG-2 Pyrenean pass road descending from the northern border col into the resort town",
+        "Grandvalira ski pistes (ice/snow slopes) and ski-lift pylon line along the mountain flanks",
+        "Clustered alpine resort village with chalets, ski hotels, and gondola plaza in the south",
+        "Conifer pine belts, rocky scree outcrops, and concrete avalanche galleries"
+      ],
+      "simplified": [
+        "Compressed the multi-kilometer Port d'Envalira switchbacks and resort slopes into a 40x40 tactical grid",
+        "Represented the ski lift with aligned pylon towers and ground path markings rather than overhead cables",
+        "Merged dense town streets into distinct chalet and hotel blocks separated by drivable lanes"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 33202601,
+    "theme": "alpine",
+    "zones": [
+      {
+        "id": "pyrenees-snow-blanket",
+        "bounds": [0, 0, 39, 39],
+        "surface": "snow",
+        "density": 0.2,
+        "details": ["patches", "cracks"]
+      },
+      {
+        "id": "west-piste-corridor",
+        "bounds": [2, 3, 30, 12],
+        "surface": "snow",
+        "density": 0.24,
+        "details": ["tracks", "patches"]
+      },
+      {
+        "id": "central-pass-roadway",
+        "bounds": [0, 16, 28, 23],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": ["cracks", "tracks", "rubble"]
+      },
+      {
+        "id": "resort-gondola-plaza",
+        "bounds": [28, 12, 39, 28],
+        "surface": "pavers",
+        "density": 0.26,
+        "details": ["cracks", "tracks", "rubble"]
+      },
+      {
+        "id": "east-ridge-scree",
+        "bounds": [2, 27, 32, 37],
+        "surface": "gravel",
+        "density": 0.24,
+        "details": ["rubble", "patches", "tracks"]
+      }
+    ],
+    "paths": [
+      {
+        "id": "ski-lift-line",
+        "points": [[7, 9], [17, 9], [27, 9]],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "resort-service-loop",
+        "points": [[35, 11], [35, 28]],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "pas-customs-label",
+        "kind": "label",
+        "row": 5,
+        "col": 19,
+        "size": 3,
+        "text": "BORDER PASS CG-2"
+      },
+      {
+        "id": "grandvalira-piste-label",
+        "kind": "label",
+        "row": 15,
+        "col": 7,
+        "size": 3,
+        "text": "SKI PISTE"
+      },
+      {
+        "id": "gondola-plaza-label",
+        "kind": "label",
+        "row": 29,
+        "col": 19,
+        "size": 3,
+        "text": "PAS DE LA CASA"
+      },
+      {
+        "id": "pass-crosswalk-north",
+        "kind": "crosswalk",
+        "row": 12,
+        "col": 20,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "resort-crosswalk-south",
+        "kind": "crosswalk",
+        "row": 32,
+        "col": 19,
+        "size": 3,
+        "rotation": 0
+      },
+      {
+        "id": "gondola-parking",
+        "kind": "parking",
+        "row": 25,
+        "col": 16,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "resort-hq-loading",
+        "kind": "loading",
+        "row": 34,
+        "col": 24,
+        "size": 2.2,
+        "rotation": 0
+      },
+      {
+        "id": "lift-pylon-hazard",
+        "kind": "hazard_zone",
+        "row": 17,
+        "col": 8,
+        "size": 1.3
+      },
+      {
+        "id": "hq-helipad",
+        "kind": "helipad",
+        "row": 36,
+        "col": 15,
+        "size": 1.8
+      },
+      {
+        "id": "resort-chevron",
+        "kind": "chevron",
+        "row": 22,
+        "col": 19,
+        "size": 1.2,
+        "rotation": 0
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.4,
+    "maxAttackers": 3,
+    "entrances": [
+      { "id": "north-pass-cg2", "row": 1, "col": 19 },
+      { "id": "west-piste-top", "row": 1, "col": 6 },
+      { "id": "east-ridge-top", "row": 1, "col": 33 },
+      { "id": "upper-west-lift", "row": 6, "col": 4 },
+      { "id": "upper-east-col", "row": 6, "col": 35 }
+    ],
+    "encounters": [
+      {
+        "id": "alpine-recon-probe",
+        "label": "BORDER PASS VANGUARD DESCENDING CG-2 & WEST PISTE",
+        "recoverySec": 0,
+        "entrances": [
+          "north-pass-cg2",
+          "west-piste-top",
+          "east-ridge-top"
+        ],
+        "initialCells": [
+          { "row": 3, "col": 6 },
+          { "row": 3, "col": 19 },
+          { "row": 4, "col": 21 },
+          { "row": 3, "col": 33 }
+        ],
+        "patrolRoute": [
+          { "row": 11, "col": 19 },
+          { "row": 21, "col": 19 },
+          { "row": 31, "col": 19 }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "ARMOR",
+          "HOWITZER",
+          "STANDARD",
+          "SCOUT",
+          "STRIKER"
+        ]
+      },
+      {
+        "id": "piste-flank-pressure",
+        "label": "SAPPER & FLAMETHROWER COLUMNS ON THE SKI SLOPES",
+        "recoverySec": 8,
+        "entrances": [
+          "west-piste-top",
+          "upper-west-lift",
+          "east-ridge-top",
+          "upper-east-col"
+        ],
+        "patrolRoute": [
+          { "row": 12, "col": 6 },
+          { "row": 24, "col": 7 },
+          { "row": 31, "col": 14 }
+        ],
+        "enemies": [
+          "FLAMETHROWER",
+          "ARMOR",
+          "SAPPER",
+          "STRIKER",
+          "STEALTH",
+          "STANDARD",
+          "SAPPER",
+          "ARMOR",
+          "FLAMETHROWER",
+          "HOWITZER"
+        ]
+      },
+      {
+        "id": "pyrenean-assault-finale",
+        "label": "ALL-COLUMN ARMORED ASSAULT ON PAS DE LA CASA",
+        "recoverySec": 10,
+        "entrances": [
+          "north-pass-cg2",
+          "west-piste-top",
+          "east-ridge-top",
+          "upper-west-lift",
+          "upper-east-col"
+        ],
+        "patrolRoute": [
+          { "row": 12, "col": 32 },
+          { "row": 24, "col": 31 },
+          { "row": 31, "col": 25 }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "KAMIKAZE",
+          "ENGINEER",
+          "ARMOR",
+          "STRIKER",
+          "FLAMETHROWER",
+          "KAMIKAZE",
+          "HOWITZER",
+          "ARMOR"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "ARMOR",
+    "HOWITZER",
+    "STANDARD",
+    "SCOUT",
+    "STRIKER",
+    "FLAMETHROWER",
+    "ARMOR",
+    "SAPPER",
+    "STRIKER",
+    "STEALTH",
+    "STANDARD",
+    "SAPPER",
+    "ARMOR",
+    "FLAMETHROWER",
+    "HOWITZER",
+    "ARMOR",
+    "STRIKER",
+    "KAMIKAZE",
+    "ENGINEER",
+    "ARMOR",
+    "STRIKER",
+    "FLAMETHROWER",
+    "KAMIKAZE",
+    "HOWITZER",
+    "ARMOR"
+  ],
+  "surfaceLayout": [
+    "VVV...III....VV...RR...VV....III....VVVV",
+    "VV....III....VV...RR...VV....III.....VVV",
+    "V..^^.III...VV....RR....VV...III.^^...VV",
+    "V..^^.III...V.....RR.....V...III.^^....V",
+    "....^.III.........RR.........III.^......",
+    "......III...^^....RR...^^....III........",
+    "VV....II....^^....RR...^^.....II.....VVV",
+    "VVV........VV.....RR....VV...........VVV",
+    "VVV..III...VV.....RR....VV...III.....VV.",
+    "..^..III..........RR.........III...^....",
+    "..^..III..........RR.........III...^^...",
+    ".....III...VV.....RR....VV...III........",
+    "VV...II....VV.....RR....VV....II....VVVV",
+    "VVV........V......RR.....V..........VVVV",
+    "VV...III..........RR.........III.....VV.",
+    ".....III...^^.....RR....^^...III........",
+    ".....III...^^.....RR....^^...III...^^...",
+    "VV................RR...............^^.VV",
+    "VVV..III..........RR.........III......VV",
+    "VV...III...VV.....RR....VV...III.....VVV",
+    ".....III...VV.....RR....VV...III........",
+    ".....III..........RR.........III..^^....",
+    "..^...............RR..............^^....",
+    "..^..III...^^.....RR....^^...III........",
+    "VV...III...^^.....RR....^^...III.....VVV",
+    "VVV..III..........RR.........III.....VVV",
+    "VV.........VV.....RR....VV...........VV.",
+    "...........VV.....RR....VV..............",
+    ".....^^...........RR..........^^........",
+    "VV...^^...........RR..........^^.....VVV",
+    "VVV.........RRRRRRRRRRRRRR...........VVV",
+    "VV..........R.....RR.....R............VV",
+    ".....^^.....R.....RR.....R....^^........",
+    ".....^^.....R............R....^^........",
+    "VV..........R............R...........VVV",
+    "VVV.........R............R...........VVV",
+    "VVV..^^.......................^^.....VVV",
+    "VV...^^.......................^^......VV",
+    "V......................................V",
+    "VVV..................................VVV"
+  ],
+  "objectLayout": [
+    "FF.........FF............FF...........FF",
+    "F...........F............F.............F",
+    "....B......FF....C..C....FF.......B.....",
+    "....B............C..C.............B.....",
+    ".FF........CC............CC........FF...",
+    ".FF........CC............CC........FF...",
+    "......F..........C..C...Q.......F.......",
+    "..FF..F.T........C..C...........F..FF...",
+    "..F........PP............AA........FF...",
+    "...Q.......PP............AA.............",
+    "FF...............C..C...............FF..",
+    "FF....B..........C..C..........B....FF..",
+    ".......B...FF............FF....B........",
+    "..FF.......FF..BB....CC..FF........FF...",
+    "..F........C............C..........FF...",
+    "...........C.....X..X...C........Q......",
+    "....F...........AA..PP..........F.......",
+    "....F...T.......AA..PP..........F.......",
+    "...........FF............FF.............",
+    ".....B.....FF....C..C....FF.....B.......",
+    ".....B...........C..C...BB......B.......",
+    "..FF.......PP............AA........FF...",
+    "..F...Q....PP............AA........FF...",
+    "...........C............C...............",
+    "....F......C.....K..K...C.......F.......",
+    "....F............X..X...........F.......",
+    "..FF......BB............CC.........FF...",
+    "........T........C..C........BB....FF...",
+    ".FF........AA............PP.............",
+    ".FF........AA............PP........FF...",
+    ".....CC.........................CC.FF...",
+    ".....CC....B............B.......CC......",
+    "...........B..PP....AA..B...............",
+    ".FF...AA......PP.X..XAA........AA...FF..",
+    ".FF...AA..Q....................AA...FF..",
+    "........................................",
+    "....FF.....C............C......FF.......",
+    "....FF.....C......CCCC..C......FF.......",
+    "........................................",
+    "FF................CHHC................FF"
+  ]
+}

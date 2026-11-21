@@ -132,6 +132,11 @@
       "kind": "FORUM_COLUMNS",
       "row": 21,
       "col": 12
+    },
+    {
+      "kind": "PANTHEON",
+      "row": 12,
+      "col": 22
     }
   ],
   "decoration": {
@@ -786,9 +791,9 @@
     "PPPPQF.....C....C.....PPP......AAA....PP",
     "PPPP.......CC.BCC.....PPP......AAA....PP",
     "........................................",
-    ".................FFF..PPPPPPP..PPPB..AAA",
-    ".................FFF..PPPPPPP..PPPB..AAA",
-    "PPPP.....CC..CCC......PPPPPPP..PPPB.....",
+    ".................FFF......PPP..PPPB..AAA",
+    ".................FFF......PPP..PPPB..AAA",
+    "PPPP.....CC..CCC..........PPP..PPPB.....",
     "PPPP.....C.....C..........CC......B..AAA",
     "PPPP.....C.....C..........Q.......B..AAA",
     "PP...F...C..Q..C..PPPP...............AAA",

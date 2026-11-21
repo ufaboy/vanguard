@@ -1,0 +1,591 @@
+{
+  "mapId": "campaign-26",
+  "id": 26,
+  "name": "Scheldt Delta Dams",
+  "subtitle": "SECTOR 26 // DELTA STORM-SURGE BARRIER",
+  "objective": "Clear the delta barrier defenses and defeat Hydra",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": true,
+    "defeatOnBaseLoss": false
+  },
+  "boss": {
+    "enemyClass": "BOSS_HYDRA",
+    "name": "HYDRA MLRS-9",
+    "title": "Amphibious Rocket-Artillery Cruiser",
+    "spawnCell": {
+      "row": 4,
+      "col": 20
+    }
+  },
+  "completionReward": {
+    "credits": 1150
+  },
+  "environment": {
+    "theme": "coast",
+    "tint": "#8ec5d6",
+    "fogColor": "#27414e",
+    "groundColor": "#53676c"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Assault a coastal storm-surge barrier and reclaimed polder network across the Scheldt Delta. Wide open estuary basins let hover packs and the amphibious Hydra MLRS-9 rocket cruiser strike from the water, while four dry causeways, sluice bridges, dune windbreaks, and destructible floodgate bulkheads give tracked armor covered approaches and flanking cuts.",
+    "breaches": [
+      {
+        "name": "West dune dike barricade",
+        "cells": [
+          {
+            "row": 16,
+            "col": 2
+          },
+          {
+            "row": 16,
+            "col": 3
+          }
+        ],
+        "start": {
+          "row": 18,
+          "col": 2
+        },
+        "end": {
+          "row": 14,
+          "col": 2
+        },
+        "purpose": "Punch through the brick barricade on the western dune lane to flank northern hover and artillery staging areas without exposing yourself on the main dike road."
+      },
+      {
+        "name": "West sluice floodgate bulkhead",
+        "cells": [
+          {
+            "row": 14,
+            "col": 16
+          },
+          {
+            "row": 15,
+            "col": 16
+          }
+        ],
+        "start": {
+          "row": 14,
+          "col": 14
+        },
+        "end": {
+          "row": 14,
+          "col": 18
+        },
+        "purpose": "Shatter the brick floodgate bulkhead connecting the west-central sluice dam to the storm-surge barrier island."
+      },
+      {
+        "name": "East lock-house bulkhead",
+        "cells": [
+          {
+            "row": 14,
+            "col": 23
+          },
+          {
+            "row": 15,
+            "col": 23
+          }
+        ],
+        "start": {
+          "row": 14,
+          "col": 25
+        },
+        "end": {
+          "row": 14,
+          "col": 21
+        },
+        "purpose": "Breach the east lock-house brick wall to cross laterally between the storm-surge barrier island and the east-central lock causeway."
+      }
+    ],
+    "reference": {
+      "place": "Scheldt Delta Dams (Oosterscheldekering / Delta Works, Zeeland, Netherlands)",
+      "kind": "real",
+      "kept": [
+        "Open estuary water basins flanking concrete storm-surge barrier piers and sluice causeways",
+        "Coastal sand dune headland on the west and reclaimed grass polders with windbreaks on the east and south",
+        "Dry bridge decks and lock control island connecting the northern approaches to the southern polders"
+      ],
+      "simplified": [
+        "Compressed the multi-kilometer Oosterscheldekering and Veerse Gatdam into four north-south dry causeways across two estuary basins",
+        "Merged auxiliary drainage canals and lock chambers into readable tactical chokepoints"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 26262026,
+    "theme": "coast",
+    "zones": [
+      {
+        "id": "west-dune-headland",
+        "bounds": [
+          0,
+          0,
+          39,
+          6
+        ],
+        "surface": "sand",
+        "density": 0.25,
+        "details": [
+          "weeds",
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-sluice-causeway",
+        "bounds": [
+          0,
+          12,
+          26,
+          16
+        ],
+        "surface": "concrete",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "barrier-control-island",
+        "bounds": [
+          10,
+          17,
+          17,
+          22
+        ],
+        "surface": "concrete",
+        "density": 0.28,
+        "details": [
+          "cracks",
+          "rubble",
+          "oil"
+        ]
+      },
+      {
+        "id": "east-lock-causeway",
+        "bounds": [
+          0,
+          23,
+          26,
+          27
+        ],
+        "surface": "concrete",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "east-polder-dike",
+        "bounds": [
+          0,
+          33,
+          39,
+          39
+        ],
+        "surface": "dirt",
+        "density": 0.22,
+        "details": [
+          "weeds",
+          "tracks",
+          "patches"
+        ]
+      },
+      {
+        "id": "south-polder-apron",
+        "bounds": [
+          27,
+          7,
+          39,
+          32
+        ],
+        "surface": "gravel",
+        "density": 0.2,
+        "details": [
+          "tracks",
+          "weeds",
+          "rubble"
+        ]
+      }
+    ],
+    "paths": [],
+    "landmarks": [
+      {
+        "id": "storm-barrier-label",
+        "kind": "label",
+        "row": 14,
+        "col": 19,
+        "size": 3,
+        "text": "STORM-SURGE BARRIER"
+      },
+      {
+        "id": "west-sluice-label",
+        "kind": "label",
+        "row": 9,
+        "col": 13,
+        "size": 3,
+        "text": "WEST SLUICE"
+      },
+      {
+        "id": "east-lock-label",
+        "kind": "label",
+        "row": 21,
+        "col": 25,
+        "size": 3,
+        "text": "EAST LOCK"
+      },
+      {
+        "id": "west-dike-crosswalk",
+        "kind": "crosswalk",
+        "row": 26,
+        "col": 4,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "east-dike-crosswalk",
+        "kind": "crosswalk",
+        "row": 26,
+        "col": 34,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "south-hq-helipad",
+        "kind": "helipad",
+        "row": 32,
+        "col": 19,
+        "size": 2
+      },
+      {
+        "id": "barrier-tower-hazard",
+        "kind": "hazard_zone",
+        "row": 13,
+        "col": 21,
+        "size": 1.3
+      },
+      {
+        "id": "south-polder-parking",
+        "kind": "parking",
+        "row": 35,
+        "col": 14,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "east-depot-loading",
+        "kind": "loading",
+        "row": 30,
+        "col": 34,
+        "size": 2.5,
+        "rotation": 0
+      },
+      {
+        "id": "sluice-drain-1",
+        "kind": "drain_grate",
+        "row": 15,
+        "col": 13,
+        "size": 1
+      },
+      {
+        "id": "lock-drain-2",
+        "kind": "drain_grate",
+        "row": 16,
+        "col": 25,
+        "size": 1
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "vanguardCount": 25,
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "maxAttackers": 3,
+    "entrances": [
+      {
+        "id": "west-dune-entry",
+        "row": 1,
+        "col": 4
+      },
+      {
+        "id": "west-sluice-entry",
+        "row": 1,
+        "col": 13
+      },
+      {
+        "id": "east-lock-entry",
+        "row": 1,
+        "col": 25
+      },
+      {
+        "id": "east-dike-entry",
+        "row": 1,
+        "col": 35
+      },
+      {
+        "id": "west-mid-slip",
+        "row": 8,
+        "col": 4
+      },
+      {
+        "id": "east-mid-slip",
+        "row": 8,
+        "col": 35
+      }
+    ],
+    "encounters": [
+      {
+        "id": "opening-barrier-probe",
+        "label": "DELTA BARRIER VANGUARD DETECTED",
+        "recoverySec": 0,
+        "entrances": [
+          "west-dune-entry",
+          "west-sluice-entry",
+          "east-lock-entry",
+          "east-dike-entry"
+        ],
+        "initialCells": [
+          {
+            "row": 3,
+            "col": 4
+          },
+          {
+            "row": 3,
+            "col": 13
+          },
+          {
+            "row": 3,
+            "col": 25
+          },
+          {
+            "row": 3,
+            "col": 35
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 13
+          },
+          {
+            "row": 24,
+            "col": 13
+          },
+          {
+            "row": 31,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "HOVER",
+          "SCOUT",
+          "HOVER",
+          "STANDARD",
+          "SCOUT",
+          "HOWITZER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "delta-amphibious-assault",
+        "label": "ESTUARY HOVER PACK & ARTILLERY SUPPORT",
+        "recoverySec": 8,
+        "entrances": [
+          "west-mid-slip",
+          "west-sluice-entry",
+          "east-lock-entry"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 25
+          },
+          {
+            "row": 24,
+            "col": 25
+          },
+          {
+            "row": 31,
+            "col": 21
+          }
+        ],
+        "enemies": [
+          "HOVER",
+          "HOWITZER",
+          "JAMMER",
+          "HOVER",
+          "ARMOR",
+          "STANDARD",
+          "HOVER",
+          "FLAMETHROWER",
+          "SAPPER"
+        ]
+      },
+      {
+        "id": "storm-surge-garrison",
+        "label": "LOCKMASTER RESERVE — HYDRA INBOUND ON CLEAR",
+        "recoverySec": 9,
+        "entrances": [
+          "west-dune-entry",
+          "west-sluice-entry",
+          "east-lock-entry",
+          "east-mid-slip"
+        ],
+        "patrolRoute": [
+          {
+            "row": 13,
+            "col": 4
+          },
+          {
+            "row": 26,
+            "col": 5
+          },
+          {
+            "row": 32,
+            "col": 16
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "HOVER",
+          "JAMMER",
+          "HOWITZER",
+          "STEALTH",
+          "HOVER",
+          "ENGINEER",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "HOVER",
+    "STANDARD",
+    "SCOUT",
+    "HOWITZER",
+    "STANDARD",
+    "HOVER",
+    "HOWITZER",
+    "JAMMER",
+    "HOVER",
+    "ARMOR",
+    "STANDARD",
+    "HOVER",
+    "FLAMETHROWER",
+    "SAPPER",
+    "ARMOR",
+    "HOVER",
+    "JAMMER",
+    "HOWITZER",
+    "STEALTH",
+    "HOVER",
+    "ENGINEER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "SSSSRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "SSSSRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "SVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "S^VVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "S^VVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "SVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "SVVVRRSWWWWWWWWWWWWWWWWWWWWWWWWWWVRRVVVV",
+    "SVVVRRSWWWWWWWWWWWWWWWWWWWWWWWWWWVRRVVVV",
+    "SVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "SVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "SWWWWWWWWWWW.RR..SSSSSS..RR.WWWWWVRRVVVV",
+    "SWWWWWWWWWWW.RR..SSSSSS..RR.WWWWWVRRVVVV",
+    "VVVSRRSWWWWW.RR..........RR.WWWWWWWWWWWV",
+    "VVSSRRSWWWWW.RR..........RR.WSSWWWWWWWWV",
+    "V^SSRRSWWSSW.RR..........RR.WSSWWVRRVVVV",
+    "V^SSRRSWWSSW.RR..........RR.WSSWWVRRVVVV",
+    "VVSSRRSWWSSW.RR..SSSSSS..RR.WWWWWVRRVVVV",
+    "VVSSRRSWWWWW.RR..SSSSSS..RR.WWWWWVRRVVVV",
+    "VVVSRRSWWWWWWWWWWWWWWWWWWWWWWWWWWVRRVVVV",
+    "VVVSRRSWWWWWWWWWWWWWWWWWWWWWWWWWWVRRVVVV",
+    "VVSSRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "VVSSRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "SWWWWWWWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "SWWWWWWWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "VVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
+    "VVVVRRSMMMMM.RR..........RR.MMMMMVRRVVVV",
+    "VVVVRRSMMMMM.RR..........RR.MMMMMVRRVVVV",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "VV^VRRSVVVVV.RRVV......VVRR.VVVVVVRRVVVV",
+    "VV^VRRSVVVVV.RRVV......VVRR.VVVVVVRRVVVV",
+    "VVVVRRSVVVVV.RRVV......VVRR.VVVVVVRRVVVV",
+    "VVVVRRSVVVVV.VV..........VV.VVVVVVRRVVVV",
+    "VVVVRRSVVVVV.VV..........VV.VVVVVVRRVVVV",
+    "VVVVRRSVVVVV.RR..........RR.VVVVVVRRVVVV",
+    "VVVVRRSVVVVV.RR..........RR.VVVVVVRRVVVV",
+    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
+    "VVVVRRSVVVVVVVVV........VVVVVVVVVVVVVVVV",
+    "VVVVRRSVVVVVVVVV........VVVVVVVVVVVVVVVV",
+    "VVVVRRSVVVVVVVVV........VVVVVVVVVVVVVVVV",
+    "VVVVRRSVVVVV................VVVVVVVVVVVV"
+  ],
+  "objectLayout": [
+    "........................................",
+    "............C..C........C..C.........FF.",
+    ".FF...X.....C..C........C..C.....X...FF.",
+    "..FF........C..CF......FC..C..........F.",
+    ".AA.........C..CF......FC..C.........AA.",
+    ".AA.........C..C........C..C.........AA.",
+    ".F...........==..........==.............",
+    ".FF..........==..........==.........FF..",
+    "..FK..Q.....C..CF......FC..C........QF..",
+    ".F.U........C..CF......FC..C........F...",
+    "....==......C..C........C..C.........FF.",
+    "....==......C..C.C....C.C..C.........FF.",
+    ".FF...............PP..............==....",
+    "AA................PP.T............==....",
+    "AA..........C...B......B...C........F...",
+    "......K.....C...B......B...C........FAD.",
+    "CCBB........C..C.Q...D..C..C.........AA.",
+    "............C..C........C..C.........FF.",
+    "......Q......==..........==.........QFF.",
+    ".............==..........==...........F.",
+    ".F..........C..C........C..C............",
+    "............C..C........C..C............",
+    "....==......C..CF......FC..C............",
+    "....==......C..CF......FC..C........AA..",
+    ".FF...X.....C..CF......FC..C.....X..AA..",
+    ".FF.................................FF..",
+    ".F........K.......U..U.......K......FF..",
+    "........................................",
+    ".AA.....FF.......K.DD.K......FF......AA.",
+    ".AA.....FF...PP....Q.....PP..FF..U...AA.",
+    "........F..X.PP..........PP.X.F.....D...",
+    ".FF..........FF..........FF.........QF..",
+    ".FF..........FF..........FF.........FF..",
+    ".........AA....K........K....AA.........",
+    ".PP......AA........X.........AA......PP.",
+    ".PP..................................PP.",
+    ".FF.........FF............FF.........FF.",
+    ".FF.........FF....CCCC....FF.........FF.",
+    ".F........K..................K..........",
+    "...................HH..................."
+  ]
+}

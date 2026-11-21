@@ -1,0 +1,457 @@
+{
+  "mapId": "campaign-18",
+  "id": 18,
+  "name": "East Berlin Rail Yards",
+  "subtitle": "SECTOR 04 // OSTBAHNHOF & WALL LINE",
+  "objective": "Destroy the Consortium blueprint vault",
+  "gameMode": "stronghold_assault",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 4,
+      "col": 20
+    },
+    "name": "Consortium Blueprint Vault",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 420
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#d4b494",
+    "fogColor": "#323438",
+    "groundColor": "#54565a"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Advance north across the former Berlin Wall border strip through three distinct industrial corridors: the derelict western factory yards with overgrown scrub, the central Ostbahnhof freight rail spine with fuel sidings and the water tower, or the eastern warehouse alleys with brick breach partitions.",
+    "breaches": [
+      {
+        "name": "Berlin Wall West Gate",
+        "cells": [
+          { "row": 15, "col": 6 },
+          { "row": 15, "col": 7 }
+        ],
+        "start": { "row": 17, "col": 6 },
+        "end": { "row": 13, "col": 6 },
+        "purpose": "Blast through the brick-patched Wall section to link the western factory yard directly to the northern border strip."
+      },
+      {
+        "name": "Central Rail Checkpoint",
+        "cells": [
+          { "row": 15, "col": 19 },
+          { "row": 15, "col": 20 }
+        ],
+        "start": { "row": 17, "col": 19 },
+        "end": { "row": 13, "col": 19 },
+        "purpose": "Breach the brick checkpoint barricade on the main rail spine for a direct push toward the Consortium blueprint vault."
+      },
+      {
+        "name": "East Siding Partition",
+        "cells": [
+          { "row": 18, "col": 29 },
+          { "row": 19, "col": 29 }
+        ],
+        "start": { "row": 18, "col": 27 },
+        "end": { "row": 18, "col": 31 },
+        "purpose": "Cut between the central freight yard and the eastern warehouse avenue."
+      },
+      {
+        "name": "South Freight Yard Wall",
+        "cells": [
+          { "row": 27, "col": 14 },
+          { "row": 27, "col": 15 }
+        ],
+        "start": { "row": 29, "col": 14 },
+        "end": { "row": 25, "col": 14 },
+        "purpose": "Open a southern shortcut from the western marshaling lane into the central rail yard."
+      }
+    ],
+    "reference": {
+      "place": "East Berlin Rail Yards (Ostbahnhof / Warschauer Strasse & Berlin Wall Strip)",
+      "kind": "real",
+      "kept": [
+        "Parallel north-south freight rail sidings with gravel track beds, loading aprons, and fuel depots",
+        "Berlin Wall concrete border line with brick-patched breach points and overgrown no-man's-land scrub",
+        "Derelict brick and concrete factory halls flanking the marshaling yard",
+        "Central railway water tower and fortified Consortium blueprint vault in the northern compound"
+      ],
+      "simplified": [
+        "Compressed the multi-kilometer Ostbahnhof and Rummelsburg yards into a 40x40 tactical sector",
+        "Represented rail tracks with gravel decoration path ribbons and yard aprons instead of custom rail meshes",
+        "Used the generic industrial tile kit without custom 3D Berlin landmarks"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 18042026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "central-rail-yard",
+        "bounds": [8, 13, 30, 27],
+        "surface": "gravel",
+        "density": 0.25,
+        "details": ["tracks", "oil", "rubble"]
+      },
+      {
+        "id": "vault-compound",
+        "bounds": [1, 17, 7, 23],
+        "surface": "concrete",
+        "density": 0.28,
+        "details": ["cracks", "oil", "patches"]
+      },
+      {
+        "id": "wall-border-strip",
+        "bounds": [13, 1, 17, 38],
+        "surface": "dirt",
+        "density": 0.22,
+        "details": ["cracks", "weeds", "rubble"]
+      },
+      {
+        "id": "west-factory-apron",
+        "bounds": [2, 1, 30, 11],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": ["cracks", "oil", "tracks"]
+      },
+      {
+        "id": "east-warehouse-apron",
+        "bounds": [2, 29, 30, 38],
+        "surface": "asphalt",
+        "density": 0.24,
+        "details": ["cracks", "oil", "rubble"]
+      },
+      {
+        "id": "south-marshaling-plaza",
+        "bounds": [34, 8, 39, 31],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": ["cracks", "tracks"]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-main-track",
+        "points": [[0, 16], [14, 16], [14, 17], [31, 17]],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "east-main-track",
+        "points": [[0, 25], [14, 25], [22, 24], [31, 24]],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "hq-service-apron",
+        "points": [[35, 15], [35, 24]],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-vault",
+        "kind": "label",
+        "row": 8,
+        "col": 20,
+        "text": "BLUEPRINT VAULT"
+      },
+      {
+        "id": "label-wall-line",
+        "kind": "label",
+        "row": 14,
+        "col": 10,
+        "text": "WALL LINE"
+      },
+      {
+        "id": "label-rail-yard",
+        "kind": "label",
+        "row": 22,
+        "col": 20,
+        "text": "OSTBAHNHOF YARD"
+      },
+      {
+        "id": "label-west-works",
+        "kind": "label",
+        "row": 23,
+        "col": 8,
+        "text": "WEST WORKS"
+      },
+      {
+        "id": "loading-east-dock",
+        "kind": "loading",
+        "row": 22,
+        "col": 32,
+        "size": 1.5,
+        "rotation": 90
+      },
+      {
+        "id": "loading-south-yard",
+        "kind": "loading",
+        "row": 29,
+        "col": 20,
+        "size": 1.5,
+        "rotation": 0
+      },
+      {
+        "id": "hazard-water-tower",
+        "kind": "hazard_zone",
+        "row": 19,
+        "col": 20,
+        "size": 1.2
+      },
+      {
+        "id": "crosswalk-west-ave",
+        "kind": "crosswalk",
+        "row": 24,
+        "col": 3,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "crosswalk-east-ave",
+        "row": 24,
+        "col": 34,
+        "kind": "crosswalk",
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "drain-central",
+        "kind": "drain_grate",
+        "row": 28,
+        "col": 22,
+        "size": 1
+      },
+      {
+        "id": "helipad-south",
+        "kind": "helipad",
+        "row": 35,
+        "col": 29,
+        "size": 1.5
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear-approach",
+        "bounds": [37, 17, 39, 22]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 4,
+    "entrances": [
+      { "id": "north-west-factory", "row": 1, "col": 4 },
+      { "id": "north-west-rail", "row": 1, "col": 13 },
+      { "id": "north-east-rail", "row": 1, "col": 26 },
+      { "id": "north-east-depot", "row": 1, "col": 35 },
+      { "id": "upper-west-wall", "row": 7, "col": 4 },
+      { "id": "upper-east-siding", "row": 7, "col": 35 }
+    ],
+    "encounters": [
+      {
+        "id": "wall-line-probe",
+        "label": "WALL LINE RECONNAISSANCE",
+        "recoverySec": 0,
+        "entrances": ["north-west-factory", "north-west-rail", "north-east-rail"],
+        "initialCells": [
+          { "row": 3, "col": 4 },
+          { "row": 4, "col": 13 },
+          { "row": 4, "col": 26 },
+          { "row": 3, "col": 34 }
+        ],
+        "patrolRoute": [
+          { "row": 12, "col": 4 },
+          { "row": 20, "col": 4 },
+          { "row": 29, "col": 10 }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "SAPPER",
+          "STANDARD",
+          "ENGINEER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "rail-yard-counterpush",
+        "label": "FREIGHT YARD COUNTER-ASSAULT",
+        "recoverySec": 8,
+        "entrances": ["north-east-rail", "north-east-depot", "upper-east-siding"],
+        "patrolRoute": [
+          { "row": 12, "col": 34 },
+          { "row": 24, "col": 34 },
+          { "row": 32, "col": 25 }
+        ],
+        "enemies": [
+          "STANDARD",
+          "ARMOR",
+          "HOWITZER",
+          "FLAMETHROWER",
+          "SAPPER",
+          "STANDARD",
+          "JAMMER",
+          "STRIKER"
+        ]
+      },
+      {
+        "id": "blueprint-vault-garrison",
+        "label": "BLUEPRINT VAULT GARRISON",
+        "recoverySec": 9,
+        "entrances": ["north-west-rail", "north-east-rail", "upper-west-wall", "upper-east-siding"],
+        "patrolRoute": [
+          { "row": 10, "col": 19 },
+          { "row": 21, "col": 18 },
+          { "row": 30, "col": 19 }
+        ],
+        "enemies": [
+          "ARMOR",
+          "ENGINEER",
+          "HOWITZER",
+          "STEALTH",
+          "STANDARD",
+          "STRIKER",
+          "ARMOR",
+          "JAMMER",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "SAPPER",
+    "STANDARD",
+    "ENGINEER",
+    "STANDARD",
+    "STANDARD",
+    "ARMOR",
+    "HOWITZER",
+    "FLAMETHROWER",
+    "SAPPER",
+    "STANDARD",
+    "JAMMER",
+    "STRIKER",
+    "ARMOR",
+    "ENGINEER",
+    "HOWITZER",
+    "STEALTH",
+    "STANDARD",
+    "STRIKER",
+    "ARMOR",
+    "JAMMER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "...RR...........................VVRR....",
+    "...RR........V..................VVRR....",
+    "...RR........VV.................VVRR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "...RR........VV............LL.....RR....",
+    "...RR........V.............LL.....RR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "...RRRRRRRRRRR............RRRRRRRRRR....",
+    "...RRVVVVVVVV...............VVVVVVRR....",
+    "...RRVVVVVV...................VVVVRR....",
+    "...RRVV.........................VVRR....",
+    "...RRVV.........................VVRR....",
+    "...RRVVVV.....................VVVVRR....",
+    "...RR.............................RR....",
+    "...RR..............LL.............RR....",
+    "...RR..............L..............RR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "...RRRRRRR................RRRRRRRRRR....",
+    "...RR.............................RR....",
+    "...RR......LL.....................RR....",
+    "...RR......L......................RR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "...RR.............................RR....",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "...VV..............RR.............VV....",
+    "...VV..............RR.............VV....",
+    "...................RR...................",
+    "........................................",
+    "........................................",
+    "........................................"
+  ],
+  "objectLayout": [
+    "........................................",
+    ".......FF...............................",
+    "......FFF.....PP.....B.....PP.......AA..",
+    ".AA...FF......PP..CCC.CCC..PP.......AA..",
+    ".AA...........PP..C.E.C....PP.......AA..",
+    ".AA...............C...C.............AA..",
+    ".......X..........CCBCC....D..Q.........",
+    ".............FF............D............",
+    ".PPP.........F......K........PPP........",
+    ".PPP..Q..BB..................PPP...B....",
+    ".PPP.....AA....AAA......AAA..PPP..FFF...",
+    ".PPP.....AA....AAA..K...AAA.......FF....",
+    "........................................",
+    "..F..FF..FF..................FFX.F......",
+    "..FF.F............K.....U.........FF....",
+    "......BBCCCC..CCC..BBCCCC..CCCC...BB....",
+    ".....U.....K......U..........C..........",
+    "......FF.....................C..........",
+    ".PPP..F......AAA........AAA..B....PPP...",
+    ".PPP.........AAA...TD...AAA..B....PPP...",
+    ".PPP....Q....AAA...D....AAA..C....PPP...",
+    ".PPP.........................C....PPP...",
+    "............K........U.......C.Q........",
+    "..FF......PPP..........PPP..........FF..",
+    "..........PPP.....X....PPP..............",
+    ".AAA......PPP..........PPP........AAA...",
+    ".AAA..B..........K................AAA...",
+    ".AAA..B.....CCBBC.........BB..Q...AAA...",
+    "...........D.........U.......FF.........",
+    "......X......Q...............FF....X....",
+    "..FF.....AAA............AAA.......FF....",
+    "..F......AAA...X.....X..AAA........F....",
+    "........................................",
+    "........................................",
+    "....Q............................Q......",
+    "..AAA..FF...BBB..........BBB....FFAAA...",
+    "..AAA..F......F..........F.......FAAA...",
+    "..............F...CCCC...F..............",
+    "........................................",
+    "...................HH..................."
+  ]
+}

@@ -1,0 +1,530 @@
+{
+  "id": 31,
+  "mapId": "campaign-31",
+  "code": "SECTOR 06 // 40×40",
+  "name": "Provence Lavender",
+  "subtitle": "SECTOR 31 // PROVENCE UPLANDS",
+  "objective": "Hunt down enemy snipers and scouts across the lavender fields",
+  "gameMode": "extermination",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 1150
+  },
+  "environment": {
+    "theme": "desert",
+    "tint": "#dec491",
+    "fogColor": "#6b6251",
+    "groundColor": "#b5a37b"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Flush snipers, scouts, and stealth tanks out of parallel lavender hedge rows and stone-walled village lanes while crossing the dry riverbed to flank long-range fire.",
+    "breaches": [
+      {
+        "name": "Lavender Terrace Wall",
+        "cells": [
+          {
+            "row": 17,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 10
+        },
+        "end": {
+          "row": 17,
+          "col": 15
+        },
+        "purpose": "Blast through the dry-stone terrace wall to cut from the western lavender lane straight into the hill village."
+      },
+      {
+        "name": "Olive-Press Courtyard Wall",
+        "cells": [
+          {
+            "row": 23,
+            "col": 25
+          },
+          {
+            "row": 24,
+            "col": 25
+          }
+        ],
+        "start": {
+          "row": 23,
+          "col": 23
+        },
+        "end": {
+          "row": 23,
+          "col": 27
+        },
+        "purpose": "Breach the eastern village yard wall to flank into the dry riverbed without looping south."
+      },
+      {
+        "name": "South Quarry Retaining Wall",
+        "cells": [
+          {
+            "row": 30,
+            "col": 14
+          }
+        ],
+        "start": {
+          "row": 30,
+          "col": 12
+        },
+        "end": {
+          "row": 30,
+          "col": 16
+        },
+        "purpose": "Open the quarry retaining wall to link the lower lavender lane directly to the southern HQ road."
+      }
+    ],
+    "reference": {
+      "place": "Plateau de Valensole lavender fields & Sault hill village, Provence, France",
+      "kind": "generic",
+      "kept": [
+        "Parallel lavender hedge rows (grass strips with bush-hedge rows and dirt tracks)",
+        "Stone upland ridges and a winding dry riverbed on the eastern flank",
+        "Compact hill village with stone cottages, mairie, courtyard walls, and water tower"
+      ],
+      "simplified": [
+        "Compressed rolling lavender terraces into flat 1-cell bush-hedge rows with playable gaps",
+        "Represented the village church/square fountain with generic P blocks and a water tower (T)"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 31062026,
+    "theme": "desert",
+    "zones": [
+      {
+        "id": "lavender-fields-north",
+        "bounds": [
+          6,
+          1,
+          13,
+          12
+        ],
+        "surface": "dirt",
+        "density": 0.35,
+        "details": [
+          "weeds",
+          "tracks"
+        ]
+      },
+      {
+        "id": "lavender-fields-south",
+        "bounds": [
+          18,
+          1,
+          28,
+          13
+        ],
+        "surface": "dirt",
+        "density": 0.35,
+        "details": [
+          "weeds",
+          "tracks"
+        ]
+      },
+      {
+        "id": "hill-village-square",
+        "bounds": [
+          16,
+          17,
+          22,
+          23
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "leaves"
+        ]
+      },
+      {
+        "id": "dry-riverbed-gravel",
+        "bounds": [
+          1,
+          30,
+          38,
+          36
+        ],
+        "surface": "sand",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "rubble"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-distillery-track",
+        "points": [
+          [
+            1,
+            6
+          ],
+          [
+            12,
+            6
+          ],
+          [
+            12,
+            16
+          ]
+        ],
+        "width": 1,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "village-east-lane",
+        "points": [
+          [
+            20,
+            20
+          ],
+          [
+            20,
+            38
+          ]
+        ],
+        "width": 1,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-valensole",
+        "kind": "label",
+        "row": 8,
+        "col": 6,
+        "text": "LAVENDER FIELDS"
+      },
+      {
+        "id": "label-village",
+        "kind": "label",
+        "row": 19,
+        "col": 19,
+        "text": "HILL VILLAGE"
+      },
+      {
+        "id": "label-riverbed",
+        "kind": "label",
+        "row": 17,
+        "col": 32,
+        "text": "DRY RIVERBED"
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-approach-clear",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3,
+    "entrances": [
+      {
+        "id": "west-ridge-track",
+        "row": 0,
+        "col": 6
+      },
+      {
+        "id": "north-upland-road",
+        "row": 0,
+        "col": 20
+      },
+      {
+        "id": "east-riverbed-pass",
+        "row": 0,
+        "col": 33
+      }
+    ],
+    "encounters": [
+      {
+        "id": "upland-recon-probe",
+        "label": "UPLAND PROBE: Scouts and stealth tanks slip into the lavender rows while snipers cover the road.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STEALTH",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STEALTH"
+        ],
+        "initialCells": [
+          {
+            "row": 2,
+            "col": 6
+          },
+          {
+            "row": 2,
+            "col": 20
+          },
+          {
+            "row": 2,
+            "col": 33
+          },
+          {
+            "row": 5,
+            "col": 19
+          }
+        ],
+        "entrances": [
+          "west-ridge-track",
+          "north-upland-road",
+          "east-riverbed-pass"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 6
+          },
+          {
+            "row": 20,
+            "col": 9
+          },
+          {
+            "row": 20,
+            "col": 20
+          },
+          {
+            "row": 32,
+            "col": 19
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "village-sniper-screen",
+        "label": "VILLAGE SCREEN: Snipers, strikers, and sappers lock down the hill village and riverbed crossings.",
+        "enemies": [
+          "STANDARD",
+          "STRIKER",
+          "SAPPER",
+          "STEALTH",
+          "STANDARD",
+          "SCOUT",
+          "HOWITZER",
+          "STANDARD",
+          "JAMMER"
+        ],
+        "entrances": [
+          "north-upland-road",
+          "east-riverbed-pass",
+          "west-ridge-track"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 18
+          },
+          {
+            "row": 20,
+            "col": 20
+          },
+          {
+            "row": 20,
+            "col": 32
+          },
+          {
+            "row": 34,
+            "col": 28
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "provence-hunter-group",
+        "label": "FINAL HUNT: Heavy armor, jammers, and sniper-stealth teams converge across the upland.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "STEALTH",
+          "STRIKER",
+          "JAMMER",
+          "HOWITZER",
+          "STANDARD",
+          "SCOUT",
+          "ARMOR"
+        ],
+        "entrances": [
+          "west-ridge-track",
+          "north-upland-road",
+          "east-riverbed-pass"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 9
+          },
+          {
+            "row": 20,
+            "col": 9
+          },
+          {
+            "row": 32,
+            "col": 9
+          },
+          {
+            "row": 32,
+            "col": 19
+          },
+          {
+            "row": 35,
+            "col": 19
+          }
+        ],
+        "recoverySec": 8
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STEALTH",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STEALTH",
+    "STANDARD",
+    "STRIKER",
+    "SAPPER",
+    "STEALTH",
+    "STANDARD",
+    "SCOUT",
+    "HOWITZER",
+    "STANDARD",
+    "JAMMER",
+    "ARMOR",
+    "STANDARD",
+    "STEALTH",
+    "STRIKER",
+    "JAMMER",
+    "HOWITZER",
+    "STANDARD",
+    "SCOUT",
+    "ARMOR"
+  ],
+  "surfaceLayout": [
+    "^^^^^.R............RR.....^^^^^.SSS.....",
+    "^^^^^.R............RR.....^^^^^.SSS.....",
+    "^^^^^^R............RR.....^^^^^.SSS.....",
+    "^^^^^^R............RR.....^^^^^SSSS.....",
+    "^^^^^^R............RR.....^^^^^SSSS.....",
+    "^^^^^.R............RR.....^^^^^SSSS.....",
+    ".VVVVVRVVVVVV.....RR......^^^^^SSS......",
+    ".VVVVVRVVVVVV.....RR...........SSS......",
+    ".VVVVVRVVVVVV....RR............SSS..^^^^",
+    ".VVVVVRVVVVVV....RR............SSS..^^^^",
+    ".VVVVVRVVVVVV....RR...........SSSS..^^^^",
+    ".VVVVVRVVVVVV....RR...........SSSS..^^^^",
+    ".VVVVVRRRRRRRRRRRRR...........SSS...^^^^",
+    ".VVVVVVVVRVVV....RR...........SSS...^^^^",
+    "^^^^^....R.......RR...........SSS...^^^^",
+    "^^^^^....R.......RR...........SSS.......",
+    "^^^^^....R........RR..........SSSS......",
+    "^^^^^....R........RR...........SSS......",
+    ".VVVVVVVVRVVVV....RR.......^^^^SSSS.....",
+    ".VVVVVVVVRVVVV....RR.......^^^^SSSS.....",
+    ".VVVVVVVVRVVVV....RRRRRRRRRRRRRRSSSRRRRR",
+    ".VVVVVVVVRVVVV....RR.......^^^^.SSS.....",
+    ".VVVVVVVVRVVVV.....RR......^^^^.SSSS....",
+    ".VVVVVVVVRVVVV......RR.....^^^^.SSSS....",
+    ".VVVVVVVVRVVVV......RR...........SSS....",
+    ".VVVVVVVVRVVVV......RR...........SSS....",
+    ".VVVVVVVVRVVVV......RR...........SSSS...",
+    ".VVVVVVVVRVVVV......RR...........SSSS...",
+    ".VVVVVVVVRVVVV.....RR............SSSS...",
+    "^^^^.....R.........RR.......^^^^.SSS....",
+    "^^^^.....R.........RR.......^^^^.SSS....",
+    "^^^^.....R.........RR.......^^^^.SSS....",
+    "^^^^.....RRRRRRRRRRRR.......^^^^SSSS....",
+    "..VVVVVVVVVVV......RR.......^^^^SSSS....",
+    "..VVVVVVVVVVV......RRRRRRRRRRRRRSSSRRRRR",
+    "..VVVVVVVVVVV...................SSS.....",
+    "..VVVVVVVVVVV...................SSS.....",
+    "..VVVVVVVVVVV....................SSS....",
+    ".................................SSS....",
+    ".................................SSS...."
+  ],
+  "objectLayout": [
+    "........................................",
+    ".......................K................",
+    ".........B..............U....B..........",
+    ".BBB.....B...FFF...........Q.B..K.......",
+    ".........B...FFF....................K...",
+    ".................X..X..FFF.......U...U..",
+    "..............AA.....AAFFF..............",
+    ".FFFF...FFFFF.AA.....AA.................",
+    "............................BBB.........",
+    "..FFFF....FFF...................K.......",
+    "..............AA.....PPPFFF.....U.......",
+    ".FFFF...FFFF..AA.....PPPFFF.........AA..",
+    ".....................PPP............AAQ.",
+    "...........................B............",
+    "............C.PPP..........B...K........",
+    "......AA....C.PPP....AAA.FF.............",
+    "......AAD...C.PPP....AQA.FF.........FFF.",
+    "........D...B.......................FFF.",
+    "............C.........T.....BBB.........",
+    ".FFFFF.....FCF..........................",
+    "..Q.AA..................................",
+    "..FFAA....FFFF...................U......",
+    "...............AAA........C.............",
+    ".FFFF......FFF.AAA....PPPB..............",
+    "......................PPPB...........AA.",
+    "..FFFF....FFF.........PPPC........K..AA.",
+    "......................D...FF.........FF.",
+    ".FFFF......FFF.AAA.....AAAFF.........FF.",
+    "..............CAAA.....AAA..BBB.........",
+    ".....AA.......C...........AA......U.....",
+    ".....AA.......B........FFFAA............",
+    "..............C........FFF..........AA..",
+    "................K.....AA............AA..",
+    "................BB....AA..U......K......",
+    "..FFFFF..FFFF...........................",
+    "........................................",
+    "...FFFFF..FFF..X.......X..BBB.......B...",
+    "..................CCCC..............B...",
+    "........................................",
+    "...................HH..................."
+  ]
+}

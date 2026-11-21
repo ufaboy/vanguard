@@ -68,6 +68,14 @@ Nothing except a bridge stands on water, swamp, ice or oil (barrels may stand on
 - Berlin: `BRANDENBURG_GATE` (7×2; cells 0, 2, 4, 6 block, cells 1, 3, 5 are drivable passages running north-south; an object such as `B` may close a passage) and `VICTORY_COLUMN` (2×2, fully blocked).
 - Versailles: `VERSAILLES_PALACE` (16×3, fully blocked, garden front facing north), `LATONA_FOUNTAIN` and `APOLLO_FOUNTAIN` (2×2, fully blocked).
 - Brussels: `CINQUANTENAIRE_ARCH` (11×2; colonnade cells 0-1 and 9-10 and piers 2, 4, 6, 8 block, cells 3, 5, 7 are drivable arches running north-south), `ATOMIUM` (3×3, fully blocked), `BRUSSELS_TOWN_HALL` (6×2, fully blocked, front facing north) and `MANNEKEN_PIS` (1×1, blocked).
+- Rome: `COLOSSEUM` (10×8, ring with north-south axial passage), `ARCH_OF_CONSTANTINE` (7×2; 3 drivable passages), `FORUM_COLUMNS` (3×1, fully blocked).
+- Vienna: `HOFBURG_PALACE` (6×2, fully blocked), `ST_STEPHENS_CATHEDRAL` (4×2, fully blocked).
+- Amsterdam: `AMSTERDAM_CANAL_HOUSES` (4×2, fully blocked), `WESTERKERK` (3×2, fully blocked).
+- Barcelona: `SAGRADA_FAMILIA` (4×4, fully blocked), `BARCELONA_CATHEDRAL` (3×2, fully blocked), `MONTJUIC_CASTLE` (5×3, fully blocked), `COLUMBUS_MONUMENT` (2×2, fully blocked), `W_HOTEL_BARCELONA` (3×2, fully blocked).
+- Alps & Pyrenees: `NEUSCHWANSTEIN` (5×3, fully blocked), `HOHENSALZBURG` (5×3, fully blocked), `MONTSERRAT_MONASTERY` (5×2, fully blocked).
+- Italy: `MILAN_DUOMO` (4×3, fully blocked), `VERONA_ARENA` (6×5, ring with north-south axial passage at cols 2-3), `PANTHEON` (4×4, fully blocked).
+- Germany: `REICHSTAG_DOME` (5×3, fully blocked), `FRAUENKIRCHE` (3×3, fully blocked), `ZOLLVEREIN_TOWER` (3×2, fully blocked).
+- Rotterdam: `ERASMUS_BRIDGE` (7×2, drivable bridge deck).
 
 The map scripts treat landmark footprints as solid walls (`#` in `layered-layout.mjs`).
 

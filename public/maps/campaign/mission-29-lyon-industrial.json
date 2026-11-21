@@ -1,0 +1,571 @@
+{
+  "mapId": "campaign-29",
+  "id": 29,
+  "name": "Lyon Industrial",
+  "subtitle": "SECTOR 29 // LYON CHEMICAL CORRIDOR",
+  "objective": "Destroy the Consortium refit line and chemical corridor stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 3,
+      "col": 20
+    },
+    "name": "Consortium Refit Line",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 680
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#c8b8a4",
+    "fogColor": "#333438",
+    "groundColor": "#515356"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Push north up the Lyon Chemical Corridor along three distinct approaches: the western Rhone bank and bridges, the central Consortium refit halls, and the eastern refinery tank farm and rail siding, breaking through brick containment bunds to reach the fortified refit line.",
+    "breaches": [
+      {
+        "name": "North Stronghold Sluice Gate",
+        "cells": [
+          {
+            "row": 9,
+            "col": 19
+          },
+          {
+            "row": 9,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 10,
+          "col": 19
+        },
+        "end": {
+          "row": 7,
+          "col": 19
+        },
+        "purpose": "Blast the northern brick gate to open a direct central approach toward the Consortium Refit Line."
+      },
+      {
+        "name": "East Tank-Farm Containment Bund",
+        "cells": [
+          {
+            "row": 17,
+            "col": 29
+          },
+          {
+            "row": 18,
+            "col": 29
+          }
+        ],
+        "start": {
+          "row": 17,
+          "col": 27
+        },
+        "end": {
+          "row": 17,
+          "col": 31
+        },
+        "purpose": "Punch through the eastern brick bund wall between the rail siding and the refinery tank farm."
+      },
+      {
+        "name": "South Refit Loading Gate",
+        "cells": [
+          {
+            "row": 27,
+            "col": 18
+          },
+          {
+            "row": 27,
+            "col": 19
+          }
+        ],
+        "start": {
+          "row": 29,
+          "col": 18
+        },
+        "end": {
+          "row": 25,
+          "col": 18
+        },
+        "purpose": "Breach the southern brick loading gate to bypass the central factory block."
+      }
+    ],
+    "reference": {
+      "place": "Couloir de la Chimie & Rhone Industrial Corridor, South Lyon (France)",
+      "kind": "real",
+      "kept": [
+        "North-south Rhone river channel on the western flank with road bridges and a dry lock causeway",
+        "Refinery tank farm with chemical/fuel drums on oil slicks and cooling water towers",
+        "Large Consortium refit factory halls and workshops along the central corridor",
+        "Industrial rail siding linking the southern marshaling yard to the northern refit stronghold"
+      ],
+      "simplified": [
+        "Compressed the multi-kilometer Saint-Fons and Feyzin chemical corridor into a 40x40 sector",
+        "Represented distillation columns and pipe racks using generic cooling towers, barrel clusters, and factory halls"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 29052026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "north-refit-stronghold",
+        "bounds": [
+          1,
+          15,
+          8,
+          25
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
+      },
+      {
+        "id": "west-rhone-quay",
+        "bounds": [
+          2,
+          1,
+          35,
+          11
+        ],
+        "surface": "concrete",
+        "density": 0.24,
+        "details": [
+          "tracks",
+          "cracks",
+          "weeds"
+        ]
+      },
+      {
+        "id": "central-refit-corridor",
+        "bounds": [
+          9,
+          12,
+          29,
+          26
+        ],
+        "surface": "asphalt",
+        "density": 0.3,
+        "details": [
+          "tracks",
+          "cracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "east-refinery-farm",
+        "bounds": [
+          9,
+          27,
+          29,
+          38
+        ],
+        "surface": "gravel",
+        "density": 0.28,
+        "details": [
+          "oil",
+          "rubble",
+          "tracks"
+        ]
+      },
+      {
+        "id": "south-marshaling-apron",
+        "bounds": [
+          30,
+          8,
+          38,
+          33
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "corridor-rail-siding",
+        "points": [
+          [
+            2,
+            26
+          ],
+          [
+            29,
+            26
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-chemical-corridor",
+        "kind": "label",
+        "row": 11,
+        "col": 19,
+        "text": "CHEMICAL CORRIDOR"
+      },
+      {
+        "id": "label-rhone-quay",
+        "kind": "label",
+        "row": 19,
+        "col": 9,
+        "text": "RHONE QUAY"
+      },
+      {
+        "id": "label-refinery-farm",
+        "kind": "label",
+        "row": 12,
+        "col": 32,
+        "text": "REFINERY TANKS"
+      },
+      {
+        "id": "loading-central-refit",
+        "kind": "loading",
+        "row": 19,
+        "col": 19,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "hazard-refinery-north",
+        "kind": "hazard_zone",
+        "row": 14,
+        "col": 30,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "hazard-refinery-south",
+        "kind": "hazard_zone",
+        "row": 24,
+        "col": 28,
+        "size": 1.5,
+        "rotation": 0
+      },
+      {
+        "id": "drain-south-apron",
+        "kind": "drain_grate",
+        "row": 33,
+        "col": 22,
+        "size": 1
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear-lane",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.5,
+    "entrances": [
+      {
+        "id": "north-west-bank",
+        "row": 0,
+        "col": 2
+      },
+      {
+        "id": "north-west-corridor",
+        "row": 0,
+        "col": 12
+      },
+      {
+        "id": "north-east-siding",
+        "row": 0,
+        "col": 26
+      },
+      {
+        "id": "north-east-refinery",
+        "row": 0,
+        "col": 35
+      },
+      {
+        "id": "upper-west-quay",
+        "row": 8,
+        "col": 2
+      },
+      {
+        "id": "upper-east-gate",
+        "row": 8,
+        "col": 38
+      }
+    ],
+    "encounters": [
+      {
+        "id": "corridor-outer-patrol",
+        "label": "CHEMICAL CORRIDOR PATROL ENGAGED",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-bank",
+          "north-west-corridor",
+          "north-east-siding",
+          "north-east-refinery"
+        ],
+        "initialCells": [
+          {
+            "row": 3,
+            "col": 2
+          },
+          {
+            "row": 3,
+            "col": 12
+          },
+          {
+            "row": 3,
+            "col": 26
+          },
+          {
+            "row": 3,
+            "col": 34
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 2
+          },
+          {
+            "row": 20,
+            "col": 12
+          },
+          {
+            "row": 30,
+            "col": 12
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "HOVER",
+          "SCOUT",
+          "SAPPER",
+          "ENGINEER",
+          "STANDARD",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "refinery-flank-counterattack",
+        "label": "REFINERY TANK FARM COUNTERATTACK",
+        "recoverySec": 8,
+        "entrances": [
+          "north-east-siding",
+          "north-east-refinery",
+          "upper-east-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 34
+          },
+          {
+            "row": 20,
+            "col": 34
+          },
+          {
+            "row": 30,
+            "col": 26
+          }
+        ],
+        "enemies": [
+          "HOVER",
+          "FLAMETHROWER",
+          "HOWITZER",
+          "STANDARD",
+          "ARMOR",
+          "SAPPER",
+          "JAMMER",
+          "STRIKER",
+          "ENGINEER"
+        ]
+      },
+      {
+        "id": "refit-stronghold-garrison",
+        "label": "CONSORTIUM REFIT LINE GARRISON",
+        "recoverySec": 9,
+        "entrances": [
+          "north-west-corridor",
+          "north-east-siding",
+          "upper-west-quay",
+          "upper-east-gate"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 19
+          },
+          {
+            "row": 20,
+            "col": 19
+          },
+          {
+            "row": 30,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STRIKER",
+          "HOWITZER",
+          "STEALTH",
+          "HOVER",
+          "JAMMER",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "SCOUT",
+    "SAPPER",
+    "ENGINEER",
+    "STANDARD",
+    "ARMOR",
+    "HOVER",
+    "FLAMETHROWER",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "SAPPER",
+    "JAMMER",
+    "STRIKER",
+    "ENGINEER",
+    "ARMOR",
+    "STRIKER",
+    "HOWITZER",
+    "STEALTH",
+    "HOVER",
+    "JAMMER",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVRRWWWW..V.RR............V.......RR..VV",
+    "VVRRWWWW..V.RR............V.......RR..VV",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "VVRRWWWW..V.RR............V.......RR..VV",
+    "VVRRWWWW..V.RR............V.......RR..VV",
+    "..RRWWWW....RR....................RR....",
+    "..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR.............LL.....RR....",
+    "VVRRWWWW..V.RR.............LL.....RR..VV",
+    "VVRRWWWW..V.RR.............LL.....RR..VV",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW..RRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "..RRWWWW..RRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR.............LL.....RR....",
+    "VVRRWWWW..V.RR.............LL.....RR..VV",
+    "VVRRWWWW..V.RR....................RR..VV",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW....RR....................RR....",
+    "..RRWWWW..RRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "..RRWWWW..RRRRRRRRRRRRRRRRRRRRRRRRRR....",
+    "..RRWWWW....RR....................RR....",
+    "VVRRWWWW..V.RR............V.......RR..VV",
+    "VVRRWWWW..V.RR............V.......RR..VV",
+    "..RRWWWW....RR....................RR....",
+    "..SSWWWW....RR....................RR....",
+    "..SSWWWW..........................RR....",
+    "....WWWW................................",
+    "VV..WWWW..............................VV"
+  ],
+  "objectLayout": [
+    "FF....................................FF",
+    "F.........B.....B.......B.....B........F",
+    "..........PP.....CCC.CCC.....PP.........",
+    "AA........PP.....C..E..C.....PP.....AA..",
+    "AA........PP.....C.....C.....PP.....AA..",
+    "..........PP.....CCBBBCC.....PP.........",
+    "........K.......C.......C...........K...",
+    "FF.......Q.B.................B.Q......FF",
+    "F.......AA.........K..BB.........AA....F",
+    "........AA.....B...BB.K......B...AA.....",
+    "........................................",
+    "........................................",
+    ".FF........B.....T...........B....FF....",
+    "........BB.................D.....B......",
+    "..........B..BB.........BB.D..D.CC....FF",
+    ".C........A..PP.BB...BB.PP.D..T..C....F.",
+    ".C........A..PP.........PP.......C......",
+    ".C...........PP.........PP...B........Q.",
+    ".C........Q..................B..CC..CCC.",
+    "..............BB..K.U...BB..............",
+    "....====................................",
+    "....====..PP..CCCBB.....................",
+    ".FF.......PP............................",
+    "AA....Q...PP...............D............",
+    "AA....K...PP..K........K...D.PP.........",
+    "..........C...BB.......BB...CPP...K...FF",
+    "FF........C.................CPP...Q...F.",
+    "F.........B....CCCBBCCC.....CPP.........",
+    "AA........X.........PPP.....X.....AA....",
+    "AA........Q.........PPP...........AA..FF",
+    "....====................................",
+    "....====................................",
+    "FF......AA....BB.......BB.....AA......FF",
+    "F.......AA........X...........AA.......F",
+    "......Q....B..............B.....Q.......",
+    "......B....B..............B.....B.......",
+    "FF......AA.........K..........AA......FF",
+    ".F............F...CCCC...F............F.",
+    "........................................",
+    "FF.................HH.................FF"
+  ]
+}

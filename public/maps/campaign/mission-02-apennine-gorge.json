@@ -1,0 +1,584 @@
+{
+  "mapId": "campaign-02",
+  "id": 2,
+  "name": "Apennine Gorge",
+  "subtitle": "THE IRON ROAD // APENNINE GORGE: FIELD WORKSHOP",
+  "objective": "Defend the field workshop HQ",
+  "gameMode": "base_defense",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 300
+  },
+  "environment": {
+    "theme": "alpine",
+    "tint": "#d8cdb8",
+    "fogColor": "#636c70",
+    "groundColor": "#7a786b"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Hold the southern field workshop HQ across a narrow Apennine river gorge with one central stone bridge, two dry stony fords, and four destructible retaining-wall breaches that reward active lateral rotations.",
+    "breaches": [
+      {
+        "name": "North-west terrace wall",
+        "cells": [
+          {
+            "row": 10,
+            "col": 13
+          },
+          {
+            "row": 10,
+            "col": 14
+          }
+        ],
+        "start": {
+          "row": 9,
+          "col": 13
+        },
+        "end": {
+          "row": 11,
+          "col": 13
+        },
+        "purpose": "Cut laterally between the West Pine Trail and the North Gorge Highway before the river."
+      },
+      {
+        "name": "West valley retaining wall",
+        "cells": [
+          {
+            "row": 23,
+            "col": 12
+          },
+          {
+            "row": 23,
+            "col": 13
+          }
+        ],
+        "start": {
+          "row": 23,
+          "col": 10
+        },
+        "end": {
+          "row": 23,
+          "col": 15
+        },
+        "purpose": "Open a fast rotation lane between the West Pine Trail and the Roadside Relay."
+      },
+      {
+        "name": "East quarry retaining wall",
+        "cells": [
+          {
+            "row": 22,
+            "col": 27
+          },
+          {
+            "row": 22,
+            "col": 28
+          }
+        ],
+        "start": {
+          "row": 22,
+          "col": 25
+        },
+        "end": {
+          "row": 22,
+          "col": 30
+        },
+        "purpose": "Shortcut from the central road into the East Quarry Pass to intercept flanking armor."
+      },
+      {
+        "name": "Workshop perimeter wall",
+        "cells": [
+          {
+            "row": 30,
+            "col": 24
+          },
+          {
+            "row": 30,
+            "col": 25
+          }
+        ],
+        "start": {
+          "row": 29,
+          "col": 24
+        },
+        "end": {
+          "row": 31,
+          "col": 24
+        },
+        "purpose": "Break directly into the eastern workshop approach to counter late-wave pushes."
+      }
+    ],
+    "reference": {
+      "place": "Apennine Mountain Gorge Pass, Italy",
+      "kind": "generic",
+      "kept": [
+        "Narrow mountain gorge river crossed by a central stone bridge and two rocky fords",
+        "Stone ledges, scree slopes, and Mediterranean pine woods on the valley flanks",
+        "Quarry depot on the northeast shelf and roadside relay south of the bridge",
+        "Allied field workshop complex defending the southern valley exit"
+      ],
+      "simplified": [
+        "Elevation cliffs are represented with stone scree, pine belts, and short concrete retaining faces",
+        "Switchback mountain grades are compressed into a bent central highway and two lateral trail/quarry routes",
+        "Rubble falls and barricades represent wartime landslide damage narrowing the lanes"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 20260202,
+    "theme": "alpine",
+    "zones": [
+      {
+        "id": "gorge-floor",
+        "bounds": [
+          1,
+          4,
+          38,
+          35
+        ],
+        "surface": "dirt",
+        "density": 0.25,
+        "details": [
+          "patches",
+          "rubble",
+          "weeds"
+        ]
+      },
+      {
+        "id": "quarry-shelf",
+        "bounds": [
+          3,
+          25,
+          12,
+          36
+        ],
+        "surface": "gravel",
+        "density": 0.35,
+        "details": [
+          "tracks",
+          "rubble",
+          "cracks"
+        ]
+      },
+      {
+        "id": "workshop-apron",
+        "bounds": [
+          31,
+          12,
+          37,
+          27
+        ],
+        "surface": "concrete",
+        "density": 0.3,
+        "details": [
+          "oil",
+          "tracks",
+          "cracks"
+        ]
+      },
+      {
+        "id": "river-shores",
+        "bounds": [
+          14,
+          1,
+          18,
+          38
+        ],
+        "surface": "sand",
+        "density": 0.2,
+        "details": [
+          "rubble",
+          "weeds"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "west-trail-wear",
+        "points": [
+          [
+            1,
+            7
+          ],
+          [
+            15,
+            7
+          ],
+          [
+            29,
+            7
+          ],
+          [
+            30,
+            18
+          ]
+        ],
+        "width": 1.5,
+        "surface": "dirt",
+        "marking": "none"
+      },
+      {
+        "id": "east-quarry-track",
+        "points": [
+          [
+            1,
+            32
+          ],
+          [
+            16,
+            32
+          ],
+          [
+            31,
+            32
+          ],
+          [
+            31,
+            20
+          ]
+        ],
+        "width": 1.5,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "gorge-bridge-label",
+        "kind": "label",
+        "row": 18,
+        "col": 20,
+        "size": 3,
+        "text": "GORGE BRIDGE"
+      },
+      {
+        "id": "west-ford-label",
+        "kind": "label",
+        "row": 18,
+        "col": 7,
+        "size": 3,
+        "text": "WEST FORD"
+      },
+      {
+        "id": "east-ford-label",
+        "kind": "label",
+        "row": 19,
+        "col": 32,
+        "size": 3,
+        "text": "EAST FORD"
+      },
+      {
+        "id": "workshop-loading",
+        "kind": "loading",
+        "row": 34,
+        "col": 15,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "bridgehead-drain",
+        "kind": "drain_grate",
+        "row": 14,
+        "col": 19,
+        "size": 1,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-apron-clear",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 4.5,
+    "entrances": [
+      {
+        "id": "north-west-trail",
+        "row": 0,
+        "col": 7
+      },
+      {
+        "id": "north-gorge-west",
+        "row": 0,
+        "col": 18
+      },
+      {
+        "id": "north-gorge-east",
+        "row": 0,
+        "col": 21
+      },
+      {
+        "id": "north-east-quarry",
+        "row": 0,
+        "col": 32
+      }
+    ],
+    "encounters": [
+      {
+        "id": "rearguard-probe",
+        "label": "CONSORTIUM REARGUARD PROBING THE GORGE",
+        "recoverySec": 0,
+        "entrances": [
+          "north-gorge-west",
+          "north-west-trail"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 18
+          },
+          {
+            "row": 18,
+            "col": 19
+          },
+          {
+            "row": 25,
+            "col": 21
+          },
+          {
+            "row": 32,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "HOVER"
+        ],
+        "initialCells": [
+          {
+            "row": 2,
+            "col": 7
+          },
+          {
+            "row": 2,
+            "col": 19
+          },
+          {
+            "row": 2,
+            "col": 20
+          },
+          {
+            "row": 3,
+            "col": 32
+          }
+        ]
+      },
+      {
+        "id": "quarry-flank-push",
+        "label": "QUARRY FLANK PUSH WITH HOWITZER SUPPORT",
+        "recoverySec": 8,
+        "entrances": [
+          "north-east-quarry",
+          "north-gorge-east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 32
+          },
+          {
+            "row": 19,
+            "col": 32
+          },
+          {
+            "row": 29,
+            "col": 32
+          },
+          {
+            "row": 31,
+            "col": 21
+          }
+        ],
+        "enemies": [
+          "SAPPER",
+          "STANDARD",
+          "ARMOR",
+          "STANDARD",
+          "SAPPER",
+          "HOVER",
+          "STANDARD",
+          "HOWITZER"
+        ]
+      },
+      {
+        "id": "gorge-breakthrough",
+        "label": "FINAL REARGUARD ASSAULT ON WORKSHOP HQ",
+        "recoverySec": 9,
+        "entrances": [
+          "north-west-trail",
+          "north-gorge-west",
+          "north-gorge-east",
+          "north-east-quarry"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 7
+          },
+          {
+            "row": 19,
+            "col": 7
+          },
+          {
+            "row": 29,
+            "col": 7
+          },
+          {
+            "row": 30,
+            "col": 18
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD",
+          "ARMOR",
+          "HOVER",
+          "STANDARD",
+          "ARMOR"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "HOVER",
+    "SAPPER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "SAPPER",
+    "HOVER",
+    "STANDARD",
+    "HOWITZER",
+    "ARMOR",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "ARMOR",
+    "HOVER",
+    "STANDARD",
+    "ARMOR"
+  ],
+  "surfaceLayout": [
+    "^^^^...R...........RR...........R...^^^^",
+    "^^VVVV.R...........RR...........R.VVVV^^",
+    "^^VVVV.R...........RR...........R.VVVV^^",
+    "^^VVVV.R...........RR...........R.VVVV^^",
+    "^^VVVV.R...^^^^....RR...^^^^....R.VVVV^^",
+    "^^VVVV.R...^^^^..RRRR...^^^^....R.VVVV^^",
+    "^^VVVV.R...^^^^..RRRR...^^^^....R.VVVV^^",
+    "^^VVVVVRVVV^^^^..RR.....^^^^....R.VVVV^^",
+    "^^VVVVVRVVV......RR......VVVVVV.R.VVVV^^",
+    "^^VVVVVRRRRRRRRRRRR..RRRRRVVRRRRR.VVVV^^",
+    "^^VVVVVRVVV......RR......VVVVVV.R.VVVV^^",
+    "^^VVVVVRVVV......RRRR....VVVVVV.R.VVVV^^",
+    "^^VVVVVRVVV......RRRR....VVVVVV.R.VVVV^^",
+    "^^VVVVVRVVV........RR....VVVVVV.R.VVVV^^",
+    "SSSSSSSRSSSSSSSSSSSRRSSSSSSSSSSSRSSSSSSS",
+    "WWWWWWSSSWWWWWWWWWWWWWWWWWWWWWWSSSSSSSSS",
+    "WWWWWWSSSWWWWWWWWWWWWWWWWWWWWWWSSSWWWWWW",
+    "WWWWWWSSSWWWWWWWWWWWWWWWWWWWWWWSSSWWWWWW",
+    "SSSSSSSSSSSSSSSSSSSRRSSSSSSSSSSSSSWWWWWW",
+    "^^VVVV.R...........RR...........R...^^^^",
+    "^^VVVVVRVVV........RRRR.........R.VVVV^^",
+    "^^VVVVVRVVV^^......RRRRVVVVV....R.VVVV^^",
+    "^^VVVVVRVVV^^........RRVVVVV....R.VVVV^^",
+    "^^VVVVVRVVV^^........RRVVVVV....R.VVVV^^",
+    "^^VVVVVRVVV^^........RRVVVVV....R.VVVV^^",
+    "^^VVVVVRVVV..........RRVVVVV^^^.R.VVVV^^",
+    "^^VVVVVRVVV.......RRRRR....^^^^.R.VVVV^^",
+    "^^VVVVVRVVVVVVVV..RRRRR....^^^^.R.VVVV^^",
+    "^^VVVVVRVVVVVVVV..RR.......^^^^.R.VVVV^^",
+    "^^VVVVVRVVVVVVVV..RR.......^^^^.R.VVVV^^",
+    "^^VVVV.RRRRRVRRRRRRR............R.VVVV^^",
+    "^^VVVV.....VVVVV..RRRRRRRRRRRRRRR.VVVV^^",
+    "^^VVVV.....VVVVV..RR.........VV...VVVV^^",
+    "^^VVVV............RR.........VVV..VVVV^^",
+    "^^VVVV............RR..........V...VVVV^^",
+    "^^VVVV............................VVVV^^",
+    "^^VVVV............................VVVV^^",
+    "^^^^................................^^^^",
+    "^^^^................................^^^^",
+    "^^^^................................^^^^"
+  ],
+  "objectLayout": [
+    "........................................",
+    "...FF.............................FF....",
+    ".CCFF......FF..........FF..........F..C.",
+    ".C..FF.....FFF.........FFF.........F..C.",
+    ".C.AA......................PPP........C.",
+    "...AA.................K...DPPP..........",
+    "...F..........AA..........DPPP.....F....",
+    "...FF.........AA...................FF...",
+    ".C..FF....Q....D.....UU...FF........F...",
+    ".C........................FF............",
+    ".C.F........CBBC...........F......AA..C.",
+    "...FF.................U.....FF....AQ..C.",
+    "....FF.........K......U...............C.",
+    "..........CCC.............CCC.UU........",
+    "........K...............................",
+    "...................==...................",
+    "...................==...................",
+    "...................==...................",
+    "................XX....KXX...............",
+    "..........CCC..T.........CCC............",
+    "...FF..............................FF...",
+    ".C.FF...F.......PP......FF.C.......FF.C.",
+    ".CQ.F...FF..C...PP......FF.BB......F..C.",
+    ".C..FF...F..BB..PP..K....F.C..........C.",
+    "........FF..C.....U..........KU.........",
+    "....AA............UU..........UU........",
+    "....AA............................AA....",
+    "....AA.........K............U.....AA....",
+    "...FF......FF...............UU.....Q....",
+    "....FF.....FF........K............FF....",
+    "....F.......F..........CBBC..K.....F....",
+    ".C..FF..........X..................F....",
+    ".C.........Q.PPP.......XAA...FF.......C.",
+    ".C...........PPP........AAD..FFF......C.",
+    ".............DD...............F.......C.",
+    "....FF............................FF....",
+    "....FFF..........................FFF....",
+    "..................CCCC..................",
+    "........................................",
+    "...................HH..................."
+  ]
+}

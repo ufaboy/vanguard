@@ -1,0 +1,600 @@
+{
+  "mapId": "campaign-37",
+  "id": 37,
+  "name": "Barcelona: Montjuic",
+  "subtitle": "SECTOR 37 // MONTJUIC COASTAL BATTERY",
+  "objective": "Silence the Montjuic coastal guns and capture the castle stronghold",
+  "gameMode": "stronghold_assault",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 4,
+      "col": 19
+    },
+    "name": "Montjuic Castle Battery",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 1300
+  },
+  "environment": {
+    "theme": "coast",
+    "tint": "#d2dfd6",
+    "fogColor": "#455863",
+    "groundColor": "#6e7a6d"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Assault the fortified Montjuic Castle and coastal battery from the southern approaches across three distinct corridors: the western Olympic Ring and pine parklands, the central hill terraces and castle sally gate, and the eastern Mediterranean cliffside coastal road.",
+    "breaches": [
+      {
+        "name": "Castle South Sally Gate",
+        "cells": [
+          {
+            "row": 7,
+            "col": 18
+          },
+          {
+            "row": 7,
+            "col": 19
+          },
+          {
+            "row": 7,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 9,
+          "col": 19
+        },
+        "end": {
+          "row": 5,
+          "col": 19
+        },
+        "purpose": "Blast through the brick sally gate in Montjuic Castle south curtain wall to storm the battery courtyard."
+      },
+      {
+        "name": "Olympic East Retaining Wall",
+        "cells": [
+          {
+            "row": 20,
+            "col": 15
+          },
+          {
+            "row": 20,
+            "col": 16
+          }
+        ],
+        "start": {
+          "row": 20,
+          "col": 13
+        },
+        "end": {
+          "row": 20,
+          "col": 18
+        },
+        "purpose": "Breach the retaining wall east of Estadi Olimpic to link the Olympic Ring directly with the central pine slope."
+      },
+      {
+        "name": "Miramar Terrace Barricade",
+        "cells": [
+          {
+            "row": 16,
+            "col": 26
+          },
+          {
+            "row": 17,
+            "col": 26
+          }
+        ],
+        "start": {
+          "row": 16,
+          "col": 24
+        },
+        "end": {
+          "row": 16,
+          "col": 28
+        },
+        "purpose": "Smash the brick terrace barrier between the Miramar overlook and the eastern coastal road."
+      },
+      {
+        "name": "Botanical Slope Wall",
+        "cells": [
+          {
+            "row": 27,
+            "col": 23
+          },
+          {
+            "row": 27,
+            "col": 24
+          }
+        ],
+        "start": {
+          "row": 29,
+          "col": 23
+        },
+        "end": {
+          "row": 25,
+          "col": 23
+        },
+        "purpose": "Open a shortcut through the botanical garden wall into the mid-hill cross road."
+      }
+    ],
+    "reference": {
+      "place": "Montjuic Hill, Castle, Olympic Ring & Mediterranean Coast (Barcelona, Spain)",
+      "kind": "real",
+      "kept": [
+        "Montjuic Castle and coastal artillery battery on the northern summit with concrete curtain walls and brick sally gate",
+        "Mediterranean sea edge and rocky/sandy coves along the eastern flank without sealing the map",
+        "Estadi Olimpic bowl, Palau Sant Jordi hall, and Calatrava communications tower at the Olympic Ring junction",
+        "Pine and cypress hill parklands, Miramar terrace, and winding coastal access roads"
+      ],
+      "simplified": [
+        "Compressed the broad Montjuic massif, Olympic plateau, and port cliffside into a 40x40 tactical sector",
+        "Represented the Calatrava communications tower with a generic water/signal tower landmark and the Olympic Ring with modular 2-storey stadium blocks and ground markings until a Barcelona 3D landmark pack exists"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 372026,
+    "theme": "coast",
+    "zones": [
+      {
+        "id": "castle-courtyard",
+        "bounds": [
+          1,
+          15,
+          8,
+          24
+        ],
+        "surface": "concrete",
+        "density": 0.28,
+        "details": [
+          "cracks",
+          "rubble",
+          "patches"
+        ]
+      },
+      {
+        "id": "olympic-ring-plaza",
+        "bounds": [
+          13,
+          3,
+          29,
+          16
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "leaves",
+          "tracks"
+        ]
+      },
+      {
+        "id": "coastal-battery-ridge",
+        "bounds": [
+          2,
+          26,
+          24,
+          34
+        ],
+        "surface": "gravel",
+        "density": 0.3,
+        "details": [
+          "cracks",
+          "oil",
+          "rubble"
+        ]
+      },
+      {
+        "id": "southern-terrace",
+        "bounds": [
+          32,
+          12,
+          39,
+          27
+        ],
+        "surface": "asphalt",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "olympic-promenade",
+        "points": [
+          [
+            14,
+            15
+          ],
+          [
+            19,
+            15
+          ]
+        ],
+        "width": 2,
+        "surface": "pavers",
+        "marking": "none"
+      },
+      {
+        "id": "miramar-walk",
+        "points": [
+          [
+            17,
+            21
+          ],
+          [
+            17,
+            25
+          ]
+        ],
+        "width": 1.5,
+        "surface": "gravel",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-castle",
+        "kind": "label",
+        "row": 6,
+        "col": 19,
+        "text": "MONTJUIC CASTLE"
+      },
+      {
+        "id": "label-olympic",
+        "kind": "label",
+        "row": 23,
+        "col": 11,
+        "text": "OLYMPIC RING"
+      },
+      {
+        "id": "label-miramar",
+        "kind": "label",
+        "row": 18,
+        "col": 23,
+        "text": "MIRAMAR"
+      },
+      {
+        "id": "hazard-battery",
+        "kind": "hazard_zone",
+        "row": 6,
+        "col": 29,
+        "size": 2,
+        "rotation": 0
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-apron",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [
+    {
+      "kind": "MONTJUIC_CASTLE",
+      "row": 15,
+      "col": 9
+    }
+  ],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 6,
+    "entrances": [
+      {
+        "id": "north-west-park",
+        "row": 0,
+        "col": 6
+      },
+      {
+        "id": "north-castle-west",
+        "row": 0,
+        "col": 13
+      },
+      {
+        "id": "north-castle-east",
+        "row": 0,
+        "col": 25
+      },
+      {
+        "id": "north-cliff-road",
+        "row": 0,
+        "col": 31
+      },
+      {
+        "id": "west-mirador",
+        "row": 10,
+        "col": 0
+      },
+      {
+        "id": "east-battery",
+        "row": 10,
+        "col": 32
+      }
+    ],
+    "encounters": [
+      {
+        "id": "coastal-pickets",
+        "label": "COASTAL PICKETS: Forward recon and battery guards probing the hill approaches.",
+        "recoverySec": 0,
+        "entrances": [
+          "north-west-park",
+          "north-castle-west",
+          "north-castle-east",
+          "north-cliff-road"
+        ],
+        "initialCells": [
+          {
+            "row": 3,
+            "col": 6
+          },
+          {
+            "row": 4,
+            "col": 13
+          },
+          {
+            "row": 4,
+            "col": 25
+          },
+          {
+            "row": 4,
+            "col": 31
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 13
+          },
+          {
+            "row": 14,
+            "col": 20
+          },
+          {
+            "row": 24,
+            "col": 20
+          },
+          {
+            "row": 30,
+            "col": 19
+          },
+          {
+            "row": 34,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "HOWITZER",
+          "STEALTH",
+          "STANDARD",
+          "ARMOR"
+        ]
+      },
+      {
+        "id": "olympic-counterattack",
+        "label": "OLYMPIC COUNTERATTACK: Mechanized columns sweeping the stadium ring and pine slopes.",
+        "recoverySec": 8,
+        "entrances": [
+          "north-west-park",
+          "north-cliff-road",
+          "west-mirador",
+          "east-battery"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 6
+          },
+          {
+            "row": 24,
+            "col": 6
+          },
+          {
+            "row": 34,
+            "col": 7
+          },
+          {
+            "row": 35,
+            "col": 17
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "ARMOR",
+          "FLAMETHROWER",
+          "STANDARD",
+          "STRIKER",
+          "SAPPER",
+          "STEALTH",
+          "HOWITZER",
+          "ENGINEER"
+        ]
+      },
+      {
+        "id": "castle-garrison",
+        "label": "MONTJUIC GARRISON: Heavy coastal-battery reserve defending the castle ramparts.",
+        "recoverySec": 9,
+        "entrances": [
+          "north-castle-west",
+          "north-castle-east",
+          "north-cliff-road",
+          "east-battery"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 31
+          },
+          {
+            "row": 22,
+            "col": 29
+          },
+          {
+            "row": 33,
+            "col": 29
+          },
+          {
+            "row": 35,
+            "col": 21
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "STRIKER",
+          "JAMMER",
+          "HOWITZER",
+          "HOVER",
+          "ARMOR",
+          "STANDARD",
+          "STRIKER"
+        ]
+      }
+    ],
+    "boss": {
+      "enabled": false
+    }
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "HOWITZER",
+    "STEALTH",
+    "STANDARD",
+    "ARMOR",
+    "SCOUT",
+    "ARMOR",
+    "FLAMETHROWER",
+    "STANDARD",
+    "STRIKER",
+    "SAPPER",
+    "STEALTH",
+    "HOWITZER",
+    "ENGINEER",
+    "ARMOR",
+    "STANDARD",
+    "STRIKER",
+    "JAMMER",
+    "HOWITZER",
+    "HOVER",
+    "ARMOR",
+    "STANDARD",
+    "STRIKER"
+  ],
+  "surfaceLayout": [
+    "VVVVVVRRVVVVVRRVVVVVVVVVVRRVVVVRRV^^WWWW",
+    "VVVVVVRRVVVVVRR..........RRVVVVRRV^^WWWW",
+    "VVVVVVRRVVVVVRR..........RR^^^^RR^^WWWWW",
+    "VVVVVVRRVVVVVRR..........RR^^^^RR^^WWWWW",
+    "VVVVVVRRVVVVVRR..........RR^^^^RR^^WWWWW",
+    "VVVVVVRRVVVVVVV..........VV^^^^RRV^^WWWW",
+    "VVVVVVRRVVVVVVV..........VV^^L^RRV^^WWWW",
+    "VVVVVVRRVVVVVVV..........VV^^^^RRV^^WWWW",
+    "VVVVVVRRVVVVVVV....RR....VV^^^^RRV^^WWWW",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVV^^^^RRV^^WWWW",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVRRRRV^^WWWW",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVRRRRRVSSWWWW",
+    "VVVVVVRRRRRRRRRRRRRRRRRRRRRRRR^^VSSWWWWW",
+    "VVV...RRRRRRRRRRRRRRRRRRRRRRRR^^VSSWWWWW",
+    "VVV...RR.........VVVVVVVVVVVRR^^SSWSWWWW",
+    "VVV...RR.........VVVVVVVVVVVRR^^SSWSWWWW",
+    "VVV...RR.........VVVVVVVVVVVRR^^SSWSWWWW",
+    "VVV...RR.........VVVVVVVVVVVRR^^VSSWWWWW",
+    "VVV...RR.........VVVVVVVVVVVRR^^VVSSWWWW",
+    "VVV...RR.........VVVVVVVVVVVRR^^VV^^WWWW",
+    "VVV...RR.........VVVVVVVVVVVRR^^VV^^WWWW",
+    "VVV...RR.........VVVVVVVVVVVRR^^VV^^WWWW",
+    "VVV...RR.........VVVVVVVVVVVRRR^VV^^WWWW",
+    "VVV...RR.........VVVVVVVVVVVVRR^VV^^WWWW",
+    "VVV...RRRRRRRRRRRRRRRRRRRRRRRRR^VV^^WWWW",
+    "VVV...RRRRRRRRRRRRRRRRRRRRRRRRRVVSSWWWWW",
+    "VVV...RR.........VVRRVVVVVVVVRRVVSSWWWWW",
+    "VVV...RR.........VVRRVVVVVVVVRRVSSWSWWWW",
+    "VVV...RR.....L...VVRRVVVVVVVVRRVSSWSWWWW",
+    "VVV...RR.........VVRRVVVVVVVVRRVVSSWWWWW",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVRRVVSSWWWWW",
+    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVRRVVVSSWWWW",
+    "VVVVVVRRVVVV.......RR.......VRRVVV^^WWWW",
+    "VVVVVVRRVVVV.......RR.RRRRRRRRRVVV^^WWWW",
+    "VVVVVVRRRRRRRRRRRRRRRRRRRRRRRRRVVV^^WWWW",
+    "VVVVVVVRRRRRRRRRRRRRRRR.....VVVVVV^^WWWW",
+    "VVVVVVVVVVVV................VVVVV^^WWWWW",
+    "VVVVVVVVVVVV................VVVVV^^WWWWW",
+    "VVVVVVVVVVVV................VVVVV^^WWWWW",
+    "VVVVVVVVVVVV................VVVVV^^WWWWW"
+  ],
+  "objectLayout": [
+    "........................................",
+    ".................................F......",
+    ".FF......F......CC..CCCC................",
+    ".FFF.....FF....C...C..A.C..CCD..........",
+    "..FFF..........C..CEC..TC..CC...........",
+    "...FF.....AA...C......D.C...Q....F......",
+    ".FF.......AA...CQ.....A.C....D...F......",
+    ".FFF.....F.....CCCBBBCCCC..BB...........",
+    ".........FF................BBK..........",
+    "..FF................K.FF................",
+    "...FF.................UFF...............",
+    "..FFFX..X..........K...FF...............",
+    ".Q.............................AA.......",
+    "...........................K...AA.......",
+    "................TX...K.PPPC.............",
+    "..PPP.........P...FF...PPPC.............",
+    "..PPP.........P...FFF.....B.............",
+    "..PPP.........P...FFF.....B.............",
+    "..PPP......K....C..FF.....CF............",
+    "............Q...C.....AAA.CF............",
+    ".........P....PBB.....AAA.CF............",
+    "..FF.....P....P.C.........CFK...F.......",
+    "..FFF....PPPPPP.C.U.............FQ......",
+    "..FF..............X..X..........F.......",
+    "........................................",
+    "...............................X........",
+    "..AAA....AAAA.......AAA........K........",
+    "..AAA....AAAADQ.FF..AAABBCC.............",
+    "..AAA....AAAAD.FFK..AAA.................",
+    "...............UFF......PPP.............",
+    "...AAA....PPPP........U.PPP.............",
+    "...AAA....PPPP....K..K......Q..AAA......",
+    "...AAA....PPPP.......X......D..AAA......",
+    ".....F.........X...............AAA......",
+    "....FF..................................",
+    "....FF.....................FF...FF......",
+    "...FFF..AA.................FFF..F.......",
+    "........AA.FF.....CCCC.....FF...........",
+    "...........F............................",
+    "...................HH..................."
+  ]
+}

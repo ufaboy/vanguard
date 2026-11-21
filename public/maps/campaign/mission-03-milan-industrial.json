@@ -1,0 +1,662 @@
+{
+  "mapId": "campaign-03",
+  "id": 3,
+  "name": "Milan Industrial",
+  "subtitle": "SECTOR 03 // NAVIGLIO TECH HUB",
+  "objective": "Destroy the Consortium tech hub",
+  "gameMode": "stronghold_assault",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 19
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "enemyBase": {
+    "cell": {
+      "row": 5,
+      "col": 22
+    },
+    "name": "Consortium Tech Hub",
+    "maxHp": 48,
+    "fortifyPerimeter": true
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "completionReward": {
+    "credits": 320
+  },
+  "environment": {
+    "theme": "industrial",
+    "tint": "#d8a07c",
+    "fogColor": "#363230",
+    "groundColor": "#585552"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Push north through Milan industrial corridors—along the Naviglio canal towpath, the central rail sidings, or the eastern sawtooth factories—to breach the Consortium tech hub.",
+    "breaches": [
+      {
+        "name": "Central rail gate",
+        "cells": [
+          {
+            "row": 13,
+            "col": 19
+          },
+          {
+            "row": 13,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 15,
+          "col": 19
+        },
+        "end": {
+          "row": 11,
+          "col": 19
+        },
+        "purpose": "Breach the central rail barrier to open a direct approach toward the Consortium tech hub."
+      },
+      {
+        "name": "West siding wall",
+        "cells": [
+          {
+            "row": 19,
+            "col": 12
+          },
+          {
+            "row": 20,
+            "col": 12
+          }
+        ],
+        "start": {
+          "row": 19,
+          "col": 10
+        },
+        "end": {
+          "row": 19,
+          "col": 14
+        },
+        "purpose": "Cut between the Naviglio canal road and the central rail yard."
+      },
+      {
+        "name": "East warehouse partition",
+        "cells": [
+          {
+            "row": 18,
+            "col": 27
+          },
+          {
+            "row": 19,
+            "col": 27
+          }
+        ],
+        "start": {
+          "row": 18,
+          "col": 25
+        },
+        "end": {
+          "row": 18,
+          "col": 29
+        },
+        "purpose": "Flank between the central factory yard and the eastern industrial avenue."
+      },
+      {
+        "name": "South loading yard wall",
+        "cells": [
+          {
+            "row": 27,
+            "col": 18
+          },
+          {
+            "row": 27,
+            "col": 19
+          }
+        ],
+        "start": {
+          "row": 29,
+          "col": 18
+        },
+        "end": {
+          "row": 25,
+          "col": 18
+        },
+        "purpose": "Shorten the southern push into the central factory spine."
+      }
+    ],
+    "reference": {
+      "place": "Milan Industrial Belt (Naviglio & Rail Sidings)",
+      "kind": "real",
+      "kept": [
+        "Naviglio canal on the west with stone quay walls, road bridges, and a shallow ford",
+        "Freight rail sidings with gravel track beds, fuel depots, and loading aprons",
+        "Sawtooth factory halls, administrative offices, and a central water tower",
+        "Fortified Consortium tech hub command compound in the north"
+      ],
+      "simplified": [
+        "Compressed multi-block Milan factory district into three north-south corridors on a 40x40 grid",
+        "Represented rail sidings via gravel path ribbons and loading aprons",
+        "Used generic industrial tile kit without custom Milan monuments"
+      ]
+    }
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 3032026,
+    "theme": "industrial",
+    "zones": [
+      {
+        "id": "central-rail-yard",
+        "bounds": [
+          2,
+          12,
+          31,
+          27
+        ],
+        "surface": "gravel",
+        "density": 0.22,
+        "details": [
+          "tracks",
+          "oil",
+          "rubble"
+        ]
+      },
+      {
+        "id": "tech-hub-compound",
+        "bounds": [
+          2,
+          18,
+          9,
+          27
+        ],
+        "surface": "concrete",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
+      },
+      {
+        "id": "east-factory-belt",
+        "bounds": [
+          2,
+          31,
+          31,
+          38
+        ],
+        "surface": "asphalt",
+        "density": 0.24,
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
+      },
+      {
+        "id": "west-canal-towpath",
+        "bounds": [
+          2,
+          1,
+          31,
+          7
+        ],
+        "surface": "dirt",
+        "density": 0.2,
+        "details": [
+          "weeds",
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "south-marshaling-apron",
+        "bounds": [
+          34,
+          10,
+          39,
+          29
+        ],
+        "surface": "pavers",
+        "density": 0.22,
+        "details": [
+          "cracks",
+          "tracks",
+          "oil"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "north-rail-siding",
+        "points": [
+          [
+            0,
+            16
+          ],
+          [
+            7,
+            16
+          ],
+          [
+            7,
+            17
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "central-rail-siding",
+        "points": [
+          [
+            14,
+            21
+          ],
+          [
+            26,
+            21
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "east-branch-siding",
+        "points": [
+          [
+            12,
+            20
+          ],
+          [
+            12,
+            28
+          ],
+          [
+            22,
+            28
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "hq-apron-loop",
+        "points": [
+          [
+            35,
+            16
+          ],
+          [
+            35,
+            23
+          ]
+        ],
+        "width": 2,
+        "surface": "asphalt",
+        "marking": "none"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-naviglio",
+        "kind": "label",
+        "row": 17,
+        "col": 7,
+        "text": "NAVIGLIO CANAL"
+      },
+      {
+        "id": "label-tech-hub",
+        "kind": "label",
+        "row": 7,
+        "col": 21,
+        "text": "CONSORTIUM HUB"
+      },
+      {
+        "id": "label-rail-yard",
+        "kind": "label",
+        "row": 24,
+        "col": 19,
+        "text": "RAIL SIDING"
+      },
+      {
+        "id": "crosswalk-canal-n",
+        "kind": "crosswalk",
+        "row": 12,
+        "col": 8,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "crosswalk-canal-s",
+        "kind": "crosswalk",
+        "row": 28,
+        "col": 8,
+        "size": 2,
+        "rotation": 0
+      },
+      {
+        "id": "loading-east-bay",
+        "kind": "loading",
+        "row": 24,
+        "col": 33,
+        "size": 1.5,
+        "rotation": 90
+      },
+      {
+        "id": "hazard-wt",
+        "kind": "hazard_zone",
+        "row": 19,
+        "col": 19,
+        "size": 1.2
+      },
+      {
+        "id": "drain-canal-quay",
+        "kind": "drain_grate",
+        "row": 18,
+        "col": 8,
+        "size": 1
+      },
+      {
+        "id": "helipad-south",
+        "kind": "helipad",
+        "row": 35,
+        "col": 22,
+        "size": 1.5
+      }
+    ],
+    "exclusions": [
+      {
+        "id": "hq-clear-approach",
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
+      }
+    ]
+  },
+  "landmarks3d": [
+    {
+      "kind": "MILAN_DUOMO",
+      "row": 25,
+      "col": 22
+    }
+  ],
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 4,
+    "entrances": [
+      {
+        "id": "north-canal-west",
+        "row": 2,
+        "col": 2
+      },
+      {
+        "id": "north-canal-road",
+        "row": 2,
+        "col": 8
+      },
+      {
+        "id": "north-rail-spine",
+        "row": 2,
+        "col": 16
+      },
+      {
+        "id": "north-factory-east",
+        "row": 2,
+        "col": 30
+      },
+      {
+        "id": "upper-east-siding",
+        "row": 6,
+        "col": 36
+      },
+      {
+        "id": "upper-west-quay",
+        "row": 7,
+        "col": 8
+      }
+    ],
+    "encounters": [
+      {
+        "id": "canal-and-rail-probe",
+        "label": "CANAL QUAY & RAIL SIDING VANGUARD",
+        "recoverySec": 0,
+        "entrances": [
+          "north-canal-west",
+          "north-canal-road",
+          "north-rail-spine"
+        ],
+        "initialCells": [
+          {
+            "row": 4,
+            "col": 11
+          },
+          {
+            "row": 5,
+            "col": 16
+          },
+          {
+            "row": 5,
+            "col": 29
+          },
+          {
+            "row": 4,
+            "col": 36
+          }
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 8
+          },
+          {
+            "row": 20,
+            "col": 8
+          },
+          {
+            "row": 28,
+            "col": 12
+          }
+        ],
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "HOVER",
+          "STANDARD",
+          "SAPPER",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "factory-belt-pressure",
+        "label": "EASTERN FACTORY BELT & ARTILLERY SUPPORT",
+        "recoverySec": 8,
+        "entrances": [
+          "north-rail-spine",
+          "north-factory-east",
+          "upper-east-siding"
+        ],
+        "patrolRoute": [
+          {
+            "row": 11,
+            "col": 30
+          },
+          {
+            "row": 23,
+            "col": 29
+          },
+          {
+            "row": 29,
+            "col": 22
+          }
+        ],
+        "enemies": [
+          "STANDARD",
+          "ENGINEER",
+          "HOWITZER",
+          "HOVER",
+          "STANDARD",
+          "SAPPER",
+          "ARMOR",
+          "STANDARD"
+        ]
+      },
+      {
+        "id": "tech-hub-counterattack",
+        "label": "CONSORTIUM TECH HUB GARRISON",
+        "recoverySec": 9,
+        "entrances": [
+          "north-canal-road",
+          "north-rail-spine",
+          "north-factory-east",
+          "upper-west-quay"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 20
+          },
+          {
+            "row": 22,
+            "col": 19
+          },
+          {
+            "row": 31,
+            "col": 19
+          }
+        ],
+        "enemies": [
+          "ARMOR",
+          "ENGINEER",
+          "HOWITZER",
+          "STANDARD",
+          "HOVER",
+          "ARMOR",
+          "STANDARD"
+        ]
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "HOVER",
+    "STANDARD",
+    "SAPPER",
+    "STANDARD",
+    "STANDARD",
+    "ENGINEER",
+    "HOWITZER",
+    "HOVER",
+    "STANDARD",
+    "SAPPER",
+    "ARMOR",
+    "STANDARD",
+    "ARMOR",
+    "ENGINEER",
+    "HOWITZER",
+    "STANDARD",
+    "HOVER",
+    "ARMOR",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVSWWSVRRV..................RR.........",
+    "VVVSWWSVRRV..VV..............RRVVVVVVVVV",
+    "VVVSWWSVRRVV.VV..............RRVVVVVVVVV",
+    "VVVSWWSVRRVV.................RRVVVVVVVVV",
+    "VVVSWWSVRRVV.................RRVVVVVVVVV",
+    "VVVSWWSVRRV..................RRVVVVVVVVV",
+    "VVVSWWSVRRV...............V..RRVVVVVVVVV",
+    "VVVSWWSVRRV..VV...........VV.RRVVVVVVVVV",
+    "VVVSWWSVRRV...VLL..........V.RRVVVVVVVVV",
+    "VVVSWWSVRRV....L.............RRVVVVVVVVV",
+    "VVVSWWSVRRV..................RRVVVVVVVVV",
+    "VVVSWWSVRRV..................RRVVVVVVVVV",
+    "RRRRWWRRRRRRRRRR.............RRVVVVVVVVV",
+    "VVVSWWSVRRV..................RRVVVVVVVVV",
+    "VVVVSWWSRRV..V...............RRVVLLVVVVV",
+    "VVVVSWWSRRV..V...............RRVVVVVVVVV",
+    "VVVVSWWSRRV...........L......RRVVVVVVVVV",
+    "VVVVSWWSRRVV..........LL.....RRVVVVVVVVV",
+    "VVVVSWWSRRVV.............V...RRVVVVVVVVV",
+    "VVVVSWWSRRV..V...........VV..RRVVVVVVVVV",
+    "VVVVSSSSRRV..V...............RRVVVVVVVVV",
+    "VVVVSSSSRRV..................RRVVVVVVVVV",
+    "VVVVSWWSRRV..................RRVVVVVVVVV",
+    "VVVVSWWSRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVSWWSRRV..................RRV....VVVV",
+    "VVVVSWWSRRV.....L............RRVVVVVVVVV",
+    "VVVVSWWSRRV.....L............RRVVVVVVVVV",
+    "VVVSWWSVRRV..................RRVVVVVVVVV",
+    "RRRRWWRRRRRRRRRR.............RRVVVVVVVVV",
+    "VVVSWWSVRRV..............L...RRVVVVVVVVV",
+    "VVVSWWSVRRV....V........VL...RRVVVVVVVVV",
+    "..VSWWS.RR.....VV.......V....RR.....VV..",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    ".VVSWWSVVV....................VVVVVVVVV.",
+    ".VVSWWSVVV....................VVVVVVVVV.",
+    ".VVSWWSVVV....V..........V....VVVVVVVVV.",
+    ".VVSWWSVVV....V..........V....VVVVVVVVV.",
+    ".VVSWWSVVV....................VVVVVVVVV.",
+    "...SWWS................................."
+  ],
+  "objectLayout": [
+    "........................................",
+    "..........F..FF......................F..",
+    "..........FF.FF......................FF.",
+    ".......C..FF......AA.....PPP....PPPP.FF.",
+    ".AA....C..........AA.CCC.PPP....PPPP....",
+    ".AA....C..........AA.CEC.PPP....PPPP....",
+    ".AA............K.....CCC..F.............",
+    ".............FFX...U....X.FF............",
+    ".F............FD..CCCBBCCC.F....AAA.....",
+    ".FF.........PPPD..CCC..CCC......AAAQFF..",
+    ".FF.........PPPAAAA...K..BBB....AAA.FF..",
+    "..F........XPPPAAAA.....Q..X........F...",
+    "....==..................................",
+    "..................CBBCC.........PPPP....",
+    ".AA....C.....F.......U.PPPP.....PDPP.F..",
+    ".AA....C.....FPPPP..K..PPPP.....PPPP.FF.",
+    ".AAQ......F...PPPP....DPPPPC....PPPP.FF.",
+    "..........FFC.PPPP....DPPPPC............",
+    "..........FFC.PPPP.K.....F.B......AAAA..",
+    "............BF......T....FFB......AAAA..",
+    "............BFAAA......AAAAC......AAAA..",
+    ".FF.........C.AAA......AAAAC....FF......",
+    ".FF................K..U.........FF......",
+    ".PP.....................................",
+    ".PP....C..........X...X...........Q.....",
+    ".PP....C.....PPPD..K............PPPP....",
+    "..........Q..PPPD...U...........PPPP....",
+    ".............PPPPCBBCC..........PPPP....",
+    "....==..........U...K...........PPPP....",
+    ".FF........AAA...BBBBB...DAAA......AAA..",
+    ".FF........AAA.F........F.AAA......AAA..",
+    "..F........X...FF.K..K..F...X.......FF..",
+    "........................................",
+    "........................................",
+    ".......F.........Q...................F..",
+    "..AAA..FF...BBB..........BBB....PPPP.FF.",
+    "..AAA..FFQ....F..........F......PPPP.F..",
+    "..............F...CCCC...F......PPPP....",
+    "........................................",
+    "...................HH..................."
+  ]
+}
