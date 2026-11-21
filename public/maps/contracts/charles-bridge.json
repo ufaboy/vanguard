@@ -1,7 +1,8 @@
 {
-  "id": 1,
-  "mapId": "campaign-01",
-  "code": "MISSION 01 // CITY OUTSKIRTS",
+  "id": 103,
+  "mapId": "contract-charles-bridge",
+  "contractId": "contract-charles-bridge",
+  "code": "CONTRACT 03 // 40×40",
   "name": "Charles Bridge",
   "subtitle": "SECTOR 01 // PRAGUE: CLEAR THE CHARLES BRIDGE CROSSINGS",
   "objective": "Clear the Charles Bridge crossings",

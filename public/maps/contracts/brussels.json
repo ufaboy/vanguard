@@ -1,7 +1,8 @@
 {
-  "id": 4,
-  "mapId": "campaign-04",
-  "code": "MISSION 04 // CITY OUTSKIRTS",
+  "id": 106,
+  "mapId": "contract-brussels",
+  "contractId": "contract-brussels",
+  "code": "CONTRACT 06 // 40×40",
   "name": "Brussels",
   "subtitle": "SECTOR 04 // BRUSSELS: STORM THE CINQUANTENAIRE",
   "objective": "Destroy the enemy HQ behind the arch",

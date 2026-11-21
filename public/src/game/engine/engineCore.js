@@ -42,6 +42,7 @@ import {
   SECTORS,
   TILE_SIZE,
   getBaseLayout,
+  isContractMap,
 } from '../levels.js';
 import { ModelFactory } from '../render/models.js';
 import { TileBatcher } from '../render/tile-batcher.js';
@@ -775,7 +776,7 @@ export class TankGameEngine {
     if (
       !Number.isInteger(index) ||
       !targetSector ||
-      (targetSector.gameMode !== 'contract' &&
+      (!isContractMap(targetSector) &&
         targetSector.gameMode !== 'survival' &&
         !isCampaignMissionUnlocked(targetSector.mapId, this.playerSave.completedMissions))
     ) {

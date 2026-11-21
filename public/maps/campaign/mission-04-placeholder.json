@@ -1,0 +1,312 @@
+{
+  "id": 4,
+  "mapId": "campaign-04",
+  "name": "Placeholder Mission",
+  "subtitle": "PLACEHOLDER SECTOR // STORY COMING SOON",
+  "objective": "Destroy all hostiles",
+  "gameMode": "extermination",
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": false
+  },
+  "gridSize": 40,
+  "tileSize": 2,
+  "baseCell": {
+    "row": 39,
+    "col": 19
+  },
+  "playerSpawnCell": {
+    "row": 34,
+    "col": 20
+  },
+  "environment": {
+    "theme": "urban",
+    "tint": "#d6d3c4",
+    "fogColor": "#20252b",
+    "groundColor": "#68716b"
+  },
+  "completionReward": {
+    "credits": 300
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Empty placeholder field until the campaign is rewritten: three roads, scattered cover and twenty light tanks."
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 70404,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "field",
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
+        "surface": "dirt",
+        "density": 0.18,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      }
+    ],
+    "paths": [],
+    "landmarks": []
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 4,
+    "spawnIntervalSec": 2.5,
+    "nextWave": {
+      "when": "cleared",
+      "delaySec": 3
+    },
+    "entrances": [
+      {
+        "id": "west",
+        "row": 0,
+        "col": 6
+      },
+      {
+        "id": "centre",
+        "row": 0,
+        "col": 20
+      },
+      {
+        "id": "east",
+        "row": 0,
+        "col": 33
+      }
+    ],
+    "encounters": [
+      {
+        "id": "placeholder-probe",
+        "label": "TRAINING GROUND: Light patrols advance from the north.",
+        "enemies": [
+          "SCOUT",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "initialCells": [
+          {
+            "row": 1,
+            "col": 6
+          },
+          {
+            "row": 1,
+            "col": 20
+          },
+          {
+            "row": 1,
+            "col": 33
+          },
+          {
+            "row": 3,
+            "col": 20
+          }
+        ],
+        "entrances": [
+          "west",
+          "centre",
+          "east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 20
+          },
+          {
+            "row": 18,
+            "col": 6
+          },
+          {
+            "row": 30,
+            "col": 20
+          },
+          {
+            "row": 18,
+            "col": 33
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "placeholder-column",
+        "label": "TRAINING GROUND: A column pushes down the central road.",
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west",
+          "centre",
+          "east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 20
+          },
+          {
+            "row": 30,
+            "col": 12
+          },
+          {
+            "row": 30,
+            "col": 28
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "placeholder-last",
+        "label": "TRAINING GROUND: The last tanks close in. Clear the field.",
+        "enemies": [
+          "STANDARD",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD"
+        ],
+        "entrances": [
+          "west",
+          "east"
+        ],
+        "patrolRoute": [
+          {
+            "row": 18,
+            "col": 6
+          },
+          {
+            "row": 32,
+            "col": 20
+          },
+          {
+            "row": 18,
+            "col": 33
+          }
+        ],
+        "recoverySec": 0
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVRVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVVVVVVVVVVVVVVVVVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVV.............VVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVV.............VVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVV.............VVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVV.............VVVVVVRVVVVVV",
+    "VVVVVVRVVVVVVV.............VVVVVVRVVVVVV"
+  ],
+  "objectLayout": [
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "..........BBB.............BBB...........",
+    "........................................",
+    "........................................",
+    "..FF................................FF..",
+    "..FF................................FF..",
+    "..............BBB...........BBB.........",
+    "........................................",
+    "...Q....................................",
+    "......................FF................",
+    ".........AA...........FF.....AA.........",
+    ".........AA..................AA.........",
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "..FF................................FF..",
+    "..FF................................FF..",
+    "..........BBB..............BBB..........",
+    ".....................................Q..",
+    "........................................",
+    ".....................FF.................",
+    ".....................FF.................",
+    "...............BBB.......BBB............",
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "........................................",
+    "..................CCCC..................",
+    "........................................",
+    "...................HH..................."
+  ]
+}

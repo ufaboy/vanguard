@@ -67,7 +67,7 @@
 **BATTLE TANK** (https://battletank.online; repository and package name `iron-vanguard`, player tank `VANGUARD`) is a free single-player 3D isometric tactical tank game for the browser, inspired by *Battle City*, built with Three.js and Vanilla JavaScript.
 
 ### Key Gameplay Features
-- **Game Modes**: a 35-mission **Campaign** (*Road to the Capital*) across 7 regions (City outskirts, Forest frontier, Desert crossing, Coastal wetlands, Frozen highlands, Industrial belt, Capital city; missions in `public/maps/campaign/`, briefing data in `src/game/campaign.js`), endless **Survival** maps (`public/maps/survival/`: Iron Crucible, Paris Last Stand) and **Contracts** special operations (`public/maps/contracts/`: Blackout Protocol, Last Cargo). Map win rules come from `gameMode` (`extermination`, `stronghold_assault`, `base_defense`; see `src/game/mapRules.js`).
+- **Game Modes**: a 35-mission **Campaign** (*Road to the Capital*) across 7 regions (City outskirts, Forest frontier, Desert crossing, Coastal wetlands, Frozen highlands, Industrial belt, Capital city; missions in `public/maps/campaign/`, briefing data in `src/game/campaign.js`), endless **Survival** maps (`public/maps/survival/`: Iron Crucible, Paris Last Stand) and **Contracts** special operations (`public/maps/contracts/`: the cargo / sabotage raids Blackout Protocol and Last Cargo with `gameMode: "contract"`, plus operation contracts Charles Bridge, Brandenburg Gate, Versailles, Brussels and Remagen Bridgehead that keep their own `gameMode` win rules and are marked by `contractId`; `isContractMap` in `levels.js` covers both, only `gameMode: "contract"` runs the cargo mechanics; campaign missions 1-5 are temporary placeholder maps). Map win rules come from `gameMode` (`extermination`, `stronghold_assault`, `base_defense`; see `src/game/mapRules.js`).
 - **40×40 Destructible Isometric Arena**:
   - Tactical grid `GRID_SIZE = 40` (`constants.js` / `levels.js`), `TILE_SIZE = 2`, 1,600 cells per map.
   - Terrain types: Destructible Brick (4 sub-blocks per cell, 4 HP), Hard-to-Destroy Reinforced Concrete (`CONCRETE`, 16 HP; craters open on the faces that were hit and expose the steel rebar), Stealth Forest Canopy, Impassable Water (crossable with the `CH4` All-Terrain or `CH5` Grav-Hover chassis), Low-Friction Ice, and the Command Base HQ. Enemies enter through each map's `enemies.entrances` (there are no spawner pads).
@@ -165,9 +165,9 @@ The game and every file it needs reside inside `/public` and are served as writt
     ├── models/             # Optimized GLBs: tanks, bosses, turrets, air drop, terrain/, landmarks/
     ├── maps/               # JSON maps (40x40 surface/object layouts, enemy pools, entrances, bosses)
     │   ├── index.json      # Map registry, game modes and tile/enemy legend
-    │   ├── campaign/       # mission-01-charles-bridge.json .. mission-35-vanguard-dawn.json (+ index.json)
+    │   ├── campaign/       # mission-01-placeholder.json .. mission-05-placeholder.json (temporary placeholders), mission-06-green-border.json .. mission-35-vanguard-dawn.json (+ index.json)
     │   ├── survival/       # iron-crucible.json, paris-last-stand.json
-    │   └── contracts/      # blackout-protocol.json, last-cargo.json
+    │   └── contracts/      # blackout-protocol.json, last-cargo.json (cargo / sabotage raids); charles-bridge.json, brandenburg-gate.json, versailles.json, brussels.json, remagen-bridgehead.json (operation contracts)
     ├── vendor/
     │   └── three/          # Pruned Three.js runtime (only imported modules + Draco decoder; see scripts/sync-vendor.mjs)
     └── src/

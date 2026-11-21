@@ -1,6 +1,8 @@
 {
-  "mapId": "campaign-05",
-  "id": 5,
+  "id": 107,
+  "mapId": "contract-remagen-bridgehead",
+  "contractId": "contract-remagen-bridgehead",
+  "code": "CONTRACT 07 // 40×40",
   "name": "Remagen Bridgehead",
   "subtitle": "SECTOR 05 // HOLD THE LUDENDORFF BRIDGEHEAD",
   "objective": "Hold the Remagen bridgehead",

@@ -9,109 +9,91 @@ export const CAMPAIGN_CHAPTERS = [
       {
         "id": "campaign-01",
         "number": 1,
-        "name": "Charles Bridge",
-        "objective": "Clear the Charles Bridge crossings",
-        "layout": "Prague: columns come down from Mala Strana over Charles Bridge, the modern road bridge and the Kampa channel toward the Old Town bank, past fuel drums, collapsing houses and the Old Town Square.",
+        "name": "Placeholder Mission",
+        "objective": "Destroy all hostiles",
+        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          { "type": "SCOUT", "count": 3, "phase": "regular" },
-          { "type": "STANDARD", "count": 14, "phase": "regular" },
-          { "type": "HOVER", "count": 2, "phase": "regular" },
-          { "type": "HOWITZER", "count": 1, "phase": "regular" },
-          { "type": "ENGINEER", "count": 1, "phase": "regular" }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 16, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 5,
-          "maxConcurrent": 5,
-          "notes": "Five waves of four to five tanks; each wave starts three seconds after the previous one is destroyed and introduces one new idea at a time."
+          "initialCount": 4,
+          "maxConcurrent": 4,
+          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
         }
       },
       {
         "id": "campaign-02",
         "number": 2,
-        "name": "Brandenburg Gate",
-        "objective": "Clear the Tiergarten approaches",
-        "layout": "Berlin: columns come out of the Tiergarten woods past the Victory Column, the Neuer See ponds and the Reichstag toward the Brandenburg Gate. Its three passages, the Ministergarten woods and the embassy courtyards lead to Pariser Platz and Unter den Linden.",
+        "name": "Placeholder Mission",
+        "objective": "Destroy all hostiles",
+        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          { "type": "SCOUT", "count": 5, "phase": "regular" },
-          { "type": "STANDARD", "count": 13, "phase": "regular" },
-          { "type": "STRIKER", "count": 1, "phase": "regular" },
-          { "type": "ARMOR", "count": 1, "phase": "regular" }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 16, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 5,
-          "maxConcurrent": 5,
-          "notes": "Four waves of five tanks; each wave starts three seconds after the previous one is destroyed. A missile carrier on the avenue and a heavy tank at the Gate are the new threats."
+          "initialCount": 4,
+          "maxConcurrent": 4,
+          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
         }
       },
       {
         "id": "campaign-03",
         "number": 3,
-        "name": "Versailles",
-        "objective": "Defend the palace HQ",
-        "layout": "Versailles: columns cross the park around the Grand Canal, the bosquets and the Trianon toward the palace. The palace front is a wall: the HQ in the Marble Court can only be reached around the Orangerie or the north parterre.",
+        "name": "Placeholder Mission",
+        "objective": "Destroy all hostiles",
+        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          { "type": "SCOUT", "count": 6, "phase": "regular" },
-          { "type": "STANDARD", "count": 11, "phase": "regular" },
-          { "type": "SAPPER", "count": 1, "phase": "regular" },
-          { "type": "FLAMETHROWER", "count": 1, "phase": "regular" },
-          { "type": "STEALTH", "count": 1, "phase": "regular" },
-          { "type": "JAMMER", "count": 1, "phase": "regular" },
-          { "type": "KAMIKAZE", "count": 1, "phase": "regular" }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 16, "phase": "regular" }
         ],
         "deploymentPlan": {
           "initialCount": 4,
-          "maxConcurrent": 5,
-          "notes": "Five waves; each starts three seconds after the previous one is destroyed and brings one new enemy kind: a sapper, a flamethrower and a stealth tank in the groves, a jammer, then a kamikaze."
+          "maxConcurrent": 4,
+          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
         }
       },
       {
         "id": "campaign-04",
         "number": 4,
-        "name": "Brussels",
-        "objective": "Destroy the enemy HQ behind the arch",
-        "layout": "Brussels: leave the Grand-Place and the Town Hall, pass the Royal Palace and cross the Parc de Bruxelles or the Ixelles ponds to Rue de la Loi. The enemy HQ hides behind the Cinquantenaire arch, between the museums and the Atomium; its three arches and the side avenues all lead to it.",
+        "name": "Placeholder Mission",
+        "objective": "Destroy all hostiles",
+        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          { "type": "SCOUT", "count": 6, "phase": "regular" },
-          { "type": "STANDARD", "count": 11, "phase": "regular" },
-          { "type": "ARMOR", "count": 2, "phase": "regular" },
-          { "type": "HOWITZER", "count": 1, "phase": "regular" }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 16, "phase": "regular" }
         ],
         "deploymentPlan": {
           "initialCount": 4,
           "maxConcurrent": 4,
-          "notes": "Four light waves; each starts three seconds after the previous one is destroyed. Patrols in the Cinquantenaire park, a column through the Parc de Bruxelles, a flank around the Ixelles ponds, then two heavy tanks and a howitzer guard the arch."
+          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
         }
       },
       {
         "id": "campaign-05",
         "number": 5,
-        "name": "Remagen Bridgehead",
-        "objective": "Hold the Remagen bridgehead",
-        "layout": "Three Rhine crossings — the Ludendorff railway bridge and two treadways — converge on the Remagen bank, closing the city introduction.",
-        "difficulty": "Moderate",
+        "name": "Placeholder Mission",
+        "objective": "Destroy all hostiles",
+        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
+        "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          { "type": "SCOUT", "count": 3, "phase": "regular" },
-          { "type": "STANDARD", "count": 9, "phase": "regular" },
-          { "type": "HOVER", "count": 4, "phase": "regular" },
-          { "type": "HOWITZER", "count": 2, "phase": "regular" },
-          { "type": "SAPPER", "count": 2, "phase": "regular" },
-          { "type": "STRIKER", "count": 2, "phase": "regular" },
-          { "type": "ARMOR", "count": 3, "phase": "regular" },
-          { "type": "ENGINEER", "count": 1, "phase": "regular" }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 16, "phase": "regular" }
         ],
         "deploymentPlan": {
           "initialCount": 4,
-          "maxConcurrent": 8,
-          "notes": "Hovercraft cross the Rhine anywhere while artillery fires from the Erpeler Ley; no single bank position covers all three crossings."
+          "maxConcurrent": 4,
+          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
         }
       }
     ]

@@ -1,7 +1,8 @@
 {
-  "id": 3,
-  "mapId": "campaign-03",
-  "code": "MISSION 03 // CITY OUTSKIRTS",
+  "id": 105,
+  "mapId": "contract-versailles",
+  "contractId": "contract-versailles",
+  "code": "CONTRACT 05 // 40×40",
   "name": "Versailles",
   "subtitle": "SECTOR 03 // VERSAILLES: DEFEND THE PALACE HQ",
   "objective": "Defend the palace HQ",

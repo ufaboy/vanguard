@@ -12,7 +12,7 @@ import {
   TITAN,
 } from '../constants.js';
 import { createEncounterState, remainingEncounterEnemies } from '../encounters.js';
-import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout } from '../levels.js';
+import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout, isContractMap } from '../levels.js';
 import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
 import { computeBuildingLayout } from '../terrains/building-layout.js';
@@ -540,7 +540,9 @@ export class SectorLoaderController {
     engine.playerHullAngle = Math.PI;
     engine.playerTurretAngle = Math.PI;
 
-    const isContractSector = sector.gameMode === 'contract';
+    // Operation contracts use the contract profile but keep their own win rules.
+    const isContractSector = isContractMap(sector);
+    const isCargoContract = sector.gameMode === 'contract';
     const isSurvivalSector = sector.gameMode === 'survival';
     const isIsolatedSector = isSurvivalSector || isContractSector;
     if (isSurvivalSector) {
@@ -607,9 +609,9 @@ export class SectorLoaderController {
     engine.activeMissionRun = {
       runId: `run_${Date.now()}_${engine.currentSectorIndex}`,
       missionId: authoredMission.id,
-      isContract: isContractSector,
+      isContract: isCargoContract,
       isSurvival: isSurvivalSector,
-      contractId: sector.contractId || (isContractSector ? sector.mapId : null),
+      contractId: sector.contractId || (isCargoContract ? sector.mapId : null),
       status: 'in_progress',
       rewardsCommitted: false,
       deliveredCargoFlags: {},
@@ -688,7 +690,7 @@ export class SectorLoaderController {
     if (isSurvivalSector) {
       engine.survivalState = createSurvivalState();
       engine.survivalDirector.startWave(1, false);
-    } else if (isContractSector) {
+    } else if (isCargoContract) {
       const contractDef =
         CONTRACTS_CATALOG.find(
           (item) => item.id === sector.contractId || item.id === sector.mapId

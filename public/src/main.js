@@ -12,7 +12,7 @@ import { ENGINE_PAGES, parseRoute, setCurrentRoutePage, syncRoute } from './rout
 import { renderHangar } from './hangar-ui.js';
 import { TankGameEngine } from './game/engine/engineCore.js';
 import { pregenerateTextures } from './game/render/texture-gen.js';
-import { SECTORS } from './game/levels.js';
+import { SECTORS, isContractMap } from './game/levels.js';
 import { GameStatus } from './game/types.js';
 import { PLAYER_TANK_CONFIG } from './game/vehicles/tanks.js';
 import {
@@ -533,7 +533,7 @@ function routeFromState() {
 
 function battlefieldUrlForSector(sector) {
   if (sector.gameMode === 'survival') return battlefieldUrl({ mode: 'survival' });
-  if (sector.gameMode === 'contract') {
+  if (isContractMap(sector)) {
     return battlefieldUrl({ mode: 'contract', id: sector.contractId || sector.mapId });
   }
   return battlefieldUrl({ mode: 'campaign', mission: sector.mapId });
@@ -557,7 +557,7 @@ function resolveBattlefieldTarget() {
 
   if (mode === 'contract' || (!mode && id)) {
     const idx = SECTORS.findIndex(
-      (sector) => sector.gameMode === 'contract' && (sector.contractId === id || sector.mapId === id)
+      (sector) => isContractMap(sector) && (sector.contractId === id || sector.mapId === id)
     );
     return idx >= 0 ? { index: idx } : { redirect: PAGE_PATHS.contracts };
   }
@@ -565,7 +565,7 @@ function resolveBattlefieldTarget() {
   if (mode === 'campaign' || (!mode && mission)) {
     const idx = SECTORS.findIndex(
       (sector) =>
-        sector.mapId === mission && sector.gameMode !== 'contract' && sector.gameMode !== 'survival'
+        sector.mapId === mission && !isContractMap(sector) && sector.gameMode !== 'survival'
     );
     if (idx < 0 || !isCampaignMissionUnlocked(mission, completedMissions)) {
       return { redirect: PAGE_PATHS.campaign };
@@ -578,7 +578,7 @@ function resolveBattlefieldTarget() {
     const targetSector = Number.isInteger(idx) ? SECTORS[idx] : null;
     if (
       targetSector &&
-      (targetSector.gameMode === 'contract' ||
+      (isContractMap(targetSector) ||
         targetSector.gameMode === 'survival' ||
         isCampaignMissionUnlocked(targetSector.mapId, completedMissions))
     ) {
@@ -675,7 +675,7 @@ async function startSector(sectorIndex) {
   if (!Number.isInteger(sectorIndex) || !SECTORS[sectorIndex]) return;
   const targetSector = SECTORS[sectorIndex];
   if (
-    targetSector.gameMode !== 'contract' &&
+    !isContractMap(targetSector) &&
     targetSector.gameMode !== 'survival' &&
     !isCampaignMissionUnlocked(targetSector.mapId, state.hud.playerSave?.completedMissions)
   ) {
@@ -689,7 +689,7 @@ async function startSector(sectorIndex) {
         toSectorId: sectorIndex,
       });
     }
-    if (targetSector.gameMode === 'contract') {
+    if (isContractMap(targetSector)) {
       state.selectedContract = targetSector.contractId || targetSector.mapId;
     } else if (targetSector.gameMode !== 'survival') {
       state.selectedCampaignMission = targetSector.mapId;

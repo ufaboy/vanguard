@@ -1,5 +1,5 @@
 import { POWERUP_TYPES } from '../game/constants.js';
-import { SECTORS } from '../game/levels.js';
+import { SECTORS, isContractMap } from '../game/levels.js';
 import { GameStatus } from '../game/types.js';
 import { buildBattleSharePayload, buildSocialShareLinks, getPartCatalogEntry } from '../sim/index.js';
 import { formatSurvivalDuration } from './contract-hud.js';
@@ -330,7 +330,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
   }
 
   const hasNextCampaign =
-    hud.sectorId + 1 < SECTORS.length && SECTORS[hud.sectorId + 1]?.gameMode !== 'contract';
+    hud.sectorId + 1 < SECTORS.length && !isContractMap(currentSector) && !isContractMap(SECTORS[hud.sectorId + 1]);
   const nextSectorIdx = hasNextCampaign ? hud.sectorId + 1 : hud.sectorId;
   const nextBtnLabel = hasNextCampaign
     ? `${t('NEXT SECTOR: {name}', { name: t(SECTORS[hud.sectorId + 1].name) })} →`
@@ -379,7 +379,9 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
         >
           ${RIVETS_HTML}${ICON_TANK}<span>${nextBtnLabel}</span>${ICON_CHEVRONS}
         </button>
-        <button class="battle-btn-secondary" data-action="return-campaign">${RIVETS_HTML}<span>${t('Campaign map')}</span></button>
+        ${isContractMap(currentSector)
+          ? `<button class="battle-btn-secondary" data-action="return-contracts">${RIVETS_HTML}<span>${t('Contracts')}</span></button>`
+          : `<button class="battle-btn-secondary" data-action="return-campaign">${RIVETS_HTML}<span>${t('Campaign map')}</span></button>`}
       </div>
     </div>
   `;
@@ -451,6 +453,7 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
   }
 
   const isContract = hud.gameMode === 'contract' || currentSector.gameMode === 'contract';
+  const isContractRun = isContract || isContractMap(currentSector);
   const defeatReason =
     currentSector?.defeatOnBaseLoss && !hud.baseAlive
       ? t('DEFENSE OBJECTIVE LOST')
@@ -498,7 +501,7 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
         >
           ${RIVETS_HTML}${ICON_TANK}<span>${isContract ? t('RETRY CONTRACT') : t('RETRY SECTOR')}</span>${ICON_CHEVRONS}
         </button>
-        <button class="battle-btn-secondary" data-action="${isContract ? 'return-contracts' : 'return-campaign'}">${RIVETS_HTML}<span>${isContract ? t('Contracts') : t('Campaign map')}</span></button>
+        <button class="battle-btn-secondary" data-action="${isContractRun ? 'return-contracts' : 'return-campaign'}">${RIVETS_HTML}<span>${isContractRun ? t('Contracts') : t('Campaign map')}</span></button>
       </div>
     </div>
   `;

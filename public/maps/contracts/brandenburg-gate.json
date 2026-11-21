@@ -1,7 +1,8 @@
 {
-  "id": 2,
-  "mapId": "campaign-02",
-  "code": "MISSION 02 // CITY OUTSKIRTS",
+  "id": 104,
+  "mapId": "contract-brandenburg-gate",
+  "contractId": "contract-brandenburg-gate",
+  "code": "CONTRACT 04 // 40×40",
   "name": "Brandenburg Gate",
   "subtitle": "SECTOR 02 // BERLIN: CLEAR THE TIERGARTEN APPROACHES",
   "objective": "Clear the Tiergarten approaches",

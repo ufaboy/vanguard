@@ -30,11 +30,16 @@ import riverWatch from '../../maps/campaign/mission-09-river-watch.json' with { 
 import hiddenSignals from '../../maps/campaign/mission-08-hidden-signals.json' with { type: 'json' };
 import timberline from '../../maps/campaign/mission-07-timberline.json' with { type: 'json' };
 import greenBorder from '../../maps/campaign/mission-06-green-border.json' with { type: 'json' };
-import remagenBridgehead from '../../maps/campaign/mission-05-remagen-bridgehead.json' with { type: 'json' };
-import brussels from '../../maps/campaign/mission-04-brussels.json' with { type: 'json' };
-import versailles from '../../maps/campaign/mission-03-versailles.json' with { type: 'json' };
-import brandenburgGate from '../../maps/campaign/mission-02-brandenburg-gate.json' with { type: 'json' };
-import charlesBridge from '../../maps/campaign/mission-01-charles-bridge.json' with { type: 'json' };
+import placeholder05 from '../../maps/campaign/mission-05-placeholder.json' with { type: 'json' };
+import placeholder04 from '../../maps/campaign/mission-04-placeholder.json' with { type: 'json' };
+import placeholder03 from '../../maps/campaign/mission-03-placeholder.json' with { type: 'json' };
+import placeholder02 from '../../maps/campaign/mission-02-placeholder.json' with { type: 'json' };
+import placeholder01 from '../../maps/campaign/mission-01-placeholder.json' with { type: 'json' };
+import remagenBridgehead from '../../maps/contracts/remagen-bridgehead.json' with { type: 'json' };
+import brussels from '../../maps/contracts/brussels.json' with { type: 'json' };
+import versailles from '../../maps/contracts/versailles.json' with { type: 'json' };
+import brandenburgGate from '../../maps/contracts/brandenburg-gate.json' with { type: 'json' };
+import charlesBridge from '../../maps/contracts/charles-bridge.json' with { type: 'json' };
 import lastCargo from '../../maps/contracts/last-cargo.json' with { type: 'json' };
 import blackoutProtocol from '../../maps/contracts/blackout-protocol.json' with { type: 'json' };
 import parisLastStand from '../../maps/survival/paris-last-stand.json' with { type: 'json' };
@@ -410,4 +415,13 @@ export function normalizeMapDefinition(rawMap, index = 0) {
   };
 }
 
-export const SECTORS = [charlesBridge, brandenburgGate, versailles, brussels, remagenBridgehead, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, parisLastStand].map(normalizeMapDefinition);
+export const SECTORS = [placeholder01, placeholder02, placeholder03, placeholder04, placeholder05, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, charlesBridge, brandenburgGate, versailles, brussels, remagenBridgehead, parisLastStand].map(normalizeMapDefinition);
+
+/**
+ * True for every map launched from the Contracts board: the cargo / sabotage raids
+ * (`gameMode: 'contract'`) and the operation contracts that keep their own win rules
+ * but carry a `contractId`. Only `gameMode: 'contract'` runs the cargo mechanics.
+ */
+export function isContractMap(sector) {
+  return Boolean(sector && (sector.gameMode === 'contract' || sector.contractId));
+}

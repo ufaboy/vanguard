@@ -2373,8 +2373,16 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   flex-direction: column;
   gap: 12px;
   flex: 1 1 auto;
-  justify-content: center;
+  /* 'safe' keeps the first cards visible when the list is taller than the board; it then scrolls. */
+  justify-content: safe center;
   min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #f59e0b33 transparent;
+  padding: 2px 4px 8px;
+}
+.contracts-banner-list > .contract-banner {
+  flex-shrink: 0;
 }
 
 .contract-banner {
@@ -2445,6 +2453,10 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   background: linear-gradient(180deg, #7e22ce 0%, #4c1d95 100%);
   border-color: #c084fc;
 }
+.contract-banner.is-operation .contract-shield {
+  background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+  border-color: #fbbf24;
+}
 
 .contract-thumb-wrap {
   position: relative;
@@ -2489,6 +2501,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 }
 .contract-banner.is-recovery .contract-code-badge { color: #38bdf8; }
 .contract-banner.is-sabotage .contract-code-badge { color: #c084fc; }
+.contract-banner.is-operation .contract-code-badge { color: #fbbf24; }
 
 .contract-status-tag {
   padding: 1px 7px;
