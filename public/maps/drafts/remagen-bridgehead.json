@@ -30,7 +30,7 @@
   },
   "design": {
     "enemySide": "north",
-    "tacticalIdentity": "Hold the Remagen bank of the Rhine against counterattacks across the Ludendorff railway bridge, a western treadway through the floodplain wood, and a barricaded eastern treadway under fire from the Erpeler Ley.",
+    "tacticalIdentity": "Hold the Remagen bank of the Rhine against counterattacks over three crossings that no single position can watch: the Ludendorff railway bridge, a western treadway through the floodplain wood, and an eastern treadway below the Erpeler Ley. Promenade villas, orchards and town gardens break the sightlines and hide ambush positions, so the defence has to rotate.",
     "reference": {
       "place": "Ludendorff Bridge, Remagen / Erpel, Germany (March 1945)",
       "kind": "real",
@@ -49,14 +49,10 @@
     },
     "breaches": [
       {
-        "name": "East treadway roadblocks",
+        "name": "East treadway roadblock",
         "cells": [
           {
             "row": 13,
-            "col": 35
-          },
-          {
-            "row": 19,
             "col": 35
           }
         ],
@@ -68,7 +64,7 @@
           "row": 20,
           "col": 35
         },
-        "purpose": "Brick roadblocks seal both ramps of the east treadway; blasting them opens a flank crossing under the Erpeler Ley."
+        "purpose": "A brick roadblock seals the north ramp of the east treadway; blasting it opens a flank crossing under the Erpeler Ley."
       },
       {
         "name": "Church garden wall",
@@ -104,7 +100,7 @@
         },
         "end": {
           "row": 32,
-          "col": 24
+          "col": 22
         },
         "purpose": "Breaking the garden wall links the main street directly to the HQ yard instead of looping via the lane."
       },
@@ -149,7 +145,7 @@
           "col": 24
         },
         "end": {
-          "row": 6,
+          "row": 7,
           "col": 24
         },
         "purpose": "Dry-stone terrace walls shield the vineyard slope; breaking them opens a direct line from the slope to the rail cut."
@@ -584,7 +580,7 @@
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWMMMMMWWWWWWW",
-    "VVVVVVVRVVSSSSSSSSSS......VVVVVVVVVRSSSS",
+    "VVVVVVVRVVVVVVVVVVVV......VVVVVVVVVRVVVV",
     "VVVVVVVRVVVVVVVVVVVV......VVVVVVVVVRVVVV",
     "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
     "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
@@ -613,39 +609,39 @@
     ".........D...................CFFC..CFF..",
     ".......................BBBB..CCFC..CFFF.",
     ".AAA..AAAA.....PPPP..........CFFC..CFF..",
-    ".AAA..AAAA.....PPPP..........FFFC..CFF..",
+    ".AAA..AAAA.....PPPP..BBBB....FFFC..CFF..",
     ".AAA...........PPPP............FC..C....",
-    "......AAA.......AAA..................Q..",
-    "......AAA.......AAA.....................",
+    "......AAA.......AAAAA................Q..",
+    "......AAA.......AAAAA...................",
     "........................................",
-    "..........XX.XX...........XX.XX.........",
-    ".................K..PP..PPD.............",
-    "....................PP..PP.........B....",
+    "..........XX.XX..AA.......XX.XX.........",
+    ".........AA.Q....AA.PP..PPD...AA........",
+    ".........AA.........PP..PP....AA...B....",
     ".......=..............==...........=....",
     ".......=..............==...........=....",
     ".......=..............==...........=....",
     ".......=..............==...........=....",
     ".......=..............==...........=....",
-    "FFFFFF..FF..........PP..PP.........B....",
-    "FFFQFF..FFF.........PP..PP..K...........",
+    "FFFFFF..FFF.AAAFAAA.PP..PP.FFF.AAA..FF..",
+    "FFFQFF..FFF.AAAFAAA.PP..PPKFFF.AAA..FF..",
     "........................................",
     "........................................",
-    "...UUUU.K.......UUU...............FFF...",
+    "...UUUU.K.......UUU........AAAAA..FFF...",
     "........................................",
     "........................................",
-    ".AAAA..PPPP..............PPPPPP...FF.FF.",
-    ".AAAA..PPPP..............PPPPPP.QDD.....",
-    ".AAAA..PPPP.............................",
+    ".AAAA..PPPP..............PPPPPP.FF..AAA.",
+    ".AAAA..PPPP..............PPPPPP.QDD.AAA.",
+    ".AAAA..PPPP.........................AAA.",
     "....................................FF..",
     ".AAA..AAAA.....PPPP.B.....AAAA.....FFFF.",
     ".AAA..AAAA.....PPPP.B.....AAAA.....FFFF.",
-    "......AAAA.....PPPP.B..............FFFF.",
-    ".................Q..B...................",
-    ".PPPP...............B..........AAA......",
-    ".PPPP...............B..........AAA......",
-    ".PPPP..........................AAA......",
-    "..FF....................................",
-    "..FF....................................",
-    "....................HH.................."
+    "......AAAA.....PPPP.B...PPPP.......FFFF.",
+    ".......FFF.......Q..B...PPPP.....FFFFF..",
+    ".PPPP.FFFF..........B...PPPP...AAA......",
+    ".PPPP.....FF........B..........AAA.FFFF.",
+    ".PPPP.....FF...................AAA.FFFF.",
+    "..FF..AAAA....AAA........FFFF......FFFF.",
+    "..FF..AAAA....AAA........FFFF......FFFF.",
+    "....................HH...FFFF..........."
   ]
 }

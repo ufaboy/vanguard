@@ -77,6 +77,10 @@ Gameplay wins over realism, but resolve conflicts by moving, compressing or addi
 - At least one **flank pocket with a BOX** that is worth the risk.
 - The base has cover, but **most BOX caches lie outside the HQ safe zone**. BOX contents are random (see `terrains/boxes-loot.js`); never promise a specific reward.
 - Asymmetric but fair: no mirrored halves, no uniform grids.
+- **No dead space**: no object-free land square of 7×7 or more (roads count as empty). A real place is full of things: gardens, sheds, tree rows, walls, parked yards. Open squares and fields are allowed only when they are a named feature (a square, a parade ground, an airstrip) and then they are a deliberate killing ground.
+- **No single defensive spot**: no one cell may see half of all enemy route cells or a quarter of every route. Break long sightlines along banks, avenues and rail lines with buildings, tree rows and walls, and spread the crossings / approaches so watching one means losing sight of another. A river or wall line with a few crossings must not become one shooting gallery.
+- **Ambush pockets everywhere a route passes**: each sector (3×3 split of the map) that a route crosses has forest or cells hugging hard cover within 4 cells of the route, so both the player and the enemy can wait unseen and strike from the side.
+- **Reasons to move**: threats arrive on different flanks in different encounters (different entrances and patrol routes), at least one BOX pocket lies on the enemy side or a far flank, and artillery or long-range enemies have positions the player must go and clear. A map where the best play is to stay in one place has failed.
 
 ### 7. Draft enemy roster
 
@@ -91,9 +95,10 @@ Gameplay wins over realism, but resolve conflicts by moving, compressing or addi
 ```text
 node skills/create-map/scripts/inspect-map.mjs . <map-json-path>
 node skills/create-map/scripts/audit-map.mjs <map-json-path>
+node skills/create-map/scripts/tactics-check.mjs <map-json-path>
 ```
 
-Both must report no errors. Also check by reading the grid: entrance gaps on row 0, no full-width water line, breaches listed in `design` really exist, `enemyPool` matches the encounters. Scripts are evidence, not proof of realism or fun.
+All three must report no errors / issues. `tactics-check` measures the tactical minimum: object-free squares (`open_area`), the best single overwatch cell in the player half (`overwatch`, using player sight and shot-blocking tiles), and ambush cover near routes per sector (`ambush`). It is a heuristic: if you keep a flagged feature on purpose, say why in the delivery report. Also check by reading the grid: entrance gaps on row 0, no full-width water line, breaches listed in `design` really exist, `enemyPool` matches the encounters. Scripts are evidence, not proof of realism or fun.
 
 ### 9. Verify visually in the editor (required)
 
