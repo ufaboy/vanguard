@@ -128,7 +128,8 @@ test('Paris LandmarkModels procedural fallback and footprint helpers cover all l
     LandmarkModels,
   } = await import('../public/src/game/terrains/landmarks.js');
 
-  assert.equal(PLACEABLE_LANDMARKS.length, 8);
+  assert.equal(PLACEABLE_LANDMARKS.length, 11);
+  assert.equal(landmarkBlockedCells({ kind: 'VERSAILLES_PALACE', row: 31, col: 12 }).length, 48);
   const gateBlocked = landmarkBlockedCells({ kind: 'BRANDENBURG_GATE', row: 19, col: 17 });
   assert.deepEqual(
     gateBlocked.filter((cell) => cell.row === 19).map((cell) => cell.col),

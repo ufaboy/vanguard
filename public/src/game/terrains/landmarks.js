@@ -1,6 +1,7 @@
 /**
  * Landmark catalog and 3D model loader (Paris monuments for Survival S-01
- * "Paris: Last Stand", Berlin monuments for campaign mission 02 "Brandenburg Gate").
+ * "Paris: Last Stand", Berlin monuments for campaign mission 02 "Brandenburg Gate",
+ * Versailles palace and fountains for campaign mission 03 "Versailles").
  *
  * Footprints: 1 cell = 2 world units, +X east, +Z south, model origin at the
  * footprint centre on the ground. Blocked cells become TileType.LANDMARK
@@ -24,6 +25,7 @@ const ALL = (cols, rows) => {
 const LANDMARK_PACKS = Object.freeze({
   paris: '../../../models/landmarks/paris_landmarks.glb',
   berlin: '../../../models/landmarks/berlin_landmarks.glb',
+  versailles: '../../../models/landmarks/versailles_landmarks.glb',
 });
 
 /** Cells `cols` of every row in a `cols` x `rows` footprint. */
@@ -42,6 +44,10 @@ const LANDMARK_SPECS = Object.freeze({
   // Pavilions (cols 0, 6) and pylon walls (cols 2, 4) block; cols 1, 3, 5 are the three passages.
   BRANDENBURG_GATE: Object.freeze({ cols: 7, rows: 2, blocked: COLUMNS([0, 2, 4, 6], 2), height: 8.4, pack: 'berlin' }),
   VICTORY_COLUMN: Object.freeze({ cols: 2, rows: 2, blocked: ALL(2, 2), height: 11.6, pack: 'berlin' }),
+  // Garden front faces north (-Z); the whole 16x3 footprint is an indestructible wall.
+  VERSAILLES_PALACE: Object.freeze({ cols: 16, rows: 3, blocked: ALL(16, 3), height: 6.0, pack: 'versailles' }),
+  LATONA_FOUNTAIN: Object.freeze({ cols: 2, rows: 2, blocked: ALL(2, 2), height: 2.5, pack: 'versailles' }),
+  APOLLO_FOUNTAIN: Object.freeze({ cols: 2, rows: 2, blocked: ALL(2, 2), height: 1.6, pack: 'versailles' }),
 });
 
 const packOf = (kind) => LANDMARK_SPECS[kind]?.pack || 'paris';
@@ -56,6 +62,9 @@ export const PLACEABLE_LANDMARKS = Object.freeze([
   'CONCORDE_OBELISK',
   'BRANDENBURG_GATE',
   'VICTORY_COLUMN',
+  'VERSAILLES_PALACE',
+  'LATONA_FOUNTAIN',
+  'APOLLO_FOUNTAIN',
 ]);
 
 /** Grid cells blocked by a `{ kind, row, col }` landmark entry. */
@@ -618,6 +627,32 @@ export class LandmarkModels {
         addCyl(0.72, 0.5, 0.3, 14, m.sandstone, 0, 8.75, 0);
         addCyl(0.1, 0.24, 1.6, 10, m.gold, 0, 9.7, 0);
         addBox(0.7, 0.5, 0.08, m.gold, 0, 10.2, -0.1);
+        break;
+      }
+      case 'VERSAILLES_PALACE': {
+        addBox(31.8, 0.12, 5.9, m.darkStone, 0, 0.06, 0);
+        addBox(18.6, 4.6, 5.8, m.stone, 0, 2.42, 0);
+        for (const x of [-12.6, 12.6]) addBox(6.6, 4.6, 5.2, m.stone, x, 2.42, 0.3);
+        addBox(31.4, 0.3, 0.16, m.whiteStone, 0, 4.93, -2.8);
+        for (const x of [-13.5, -6, 6, 13.5]) addBox(3.0, 1.0, 1.8, m.slate, x, 5.2, 2.0);
+        for (let i = 0; i < 24; i++) addBox(0.5, 1.3, 0.05, m.glass, -14.4 + i * 1.25, 2.7, -2.95);
+        break;
+      }
+      case 'LATONA_FOUNTAIN': {
+        addCyl(1.95, 1.95, 0.3, 24, m.whiteStone, 0, 0.15, 0);
+        addCyl(1.8, 1.8, 0.04, 24, m.glass, 0, 0.32, 0);
+        addCyl(1.3, 1.38, 0.32, 20, m.granite, 0, 0.46, 0);
+        addCyl(0.95, 1.02, 0.3, 18, m.whiteStone, 0, 0.77, 0);
+        addCyl(0.64, 0.68, 0.3, 16, m.granite, 0, 1.07, 0);
+        addCyl(0.1, 0.16, 0.8, 10, m.whiteStone, 0, 1.62, 0);
+        break;
+      }
+      case 'APOLLO_FOUNTAIN': {
+        addBox(3.96, 0.26, 3.96, m.whiteStone, 0, 0.13, 0);
+        addBox(3.7, 0.04, 3.7, m.glass, 0, 0.28, 0);
+        addBox(1.1, 0.52, 0.7, m.gold, 0, 0.54, 0.45);
+        for (const x of [-0.75, -0.25, 0.25, 0.75]) addBox(0.22, 0.6, 0.7, m.gold, x, 0.6, -0.6);
+        addCyl(0.12, 0.17, 0.7, 10, m.gold, 0, 1.15, 0.55);
         break;
       }
       case 'MINE_SIGN': {

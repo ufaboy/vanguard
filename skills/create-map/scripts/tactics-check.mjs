@@ -7,7 +7,7 @@ const SIZE = 40;
 const SIGHT_CELLS = 14; // player sight 28 world units / 2 per cell (vehicles/tanks.js)
 const FOREST_SIGHT_CELLS = 4; // ENEMY_VISIBILITY.FOREST_SIGHT_RADIUS 7.5 world units
 const PASSABLE = '.FIVSNRMLK^_ =U';
-const BLOCKS_SHOTS = 'BCAPDQTEH';
+const BLOCKS_SHOTS = 'BCAPDQTEH#'; // '#': cells blocked by a 3D landmark
 const OPEN_SQUARE_LIMIT = 7; // an object-free square this large or larger is flagged
 const OVERWATCH_LIMIT = 0.5; // one cell seeing this share of all route cells is flagged
 
@@ -19,7 +19,7 @@ export function tacticsCheck(map) {
   const key = (r, c) => r * SIZE + c;
 
   // 1. Largest object-free land squares (water counts as filled: it is a feature, not empty ground).
-  const empty = (r, c) => obj[r][c] === '.' && map.surfaceLayout[r][c] !== 'W';
+  const empty = (r, c) => obj[r][c] === '.' && map.surfaceLayout[r][c] !== 'W' && L[r][c] !== '#';
   const dp = Array.from({ length: SIZE }, () => new Array(SIZE).fill(0));
   const openAreas = [];
   for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {

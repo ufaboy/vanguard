@@ -50,32 +50,24 @@ export const CAMPAIGN_CHAPTERS = [
       {
         "id": "campaign-03",
         "number": 3,
-        "name": "Civic Shelter",
-        "objective": "Defend the district HQ",
-        "layout": "Three approach streets surround a sheltered repair square; short waves teach repositioning.",
+        "name": "Versailles",
+        "objective": "Defend the palace HQ",
+        "layout": "Versailles: columns cross the park around the Grand Canal, the bosquets and the Trianon toward the palace. The palace front is a wall: the HQ in the Marble Court can only be reached around the Orangerie or the north parterre.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 6,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 13,
-            "phase": "regular"
-          },
-          {
-            "type": "SAPPER",
-            "count": 3,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 6, "phase": "regular" },
+          { "type": "STANDARD", "count": 11, "phase": "regular" },
+          { "type": "SAPPER", "count": 1, "phase": "regular" },
+          { "type": "FLAMETHROWER", "count": 1, "phase": "regular" },
+          { "type": "STEALTH", "count": 1, "phase": "regular" },
+          { "type": "JAMMER", "count": 1, "phase": "regular" },
+          { "type": "KAMIKAZE", "count": 1, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Introduce sappers after the opening wave; avoid mining every HQ approach at once."
+          "initialCount": 4,
+          "maxConcurrent": 5,
+          "notes": "Five waves; each starts three seconds after the previous one is destroyed and brings one new enemy kind: a sapper, a flamethrower and a stealth tank in the groves, a jammer, then a kamikaze."
         }
       },
       {
