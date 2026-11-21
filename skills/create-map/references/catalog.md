@@ -62,7 +62,12 @@ Nothing except a bridge stands on water, swamp, ice or oil (barrels may stand on
 
 ## 3D landmarks (`landmarks3d`)
 
-`[{ "kind": "...", "row": r, "col": c }]` with a kind from `PLACEABLE_LANDMARKS` (`terrains/landmarks.js`). These are currently Paris-only monuments (`EIFFEL_TOWER`, `ARC_DE_TRIOMPHE`, `NOTRE_DAME`, `LOUVRE_PYRAMID`, `SACRE_COEUR`, `CONCORDE_OBELISK`); use them only where they truly belong. For other places, build the dominant landmark from tiles (water tower, bridge, a large `P` block, a square with a label, a dam, a quay).
+`[{ "kind": "...", "row": r, "col": c }]` with a kind from `PLACEABLE_LANDMARKS` (`terrains/landmarks.js`); `row` / `col` is the footprint's top-left cell. These are real monuments, so use them only where they truly belong:
+
+- Paris: `EIFFEL_TOWER`, `ARC_DE_TRIOMPHE`, `NOTRE_DAME`, `LOUVRE_PYRAMID`, `SACRE_COEUR`, `CONCORDE_OBELISK`.
+- Berlin: `BRANDENBURG_GATE` (7×2; cells 0, 2, 4, 6 block, cells 1, 3, 5 are drivable passages running north-south; an object such as `B` may close a passage) and `VICTORY_COLUMN` (2×2, fully blocked).
+
+A new monument needs a Blender build (`assets/blender/landmarks*/`), a `LANDMARK_SPECS` entry with its footprint and GLB `pack`, and a procedural fallback. For other places, build the dominant landmark from tiles (water tower, bridge, a large `P` block, a square with a label, a dam, a quay).
 
 ## Map JSON fields
 

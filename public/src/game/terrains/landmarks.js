@@ -1,12 +1,13 @@
 /**
- * Paris landmark catalog and 3D model loader for Survival S-01 "Paris: Last Stand".
+ * Landmark catalog and 3D model loader (Paris monuments for Survival S-01
+ * "Paris: Last Stand", Berlin monuments for campaign mission 02 "Brandenburg Gate").
  *
- * Footprints follow docs/paris-last-stand.md: 1 cell = 2 world units, +X east,
- * +Z south, model origin at the footprint centre on the ground. Blocked cells
- * become TileType.LANDMARK (indestructible walls); the rest stay drivable.
+ * Footprints: 1 cell = 2 world units, +X east, +Z south, model origin at the
+ * footprint centre on the ground. Blocked cells become TileType.LANDMARK
+ * (indestructible walls); the rest stay drivable.
  *
- * `LandmarkModels.create(kind)` returns a THREE.Group immediately (populated from
- * `public/models/landmarks/paris_landmarks.glb` when loaded, or a detailed procedural
+ * `LandmarkModels.create(kind)` returns a THREE.Group immediately (populated from the
+ * kind's GLB pack in `public/models/landmarks/` when loaded, or a detailed procedural
  * representation that upgrades in-place once the GLB finishes loading).
  */
 
@@ -19,6 +20,15 @@ const ALL = (cols, rows) => {
   return cells;
 };
 
+/** Blender GLB packs; each landmark kind names the pack that holds its template. */
+const LANDMARK_PACKS = Object.freeze({
+  paris: '../../../models/landmarks/paris_landmarks.glb',
+  berlin: '../../../models/landmarks/berlin_landmarks.glb',
+});
+
+/** Cells `cols` of every row in a `cols` x `rows` footprint. */
+const COLUMNS = (cols, rows) => ALL(Math.max(...cols) + 1, rows).filter(([, dc]) => cols.includes(dc));
+
 const LANDMARK_SPECS = Object.freeze({
   ELYSEE: Object.freeze({ cols: 4, rows: 2, blocked: ALL(4, 2), height: 4.5 }),
   ELYSEE_RUINED: Object.freeze({ cols: 4, rows: 2, blocked: [], height: 3.0 }),
@@ -29,7 +39,12 @@ const LANDMARK_SPECS = Object.freeze({
   SACRE_COEUR: Object.freeze({ cols: 3, rows: 2, blocked: ALL(3, 2), height: 8 }),
   CONCORDE_OBELISK: Object.freeze({ cols: 1, rows: 1, blocked: [[0, 0]], height: 7 }),
   MINE_SIGN: Object.freeze({ cols: 1, rows: 1, blocked: [], height: 1.4 }),
+  // Pavilions (cols 0, 6) and pylon walls (cols 2, 4) block; cols 1, 3, 5 are the three passages.
+  BRANDENBURG_GATE: Object.freeze({ cols: 7, rows: 2, blocked: COLUMNS([0, 2, 4, 6], 2), height: 8.4, pack: 'berlin' }),
+  VICTORY_COLUMN: Object.freeze({ cols: 2, rows: 2, blocked: ALL(2, 2), height: 11.6, pack: 'berlin' }),
 });
+
+const packOf = (kind) => LANDMARK_SPECS[kind]?.pack || 'paris';
 
 /** Kinds that may be authored in a map's `landmarks3d` list. */
 export const PLACEABLE_LANDMARKS = Object.freeze([
@@ -39,6 +54,8 @@ export const PLACEABLE_LANDMARKS = Object.freeze([
   'LOUVRE_PYRAMID',
   'SACRE_COEUR',
   'CONCORDE_OBELISK',
+  'BRANDENBURG_GATE',
+  'VICTORY_COLUMN',
 ]);
 
 /** Grid cells blocked by a `{ kind, row, col }` landmark entry. */
@@ -184,13 +201,14 @@ export class LandmarkModels {
     this.fallbackMats = null;
     this.fallbackTextures = [];
     this.liveGroups = new Set();
+    this.packPromises = new Map();
     this.loadPromise = null;
     this.disposed = false;
   }
 
-  /** Loads the Blender GLB templates. Resolves to true when they are ready. */
-  async load() {
-    const glbUrl = new URL('../../../models/landmarks/paris_landmarks.glb', import.meta.url).href;
+  /** Loads one Blender GLB pack of templates. Resolves to true when they are ready. */
+  async loadPack(pack) {
+    const glbUrl = new URL(LANDMARK_PACKS[pack], import.meta.url).href;
     const gltf = await new GLTFLoader().loadAsync(glbUrl);
     if (this.disposed) return false;
     gltf.scene.updateMatrixWorld(true);
@@ -229,12 +247,25 @@ export class LandmarkModels {
     return this.templates.size > 0;
   }
 
-  /** Idempotent lazy load: maps with landmarks call this, other maps never pay for the GLB. */
-  ensureLoaded() {
-    this.loadPromise ||= this.load().catch((error) => {
-      console.warn('Landmark GLB unavailable; using procedural landmark meshes.', error);
-      return false;
+  /**
+   * Idempotent lazy load of the GLB packs that hold `kinds`: maps with landmarks
+   * call this, other maps (and other cities) never pay for those GLBs.
+   */
+  ensureLoaded(kinds = Object.keys(LANDMARK_SPECS)) {
+    const packs = [...new Set(kinds.filter((kind) => LANDMARK_SPECS[kind]).map(packOf))];
+    const promises = packs.map((pack) => {
+      if (!this.packPromises.has(pack)) {
+        this.packPromises.set(
+          pack,
+          this.loadPack(pack).catch((error) => {
+            console.warn(`Landmark GLB pack "${pack}" unavailable; using procedural landmark meshes.`, error);
+            return false;
+          })
+        );
+      }
+      return this.packPromises.get(pack);
     });
+    this.loadPromise = Promise.all(promises).then((results) => results.some(Boolean));
     return this.loadPromise;
   }
 
@@ -458,6 +489,8 @@ export class LandmarkModels {
         roughness: 0.5,
       }),
       blue: new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.55 }),
+      sandstone: applyLandmarkFinish(new THREE.MeshStandardMaterial({ color: 0xc2b293, map: stoneTex, roughness: 0.8, metalness: 0.04 })),
+      patina: new THREE.MeshStandardMaterial({ color: 0x45766a, roughness: 0.55, metalness: 0.5 }),
       asphalt: new THREE.MeshStandardMaterial({ color: 0x4a4f58, roughness: 0.92, metalness: 0.02 }),
       roadPaint: new THREE.MeshStandardMaterial({ color: 0xe0b23a, roughness: 0.7 }),
     };
@@ -557,6 +590,36 @@ export class LandmarkModels {
         addCyl(0.01, 0.26, 0.85, 4, m.gold, 0, 6.52, 0).rotation.y = Math.PI / 4;
         break;
       }
+      case 'BRANDENBURG_GATE': {
+        // Pylons and pavilions on cells 0, 2, 4, 6; passages on cells 1, 3, 5 stay open below the entablature.
+        for (const x of [-2, 2]) addBox(0.9, 4.3, 3.0, m.sandstone, x, 2.15, 0);
+        for (const x of [-5.55, 5.55]) addBox(0.7, 4.3, 3.0, m.sandstone, x, 2.15, 0);
+        for (const x of [-5.25, -2.75, -1.25, 1.25, 2.75, 5.25]) {
+          for (const z of [-1.45, 1.45]) addCyl(0.2, 0.24, 3.9, 10, m.whiteStone, x, 2.3, z);
+        }
+        addBox(11.3, 0.9, 3.5, m.sandstone, 0, 4.85, 0);
+        addBox(11.7, 0.2, 3.84, m.darkStone, 0, 5.37, 0);
+        addBox(10.6, 0.7, 3.3, m.sandstone, 0, 5.82, 0);
+        addBox(2.2, 0.9, 1.6, m.patina, 0, 6.62, 0);
+        addCyl(0.1, 0.16, 1.3, 8, m.patina, 0, 7.6, -0.5);
+        for (const x of [-6.3, 6.3]) {
+          addBox(1.1, 2.7, 3.1, m.sandstone, x, 1.35, 0);
+          addBox(1.3, 0.5, 3.7, m.slate, x, 2.95, 0);
+        }
+        break;
+      }
+      case 'VICTORY_COLUMN': {
+        addBox(3.5, 0.36, 3.5, m.darkStone, 0, 0.18, 0);
+        addBox(3.1, 0.95, 3.1, m.granite, 0, 0.83, 0);
+        addCyl(1.4, 1.4, 1.1, 16, m.granite, 0, 1.86, 0);
+        addCyl(1.52, 1.52, 0.2, 20, m.darkStone, 0, 2.51, 0);
+        addCyl(0.48, 0.56, 6.0, 14, m.whiteStone, 0, 5.6, 0);
+        for (const y of [3.4, 5.4, 7.4]) addCyl(0.6, 0.6, 0.6, 14, m.gold, 0, y, 0);
+        addCyl(0.72, 0.5, 0.3, 14, m.sandstone, 0, 8.75, 0);
+        addCyl(0.1, 0.24, 1.6, 10, m.gold, 0, 9.7, 0);
+        addBox(0.7, 0.5, 0.08, m.gold, 0, 10.2, -0.1);
+        break;
+      }
       case 'MINE_SIGN': {
         addCyl(0.04, 0.04, 1.05, 8, m.slate, 0, 0.52, 0);
         addBox(0.5, 0.36, 0.05, m.red, 0, 1.12, 0);
@@ -573,6 +636,7 @@ export class LandmarkModels {
   /** Frees loaded GLB templates, textures, and materials while keeping the loader reusable. */
   unload() {
     this.liveGroups.clear();
+    this.packPromises.clear();
     this.loadPromise = null;
     for (const template of this.templates.values()) {
       template.traverse((node) => {

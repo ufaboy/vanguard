@@ -62,6 +62,15 @@ export function getSectorEnemyClasses(sector) {
 }
 
 /** True when a sector uses 3D landmarks (Élysée HQ, Paris monuments, bridges, or mine signs). */
+/** Landmark kinds whose GLB templates a sector needs (3D landmarks, model HQ, mine signs). */
+export function sectorLandmarkKinds(sector) {
+  if (!sector) return [];
+  const kinds = (sector.landmarks3d || []).map((entry) => entry.kind);
+  if (sector.baseModel) kinds.push(sector.baseModel);
+  if (sector.mineSigns?.length) kinds.push('MINE_SIGN');
+  return [...new Set(kinds)];
+}
+
 export function sectorUsesLandmarks(sector) {
   if (!sector) return false;
   return Boolean(
@@ -220,7 +229,7 @@ export class SectorLoaderController {
     engine.baseLandmarkMesh = null;
     if (sectorUsesLandmarks(sector)) {
       engine.modelFactory.landmarkModels?.clearLiveGroups?.();
-      engine.modelFactory.landmarkModels?.ensureLoaded?.();
+      engine.modelFactory.landmarkModels?.ensureLoaded?.(sectorLandmarkKinds(sector));
     } else {
       engine.modelFactory.landmarkModels?.unload?.();
     }

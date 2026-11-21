@@ -30,27 +30,21 @@ export const CAMPAIGN_CHAPTERS = [
       {
         "id": "campaign-02",
         "number": 2,
-        "name": "Broken Avenue",
-        "objective": "Clear the residential blocks",
-        "layout": "A blocked east-west avenue links unequal residential courts. Breach three thin brick partitions for shorter flanks, or use the northern garden and southern garage loop.",
+        "name": "Brandenburg Gate",
+        "objective": "Clear the Tiergarten approaches",
+        "layout": "Berlin: columns come out of the Tiergarten woods past the Victory Column, the Neuer See ponds and the Reichstag toward the Brandenburg Gate. Its three passages, the Ministergarten woods and the embassy courtyards lead to Pariser Platz and Unter den Linden.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 9,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 12,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 5, "phase": "regular" },
+          { "type": "STANDARD", "count": 13, "phase": "regular" },
+          { "type": "STRIKER", "count": 1, "phase": "regular" },
+          { "type": "ARMOR", "count": 1, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Alternate scout flanks with standard groups through the main avenue."
+          "initialCount": 5,
+          "maxConcurrent": 5,
+          "notes": "Four waves of five tanks; each wave starts three seconds after the previous one is destroyed. A missile carrier on the avenue and a heavy tank at the Gate are the new threats."
         }
       },
       {

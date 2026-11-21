@@ -128,7 +128,13 @@ test('Paris LandmarkModels procedural fallback and footprint helpers cover all l
     LandmarkModels,
   } = await import('../public/src/game/terrains/landmarks.js');
 
-  assert.equal(PLACEABLE_LANDMARKS.length, 6);
+  assert.equal(PLACEABLE_LANDMARKS.length, 8);
+  const gateBlocked = landmarkBlockedCells({ kind: 'BRANDENBURG_GATE', row: 19, col: 17 });
+  assert.deepEqual(
+    gateBlocked.filter((cell) => cell.row === 19).map((cell) => cell.col),
+    [17, 19, 21, 23],
+    'the Brandenburg Gate keeps three open passages between its pylons'
+  );
   const eiffelBlocked = landmarkBlockedCells({ kind: 'EIFFEL_TOWER', row: 33, col: 6 });
   assert.equal(eiffelBlocked.length, 4);
   const arcBlocked = landmarkBlockedCells({ kind: 'ARC_DE_TRIOMPHE', row: 7, col: 6 });

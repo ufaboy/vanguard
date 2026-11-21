@@ -20,7 +20,7 @@ import { InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
 import { TerrainDestructionController } from './terrain-destruction.js';
-import { SectorLoaderController, getSectorEnemyClasses, sectorUsesLandmarks } from './sector-loader.js';
+import { SectorLoaderController, getSectorEnemyClasses, sectorLandmarkKinds } from './sector-loader.js';
 import { ProjectilesController } from './projectiles.js';
 import { EnemySpawnerController } from './enemy-spawner.js';
 import { EnemyCombatController } from './enemy-combat.js';
@@ -378,7 +378,7 @@ export class TankGameEngine {
   waitForSectorModels(sectorIdx) {
     const sector = SECTORS[sectorIdx];
     return this.modelFactory.waitForModels(getSectorEnemyClasses(sector), {
-      landmarks: sectorUsesLandmarks(sector),
+      landmarks: sectorLandmarkKinds(sector),
     });
   }
 

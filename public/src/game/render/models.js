@@ -541,8 +541,10 @@ export class ModelFactory extends TextureGenerator {
       this.buildingModelsPromise,
       this.ensureEnemyModels(enemyClasses),
     ];
-    if (options.landmarks && this.landmarkModels?.ensureLoaded) {
-      tasks.push(this.landmarkModels.ensureLoaded());
+    // `options.landmarks`: the sector's landmark kinds (only their GLB packs load), or true for every pack.
+    const landmarkKinds = Array.isArray(options.landmarks) ? options.landmarks : options.landmarks ? undefined : [];
+    if (landmarkKinds?.length !== 0 && this.landmarkModels?.ensureLoaded) {
+      tasks.push(this.landmarkModels.ensureLoaded(landmarkKinds));
     }
     return Promise.all(tasks);
   }
