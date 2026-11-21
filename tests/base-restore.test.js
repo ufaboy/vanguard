@@ -40,7 +40,7 @@ test('Reconstruction restores both HQ cells and services without shielding or ch
   assert.equal(added, 1);
 });
 
-test('HQ is two cells on the outer row behind a 4-cell concrete line with an open lane (or authored footprint)', async () => {
+test('every standard map authors its HQ cover: two HQ cells on the outer row, a 4-cell concrete row and an open drive-up lane', async () => {
   const { getBaseLayout } = await import('../public/src/game/levels.js');
   for (const sector of SECTORS) {
     if (sector.baseDefense === 'authored') {
@@ -64,8 +64,10 @@ test('HQ is two cells on the outer row behind a 4-cell concrete line with an ope
     const layout = getBaseLayout(sector.baseCell);
     for (const c of layout.cells) assert.equal(sector.grid[c.row][c.col], TileType.BASE);
     assert.equal(layout.wall.length, 4);
-    for (const c of layout.wall) assert.equal(sector.grid[c.row][c.col], TileType.CONCRETE);
-    for (const c of layout.open) assert.equal(sector.grid[c.row][c.col], TileType.EMPTY);
+    for (const c of layout.wall) {
+      assert.equal(sector.grid[c.row][c.col], TileType.CONCRETE, `${sector.name}: map must author concrete at ${c.row},${c.col}`);
+      assert.equal(sector.grid[c.row + 1][c.col], TileType.EMPTY, `${sector.name}: drive-up lane open at ${c.row + 1},${c.col}`);
+    }
     const baseCount = sector.grid.flat().filter((t) => t === TileType.BASE).length;
     assert.equal(baseCount, 2, `${sector.name}: exactly two HQ cells`);
   }

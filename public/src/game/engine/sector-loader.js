@@ -114,9 +114,14 @@ export class SectorLoaderController {
     };
   }
 
+  /** Restores the HQ cover row, but only the cells the map itself authored as concrete. */
   setBasePerimeterMaterial(targetType) {
     const { engine } = this;
-    for (const p of this.getBaseLayout().wall) {
+    const sector = SECTORS[engine.currentSectorIndex];
+    const authored = this.getBaseLayout().wall.filter(
+      (p) => sector?.objectGrid?.[p.row]?.[p.col] === TileType.CONCRETE
+    );
+    for (const p of authored) {
       const cell = engine.grid[p.row]?.[p.col];
       if (!cell) continue;
       if (cell.mesh) {

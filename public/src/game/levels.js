@@ -51,10 +51,11 @@ export const TILE_SIZE = 2.0;
 export const BASE_CELL = Object.freeze({ row: 39, col: 19 });
 
 /**
- * Cell layout around the Allied HQ:
+ * Cell layout around the Allied HQ. The loader never writes terrain from it: walls and lanes come only
+ * from the map's `objectLayout` / `surfaceLayout`.
  * - `cells`: the HQ footprint cells (default 2×1: anchor + its right neighbour);
- * - `wall`: a 4-cell concrete line two rows towards the enemy, covering the HQ from the enemy side;
- * - `open`: the free lane between HQ and wall plus the cells beside the HQ, so tanks can drive up to it.
+ * - `wall`: where the standard HQ cover row sits (4 cells, two rows towards the enemy). Maps author the
+ *   concrete there; the Survival boss-wave reward restores only the cells the map authored as concrete.
  */
 export function getBaseLayout(baseCell = BASE_CELL, size = GRID_SIZE, options = {}) {
   const { row, col } = baseCell;
@@ -69,18 +70,12 @@ export function getBaseLayout(baseCell = BASE_CELL, size = GRID_SIZE, options = 
     }
   }
   if (authored) {
-    return { cells: cells.filter(inside), wall: [], open: [] };
+    return { cells: cells.filter(inside), wall: [] };
   }
   const towardEnemy = row >= size / 2 ? -1 : 1;
-  const span = [-1, 0, 1, 2];
   return {
     cells: cells.filter(inside),
-    wall: span.map((dc) => ({ row: row + 2 * towardEnemy, col: col + dc })).filter(inside),
-    open: [
-      ...span.map((dc) => ({ row: row + towardEnemy, col: col + dc })),
-      { row, col: col - 1 },
-      { row, col: col + 2 },
-    ].filter(inside),
+    wall: [-1, 0, 1, 2].map((dc) => ({ row: row + 2 * towardEnemy, col: col + dc })).filter(inside),
   };
 }
 
@@ -176,14 +171,6 @@ function parseMapGrids(mapJson) {
     for (let c = 0; c < size; c++) {
       if (objectGrid[r][c] === TileType.BASE) objectGrid[r][c] = null;
     }
-  }
-  for (const { row, col } of layout.open) {
-    surfaceGrid[row][col] = TileType.EMPTY;
-    objectGrid[row][col] = null;
-  }
-  for (const { row, col } of layout.wall) {
-    surfaceGrid[row][col] = TileType.EMPTY;
-    objectGrid[row][col] = TileType.CONCRETE;
   }
   for (const { row, col } of layout.cells) {
     surfaceGrid[row][col] = TileType.EMPTY;
