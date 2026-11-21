@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { TileType } from '/public/src/game/terrains/surfaces.js';
 import { ModelFactory } from '/public/src/game/render/models.js';
 import { landmarkFootprintCenter } from '/public/src/game/terrains/landmarks.js';
+import { computeBuildingLayout } from '/public/src/game/terrains/building-layout.js';
+import { BUILDING_MAX_HP } from '/public/src/game/terrains/building-models.js';
 import { GRID_SIZE, TILE_SIZE } from './catalog.js';
 
 export function gridToWorld(row, col, size = GRID_SIZE) {
@@ -46,7 +48,7 @@ export class Viewport3D {
     this.scene.add(this.dirLight);
 
     // ModelFactory from the game (reuses Blender GLBs & procedural fallbacks)
-    this.modelFactory = new ModelFactory(this.renderer, { isSoftwareGl: false });
+    this.modelFactory = new ModelFactory(this.renderer, false);
     this.modelFactory.onBrickModelsReady = () => this.rebuildAll();
     this.modelFactory.onConcreteModelsReady = () => this.rebuildAll();
     this.modelFactory.onBuildingModelsReady = () => this.rebuildAll();
@@ -70,10 +72,12 @@ export class Viewport3D {
     this.objectGroup = new THREE.Group();
     this.markerGroup = new THREE.Group();
     this.landmarkGroup = new THREE.Group();
-    this.scene.add(this.surfaceGroup, this.objectGroup, this.markerGroup, this.landmarkGroup);
+    this.decoGroup = new THREE.Group();
+    this.scene.add(this.surfaceGroup, this.objectGroup, this.markerGroup, this.landmarkGroup, this.decoGroup);
 
     this.surfaceCells = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
     this.objectCells = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
+    this.buildingLayout = new Map();
 
     // Shared flat materials for water/ice/fallback
     this.waterGeo = new THREE.PlaneGeometry(TILE_SIZE, TILE_SIZE);
@@ -172,6 +176,10 @@ export class Viewport3D {
     if (!this.state) return;
     this.surfaceGroup.clear();
     this.objectGroup.clear();
+    this.buildingLayout = computeBuildingLayout(
+      this.state.objectGrid,
+      this.state.environment?.theme || 'urban'
+    );
     const size = this.state.size;
     for (let r = 0; r < size; r++) {
       for (let c = 0; c < size; c++) {
@@ -182,12 +190,20 @@ export class Viewport3D {
     }
     this.rebuildMarkers();
     this.rebuildLandmarks();
+    this.rebuildDecorations();
   }
 
   updateCell(r, c, updateNeighbors = true) {
     if (!this.state) return;
     const size = this.state.size;
     if (r < 0 || r >= size || c < 0 || c >= size) return;
+
+    if (updateNeighbors) {
+      this.buildingLayout = computeBuildingLayout(
+        this.state.objectGrid,
+        this.state.environment?.theme || 'urban'
+      );
+    }
 
     // Remove previous meshes for (r, c)
     if (this.surfaceCells[r][c]) {
@@ -273,11 +289,15 @@ export class Viewport3D {
     } else if (object === TileType.BRIDGE && this.modelFactory.landmarkModels) {
       oMesh = this.modelFactory.landmarkModels.createBridge(1, 1);
       oMesh.position.set(x, 0, z);
-    } else if (object === TileType.HOUSE_1) {
-      oMesh = this.modelFactory.createBuildingBlock('house1', 'single', 0, 1, 1, 0).group;
-      oMesh.position.set(x, 0, z);
-    } else if (object === TileType.HOUSE_2) {
-      oMesh = this.modelFactory.createBuildingBlock('house2', 'single', 0, 1, 1, 0).group;
+    } else if (object === TileType.HOUSE_1 || object === TileType.HOUSE_2) {
+      const b = this.buildingLayout.get(`${r},${c}`) || {
+        kind: object === TileType.HOUSE_2 ? 'house2' : 'house1',
+        part: 'corner',
+        yaw: 0,
+        style: 0,
+      };
+      const hp = BUILDING_MAX_HP[b.kind] || 25;
+      oMesh = this.modelFactory.createBuildingBlock(b.kind, b.part, b.yaw, hp, hp, b.style).group;
       oMesh.position.set(x, 0, z);
     } else if (object === TileType.ENEMY_BASE) {
       oMesh = this.modelFactory.createEnemyBaseBlock();
@@ -290,11 +310,14 @@ export class Viewport3D {
     }
 
     if (updateNeighbors) {
-      // Refresh adjacent roads so junctions connect seamlessly
+      // Refresh adjacent roads and modular building neighbours
       for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
         const nr = r + dr;
         const nc = c + dc;
-        if (nr >= 0 && nr < size && nc >= 0 && nc < size && this.state.surfaceGrid[nr][nc] === TileType.ROAD) {
+        if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
+        const nSurf = this.state.surfaceGrid[nr][nc];
+        const nObj = this.state.objectGrid[nr][nc];
+        if (nSurf === TileType.ROAD || nObj === TileType.HOUSE_1 || nObj === TileType.HOUSE_2) {
           this.updateCell(nr, nc, false);
         }
       }
@@ -358,6 +381,39 @@ export class Viewport3D {
       } catch {
         // Ignore unknown landmark kinds
       }
+    }
+  }
+
+  rebuildDecorations() {
+    this.decoGroup.clear();
+    const items = this.state?.decoration?.landmarks;
+    if (!Array.isArray(items)) return;
+    const decoColors = {
+      crosswalk: 0xe2e8f0,
+      parking: 0x94a3b8,
+      manhole: 0x475569,
+      loading: 0xf59e0b,
+      helipad: 0x38bdf8,
+      hazard_zone: 0xeab308,
+      chevron: 0xfb923c,
+      drain_grate: 0x64748b,
+      label: 0xa855f7,
+    };
+    for (const d of items) {
+      const pos = gridToWorld(d.row, d.col, this.state.size);
+      const span = Math.max(1, Number(d.size) || 1) * TILE_SIZE * 0.85;
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(span, span),
+        new THREE.MeshBasicMaterial({
+          color: decoColors[d.kind] || 0xf59e0b,
+          transparent: true,
+          opacity: 0.65,
+          depthWrite: false,
+        })
+      );
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.position.set(pos.x, 0.04, pos.z);
+      this.decoGroup.add(mesh);
     }
   }
 

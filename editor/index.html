@@ -35,7 +35,8 @@
 
         <div class="tb-group" id="tool-buttons">
           <button data-tool="brush" class="active" title="Brush (B)">Brush</button>
-          <button data-tool="eraser" title="Eraser (E)">Eraser</button>
+          <button data-tool="move" title="Move Object / Marker / Landmark (M)">Move</button>
+          <button data-tool="eraser" title="Eraser (X)">Eraser</button>
           <button data-tool="eyedropper" title="Eyedropper (I or Alt+Click)">Pick</button>
           <button data-tool="rect" title="Rectangle Fill (R)">Rect</button>
           <button data-tool="fill" title="Flood Fill (F)">Fill</button>
@@ -74,6 +75,7 @@
             <button class="tab-btn" data-tab="objects">Objects</button>
             <button class="tab-btn" data-tab="markers">Markers</button>
             <button class="tab-btn" data-tab="landmarks">Landmarks</button>
+            <button class="tab-btn" data-tab="decorations">Deco</button>
           </div>
           <div id="palette-list" class="palette-list"></div>
         </aside>
@@ -160,6 +162,11 @@
           <section class="insp-section">
             <h3>Landmarks (<span id="landmark-count">0</span>)</h3>
             <div id="landmark-list" class="item-list"></div>
+          </section>
+
+          <section class="insp-section">
+            <h3>Decorations (<span id="deco-count">0</span>)</h3>
+            <div id="deco-list" class="item-list"></div>
           </section>
         </aside>
       </div>

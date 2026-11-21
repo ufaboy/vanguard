@@ -121,6 +121,7 @@ export function parseMapState(rawJson) {
     },
     powerups: structuredClone(rawJson.powerups || []),
     landmarks3d: structuredClone(rawJson.landmarks3d || []),
+    decoration: rawJson.decoration ? structuredClone(rawJson.decoration) : null,
     environment: {
       theme: rawJson.environment?.theme || 'urban',
       tint: rawJson.environment?.tint || '#d6e7a0',
@@ -153,6 +154,9 @@ export function serializeMapState(state) {
   if (state.landmarks3d.length > 0 || out.landmarks3d !== undefined) {
     out.landmarks3d = structuredClone(state.landmarks3d);
   }
+  if (state.decoration) {
+    out.decoration = structuredClone(state.decoration);
+  }
   out.surfaceLayout = state.surfaceGrid.map((row) =>
     row.map((tile) => SURFACE_TILE_TO_CHAR.get(tile) ?? '.').join('')
   );
@@ -163,6 +167,9 @@ export function serializeMapState(state) {
 }
 
 export async function saveJsonWithPicker(jsonText, suggestedName, existingHandle = null) {
+  if (!jsonText || jsonText.length < 2) {
+    throw new Error('Serialized map JSON is empty');
+  }
   if (!window.showSaveFilePicker) {
     downloadJson(jsonText, suggestedName);
     return { handle: null, method: 'download' };
@@ -173,10 +180,22 @@ export async function saveJsonWithPicker(jsonText, suggestedName, existingHandle
       suggestedName,
       types: [{ description: 'JSON Map File', accept: { 'application/json': ['.json'] } }],
     }));
-  const writable = await handle.createWritable();
-  await writable.write(jsonText);
-  await writable.close();
-  return { handle, method: 'fs' };
+
+  let writable = null;
+  try {
+    if (handle.queryPermission && (await handle.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+      const perm = await handle.requestPermission?.({ mode: 'readwrite' });
+      if (perm !== 'granted') throw new Error('Write permission denied');
+    }
+    writable = await handle.createWritable();
+    await writable.write(new Blob([jsonText], { type: 'application/json' }));
+    await writable.close();
+    return { handle, method: 'fs' };
+  } catch (err) {
+    await writable?.abort?.().catch(() => {});
+    downloadJson(jsonText, suggestedName);
+    return { handle: null, method: 'download', fallbackError: err?.message };
+  }
 }
 
 export function downloadJson(jsonText, fileName) {
@@ -185,6 +204,9 @@ export function downloadJson(jsonText, fileName) {
   const a = document.createElement('a');
   a.href = url;
   a.download = fileName;
+  a.style.display = 'none';
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
 }

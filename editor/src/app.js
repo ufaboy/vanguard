@@ -1,6 +1,7 @@
 /** Main controller for the BATTLE TANK 3D Map Editor. */
 import { TileType } from '/public/src/game/terrains/surfaces.js';
 import {
+  DECORATIONS,
   LANDMARKS,
   MARKERS,
   OBJECTS,
@@ -36,10 +37,12 @@ class MapEditorApp {
     this.selectedObject = TileType.BRICK;
     this.selectedMarker = 'playerSpawn';
     this.selectedLandmark = 'CONCORDE_OBELISK';
+    this.selectedDecoration = 'crosswalk';
 
     this.strokeSnapshot = null;
     this.rectStartCell = null;
     this.strokeChanged = false;
+    this.moveDrag = null;
 
     this.viewport = new Viewport3D($('viewport'), {
       isEyedropperActive: () => this.activeTool === 'eyedropper',
@@ -81,6 +84,7 @@ class MapEditorApp {
       playerSpawnCell: this.state.playerSpawnCell,
       powerups: this.state.powerups,
       landmarks3d: this.state.landmarks3d,
+      decoration: this.state.decoration,
       environment: this.state.environment,
       meta: this.state.meta,
     });
@@ -94,6 +98,7 @@ class MapEditorApp {
     this.state.playerSpawnCell = data.playerSpawnCell;
     this.state.powerups = data.powerups;
     this.state.landmarks3d = data.landmarks3d;
+    this.state.decoration = data.decoration ?? null;
     this.state.environment = data.environment;
     this.state.meta = data.meta;
     this.viewport.setState(this.state);
@@ -143,6 +148,14 @@ class MapEditorApp {
     if (r < 0 || r >= size || c < 0 || c >= size) return false;
 
     if (mode === 'eraser') {
+      if (this.activeTab === 'decorations') {
+        const list = this.state.decoration?.landmarks;
+        if (!Array.isArray(list)) return false;
+        const idx = list.findIndex((d) => d.row === r && d.col === c);
+        if (idx < 0) return false;
+        list.splice(idx, 1);
+        return true;
+      }
       const hadObj = this.state.objectGrid[r][c] !== null;
       const hadSurf = this.state.surfaceGrid[r][c] !== TileType.EMPTY;
       if (hadObj) {
@@ -170,6 +183,37 @@ class MapEditorApp {
       return true;
     }
 
+    if (this.activeTab === 'decorations') {
+      if (!this.state.decoration) {
+        this.state.decoration = {
+          version: 1,
+          seed: 1,
+          theme: this.state.environment.theme || 'urban',
+          landmarks: [],
+        };
+      }
+      if (!Array.isArray(this.state.decoration.landmarks)) {
+        this.state.decoration.landmarks = [];
+      }
+      const list = this.state.decoration.landmarks;
+      const existing = list.find((d) => d.row === r && d.col === c);
+      if (existing) {
+        if (existing.kind === this.selectedDecoration) return false;
+        existing.kind = this.selectedDecoration;
+        if (this.selectedDecoration === 'label' && !existing.text) existing.text = 'SECTOR';
+        return true;
+      }
+      if (list.length >= 64) {
+        this._toast('Max 64 decoration landmarks per map');
+        return false;
+      }
+      const id = `deco-${this.selectedDecoration.replace(/_/g, '-')}-${r}-${c}`;
+      const entry = { id, kind: this.selectedDecoration, row: r, col: c, size: 1 };
+      if (this.selectedDecoration === 'label') entry.text = 'SECTOR';
+      list.push(entry);
+      return true;
+    }
+
     return false;
   }
 
@@ -181,6 +225,10 @@ class MapEditorApp {
           changed = true;
         }
       }
+    }
+    if (changed && this.activeTab === 'decorations') {
+      this.viewport.rebuildDecorations();
+      this._syncLists();
     }
     return changed;
   }
@@ -263,6 +311,39 @@ class MapEditorApp {
       this.viewport.rebuildLandmarks();
       this._syncLists();
       this._commitSnapshot(prev);
+    } else if (this.activeTab === 'decorations') {
+      if (!this.state.decoration) {
+        this.state.decoration = {
+          version: 1,
+          seed: 1,
+          theme: this.state.environment.theme || 'urban',
+          landmarks: [],
+        };
+      }
+      if (!Array.isArray(this.state.decoration.landmarks)) {
+        this.state.decoration.landmarks = [];
+      }
+      const list = this.state.decoration.landmarks;
+      const existingIdx = list.findIndex((d) => d.row === cell.row && d.col === cell.col);
+      if (existingIdx >= 0) {
+        list.splice(existingIdx, 1);
+      } else {
+        const id = `deco-${this.selectedDecoration.replace(/_/g, '-')}-${cell.row}-${cell.col}`;
+        const entry = {
+          id,
+          kind: this.selectedDecoration,
+          row: cell.row,
+          col: cell.col,
+          size: 1,
+        };
+        if (this.selectedDecoration === 'label') {
+          entry.text = 'SECTOR';
+        }
+        list.push(entry);
+      }
+      this.viewport.rebuildDecorations();
+      this._syncLists();
+      this._commitSnapshot(prev);
     }
   }
 
@@ -282,9 +363,68 @@ class MapEditorApp {
     }
   }
 
+  _startMoveAt(cell) {
+    const { row, col } = cell;
+
+    // 1. Landmark (anchor cell)
+    const lm = this.state.landmarks3d.find((l) => l.row === row && l.col === col);
+    if (lm) {
+      this.moveDrag = { kind: 'landmark', item: lm, fromRow: row, fromCol: col, snapshot: this._snapshot() };
+      this._toast(`Moving landmark ${lm.kind}`);
+      return;
+    }
+
+    // 2. Powerup crate
+    const pw = this.state.powerups.find((p) => p.row === row && p.col === col);
+    if (pw) {
+      this.moveDrag = { kind: 'powerup', item: pw, fromRow: row, fromCol: col, snapshot: this._snapshot() };
+      this._toast(`Moving crate ${pw.type}`);
+      return;
+    }
+
+    // 3. Player spawn
+    if (this.state.playerSpawnCell.row === row && this.state.playerSpawnCell.col === col) {
+      this.moveDrag = { kind: 'playerSpawn', fromRow: row, fromCol: col, snapshot: this._snapshot() };
+      this._toast('Moving Player Spawn');
+      return;
+    }
+
+    // 4. Allied HQ (2x1 footprint: anchor or col+1)
+    if (
+      this.state.baseCell.row === row &&
+      (this.state.baseCell.col === col || this.state.baseCell.col + 1 === col)
+    ) {
+      this.moveDrag = { kind: 'baseCell', fromRow: this.state.baseCell.row, fromCol: this.state.baseCell.col, snapshot: this._snapshot() };
+      this._toast('Moving Allied HQ');
+      return;
+    }
+
+    // 5. Grid object
+    const obj = this.state.objectGrid[row][col];
+    if (obj !== null) {
+      this.moveDrag = { kind: 'object', value: obj, fromRow: row, fromCol: col, snapshot: this._snapshot() };
+      this._toast(`Moving ${OBJECT_BY_TILE.get(obj)?.name || 'object'}`);
+      return;
+    }
+
+    // 6. Non-empty surface
+    const surf = this.state.surfaceGrid[row][col];
+    if (surf !== TileType.EMPTY) {
+      this.moveDrag = { kind: 'surface', value: surf, fromRow: row, fromCol: col, snapshot: this._snapshot() };
+      this._toast(`Moving ${SURFACE_BY_TILE.get(surf)?.name || 'surface'}`);
+      return;
+    }
+
+    this._toast('Nothing to move on this cell');
+  }
+
   _onPointerDownCell(cell) {
     if (this.activeTool === 'eyedropper') {
       this._pickFromCell(cell);
+      return;
+    }
+    if (this.activeTool === 'move') {
+      this._startMoveAt(cell);
       return;
     }
     if (this.activeTab === 'markers' || this.activeTab === 'landmarks') {
@@ -305,8 +445,26 @@ class MapEditorApp {
   }
 
   _onPointerDragCell(cell) {
+    if (this.activeTool === 'move' && this.moveDrag) {
+      if (this.moveDrag.kind === 'landmark') {
+        this.moveDrag.item.row = cell.row;
+        this.moveDrag.item.col = cell.col;
+        this.viewport.rebuildLandmarks();
+      } else if (this.moveDrag.kind === 'powerup') {
+        this.moveDrag.item.row = cell.row;
+        this.moveDrag.item.col = cell.col;
+        this.viewport.rebuildMarkers();
+      } else if (this.moveDrag.kind === 'playerSpawn') {
+        this.state.playerSpawnCell = { row: cell.row, col: cell.col };
+        this.viewport.rebuildMarkers();
+      } else if (this.moveDrag.kind === 'baseCell') {
+        this.state.baseCell = { row: cell.row, col: cell.col };
+        this.viewport.rebuildMarkers();
+      }
+      return;
+    }
     if (this.activeTool === 'brush' || this.activeTool === 'eraser') {
-      if (this.activeTab === 'surfaces' || this.activeTab === 'objects') {
+      if (this.activeTab === 'surfaces' || this.activeTab === 'objects' || this.activeTab === 'decorations') {
         if (this._applyBrushAt(cell, this.activeTool)) {
           this.strokeChanged = true;
         }
@@ -315,6 +473,30 @@ class MapEditorApp {
   }
 
   _onPointerUpCell(cell) {
+    if (this.activeTool === 'move' && this.moveDrag) {
+      const drag = this.moveDrag;
+      this.moveDrag = null;
+      if (!cell || (cell.row === drag.fromRow && cell.col === drag.fromCol)) {
+        return;
+      }
+      if (drag.kind === 'object') {
+        this.state.objectGrid[drag.fromRow][drag.fromCol] = null;
+        this.state.objectGrid[cell.row][cell.col] = drag.value;
+        this.viewport.updateCell(drag.fromRow, drag.fromCol);
+        this.viewport.updateCell(cell.row, cell.col);
+      } else if (drag.kind === 'surface') {
+        this.state.surfaceGrid[drag.fromRow][drag.fromCol] = TileType.EMPTY;
+        this.state.surfaceGrid[cell.row][cell.col] = drag.value;
+        this.viewport.updateCell(drag.fromRow, drag.fromCol);
+        this.viewport.updateCell(cell.row, cell.col);
+      } else {
+        this._syncLists();
+      }
+      this._commitSnapshot(drag.snapshot);
+      this._toast(`Moved to (${cell.row}, ${cell.col})`);
+      return;
+    }
+
     if (this.activeTool === 'rect' && this.rectStartCell && cell) {
       const r0 = Math.min(this.rectStartCell.row, cell.row);
       const r1 = Math.max(this.rectStartCell.row, cell.row);
@@ -326,7 +508,13 @@ class MapEditorApp {
           if (this._applyCell(r, c, 'brush')) changed = true;
         }
       }
-      if (changed) this._commitSnapshot(this.strokeSnapshot);
+      if (changed) {
+        if (this.activeTab === 'decorations') {
+          this.viewport.rebuildDecorations();
+          this._syncLists();
+        }
+        this._commitSnapshot(this.strokeSnapshot);
+      }
       this.rectStartCell = null;
       this.strokeSnapshot = null;
       return;
@@ -409,6 +597,17 @@ class MapEditorApp {
         };
         list.appendChild(btn);
       }
+    } else if (this.activeTab === 'decorations') {
+      for (const d of DECORATIONS) {
+        const btn = this._makePaletteItem(d.name, `Ground decal (${d.kind})`, d.color, d.kind === this.selectedDecoration);
+        btn.onclick = () => {
+          this.selectedDecoration = d.kind;
+          if (this.activeTool === 'eraser') this._setTool('brush');
+          this._renderPalette();
+          this._updateStatusActive();
+        };
+        list.appendChild(btn);
+      }
     }
   }
 
@@ -435,8 +634,10 @@ class MapEditorApp {
       label = `Object: ${o?.name} (${o?.char})`;
     } else if (this.activeTab === 'markers') {
       label = `Marker: ${this.selectedMarker}`;
-    } else {
+    } else if (this.activeTab === 'landmarks') {
       label = `Landmark: ${this.selectedLandmark}`;
+    } else {
+      label = `Deco: ${this.selectedDecoration}`;
     }
     $('status-active').textContent = label;
   }
@@ -522,6 +723,27 @@ class MapEditorApp {
       };
       row.appendChild(del);
       lList.appendChild(row);
+    });
+
+    const decos = this.state.decoration?.landmarks || [];
+    $('deco-count').textContent = String(decos.length);
+    const dList = $('deco-list');
+    dList.innerHTML = '';
+    decos.forEach((d, idx) => {
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `<span>${d.kind} (${d.row}, ${d.col})</span>`;
+      const del = document.createElement('button');
+      del.textContent = '×';
+      del.onclick = () => {
+        const prev = this._snapshot();
+        decos.splice(idx, 1);
+        this.viewport.rebuildDecorations();
+        this._syncLists();
+        this._commitSnapshot(prev);
+      };
+      row.appendChild(del);
+      dList.appendChild(row);
     });
   }
 
@@ -670,6 +892,8 @@ class MapEditorApp {
         this._saveMap();
       } else if (e.code === 'KeyB') {
         this._setTool('brush');
+      } else if (e.code === 'KeyM') {
+        this._setTool('move');
       } else if (e.code === 'KeyE' && !e.ctrlKey) {
         // Note: E also rotates camera if held; only switch if Shift+E or keep simple: X for eraser
       } else if (e.code === 'KeyX') {

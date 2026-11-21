@@ -52,6 +52,18 @@ export const LANDMARKS = PLACEABLE_LANDMARKS.map((kind) => ({
   color: '#f59e0b',
 }));
 
+export const DECORATIONS = [
+  { kind: 'crosswalk', name: 'Crosswalk', color: '#e2e8f0' },
+  { kind: 'parking', name: 'Parking Bay', color: '#94a3b8' },
+  { kind: 'manhole', name: 'Manhole', color: '#475569' },
+  { kind: 'loading', name: 'Loading Zone', color: '#f59e0b' },
+  { kind: 'helipad', name: 'Helipad', color: '#38bdf8' },
+  { kind: 'hazard_zone', name: 'Hazard Zone', color: '#eab308' },
+  { kind: 'chevron', name: 'Chevron', color: '#fb923c' },
+  { kind: 'drain_grate', name: 'Drain Grate', color: '#64748b' },
+  { kind: 'label', name: 'District Label', color: '#a855f7' },
+];
+
 export const SURFACE_CHAR_TO_TILE = {
   '.': TileType.EMPTY,
   _: TileType.EMPTY,
