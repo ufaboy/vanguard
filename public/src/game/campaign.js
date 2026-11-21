@@ -92,32 +92,21 @@ export const CAMPAIGN_CHAPTERS = [
       {
         "id": "campaign-04",
         "number": 4,
-        "name": "Railway Cut",
-        "objective": "Clear the station approaches",
-        "layout": "Parallel platforms and service tunnels expose artillery positions from the flank.",
+        "name": "Outer Gate",
+        "objective": "Destroy the gate stronghold",
+        "layout": "Two breach lanes and a rear service road lead to the screened gate core.",
         "difficulty": "Moderate",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 5,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 14,
-            "phase": "regular"
-          },
-          {
-            "type": "HOWITZER",
-            "count": 4,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 12, "phase": "regular" },
+          { "type": "ARMOR", "count": 5, "phase": "regular" },
+          { "type": "HOWITZER", "count": 3, "phase": "regular" }
         ],
         "deploymentPlan": {
           "initialCount": 3,
           "maxConcurrent": 6,
-          "notes": "Introduce artillery behind breakable cover; keep a clear side route to each firing position."
+          "notes": "Use armor at the gate and standard tanks in side streets; artillery stays reachable from a flank."
         }
       },
       {
