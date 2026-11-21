@@ -105,6 +105,14 @@ export function tacticsCheck(map) {
   for (const s of routeSectors) {
     if ((sectors[s] || 0) < 4) issues.push(`[ambush] sector ${s} has ${sectors[s] || 0} cover/forest cells near routes`);
   }
+
+  // 5. HQ cover: authored CONCRETE row two rows north of the HQ, an open drive-up row between, reachable from a side.
+  const span = [bc - 1, bc, bc + 1, bc + 2];
+  const missingWall = span.filter((c) => c >= 0 && c < SIZE && obj[br - 2]?.[c] !== 'C');
+  if (missingWall.length) issues.push(`[hq_cover] row ${br - 2} needs CONCRETE at cols ${missingWall.join(', ')} to shield the HQ from the north`);
+  const blockedGap = span.filter((c) => c >= 0 && c < SIZE && !passable(br - 1, c));
+  if (blockedGap.length) issues.push(`[hq_cover] drive-up row ${br - 1} is blocked at cols ${blockedGap.join(', ')}`);
+  if (!passable(br - 1, bc - 2) && !passable(br - 1, bc + 3)) issues.push(`[hq_cover] drive-up row ${br - 1} has no open side entry (cols ${bc - 2} / ${bc + 3})`);
   return { routes: routes.map(({ id, length, reachesBase }) => ({ id, length, reachesBase })), bestOverwatch: best, coverBySector: sectors, issues };
 }
 

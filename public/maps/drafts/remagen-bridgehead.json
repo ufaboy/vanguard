@@ -640,7 +640,7 @@
     ".PPPP.FFFF..........B...PPPP...AAA......",
     ".PPPP.....FF........B..........AAA.FFFF.",
     ".PPPP.....FF...................AAA.FFFF.",
-    "..FF..AAAA....AAA........FFFF......FFFF.",
+    "..FF..AAAA....AAA..CCCC..FFFF......FFFF.",
     "..FF..AAAA....AAA........FFFF......FFFF.",
     "....................HH...FFFF..........."
   ]

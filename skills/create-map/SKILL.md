@@ -65,7 +65,8 @@ Gameplay wins over realism, but resolve conflicts by moving, compressing or addi
 - **No border frame**: no continuous `C`/`B` perimeter box. Edges stay open terrain, forest, water or local buildings.
 - **No unbreakable water divider**: no continuous water line across the map between the enemy side and the base. Every full-width water barrier has dry fords, bridges (`=`), or destructible breach points.
 - **Connectivity**: the player spawn can reach every enemy entrance, either over open ground or through brick / concrete breaches. Every BOX can be reached and collected with the stock chassis.
-- **Base**: `baseCell` and its right neighbour are `HH` on the outermost southern row. `getBaseLayout` (`levels.js`) adds a 4-cell concrete line two rows north and keeps the lane open — do not author over those cells. Keep the player spawn open and a few rows north of the base.
+- **Base**: `baseCell` and its right neighbour are `HH` on the outermost southern row. Keep the player spawn open and a few rows north of the base.
+- **HQ cover (always)**: the HQ must be shielded from direct fire from the north. Author a row of `CONCRETE` (`C`) in `objectLayout` two rows north of the HQ (`baseRow - 2`), covering at least `baseCol - 1` … `baseCol + 2` (4 cells), with exactly one open row between it and the HQ (`baseRow - 1`, same columns) so the player tank can drive up to the base. That gap row and the cells beside the HQ stay free of objects, and the gap is reachable from the side on at least one end (preferably both). This matches the runtime default of `getBaseLayout` (`levels.js`), but draw it explicitly so it shows in the editor and survives `baseDefense: "authored"`.
 - **Stronghold mode**: the `E` enemy base sits deep in the north (rows 2–7), never mid-map, with `enemyBase.fortifyPerimeter: true` and concrete around it.
 - **Placement compatibility**: every object stands on a surface allowed by `canPlaceOnSurface` (see catalog.md).
 
