@@ -160,8 +160,16 @@ export function serializeMapState(state) {
   out.surfaceLayout = state.surfaceGrid.map((row) =>
     row.map((tile) => SURFACE_TILE_TO_CHAR.get(tile) ?? '.').join('')
   );
-  out.objectLayout = state.objectGrid.map((row) =>
-    row.map((tile) => OBJECT_TILE_TO_CHAR.get(tile) ?? '.').join('')
+  out.objectLayout = state.objectGrid.map((row, r) =>
+    row
+      .map((tile, c) => {
+        if (r === state.baseCell.row && (c === state.baseCell.col || c === state.baseCell.col + 1)) {
+          return 'H';
+        }
+        if (tile === TileType.BASE) return '.';
+        return OBJECT_TILE_TO_CHAR.get(tile) ?? '.';
+      })
+      .join('')
   );
   return JSON.stringify(out, null, 2) + '\n';
 }
@@ -183,12 +191,8 @@ export async function saveJsonWithPicker(jsonText, suggestedName, existingHandle
 
   let writable = null;
   try {
-    if (handle.queryPermission && (await handle.queryPermission({ mode: 'readwrite' })) !== 'granted') {
-      const perm = await handle.requestPermission?.({ mode: 'readwrite' });
-      if (perm !== 'granted') throw new Error('Write permission denied');
-    }
     writable = await handle.createWritable();
-    await writable.write(new Blob([jsonText], { type: 'application/json' }));
+    await writable.write(new TextEncoder().encode(jsonText));
     await writable.close();
     return { handle, method: 'fs' };
   } catch (err) {

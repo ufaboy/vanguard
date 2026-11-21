@@ -28,6 +28,7 @@ class MapEditorApp {
     this.state = parseMapState(createBlankMap());
     this.fileHandle = null;
     this.currentFileName = 'custom-map.json';
+    this.currentMapRelPath = null;
     this.dirty = false;
 
     this.activeTab = 'surfaces';
@@ -114,9 +115,10 @@ class MapEditorApp {
     this._updateUndoRedoButtons();
   }
 
-  _loadState(newState, { resetHistory = false, fileName = 'map.json', handle = null } = {}) {
+  _loadState(newState, { resetHistory = false, fileName = 'map.json', handle = null, relPath = null } = {}) {
     this.state = newState;
     this.currentFileName = fileName;
+    this.currentMapRelPath = relPath;
     this.fileHandle = handle;
     if (resetHistory) this.history.clear();
     this.viewport.setState(this.state);
@@ -784,7 +786,8 @@ class MapEditorApp {
       try {
         const res = await fetch(url);
         const json = await res.json();
-        this._loadState(parseMapState(json), { resetHistory: true, fileName });
+        const relPath = url.replace(/^\//, '');
+        this._loadState(parseMapState(json), { resetHistory: true, fileName, relPath });
         this._toast(`Loaded ${fileName}`);
       } catch (err) {
         this._toast(`Failed to load map: ${err.message}`);

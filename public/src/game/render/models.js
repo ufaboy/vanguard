@@ -2477,7 +2477,7 @@ export class ModelFactory extends TextureGenerator {
         }));
       });
     }
-    return this.createSeamlessSurfacePatch(x, z, this.grassPatchMats, 0.01);
+    return this.createSeamlessSurfacePatch(x, z, this.grassPatchMats, 0.007);
   }
 
   /** Seamless compacted stone & rocky bedrock surface patch at world (x, z). */
