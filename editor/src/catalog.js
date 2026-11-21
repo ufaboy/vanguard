@@ -1,0 +1,96 @@
+/** Editor palette catalog and char/TileType mappings matching public/src/game/levels.js. */
+import { TileType } from '/public/src/game/terrains/surfaces.js';
+import { PLACEABLE_LANDMARKS } from '/public/src/game/terrains/landmarks.js';
+import { POWERUP } from '/public/src/game/powerups.js';
+
+export const GRID_SIZE = 40;
+export const TILE_SIZE = 2.0;
+
+export const SURFACES = [
+  { tile: TileType.EMPTY, char: '.', name: 'Ground / Asphalt', color: '#64748b' },
+  { tile: TileType.ROAD, char: 'R', name: 'Paved Road', color: '#334155' },
+  { tile: TileType.WATER, char: 'W', name: 'Deep Water', color: '#0284c7' },
+  { tile: TileType.ICE, char: 'I', name: 'Glacial Ice', color: '#bae6fd' },
+  { tile: TileType.SAND, char: 'S', name: 'Desert Sand', color: '#eab308' },
+  { tile: TileType.STONE, char: '^', name: 'Cobble / Stone', color: '#78716c' },
+  { tile: TileType.GRASS, char: 'V', name: 'Grassland', color: '#16a34a' },
+  { tile: TileType.SWAMP, char: 'M', name: 'Swamp / Mud', color: '#4d7c0f' },
+  { tile: TileType.OIL_SLICK, char: 'L', name: 'Oil Slick', color: '#1e1b4b' },
+];
+
+export const OBJECTS = [
+  { tile: null, char: '.', name: 'Empty (Clear Object)', color: '#1e293b' },
+  { tile: TileType.BRICK, char: 'B', name: 'Brick Wall (4 HP)', color: '#d97706' },
+  { tile: TileType.CONCRETE, char: 'C', name: 'Concrete Wall (16 HP)', color: '#94a3b8' },
+  { tile: TileType.FOREST, char: 'F', name: 'Forest Canopy', color: '#15803d' },
+  { tile: TileType.HEDGEHOG, char: 'X', name: 'Czech Hedgehog', color: '#475569' },
+  { tile: TileType.BARREL, char: 'D', name: 'Fuel Barrel', color: '#dc2626' },
+  { tile: TileType.BOXES, char: 'Q', name: 'Supply Crates', color: '#ca8a04' },
+  { tile: TileType.CRATER, char: 'K', name: 'Shell Crater', color: '#57534e' },
+  { tile: TileType.WATER_TOWER, char: 'T', name: 'Water Tower', color: '#0ea5e9' },
+  { tile: TileType.BRIDGE, char: '=', name: 'Bridge', color: '#a16207' },
+  { tile: TileType.RUBBLE, char: 'U', name: 'Rubble', color: '#71717a' },
+  { tile: TileType.HOUSE_1, char: 'A', name: 'Building Type 1', color: '#b45309' },
+  { tile: TileType.HOUSE_2, char: 'P', name: 'Building Type 2', color: '#9a3412' },
+  { tile: TileType.ENEMY_BASE, char: 'E', name: 'Enemy Stronghold', color: '#ef4444' },
+];
+
+export const MARKERS = [
+  { id: 'playerSpawn', name: 'Player Spawn', sub: 'Sets playerSpawnCell', color: '#22c55e' },
+  { id: 'baseCell', name: 'Allied HQ (2×1)', sub: 'Sets baseCell anchor', color: '#3b82f6' },
+  { id: `powerup:${POWERUP.REPAIR}`, powerupType: 'REPAIR', name: 'Crate: Repair', sub: 'Field Repair Kit', color: '#22c55e' },
+  { id: `powerup:${POWERUP.EMP}`, powerupType: 'EMP', name: 'Crate: EMP', sub: 'EMP Blast (10s)', color: '#06b6d4' },
+  { id: `powerup:${POWERUP.BASE_RESTORE}`, powerupType: 'BASE_RESTORE', name: 'Crate: Base Restore', sub: 'Fortify HQ', color: '#60a5fa' },
+  { id: `powerup:${POWERUP.APS}`, powerupType: 'APS', name: 'Crate: APS', sub: 'Active Protection', color: '#a855f7' },
+  { id: `powerup:${POWERUP.MISSILE}`, powerupType: 'MISSILE', name: 'Crate: ATGM', sub: 'Guided Missiles', color: '#f97316' },
+  { id: `powerup:${POWERUP.AMMO}`, powerupType: 'AMMO', name: 'Crate: Ammo', sub: 'Shell Resupply', color: '#eab308' },
+];
+
+export const LANDMARKS = PLACEABLE_LANDMARKS.map((kind) => ({
+  kind,
+  name: kind.replace(/_/g, ' '),
+  color: '#f59e0b',
+}));
+
+export const SURFACE_CHAR_TO_TILE = {
+  '.': TileType.EMPTY,
+  _: TileType.EMPTY,
+  ' ': TileType.EMPTY,
+  G: TileType.EMPTY,
+  R: TileType.ROAD,
+  W: TileType.WATER,
+  I: TileType.ICE,
+  S: TileType.SAND,
+  N: TileType.SAND,
+  '^': TileType.STONE,
+  V: TileType.GRASS,
+  M: TileType.SWAMP,
+  L: TileType.OIL_SLICK,
+};
+
+export const OBJECT_CHAR_TO_TILE = {
+  '.': null,
+  _: null,
+  ' ': null,
+  B: TileType.BRICK,
+  C: TileType.CONCRETE,
+  F: TileType.FOREST,
+  X: TileType.HEDGEHOG,
+  Z: TileType.HEDGEHOG,
+  D: TileType.BARREL,
+  O: TileType.BARREL,
+  Q: TileType.BOXES,
+  K: TileType.CRATER,
+  T: TileType.WATER_TOWER,
+  '=': TileType.BRIDGE,
+  U: TileType.RUBBLE,
+  A: TileType.HOUSE_1,
+  P: TileType.HOUSE_2,
+  H: TileType.BASE,
+  E: TileType.ENEMY_BASE,
+};
+
+export const SURFACE_TILE_TO_CHAR = new Map(SURFACES.map((s) => [s.tile, s.char]));
+export const OBJECT_TILE_TO_CHAR = new Map(OBJECTS.map((o) => [o.tile, o.char]));
+export const SURFACE_BY_TILE = new Map(SURFACES.map((s) => [s.tile, s]));
+export const OBJECT_BY_TILE = new Map(OBJECTS.map((o) => [o.tile, o]));

@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm run build:site && pnpm dlx serve dist/site -l 3000",
+    "editor": "pnpm dlx serve . -l 3002",
     "codex": "pnpm dlx serve . -l 3001",
     "start": "pnpm run build:site && pnpm dlx serve dist/site -l 3000",
     "build": "pnpm run lint && pnpm run build:site",
