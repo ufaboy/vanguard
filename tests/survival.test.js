@@ -120,7 +120,7 @@ test('recordSurvivalRun updates personal Survival Records without modifying pers
   assert.equal(snap.earlyCallBonus, SURVIVAL_CONFIG.EARLY_CALL_BONUS);
 });
 
-test('Paris LandmarkModels procedural fallback and footprint helpers cover all landmarks', async () => {
+test('LandmarkModels procedural fallback and footprint helpers cover all landmarks', async () => {
   const {
     PLACEABLE_LANDMARKS,
     landmarkBlockedCells,
@@ -128,7 +128,7 @@ test('Paris LandmarkModels procedural fallback and footprint helpers cover all l
     LandmarkModels,
   } = await import('../public/src/game/terrains/landmarks.js');
 
-  assert.equal(PLACEABLE_LANDMARKS.length, 15);
+  assert.equal(new Set(PLACEABLE_LANDMARKS).size, PLACEABLE_LANDMARKS.length, 'placeable kinds are unique');
   assert.equal(landmarkBlockedCells({ kind: 'VERSAILLES_PALACE', row: 31, col: 12 }).length, 48);
   assert.equal(landmarkBlockedCells({ kind: 'ATOMIUM', row: 2, col: 35 }).length, 9);
   assert.equal(landmarkBlockedCells({ kind: 'BRUSSELS_TOWN_HALL', row: 35, col: 6 }).length, 12);

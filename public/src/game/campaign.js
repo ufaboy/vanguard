@@ -9,19 +9,20 @@ export const CAMPAIGN_CHAPTERS = [
       {
         "id": "campaign-01",
         "number": 1,
-        "name": "Placeholder Mission",
-        "objective": "Destroy all hostiles",
-        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
+        "name": "Rome: Forum & Colosseum",
+        "objective": "Clear the Consortium strike teams before they regroup",
+        "layout": "Interlocking urban loops through the Roman Forum, a bent imperial avenue and the Colosseum square, with cross streets and three destructible breaches.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          { "type": "SCOUT", "count": 4, "phase": "regular" },
-          { "type": "STANDARD", "count": 16, "phase": "regular" }
+          { "type": "SCOUT", "count": 5, "phase": "regular" },
+          { "type": "STANDARD", "count": 14, "phase": "regular" },
+          { "type": "HOWITZER", "count": 1, "phase": "regular" }
         ],
         "deploymentPlan": {
           "initialCount": 4,
-          "maxConcurrent": 4,
-          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
+          "maxConcurrent": 8,
+          "notes": "Three Consortium strike groups: Forum patrols, a Colosseum flank with one howitzer, and a two-lane rearguard."
         }
       },
       {

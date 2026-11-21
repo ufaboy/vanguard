@@ -15,6 +15,8 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { autoDisposeOwned, disposeOwned, markOwned } from '../render/dispose.js';
 
 const ALL = (cols, rows) => {
   const cells = [];
@@ -28,6 +30,7 @@ const LANDMARK_PACKS = Object.freeze({
   berlin: '../../../models/landmarks/berlin_landmarks.glb',
   versailles: '../../../models/landmarks/versailles_landmarks.glb',
   brussels: '../../../models/landmarks/brussels_landmarks.glb',
+  rome: '../../../models/landmarks/rome_landmarks.glb',
 });
 
 /** Cells `cols` of every row in a `cols` x `rows` footprint. */
@@ -57,6 +60,13 @@ const LANDMARK_SPECS = Object.freeze({
   // Gothic town hall, square front facing north, belfry spire in the middle; fully blocked.
   BRUSSELS_TOWN_HALL: Object.freeze({ cols: 6, rows: 2, blocked: ALL(6, 2), height: 12.0, pack: 'brussels' }),
   MANNEKEN_PIS: Object.freeze({ cols: 1, rows: 1, blocked: [[0, 0]], height: 1.8, pack: 'brussels' }),
+  // The central two columns remain open through both axial gates and the arena.
+  COLOSSEUM: Object.freeze({ cols: 10, rows: 8, blocked: [
+    '..##..##..', '.###..###.', '###....###', '##......##',
+    '##......##', '###....###', '.###..###.', '..##..##..',
+  ].flatMap((line, row) => [...line].flatMap((cell, col) => cell === '#' ? [[row, col]] : [])), height: 8.7, pack: 'rome' }),
+  ARCH_OF_CONSTANTINE: Object.freeze({ cols: 7, rows: 2, blocked: COLUMNS([0, 2, 4, 6], 2), height: 7.4, pack: 'rome' }),
+  FORUM_COLUMNS: Object.freeze({ cols: 3, rows: 1, blocked: ALL(3, 1), height: 5.1, pack: 'rome' }),
 });
 
 const packOf = (kind) => LANDMARK_SPECS[kind]?.pack || 'paris';
@@ -78,6 +88,9 @@ export const PLACEABLE_LANDMARKS = Object.freeze([
   'CINQUANTENAIRE_ARCH',
   'BRUSSELS_TOWN_HALL',
   'MANNEKEN_PIS',
+  'COLOSSEUM',
+  'ARCH_OF_CONSTANTINE',
+  'FORUM_COLUMNS',
 ]);
 
 /** Grid cells blocked by a `{ kind, row, col }` landmark entry. */
@@ -313,6 +326,7 @@ export class LandmarkModels {
     if (!spec) throw new Error(`Unknown landmark kind: ${kind}`);
     const group = new THREE.Group();
     group.userData.landmarkKind = kind;
+    if (packOf(kind) === 'rome') autoDisposeOwned(group);
     if (!this.populateFromTemplate(group, kind)) {
       this.populateFallback(group, kind);
       this.liveGroups.add(group);
@@ -522,6 +536,16 @@ export class LandmarkModels {
 
   populateFallback(group, kind) {
     group.clear();
+    if (packOf(kind) === 'rome') {
+      const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.86 });
+      applyLandmarkFinish(material);
+      const mesh = new THREE.Mesh(createRomeLandmarkGeometry(kind), material);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(markOwned(mesh));
+      group.userData.landmarkSource = 'fallback';
+      return;
+    }
     const m = this.getMaterials();
     const addBox = (w, h, d, mat, x, y, z) => {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -747,6 +771,7 @@ export class LandmarkModels {
 
   /** Frees loaded GLB templates, textures, and materials while keeping the loader reusable. */
   unload() {
+    for (const group of this.liveGroups) disposeOwned(group);
     this.liveGroups.clear();
     this.packPromises.clear();
     this.loadPromise = null;
@@ -778,4 +803,162 @@ export class LandmarkModels {
     this.disposed = true;
     this.unload();
   }
+}
+
+// Procedural fallback geometry, available while the landmark pack loads.
+const STONE = 0xc6b396;
+const MARBLE = 0xdacdb2;
+const AGED = 0x9c876c;
+
+function createRomeLandmarkGeometry(kind) {
+  const parts = [];
+  const put = (geometry, x, y, z, color = STONE, yaw = 0) => {
+    const g = geometry.index ? geometry.toNonIndexed() : geometry;
+    if (g !== geometry) geometry.dispose();
+    g.rotateY(yaw);
+    g.translate(x, y, z);
+    const tint = new THREE.Color(color);
+    // Stable per-block variation; no random state shared with gameplay.
+    tint.multiplyScalar(0.92 + ((parts.length * 37) % 17) / 100);
+    const colors = new Float32Array(g.attributes.position.count * 3);
+    for (let i = 0; i < colors.length; i += 3) tint.toArray(colors, i);
+    g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    parts.push(g);
+  };
+  const box = (w, h, d, x, y, z, color = STONE, yaw = 0) =>
+    put(new THREE.BoxGeometry(w, h, d), x, y, z, color, yaw);
+  const cylinder = (rt, rb, h, x, y, z, color = MARBLE, segments = 12) =>
+    put(new THREE.CylinderGeometry(rt, rb, h, segments), x, y, z, color);
+
+  // Real open voussoir arches, not dark panels painted over solid walls.
+  const arch = (radius, thickness, depth, x, spring, z, yaw = 0, color = MARBLE) => {
+    for (let i = 0; i < 10; i++) {
+      const a = i * Math.PI / 10 + 0.008;
+      const b = (i + 1) * Math.PI / 10 - 0.008;
+      const shape = new THREE.Shape();
+      shape.moveTo(Math.cos(a) * radius, Math.sin(a) * radius);
+      shape.lineTo(Math.cos(a) * (radius + thickness), Math.sin(a) * (radius + thickness));
+      shape.lineTo(Math.cos(b) * (radius + thickness), Math.sin(b) * (radius + thickness));
+      shape.lineTo(Math.cos(b) * radius, Math.sin(b) * radius);
+      shape.closePath();
+      const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false, steps: 1, curveSegments: 1 });
+      g.translate(0, 0, -depth / 2);
+      put(g, x, spring, z, color, yaw);
+    }
+  };
+  const column = (x, z, height, base = 0, radius = 0.25) => {
+    box(radius * 3, 0.22, radius * 3, x, base + 0.11, z, AGED);
+    cylinder(radius * 1.2, radius * 1.3, 0.18, x, base + 0.31, z);
+    // Separate drums make weathering legible at the isometric camera distance.
+    const shaft = height - 0.9;
+    for (let i = 0; i < 5; i++) {
+      cylinder(radius * (0.92 - i * 0.025), radius * (0.96 - i * 0.025), shaft / 5 - 0.015,
+        x, base + 0.4 + (i + 0.5) * shaft / 5, z, MARBLE, 16);
+    }
+    cylinder(radius * 1.3, radius * 0.85, 0.28, x, base + height - 0.36, z);
+    box(radius * 3, 0.22, radius * 3, x, base + height - 0.11, z, MARBLE);
+  };
+
+  if (kind === 'COLOSSEUM') {
+    // 10x8 cells. The southern facade is partly lost, exposing the cavea.
+    // Leave a four-unit axial passage at north and south, also in the collision mask.
+    const bays = 40;
+    for (let i = 0; i < bays; i++) {
+      const a = (i + 0.5) * Math.PI * 2 / bays;
+      const x = 9.15 * Math.cos(a), z = 7.1 * Math.sin(a);
+      const yaw = Math.atan2(7.1 * Math.cos(a), 9.15 * Math.sin(a));
+      const width = Math.hypot(9.15 * Math.sin(a), 7.1 * Math.cos(a)) * Math.PI * 2 / bays;
+      const gate = Math.abs(x) < 2.55;
+      const ruined = Math.sin(a) > 0.15;
+      for (let tier = 0; tier < (ruined ? 1 : 3); tier++) {
+        if (gate && tier === 0) continue;
+        const y0 = tier === 0 ? 0 : 3.4 + (tier - 1) * 2.15;
+        const h = tier === 0 ? 3.4 : 2.15;
+        const r = width * 0.33;
+        const spring = y0 + h - r - 0.38;
+        const pierX = x + Math.cos(yaw) * width / 2;
+        const pierZ = z - Math.sin(yaw) * width / 2;
+        box(width * 0.28, h - 0.24, 0.72, pierX, y0 + (h - 0.24) / 2, pierZ, STONE, yaw);
+        arch(r, 0.18, 0.72, x, spring, z, yaw);
+        box(width + 0.06, 0.22, 0.92, x, y0 + h - 0.11, z, MARBLE, yaw);
+        // Engaged columns on the outside of every pier.
+        cylinder(0.10, 0.13, h - 0.45, pierX + Math.sin(yaw) * 0.43,
+          y0 + h / 2 - 0.1, pierZ + Math.cos(yaw) * 0.43, MARBLE, 8);
+      }
+      if (!ruined) {
+        box(width + 0.03, 0.85, 0.7, x, 8.12, z, STONE, yaw);
+        box(width + 0.09, 0.16, 0.92, x, 8.62, z, MARBLE, yaw);
+        box(0.26, 0.36, 0.07, x + Math.sin(yaw) * 0.37, 8.13,
+          z + Math.cos(yaw) * 0.37, AGED, yaw);
+      }
+      if (!gate) {
+        // Stepped seating and exposed radial substructures inside the surviving shell.
+        for (let step = 0; step < 4; step++) {
+          const factor = 0.77 + step * 0.045;
+          box(width * factor + 0.02, 0.3, 0.43, x * factor, 0.35 + step * 0.34,
+            z * factor, step % 2 ? STONE : AGED, yaw);
+        }
+        if (ruined && i % 2 === 0) {
+          box(0.36, 1.6, 1.8, x * 0.87, 0.8, z * 0.87, AGED, yaw);
+        }
+      }
+    }
+  } else if (kind === 'ARCH_OF_CONSTANTINE') {
+    // 7x2 cells: four piers, three full north/south passages, higher central arch.
+    for (const x of [-6, -2, 2, 6]) {
+      box(1.85, 0.4, 3.8, x, 0.2, 0, AGED);
+      box(1.6, 5.1, 2.8, x, 2.95, 0);
+      for (const z of [-1.55, 1.55]) {
+        column(x, z, 4.65, 0.4, 0.23);
+        box(1.05, 0.55, 0.08, x, 2.0, z + Math.sign(z) * 0.13, MARBLE);
+        // Attic statues on individual plinths above the projecting columns.
+        box(0.66, 0.18, 0.66, x, 6.36, z, MARBLE);
+        cylinder(0.14, 0.22, 0.66, x, 6.79, z, AGED, 8);
+        cylinder(0.14, 0.14, 0.22, x, 7.23, z, MARBLE, 8);
+      }
+    }
+    for (const x of [-4, 0, 4]) {
+      arch(x === 0 ? 1.18 : 1.08, 0.28, 2.8, x, x === 0 ? 3.45 : 2.5, 0);
+      if (x !== 0) {
+        box(2.45, 1.25, 2.8, x, 4.75, 0);
+        for (const z of [-1.43, 1.43]) for (const dx of [-0.55, 0.55]) {
+          const medallion = new THREE.CylinderGeometry(0.31, 0.31, 0.08, 16);
+          medallion.rotateX(Math.PI / 2);
+          put(medallion, x + dx, 4.62, z, MARBLE);
+        }
+      }
+    }
+    box(13.8, 0.26, 3.7, 0, 5.6, 0, MARBLE);
+    box(13.3, 1.1, 2.8, 0, 6.28, 0);
+    box(13.7, 0.22, 3.3, 0, 6.94, 0, MARBLE);
+    for (const z of [-1.43, 1.43]) {
+      box(3.1, 0.74, 0.08, 0, 6.27, z, AGED);
+      for (let line = 0; line < 4; line++) {
+        box(2.65 - (line % 2) * 0.2, 0.035, 0.025, 0, 6.04 + line * 0.15,
+          z + Math.sign(z) * 0.055, MARBLE);
+      }
+      for (const x of [-4, 4]) box(1.55, 0.66, 0.09, x, 6.3, z, MARBLE);
+    }
+  } else if (kind === 'FORUM_COLUMNS') {
+    // Three surviving Corinthian columns and broken entablature on a low temple podium.
+    box(5.9, 0.22, 1.9, 0, 0.11, 0, AGED);
+    box(5.6, 0.18, 1.6, 0, 0.31, 0, STONE);
+    for (const x of [-2, 0, 2]) {
+      column(x, 0, 4.1, 0.4, 0.3);
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        cylinder(0.05, 0.11, 0.3, x + Math.cos(a) * 0.3, 4.15, Math.sin(a) * 0.3, MARBLE, 5);
+      }
+    }
+    box(5.6, 0.3, 0.9, 0, 4.65, 0, STONE);
+    box(5.8, 0.22, 1.12, 0, 4.91, 0, MARBLE);
+    for (let i = 0; i < 18; i++) box(0.13, 0.14, 0.15, -2.65 + i * 0.31, 4.77, 0.52, AGED);
+  } else {
+    throw new Error(`Unknown Rome landmark: ${kind}`);
+  }
+  const geometry = mergeGeometries(parts);
+  for (const part of parts) part.dispose();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  return geometry;
 }

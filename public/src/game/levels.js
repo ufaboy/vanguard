@@ -34,7 +34,7 @@ import placeholder05 from '../../maps/campaign/mission-05-placeholder.json' with
 import placeholder04 from '../../maps/campaign/mission-04-placeholder.json' with { type: 'json' };
 import placeholder03 from '../../maps/campaign/mission-03-placeholder.json' with { type: 'json' };
 import placeholder02 from '../../maps/campaign/mission-02-placeholder.json' with { type: 'json' };
-import placeholder01 from '../../maps/campaign/mission-01-placeholder.json' with { type: 'json' };
+import romeForumColosseum from '../../maps/campaign/mission-01-rome-forum-colosseum.json' with { type: 'json' };
 import remagenBridgehead from '../../maps/contracts/remagen-bridgehead.json' with { type: 'json' };
 import brussels from '../../maps/contracts/brussels.json' with { type: 'json' };
 import versailles from '../../maps/contracts/versailles.json' with { type: 'json' };
@@ -415,7 +415,7 @@ export function normalizeMapDefinition(rawMap, index = 0) {
   };
 }
 
-export const SECTORS = [placeholder01, placeholder02, placeholder03, placeholder04, placeholder05, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, charlesBridge, brandenburgGate, versailles, brussels, remagenBridgehead, parisLastStand].map(normalizeMapDefinition);
+export const SECTORS = [romeForumColosseum, placeholder02, placeholder03, placeholder04, placeholder05, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, charlesBridge, brandenburgGate, versailles, brussels, remagenBridgehead, parisLastStand].map(normalizeMapDefinition);
 
 /**
  * True for every map launched from the Contracts board: the cargo / sabotage raids

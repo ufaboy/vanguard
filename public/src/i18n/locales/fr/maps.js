@@ -2,6 +2,11 @@
 export default {
   "CONTRACT 01 // 40×40": "CONTRAT 01 // 40×40",
   "CONTRACT 02 // 40×40": "CONTRAT 02 // 40×40",
+  "Rome: Forum & Colosseum": "Rome : Forum et Colisée",
+  "THE IRON ROAD // ROME: THE STOLEN CONVOY": "LA ROUTE DE FER // ROME : LE CONVOI VOLÉ",
+  "FORUM: Patrols cross the temple courts. Use the side passages.": "FORUM : Des patrouilles traversent les cours du temple. Empruntez les passages latéraux.",
+  "COLOSSEUM: A howitzer covers the centre. Circle the blocks to reach it.": "COLISÉE : Un obusier couvre le centre. Contournez les pâtés de maisons pour l’atteindre.",
+  "REARGUARD: The last teams converge through the Forum and the bent avenue.": "ARRIÈRE-GARDE : Les dernières équipes convergent par le Forum et l’avenue coudée.",
   "Placeholder Mission": "Mission provisoire",
   "PLACEHOLDER SECTOR // STORY COMING SOON": "SECTEUR PROVISOIRE // HISTOIRE À VENIR",
   "TRAINING GROUND: Light patrols advance from the north.": "TERRAIN D’ENTRAÎNEMENT : Des patrouilles légères avancent depuis le nord.",
