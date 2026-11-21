@@ -4,7 +4,7 @@ import { normalizeDecoration, buildDecorationPlan, decorationCellAllowed } from 
 import { normalizeMapDefinition, SECTORS } from '../public/src/game/levels.js';
 import { paintDecoration, createUrbanGroundTexture } from '../public/src/game/terrains/urban-ground.js';
 import { applyGroundSurfaceFinish, updateGroundSurfaceFinish } from '../public/src/game/terrains/ground-finish.js';
-import map from '../public/maps/campaign/mission-01-first-contact.json' with { type: 'json' };
+import map from '../public/maps/contracts/charles-bridge.json' with { type: 'json' };
 
 // Record clip regions and canvas ownership without a DOM/WebGL dependency.
 function recordingContext() {

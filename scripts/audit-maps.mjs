@@ -1,8 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { inspectMap } from '../skills/vanguard-map-creator/scripts/inspect-map.mjs';
-import { effectiveLayout } from '../skills/vanguard-map-creator/scripts/layered-layout.mjs';
+import { inspectMap } from '../.agents/skills/create-map/scripts/inspect-map.mjs';
+import { effectiveLayout } from '../.agents/skills/create-map/scripts/layered-layout.mjs';
 import { normalizeMapDefinition } from '../public/src/game/levels.js';
 
 // Read-only audit: JSON output goes to stdout; no campaign files are modified.

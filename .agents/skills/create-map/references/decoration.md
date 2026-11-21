@@ -1,6 +1,6 @@
 # Terrain decoration contract
 
-`decoration` is an optional, validated top-level JSON object. `public/src/game/decoration.js` normalizes it and generates deterministic detail placements; `urban-ground.js` bakes the result into the existing ground texture at sector load. It does not change terrain physics, collision, navigation, enemy routes, or combat stats.
+`decoration` is an optional, validated top-level JSON object. `public/src/game/render/decoration.js` normalizes it and generates deterministic detail placements; `urban-ground.js` bakes the result into the existing ground texture at sector load. It does not change terrain physics, collision, navigation, enemy routes, or combat stats.
 
 ```json
 {
@@ -24,7 +24,7 @@
 - Zones: `surface`, `bounds`, optional `density` (0–1, default 0.3), optional `details` (default `["cracks"]`; `[]` disables details). Surfaces: `asphalt`, `pavers`, `concrete`, `dirt`, `gravel`, `sand`, `snow`. These are flat visual treatments: snow is not slippery ice, and painted concrete is not a wall.
 - Details: `cracks`, `patches`, `oil`, `leaves`, `rubble`, `tracks`, `weeds`. Vegetation and rubble favor wall edges; tracks follow nearby path direction. Stable zone sub-seeds avoid reshuffling when landmarks change.
 - Paths: 2–64 points, width greater than zero and at most 8, a surface, and optional `marking` (`none`, `dashed`, `edges`). Paths paint ribbons; they never clear obstacles or define AI routes.
-- Landmarks: `kind` (`crosswalk`, `parking`, `manhole`, `loading`, `label`), `row`, `col`, optional `size` (0–8 exclusive of zero; default 1), optional `rotation` (-360–360). Labels require `text` of 1–40 printable ASCII characters. Keep all visible labels in English. Labels use a camera-readable fixed proportional font; `size` controls area markings, not label length.
+- Landmarks: `kind` (`crosswalk`, `parking`, `manhole`, `loading`, `label`, `helipad`, `hazard_zone`, `chevron`, `drain_grate`; the current list is `DECORATION_LANDMARKS` in `render/decoration.js`), `row`, `col`, optional `size` (0–8 exclusive of zero; default 1), optional `rotation` (-360–360). Labels require `text` of 1–40 printable ASCII characters. Keep all visible labels in English. Labels use a camera-readable fixed proportional font; `size` controls area markings, not label length.
 - Exclusions: `bounds`. Player spawn and enemy entrances automatically reserve a one-cell radius; HQ reserves two cells. Add authored exclusions for important sightlines and transitions. Exclusions suppress surface overlays as well as small details.
 
 ## Rendering and lifetime
@@ -33,7 +33,7 @@ Order: theme base, authored zones, paths and lane paint, seeded details, landmar
 
 At most 256 details are generated per zone and 2,048 overall. Low quality uses a deterministic subset and a 512px texture instead of 1024px; both respect the renderer maximum texture size. The engine disposes the previous texture on sector replacement and the current texture on shutdown. The old generic grime overlay is hidden for decoration maps. There are no additional meshes, shadow casters, or per-frame decoration updates. Existing pooled combat FX remain independent.
 
-Legacy `environment.roads` and `environment.districts` are adapted only if `decoration` is absent. Explicit decoration takes precedence even with empty collections. New maps should use only the new object for this information. Missions 1 and 2 are migrated; existing missions 3 and 4 also use the renderer.
+Legacy `environment.roads` and `environment.districts` are adapted only if `decoration` is absent. Explicit decoration takes precedence even with empty collections. New maps should use only the new object for this information.
 
 This version supports flat surfaces and static details. It does not implement decorative 3D props, new hazards, or new battle-trace systems. Large objects that resemble cover need real collision/destruction support.
 
@@ -48,6 +48,9 @@ This version supports flat surfaces and static details. It does not implement de
 Choose texture size/chunking from the actual camera and renderer limits, not an arbitrary maximal resolution. Account for transparent overdraw, z-fighting, object lifetime, texture disposal on replay, and unnecessary shadow casters. Static ground detail should remain in software WebGL; reduce optional 3D clutter, particles, and dynamic trace counts first. Never add backdrop-filter over WebGL.
 
 ## Placement rules that create a believable place
+
+- `helipad` needs a fully clear 3×3 pad (`.` ground, no road, no walls). `hazard_zone` sits on or beside a real hazard (`T`, `Q`, `L`, `D`, `X`). `crosswalk` belongs on `R` streets. `label`, `loading`, `manhole`, `drain_grate` and `chevron` never sit under solid objects (`audit-map.mjs` checks this).
+- Do not draw `decoration.paths` with `marking: "dashed"` over `R` roads or walls: `R` already renders curbs and lane dividers. Use paths (`marking: "none"`) for open aprons, plazas and dirt tracks.
 
 - Put dirt at verges, entrances, and damaged walls; concentrate debris near its plausible source.
 - Align wheel wear with passage direction and turning areas. Avoid tracks running through intact buildings.

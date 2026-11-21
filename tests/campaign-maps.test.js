@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import { inspectMap } from '../skills/vanguard-map-creator/scripts/inspect-map.mjs';
+import { inspectMap } from '../.agents/skills/create-map/scripts/inspect-map.mjs';
 import { SECTORS, normalizeMapDefinition } from '../public/src/game/levels.js';
 import { checkMapVictory } from '../public/src/game/mapRules.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';

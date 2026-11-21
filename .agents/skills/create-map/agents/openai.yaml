@@ -1,0 +1,3 @@
+interface:
+  display_name: "Create Map"
+  short_description: "Create a realistic, playable battlefield map JSON from a theme"

@@ -20,7 +20,7 @@ import { InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
 import { TerrainDestructionController } from './terrain-destruction.js';
-import { SectorLoaderController, getSectorEnemyClasses, sectorUsesLandmarks } from './sector-loader.js';
+import { SectorLoaderController, getSectorEnemyClasses, sectorLandmarkKinds } from './sector-loader.js';
 import { ProjectilesController } from './projectiles.js';
 import { EnemySpawnerController } from './enemy-spawner.js';
 import { EnemyCombatController } from './enemy-combat.js';
@@ -42,6 +42,7 @@ import {
   SECTORS,
   TILE_SIZE,
   getBaseLayout,
+  isContractMap,
 } from '../levels.js';
 import { ModelFactory } from '../render/models.js';
 import { TileBatcher } from '../render/tile-batcher.js';
@@ -378,7 +379,7 @@ export class TankGameEngine {
   waitForSectorModels(sectorIdx) {
     const sector = SECTORS[sectorIdx];
     return this.modelFactory.waitForModels(getSectorEnemyClasses(sector), {
-      landmarks: sectorUsesLandmarks(sector),
+      landmarks: sectorLandmarkKinds(sector),
     });
   }
 
@@ -775,7 +776,7 @@ export class TankGameEngine {
     if (
       !Number.isInteger(index) ||
       !targetSector ||
-      (targetSector.gameMode !== 'contract' &&
+      (!isContractMap(targetSector) &&
         targetSector.gameMode !== 'survival' &&
         !isCampaignMissionUnlocked(targetSector.mapId, this.playerSave.completedMissions))
     ) {

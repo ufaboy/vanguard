@@ -120,7 +120,7 @@ test('recordSurvivalRun updates personal Survival Records without modifying pers
   assert.equal(snap.earlyCallBonus, SURVIVAL_CONFIG.EARLY_CALL_BONUS);
 });
 
-test('Paris LandmarkModels procedural fallback and footprint helpers cover all landmarks', async () => {
+test('LandmarkModels procedural fallback and footprint helpers cover all landmarks', async () => {
   const {
     PLACEABLE_LANDMARKS,
     landmarkBlockedCells,
@@ -128,7 +128,23 @@ test('Paris LandmarkModels procedural fallback and footprint helpers cover all l
     LandmarkModels,
   } = await import('../public/src/game/terrains/landmarks.js');
 
-  assert.equal(PLACEABLE_LANDMARKS.length, 6);
+  assert.equal(new Set(PLACEABLE_LANDMARKS).size, PLACEABLE_LANDMARKS.length, 'placeable kinds are unique');
+  assert.equal(landmarkBlockedCells({ kind: 'VERSAILLES_PALACE', row: 31, col: 12 }).length, 48);
+  assert.equal(landmarkBlockedCells({ kind: 'ATOMIUM', row: 2, col: 35 }).length, 9);
+  assert.equal(landmarkBlockedCells({ kind: 'BRUSSELS_TOWN_HALL', row: 35, col: 6 }).length, 12);
+  assert.equal(landmarkBlockedCells({ kind: 'MANNEKEN_PIS', row: 37, col: 3 }).length, 1);
+  const archBlocked = landmarkBlockedCells({ kind: 'CINQUANTENAIRE_ARCH', row: 6, col: 14 });
+  assert.deepEqual(
+    archBlocked.filter((cell) => cell.row === 6).map((cell) => cell.col),
+    [14, 15, 16, 18, 20, 22, 23, 24],
+    'the Cinquantenaire arch keeps its three arches (cols 17, 19, 21) open'
+  );
+  const gateBlocked = landmarkBlockedCells({ kind: 'BRANDENBURG_GATE', row: 19, col: 17 });
+  assert.deepEqual(
+    gateBlocked.filter((cell) => cell.row === 19).map((cell) => cell.col),
+    [17, 19, 21, 23],
+    'the Brandenburg Gate keeps three open passages between its pylons'
+  );
   const eiffelBlocked = landmarkBlockedCells({ kind: 'EIFFEL_TOWER', row: 33, col: 6 });
   assert.equal(eiffelBlocked.length, 4);
   const arcBlocked = landmarkBlockedCells({ kind: 'ARC_DE_TRIOMPHE', row: 7, col: 6 });

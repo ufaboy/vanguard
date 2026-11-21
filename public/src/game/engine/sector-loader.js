@@ -12,7 +12,7 @@ import {
   TITAN,
 } from '../constants.js';
 import { createEncounterState, remainingEncounterEnemies } from '../encounters.js';
-import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout } from '../levels.js';
+import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout, isContractMap } from '../levels.js';
 import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
 import { computeBuildingLayout } from '../terrains/building-layout.js';
@@ -62,6 +62,15 @@ export function getSectorEnemyClasses(sector) {
 }
 
 /** True when a sector uses 3D landmarks (Élysée HQ, Paris monuments, bridges, or mine signs). */
+/** Landmark kinds whose GLB templates a sector needs (3D landmarks, model HQ, mine signs). */
+export function sectorLandmarkKinds(sector) {
+  if (!sector) return [];
+  const kinds = (sector.landmarks3d || []).map((entry) => entry.kind);
+  if (sector.baseModel) kinds.push(sector.baseModel);
+  if (sector.mineSigns?.length) kinds.push('MINE_SIGN');
+  return [...new Set(kinds)];
+}
+
 export function sectorUsesLandmarks(sector) {
   if (!sector) return false;
   return Boolean(
@@ -114,9 +123,14 @@ export class SectorLoaderController {
     };
   }
 
+  /** Restores the HQ cover row, but only the cells the map itself authored as concrete. */
   setBasePerimeterMaterial(targetType) {
     const { engine } = this;
-    for (const p of this.getBaseLayout().wall) {
+    const sector = SECTORS[engine.currentSectorIndex];
+    const authored = this.getBaseLayout().wall.filter(
+      (p) => sector?.objectGrid?.[p.row]?.[p.col] === TileType.CONCRETE
+    );
+    for (const p of authored) {
       const cell = engine.grid[p.row]?.[p.col];
       if (!cell) continue;
       if (cell.mesh) {
@@ -215,7 +229,7 @@ export class SectorLoaderController {
     engine.baseLandmarkMesh = null;
     if (sectorUsesLandmarks(sector)) {
       engine.modelFactory.landmarkModels?.clearLiveGroups?.();
-      engine.modelFactory.landmarkModels?.ensureLoaded?.();
+      engine.modelFactory.landmarkModels?.ensureLoaded?.(sectorLandmarkKinds(sector));
     } else {
       engine.modelFactory.landmarkModels?.unload?.();
     }
@@ -526,7 +540,9 @@ export class SectorLoaderController {
     engine.playerHullAngle = Math.PI;
     engine.playerTurretAngle = Math.PI;
 
-    const isContractSector = sector.gameMode === 'contract';
+    // Operation contracts use the contract profile but keep their own win rules.
+    const isContractSector = isContractMap(sector);
+    const isCargoContract = sector.gameMode === 'contract';
     const isSurvivalSector = sector.gameMode === 'survival';
     const isIsolatedSector = isSurvivalSector || isContractSector;
     if (isSurvivalSector) {
@@ -593,9 +609,9 @@ export class SectorLoaderController {
     engine.activeMissionRun = {
       runId: `run_${Date.now()}_${engine.currentSectorIndex}`,
       missionId: authoredMission.id,
-      isContract: isContractSector,
+      isContract: isCargoContract,
       isSurvival: isSurvivalSector,
-      contractId: sector.contractId || (isContractSector ? sector.mapId : null),
+      contractId: sector.contractId || (isCargoContract ? sector.mapId : null),
       status: 'in_progress',
       rewardsCommitted: false,
       deliveredCargoFlags: {},
@@ -674,7 +690,7 @@ export class SectorLoaderController {
     if (isSurvivalSector) {
       engine.survivalState = createSurvivalState();
       engine.survivalDirector.startWave(1, false);
-    } else if (isContractSector) {
+    } else if (isCargoContract) {
       const contractDef =
         CONTRACTS_CATALOG.find(
           (item) => item.id === sector.contractId || item.id === sector.mapId
@@ -723,7 +739,7 @@ export class SectorLoaderController {
         engine.createEnemyAt(enemyClass, spawn.spawnPos.x, spawn.spawnPos.z, false, spawn.entryTarget);
         engine.enemies.at(-1).campaignPatrolRoute = opening.patrolRoute;
       }
-      engine.encounterState = createEncounterState(sector.encounters, count);
+      engine.encounterState = createEncounterState(sector.encounters, count, sector.nextWave);
       engine.vanguardRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
       engine.initialVanguardCount = engine.vanguardRemainingToSpawn + count;
       engine.enemySpawnQueue = [];

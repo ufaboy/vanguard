@@ -1,0 +1,649 @@
+{
+  "id": 107,
+  "mapId": "contract-remagen-bridgehead",
+  "contractId": "contract-remagen-bridgehead",
+  "code": "CONTRACT 07 // 40×40",
+  "name": "Remagen Bridgehead",
+  "subtitle": "SECTOR 05 // HOLD THE LUDENDORFF BRIDGEHEAD",
+  "objective": "Hold the Remagen bridgehead",
+  "gameMode": "base_defense",
+  "gridSize": 40,
+  "tileSize": 2,
+  "playerSpawnCell": {
+    "row": 35,
+    "col": 22
+  },
+  "baseCell": {
+    "row": 39,
+    "col": 20
+  },
+  "rules": {
+    "spawnSectorBossOnClear": false,
+    "defeatOnBaseLoss": true
+  },
+  "completionReward": {
+    "credits": 450
+  },
+  "environment": {
+    "theme": "urban",
+    "tint": "#c9b99a",
+    "fogColor": "#262a30",
+    "groundColor": "#6a6e68"
+  },
+  "design": {
+    "enemySide": "north",
+    "tacticalIdentity": "Hold the Remagen bank of the Rhine against counterattacks over three crossings that no single position can watch: the Ludendorff railway bridge, a western treadway through the floodplain wood, and an eastern treadway below the Erpeler Ley. Promenade villas, orchards and town gardens break the sightlines and hide ambush positions, so the defence has to rotate.",
+    "reference": {
+      "place": "Ludendorff Bridge, Remagen / Erpel, Germany (March 1945)",
+      "kind": "real",
+      "kept": [
+        "Railway bridge with stone towers at both abutments",
+        "Erpeler Ley basalt cliff with the railway running into it",
+        "Erpel village and vineyards on the far bank",
+        "Remagen town, riverside road and left-bank railway with the station"
+      ],
+      "simplified": [
+        "Map rotated: the Rhine runs west-east, Erpel is north, Remagen south",
+        "Rhine narrowed to five cells; the 400 m bridge spans five cells",
+        "The rail tunnel is shown as an open rock cut that reaches the north edge",
+        "Two treadway bridges added for route choice (built later, downstream, in reality)"
+      ]
+    },
+    "breaches": [
+      {
+        "name": "East treadway roadblock",
+        "cells": [
+          {
+            "row": 13,
+            "col": 35
+          }
+        ],
+        "start": {
+          "row": 12,
+          "col": 35
+        },
+        "end": {
+          "row": 20,
+          "col": 35
+        },
+        "purpose": "A brick roadblock seals the north ramp of the east treadway; blasting it opens a flank crossing under the Erpeler Ley."
+      },
+      {
+        "name": "Church garden wall",
+        "cells": [
+          {
+            "row": 30,
+            "col": 20
+          },
+          {
+            "row": 31,
+            "col": 20
+          },
+          {
+            "row": 32,
+            "col": 20
+          },
+          {
+            "row": 33,
+            "col": 20
+          },
+          {
+            "row": 34,
+            "col": 20
+          },
+          {
+            "row": 35,
+            "col": 20
+          }
+        ],
+        "start": {
+          "row": 32,
+          "col": 14
+        },
+        "end": {
+          "row": 32,
+          "col": 22
+        },
+        "purpose": "Breaking the garden wall links the main street directly to the HQ yard instead of looping via the lane."
+      },
+      {
+        "name": "Vineyard terraces",
+        "cells": [
+          {
+            "row": 2,
+            "col": 22
+          },
+          {
+            "row": 2,
+            "col": 23
+          },
+          {
+            "row": 2,
+            "col": 24
+          },
+          {
+            "row": 2,
+            "col": 25
+          },
+          {
+            "row": 4,
+            "col": 23
+          },
+          {
+            "row": 4,
+            "col": 24
+          },
+          {
+            "row": 4,
+            "col": 25
+          },
+          {
+            "row": 4,
+            "col": 26
+          }
+        ],
+        "start": {
+          "row": 1,
+          "col": 24
+        },
+        "end": {
+          "row": 7,
+          "col": 24
+        },
+        "purpose": "Dry-stone terrace walls shield the vineyard slope; breaking them opens a direct line from the slope to the rail cut."
+      }
+    ]
+  },
+  "decoration": {
+    "version": 1,
+    "seed": 19450307,
+    "theme": "urban",
+    "zones": [
+      {
+        "id": "erpel-village",
+        "bounds": [
+          0,
+          0,
+          9,
+          20
+        ],
+        "surface": "pavers",
+        "density": 0.2,
+        "details": [
+          "cracks",
+          "leaves"
+        ]
+      },
+      {
+        "id": "erpel-vineyards",
+        "bounds": [
+          0,
+          21,
+          7,
+          28
+        ],
+        "surface": "dirt",
+        "density": 0.3,
+        "details": [
+          "weeds",
+          "leaves"
+        ]
+      },
+      {
+        "id": "ley-forest",
+        "bounds": [
+          0,
+          29,
+          9,
+          39
+        ],
+        "surface": "dirt",
+        "density": 0.3,
+        "details": [
+          "leaves",
+          "rubble"
+        ]
+      },
+      {
+        "id": "north-bridgehead",
+        "bounds": [
+          11,
+          8,
+          13,
+          34
+        ],
+        "surface": "dirt",
+        "density": 0.3,
+        "details": [
+          "tracks",
+          "rubble"
+        ]
+      },
+      {
+        "id": "floodplain",
+        "bounds": [
+          19,
+          0,
+          20,
+          19
+        ],
+        "surface": "dirt",
+        "density": 0.3,
+        "details": [
+          "leaves",
+          "weeds"
+        ]
+      },
+      {
+        "id": "remagen-town",
+        "bounds": [
+          23,
+          0,
+          39,
+          29
+        ],
+        "surface": "pavers",
+        "density": 0.25,
+        "details": [
+          "cracks",
+          "patches",
+          "rubble"
+        ]
+      },
+      {
+        "id": "station-depot",
+        "bounds": [
+          26,
+          24,
+          29,
+          35
+        ],
+        "surface": "concrete",
+        "density": 0.3,
+        "details": [
+          "oil",
+          "tracks"
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "rail-ley-cut",
+        "points": [
+          [
+            13,
+            22.5
+          ],
+          [
+            8.5,
+            22.5
+          ],
+          [
+            8.5,
+            33.5
+          ],
+          [
+            0,
+            33.5
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "rail-bridge-south",
+        "points": [
+          [
+            19,
+            22.5
+          ],
+          [
+            24.5,
+            22.5
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      },
+      {
+        "id": "rail-left-bank",
+        "points": [
+          [
+            24.5,
+            0
+          ],
+          [
+            24.5,
+            39
+          ]
+        ],
+        "width": 2,
+        "surface": "gravel",
+        "marking": "edges"
+      }
+    ],
+    "landmarks": [
+      {
+        "id": "label-erpel",
+        "kind": "label",
+        "row": 3,
+        "col": 12,
+        "size": 1.8,
+        "text": "ERPEL"
+      },
+      {
+        "id": "label-ley",
+        "kind": "label",
+        "row": 9,
+        "col": 34,
+        "size": 1.8,
+        "text": "ERPELER LEY"
+      },
+      {
+        "id": "label-bridge",
+        "kind": "label",
+        "row": 13,
+        "col": 30,
+        "size": 2,
+        "text": "LUDENDORFF BRIDGE"
+      },
+      {
+        "id": "label-remagen",
+        "kind": "label",
+        "row": 33,
+        "col": 8,
+        "size": 1.8,
+        "text": "REMAGEN"
+      },
+      {
+        "id": "label-station",
+        "kind": "label",
+        "row": 29,
+        "col": 27,
+        "size": 1.6,
+        "text": "REMAGEN STATION"
+      },
+      {
+        "id": "main-street-crossing",
+        "kind": "crosswalk",
+        "row": 28,
+        "col": 12,
+        "size": 2,
+        "rotation": 90
+      },
+      {
+        "id": "depot-hazard",
+        "kind": "hazard_zone",
+        "row": 28,
+        "col": 33,
+        "size": 2
+      }
+    ]
+  },
+  "enemies": {
+    "initialSpawnCount": 4,
+    "maxConcurrent": 8,
+    "spawnIntervalSec": 3.6,
+    "entrances": [
+      {
+        "id": "erpel-west-lane",
+        "row": 0,
+        "col": 3
+      },
+      {
+        "id": "erpel-main-road",
+        "row": 0,
+        "col": 12
+      },
+      {
+        "id": "ley-rail-cut",
+        "row": 0,
+        "col": 33
+      }
+    ],
+    "encounters": [
+      {
+        "id": "bridgehead-probe",
+        "label": "BRIDGEHEAD PROBE: Scouts test the crossings from Erpel and the rail cut.",
+        "enemies": [
+          "SCOUT",
+          "STANDARD",
+          "SCOUT",
+          "STANDARD",
+          "STANDARD",
+          "SCOUT"
+        ],
+        "initialCells": [
+          {
+            "row": 2,
+            "col": 12
+          },
+          {
+            "row": 3,
+            "col": 3
+          },
+          {
+            "row": 6,
+            "col": 33
+          },
+          {
+            "row": 9,
+            "col": 26
+          }
+        ],
+        "entrances": [
+          "erpel-west-lane",
+          "erpel-main-road"
+        ],
+        "patrolRoute": [
+          {
+            "row": 12,
+            "col": 22
+          },
+          {
+            "row": 21,
+            "col": 23
+          },
+          {
+            "row": 33,
+            "col": 22
+          }
+        ],
+        "recoverySec": 0
+      },
+      {
+        "id": "river-pressure",
+        "label": "RIVER PRESSURE: Hovercraft cross the Rhine while artillery fires from the Erpeler Ley.",
+        "enemies": [
+          "HOVER",
+          "STANDARD",
+          "HOWITZER",
+          "SAPPER",
+          "HOVER",
+          "STRIKER",
+          "STANDARD",
+          "HOVER",
+          "HOWITZER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "erpel-main-road",
+          "ley-rail-cut"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 30
+          },
+          {
+            "row": 20,
+            "col": 35
+          },
+          {
+            "row": 28,
+            "col": 26
+          },
+          {
+            "row": 35,
+            "col": 24
+          }
+        ],
+        "recoverySec": 8
+      },
+      {
+        "id": "bridge-counterattack",
+        "label": "COUNTERATTACK: Heavy armor storms the Ludendorff Bridge and the treadway crossings.",
+        "enemies": [
+          "ARMOR",
+          "STANDARD",
+          "ENGINEER",
+          "ARMOR",
+          "HOVER",
+          "STANDARD",
+          "SAPPER",
+          "ARMOR",
+          "STRIKER",
+          "STANDARD"
+        ],
+        "entrances": [
+          "erpel-west-lane",
+          "erpel-main-road",
+          "ley-rail-cut"
+        ],
+        "patrolRoute": [
+          {
+            "row": 10,
+            "col": 7
+          },
+          {
+            "row": 21,
+            "col": 7
+          },
+          {
+            "row": 28,
+            "col": 13
+          },
+          {
+            "row": 36,
+            "col": 18
+          }
+        ],
+        "recoverySec": 9
+      }
+    ]
+  },
+  "enemyPool": [
+    "SCOUT",
+    "STANDARD",
+    "SCOUT",
+    "STANDARD",
+    "STANDARD",
+    "SCOUT",
+    "HOVER",
+    "STANDARD",
+    "HOWITZER",
+    "SAPPER",
+    "HOVER",
+    "STRIKER",
+    "STANDARD",
+    "HOVER",
+    "HOWITZER",
+    "STANDARD",
+    "ARMOR",
+    "STANDARD",
+    "ENGINEER",
+    "ARMOR",
+    "HOVER",
+    "STANDARD",
+    "SAPPER",
+    "ARMOR",
+    "STRIKER",
+    "STANDARD"
+  ],
+  "surfaceLayout": [
+    "VVVR........RR.......VVVVVVVVVVVV..VVVVV",
+    "VVVR........RR.......VVVVVVVVVVVV..VVVVV",
+    "VVVR........RR.......VVVVVVVVVVVV..VVVVV",
+    "VVVR........RR.......VVVVVVVVVVVV..VVVVV",
+    "RRRRRRRRRRRRRRRRRRRRRVVVVVVVVVVVV..VVVVV",
+    "............RR.......VVVVVVVVVVVV..VVVVV",
+    "............RR.......VVVVVVVVVVVV..VVVVV",
+    "............RR.......VVVVVVVVVVVV..VVVVV",
+    "............RR.....................VVVVV",
+    "............RR.....................VVVVV",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "MMMMMM.R...........................R....",
+    "MMMM...RSSSSSSSSSSSS......SSSSSSSSSRSSSS",
+    "MMMMSSSRSSSSSSSSSSSS......SSSSSSSSSRSSMM",
+    "WWWWWWWWWWSSSSWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWWWWWWWWWWWWWWWMMMMMWWWWWWW",
+    "VVVVVVVRVVVVVVVVVVVV......VVVVVVVVVRVVVV",
+    "VVVVVVVRVVVVVVVVVVVV......VVVVVVVVVRVVVV",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+    "............RR..................VVVVVVVV",
+    "............RR..........................",
+    "............RR..........................",
+    "............RR..................VVVVVVVV",
+    "............RR...................LLLVVVV",
+    "............RRRRRRRRRRRRRRRRRRRRRR.L....",
+    "............RR................VVVVVVVVVV",
+    "............RR................VVVVVVVVVV",
+    "............RR................VVVVVVVVVV",
+    "............RR................VVVVVVVVVV",
+    "............RR................VVVVVVVVVV",
+    "............RR................VVVVVVVVVV",
+    "............RR................VVVVVVVVVV",
+    "............RRRRRRRRRRRRRRRRRRR.VVVVVVVV",
+    "............RR................VVVVVVVVVV",
+    "............RR................VVVVVVVVVV",
+    "............RR................VVVVVVVVVV"
+  ],
+  "objectLayout": [
+    "......AAA......AAA...........FFFC..CFFFF",
+    "......AAA......AAA...........CFFC..CFFFF",
+    "......................BBBB...CCFC..CFFF.",
+    ".........D...................CFFC..CFF..",
+    ".......................BBBB..CCFC..CFFF.",
+    ".AAA..AAAA.....PPPP..........CFFC..CFF..",
+    ".AAA..AAAA.....PPPP..BBBB....FFFC..CFF..",
+    ".AAA...........PPPP............FC..C....",
+    "......AAA.......AAAAA................Q..",
+    "......AAA.......AAAAA...................",
+    "........................................",
+    "..........XX.XX..AA.......XX.XX.........",
+    ".........AA.Q....AA.PP..PPD...AA........",
+    ".........AA.........PP..PP....AA...B....",
+    ".......=..............==...........=....",
+    ".......=..............==...........=....",
+    ".......=..............==...........=....",
+    ".......=..............==...........=....",
+    ".......=..............==...........=....",
+    "FFFFFF..FFF.AAAFAAA.PP..PP.FFF.AAA..FF..",
+    "FFFQFF..FFF.AAAFAAA.PP..PPKFFF.AAA..FF..",
+    "........................................",
+    "........................................",
+    "...UUUU.K.......UUU........AAAAA..FFF...",
+    "........................................",
+    "........................................",
+    ".AAAA..PPPP..............PPPPPP.FF..AAA.",
+    ".AAAA..PPPP..............PPPPPP.QDD.AAA.",
+    ".AAAA..PPPP.........................AAA.",
+    "....................................FF..",
+    ".AAA..AAAA.....PPPP.B.....AAAA.....FFFF.",
+    ".AAA..AAAA.....PPPP.B.....AAAA.....FFFF.",
+    "......AAAA.....PPPP.B...PPPP.......FFFF.",
+    ".......FFF.......Q..B...PPPP.....FFFFF..",
+    ".PPPP.FFFF..........B...PPPP...AAA......",
+    ".PPPP.....FF........B..........AAA.FFFF.",
+    ".PPPP.....FF...................AAA.FFFF.",
+    "..FF..AAAA....AAA..CCCC..FFFF......FFFF.",
+    "..FF..AAAA....AAA........FFFF......FFFF.",
+    "....................HH...FFFF..........."
+  ]
+}

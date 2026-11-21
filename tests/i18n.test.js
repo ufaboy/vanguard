@@ -18,7 +18,7 @@ test('t() falls back to the English source and fills placeholders outside the br
 });
 
 test('the extractor finds UI, engine, catalog and map strings', () => {
-  for (const key of ['HOSTILES', 'TACTICAL PAUSE', 'Cannon Mk1', 'First Contact', 'INTACT', 'OUT OF AMMO! REARM AT BASE OR FIND AMMO CRATES']) {
+  for (const key of ['HOSTILES', 'TACTICAL PAUSE', 'Cannon Mk1', 'Charles Bridge', 'INTACT', 'OUT OF AMMO! REARM AT BASE OR FIND AMMO CRATES']) {
     assert.ok(allKeys.has(key), `expected source key: ${key}`);
   }
 });

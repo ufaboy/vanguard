@@ -9,151 +9,92 @@ export const CAMPAIGN_CHAPTERS = [
       {
         "id": "campaign-01",
         "number": 1,
-        "name": "First Contact",
-        "objective": "Clear the outer streets",
-        "layout": "An offset entry street leads to a broken market, civic square, and workshop court. Breach brick partitions for short flanks or follow the covered outer loop.",
+        "name": "Rome: Forum & Colosseum",
+        "objective": "Clear the Consortium strike teams before they regroup",
+        "layout": "Interlocking urban loops through the Roman Forum, a bent imperial avenue and the Colosseum square, with cross streets and three destructible breaches.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 12,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 8,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 5, "phase": "regular" },
+          { "type": "STANDARD", "count": 14, "phase": "regular" },
+          { "type": "HOWITZER", "count": 1, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Introduce only basic units; keep the first engagement free of crossfire."
+          "initialCount": 4,
+          "maxConcurrent": 8,
+          "notes": "Three Consortium strike groups: Forum patrols, a Colosseum flank with one howitzer, and a two-lane rearguard."
         }
       },
       {
         "id": "campaign-02",
         "number": 2,
-        "name": "Broken Avenue",
-        "objective": "Clear the residential blocks",
-        "layout": "A blocked east-west avenue links unequal residential courts. Breach three thin brick partitions for shorter flanks, or use the northern garden and southern garage loop.",
+        "name": "Placeholder Mission",
+        "objective": "Destroy all hostiles",
+        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 9,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 12,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 16, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Alternate scout flanks with standard groups through the main avenue."
+          "initialCount": 4,
+          "maxConcurrent": 4,
+          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
         }
       },
       {
         "id": "campaign-03",
         "number": 3,
-        "name": "Civic Shelter",
-        "objective": "Defend the district HQ",
-        "layout": "Three approach streets surround a sheltered repair square; short waves teach repositioning.",
+        "name": "Placeholder Mission",
+        "objective": "Destroy all hostiles",
+        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
         "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 6,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 13,
-            "phase": "regular"
-          },
-          {
-            "type": "SAPPER",
-            "count": 3,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 16, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Introduce sappers after the opening wave; avoid mining every HQ approach at once."
+          "initialCount": 4,
+          "maxConcurrent": 4,
+          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
         }
       },
       {
         "id": "campaign-04",
         "number": 4,
-        "name": "Railway Cut",
-        "objective": "Clear the station approaches",
-        "layout": "Parallel platforms and service tunnels expose artillery positions from the flank.",
-        "difficulty": "Moderate",
+        "name": "Placeholder Mission",
+        "objective": "Destroy all hostiles",
+        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
+        "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 5,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 14,
-            "phase": "regular"
-          },
-          {
-            "type": "HOWITZER",
-            "count": 4,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 16, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Introduce artillery behind breakable cover; keep a clear side route to each firing position."
+          "initialCount": 4,
+          "maxConcurrent": 4,
+          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
         }
       },
       {
         "id": "campaign-05",
         "number": 5,
-        "name": "Outer Gate",
-        "objective": "Destroy the gate stronghold",
-        "layout": "Two breach lanes and a rear service road conclude the city introduction.",
-        "difficulty": "Moderate",
+        "name": "Placeholder Mission",
+        "objective": "Destroy all hostiles",
+        "layout": "Empty placeholder until the campaign story is written: a plain field with three roads and scattered cover.",
+        "difficulty": "Low",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 4,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 12,
-            "phase": "regular"
-          },
-          {
-            "type": "ARMOR",
-            "count": 5,
-            "phase": "regular"
-          },
-          {
-            "type": "HOWITZER",
-            "count": 3,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 4, "phase": "regular" },
+          { "type": "STANDARD", "count": 16, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Use armor at the gate and standard tanks in side streets; artillery stays reachable from a flank."
+          "initialCount": 4,
+          "maxConcurrent": 4,
+          "notes": "Placeholder: three waves of light tanks, each starting three seconds after the previous one is destroyed."
         }
       }
     ]

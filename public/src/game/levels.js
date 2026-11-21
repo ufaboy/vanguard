@@ -30,11 +30,16 @@ import riverWatch from '../../maps/campaign/mission-09-river-watch.json' with { 
 import hiddenSignals from '../../maps/campaign/mission-08-hidden-signals.json' with { type: 'json' };
 import timberline from '../../maps/campaign/mission-07-timberline.json' with { type: 'json' };
 import greenBorder from '../../maps/campaign/mission-06-green-border.json' with { type: 'json' };
-import outerGate from '../../maps/campaign/mission-05-outer-gate.json' with { type: 'json' };
-import railwayCut from '../../maps/campaign/mission-04-railway-cut.json' with { type: 'json' };
-import civicShelter from '../../maps/campaign/mission-03-civic-shelter.json' with { type: 'json' };
-import brokenAvenue from '../../maps/campaign/mission-02-broken-avenue.json' with { type: 'json' };
-import firstContact from '../../maps/campaign/mission-01-first-contact.json' with { type: 'json' };
+import placeholder05 from '../../maps/campaign/mission-05-placeholder.json' with { type: 'json' };
+import placeholder04 from '../../maps/campaign/mission-04-placeholder.json' with { type: 'json' };
+import placeholder03 from '../../maps/campaign/mission-03-placeholder.json' with { type: 'json' };
+import placeholder02 from '../../maps/campaign/mission-02-placeholder.json' with { type: 'json' };
+import romeForumColosseum from '../../maps/campaign/mission-01-rome-forum-colosseum.json' with { type: 'json' };
+import remagenBridgehead from '../../maps/contracts/remagen-bridgehead.json' with { type: 'json' };
+import brussels from '../../maps/contracts/brussels.json' with { type: 'json' };
+import versailles from '../../maps/contracts/versailles.json' with { type: 'json' };
+import brandenburgGate from '../../maps/contracts/brandenburg-gate.json' with { type: 'json' };
+import charlesBridge from '../../maps/contracts/charles-bridge.json' with { type: 'json' };
 import lastCargo from '../../maps/contracts/last-cargo.json' with { type: 'json' };
 import blackoutProtocol from '../../maps/contracts/blackout-protocol.json' with { type: 'json' };
 import parisLastStand from '../../maps/survival/paris-last-stand.json' with { type: 'json' };
@@ -51,10 +56,11 @@ export const TILE_SIZE = 2.0;
 export const BASE_CELL = Object.freeze({ row: 39, col: 19 });
 
 /**
- * Cell layout around the Allied HQ:
+ * Cell layout around the Allied HQ. The loader never writes terrain from it: walls and lanes come only
+ * from the map's `objectLayout` / `surfaceLayout`.
  * - `cells`: the HQ footprint cells (default 2×1: anchor + its right neighbour);
- * - `wall`: a 4-cell concrete line two rows towards the enemy, covering the HQ from the enemy side;
- * - `open`: the free lane between HQ and wall plus the cells beside the HQ, so tanks can drive up to it.
+ * - `wall`: where the standard HQ cover row sits (4 cells, two rows towards the enemy). Maps author the
+ *   concrete there; the Survival boss-wave reward restores only the cells the map authored as concrete.
  */
 export function getBaseLayout(baseCell = BASE_CELL, size = GRID_SIZE, options = {}) {
   const { row, col } = baseCell;
@@ -69,18 +75,12 @@ export function getBaseLayout(baseCell = BASE_CELL, size = GRID_SIZE, options = 
     }
   }
   if (authored) {
-    return { cells: cells.filter(inside), wall: [], open: [] };
+    return { cells: cells.filter(inside), wall: [] };
   }
   const towardEnemy = row >= size / 2 ? -1 : 1;
-  const span = [-1, 0, 1, 2];
   return {
     cells: cells.filter(inside),
-    wall: span.map((dc) => ({ row: row + 2 * towardEnemy, col: col + dc })).filter(inside),
-    open: [
-      ...span.map((dc) => ({ row: row + towardEnemy, col: col + dc })),
-      { row, col: col - 1 },
-      { row, col: col + 2 },
-    ].filter(inside),
+    wall: [-1, 0, 1, 2].map((dc) => ({ row: row + 2 * towardEnemy, col: col + dc })).filter(inside),
   };
 }
 
@@ -121,6 +121,16 @@ const OBJECT_CHAR_TO_TILE = {
   H: TileType.BASE,
   E: TileType.ENEMY_BASE,
 };
+
+/** Map `enemies.nextWave`: `{ when: "cleared", delaySec }` starts each group `delaySec` after the field is empty. */
+function normalizeNextWave(raw, mapId = 'map') {
+  if (raw == null) return null;
+  const delaySec = Number(raw.delaySec ?? 0);
+  if (raw.when !== 'cleared' || !Number.isFinite(delaySec) || delaySec < 0) {
+    throw new Error(`${mapId}: enemies.nextWave must be { when: "cleared", delaySec >= 0 }`);
+  }
+  return Object.freeze({ when: 'cleared', delaySec });
+}
 
 function parseHexColor(val, fallback = 0x0b1120) {
   if (typeof val === 'number') return val;
@@ -176,14 +186,6 @@ function parseMapGrids(mapJson) {
     for (let c = 0; c < size; c++) {
       if (objectGrid[r][c] === TileType.BASE) objectGrid[r][c] = null;
     }
-  }
-  for (const { row, col } of layout.open) {
-    surfaceGrid[row][col] = TileType.EMPTY;
-    objectGrid[row][col] = null;
-  }
-  for (const { row, col } of layout.wall) {
-    surfaceGrid[row][col] = TileType.EMPTY;
-    objectGrid[row][col] = TileType.CONCRETE;
   }
   for (const { row, col } of layout.cells) {
     surfaceGrid[row][col] = TileType.EMPTY;
@@ -358,6 +360,7 @@ export function normalizeMapDefinition(rawMap, index = 0) {
       enemies: encounter.enemies.map(type => EnemyClass[type] || type),
     })),
     entrances: enemiesCfg.entrances || [],
+    nextWave: normalizeNextWave(enemiesCfg.nextWave, rawMap.mapId),
     bossName: bossCfg.name || rawMap.bossName || 'MAMMOTH MK-V',
     bossTitle:
       bossCfg.title ||
@@ -412,4 +415,13 @@ export function normalizeMapDefinition(rawMap, index = 0) {
   };
 }
 
-export const SECTORS = [firstContact, brokenAvenue, civicShelter, railwayCut, outerGate, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, parisLastStand].map(normalizeMapDefinition);
+export const SECTORS = [romeForumColosseum, placeholder02, placeholder03, placeholder04, placeholder05, greenBorder, timberline, hiddenSignals, riverWatch, deepwoodBastion, dustFrontier, dryWells, canyonTeeth, mirageArray, sunkenFortress, saltApproach, reedAmbush, harborRefuge, breakwater, tidalLock, coldAscent, whiteRelay, summitRefuge, glacierCut, ironAvalanche, foundryRoad, freightSpine, powerReserve, furnaceDistrict, capitalBreach, returnToTheStreets, boulevardOfSteel, lastShelter, citadelRing, vanguardDawn, lastCargo, blackoutProtocol, charlesBridge, brandenburgGate, versailles, brussels, remagenBridgehead, parisLastStand].map(normalizeMapDefinition);
+
+/**
+ * True for every map launched from the Contracts board: the cargo / sabotage raids
+ * (`gameMode: 'contract'`) and the operation contracts that keep their own win rules
+ * but carry a `contractId`. Only `gameMode: 'contract'` runs the cargo mechanics.
+ */
+export function isContractMap(sector) {
+  return Boolean(sector && (sector.gameMode === 'contract' || sector.contractId));
+}
