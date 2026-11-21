@@ -1,8 +1,8 @@
 {
-  "mapId": "draft-remagen-bridgehead",
-  "id": "remagen-bridgehead",
+  "mapId": "campaign-05",
+  "id": 5,
   "name": "Remagen Bridgehead",
-  "subtitle": "LUDENDORFF BRIDGE // HOLD THE WEST BANK",
+  "subtitle": "SECTOR 05 // HOLD THE LUDENDORFF BRIDGEHEAD",
   "objective": "Hold the Remagen bridgehead",
   "gameMode": "base_defense",
   "gridSize": 40,
@@ -20,7 +20,7 @@
     "defeatOnBaseLoss": true
   },
   "completionReward": {
-    "credits": 800
+    "credits": 450
   },
   "environment": {
     "theme": "urban",

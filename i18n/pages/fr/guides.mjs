@@ -75,7 +75,7 @@ export default {
   "City Outskirts urban sector": "Secteur urbain Périphérie Urbaine",
   "REGION 01 // MISSIONS 01–05": "RÉGION 01 // MISSIONS 01–05",
   "City Outskirts": "Périphérie Urbaine",
-  "Start with First Contact, Broken Avenue, Civic Shelter, Railway Cut, and Outer Gate. Use destructible brick walls for cover, protect your 2-cell Command Base HQ, and invest early credits into Cannon Mk2 and Armor A2.": "Commencez par Premier Contact, Avenue Brisée, Abri Civique, Tranchée Ferroviaire et Porte Extérieure. Protégez votre QG et investissez tôt dans le Canon Mk2 et le Blindage A2.",
+  "Start with First Contact, Broken Avenue, Civic Shelter, Railway Cut, and Remagen Bridgehead. Use destructible brick walls for cover, protect your 2-cell Command Base HQ, and invest early credits into Cannon Mk2 and Armor A2.": "Commencez par Premier Contact, Avenue Brisée, Abri Civique, Tranchée Ferroviaire et Tête de pont de Remagen. Protégez votre QG et investissez tôt dans le Canon Mk2 et le Blindage A2.",
   "Forest Frontier woodland sector": "Secteur forestier Frontière Forestière",
   "REGION 02 // MISSIONS 06–10": "RÉGION 02 // MISSIONS 06–10",
   "Forest Frontier": "Frontière Forestière",

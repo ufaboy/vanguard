@@ -75,7 +75,7 @@ export default {
   "City Outskirts urban sector": "Setor urbano Arredores da Cidade",
   "REGION 01 // MISSIONS 01–05": "REGIÃO 01 // MISSÕES 01–05",
   "City Outskirts": "Arredores da Cidade",
-  "Start with First Contact, Broken Avenue, Civic Shelter, Railway Cut, and Outer Gate. Use destructible brick walls for cover, protect your 2-cell Command Base HQ, and invest early credits into Cannon Mk2 and Armor A2.": "Comece com Primeiro Contato, Avenida Destruída, Abrigo Cívico, Corte Ferroviário e Portão Externo. Use muros de tijolos destrutíveis como cobertura, proteja seu QG de 2 células e invista os créditos iniciais no Canhão Mk2 e Blindagem A2.",
+  "Start with First Contact, Broken Avenue, Civic Shelter, Railway Cut, and Remagen Bridgehead. Use destructible brick walls for cover, protect your 2-cell Command Base HQ, and invest early credits into Cannon Mk2 and Armor A2.": "Comece com Primeiro Contato, Avenida Destruída, Abrigo Cívico, Corte Ferroviário e Cabeça de ponte de Remagen. Use muros de tijolos destrutíveis como cobertura, proteja seu QG de 2 células e invista os créditos iniciais no Canhão Mk2 e Blindagem A2.",
   "Forest Frontier woodland sector": "Setor florestal Fronteira da Floresta",
   "REGION 02 // MISSIONS 06–10": "REGIÃO 02 // MISSÕES 06–10",
   "Forest Frontier": "Fronteira da Floresta",

@@ -123,37 +123,25 @@ export const CAMPAIGN_CHAPTERS = [
       {
         "id": "campaign-05",
         "number": 5,
-        "name": "Outer Gate",
-        "objective": "Destroy the gate stronghold",
-        "layout": "Two breach lanes and a rear service road conclude the city introduction.",
+        "name": "Remagen Bridgehead",
+        "objective": "Hold the Remagen bridgehead",
+        "layout": "Three Rhine crossings — the Ludendorff railway bridge and two treadways — converge on the Remagen bank, closing the city introduction.",
         "difficulty": "Moderate",
         "status": "available",
         "enemyRoster": [
-          {
-            "type": "SCOUT",
-            "count": 4,
-            "phase": "regular"
-          },
-          {
-            "type": "STANDARD",
-            "count": 12,
-            "phase": "regular"
-          },
-          {
-            "type": "ARMOR",
-            "count": 5,
-            "phase": "regular"
-          },
-          {
-            "type": "HOWITZER",
-            "count": 3,
-            "phase": "regular"
-          }
+          { "type": "SCOUT", "count": 3, "phase": "regular" },
+          { "type": "STANDARD", "count": 9, "phase": "regular" },
+          { "type": "HOVER", "count": 4, "phase": "regular" },
+          { "type": "HOWITZER", "count": 2, "phase": "regular" },
+          { "type": "SAPPER", "count": 2, "phase": "regular" },
+          { "type": "STRIKER", "count": 2, "phase": "regular" },
+          { "type": "ARMOR", "count": 3, "phase": "regular" },
+          { "type": "ENGINEER", "count": 1, "phase": "regular" }
         ],
         "deploymentPlan": {
-          "initialCount": 3,
-          "maxConcurrent": 6,
-          "notes": "Use armor at the gate and standard tanks in side streets; artillery stays reachable from a flank."
+          "initialCount": 4,
+          "maxConcurrent": 8,
+          "notes": "Hovercraft cross the Rhine anywhere while artillery fires from the Erpeler Ley; no single bank position covers all three crossings."
         }
       }
     ]
