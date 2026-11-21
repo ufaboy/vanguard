@@ -32,1029 +32,221 @@ const jsonLd = [
 <PageLayout
   locale={locale}
   slug="campaign"
-  title={"Tank Campaign: 35 Base Defense Missions — BATTLE TANK"}
-  description={"Play a 35-mission 3D tank campaign in your browser, no download. Defend your HQ like in Battle City, cross 7 regions and defeat 4 Sector Bosses."}
-  ogDescription={"35 base defense and assault tank missions across 7 regions, ending in 4 Sector Boss fights. Free in your browser."}
-  twitterDescription={"35 base defense tank missions across 7 regions in a free 3D Battle City-style browser game."}
+  title={"Tank Campaign: Road to the Capital — BATTLE TANK"}
+  description={"Play a 35-mission 3D tank campaign in your browser, no download. Advance sector by sector through seven regions, inspect recon maps, and defeat four Sector Bosses."}
+  ogDescription={"35 tactical 3D tank missions across seven regions on the Road to the Capital. Free in your browser."}
+  twitterDescription={"35 tactical 3D tank missions across seven regions in a free Battle City-style browser game."}
   image={"https://battletank.online/images/campaign-map-clean.webp"}
   jsonLd={jsonLd}
   bodyPage="campaign"
   contentClass="menu-content campaign-content"
   script="src/pages/campaign.js"
 >
-        <h1 class="sr-only" tabindex="-1">{t("Tank Campaign: 35 Base Defense Missions on the Road to the Capital")}</h1>
-        
-    <div class="cinematic-campaign">
-      <!-- Main Map Board -->
-      <div class="cinematic-map-scroll">
-        <div class="cinematic-map-board">
-          <svg viewBox="0 0 1376 768" class="cinematic-path-svg" preserveAspectRatio="none" aria-hidden="true">
-            <defs>
-              <filter id="gold-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3.5" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <!-- Contrast casing under the route -->
-            <path d="M 144 165 L 234 165 L 323 184 L 413 190 L 498 212 Q 316 253, 154 269 L 237 303 L 255 365 L 223 432 L 305 449 Q 206 522, 144 553 L 223 545 L 300 557 L 378 562 L 457 561 L 571 557 L 681 534 L 791 549 L 888 557 L 984 559 L 1076 628 L 1076 564 L 1039 511 L 1176 480 L 1142 422 L 1135 376 L 1053 380 L 988 376 L 943 334 L 860 288 L 768 230 L 819 188 L 919 188 L 1011 188 L 1121 175" class="path-casing" />
-            <!-- Background base path for locked sectors -->
-            <path d="M 144 165 L 234 165 L 323 184 L 413 190 L 498 212 Q 316 253, 154 269 L 237 303 L 255 365 L 223 432 L 305 449 Q 206 522, 144 553 L 223 545 L 300 557 L 378 562 L 457 561 L 571 557 L 681 534 L 791 549 L 888 557 L 984 559 L 1076 628 L 1076 564 L 1039 511 L 1176 480 L 1142 422 L 1135 376 L 1053 380 L 988 376 L 943 334 L 860 288 L 768 230 L 819 188 L 919 188 L 1011 188 L 1121 175" class="path-base" />
-            <!-- Active / completed glowing path -->
-            <path d="" class="path-active" filter="url(#gold-glow)" />
+  <h1 class="campaign-page-title" tabindex="-1">{t("Campaign: Road to the Capital")}</h1>
+
+  <nav class="campaign-nav" aria-label={t("Mission navigation")}>
+    <button
+      type="button"
+      class="campaign-nav-arrow"
+      data-action="prev-campaign-mission"
+      aria-label={t("Previous mission")}
+      disabled
+    >‹</button>
+
+    <div class="campaign-nav-track">
+      <div class="campaign-region-group" style="--region-accent:#d6e7a0;">
+        <span class="campaign-region-label" style="--region-accent:#d6e7a0;">{t("City outskirts")}</span>
+        <div class="campaign-region-missions">
+          <button
+            type="button"
+            class="campaign-mission-btn is-available is-selected"
+            style="--region-accent:#d6e7a0;"
+            data-action="select-campaign-mission"
+            data-mission="campaign-01"
+            aria-pressed="true"
+            aria-label={t("Mission 1: Rome: Forum & Colosseum. available.")}
+            title={t("01. Rome: Forum & Colosseum")}
+          ><span class="nav-pulse" aria-hidden="true"></span><svg class="nav-status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/><path d="M9.5 17.5L21 6V3h-3L6.5 14.5"/><path d="M11 19l-6-6"/><path d="M8 16l-4 4"/><path d="M5 21l-2-2"/></svg><span class="nav-num">01</span></button>
+          <button
+            type="button"
+            class="campaign-mission-btn is-locked"
+            style="--region-accent:#d6e7a0;"
+            data-action="select-campaign-mission"
+            data-mission="campaign-02"
+            aria-pressed="false"
+            aria-label={t("Mission 2: Placeholder Mission. locked.")}
+            title={t("02. Placeholder Mission")}
+          ><svg class="nav-status-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg><span class="nav-num">02</span></button>
+          <button
+            type="button"
+            class="campaign-mission-btn is-locked"
+            style="--region-accent:#d6e7a0;"
+            data-action="select-campaign-mission"
+            data-mission="campaign-03"
+            aria-pressed="false"
+            aria-label={t("Mission 3: Placeholder Mission. locked.")}
+            title={t("03. Placeholder Mission")}
+          ><svg class="nav-status-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg><span class="nav-num">03</span></button>
+          <button
+            type="button"
+            class="campaign-mission-btn is-locked"
+            style="--region-accent:#d6e7a0;"
+            data-action="select-campaign-mission"
+            data-mission="campaign-04"
+            aria-pressed="false"
+            aria-label={t("Mission 4: Placeholder Mission. locked.")}
+            title={t("04. Placeholder Mission")}
+          ><svg class="nav-status-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg><span class="nav-num">04</span></button>
+          <button
+            type="button"
+            class="campaign-mission-btn is-locked"
+            style="--region-accent:#d6e7a0;"
+            data-action="select-campaign-mission"
+            data-mission="campaign-05"
+            aria-pressed="false"
+            aria-label={t("Mission 5: Placeholder Mission. locked.")}
+            title={t("05. Placeholder Mission")}
+          ><svg class="nav-status-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg><span class="nav-num">05</span></button>
+        </div>
+      </div>
+
+      <span class="campaign-next-region" aria-disabled="true">
+        <svg class="nav-status-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
+        <span>{t("Next: Forest frontier · 2/7")}</span>
+      </span>
+    </div>
+
+    <button
+      type="button"
+      class="campaign-nav-arrow"
+      data-action="next-campaign-mission"
+      aria-label={t("Next mission")}
+    >›</button>
+  </nav>
+
+  <section class="campaign-workspace" style="--region-accent:#d6e7a0;" aria-label={t("Mission briefing")}>
+    <div class="campaign-recon-panel">
+      <div class="campaign-recon-square is-missing-img">
+        <img class="campaign-recon-img" src="./images/campaign/mission-01.webp" alt={t("Rome: Forum & Colosseum — Reconnaissance map")} />
+        <div class="campaign-recon-fallback" aria-hidden="true">
+          <div class="recon-radar-rings"></div>
+          <span class="recon-pending-label">{t("Recon imagery pending")}</span>
+        </div>
+        <div class="campaign-hq-marker" style="--hq-x:50%;--hq-y:50%;">
+          <div class="hq-marker-pulse" aria-hidden="true"></div>
+          <svg class="hq-marker-hex" viewBox="0 0 100 86.6" aria-hidden="true">
+            <polygon points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
           </svg>
+          <span class="hq-marker-num">01</span>
+          <span class="hq-marker-label">{t("HQ")}</span>
+        </div>
+        <div class="campaign-recon-classified">
+          <span class="classified-stamp">{t("CLASSIFIED")}</span>
+          <span class="campaign-classified-sub">{t("Pass Sector {n} to unlock recon imagery", { n: 0 })}</span>
+        </div>
+      </div>
+    </div>
 
-          <!-- 7 Region Badges -->
-          
-    <div class="cinematic-region-badge" style="left:9.5%;top:13%;--region-color:#38bdf8;--region-glow:#38bdf866;" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M3 21h18M5 21V7l8-4v18M13 10h4v11M9 9h1M9 13h1M9 17h1M15 14h1M15 17h1"/></svg>
-      <span>{t("City Outskirts")}</span>
-    </div>
-  
-    <div class="cinematic-region-badge" style="left:10.5%;top:43.5%;--region-color:#4ade80;--region-glow:#4ade8066;" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M12 2L6 12h4l-3 7h10l-3-7h4L12 2zM12 19v3"/></svg>
-      <span>{t("Forest Frontier")}</span>
-    </div>
-  
-    <div class="cinematic-region-badge" style="left:10.5%;top:64%;--region-color:#f59e0b;--region-glow:#f59e0b66;" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M12 3v18M8 8v4a4 4 0 008 0V7M5 12h3M16 11h3"/></svg>
-      <span>{t("Desert Crossing")}</span>
-    </div>
-  
-    <div class="cinematic-region-badge" style="left:42%;top:63.5%;--region-color:#2dd4bf;--region-glow:#2dd4bf66;" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M2 20c3-1 6-1 9 0s6 1 9 0M2 16c3-1 6-1 9 0s6 1 9 0M6 4v10M12 2v12M18 6v8"/></svg>
-      <span>{t("Coastal Wetlands")}</span>
-    </div>
-  
-    <div class="cinematic-region-badge" style="left:85%;top:69.5%;--region-color:#67e8f9;--region-glow:#67e8f966;" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93M8 4l4 4-4 4M16 4l-4 4 4 4M8 20l4-4-4-4M16 20l-4-4 4-4"/></svg>
-      <span>{t("Frozen Highlands")}</span>
-    </div>
-  
-    <div class="cinematic-region-badge" style="left:85%;top:41.5%;--region-color:#fb923c;--region-glow:#fb923c66;" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M2 20h20M4 20V10l6 4V10l6 4V4h4v16"/></svg>
-      <span>{t("Industrial Belt")}</span>
-    </div>
-  
-    <div class="cinematic-region-badge" style="left:84%;top:13%;--region-color:#f43f5e;--region-glow:#f43f5e66;" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="region-badge-icon"><path d="M3 21h18M5 21V10l7-5 7 5v11M10 21v-6h4v6M9 13h6"/></svg>
-      <span>{t("Capital City")}</span>
-    </div>
-  
+    <div class="campaign-briefing-panel">
+      <div class="campaign-brief-head">
+        <span class="campaign-brief-sector">{t("SECTOR 01 // 35 · CITY OUTSKIRTS")}</span>
+        <span class="campaign-brief-difficulty">{t("Low")}</span>
+      </div>
 
-          <!-- 35 Checkpoint Nodes -->
-          
-      <button
-        type="button"
-        class="cinematic-node is-available is-selected"
-        style="left:10.5%;top:21.5%;--node-accent:#d6e7a0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-01"
-        aria-pressed="true"
-        aria-label={t("Mission 1: Rome: Forum & Colosseum. available.")}
-        title={t("1. Rome: Forum & Colosseum")}
-      >
-        <div class="node-pulse" aria-hidden="true"><svg viewBox="0 0 100 86.6" aria-hidden="true"><polygon points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3"/></svg></div>
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      <polygon class="node-hex-inner" points="30.5,9.5 69.5,9.5 89,43.3 69.5,77.1 30.5,77.1 11,43.3" />
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/><path d="M9.5 17.5L21 6V3h-3L6.5 14.5"/><path d="M11 19l-6-6"/><path d="M8 16l-4 4"/><path d="M5 21l-2-2"/></svg>
-    <span class="node-num">01</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:17%;top:21.5%;--node-accent:#d6e7a0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-02"
-        aria-pressed="false"
-        aria-label={t("Mission 2: Placeholder Mission. locked.")}
-        title={t("2. Placeholder Mission")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">02</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:23.5%;top:24%;--node-accent:#d6e7a0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-03"
-        aria-pressed="false"
-        aria-label={t("Mission 3: Placeholder Mission. locked.")}
-        title={t("3. Placeholder Mission")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">03</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:30%;top:24.8%;--node-accent:#d6e7a0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-04"
-        aria-pressed="false"
-        aria-label={t("Mission 4: Placeholder Mission. locked.")}
-        title={t("4. Placeholder Mission")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">04</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:36.2%;top:27.6%;--node-accent:#d6e7a0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-05"
-        aria-pressed="false"
-        aria-label={t("Mission 5: Placeholder Mission. locked.")}
-        title={t("5. Placeholder Mission")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">05</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:11.2%;top:35%;--node-accent:#80c89a;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-06"
-        aria-pressed="false"
-        aria-label={t("Mission 6: Green Border. locked.")}
-        title={t("6. Green Border")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">06</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:17.2%;top:39.5%;--node-accent:#80c89a;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-07"
-        aria-pressed="false"
-        aria-label={t("Mission 7: Timberline. locked.")}
-        title={t("7. Timberline")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">07</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:18.5%;top:47.5%;--node-accent:#80c89a;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-08"
-        aria-pressed="false"
-        aria-label={t("Mission 8: Hidden Signals. locked.")}
-        title={t("8. Hidden Signals")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">08</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:16.2%;top:56.2%;--node-accent:#80c89a;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-09"
-        aria-pressed="false"
-        aria-label={t("Mission 9: River Watch. locked.")}
-        title={t("9. River Watch")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">09</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:22.2%;top:58.5%;--node-accent:#80c89a;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-10"
-        aria-pressed="false"
-        aria-label={t("Mission 10: Deepwood Bastion. locked.")}
-        title={t("10. Deepwood Bastion")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">10</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:10.5%;top:72%;--node-accent:#e4bc79;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-11"
-        aria-pressed="false"
-        aria-label={t("Mission 11: Dust Frontier. locked.")}
-        title={t("11. Dust Frontier")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">11</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:16.2%;top:71%;--node-accent:#e4bc79;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-12"
-        aria-pressed="false"
-        aria-label={t("Mission 12: Dry Wells. locked.")}
-        title={t("12. Dry Wells")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">12</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:21.8%;top:72.5%;--node-accent:#e4bc79;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-13"
-        aria-pressed="false"
-        aria-label={t("Mission 13: Canyon Teeth. locked.")}
-        title={t("13. Canyon Teeth")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">13</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:27.5%;top:73.2%;--node-accent:#e4bc79;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-14"
-        aria-pressed="false"
-        aria-label={t("Mission 14: Mirage Array. locked.")}
-        title={t("14. Mirage Array")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">14</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:33.2%;top:73%;--node-accent:#e4bc79;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-15"
-        aria-pressed="false"
-        aria-label={t("Mission 15: Sunken Fortress. locked.")}
-        title={t("15. Sunken Fortress")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">15</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:41.5%;top:72.5%;--node-accent:#75c8d0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-16"
-        aria-pressed="false"
-        aria-label={t("Mission 16: Salt Approach. locked.")}
-        title={t("16. Salt Approach")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">16</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:49.5%;top:69.5%;--node-accent:#75c8d0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-17"
-        aria-pressed="false"
-        aria-label={t("Mission 17: Reed Ambush. locked.")}
-        title={t("17. Reed Ambush")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">17</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:57.5%;top:71.5%;--node-accent:#75c8d0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-18"
-        aria-pressed="false"
-        aria-label={t("Mission 18: Harbor Refuge. locked.")}
-        title={t("18. Harbor Refuge")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">18</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:64.5%;top:72.5%;--node-accent:#75c8d0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-19"
-        aria-pressed="false"
-        aria-label={t("Mission 19: Breakwater. locked.")}
-        title={t("19. Breakwater")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">19</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:71.5%;top:72.8%;--node-accent:#75c8d0;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-20"
-        aria-pressed="false"
-        aria-label={t("Mission 20: Tidal Lock. locked.")}
-        title={t("20. Tidal Lock")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">20</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:78.2%;top:81.8%;--node-accent:#b0c9e7;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-21"
-        aria-pressed="false"
-        aria-label={t("Mission 21: Cold Ascent. locked.")}
-        title={t("21. Cold Ascent")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">21</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:78.2%;top:73.5%;--node-accent:#b0c9e7;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-22"
-        aria-pressed="false"
-        aria-label={t("Mission 22: White Relay. locked.")}
-        title={t("22. White Relay")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">22</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:75.5%;top:66.5%;--node-accent:#b0c9e7;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-23"
-        aria-pressed="false"
-        aria-label={t("Mission 23: Summit Refuge. locked.")}
-        title={t("23. Summit Refuge")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">23</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:85.5%;top:62.5%;--node-accent:#b0c9e7;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-24"
-        aria-pressed="false"
-        aria-label={t("Mission 24: Glacier Cut. locked.")}
-        title={t("24. Glacier Cut")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">24</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:83%;top:55%;--node-accent:#b0c9e7;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-25"
-        aria-pressed="false"
-        aria-label={t("Mission 25: Iron Avalanche. locked.")}
-        title={t("25. Iron Avalanche")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">25</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:82.5%;top:49%;--node-accent:#d89a76;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-26"
-        aria-pressed="false"
-        aria-label={t("Mission 26: Foundry Road. locked.")}
-        title={t("26. Foundry Road")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">26</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:76.5%;top:49.5%;--node-accent:#d89a76;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-27"
-        aria-pressed="false"
-        aria-label={t("Mission 27: Freight Spine. locked.")}
-        title={t("27. Freight Spine")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">27</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:71.8%;top:49%;--node-accent:#d89a76;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-28"
-        aria-pressed="false"
-        aria-label={t("Mission 28: Power Reserve. locked.")}
-        title={t("28. Power Reserve")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">28</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:68.5%;top:43.5%;--node-accent:#d89a76;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-29"
-        aria-pressed="false"
-        aria-label={t("Mission 29: Furnace District. locked.")}
-        title={t("29. Furnace District")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">29</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:62.5%;top:37.5%;--node-accent:#d89a76;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-30"
-        aria-pressed="false"
-        aria-label={t("Mission 30: Capital Breach. locked.")}
-        title={t("30. Capital Breach")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">30</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:55.8%;top:30%;--node-accent:#dda4a1;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-31"
-        aria-pressed="false"
-        aria-label={t("Mission 31: Return to the Streets. locked.")}
-        title={t("31. Return to the Streets")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">31</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:59.5%;top:24.5%;--node-accent:#dda4a1;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-32"
-        aria-pressed="false"
-        aria-label={t("Mission 32: Boulevard of Steel. locked.")}
-        title={t("32. Boulevard of Steel")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">32</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:66.8%;top:24.5%;--node-accent:#dda4a1;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-33"
-        aria-pressed="false"
-        aria-label={t("Mission 33: Last Shelter. locked.")}
-        title={t("33. Last Shelter")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">33</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:73.5%;top:24.5%;--node-accent:#dda4a1;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-34"
-        aria-pressed="false"
-        aria-label={t("Mission 34: Citadel Ring. locked.")}
-        title={t("34. Citadel Ring")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">34</span>
-  
-        </div>
-      </button>
-    
-      <button
-        type="button"
-        class="cinematic-node is-locked "
-        style="left:81.5%;top:22.8%;--node-accent:#dda4a1;"
-        data-action="select-campaign-mission"
-        data-mission="campaign-35"
-        aria-pressed="false"
-        aria-label={t("Mission 35: Vanguard Dawn. locked.")}
-        title={t("35. Vanguard Dawn")}
-      >
-        
-        <div class="node-badge">
-          
-    <svg class="node-hex-svg" viewBox="0 0 100 86.6" aria-hidden="true">
-      <polygon class="node-hex-fill" points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-      
-    </svg>
-    <svg class="node-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7zm3 8.73V17a1 1 0 1 1-2 0v-1.27a1.5 1.5 0 1 1 2 0z"/></svg>
-    <span class="node-num">35</span>
-  
-        </div>
-      </button>
-    
+      <h2 class="campaign-brief-title">{t("Rome: Forum & Colosseum")}</h2>
+      <p class="campaign-brief-objective">{t("Clear the Consortium strike teams before they regroup")}</p>
 
-          <!-- Sliding Bottom Briefing Drawer -->
-          
-    <aside
-      class="cinematic-brief-drawer is-open"
-      aria-label={t("Selected mission briefing")}
-      style="--chapter-color:#d6e7a0;--region-color:#38bdf8;"
-    >
-      <div class="brief-card-chassis">
-        <!-- Corner Rivets -->
-        <span class="btn-rivet top-left" aria-hidden="true"></span>
-        <span class="btn-rivet top-right" aria-hidden="true"></span>
-        <span class="btn-rivet bottom-left" aria-hidden="true"></span>
-        <span class="btn-rivet bottom-right" aria-hidden="true"></span>
-
-        <!-- Left Block: Landscape Preview Frame -->
-        <div class="brief-thumb-frame">
-          <img
-            class="brief-thumb-img"
-            src={h("./images/region-thumb-urban.jpg")}
-            alt={t("City outskirts — 3D isometric tank campaign region preview")}
-            loading="lazy"
-            width="360"
-            height="200"
-          />
-          <div class="brief-thumb-overlay" aria-hidden="true"></div>
+      <div class="campaign-brief-details">
+        <p class="campaign-brief-text">{t("Consortium strike teams have occupied the Roman Forum and the Colosseum square. A howitzer covers the central avenue, so use the temple passages and brick breaches to flank their positions. Clear every hostile unit before they regroup.")}</p>
+        <p class="campaign-brief-layout">{t("Interlocking urban loops through the Roman Forum, a bent imperial avenue and the Colosseum square, with cross streets and three destructible breaches.")}</p>
+        <div class="campaign-roster-chips">
+          <span class="campaign-roster-chip">SCOUT ×5</span>
+          <span class="campaign-roster-chip">STANDARD ×14</span>
+          <span class="campaign-roster-chip">HOWITZER ×1</span>
         </div>
+      </div>
 
-        <!-- Center Block: Region Badge & Mission Identity -->
-        <div class="brief-info-block">
-          <div class="brief-region-badge">
-            <svg class="region-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3 21h18M5 21V7l8-4v18M13 10h4v11M9 9h1M9 13h1M9 17h1M15 14h1M15 17h1"/>
+      <p class="campaign-brief-classified" hidden></p>
+
+      <div class="campaign-brief-actions">
+        <button
+          type="button"
+          class="brief-start-btn"
+          data-action="start-campaign-mission"
+          data-mission="campaign-01"
+        >
+          <span class="start-content">
+            <svg class="start-tank-icon" viewBox="0 0 48 22" fill="currentColor" aria-hidden="true">
+              <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
             </svg>
-            <span class="region-badge-name">{t("CITY OUTSKIRTS")}</span>
-          </div>
-
-          <div class="brief-mission-details">
-            <div class="brief-sector-code">{t("SECTOR 01 // 35")}</div>
-            <h2 class="brief-mission-title">{t("Rome: Forum & Colosseum")}</h2>
-            <p class="brief-mission-desc">{t("Clear the Consortium strike teams before they regroup · 20 hostiles")}</p>
-          </div>
-
-          <!-- Subtle Background Tank Watermark Silhouette -->
-          <svg class="brief-tank-watermark" viewBox="0 0 160 48" fill="none" aria-hidden="true">
-            <rect x="88" y="22" width="16" height="3" rx="1" fill="currentColor"/>
-            <path d="M72 21H88L85 27H74L72 21Z" fill="currentColor"/>
-            <path d="M66 27H94L98 33H62L66 27Z" fill="currentColor"/>
-            <rect x="62" y="33" width="36" height="7" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="67" cy="36.5" r="2" fill="currentColor"/>
-            <circle cx="73.5" cy="36.5" r="2" fill="currentColor"/>
-            <circle cx="80" cy="36.5" r="2" fill="currentColor"/>
-            <circle cx="86.5" cy="36.5" r="2" fill="currentColor"/>
-            <circle cx="93" cy="36.5" r="2" fill="currentColor"/>
-          </svg>
-        </div>
-
-        <!-- Right Block: Massive Start Button -->
-        <div class="brief-action-block">
-          
-            <button
-              type="button"
-              class="brief-start-btn"
-              data-action="start-campaign-mission"
-              data-mission="campaign-01"
-            >
-              <span class="start-content">
-                <svg class="start-tank-icon" viewBox="0 0 48 22" fill="currentColor" aria-hidden="true">
-                  <path d="M18 4h11l2 4h14v2.5H31l1.5 3.5H13l3-6h2V4zm-8 10h28l4 4H6l4-4zm2 4.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
-                </svg>
-                <span class="start-text">{t("START MISSION »")}</span>
-              </span>
-              <span class="start-glow" aria-hidden="true"></span>
-            </button>
-          
-        </div>
-      </div>
-    </aside>
-
-        </div>
+            <span class="start-text">{t("START MISSION »")}</span>
+          </span>
+          <span class="start-glow" aria-hidden="true"></span>
+        </button>
       </div>
     </div>
+  </section>
 
   <Fragment slot="after">
-      <section class="menu-content page-briefing" aria-labelledby="campaign-briefing-title">
-        <h2 id="campaign-briefing-title">{t("Campaign Briefing: Road to the Capital")}</h2>
-        <p class="menu-lead">{t("Road to the Capital is the main story of BATTLE TANK, a")} <a href={h("./")}>{t("free 3D tank game inspired by Battle City")}</a> {t("you play in the browser: 35 base defense and assault missions across seven regions, fought on 40×40 destructible arenas from the city outskirts to the enemy's capital citadel. Every mission you clear unlocks the next checkpoint on the map above, pays out credits, and brings your modular VANGUARD tank one step closer to its final assault.")}</p>
+    <section class="menu-content page-briefing" aria-labelledby="campaign-regions-title">
+      <h2 id="campaign-regions-title">{t("Campaign regions")}</h2>
+      <p class="menu-lead">{t("Road to the Capital spans 35 missions across seven regions on 40×40 destructible arenas. Clear each sector to unlock the next, earn credits for Garage upgrades, and push toward the Capital Citadel.")}</p>
 
-        <div class="menu-guide">
-          <section>
-            <h3>{t("Three kinds of missions")}</h3>
-            <p><strong>{t("Extermination")}</strong> {t("— destroy every hostile tank on the map, including the sector boss when one is present.")} <strong>{t("Stronghold Assault")}</strong> {t("— break through the defenses and destroy the fortified enemy stronghold core.")} <strong>{t("Base Defense")}</strong> {t("— hold off attacking waves while protecting your own Command Base HQ; losing either HQ cell ends the operation.")}</p>
-            <h3>{t("Credits and upgrades between missions")}</h3>
-            <p>{t("Mission rewards grow as you advance, from $300 for the first mission to $1,500 for the finale. Spend credits in the Garage to raise Cannon, Chassis, Frame, Engine and Armor from Tier I to Tier V, and add standalone modules such as the 4-corner APS and the homing ATGM pod. Your progress, credits and upgrades are saved in your browser.")}</p>
-            <h3>{t("Tips for the long road")}</h3>
-            <p>{t("Flank heavy armor instead of trading shots with its glacis, use forest canopy to break line of sight, and and consider a Tier IV Chassis for the Coastal Wetlands: All-Terrain tracks cross water and drive over ice and sand without slowing down. Smash brick walls to open new firing lanes, but remember that reinforced concrete takes 16 hits.")}</p>
-          </section>
-          <section>
-            <h3>{t("Seven regions, five missions each")}</h3>
-            <ol>
-              <li><strong>{t("City Outskirts (1–5)")}</strong> {t("— placeholder missions until the new story is ready.")}</li>
-              <li><strong>{t("Forest Frontier (6–10)")}</strong> {t("— Green Border, Timberline, Hidden Signals, River Watch, Deepwood Bastion.")}</li>
-              <li><strong>{t("Desert Crossing (11–15)")}</strong> {t("— Dust Frontier, Dry Wells, Canyon Teeth, Mirage Array, Sunken Fortress.")}</li>
-              <li><strong>{t("Coastal Wetlands (16–20)")}</strong> {t("— Salt Approach, Reed Ambush, Harbor Refuge, Breakwater, Tidal Lock.")}</li>
-              <li><strong>{t("Frozen Highlands (21–25)")}</strong> {t("— Cold Ascent, White Relay, Summit Refuge, Glacier Cut, Iron Avalanche.")}</li>
-              <li><strong>{t("Industrial Belt (26–30)")}</strong> {t("— Foundry Road, Freight Spine, Power Reserve, Furnace District, Capital Breach.")}</li>
-              <li><strong>{t("Capital City (31–35)")}</strong> {t("— Return to the Streets, Boulevard of Steel, Last Shelter, Citadel Ring, Vanguard Dawn.")}</li>
-            </ol>
-          </section>
-        </div>
+      <div class="menu-grid campaign-regions-grid">
+        <article class="menu-card">
+          <strong>{t("1. City Outskirts")}</strong>
+          <p>{t("Opening urban sectors: dense avenues, excavated ruins, and cross-street flanks leading out of the metro perimeter.")}</p>
+        </article>
+        <article class="menu-card">
+          <strong>{t("2. Forest Frontier")}</strong>
+          <p>{t("Woodland roads, timber yards, and concealed canopy lanes where electronic jamming and minefields enter the fight.")}</p>
+        </article>
+        <article class="menu-card">
+          <strong>{t("3. Desert Crossing")}</strong>
+          <p>{t("Open caravan highways, canyon switchbacks, and oasis defenses ending at the first Sector Boss stronghold.")}</p>
+        </article>
+        <article class="menu-card">
+          <strong>{t("4. Coastal Wetlands")}</strong>
+          <p>{t("Flooded causeways, dockyards, and amphibious hovercraft flanks culminating in a coastal rocket-artillery cruiser.")}</p>
+        </article>
+        <article class="menu-card">
+          <strong>{t("5. Frozen Highlands")}</strong>
+          <p>{t("Low-traction ice passes and alpine relays guarded by long-range artillery and a thermobaric siege leviathan.")}</p>
+        </article>
+        <article class="menu-card">
+          <strong>{t("6. Industrial Belt")}</strong>
+          <p>{t("Heavy foundries, rail freight spines, and steelworks defended by repair engineers and reinforced staging lines.")}</p>
+        </article>
+        <article class="menu-card">
+          <strong>{t("7. Capital City")}</strong>
+          <p>{t("Fortified boulevards and concentric citadel rings leading to the All-Boss Escalation finale.")}</p>
+        </article>
+      </div>
 
-        <h2 class="briefing-heading">{t("Sector Bosses on the road")}</h2>
-        <div class="menu-grid">
-          <article class="menu-card">
-            <strong>{t("Mission 15 — Sunken Fortress")}</strong>
-            <p>{t("The MAMMOTH siege dreadnought guards the desert stronghold. It is a close-range brawler with twin heavy guns and a missile pod; keep moving and hit its flanks.")}</p>
-          </article>
-          <article class="menu-card">
-            <strong>{t("Mission 20 — Tidal Lock")}</strong>
-            <p>{t("HYDRA is an amphibious rocket-artillery cruiser that keeps its distance and fires telegraphed rocket salvos. Close the gap through cover and watch the warning markers.")}</p>
-          </article>
-          <article class="menu-card">
-            <strong>{t("Mission 25 — Iron Avalanche")}</strong>
-            <p>{t("CERBERUS-T, the thermobaric siege leviathan, holds the summit fortress at the end of the Frozen Highlands.")}</p>
-          </article>
-          <article class="menu-card">
-            <strong>{t("Mission 35 — Vanguard Dawn")}</strong>
-            <p>{t("The capital citadel finale. After a second MAMMOTH at Capital Breach, the last mission throws all four Sector Bosses at you, including the TITAN rail fortress, whose directional armor means you must get behind it.")}</p>
-          </article>
-        </div>
+      <div class="menu-guide" style="margin-top:24px;">
+        <section>
+          <h3>{t("Three kinds of missions")}</h3>
+          <p><strong>{t("Extermination")}</strong> {t("— destroy every hostile tank on the map, including the sector boss when one is present.")} <strong>{t("Stronghold Assault")}</strong> {t("— break through the defenses and destroy the fortified enemy stronghold core.")} <strong>{t("Base Defense")}</strong> {t("— hold off attacking waves while protecting your own Command Base HQ; losing either HQ cell ends the operation.")}</p>
+        </section>
+        <section>
+          <h3>{t("Credits and upgrades between missions")}</h3>
+          <p>{t("Earn credits on every cleared mission to upgrade Cannon, Chassis, Frame, Engine and Armor from Tier I to Tier V in the Garage, and equip standalone modules like 4-corner APS and homing ATGMs. Progress is saved in your browser.")}</p>
+        </section>
+      </div>
 
-        <div class="menu-actions">
-          <a class="menu-primary" href={h("./how-to-play")}>{t("How to Play →")}</a>
-          <a class="menu-secondary" href={h("./walkthrough")}>{t("Campaign Walkthrough")}</a>
-          <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
-          <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
-        </div>
-      </section>
+      <div class="menu-actions">
+        <a class="menu-primary" href={h("./how-to-play")}>{t("How to Play →")}</a>
+        <a class="menu-secondary" href={h("./walkthrough")}>{t("Campaign Walkthrough")}</a>
+        <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
+        <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
+      </div>
+    </section>
   </Fragment>
 
   <Fragment slot="noscript">
-      <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
-        <h1>{t("Tank Campaign: 35 Base Defense Missions — BATTLE TANK")}</h1>
-        <p>{t("Select a mission on the Road to the Capital and deploy into 3D tactical tank combat. JavaScript and WebGL are required.")}</p>
-      </main>
+    <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+      <h1>{t("Tank Campaign: Road to the Capital — BATTLE TANK")}</h1>
+      <p>{t("Select a mission on the Road to the Capital and deploy into 3D tactical tank combat. JavaScript and WebGL are required.")}</p>
+    </main>
   </Fragment>
 </PageLayout>

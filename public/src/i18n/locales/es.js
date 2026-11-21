@@ -6,5 +6,6 @@ import ui from './es/ui.js';
 import banners from './es/banners.js';
 import catalog from './es/catalog.js';
 import maps from './es/maps.js';
+import campaign from './es/campaign.js';
 
-export default Object.freeze({ ...maps, ...catalog, ...banners, ...ui });
+export default Object.freeze({ ...maps, ...campaign, ...catalog, ...banners, ...ui });
