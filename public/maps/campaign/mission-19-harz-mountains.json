@@ -50,41 +50,89 @@
       {
         "name": "West Granite Ridge Wall",
         "cells": [
-          { "row": 12, "col": 12 },
-          { "row": 12, "col": 13 }
+          {
+            "row": 12,
+            "col": 12
+          },
+          {
+            "row": 12,
+            "col": 13
+          }
         ],
-        "start": { "row": 12, "col": 10 },
-        "end": { "row": 12, "col": 15 },
+        "start": {
+          "row": 12,
+          "col": 10
+        },
+        "end": {
+          "row": 12,
+          "col": 15
+        },
         "purpose": "Shortcut between the western logging road and the central Brockenbahn rail approach."
       },
       {
         "name": "Station Yard Brick Fence",
         "cells": [
-          { "row": 18, "col": 17 },
-          { "row": 19, "col": 17 }
+          {
+            "row": 18,
+            "col": 17
+          },
+          {
+            "row": 19,
+            "col": 17
+          }
         ],
-        "start": { "row": 18, "col": 15 },
-        "end": { "row": 18, "col": 19 },
+        "start": {
+          "row": 18,
+          "col": 15
+        },
+        "end": {
+          "row": 18,
+          "col": 19
+        },
         "purpose": "Flank entry from the central forest trail straight into the Brockenbahn station apron."
       },
       {
         "name": "East Sawmill Retaining Wall",
         "cells": [
-          { "row": 23, "col": 27 },
-          { "row": 23, "col": 28 }
+          {
+            "row": 23,
+            "col": 27
+          },
+          {
+            "row": 23,
+            "col": 28
+          }
         ],
-        "start": { "row": 23, "col": 25 },
-        "end": { "row": 23, "col": 30 },
+        "start": {
+          "row": 23,
+          "col": 25
+        },
+        "end": {
+          "row": 23,
+          "col": 30
+        },
         "purpose": "Fast lateral cut between the eastern timber road and the Brockenbahn rail corridor."
       },
       {
         "name": "South-West Timber Yard Wall",
         "cells": [
-          { "row": 29, "col": 13 },
-          { "row": 29, "col": 14 }
+          {
+            "row": 29,
+            "col": 13
+          },
+          {
+            "row": 29,
+            "col": 14
+          }
         ],
-        "start": { "row": 29, "col": 11 },
-        "end": { "row": 29, "col": 16 },
+        "start": {
+          "row": 29,
+          "col": 11
+        },
+        "end": {
+          "row": 29,
+          "col": 16
+        },
         "purpose": "Direct breach between the south-west logging approach and the southern HQ road."
       }
     ]
@@ -96,52 +144,117 @@
     "zones": [
       {
         "id": "harz-spruce-floor",
-        "bounds": [0, 0, 39, 39],
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
         "surface": "dirt",
         "density": 0.24,
-        "details": ["leaves", "weeds"]
+        "details": [
+          "leaves",
+          "weeds"
+        ]
       },
       {
         "id": "brocken-station-yard",
-        "bounds": [15, 18, 22, 27],
+        "bounds": [
+          15,
+          18,
+          22,
+          27
+        ],
         "surface": "gravel",
         "density": 0.34,
-        "details": ["tracks", "patches", "oil"]
+        "details": [
+          "tracks",
+          "patches",
+          "oil"
+        ]
       },
       {
         "id": "east-sawmill-yard",
-        "bounds": [13, 30, 18, 37],
+        "bounds": [
+          13,
+          30,
+          18,
+          37
+        ],
         "surface": "dirt",
         "density": 0.3,
-        "details": ["tracks", "oil"]
+        "details": [
+          "tracks",
+          "oil"
+        ]
       },
       {
         "id": "west-granite-clearing",
-        "bounds": [9, 2, 14, 7],
+        "bounds": [
+          9,
+          2,
+          14,
+          7
+        ],
         "surface": "gravel",
         "density": 0.22,
-        "details": ["rubble", "weeds"]
+        "details": [
+          "rubble",
+          "weeds"
+        ]
       },
       {
         "id": "hq-camp-apron",
-        "bounds": [32, 14, 38, 25],
+        "bounds": [
+          32,
+          14,
+          38,
+          25
+        ],
         "surface": "gravel",
         "density": 0.28,
-        "details": ["tracks", "rubble"]
+        "details": [
+          "tracks",
+          "rubble"
+        ]
       }
     ],
     "paths": [
       {
         "id": "brockenbahn-main-line",
         "points": [
-          [0, 19],
-          [8, 19],
-          [14, 20],
-          [19, 20],
-          [25, 22],
-          [31, 27],
-          [36, 33],
-          [39, 36]
+          [
+            0,
+            19
+          ],
+          [
+            8,
+            19
+          ],
+          [
+            14,
+            20
+          ],
+          [
+            19,
+            20
+          ],
+          [
+            25,
+            22
+          ],
+          [
+            31,
+            27
+          ],
+          [
+            36,
+            33
+          ],
+          [
+            39,
+            36
+          ]
         ],
         "width": 2,
         "surface": "gravel",
@@ -150,9 +263,18 @@
       {
         "id": "brockenbahn-station-siding",
         "points": [
-          [15, 20],
-          [18, 22],
-          [21, 23]
+          [
+            15,
+            20
+          ],
+          [
+            18,
+            22
+          ],
+          [
+            21,
+            23
+          ]
         ],
         "width": 1.6,
         "surface": "gravel",
@@ -203,7 +325,12 @@
     "exclusions": [
       {
         "id": "hq-apron-clear",
-        "bounds": [37, 17, 39, 22]
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
       }
     ]
   },
@@ -213,9 +340,21 @@
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
     "entrances": [
-      { "id": "west-ridge", "row": 2, "col": 7 },
-      { "id": "central-track", "row": 2, "col": 19 },
-      { "id": "east-logging", "row": 2, "col": 32 }
+      {
+        "id": "west-ridge",
+        "row": 2,
+        "col": 7
+      },
+      {
+        "id": "central-track",
+        "row": 2,
+        "col": 19
+      },
+      {
+        "id": "east-logging",
+        "row": 2,
+        "col": 32
+      }
     ],
     "encounters": [
       {
@@ -230,18 +369,42 @@
           "STANDARD",
           "SAPPER"
         ],
-        "entrances": ["west-ridge", "central-track"],
+        "entrances": [
+          "west-ridge",
+          "central-track"
+        ],
         "patrolRoute": [
-          { "row": 12, "col": 8 },
-          { "row": 22, "col": 9 },
-          { "row": 32, "col": 12 }
+          {
+            "row": 12,
+            "col": 8
+          },
+          {
+            "row": 22,
+            "col": 9
+          },
+          {
+            "row": 32,
+            "col": 12
+          }
         ],
         "recoverySec": 0,
         "initialCells": [
-          { "row": 4, "col": 7 },
-          { "row": 4, "col": 19 },
-          { "row": 5, "col": 32 },
-          { "row": 6, "col": 18 }
+          {
+            "row": 4,
+            "col": 7
+          },
+          {
+            "row": 4,
+            "col": 19
+          },
+          {
+            "row": 5,
+            "col": 32
+          },
+          {
+            "row": 6,
+            "col": 18
+          }
         ]
       },
       {
@@ -257,11 +420,23 @@
           "HOWITZER",
           "STANDARD"
         ],
-        "entrances": ["east-logging", "central-track"],
+        "entrances": [
+          "east-logging",
+          "central-track"
+        ],
         "patrolRoute": [
-          { "row": 15, "col": 32 },
-          { "row": 25, "col": 32 },
-          { "row": 33, "col": 25 }
+          {
+            "row": 15,
+            "col": 32
+          },
+          {
+            "row": 25,
+            "col": 32
+          },
+          {
+            "row": 33,
+            "col": 25
+          }
         ],
         "recoverySec": 8
       },
@@ -279,11 +454,24 @@
           "ARMOR",
           "SCOUT"
         ],
-        "entrances": ["west-ridge", "central-track", "east-logging"],
+        "entrances": [
+          "west-ridge",
+          "central-track",
+          "east-logging"
+        ],
         "patrolRoute": [
-          { "row": 14, "col": 20 },
-          { "row": 23, "col": 20 },
-          { "row": 31, "col": 19 }
+          {
+            "row": 14,
+            "col": 20
+          },
+          {
+            "row": 23,
+            "col": 20
+          },
+          {
+            "row": 31,
+            "col": 19
+          }
         ],
         "recoverySec": 10
       }
@@ -362,7 +550,7 @@
   ],
   "objectLayout": [
     "FF.FF.....FF..FF..........FF..FF....FF.F",
-    "FF..F.....FF..F...........FF...FF...F..F",
+    "FF..F.....FF..F.......Q...FF...FF...F..F",
     ".F..F.....F...FF.....F....F....FF....FFF",
     "FF..F.....F....F.....FF...FF...FF....F.F",
     "F...FF....F.....FF....F....F....F....FF.",
@@ -382,11 +570,11 @@
     "F..AA....FF..F...B....PPPP.FF..FF..FF.FF",
     "FF..F....FF..F...B...T..FFF.F..FF..FF.FF",
     "FF..FF...FF..F...F......AAA.F..FF...F.FF",
-    "F...FF...FF.FF...FF.....AAA.F...F...F..F",
+    "F...FF...FF.FF...FFQ....AAA.F...F...F..F",
     "FF..F....FF.FF...FF..F..FF..F...F..FF.FF",
     "FF..F.....F.CC....F..F..FF.BB...F..FF.FF",
     "FF..FF....F.......F..F...FF.FF..F..FF.FF",
-    "F...FF....F.......FF.FF..FF..F..F...F.FF",
+    "FQ..FF....F.......FF.FF..FF..F..F...F.FF",
     "FF..F....FF..FF...FF..F..FF..FF.F...F..F",
     "FF..FF...FF..FF...K...F..FF..FF.F..FFQ.F",
     "FF..FF...FF.FF...FF...F..FF..FF.F..FF.FF",
@@ -399,7 +587,7 @@
     "FF..FF.FF.....FF......FF.....FF..FF.FF.F",
     "F...F..FF.FF..F........F..FF.FF...F..F.F",
     "FF..FF.FF.FF......CCCC....FF.FF..FF.FF.F",
-    "FF..FF.FF..F...............F.FF..FF..F.F",
+    "FF..FF.FFQ.F.............Q.F.FF..FF..F.F",
     "F...F..FF..F.......HH......F.FF...F..F.F"
   ]
 }

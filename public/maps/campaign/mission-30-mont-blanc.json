@@ -44,42 +44,93 @@
       {
         "name": "Radar Station South Wall",
         "cells": [
-          { "row": 5, "col": 19 },
-          { "row": 5, "col": 20 },
-          { "row": 5, "col": 21 }
+          {
+            "row": 5,
+            "col": 19
+          },
+          {
+            "row": 5,
+            "col": 20
+          },
+          {
+            "row": 5,
+            "col": 21
+          }
         ],
-        "start": { "row": 7, "col": 20 },
-        "end": { "row": 4, "col": 19 },
+        "start": {
+          "row": 7,
+          "col": 20
+        },
+        "end": {
+          "row": 4,
+          "col": 19
+        },
         "purpose": "Breach the southern brick sally wall of the fortified high col radar station for direct fire on the command core."
       },
       {
         "name": "West Moraine Retaining Wall",
         "cells": [
-          { "row": 18, "col": 9 },
-          { "row": 19, "col": 9 }
+          {
+            "row": 18,
+            "col": 9
+          },
+          {
+            "row": 19,
+            "col": 9
+          }
         ],
-        "start": { "row": 18, "col": 7 },
-        "end": { "row": 18, "col": 11 },
+        "start": {
+          "row": 18,
+          "col": 7
+        },
+        "end": {
+          "row": 18,
+          "col": 11
+        },
         "purpose": "Blast through the moraine retaining wall to cut between the west cable-car road and the central glacier valley."
       },
       {
         "name": "East Avalanche Barrier",
         "cells": [
-          { "row": 23, "col": 29 },
-          { "row": 23, "col": 30 }
+          {
+            "row": 23,
+            "col": 29
+          },
+          {
+            "row": 23,
+            "col": 30
+          }
         ],
-        "start": { "row": 25, "col": 29 },
-        "end": { "row": 22, "col": 29 },
+        "start": {
+          "row": 25,
+          "col": 29
+        },
+        "end": {
+          "row": 22,
+          "col": 29
+        },
         "purpose": "Clear the brick avalanche barrier to link the eastern glacier flank directly to the mid-mountain plateau."
       },
       {
         "name": "Lower Valley Checkpoint Wall",
         "cells": [
-          { "row": 29, "col": 22 },
-          { "row": 29, "col": 23 }
+          {
+            "row": 29,
+            "col": 22
+          },
+          {
+            "row": 29,
+            "col": 23
+          }
         ],
-        "start": { "row": 31, "col": 22 },
-        "end": { "row": 28, "col": 22 },
+        "start": {
+          "row": 31,
+          "col": 22
+        },
+        "end": {
+          "row": 28,
+          "col": 22
+        },
         "purpose": "Punch through the lower valley checkpoint wall to bypass the main road choke."
       }
     ],
@@ -106,31 +157,63 @@
     "zones": [
       {
         "id": "mont-blanc-snow",
-        "bounds": [0, 0, 39, 39],
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
         "surface": "snow",
         "density": 0.22,
-        "details": ["patches", "cracks"]
+        "details": [
+          "patches",
+          "cracks"
+        ]
       },
       {
         "id": "radar-col-apron",
-        "bounds": [2, 16, 8, 25],
+        "bounds": [
+          2,
+          16,
+          8,
+          25
+        ],
         "surface": "concrete",
         "density": 0.35,
-        "details": ["cracks", "rubble"]
+        "details": [
+          "cracks",
+          "rubble"
+        ]
       },
       {
         "id": "cable-terminal-yard",
-        "bounds": [25, 10, 29, 15],
+        "bounds": [
+          25,
+          10,
+          29,
+          15
+        ],
         "surface": "gravel",
         "density": 0.3,
-        "details": ["tracks", "rubble"]
+        "details": [
+          "tracks",
+          "rubble"
+        ]
       },
       {
         "id": "valley-depot-pad",
-        "bounds": [30, 26, 34, 31],
+        "bounds": [
+          30,
+          26,
+          34,
+          31
+        ],
         "surface": "asphalt",
         "density": 0.28,
-        "details": ["tracks", "patches"]
+        "details": [
+          "tracks",
+          "patches"
+        ]
       }
     ],
     "paths": [],
@@ -193,7 +276,12 @@
     "exclusions": [
       {
         "id": "radar-gate-clear",
-        "bounds": [6, 18, 8, 22]
+        "bounds": [
+          6,
+          18,
+          8,
+          22
+        ]
       }
     ]
   },
@@ -203,12 +291,36 @@
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.2,
     "entrances": [
-      { "id": "north-west-col", "row": 1, "col": 5 },
-      { "id": "north-radar-west", "row": 1, "col": 13 },
-      { "id": "north-radar-east", "row": 1, "col": 26 },
-      { "id": "north-east-glacier", "row": 1, "col": 34 },
-      { "id": "upper-west-shelf", "row": 6, "col": 3 },
-      { "id": "upper-east-shelf", "row": 6, "col": 36 }
+      {
+        "id": "north-west-col",
+        "row": 1,
+        "col": 5
+      },
+      {
+        "id": "north-radar-west",
+        "row": 1,
+        "col": 13
+      },
+      {
+        "id": "north-radar-east",
+        "row": 1,
+        "col": 26
+      },
+      {
+        "id": "north-east-glacier",
+        "row": 1,
+        "col": 34
+      },
+      {
+        "id": "upper-west-shelf",
+        "row": 6,
+        "col": 3
+      },
+      {
+        "id": "upper-east-shelf",
+        "row": 6,
+        "col": 36
+      }
     ],
     "encounters": [
       {
@@ -222,16 +334,40 @@
           "north-east-glacier"
         ],
         "initialCells": [
-          { "row": 3, "col": 5 },
-          { "row": 3, "col": 14 },
-          { "row": 3, "col": 26 },
-          { "row": 3, "col": 34 }
+          {
+            "row": 3,
+            "col": 5
+          },
+          {
+            "row": 3,
+            "col": 14
+          },
+          {
+            "row": 3,
+            "col": 26
+          },
+          {
+            "row": 3,
+            "col": 34
+          }
         ],
         "patrolRoute": [
-          { "row": 11, "col": 12 },
-          { "row": 16, "col": 17 },
-          { "row": 24, "col": 22 },
-          { "row": 32, "col": 19 }
+          {
+            "row": 11,
+            "col": 12
+          },
+          {
+            "row": 16,
+            "col": 17
+          },
+          {
+            "row": 24,
+            "col": 22
+          },
+          {
+            "row": 32,
+            "col": 19
+          }
         ],
         "enemies": [
           "SCOUT",
@@ -255,11 +391,26 @@
           "upper-east-shelf"
         ],
         "patrolRoute": [
-          { "row": 14, "col": 5 },
-          { "row": 20, "col": 5 },
-          { "row": 27, "col": 16 },
-          { "row": 27, "col": 30 },
-          { "row": 33, "col": 27 }
+          {
+            "row": 14,
+            "col": 5
+          },
+          {
+            "row": 20,
+            "col": 5
+          },
+          {
+            "row": 27,
+            "col": 16
+          },
+          {
+            "row": 27,
+            "col": 30
+          },
+          {
+            "row": 33,
+            "col": 27
+          }
         ],
         "enemies": [
           "HOVER",
@@ -284,11 +435,26 @@
           "upper-east-shelf"
         ],
         "patrolRoute": [
-          { "row": 9, "col": 20 },
-          { "row": 11, "col": 25 },
-          { "row": 20, "col": 32 },
-          { "row": 28, "col": 26 },
-          { "row": 32, "col": 19 }
+          {
+            "row": 9,
+            "col": 20
+          },
+          {
+            "row": 11,
+            "col": 25
+          },
+          {
+            "row": 20,
+            "col": 32
+          },
+          {
+            "row": 28,
+            "col": 26
+          },
+          {
+            "row": 32,
+            "col": 19
+          }
         ],
         "enemies": [
           "ARMOR",
@@ -389,7 +555,7 @@
     "..FFF......K.........K......K.......FFF.",
     ".......FF......................FF.......",
     "..FF...FFF....X..........X.....FFF..FF..",
-    "............==..........==..............",
+    "............==.....Q....==..............",
     "............==..........==..............",
     "..FF...FF.......C....C..........FF..FF..",
     ".......FFF......C....C..........FFF.....",
@@ -416,7 +582,7 @@
     "..FFF....FFF....X......FFF.........FFF..",
     "................K.......................",
     "..................CCCC..................",
-    "........................................",
+    "......................................Q.",
     "...................HH..................."
   ]
 }

@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { EnemyClass } from '../public/src/game/types.js';
-import { createProjectileVisual, createMissileVisual, animateMissileVisual } from '../public/src/game/effects/index.js';
+import { createArtilleryShellVisual, createMissileVisual, animateMissileVisual } from '../public/src/game/effects/index.js';
 import { sound } from '../public/src/game/sound.js';
 
 export class CodexStage {
@@ -418,11 +418,8 @@ export class CodexStage {
       e.codexHazardFill.position.set(1.25, 0.04, 0);
       e.codexStageGroup.add(e.codexHazardFill);
 
-      e.codexArcShell = createProjectileVisual(0xff5a2a, {
-        radius: 0.2,
-        length: 0.3,
-        glow: 1.2,
-      });
+      e.codexArcShell = createArtilleryShellVisual('enemy');
+      e.codexArcShell.rotation.order = 'YXZ';
       e.codexStageGroup.add(e.codexArcShell);
     } else if (effectType === 'APS') {
       e.codexTankRig = e.modelFactory.createPlayerTank();
@@ -831,7 +828,14 @@ export class CodexStage {
           const sx = THREE.MathUtils.lerp(m.x, 1.25, cycle);
           const sz = THREE.MathUtils.lerp(m.z, 0, cycle);
           const sy = THREE.MathUtils.lerp(m.y, 0.3, cycle) + Math.sin(cycle * Math.PI) * 3.2;
+          const dx = 1.25 - m.x;
+          const dz = -m.z;
+          const horizDist = Math.max(0.001, Math.hypot(dx, dz));
+          const dy = (0.3 - m.y) + Math.cos(cycle * Math.PI) * Math.PI * 3.2;
           e.codexArcShell.position.set(sx, sy, sz);
+          e.codexArcShell.rotation.y = Math.atan2(dx, dz);
+          e.codexArcShell.rotation.x = Math.atan2(-dy, horizDist);
+          e.codexArcShell.rotation.z += dt * 10;
           e.codexArcShell.visible = true;
           e.codexFx.shellSmokeTrail(sx, sy, sz, true);
         }

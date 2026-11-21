@@ -8,7 +8,7 @@ import {
   computeEffectiveDamage,
 } from '../constants.js';
 import { markOwned } from '../render/dispose.js';
-import { createProjectileVisual } from '../effects/index.js';
+import { createArtilleryShellVisual } from '../effects/index.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { breachPointToward } from '../terrains/breach-models.js';
@@ -181,12 +181,9 @@ export class ExplosionsController {
     fillMesh.position.set(targetX, 0.06, targetZ);
     fillMesh.scale.setScalar(0.05);
 
-    const shellMesh = createProjectileVisual(fromPlayer ? 0xffb030 : 0xff5a2a, {
-      radius: 0.2,
-      length: 0.34,
-      glow: 1.25,
-    });
+    const shellMesh = createArtilleryShellVisual(fromPlayer ? 'player' : 'enemy');
     shellMesh.position.set(startX, startY, startZ);
+    shellMesh.rotation.order = 'YXZ';
     shellMesh.rotation.y = Math.atan2(targetX - startX, targetZ - startZ);
     const launchLen = Math.hypot(targetX - startX, targetZ - startZ) || 1;
     engine.fx.muzzleFlash(
@@ -235,10 +232,16 @@ export class ExplosionsController {
 
       const curX = THREE.MathUtils.lerp(hz.startX, hz.x, progress);
       const curZ = THREE.MathUtils.lerp(hz.startZ, hz.z, progress);
+      const startY = hz.startY ?? 0.8;
       const arcY =
-        THREE.MathUtils.lerp(hz.startY ?? 0.8, 0.3, progress) +
+        THREE.MathUtils.lerp(startY, 0.3, progress) +
         Math.sin(progress * Math.PI) * 6.5;
       hz.shellMesh.position.set(curX, arcY, curZ);
+      const horizDist = Math.hypot(hz.x - hz.startX, hz.z - hz.startZ) || 1;
+      const dy = (0.3 - startY) + Math.cos(progress * Math.PI) * Math.PI * 6.5;
+      hz.shellMesh.rotation.order = 'YXZ';
+      hz.shellMesh.rotation.x = Math.atan2(-dy, horizDist);
+      hz.shellMesh.rotation.z += dt * 10;
       hz.trailAcc = (hz.trailAcc || 0) + dt;
       if (hz.trailAcc >= 0.03 / engine.fx.q) {
         hz.trailAcc = 0;

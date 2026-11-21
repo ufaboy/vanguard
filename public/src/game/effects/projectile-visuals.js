@@ -205,3 +205,107 @@ export function animateMissileVisual(root, dt, turnRate = 0) {
   const blink = Math.sin(m.t * 18) > 0.2 ? 0.18 : 0.1;
   m.seekerHalo.scale.set(blink, blink, 1);
 }
+
+const artilleryShellCache = new Map();
+
+function artilleryShellAssets(style) {
+  let a = artilleryShellCache.get(style);
+  if (a) return a;
+  const isPlayer = style === 'player';
+  const bodyColor = isPlayer ? 0x4b5836 : 0x3b424c;
+  const bandColor = isPlayer ? 0xf59e0b : 0xef4444;
+  const tracerColor = isPlayer ? 0xffb030 : 0xff5a2a;
+
+  const body = new THREE.CylinderGeometry(0.11, 0.115, 0.42, 12);
+  body.rotateX(Math.PI / 2);
+  const ogive = new THREE.CylinderGeometry(0.055, 0.11, 0.22, 12);
+  ogive.rotateX(Math.PI / 2);
+  const fuze = new THREE.ConeGeometry(0.055, 0.14, 10);
+  fuze.rotateX(Math.PI / 2);
+  const heBand = new THREE.CylinderGeometry(0.116, 0.116, 0.06, 12);
+  heBand.rotateX(Math.PI / 2);
+  const copperBand = new THREE.CylinderGeometry(0.118, 0.118, 0.045, 12);
+  copperBand.rotateX(Math.PI / 2);
+  const boatTail = new THREE.CylinderGeometry(0.112, 0.082, 0.1, 12);
+  boatTail.rotateX(Math.PI / 2);
+  const tracer = new THREE.ConeGeometry(0.075, 0.36, 10, 1, true);
+  tracer.rotateX(-Math.PI / 2);
+  tracer.translate(0, 0, -0.18);
+
+  a = {
+    geo: { body, ogive, fuze, heBand, copperBand, boatTail, tracer },
+    mat: {
+      body: new THREE.MeshStandardMaterial({ color: bodyColor, metalness: 0.45, roughness: 0.46 }),
+      ogive: new THREE.MeshStandardMaterial({ color: 0x2d333b, metalness: 0.55, roughness: 0.42 }),
+      fuze: new THREE.MeshStandardMaterial({ color: 0xd4a448, metalness: 0.72, roughness: 0.32 }),
+      heBand: new THREE.MeshStandardMaterial({ color: bandColor, metalness: 0.25, roughness: 0.45 }),
+      copperBand: new THREE.MeshStandardMaterial({ color: 0xc26d38, metalness: 0.78, roughness: 0.3 }),
+      tracer: new THREE.MeshBasicMaterial({
+        color: tracerColor,
+        transparent: true,
+        opacity: 0.85,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        toneMapped: false,
+      }),
+      halo: new THREE.SpriteMaterial({
+        map: glowSpriteTexture(),
+        color: tracerColor,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        depthWrite: false,
+        toneMapped: false,
+        opacity: 0.65,
+      }),
+    },
+  };
+  artilleryShellCache.set(style, a);
+  return a;
+}
+
+/**
+ * Shared-resource 155mm howitzer artillery shell model, nose along +Z.
+ * `style`: 'enemy' | 'player'. Resources are cached and must not be disposed by callers.
+ */
+export function createArtilleryShellVisual(style = 'enemy', scale = 1.15) {
+  const { geo, mat } = artilleryShellAssets(style);
+  const root = new THREE.Group();
+  root.name = 'ArtilleryShell';
+  const body = new THREE.Group();
+  root.add(body);
+
+  body.add(new THREE.Mesh(geo.body, mat.body));
+  const ogive = new THREE.Mesh(geo.ogive, mat.ogive);
+  ogive.position.z = 0.32;
+  body.add(ogive);
+
+  const fuze = new THREE.Mesh(geo.fuze, mat.fuze);
+  fuze.position.z = 0.50;
+  body.add(fuze);
+
+  const heBand = new THREE.Mesh(geo.heBand, mat.heBand);
+  heBand.position.z = 0.16;
+  body.add(heBand);
+
+  const copperBand = new THREE.Mesh(geo.copperBand, mat.copperBand);
+  copperBand.position.z = -0.15;
+  body.add(copperBand);
+
+  const boatTail = new THREE.Mesh(geo.boatTail, mat.ogive);
+  boatTail.position.z = -0.26;
+  body.add(boatTail);
+
+  const tracer = new THREE.Mesh(geo.tracer, mat.tracer);
+  tracer.position.z = -0.31;
+  body.add(tracer);
+
+  const halo = new THREE.Sprite(mat.halo);
+  halo.scale.set(0.95, 0.95, 1);
+  halo.position.z = -0.34;
+  halo.renderOrder = 11;
+  body.add(halo);
+
+  if (scale !== 1) root.scale.setScalar(scale);
+  return root;
+}

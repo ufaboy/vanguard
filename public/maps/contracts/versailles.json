@@ -672,14 +672,14 @@
   ],
   "objectLayout": [
     "AAAF..FF...FF..FFFFFFFF....FFF..FFFFFAAA",
-    "AAAF..FF...FF..FFF...........F..FAAAAAAF",
+    "AAAF..FF..QFF..FFF...........F..FAAAAAAF",
     "FFFF...........FFF....FFFFFFFF...A.Q..AF",
     "FFFF...........XFF....FFFFFFFX...A....AF",
     "FFFFFFF..........................FFFFFFF",
     "FFFFFFF..........................FFFAAAF",
     "FFF..FF..FFFFFF..F....F..FFFFFF..F..AAAF",
     "FFF..FF..FF...F..F....F..FFFFFF..F..FFFF",
-    "FFF..FF..FFFFKF..F....F..F...FF..F....FF",
+    "FFF..FF..FFFFKF..F....FQ.F...FF..F....FF",
     "FFF..FF..FFFFFF..F....F..FFFFFF..F....FF",
     "FFF..FFFF......................FFFAAAFFF",
     "FFF..FFFFFFFFFFFF......FFFFFFFFFFF..FFFF",
@@ -709,7 +709,7 @@
     "..PPPPPPPPPP................PPPPPPPPPP..",
     "..........PP................PP..........",
     "..PPPP.AAAPP......CCCC......PPAAAA.PPP..",
-    "..PPPP.AAAPP................PPAAAA.PPP..",
+    "..PPPP.AAAPP.............Q..PPAAAA.PPP..",
     "..PPPP.AAA.........HH.........AAAA.PPP.."
   ]
 }

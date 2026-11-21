@@ -474,7 +474,7 @@
     "FF.FF......FF.F.F......F...F.FF....F..FF",
     ".F..F.....F..FF.FF....F.F...FFF.....FFFF",
     ".FFFF.....FF..F.F.....FF.F.FFFF....FF..F",
-    "F..F.......F...FFF......F.FFFFF....FF...",
+    "FQ.F.......F...FFF......F.FFFFF....FF...",
     "F.F...F..FF......F....FFFF..F.....F.F..F",
     "....FF.........FQ.F...FF.F.FFF.....F..F.",
     "F........FF....FF.......FF.....F..FF..F.",
@@ -507,8 +507,8 @@
     "FFFFFFFFF.....AA........AA...........F..",
     "FFFF.F.FF.......K......B...FFFFFF.FFFF..",
     ".FF.FF..FFF...............FFF.F.F..FF.F.",
-    "F..FF..F..FFF.....CCCC....FFFF.F.FFFF.F.",
-    "FFFFFF.FFFFF.F.............FFFFF..FF.FFF",
+    "F..FF..F..FFF.....CCCC....FFFF.F.FFFFQF.",
+    "FFFFFFQFFFFF.F.............FFFFF..FF.FFF",
     "....FFFF.FF........HH.....FF..F.FFFFF..F"
   ]
 }

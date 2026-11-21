@@ -541,7 +541,7 @@
   ],
   "objectLayout": [
     "FFFFF...................FFFF............",
-    "FFFFFF.....FFFFFF.......FFFF.......FFFF.",
+    "FFFFFF.....FFFFFFQ......FFFF.......FFFF.",
     "FFFFFF.....FFFFFF.......FFFF.AA....FFFF.",
     "FFFFF...................FFFF.AA....FFFF.",
     "FF...............AA......FFF.FF....FFFF.",
@@ -578,7 +578,7 @@
     "FFFFFFFFFFFF.FFF........FFFFFFF.AAFFFFF.",
     "......FFFFFF.FFF........FFFFFFF.AAFFFFF.",
     "..FF..FFFFFF.FFF..CCCC..FFFFFFF..FFFFFF.",
-    "..FF....BB...................BB..FFFFFF.",
+    "..FF....BB.Q.................BB.QFFFFFF.",
     "...................HH..................."
   ]
 }

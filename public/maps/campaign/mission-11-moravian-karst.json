@@ -35,34 +35,79 @@
       {
         "name": "Katerinska Cut",
         "cells": [
-          { "row": 18, "col": 10 },
-          { "row": 19, "col": 10 },
-          { "row": 20, "col": 10 }
+          {
+            "row": 18,
+            "col": 10
+          },
+          {
+            "row": 19,
+            "col": 10
+          },
+          {
+            "row": 20,
+            "col": 10
+          }
         ],
-        "start": { "row": 19, "col": 8 },
-        "end": { "row": 19, "col": 12 },
+        "start": {
+          "row": 19,
+          "col": 8
+        },
+        "end": {
+          "row": 19,
+          "col": 12
+        },
         "purpose": "Breach the limestone barricade at Katerinska Cave to flank the abyss rim from the western forest road."
       },
       {
         "name": "Abyss Rim Checkpoint",
         "cells": [
-          { "row": 13, "col": 18 },
-          { "row": 13, "col": 19 },
-          { "row": 13, "col": 20 }
+          {
+            "row": 13,
+            "col": 18
+          },
+          {
+            "row": 13,
+            "col": 19
+          },
+          {
+            "row": 13,
+            "col": 20
+          }
         ],
-        "start": { "row": 11, "col": 19 },
-        "end": { "row": 15, "col": 19 },
+        "start": {
+          "row": 11,
+          "col": 19
+        },
+        "end": {
+          "row": 15,
+          "col": 19
+        },
         "purpose": "Smash the northern rim wall to open a direct firing lane past the abyss."
       },
       {
         "name": "Punkva Gorge Wall",
         "cells": [
-          { "row": 22, "col": 27 },
-          { "row": 23, "col": 27 },
-          { "row": 24, "col": 27 }
+          {
+            "row": 22,
+            "col": 27
+          },
+          {
+            "row": 23,
+            "col": 27
+          },
+          {
+            "row": 24,
+            "col": 27
+          }
         ],
-        "start": { "row": 23, "col": 25 },
-        "end": { "row": 23, "col": 29 },
+        "start": {
+          "row": 23,
+          "col": 25
+        },
+        "end": {
+          "row": 23,
+          "col": 29
+        },
         "purpose": "Cut between the eastern ravine road and the central lookout plateau."
       }
     ],
@@ -88,44 +133,102 @@
     "zones": [
       {
         "id": "karst-plateau",
-        "bounds": [0, 0, 39, 39],
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
         "surface": "dirt",
         "density": 0.18,
-        "details": ["leaves", "weeds"]
+        "details": [
+          "leaves",
+          "weeds"
+        ]
       },
       {
         "id": "macocha-rim",
-        "bounds": [14, 15, 22, 26],
+        "bounds": [
+          14,
+          15,
+          22,
+          26
+        ],
         "surface": "gravel",
         "density": 0.25,
-        "details": ["cracks", "rubble"]
+        "details": [
+          "cracks",
+          "rubble"
+        ]
       },
       {
         "id": "punkva-depot",
-        "bounds": [25, 31, 30, 37],
+        "bounds": [
+          25,
+          31,
+          30,
+          37
+        ],
         "surface": "concrete",
         "density": 0.25,
-        "details": ["oil", "tracks"]
+        "details": [
+          "oil",
+          "tracks"
+        ]
       },
       {
         "id": "ranger-yard",
-        "bounds": [29, 10, 34, 17],
+        "bounds": [
+          29,
+          10,
+          34,
+          17
+        ],
         "surface": "gravel",
         "density": 0.2,
-        "details": ["tracks", "patches"]
+        "details": [
+          "tracks",
+          "patches"
+        ]
       }
     ],
     "paths": [
       {
         "id": "west-cave-track",
-        "points": [[19, 4], [19, 7], [19, 9]],
+        "points": [
+          [
+            19,
+            4
+          ],
+          [
+            19,
+            7
+          ],
+          [
+            19,
+            9
+          ]
+        ],
         "width": 1.4,
         "surface": "gravel",
         "marking": "none"
       },
       {
         "id": "abyss-overlook-apron",
-        "points": [[21, 22], [23, 23], [24, 24]],
+        "points": [
+          [
+            21,
+            22
+          ],
+          [
+            23,
+            23
+          ],
+          [
+            24,
+            24
+          ]
+        ],
         "width": 2,
         "surface": "pavers",
         "marking": "none"
@@ -164,7 +267,12 @@
     "exclusions": [
       {
         "id": "hq-lane",
-        "bounds": [36, 17, 39, 22]
+        "bounds": [
+          36,
+          17,
+          39,
+          22
+        ]
       }
     ]
   },
@@ -174,9 +282,21 @@
     "maxConcurrent": 8,
     "spawnIntervalSec": 4,
     "entrances": [
-      { "id": "nw-ravine", "row": 0, "col": 7 },
-      { "id": "north-rim", "row": 0, "col": 19 },
-      { "id": "ne-punkva", "row": 0, "col": 32 }
+      {
+        "id": "nw-ravine",
+        "row": 0,
+        "col": 7
+      },
+      {
+        "id": "north-rim",
+        "row": 0,
+        "col": 19
+      },
+      {
+        "id": "ne-punkva",
+        "row": 0,
+        "col": 32
+      }
     ],
     "encounters": [
       {
@@ -191,18 +311,43 @@
           "FLAMETHROWER",
           "STANDARD"
         ],
-        "entrances": ["nw-ravine", "north-rim", "ne-punkva"],
+        "entrances": [
+          "nw-ravine",
+          "north-rim",
+          "ne-punkva"
+        ],
         "patrolRoute": [
-          { "row": 8, "col": 6 },
-          { "row": 20, "col": 3 },
-          { "row": 32, "col": 15 }
+          {
+            "row": 8,
+            "col": 6
+          },
+          {
+            "row": 20,
+            "col": 3
+          },
+          {
+            "row": 32,
+            "col": 15
+          }
         ],
         "recoverySec": 0,
         "initialCells": [
-          { "row": 7, "col": 6 },
-          { "row": 8, "col": 18 },
-          { "row": 7, "col": 31 },
-          { "row": 10, "col": 13 }
+          {
+            "row": 7,
+            "col": 6
+          },
+          {
+            "row": 8,
+            "col": 18
+          },
+          {
+            "row": 7,
+            "col": 31
+          },
+          {
+            "row": 10,
+            "col": 13
+          }
         ]
       },
       {
@@ -219,11 +364,23 @@
           "JAMMER",
           "SAPPER"
         ],
-        "entrances": ["nw-ravine", "ne-punkva"],
+        "entrances": [
+          "nw-ravine",
+          "ne-punkva"
+        ],
         "patrolRoute": [
-          { "row": 10, "col": 31 },
-          { "row": 22, "col": 31 },
-          { "row": 30, "col": 24 }
+          {
+            "row": 10,
+            "col": 31
+          },
+          {
+            "row": 22,
+            "col": 31
+          },
+          {
+            "row": 30,
+            "col": 24
+          }
         ],
         "recoverySec": 8
       },
@@ -241,11 +398,24 @@
           "ARMOR",
           "STRIKER"
         ],
-        "entrances": ["nw-ravine", "north-rim", "ne-punkva"],
+        "entrances": [
+          "nw-ravine",
+          "north-rim",
+          "ne-punkva"
+        ],
         "patrolRoute": [
-          { "row": 11, "col": 18 },
-          { "row": 24, "col": 16 },
-          { "row": 33, "col": 19 }
+          {
+            "row": 11,
+            "col": 18
+          },
+          {
+            "row": 24,
+            "col": 16
+          },
+          {
+            "row": 33,
+            "col": 19
+          }
         ],
         "recoverySec": 10
       }
@@ -327,7 +497,7 @@
     "FFFFF......FFFFFF......FFFFFFF......FFFF",
     "FFFFF......FFFFFF......FFFFFFF......FFFF",
     "FFFF.......FFFFFF.......FFFFFF......FFFF",
-    "FFF........FFFFF........FFFF........FFFF",
+    "FFF........FFFFF........FFFFQ.......FFFF",
     "FF..BB.....FFFF..CC..CC.FFF..BB......FFF",
     "FF.........FF....C....C.FF....C...C...FF",
     "FFF...F....FF....C....C.FF....C...C...FF",
@@ -348,7 +518,7 @@
     "FF........C......B.....B...C..FF..C...FF",
     "FF.......FC........PPP.F...B......C...FF",
     "FF.......FC........PPP.F...B......F...FF",
-    "FF........C........PPP.F...B......F...FF",
+    "FFQ.......C........PPP.F...B......F...FF",
     "FF...F....FF........Q..F...C.....ADD..FF",
     "FFF..F...FFF.....F.....F...C.....ADD..FF",
     "FFF......FFF..C..FF...FF...C.F...AAQ..FF",
@@ -362,7 +532,7 @@
     "FFFFFF...FF..FFF........FFF..FFFFF..FFFF",
     "FFFFF....FF..FFF..K..K..FFF..FFFF...FFFF",
     "FFFFF....F........CCCC.......FFF....FFFF",
-    "FFFFF........................FF.....FFFF",
+    "FFFFFQ....................Q..FF.....FFFF",
     "FFFFFF.............HH...............FFFF"
   ]
 }
