@@ -82,6 +82,9 @@ export class PlayerController {
     if (engine.missileAmmo > 0) {
       optEquip.push('ROCKET_LAUNCHER');
     }
+    if (engine.reconDroneOwned) {
+      optEquip.push('RECON_DRONE');
+    }
 
     engine.playerStats = computeTankStats({
       gun,
@@ -453,6 +456,10 @@ export class PlayerController {
     }
     if (engine.missileCooldown > 0)
       engine.missileCooldown = Math.max(0, engine.missileCooldown - dt);
+    if (engine.reconDroneCooldown > 0)
+      engine.reconDroneCooldown = Math.max(0, engine.reconDroneCooldown - dt);
+    if (engine.reconDroneActiveTimer > 0)
+      engine.reconDroneActiveTimer = Math.max(0, engine.reconDroneActiveTimer - dt);
     if (engine.apsRearmTimer > 0)
       engine.apsRearmTimer = Math.max(0, engine.apsRearmTimer - dt);
     if (engine.empTimer > 0) engine.empTimer = Math.max(0, engine.empTimer - dt);

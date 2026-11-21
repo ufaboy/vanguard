@@ -10,7 +10,7 @@ import { EnemyClass, TileType } from '../types.js';
 import { SECTOR_BOSS_CONFIGS } from '../vehicles/tanks.js';
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { deckClearance } from '../render/models.js';
-import { cellMovement } from '../terrains/layers.js';
+import { cellMovement, doesTileBlockLineOfSight } from '../terrains/layers.js';
 import { inContactRange, updateAbilities } from '../abilities/index.js';
 import { normalizeAngleSigned, stepAngleTowards } from '../../sim/ai.js';
 import {
@@ -85,21 +85,23 @@ export class EnemyAiController {
       const col = Math.floor((sx + half) / TILE_SIZE);
       const row = Math.floor((sz + half) / TILE_SIZE);
       const cell = engine.grid[row]?.[col];
-      if (
-        cell &&
-        (cell.type === TileType.BOXES ||
-          cell.type === TileType.BRICK ||
-          cell.type === TileType.CONCRETE ||
-          cell.type === TileType.HOUSE_1 ||
-          cell.type === TileType.HOUSE_2 ||
-          cell.type === TileType.LANDMARK ||
-          cell.type === TileType.BASE ||
-          cell.type === TileType.ENEMY_BASE ||
-          cell.type === TileType.WATER_TOWER)
-      ) {
+      if (cell && doesTileBlockLineOfSight(cell.type)) {
         return false;
       }
     }
+    return true;
+  }
+
+  hasPlayerLineOfSight(enemy) {
+    const engine = this.engine;
+    if (!enemy) return false;
+    if (engine.isPointRevealedByReconDrone?.(enemy.x, enemy.z)) return true;
+    if (!this.hasLineOfSight(engine.playerX, engine.playerZ, enemy.x, enemy.z)) return false;
+    const dist = Math.hypot(enemy.x - engine.playerX, enemy.z - engine.playerZ);
+    if (dist <= ENEMY_VISIBILITY.FOREST_SIGHT_RADIUS) return true;
+    const eCell = engine.worldToGrid?.(enemy.x, enemy.z);
+    const cell = eCell ? engine.grid[eCell.row]?.[eCell.col] : null;
+    if (cell?.type === TileType.FOREST) return false;
     return true;
   }
 
@@ -920,15 +922,45 @@ export class EnemyAiController {
         : null;
 
       if (e.enemyClass === EnemyClass.STEALTH && e.rig.stealthMaterials) {
-        const revealed = distToPlayer < 6.2 || e.stealthRevealTimer > 0;
+        const spottedByDrone = Boolean(engine.isPointRevealedByReconDrone?.(e.x, e.z));
+        const hasLos = !engine.hardMode || this.hasPlayerLineOfSight(e);
+        const revealed = spottedByDrone || (hasLos && (distToPlayer < 6.2 || e.stealthRevealTimer > 0));
         const moving = Math.hypot(e.targetDirX, e.targetDirZ) > 0.05;
-        const targetOpacity = revealed ? 0.96 : moving ? 0.3 : 0.12;
+        const targetOpacity = !hasLos && !spottedByDrone ? 0.0 : revealed ? 0.96 : moving ? 0.3 : 0.12;
+        let currentOpacity = 0;
         for (const mat of e.rig.stealthMaterials) {
           mat.opacity = THREE.MathUtils.damp(mat.opacity, targetOpacity, 8, dt);
+          currentOpacity = mat.opacity;
         }
+        if (e.rig.root) e.rig.root.visible = currentOpacity > 0.015;
+        if (e.rig.shadowMesh) e.rig.shadowMesh.visible = currentOpacity > 0.15;
         if (e.rig.hpBarBg && e.rig.hpBarFill) {
-          e.rig.hpBarBg.visible = revealed;
-          e.rig.hpBarFill.visible = revealed;
+          const showHp = engine.aiDebugMode || (revealed && currentOpacity > 0.2);
+          e.rig.hpBarBg.visible = showHp;
+          e.rig.hpBarFill.visible = showHp;
+        }
+      } else if (e.rig?.fadeMaterials?.length) {
+        const visibleToPlayer = !engine.hardMode || this.hasPlayerLineOfSight(e);
+        const targetOpacity = visibleToPlayer ? 1.0 : 0.0;
+        const prevOpacity = e.visibilityOpacity ?? 1.0;
+        const nextOpacity = engine.hardMode
+          ? THREE.MathUtils.damp(prevOpacity, targetOpacity, 8, dt)
+          : 1.0;
+        e.visibilityOpacity = nextOpacity;
+        const shouldBeTransparent = nextOpacity < 0.99;
+        for (const mat of e.rig.fadeMaterials) {
+          mat.opacity = nextOpacity;
+          if (mat.transparent !== shouldBeTransparent) {
+            mat.transparent = shouldBeTransparent;
+            mat.needsUpdate = true;
+          }
+        }
+        if (e.rig.root) e.rig.root.visible = nextOpacity > 0.015;
+        if (e.rig.shadowMesh) e.rig.shadowMesh.visible = nextOpacity > 0.15;
+        if (e.rig.hpBarBg && e.rig.hpBarFill) {
+          const showHp = engine.aiDebugMode || (visibleToPlayer && nextOpacity > 0.25);
+          e.rig.hpBarBg.visible = showHp;
+          e.rig.hpBarFill.visible = showHp;
         }
       }
 

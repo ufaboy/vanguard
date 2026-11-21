@@ -61,6 +61,7 @@ export function loadPreferences() {
     cameraPreset: 'ISOMETRIC',
     cameraZoom: null,
     missileFpvEnabled: false,
+    hardMode: false,
     graphicsQuality: isMobileOrTabletDevice() ? 'low' : 'high',
     fpsCap: 60,
     touchControlsMode: 'auto',
@@ -73,6 +74,7 @@ export function loadPreferences() {
       prefs.cameraZoom = raw.cameraZoom;
     }
     if (typeof raw.missileFpvEnabled === 'boolean') prefs.missileFpvEnabled = raw.missileFpvEnabled;
+    if (typeof raw.hardMode === 'boolean') prefs.hardMode = raw.hardMode;
     if (VALID_QUALITY_PRESETS.includes(raw.graphicsQuality)) prefs.graphicsQuality = raw.graphicsQuality;
     if (FPS_CAP_OPTIONS.includes(raw.fpsCap)) prefs.fpsCap = raw.fpsCap;
     if (TOUCH_CONTROLS_MODES.includes(raw.touchControlsMode)) prefs.touchControlsMode = raw.touchControlsMode;
@@ -92,6 +94,7 @@ export function savePreferences(prefs) {
         ? Math.max(14, Math.min(46, prefs.cameraZoom))
         : null,
       missileFpvEnabled: Boolean(prefs.missileFpvEnabled),
+      hardMode: Boolean(prefs.hardMode),
       graphicsQuality: prefs.graphicsQuality,
       fpsCap: prefs.fpsCap,
       touchControlsMode: TOUCH_CONTROLS_MODES.includes(prefs.touchControlsMode) ? prefs.touchControlsMode : 'auto',

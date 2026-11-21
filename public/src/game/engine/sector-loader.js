@@ -641,6 +641,9 @@ export class SectorLoaderController {
     engine.cannonAmmo = engine.getPlayerMaxCannonAmmo();
     engine.cannonBaseRearmTimer = 0;
     engine.missileCooldown = 0;
+    engine.reconDroneCooldown = 0;
+    engine.reconDroneActiveTimer = 0;
+    engine.reconDroneOwned = isIsolatedSector ? false : Boolean(engine.playerSave?.reconDroneOwned);
     engine.repairKitCount = engine.getPlayerMaxRepairKitCharges();
 
     engine.playerRig.root.position.set(engine.playerX, 0, engine.playerZ);

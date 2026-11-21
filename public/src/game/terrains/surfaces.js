@@ -74,6 +74,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     acceleration: 22.0,
     brakingDrag: 14.0,
     description:
@@ -101,6 +102,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: true,
     description:
       'Masonry fortification composed of 4 independent sub-blocks per cell (4 HP total). Standard shells (Mk1–Mk3) destroy 1 layer per hit; Heavy AP shells (Mk4/Mk5) demolish 2 layers at once. Combat Engineers can rebuild destroyed brick walls.',
     specs: Object.freeze([
@@ -127,6 +129,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: true,
     description:
       'Heavy cast-concrete fortification reinforced with an internal twisted steel rebar cage (16 HP). Hard to destroy: standard Mk1–Mk3 shells chip away 1 HP per hit, while Mk4/Mk5 Heavy AP cannons deal 4 HP structural damage and artillery blasts deal 6 HP, progressively cracking the slab and exposing its steel rebar before collapse.',
     specs: Object.freeze([
@@ -150,6 +153,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     providesConcealment: true,
     description:
       'Dense multi-tree woodland cluster. Tanks positioned inside forest cells gain optical concealment (breaks enemy missile homing lock). Vulnerable to incineration by Flamethrower tanks.',
@@ -172,6 +176,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     description:
       'Deep water moat that blocks standard tracked chassis (CH1–CH3). Shells and missiles fly freely across water. Crossable at reduced speed (60%) with CH4 All-Terrain or at full speed with CH5 Grav-Hover.',
     specs: Object.freeze([
@@ -194,6 +199,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     speedMultiplier: 0.85,
     accelMultiplier: 0.75,
     turnMultiplier: 0.82,
@@ -226,6 +232,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     maxSpeedCells: 1.5,
     hudLabel: 'Rocky Ground',
     description:
@@ -249,6 +256,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     description:
       'Natural grass and soil turf supporting woodland trees, fortifications, and field facilities with standard off-road traction.',
     specs: Object.freeze([
@@ -273,6 +281,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: true,
     description:
       'Two-bay drive-through tank workshop (2x1 cells) with gantry cranes, a fuel depot and ammunition stores, always set on the outermost row behind a 4-cell concrete line one lane away. Generates an active Field Repair Zone (+3 HP/s hull and subsystem restoration) within a 2.5-cell radius. If destroyed by enemy fire, you lose the ability to repair near the base, while combat continues until your tank is destroyed (or in special base-defense modes).',
     specs: Object.freeze([
@@ -296,6 +305,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: true,
     description:
       'Armored enemy command citadel and reactor core protected by reinforced concrete/brick fortifications and guarded by hostile armor divisions. In Stronghold Assault mode, destroying this fortified enemy base immediately achieves mission victory.',
     specs: Object.freeze([
@@ -318,6 +328,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     description:
       'Heavy welded three-rail steel obstacle. Completely stops tank chassis progression, but sits low enough that cannon shells, rockets, and targeting lasers fly straight over it without obstruction. Ideal for firing from covered chokepoints.',
     specs: Object.freeze([
@@ -342,6 +353,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: false,
     description:
       'Pressurized volatile fuel drum and explosive ordnance depot. Demolished on impact by any shell, missile, or blast. Detonation deals 35 heavy explosive damage in a 2.8-cell radius, demolishes adjacent brick walls, damages concrete, and triggers chain reactions with neighboring fuel drums.',
     specs: Object.freeze([
@@ -357,7 +369,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     code: 'TILE-BOXES', name: 'Wooden Supply Boxes', role: 'Destructible Supply Cache',
     accentHex: '#B8874F', destructible: true, maxHP: 2,
     normalShellDamage: 1, heavyShellDamage: 1, artilleryDamage: 1,
-    passableByTracks: false, passableByHover: false, blocksProjectiles: true,
+    passableByTracks: false, passableByHover: false, blocksProjectiles: true, blocksLineOfSight: false,
     description: `Four wooden supply crates form one cache. Each cannon hit breaks two crates; two hits open the cache with a ${Math.round(BOX_POWERUP_DROP_CHANCE * 100)}% chance to release one field Power-Up at its location: HQ Restore (100% while the base is destroyed and no kit is pending), otherwise 50% Cannon Shells (+3-7) and 50% divided equally among REPAIR, EMP, APS, and MISSILE. Drive over the bonus to collect it, or leave it for later: it never expires during the mission. Boxes contain no credits. Crates broken by enemy fire are lost. Player missiles fly over the crates.`,
     specs: Object.freeze([
       Object.freeze({ label: 'DURABILITY', value: '2 hits / 4 crates' }),
@@ -379,6 +391,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     speedMultiplier: 0.78,
     accelMultiplier: 0.75,
     turnMultiplier: 0.82,
@@ -409,6 +422,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: false,
     description:
       'Heavy automated anti-tank defense bastion installed on fortified citadel redoubts. Features an authentic octagonal reinforced concrete barbette and a low-profile cast armored turret with a long-barrel 125mm AP cannon firing high-velocity shells directly at intruders.',
     specs: Object.freeze([
@@ -436,6 +450,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: false,
     description:
       'Heavy long-range artillery redoubt anchoring the rear corners of enemy citadels. Fires high-arc explosive mortar shells that soar over walls and natural obstacles to bombard the player with devastating splash damage.',
     specs: Object.freeze([
@@ -463,6 +478,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: false,
     description:
       'Flanking rocket artillery battery deployed on advanced fortress sectors. Houses a 6-tube armored launcher pod that fires 3-rocket salvos toward advancing intruders, saturating the approach vector.',
     specs: Object.freeze([
@@ -489,6 +505,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     speedMultiplier: 1.2,
     accelMultiplier: 1.25,
     turnMultiplier: 1.0,
@@ -516,6 +533,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     speedMultiplier: 0.58,
     accelMultiplier: 0.55,
     turnMultiplier: 0.65,
@@ -544,6 +562,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     speedMultiplier: 0.9,
     accelMultiplier: 0.23,
     turnMultiplier: 0.82,
@@ -575,6 +594,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     speedMultiplier: 0.85,
     accelMultiplier: 0.85,
     turnMultiplier: 0.95,
@@ -606,6 +626,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: false,
     description:
       'Elevated steel water tank standing over a concrete base. Destroying it (2 HP) ruptures the reservoir, flooding adjacent ground into deep mud/swamp and extinguishing all burning forest and oil fires within 2.5 cells.',
     specs: Object.freeze([
@@ -628,6 +649,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: true,
     description:
       'Protected historical monument and heavy stone/iron architecture. Completely indestructible — blocks all direct-fire shells, missiles, line of sight, and tank movement.',
     specs: Object.freeze([
@@ -650,6 +672,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     speedMultiplier: 1.2,
     accelMultiplier: 1.25,
     turnMultiplier: 1.0,
@@ -677,6 +700,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: true,
     passableByHover: true,
     blocksProjectiles: false,
+    blocksLineOfSight: false,
     speedMultiplier: 0.45,
     affectsAllTerrain: true,
     hudLabel: 'Collapsed Rubble',
@@ -702,6 +726,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: true,
     description:
       'Single-story multi-tile modular building with 12 distinct architectural styles (8 residential pitched-roof houses + 4 windowless corrugated warehouses, sawtooth brick factories, barrel-arch supply depots, and windowed site offices) and 5 progressive destruction stages. Direct cannon fire strips the facade and roof down to exposed rafters/trusses before collapsing into persistent RUBBLE.',
     specs: Object.freeze([
@@ -725,6 +750,7 @@ export const SURFACE_CONFIGS = Object.freeze({
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
+    blocksLineOfSight: true,
     description:
       'Two-story reinforced concrete, industrial, warehouse, and office building with 12 distinct styles (8 urban residential blocks + 4 glass-curtain offices, windowless heavy industrial plants, brutalist administrative buildings, and windowless high-bay logistics hubs) and 7 progressive destruction stages. Collapses into persistent RUBBLE.',
     specs: Object.freeze([

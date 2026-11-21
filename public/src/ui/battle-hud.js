@@ -430,6 +430,24 @@ export function renderBattlefieldHud({
       const missileMax = hud.missileMaxAmmo ?? getMaxMissileAmmo(upgrades.frame);
       const missileStateClass = canFireMissile ? 'tone-amber is-ready' : 'is-empty';
 
+      const reconOwned = Boolean(hud.reconDroneOwned);
+      const reconCd = hud.reconDroneCooldown || 0;
+      const reconActive = (hud.reconDroneActiveTimer || 0) > 0;
+      const reconReady = reconOwned && reconCd <= 0;
+      const reconValue = !reconOwned
+        ? t('OFF')
+        : reconActive
+        ? `${Math.ceil(hud.reconDroneActiveTimer)}s`
+        : reconCd > 0
+        ? `${Math.ceil(reconCd)}s`
+        : t('RDY');
+      const reconStateClass = !reconOwned
+        ? 'is-empty'
+        : reconActive || reconCd > 0
+        ? 'is-cooldown'
+        : 'tone-sky is-ready';
+      const reconIconColor = !reconOwned ? '#64748b' : reconActive ? '#22d3ee' : reconCd > 0 ? '#fbbf24' : '#38bdf8';
+
       const apsTotal = hud.apsTotal ?? 0;
       const apsMax = hud.apsMaxAmmo ?? 0;
       const apsJammed = Boolean(hud.apsJammed);
@@ -504,7 +522,7 @@ export function renderBattlefieldHud({
       const canRepair = credits >= AIR_SUPPORT.REPAIR.cost;
       const canMines = credits >= AIR_SUPPORT.MINES.cost;
       const canDrop = credits >= AIR_SUPPORT.AIRDROP.cost;
-      const staticKey = `${hud.cannonName}|${cannonAmmo}|${cannonMax}|${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canFireMissile}|${hud.missileAmmo}|${missileMax}|${apsValueText}|${apsStateClass}|${canStrike}|${canRepair}|${canMines}|${canDrop}|${airTargetingType}`;
+      const staticKey = `${hud.cannonName}|${cannonAmmo}|${cannonMax}|${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canFireMissile}|${hud.missileAmmo}|${missileMax}|${reconValue}|${reconStateClass}|${apsValueText}|${apsStateClass}|${canStrike}|${canRepair}|${canMines}|${canDrop}|${airTargetingType}`;
 
       if (centerSection.__staticKey === staticKey) {
         const segsEl = centerSection.querySelector('.hud-reload-segs');
@@ -657,6 +675,25 @@ export function renderBattlefieldHud({
                 <div class="hud-mod-val-row">
                   ${renderPowerUpBadgeSvg(POWERUP.MISSILE, 16, false)}
                   <span class="hud-mod-val">${hud.missileAmmo}<small>/${missileMax}</small></span>
+                </div>
+              </button>
+
+              <button
+                data-action="launch-recon-drone"
+                ${reconReady ? '' : 'disabled'}
+                class="hud-mod-tile ${reconStateClass}"
+                title="${t('Launch Tactical Recon Drone to cursor [Key R]')}"
+              >
+                <div class="hud-mod-top">
+                  <span class="hud-mod-key">R</span>
+                  <span class="hud-mod-name">${t('RECON')}</span>
+                </div>
+                <div class="hud-mod-val-row">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="2.5" fill="${reconIconColor}" fill-opacity="0.25" stroke="${reconIconColor}" stroke-width="1.8"/>
+                    <path d="M5 5l3.5 3.5M19 5l-3.5 3.5M5 19l3.5-3.5M19 19l-3.5-3.5" stroke="${reconIconColor}" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                  <span class="hud-mod-val">${reconValue}</span>
                 </div>
               </button>
 

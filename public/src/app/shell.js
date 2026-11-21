@@ -148,6 +148,10 @@ export function attachSettingsModal(root, onSettingsChange = null) {
         prefs.missileFpvEnabled = !prefs.missileFpvEnabled;
         settingName = 'missile_fpv';
         settingValue = prefs.missileFpvEnabled;
+      } else if (action === 'toggle-hard-mode') {
+        prefs.hardMode = !prefs.hardMode;
+        settingName = 'hard_mode';
+        settingValue = prefs.hardMode;
       } else if (action === 'cycle-touch-controls') {
         prefs.touchControlsMode =
           TOUCH_CONTROLS_MODES[(TOUCH_CONTROLS_MODES.indexOf(prefs.touchControlsMode) + 1) % TOUCH_CONTROLS_MODES.length];

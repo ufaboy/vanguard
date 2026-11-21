@@ -778,6 +778,7 @@ export class ModelFactory extends TextureGenerator {
     const gunY = cfg.gunY * s;
     const gunZ = cfg.barrelBaseZ ?? ENEMY_BARREL_BASE_Z;
     const stealthMaterials = cfg.stealth ? [] : null;
+    const fadeMaterials = [];
     const gear = createGearUniforms(s);
     rig.gear = gear;
     const wrap = (meshes, offsetY, offsetZ, bakedDir = 1) => {
@@ -788,16 +789,17 @@ export class ModelFactory extends TextureGenerator {
       meshes.forEach((mesh) => {
         const copy = mesh.clone();
         const gearMesh = hasGearData(copy.geometry);
-        if (stealthMaterials || gearMesh) {
-          copy.material = markMaterialOwned(addBakedGlow(copy.material.clone(), cfg.glow));
-          if (gearMesh) addGearMotion(copy.material, gear);
-        }
+        copy.material = markMaterialOwned(addBakedGlow(copy.material.clone(), cfg.glow));
+        if (gearMesh) addGearMotion(copy.material, gear);
         if (stealthMaterials) {
           copy.material.transparent = true;
           copy.material.opacity = 0.22;
           copy.castShadow = false;
           stealthMaterials.push(copy.material);
+        } else {
+          copy.material.opacity = 1.0;
         }
+        fadeMaterials.push(copy.material);
         group.add(copy);
       });
       return group;
@@ -842,6 +844,7 @@ export class ModelFactory extends TextureGenerator {
       rig.radarDish = null;
       rig.missileMounts = null;
       rig.clearanceSources = [];
+      rig.fadeMaterials = fadeMaterials;
       return;
     }
 
@@ -860,6 +863,7 @@ export class ModelFactory extends TextureGenerator {
     if (stealthMaterials && rig.stealthMaterials) {
       rig.stealthMaterials.splice(0, rig.stealthMaterials.length, ...stealthMaterials);
     }
+    rig.fadeMaterials = fadeMaterials;
     rig.muzzleDist = cfg.muzzleX * s;
     rig.missileMounts = cfg.missileMounts
       ? cfg.missileMounts.map(([fwd, left]) => ({ forward: fwd * s, left: left * s }))
@@ -1485,6 +1489,7 @@ export class ModelFactory extends TextureGenerator {
       hpBarFill,
       radarDish: null,
       stealthMaterials: null,
+      fadeMaterials: null,
       muzzleDist: barrelPivot.position.z + muzzleFlash.position.z,
       missileMounts: null,
       clearanceSources: [],

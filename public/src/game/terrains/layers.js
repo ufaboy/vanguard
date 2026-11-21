@@ -178,6 +178,13 @@ export function isTilePassable(tileType, canCrossWater = false) {
   return canCrossWater && tileType === TileType.WATER;
 }
 
+/**
+ * True when a tile of this top-layer type (`cell.type`) blocks direct line of sight.
+ */
+export function doesTileBlockLineOfSight(tileType) {
+  return Boolean(tileConfig(tileType)?.blocksLineOfSight);
+}
+
 const MOVEMENT_FIELDS = Object.freeze(['speedMultiplier', 'accelMultiplier', 'turnMultiplier', 'brakeMultiplier']);
 
 function hasMovement(cfg) {

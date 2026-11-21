@@ -107,6 +107,9 @@ export class InputCameraController {
           e.preventDefault();
           engine.callNextSurvivalWave();
         }
+      } else if (e.code === 'KeyR') {
+        e.preventDefault();
+        engine.launchReconDrone(engine.aimWorld.x, engine.aimWorld.z);
       } else if (e.code === 'Space') {
         e.preventDefault();
         engine.firePlayerHomingMissile();

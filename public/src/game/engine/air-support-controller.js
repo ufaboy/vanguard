@@ -384,6 +384,123 @@ export class AirSupportController {
     return true;
   }
 
+  launchReconDrone(targetX, targetZ) {
+    const { engine } = this;
+    if (engine.status !== GameStatus.PLAYING) return false;
+    if (engine.playerHp <= DURABILITY.ZERO_HP || engine.isHangarOpen || engine.isAdPaused) {
+      return false;
+    }
+    if (!engine.reconDroneOwned) {
+      engine.setStatusBanner(t('RECON DRONE NOT INSTALLED — BUY IN GARAGE'), 2.2);
+      return false;
+    }
+    if ((engine.reconDroneCooldown || 0) > 0) {
+      engine.setStatusBanner(
+        t('RECON DRONE ON COOLDOWN ({sec}s)', { sec: Math.ceil(engine.reconDroneCooldown) }),
+        1.8
+      );
+      return false;
+    }
+
+    const droneCfg = DRONE_CONFIGS.RECON_DRONE;
+    const halfLimit = (GRID_SIZE * TILE_SIZE) / 2 - 1.2;
+    const tx = THREE.MathUtils.clamp(Number.isFinite(targetX) ? targetX : engine.playerX, -halfLimit, halfLimit);
+    const tz = THREE.MathUtils.clamp(Number.isFinite(targetZ) ? targetZ : engine.playerZ, -halfLimit, halfLimit);
+    const launch = this.getAlliedSideLaunchPos(tx, tz);
+    const droneRig = this.createRepairDroneMesh();
+    if (droneRig && engine.fxGroup) {
+      droneRig.position.set(launch.x, droneCfg.approachAltitude, launch.z);
+      engine.fxGroup.add(droneRig);
+    }
+
+    engine.reconDroneCooldown = droneCfg.cooldownSec;
+    engine.reconDroneActiveTimer = droneCfg.durationSec;
+    engine.airSupportMissions ||= [];
+    engine.airSupportMissions.push({
+      kind: 'RECON_DRONE',
+      x: launch.x,
+      y: droneCfg.approachAltitude,
+      z: launch.z,
+      targetX: tx,
+      targetZ: tz,
+      exitX: launch.x,
+      exitZ: launch.z,
+      revealRadius: droneCfg.revealRadiusCells * TILE_SIZE,
+      phase: 'approach',
+      timer: 0,
+      duration: droneCfg.durationSec,
+      mesh: droneRig,
+    });
+    engine.setStatusBanner(t('RECON DRONE DISPATCHED — SCANNING TARGET ZONE'), 2.4);
+    engine.emitHudUpdate?.();
+    return true;
+  }
+
+  isPointRevealedByReconDrone(x, z) {
+    const missions = this.engine.airSupportMissions;
+    if (!missions || missions.length === 0) return false;
+    for (const m of missions) {
+      if (m.kind !== 'RECON_DRONE' || m.phase !== 'orbit') continue;
+      if (Math.hypot(x - m.targetX, z - m.targetZ) <= m.revealRadius) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Spawns a STRATEGIC_BOMBER flyby from `launch` across `(targetX, targetZ)` and returns its flight kinematics. */
+  spawnStrategicBomberFlyby(launch, targetX, targetZ, flightSec) {
+    const { engine } = this;
+    const bomberCfg = AIRCRAFT_CONFIGS.STRATEGIC_BOMBER;
+    const halfSpan = (GRID_SIZE * TILE_SIZE) / 2;
+    const dx = targetX - launch.x;
+    const dz = targetZ - launch.z;
+    const len = Math.hypot(dx, dz) || 1;
+    const dirX = dx / len;
+    const dirZ = dz / len;
+    const bomberSpeed = bomberCfg.speed;
+    const altitude = bomberCfg.altitude;
+    const leadDist = bomberSpeed * flightSec * bomberCfg.leadFactor;
+
+    // High-altitude bomber spawns off-map on the allied side and flies across the arena
+    const bomberStartX = launch.x - dirX * 10;
+    const bomberStartZ = launch.z - dirZ * 10;
+    const distToTarget = Math.hypot(targetX - bomberStartX, targetZ - bomberStartZ);
+    const flybySec = Math.max(
+      bomberCfg.flybySec,
+      (distToTarget + halfSpan + 28) / bomberSpeed
+    );
+    const bomberMesh = this.createBomberMesh();
+    if (bomberMesh && engine.fxGroup) {
+      bomberMesh.position.set(bomberStartX, altitude, bomberStartZ);
+      bomberMesh.rotation.y = Math.atan2(dirX, dirZ);
+      engine.fxGroup.add(bomberMesh);
+    }
+    engine.airSupportMissions.push({
+      kind: 'BOMBER_FLYBY',
+      x: bomberStartX,
+      y: altitude,
+      z: bomberStartZ,
+      vx: dirX * bomberSpeed,
+      vz: dirZ * bomberSpeed,
+      life: flybySec,
+      mesh: bomberMesh,
+    });
+
+    return { dirX, dirZ, bomberSpeed, altitude, leadDist, bomberStartX, bomberStartZ };
+  }
+
+  /** Computes the release point and delay for ordnance dropped from a flying bomber onto `(dropX, dropZ)`. */
+  computeBomberRelease(flyby, dropX, dropZ) {
+    const releaseX = dropX - flyby.dirX * flyby.leadDist;
+    const releaseZ = dropZ - flyby.dirZ * flyby.leadDist;
+    const distToRelease =
+      (releaseX - flyby.bomberStartX) * flyby.dirX +
+      (releaseZ - flyby.bomberStartZ) * flyby.dirZ;
+    const releaseDelay = Math.max(0.05, distToRelease / flyby.bomberSpeed);
+    return { releaseX, releaseZ, releaseDelay };
+  }
+
   launchAirStrike(variant, targetX, targetZ) {
     const { engine } = this;
     engine.airSupportMissions ||= [];
@@ -391,58 +508,20 @@ export class AirSupportController {
 
     if (variant === 'STRIKE_BOMBS') {
       const cfg = AIR_SUPPORT.STRIKE_BOMBS;
-      const bomberCfg = AIRCRAFT_CONFIGS.STRATEGIC_BOMBER;
-      const halfSpan = (GRID_SIZE * TILE_SIZE) / 2;
-      const dx = targetX - launch.x;
-      const dz = targetZ - launch.z;
-      const len = Math.hypot(dx, dz) || 1;
-      const dirX = dx / len;
-      const dirZ = dz / len;
-      const bomberSpeed = bomberCfg.speed;
-      const altitude = bomberCfg.altitude;
-      const leadDist = bomberSpeed * cfg.flightSec * bomberCfg.leadFactor;
-
-      // High-altitude bomber spawns off-map on the allied side and flies across the arena
-      const bomberStartX = launch.x - dirX * 10;
-      const bomberStartZ = launch.z - dirZ * 10;
-      const distToTarget = Math.hypot(targetX - bomberStartX, targetZ - bomberStartZ);
-      const flybySec = Math.max(
-        bomberCfg.flybySec,
-        (distToTarget + halfSpan + 28) / bomberSpeed
-      );
-      const bomberMesh = this.createBomberMesh();
-      if (bomberMesh && engine.fxGroup) {
-        bomberMesh.position.set(bomberStartX, altitude, bomberStartZ);
-        bomberMesh.rotation.y = Math.atan2(dirX, dirZ);
-        engine.fxGroup.add(bomberMesh);
-      }
-      engine.airSupportMissions.push({
-        kind: 'BOMBER_FLYBY',
-        x: bomberStartX,
-        y: altitude,
-        z: bomberStartZ,
-        vx: dirX * bomberSpeed,
-        vz: dirZ * bomberSpeed,
-        life: flybySec,
-        mesh: bomberMesh,
-      });
+      const flyby = this.spawnStrategicBomberFlyby(launch, targetX, targetZ, cfg.flightSec);
 
       for (let i = 0; i < cfg.bombCount; i++) {
         const dropOffset = (i - 1) * cfg.scatterCells * TILE_SIZE * 0.85;
         const lateral = (Math.random() - 0.5) * cfg.scatterCells * TILE_SIZE * 0.7;
-        const bx = targetX + dirX * dropOffset - dirZ * lateral;
-        const bz = targetZ + dirZ * dropOffset + dirX * lateral;
+        const bx = targetX + flyby.dirX * dropOffset - flyby.dirZ * lateral;
+        const bz = targetZ + flyby.dirZ * dropOffset + flyby.dirX * lateral;
         // Bomb releases from the bomber as it passes over the release point ahead of the target
-        const releaseX = bx - dirX * leadDist;
-        const releaseZ = bz - dirZ * leadDist;
-        const distToRelease =
-          (releaseX - bomberStartX) * dirX + (releaseZ - bomberStartZ) * dirZ;
-        const releaseDelay = Math.max(0.05, distToRelease / bomberSpeed);
+        const { releaseX, releaseZ, releaseDelay } = this.computeBomberRelease(flyby, bx, bz);
         engine.airSupportMissions.push({
           kind: 'AIR_ORDNANCE',
           ordnanceType: 'BOMB',
           startX: releaseX,
-          startY: altitude - 0.5,
+          startY: flyby.altitude - 0.5,
           startZ: releaseZ,
           targetX: bx,
           targetZ: bz,
@@ -522,30 +601,29 @@ export class AirSupportController {
   launchAirMines(targetX, targetZ) {
     const { engine } = this;
     const cfg = AIR_SUPPORT.MINES;
-    const mineCfg = AIR_ORDNANCE.AIR_MINE;
     const launch = this.getAlliedSideLaunchPos(targetX, targetZ);
     const half = cfg.zoneHalfCells * TILE_SIZE;
     engine.airSupportMissions ||= [];
+    const flyby = this.spawnStrategicBomberFlyby(launch, targetX, targetZ, cfg.flightSec);
 
-    // 3x3 grid with jitter across the ~5x5 cell carpet zone
-    let index = 0;
+    // 3x3 grid with jitter across the ~5x5 cell carpet zone, released from the bomber
     for (let gy = -1; gy <= 1; gy++) {
       for (let gx = -1; gx <= 1; gx++) {
         const mx = targetX + gx * (half * 0.68) + (Math.random() - 0.5) * TILE_SIZE * 0.65;
         const mz = targetZ + gy * (half * 0.68) + (Math.random() - 0.5) * TILE_SIZE * 0.65;
-        const flight = cfg.flightSec + index * mineCfg.staggerSec;
+        const { releaseX, releaseZ, releaseDelay } = this.computeBomberRelease(flyby, mx, mz);
         engine.airSupportMissions.push({
           kind: 'AIR_MINE',
-          startX: launch.x,
-          startY: mineCfg.launchAltitude,
-          startZ: launch.z,
+          startX: releaseX,
+          startY: flyby.altitude - 0.5,
+          startZ: releaseZ,
           targetX: mx,
           targetZ: mz,
-          timer: flight,
-          maxTimer: flight,
+          delay: releaseDelay,
+          timer: cfg.flightSec,
+          maxTimer: cfg.flightSec,
           mesh: null,
         });
-        index++;
       }
     }
     engine.setStatusBanner(t('AIR MINES DEPLOYED — CARPET MINEFIELD INBOUND'), 2.8);
@@ -593,6 +671,11 @@ export class AirSupportController {
       const m = missions[i];
       if (m.kind === 'REPAIR_DRONE') {
         if (this.updateRepairDrone(m, dt, elapsed)) {
+          this.disposeMissionVisuals(m);
+          missions.splice(i, 1);
+        }
+      } else if (m.kind === 'RECON_DRONE') {
+        if (this.updateReconDrone(m, dt, elapsed)) {
           this.disposeMissionVisuals(m);
           missions.splice(i, 1);
         }
@@ -701,6 +784,75 @@ export class AirSupportController {
           engine.playerHp = Math.min(engine.playerMaxHp, engine.playerHp + m.healRemaining);
           m.healRemaining = 0;
         }
+        m.phase = 'depart';
+        m.timer = 0;
+      }
+      return false;
+    }
+
+    // Depart phase
+    m.timer += dt;
+    const dx = m.exitX - m.x;
+    const dz = m.exitZ - m.z;
+    const dist = Math.hypot(dx, dz) || 1;
+    m.x += (dx / dist) * droneCfg.departSpeed * dt;
+    m.z += (dz / dist) * droneCfg.departSpeed * dt;
+    m.y += droneCfg.departClimbSpeed * dt;
+    if (m.mesh) {
+      m.mesh.position.set(m.x, m.y, m.z);
+      m.mesh.rotation.y = Math.atan2(dx, dz);
+    }
+    return m.timer >= 1.8 || dist < 1.5;
+  }
+
+  updateReconDrone(m, dt, elapsed) {
+    const droneCfg = DRONE_CONFIGS.RECON_DRONE;
+    const orbitRadius = (droneCfg.orbitRadiusCells ?? 4) * TILE_SIZE;
+    this.spinDroneRotors(m.mesh, dt);
+    if (m.phase === 'approach') {
+      const dx = m.targetX - m.x;
+      const dz = m.targetZ - m.z;
+      const dist = Math.hypot(dx, dz);
+      if (dist <= orbitRadius + 0.5) {
+        m.phase = 'orbit';
+        m.timer = 0;
+        m.orbitAngle = dist > 0.01 ? Math.atan2(m.z - m.targetZ, m.x - m.targetX) : 0;
+        m.currentOrbitRadius = dist;
+      } else {
+        const step = Math.min(dist, droneCfg.approachSpeed * dt);
+        m.x += (dx / dist) * step;
+        m.z += (dz / dist) * step;
+        m.y = THREE.MathUtils.lerp(m.y, droneCfg.hoverAltitude, Math.min(1, dt * 4));
+        if (m.mesh) {
+          m.mesh.position.set(m.x, m.y, m.z);
+          m.mesh.rotation.y = Math.atan2(dx, dz);
+        }
+      }
+      return false;
+    }
+
+    if (m.phase === 'orbit') {
+      m.timer += dt;
+      m.orbitAngle = (m.orbitAngle || 0) + dt * (droneCfg.orbitAngularSpeed ?? 1.6);
+      m.currentOrbitRadius = THREE.MathUtils.lerp(
+        m.currentOrbitRadius ?? orbitRadius,
+        orbitRadius,
+        Math.min(1, dt * 4)
+      );
+      const nx = m.targetX + Math.cos(m.orbitAngle) * m.currentOrbitRadius;
+      const nz = m.targetZ + Math.sin(m.orbitAngle) * m.currentOrbitRadius;
+      const vx = nx - m.x;
+      const vz = nz - m.z;
+      m.x = nx;
+      m.z = nz;
+      m.y = droneCfg.hoverAltitude + Math.sin(elapsed * 4.5) * 0.18;
+      if (m.mesh) {
+        m.mesh.position.set(m.x, m.y, m.z);
+        if (Math.hypot(vx, vz) > 1e-4) {
+          m.mesh.rotation.y = Math.atan2(vx, vz);
+        }
+      }
+      if (m.timer >= m.duration) {
         m.phase = 'depart';
         m.timer = 0;
       }
@@ -1052,6 +1204,11 @@ export class AirSupportController {
 
   updateAirMine(m, dt) {
     const { engine } = this;
+    if (m.delay > 0) {
+      m.delay -= dt;
+      return false;
+    }
+
     if (!m.mesh && engine.modelFactory?.createLandMineMesh && engine.fxGroup) {
       m.mesh = engine.modelFactory.createLandMineMesh();
       m.mesh.position.set(m.startX, m.startY, m.startZ);
@@ -1060,8 +1217,8 @@ export class AirSupportController {
 
     m.timer -= dt;
     const progress = Math.min(1, Math.max(0, 1 - m.timer / m.maxTimer));
-    const curX = THREE.MathUtils.lerp(m.startX, m.targetX, progress);
-    const curZ = THREE.MathUtils.lerp(m.startZ, m.targetZ, progress);
+    const curX = THREE.MathUtils.lerp(m.startX, m.targetX, Math.pow(progress, 0.85));
+    const curZ = THREE.MathUtils.lerp(m.startZ, m.targetZ, Math.pow(progress, 0.85));
     const curY = THREE.MathUtils.lerp(m.startY, 0.05, progress * progress);
     if (m.mesh) {
       m.mesh.position.set(curX, curY, curZ);
