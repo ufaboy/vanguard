@@ -107,11 +107,12 @@
         "Heldenplatz ceremonial plaza",
         "Hofburg palace wings and inner courtyard",
         "Volksgarten and Burggarten parks",
-        "Stephansplatz and St. Stephen's Cathedral block to the east"
+        "Stephansplatz and St. Stephen's Cathedral block to the east",
+        "Michaelertor dome gate, outer Burgtor and the two Heldenplatz equestrian statues"
       ],
       "simplified": [
         "Danube Canal omitted; northern Ringstrasse forms the enemy approach",
-        "Hofburg Neue Burg and St. Stephen's Cathedral built from generic P/C/T tiles (no Vienna 3D landmark pack yet)",
+        "Hofburg reduced to the Michaelertrakt dome gate, one palace wing and generic courtyard blocks; Neue Burg built from generic tiles",
         "Surrounding Innere Stadt alleys compressed into asymmetric urban blocks"
       ]
     }
@@ -247,6 +248,26 @@
       "kind": "ST_STEPHENS_CATHEDRAL",
       "row": 17,
       "col": 28
+    },
+    {
+      "kind": "MICHAELERTRAKT",
+      "row": 6,
+      "col": 16
+    },
+    {
+      "kind": "BURGTOR",
+      "row": 30,
+      "col": 15
+    },
+    {
+      "kind": "HELDENPLATZ_STATUE",
+      "row": 20,
+      "col": 19
+    },
+    {
+      "kind": "HELDENPLATZ_STATUE",
+      "row": 20,
+      "col": 23
     }
   ],
   "enemies": {
@@ -508,7 +529,7 @@
     "..F........F......BB....AA...........PPP",
     "..F....PPP.F.PPP........AA..............",
     "PP.....PPP...PPP.....DD..K...........F..",
-    "PP.....PPP...PPP...X...X.............F..",
+    "PP.....PPP...PPP.....................F..",
     "PP....F......PPPP.......K.B.............",
     "PP....FF.....PPPP....CC...B..........AAA",
     "PP................K......U...........AAA",
@@ -519,7 +540,7 @@
     "AA.........F.......X..AXAA.PPPPP........",
     "AA...Q.....F....X.....AAAA......D.......",
     "AA.........FF.........AAAAU.....D....F..",
-    "AA.....FF.F....K.....................F..",
+    "AA.....FF.F..........................F..",
     "AA......................................",
     "........................................",
     "................BB......Q...............",

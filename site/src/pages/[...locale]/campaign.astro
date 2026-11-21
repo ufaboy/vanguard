@@ -44,6 +44,14 @@ const jsonLd = [
 >
   <h1 class="campaign-page-title" tabindex="-1">{t("Campaign: Road to the Capital")}</h1>
 
+  <div class="campaign-goal-banner" role="region" aria-label={t("OPERATION GOAL")}>
+    <div class="campaign-goal-main">
+      <span class="campaign-goal-badge">{t("OPERATION GOAL")}</span>
+      <p class="campaign-goal-text">{t("The Iron Consortium has seized experimental tank prototypes in Rome and is rushing them across Europe toward the port of Barcelona. Intercept the convoy, break every fortified depot along the Iron Road, and stop the freighter before it sails.")}</p>
+    </div>
+    <div class="campaign-goal-progress" data-campaign-progress>0 / 35</div>
+  </div>
+
   <nav class="campaign-nav" aria-label={t("Mission navigation")}>
     <button
       type="button"
@@ -128,17 +136,25 @@ const jsonLd = [
     <div class="campaign-recon-panel">
       <div class="campaign-recon-square is-missing-img">
         <img class="campaign-recon-img" src="./images/campaign/mission-01.webp" alt={t("Rome: Forum & Colosseum — Reconnaissance map")} />
+        <div class="campaign-recon-hud" aria-hidden="true">
+          <span class="recon-hud-corner is-tl"></span>
+          <span class="recon-hud-corner is-tr"></span>
+          <span class="recon-hud-corner is-bl"></span>
+          <span class="recon-hud-corner is-br"></span>
+          <svg class="recon-hud-reticle" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+            <path d="M20 38V20H38M82 20H100V38M100 82V100H82M38 100H20V82" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M60 10V28M60 92V110M10 60H28M92 60H110" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M44 60H53M67 60H76M60 44V53M60 67V76" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="60" cy="60" r="2" fill="currentColor"/>
+          </svg>
+          <div class="recon-hud-top">
+            <span class="recon-hud-pill" data-recon-sector>SEC-01</span>
+            <span class="recon-hud-pill"><span class="recon-live-dot"></span>RECON</span>
+          </div>
+        </div>
         <div class="campaign-recon-fallback" aria-hidden="true">
           <div class="recon-radar-rings"></div>
           <span class="recon-pending-label">{t("Recon imagery pending")}</span>
-        </div>
-        <div class="campaign-hq-marker" style="--hq-x:50%;--hq-y:50%;">
-          <div class="hq-marker-pulse" aria-hidden="true"></div>
-          <svg class="hq-marker-hex" viewBox="0 0 100 86.6" aria-hidden="true">
-            <polygon points="28,5.2 72,5.2 94,43.3 72,81.4 28,81.4 6,43.3" />
-          </svg>
-          <span class="hq-marker-num">01</span>
-          <span class="hq-marker-label">{t("HQ")}</span>
         </div>
         <div class="campaign-recon-classified">
           <span class="classified-stamp">{t("CLASSIFIED")}</span>
@@ -154,15 +170,27 @@ const jsonLd = [
       </div>
 
       <h2 class="campaign-brief-title">{t("Rome: Forum & Colosseum")}</h2>
-      <p class="campaign-brief-objective">{t("Clear the Consortium strike teams before they regroup")}</p>
+      <div class="campaign-brief-block">
+        <span class="campaign-brief-section-label">{t("MISSION OBJECTIVE")}</span>
+        <p class="campaign-brief-objective">{t("Clear the Consortium strike teams before they regroup")}</p>
+      </div>
 
       <div class="campaign-brief-details">
-        <p class="campaign-brief-text">{t("Consortium strike teams have occupied the Roman Forum and the Colosseum square. A howitzer covers the central avenue, so use the temple passages and brick breaches to flank their positions. Clear every hostile unit before they regroup.")}</p>
-        <p class="campaign-brief-layout">{t("Interlocking urban loops through the Roman Forum, a bent imperial avenue and the Colosseum square, with cross streets and three destructible breaches.")}</p>
-        <div class="campaign-roster-chips">
-          <span class="campaign-roster-chip">SCOUT ×5</span>
-          <span class="campaign-roster-chip">STANDARD ×14</span>
-          <span class="campaign-roster-chip">HOWITZER ×1</span>
+        <div class="campaign-brief-block">
+          <span class="campaign-brief-section-label">{t("SITUATION & WHY")}</span>
+          <p class="campaign-brief-text">{t("Consortium strike teams have occupied the Roman Forum and the Colosseum square. A howitzer covers the central avenue, so use the temple passages and brick breaches to flank their positions. Clear every hostile unit before they regroup.")}</p>
+        </div>
+        <div class="campaign-brief-block">
+          <span class="campaign-brief-section-label">{t("BATTLEFIELD INTEL")}</span>
+          <p class="campaign-brief-layout">{t("Interlocking urban loops through the Roman Forum, a bent imperial avenue and the Colosseum square, with cross streets and three destructible breaches.")}</p>
+        </div>
+        <div class="campaign-brief-block">
+          <span class="campaign-brief-section-label">{t("HOSTILE FORCES")}</span>
+          <div class="campaign-roster-chips">
+            <span class="campaign-roster-chip">SCOUT ×5</span>
+            <span class="campaign-roster-chip">STANDARD ×14</span>
+            <span class="campaign-roster-chip">HOWITZER ×1</span>
+          </div>
         </div>
       </div>
 
@@ -190,36 +218,36 @@ const jsonLd = [
   <Fragment slot="after">
     <section class="menu-content page-briefing" aria-labelledby="campaign-regions-title">
       <h2 id="campaign-regions-title">{t("Campaign regions")}</h2>
-      <p class="menu-lead">{t("Road to the Capital spans 35 missions across seven regions on 40×40 destructible arenas. Clear each sector to unlock the next, earn credits for Garage upgrades, and push toward the Capital Citadel.")}</p>
+      <p class="menu-lead">{t("The Iron Road spans 38 missions across seven European regions on 40×40 destructible arenas. Pursue the Iron Consortium convoy from Rome to Barcelona, earn credits for Garage upgrades, and defeat four Sector Bosses.")}</p>
 
       <div class="menu-grid campaign-regions-grid">
         <article class="menu-card">
-          <strong>{t("1. City Outskirts")}</strong>
-          <p>{t("Opening urban sectors: dense avenues, excavated ruins, and cross-street flanks leading out of the metro perimeter.")}</p>
+          <strong>{t("1. Italy (Missions 1–5)")}</strong>
+          <p>{t("Rome, Apennine Gorge, Milan, Lake Garda, and the Dolomites: urban ruins, mountain passes, and lakeside flanks.")}</p>
         </article>
         <article class="menu-card">
-          <strong>{t("2. Forest Frontier")}</strong>
-          <p>{t("Woodland roads, timber yards, and concealed canopy lanes where electronic jamming and minefields enter the fight.")}</p>
+          <strong>{t("2. Alps (Missions 6–10)")}</strong>
+          <p>{t("Neuschwanstein, Innsbruck, Hohensalzburg, Wachau, and Vienna: alpine castles, rail tunnels, and Danube river crossings.")}</p>
         </article>
         <article class="menu-card">
-          <strong>{t("3. Desert Crossing")}</strong>
-          <p>{t("Open caravan highways, canyon switchbacks, and oasis defenses ending at the first Sector Boss stronghold.")}</p>
+          <strong>{t("3. Bohemia & Saxony (Missions 11–15)")}</strong>
+          <p>{t("Moravian Karst, Konopiště, Prague, Bohemian Forest, and Dresden: karst ravines and Elbe crossings guarded by Mammoth.")}</p>
         </article>
         <article class="menu-card">
-          <strong>{t("4. Coastal Wetlands")}</strong>
-          <p>{t("Flooded causeways, dockyards, and amphibious hovercraft flanks culminating in a coastal rocket-artillery cruiser.")}</p>
+          <strong>{t("4. Germany (Missions 16–21)")}</strong>
+          <p>{t("Berlin, East Berlin rail yards, Harz Mountains, Remagen, and the Ruhr steelworks defended by Cerberus-T.")}</p>
         </article>
         <article class="menu-card">
-          <strong>{t("5. Frozen Highlands")}</strong>
-          <p>{t("Low-traction ice passes and alpine relays guarded by long-range artillery and a thermobaric siege leviathan.")}</p>
+          <strong>{t("5. Low Countries (Missions 22–26)")}</strong>
+          <p>{t("Amsterdam, Rotterdam, Brussels, Antwerp, and the Scheldt Delta: canal rings, ports, and storm-surge dams held by Hydra.")}</p>
         </article>
         <article class="menu-card">
-          <strong>{t("6. Industrial Belt")}</strong>
-          <p>{t("Heavy foundries, rail freight spines, and steelworks defended by repair engineers and reinforced staging lines.")}</p>
+          <strong>{t("6. France (Missions 27–32)")}</strong>
+          <p>{t("Paris, Versailles, Lyon, Mont Blanc, Provence, and Nice: grand boulevards, glaciers, and a Mammoth rematch on the Riviera.")}</p>
         </article>
         <article class="menu-card">
-          <strong>{t("7. Capital City")}</strong>
-          <p>{t("Fortified boulevards and concentric citadel rings leading to the All-Boss Escalation finale.")}</p>
+          <strong>{t("7. Pyrenees & Catalonia (Missions 33–38)")}</strong>
+          <p>{t("Andorra, Bardenas Reales, Montserrat, and Barcelona: Pyrenean passes leading to the Port All-Boss Escalation and Titan.")}</p>
         </article>
       </div>
 

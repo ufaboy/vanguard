@@ -2,7 +2,8 @@
  * Landmark catalog and 3D model loader (Paris monuments for Survival S-01
  * "Paris: Last Stand", Berlin monuments for campaign mission 02 "Brandenburg Gate",
  * Versailles palace and fountains for campaign mission 03 "Versailles", Brussels
- * monuments for campaign mission 04 "Brussels").
+ * monuments for campaign mission 04 "Brussels", Hofburg, Burgtor and Heldenplatz for
+ * campaign mission 10 "Vienna: Hofburg").
  *
  * Footprints: 1 cell = 2 world units, +X east, +Z south, model origin at the
  * footprint centre on the ground. Blocked cells become TileType.LANDMARK
@@ -17,6 +18,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { autoDisposeOwned, disposeOwned, markOwned } from '../render/dispose.js';
+import { VIENNA_GEOMETRY_KINDS, createViennaLandmarkGeometry } from './vienna-landmarks.js';
 
 const ALL = (cols, rows) => {
   const cells = [];
@@ -76,6 +78,11 @@ const LANDMARK_SPECS = Object.freeze({
   FORUM_COLUMNS: Object.freeze({ cols: 3, rows: 1, blocked: ALL(3, 1), height: 5.1, pack: 'rome' }),
   HOFBURG_PALACE: Object.freeze({ cols: 6, rows: 2, blocked: ALL(6, 2), height: 6.92, pack: 'vienna' }),
   ST_STEPHENS_CATHEDRAL: Object.freeze({ cols: 4, rows: 2, blocked: ALL(4, 2), height: 12.0, pack: 'vienna' }),
+  // Hofburg Michaelertrakt, front facing north; both wings block, cell 3 is the open dome gate.
+  MICHAELERTRAKT: Object.freeze({ cols: 7, rows: 2, blocked: COLUMNS([0, 1, 2, 4, 5, 6], 2), height: 9.9, pack: 'vienna' }),
+  // Outer castle gate: piers (cells 0, 2, 4, 6) block, cells 1, 3, 5 are north-south passages.
+  BURGTOR: Object.freeze({ cols: 7, rows: 2, blocked: COLUMNS([0, 2, 4, 6], 2), height: 6.9, pack: 'vienna' }),
+  HELDENPLATZ_STATUE: Object.freeze({ cols: 1, rows: 1, blocked: [[0, 0]], height: 3.9, pack: 'vienna' }),
   AMSTERDAM_CANAL_HOUSES: Object.freeze({ cols: 4, rows: 2, blocked: ALL(4, 2), height: 5.94, pack: 'amsterdam' }),
   WESTERKERK: Object.freeze({ cols: 3, rows: 2, blocked: ALL(3, 2), height: 11.36, pack: 'amsterdam' }),
   SAGRADA_FAMILIA: Object.freeze({ cols: 4, rows: 4, blocked: ALL(4, 4), height: 13.0, pack: 'barcelona' }),
@@ -99,6 +106,12 @@ const LANDMARK_SPECS = Object.freeze({
 
 const packOf = (kind) => LANDMARK_SPECS[kind]?.pack || 'paris';
 
+/** Single vertex-coloured fallback mesh shared with the kind's Blender build, or null. */
+const proceduralGeometryOf = (kind) => {
+  if (packOf(kind) === 'rome') return createRomeLandmarkGeometry;
+  return VIENNA_GEOMETRY_KINDS.includes(kind) ? createViennaLandmarkGeometry : null;
+};
+
 /** Kinds that may be authored in a map's `landmarks3d` list. */
 export const PLACEABLE_LANDMARKS = Object.freeze([
   'EIFFEL_TOWER',
@@ -121,6 +134,9 @@ export const PLACEABLE_LANDMARKS = Object.freeze([
   'FORUM_COLUMNS',
   'HOFBURG_PALACE',
   'ST_STEPHENS_CATHEDRAL',
+  'MICHAELERTRAKT',
+  'BURGTOR',
+  'HELDENPLATZ_STATUE',
   'AMSTERDAM_CANAL_HOUSES',
   'WESTERKERK',
   'SAGRADA_FAMILIA',
@@ -373,7 +389,7 @@ export class LandmarkModels {
     if (!spec) throw new Error(`Unknown landmark kind: ${kind}`);
     const group = new THREE.Group();
     group.userData.landmarkKind = kind;
-    if (packOf(kind) === 'rome') autoDisposeOwned(group);
+    if (proceduralGeometryOf(kind)) autoDisposeOwned(group);
     if (!this.populateFromTemplate(group, kind)) {
       this.populateFallback(group, kind);
       this.liveGroups.add(group);
@@ -583,10 +599,11 @@ export class LandmarkModels {
 
   populateFallback(group, kind) {
     group.clear();
-    if (packOf(kind) === 'rome') {
+    const buildGeometry = proceduralGeometryOf(kind);
+    if (buildGeometry) {
       const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.86 });
       applyLandmarkFinish(material);
-      const mesh = new THREE.Mesh(createRomeLandmarkGeometry(kind), material);
+      const mesh = new THREE.Mesh(buildGeometry(kind), material);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       group.add(markOwned(mesh));

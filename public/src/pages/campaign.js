@@ -135,7 +135,7 @@ function renderNavTrack(completed, currentChapterIdx, expandedRegions, selectedI
           data-action="toggle-campaign-region"
           data-region="${ch.id}"
           aria-expanded="false"
-        >✓ ${escapeHtml(t(ch.name))}</button>
+        ><span>✓ ${escapeHtml(t(ch.name))}</span><span class="region-chip-count">${ch.missions.length}/${ch.missions.length}</span><span class="region-toggle-chevron" aria-hidden="true">▸</span></button>
       `);
       continue;
     }
@@ -165,7 +165,7 @@ function renderNavTrack(completed, currentChapterIdx, expandedRegions, selectedI
       .join('');
 
     const regionHeader = isCompletedChapter
-      ? `<button type="button" class="campaign-region-label is-collapsible" style="--region-accent:${ch.color};" data-action="toggle-campaign-region" data-region="${ch.id}" aria-expanded="true">✓ ${escapeHtml(t(ch.name))}</button>`
+      ? `<button type="button" class="campaign-region-label is-collapsible" style="--region-accent:${ch.color};" data-action="toggle-campaign-region" data-region="${ch.id}" aria-expanded="true"><span>✓ ${escapeHtml(t(ch.name))}</span><span class="region-toggle-chevron" aria-hidden="true">▾</span></button>`
       : `<span class="campaign-region-label" style="--region-accent:${ch.color};">${escapeHtml(t(ch.name))}</span>`;
 
     parts.push(`
@@ -204,6 +204,12 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
     track.innerHTML = renderNavTrack(completedMissions, currentChapterIdx, expandedRegions, selectedId);
   }
 
+  const progressEl = document.querySelector('[data-campaign-progress]');
+  if (progressEl) {
+    const doneCount = CAMPAIGN_MISSIONS.filter((m) => Boolean(completedMissions[m.id])).length;
+    progressEl.textContent = `${doneCount} / ${CAMPAIGN_MISSIONS.length}`;
+  }
+
   const selIdx = visible.findIndex((m) => m.id === selectedId);
   const prevBtn = document.querySelector('[data-action="prev-campaign-mission"]');
   const nextBtn = document.querySelector('[data-action="next-campaign-mission"]');
@@ -221,7 +227,6 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
 
   const reconSquare = document.querySelector('.campaign-recon-square');
   const reconImg = document.querySelector('.campaign-recon-img');
-  const hqMarker = document.querySelector('.campaign-hq-marker');
   const classifiedSub = document.querySelector('.campaign-classified-sub');
 
   if (reconSquare) {
@@ -236,6 +241,8 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
       const imgPrefix = /^\/(es|pt-br|de|fr)(\/|$)/i.test(location.pathname) ? '../' : './';
       const numStr = String(selected.number).padStart(2, '0');
       const targetSrc = `${imgPrefix}images/campaign/mission-${numStr}.webp`;
+      const reconSectorTag = reconSquare.querySelector('[data-recon-sector]');
+      if (reconSectorTag) reconSectorTag.textContent = `SEC-${numStr}`;
       if (reconImg) {
         reconSquare.classList.add('is-missing-img');
         reconImg.onload = () => {
@@ -249,14 +256,6 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
         if (reconImg.complete && reconImg.naturalWidth > 0) {
           reconSquare.classList.remove('is-missing-img');
         }
-      }
-      if (hqMarker) {
-        const x = selected.hqMarker?.x ?? 50;
-        const y = selected.hqMarker?.y ?? 50;
-        hqMarker.style.setProperty('--hq-x', `${x}%`);
-        hqMarker.style.setProperty('--hq-y', `${y}%`);
-        const numEl = hqMarker.querySelector('.hq-marker-num');
-        if (numEl) numEl.textContent = numStr;
       }
     }
   }

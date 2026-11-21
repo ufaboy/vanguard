@@ -69,7 +69,7 @@ Nothing except a bridge stands on water, swamp, ice or oil (barrels may stand on
 - Versailles: `VERSAILLES_PALACE` (16×3, fully blocked, garden front facing north), `LATONA_FOUNTAIN` and `APOLLO_FOUNTAIN` (2×2, fully blocked).
 - Brussels: `CINQUANTENAIRE_ARCH` (11×2; colonnade cells 0-1 and 9-10 and piers 2, 4, 6, 8 block, cells 3, 5, 7 are drivable arches running north-south), `ATOMIUM` (3×3, fully blocked), `BRUSSELS_TOWN_HALL` (6×2, fully blocked, front facing north) and `MANNEKEN_PIS` (1×1, blocked).
 - Rome: `COLOSSEUM` (10×8, ring with north-south axial passage), `ARCH_OF_CONSTANTINE` (7×2; 3 drivable passages), `FORUM_COLUMNS` (3×1, fully blocked).
-- Vienna: `HOFBURG_PALACE` (6×2, fully blocked), `ST_STEPHENS_CATHEDRAL` (4×2, fully blocked).
+- Vienna: `HOFBURG_PALACE` (6×2, fully blocked), `ST_STEPHENS_CATHEDRAL` (4×2, fully blocked), `MICHAELERTRAKT` (7×2, front facing north; wing cells 0-2 and 4-6 block, cell 3 is the drivable dome gate running north-south), `BURGTOR` (7×2; piers 0, 2, 4, 6 block, cells 1, 3, 5 are drivable passages running north-south) and `HELDENPLATZ_STATUE` (1×1, blocked equestrian statue).
 - Amsterdam: `AMSTERDAM_CANAL_HOUSES` (4×2, fully blocked), `WESTERKERK` (3×2, fully blocked).
 - Barcelona: `SAGRADA_FAMILIA` (4×4, fully blocked), `BARCELONA_CATHEDRAL` (3×2, fully blocked), `MONTJUIC_CASTLE` (5×3, fully blocked), `COLUMBUS_MONUMENT` (2×2, fully blocked), `W_HOTEL_BARCELONA` (3×2, fully blocked).
 - Alps & Pyrenees: `NEUSCHWANSTEIN` (5×3, fully blocked), `HOHENSALZBURG` (5×3, fully blocked), `MONTSERRAT_MONASTERY` (5×2, fully blocked).
