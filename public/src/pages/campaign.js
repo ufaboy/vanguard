@@ -4,6 +4,11 @@ import { attachSettingsModal } from '../app/shell.js';
 import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
 import { loadPlayerSave } from '../app/state.js';
 import { CAMPAIGN_CHAPTERS, CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from '../game/campaign.js';
+import {
+  getCampaignMissionAssets,
+  getCoreAssets,
+  preloadBattlefieldAssets,
+} from '../app/asset-preloader.js';
 
 const NAV_ICONS = Object.freeze({
   completed:
@@ -328,13 +333,22 @@ if (root) {
     },
   });
 
+  const preloadMissionAssets = (missionId) => {
+    const mission = CAMPAIGN_MISSIONS.find((m) => m.id === missionId);
+    if (!mission || getMissionStatus(mission, completedMissions) === 'locked') return;
+    preloadBattlefieldAssets(getCampaignMissionAssets(mission));
+  };
+
   selectedMissionId = syncCampaignPage(completedMissions, selectedMissionId, expandedRegions);
   syncMissionUrl(selectedMissionId);
+  preloadBattlefieldAssets(getCoreAssets({ includeTerrain: true }));
+  preloadMissionAssets(selectedMissionId);
 
   const selectMission = (missionId) => {
     if (!missionId || !visibleMissions.some((m) => m.id === missionId)) return;
     selectedMissionId = syncCampaignPage(completedMissions, missionId, expandedRegions);
     syncMissionUrl(selectedMissionId);
+    preloadMissionAssets(selectedMissionId);
   };
 
   const stepMission = (delta) => {

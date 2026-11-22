@@ -2,6 +2,11 @@ import { battlefieldUrl } from '../app/routes.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { loadPlayerSave } from '../app/state.js';
 import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
+import {
+  getContractAssets,
+  getCoreAssets,
+  preloadBattlefieldAssets,
+} from '../app/asset-preloader.js';
 
 const root = document.getElementById('root');
 const playerSave = loadPlayerSave();
@@ -17,8 +22,15 @@ if (root) {
     },
   });
 
+  preloadBattlefieldAssets(getCoreAssets({ includeTerrain: true }));
+
   document.querySelectorAll('.contract-banner[data-contract-card]').forEach((card) => {
     const id = card.getAttribute('data-contract-card');
+    if (id) {
+      const warmContract = () => preloadBattlefieldAssets(getContractAssets(id));
+      card.addEventListener('pointerenter', warmContract, { once: true });
+      card.addEventListener('focusin', warmContract, { once: true });
+    }
     if (id && completedMissions[id]) {
       const tag = card.querySelector('.contract-status-tag');
       if (tag) {

@@ -1,8 +1,13 @@
 import { SURVIVAL_MAP_ID, battlefieldUrl } from '../app/routes.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { loadPlayerSave } from '../app/state.js';
-import { createDefaultSurvivalRecords } from '../sim/survival.js';
+import { buildSurvivalWaveSpec, createDefaultSurvivalRecords } from '../sim/survival.js';
 import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
+import {
+  getCoreAssets,
+  getSurvivalAssets,
+  preloadBattlefieldAssets,
+} from '../app/asset-preloader.js';
 
 function formatSurvivalTime(totalSec = 0) {
   const sec = Math.max(0, Math.floor(totalSec));
@@ -35,6 +40,16 @@ if (root) {
       pill.textContent = `BEST: WAVE ${rec.bestWave}  ·  ${rec.bestKills} KILLS  ·  ${formatSurvivalTime(rec.bestTimeSec)}${winsPart}`;
     }
   }
+
+  const wave1 = buildSurvivalWaveSpec(1);
+  const wave1Classes = [
+    ...(wave1.roster || []),
+    ...(wave1.bossClass ? [wave1.bossClass] : []),
+  ];
+  preloadBattlefieldAssets([
+    ...getCoreAssets({ includeTerrain: true }),
+    ...getSurvivalAssets(wave1Classes),
+  ]);
 
   root.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-action="start-survival"]');
