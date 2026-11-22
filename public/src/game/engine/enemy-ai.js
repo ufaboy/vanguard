@@ -107,7 +107,7 @@ export class EnemyAiController {
     if (engine.isPointRevealedByReconDrone?.(enemy.x, enemy.z)) return true;
     if (this.isPointRevealedByPlayerBase(enemy.x, enemy.z)) return true;
     const dist = Math.hypot(enemy.x - engine.playerX, enemy.z - engine.playerZ);
-    if (dist <= 2 * TILE_SIZE) return true;
+    if (dist <= ENEMY_VISIBILITY.PLAYER_PROXIMITY_RADIUS_CELLS * TILE_SIZE) return true;
     if (!this.hasLineOfSight(engine.playerX, engine.playerZ, enemy.x, enemy.z)) return false;
     if (dist <= ENEMY_VISIBILITY.FOREST_SIGHT_RADIUS) return true;
     const eCell = engine.worldToGrid?.(enemy.x, enemy.z);

@@ -9,6 +9,7 @@ export const AIRCRAFT_CONFIGS = Object.freeze({
     altitude: 20,
     flybySec: 3.6,
     leadFactor: 0.45,
+    reconRadiusCells: 20,
   }),
   AC130_SPOOKY: Object.freeze({
     id: 'AC130_SPOOKY',
@@ -23,5 +24,6 @@ export const AIRCRAFT_CONFIGS = Object.freeze({
     durationSec: 15.0,
     fireIntervalSec: 0.7,
     weaponId: 'CANNON_Mk2',
+    reconRadiusCells: 20,
   }),
 });

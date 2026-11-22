@@ -69,10 +69,10 @@ test('hasPlayerLineOfSight respects obstacles, forest range, and recon drone rev
   };
   const ai = new EnemyAiController(engine);
 
-  // Within 2 cells (4m) of player -> full visibility without penalties even behind concrete
+  // Within 5 cells (10m) of player -> full visibility without penalties even behind concrete
   grid[20][21].type = TileType.CONCRETE;
-  assert.equal(ai.hasPlayerLineOfSight({ x: 1 + 2 * TILE_SIZE, z: 1 }), true);
-  // Behind concrete beyond 2 cells -> blocked
+  assert.equal(ai.hasPlayerLineOfSight({ x: 1 + 5 * TILE_SIZE, z: 1 }), true);
+  // Behind concrete beyond 5 cells -> blocked
   assert.equal(ai.hasPlayerLineOfSight({ x: 15, z: 1 }), false);
   // Behind water tower -> visible
   assert.equal(ai.hasPlayerLineOfSight({ x: -13, z: 1 }), true);
@@ -206,4 +206,23 @@ test('updateEnemies still reveals EMP-stunned enemies spotted by RECON_DRONE', (
   ai.updateEnemies(0.5, 1.5);
   assert.equal(enemy.rig.root.visible, true);
   assert.ok(enemy.visibilityOpacity > 0.5, `expected enemy to fade in, got ${enemy.visibilityOpacity}`);
+});
+
+test('STRATEGIC_BOMBER and AC130_SPOOKY reveal enemies within 20 cells of their current position', () => {
+  const engine = {
+    airSupportMissions: [
+      { kind: 'BOMBER_FLYBY', x: 10, z: -10 },
+      { kind: 'AC130', x: 0, z: 0, gunshipX: -20, gunshipZ: 16 },
+    ],
+  };
+  const air = new AirSupportController(engine);
+  const r20 = 20 * TILE_SIZE;
+
+  // Within 20 cells of STRATEGIC_BOMBER (10, -10)
+  assert.equal(air.isPointRevealedByReconDrone(10 + r20 - 1, -10), true);
+  assert.equal(air.isPointRevealedByReconDrone(10 + r20 + 2, -10), false);
+
+  // Within 20 cells of AC130_SPOOKY live gunship position (-20, 16)
+  assert.equal(air.isPointRevealedByReconDrone(-20, 16 + r20 - 1), true);
+  assert.equal(air.isPointRevealedByReconDrone(-20, 16 + r20 + 2), false);
 });

@@ -445,9 +445,22 @@ export class AirSupportController {
     const missions = this.engine.airSupportMissions;
     if (!missions || missions.length === 0) return false;
     for (const m of missions) {
-      if (m.kind !== 'RECON_DRONE' || m.phase !== 'orbit') continue;
-      if (Math.hypot(x - m.targetX, z - m.targetZ) <= m.revealRadius) {
-        return true;
+      if (m.kind === 'RECON_DRONE') {
+        if (m.phase === 'orbit' && Math.hypot(x - m.targetX, z - m.targetZ) <= m.revealRadius) {
+          return true;
+        }
+      } else if (m.kind === 'BOMBER_FLYBY') {
+        const r = (AIRCRAFT_CONFIGS.STRATEGIC_BOMBER.reconRadiusCells ?? 0) * TILE_SIZE;
+        if (r > 0 && Math.hypot(x - m.x, z - m.z) <= r) {
+          return true;
+        }
+      } else if (m.kind === 'AC130') {
+        const r = (AIRCRAFT_CONFIGS.AC130_SPOOKY.reconRadiusCells ?? 0) * TILE_SIZE;
+        const ax = m.gunshipX ?? m.x;
+        const az = m.gunshipZ ?? m.z;
+        if (r > 0 && Math.hypot(x - ax, z - az) <= r) {
+          return true;
+        }
       }
     }
     return false;

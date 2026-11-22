@@ -152,6 +152,7 @@ export const ENEMY_VISIBILITY = Object.freeze({
   ALERT_PURSUIT_DURATION_SEC: 8.5, // Time enemies stay in active alert pursuit before resuming patrol
   ALERT_ARRIVAL_RADIUS: 4.0, // Distance to destination at which an alerted enemy considers alert reached
   HQ_RECON_RADIUS_CELLS: 15, // Recon perimeter radius around living player HQ in grid cells
+  PLAYER_PROXIMITY_RADIUS_CELLS: 5, // Full visibility radius around the player tank in grid cells
 });
 
 const ARMOR_ASPECTS = Object.freeze(['front', 'left', 'right', 'rear']);
