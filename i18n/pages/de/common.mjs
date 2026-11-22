@@ -215,4 +215,11 @@ export default {
   "How to Play": "Spielanleitung",
   "Enemy Tanks &amp; Boss Fights — BATTLE TANK": "Feindpanzer &amp; Bosskämpfe — BATTLE TANK",
   "Field guide to all 12 enemy classes and 4 Sector Bosses in BATTLE TANK.": "Feldhandbuch zu allen 12 Feindklassen und 4 Sektor-Bossen in BATTLE TANK.",
+  "38 Missions · 4 Bosses": "38 Missionen · 4 Bosse",
+  "Conquer 38 Campaign missions across 7 regions, hold out in Endless Survival waves, or run Blackout Protocol and Last Cargo raids.": "Erobere 38 Kampagnenmissionen in 7 Regionen, halte endlose Überlebenswellen aus oder starte Blackout-Protocol- und Last-Cargo-Einsätze.",
+  "The Campaign has 38 missions across 7 regions with 4 Sector Bosses. Survival throws endless enemy waves at you, and Contracts are special operations such as Blackout Protocol and Last Cargo.": "Die Kampagne umfasst 38 Missionen in 7 Regionen mit 4 Sektor-Bossen. Survival schickt endlose Gegnerwellen, und Aufträge sind Spezialoperationen wie Blackout Protocol und Last Cargo.",
+  "has 38 missions across 7 regions with 4 Sector Bosses.": "umfasst 38 Missionen in 7 Regionen mit 4 Sektor-Bossen.",
+  "Free 3D isometric tactical tank game for the web browser, inspired by the classic Battle City, with 38 campaign missions, Command Base defense, destructible 40x40 arenas, 5-tier modular tank upgrades, directional armor, 4-Corner APS, homing ATGM missiles, 12 enemy classes and 4 Sector Bosses.": "Kostenloses isometrisches 3D-Taktik-Panzerspiel für den Webbrowser, inspiriert vom Klassiker Battle City, mit 38 Kampagnenmissionen, Hauptquartier-Verteidigung, zerstörbaren 40x40-Arenen, 5-stufigen modularen Panzer-Upgrades, direktionaler Panzerung, 4-Ecken-APS, zielsuchenden ATGM-Raketen, 12 Gegnerklassen und 4 Sektor-Bossen.",
+  "38-mission Road to the Capital Campaign across 7 tactical regions": "38-Missionen-Kampagne Weg zur Hauptstadt durch 7 taktische Regionen",
+  "Free online tank game in your browser, no download or sign-up: 3D tactical tank battles inspired by Battle City, with 38 missions and destructible maps.": "Kostenloses Online-Panzerspiel im Browser, ohne Download und Anmeldung: taktische 3D-Panzerschlachten inspiriert von Battle City, mit 38 Missionen und zerstörbaren Karten.",
 };

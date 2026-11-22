@@ -215,4 +215,11 @@ export default {
   "How to Play": "Comment jouer",
   "Enemy Tanks &amp; Boss Fights — BATTLE TANK": "Chars Ennemis &amp; Combats de Boss — BATTLE TANK",
   "Field guide to all 12 enemy classes and 4 Sector Bosses in BATTLE TANK.": "Guide de terrain des 12 classes ennemies et 4 Boss de Secteur dans BATTLE TANK.",
+  "38 Missions · 4 Bosses": "38 missions · 4 boss",
+  "Conquer 38 Campaign missions across 7 regions, hold out in Endless Survival waves, or run Blackout Protocol and Last Cargo raids.": "Conquérez 38 missions de campagne dans 7 régions, tenez face aux vagues sans fin en Survie ou lancez les raids Blackout Protocol et Last Cargo.",
+  "The Campaign has 38 missions across 7 regions with 4 Sector Bosses. Survival throws endless enemy waves at you, and Contracts are special operations such as Blackout Protocol and Last Cargo.": "La Campagne compte 38 missions dans 7 régions avec 4 Boss de secteur. Survie enchaîne des vagues infinies d'ennemis et les Contrats sont des opérations spéciales comme Blackout Protocol et Last Cargo.",
+  "has 38 missions across 7 regions with 4 Sector Bosses.": "compte 38 missions dans 7 régions avec 4 Boss de secteur.",
+  "Free 3D isometric tactical tank game for the web browser, inspired by the classic Battle City, with 38 campaign missions, Command Base defense, destructible 40x40 arenas, 5-tier modular tank upgrades, directional armor, 4-Corner APS, homing ATGM missiles, 12 enemy classes and 4 Sector Bosses.": "Jeu de chars tactique 3D isométrique gratuit sur navigateur, inspiré du classique Battle City, avec 38 missions de campagne, défense de QG, arènes destructibles 40x40, améliorations modulaires sur 5 niveaux, blindage directionnel, APS 4 angles, missiles ATGM guidés, 12 classes d'ennemis et 4 Boss de secteur.",
+  "38-mission Road to the Capital Campaign across 7 tactical regions": "Campagne Route vers la Capitale de 38 missions dans 7 régions tactiques",
+  "Free online tank game in your browser, no download or sign-up: 3D tactical tank battles inspired by Battle City, with 38 missions and destructible maps.": "Jeu de chars en ligne gratuit dans votre navigateur, sans téléchargement ni inscription : batailles de chars tactiques 3D inspirées de Battle City, avec 38 missions et cartes destructibles.",
 };

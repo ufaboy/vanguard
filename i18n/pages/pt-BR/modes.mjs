@@ -323,5 +323,8 @@ export default {
   "Andorra, Bardenas Reales, Montserrat, and Barcelona: Pyrenean passes leading to the Port All-Boss Escalation and Titan.": "Andorra, Bardenas Reales, Montserrat e Barcelona: passos pirenaicos até a Escalada de Chefes e Titan no porto.",
   "Italy": "Itália",
   "Next: Alps · 2/7": "Próxima: Alpes · 2/7",
-  "SECTOR 01 // 38 · ITALY": "SETOR 01 // 38 · ITÁLIA"
+  "SECTOR 01 // 38 · ITALY": "SETOR 01 // 38 · ITÁLIA",
+  "Play a 38-mission 3D tank campaign in your browser, no download. Advance sector by sector through seven regions, inspect recon maps, and defeat four Sector Bosses.": "Jogue uma campanha de tanques 3D com 38 missões no navegador, sem download. Avance setor por setor por sete regiões, analise mapas de reconhecimento e derrote quatro Chefes de Setor.",
+  "38 tactical 3D tank missions across seven regions on the Road to the Capital. Free in your browser.": "38 missões táticas de tanques 3D em sete regiões no Caminho para a Capital. Grátis no seu navegador.",
+  "38 tactical 3D tank missions across seven regions in a free Battle City-style browser game.": "38 missões táticas de tanques 3D em sete regiões em um jogo gratuito de navegador estilo Battle City.",
 };
