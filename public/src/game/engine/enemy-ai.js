@@ -936,9 +936,8 @@ export class EnemyAiController {
         if (e.rig.root) e.rig.root.visible = currentOpacity > 0.015;
         if (e.rig.shadowMesh) e.rig.shadowMesh.visible = currentOpacity > 0.15;
         if (e.rig.hpBarBg && e.rig.hpBarFill) {
-          const showHp = engine.aiDebugMode || (revealed && currentOpacity > 0.2);
-          e.rig.hpBarBg.visible = showHp;
-          e.rig.hpBarFill.visible = showHp;
+          e.rig.hpBarBg.visible = engine.aiDebugMode;
+          e.rig.hpBarFill.visible = engine.aiDebugMode;
         }
       } else if (e.rig?.fadeMaterials?.length) {
         const visibleToPlayer = !engine.hardMode || this.hasPlayerLineOfSight(e);
@@ -959,9 +958,8 @@ export class EnemyAiController {
         if (e.rig.root) e.rig.root.visible = nextOpacity > 0.015;
         if (e.rig.shadowMesh) e.rig.shadowMesh.visible = nextOpacity > 0.15;
         if (e.rig.hpBarBg && e.rig.hpBarFill) {
-          const showHp = engine.aiDebugMode || (visibleToPlayer && nextOpacity > 0.25);
-          e.rig.hpBarBg.visible = showHp;
-          e.rig.hpBarFill.visible = showHp;
+          e.rig.hpBarBg.visible = engine.aiDebugMode;
+          e.rig.hpBarFill.visible = engine.aiDebugMode;
         }
       }
 
