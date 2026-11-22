@@ -401,7 +401,7 @@ export class ExplosionsController {
       sound.playExplosion(1.4, { x, z });
     }
     engine.screenShake = Math.max(engine.screenShake, 0.55);
-    engine.fx.explosion(x, 0.55, z, {
+    engine.fx?.explosion?.(x, 0.55, z, {
       scale: THREE.MathUtils.clamp(radius / 2.4, 0.75, 1.6),
     });
 
@@ -415,8 +415,8 @@ export class ExplosionsController {
     const maxCol = Math.min(GRID_SIZE - 1, maxG.col + 1);
     for (let r = minRow; r <= maxRow; r++) {
       for (let c = minCol; c <= maxCol; c++) {
-        const cell = engine.grid[r][c];
-        if (cell.type === TileType.EMPTY) continue;
+        const cell = engine.grid[r]?.[c];
+        if (!cell || cell.type === TileType.EMPTY) continue;
         const pos = engine.gridToWorld(r, c);
         if (Math.hypot(pos.x - x, pos.z - z) <= searchSpan) {
           if (cell.type === TileType.BOXES) {

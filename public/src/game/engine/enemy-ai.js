@@ -854,6 +854,66 @@ export class EnemyAiController {
     return goals;
   }
 
+  /**
+   * Synchronizes an enemy tank's visual opacity, mesh visibility, and debug HP bar
+   * with line-of-sight, HQ perimeter, and recon drone reveal state.
+   */
+  syncEnemyVisibility(e, dt, distToPlayer) {
+    const engine = this.engine;
+    if (e.enemyClass === EnemyClass.STEALTH && e.rig.stealthMaterials) {
+      const spottedByDrone = Boolean(engine.isPointRevealedByReconDrone?.(e.x, e.z));
+      const spottedByHq = this.isPointRevealedByPlayerBase(e.x, e.z);
+      const hasLos = !engine.hardMode || this.hasPlayerLineOfSight(e);
+      const revealed = spottedByDrone || spottedByHq || (hasLos && (distToPlayer < 6.2 || e.stealthRevealTimer > 0));
+      const moving = Math.hypot(e.targetDirX, e.targetDirZ) > 0.05;
+      const targetOpacity = !hasLos && !spottedByDrone && !spottedByHq ? 0.0 : revealed ? 0.96 : moving ? 0.3 : 0.12;
+      let currentOpacity = 0;
+      for (const mat of e.rig.stealthMaterials) {
+        mat.opacity = THREE.MathUtils.damp(mat.opacity, targetOpacity, 8, dt);
+        currentOpacity = mat.opacity;
+      }
+      if (e.rig.root) e.rig.root.visible = currentOpacity > 0.015;
+      if (e.rig.shadowMesh) e.rig.shadowMesh.visible = currentOpacity > 0.15;
+      if (e.rig.hpBarBg && e.rig.hpBarFill) {
+        e.rig.hpBarBg.visible = engine.aiDebugMode;
+        e.rig.hpBarFill.visible = engine.aiDebugMode;
+      }
+    } else if (e.rig?.fadeMaterials?.length) {
+      const visibleToPlayer = !engine.hardMode || this.hasPlayerLineOfSight(e);
+      const targetOpacity = visibleToPlayer ? 1.0 : 0.0;
+      const prevOpacity = e.visibilityOpacity ?? 1.0;
+      const nextOpacity = engine.hardMode
+        ? THREE.MathUtils.damp(prevOpacity, targetOpacity, 8, dt)
+        : 1.0;
+      e.visibilityOpacity = nextOpacity;
+      const lastApplied = e._lastAppliedOpacity ?? 1.0;
+      const needsMatUpdate =
+        Math.abs(lastApplied - nextOpacity) > 0.004 ||
+        (engine.hardMode && !e._hardModeFadeInit && nextOpacity < 0.99);
+      if (needsMatUpdate) {
+        e._lastAppliedOpacity = nextOpacity;
+        const enableTransparent = engine.hardMode && (e._hardModeFadeInit || nextOpacity < 0.99);
+        if (enableTransparent) e._hardModeFadeInit = true;
+        for (const mat of e.rig.fadeMaterials) {
+          mat.opacity = nextOpacity;
+          if (enableTransparent && !mat.transparent) {
+            mat.transparent = true;
+            mat.needsUpdate = true;
+          } else if (!engine.hardMode && mat.transparent) {
+            mat.transparent = false;
+            mat.needsUpdate = true;
+          }
+        }
+      }
+      if (e.rig.root) e.rig.root.visible = nextOpacity > 0.015;
+      if (e.rig.shadowMesh) e.rig.shadowMesh.visible = nextOpacity > 0.15;
+      if (e.rig.hpBarBg && e.rig.hpBarFill) {
+        e.rig.hpBarBg.visible = engine.aiDebugMode;
+        e.rig.hpBarFill.visible = engine.aiDebugMode;
+      }
+    }
+  }
+
   updateEnemies(dt, elapsed) {
     const engine = this.engine;
     const empStunned = engine.empTimer > 0;
@@ -874,6 +934,9 @@ export class EnemyAiController {
       }
 
       if (empStunned) {
+        // Keep fog-of-war / stealth / recon drone visibility responsive while stunned.
+        const distToPlayer = Math.hypot(engine.playerX - e.x, engine.playerZ - e.z);
+        this.syncEnemyVisibility(e, dt, distToPlayer);
         if (Math.random() < 0.12) {
           engine.spawnSparks(e.x, 0.9, e.z, 0x06b6d4, 2);
         }
@@ -986,58 +1049,7 @@ export class EnemyAiController {
         ? engine.playerZ
         : null;
 
-      if (e.enemyClass === EnemyClass.STEALTH && e.rig.stealthMaterials) {
-        const spottedByDrone = Boolean(engine.isPointRevealedByReconDrone?.(e.x, e.z));
-        const spottedByHq = this.isPointRevealedByPlayerBase(e.x, e.z);
-        const hasLos = !engine.hardMode || this.hasPlayerLineOfSight(e);
-        const revealed = spottedByDrone || spottedByHq || (hasLos && (distToPlayer < 6.2 || e.stealthRevealTimer > 0));
-        const moving = Math.hypot(e.targetDirX, e.targetDirZ) > 0.05;
-        const targetOpacity = !hasLos && !spottedByDrone && !spottedByHq ? 0.0 : revealed ? 0.96 : moving ? 0.3 : 0.12;
-        let currentOpacity = 0;
-        for (const mat of e.rig.stealthMaterials) {
-          mat.opacity = THREE.MathUtils.damp(mat.opacity, targetOpacity, 8, dt);
-          currentOpacity = mat.opacity;
-        }
-        if (e.rig.root) e.rig.root.visible = currentOpacity > 0.015;
-        if (e.rig.shadowMesh) e.rig.shadowMesh.visible = currentOpacity > 0.15;
-        if (e.rig.hpBarBg && e.rig.hpBarFill) {
-          e.rig.hpBarBg.visible = engine.aiDebugMode;
-          e.rig.hpBarFill.visible = engine.aiDebugMode;
-        }
-      } else if (e.rig?.fadeMaterials?.length) {
-        const visibleToPlayer = !engine.hardMode || this.hasPlayerLineOfSight(e);
-        const targetOpacity = visibleToPlayer ? 1.0 : 0.0;
-        const prevOpacity = e.visibilityOpacity ?? 1.0;
-        const nextOpacity = engine.hardMode
-          ? THREE.MathUtils.damp(prevOpacity, targetOpacity, 8, dt)
-          : 1.0;
-        e.visibilityOpacity = nextOpacity;
-        const lastApplied = e._lastAppliedOpacity ?? 1.0;
-        const needsMatUpdate =
-          Math.abs(lastApplied - nextOpacity) > 0.004 ||
-          (engine.hardMode && !e._hardModeFadeInit && nextOpacity < 0.99);
-        if (needsMatUpdate) {
-          e._lastAppliedOpacity = nextOpacity;
-          const enableTransparent = engine.hardMode && (e._hardModeFadeInit || nextOpacity < 0.99);
-          if (enableTransparent) e._hardModeFadeInit = true;
-          for (const mat of e.rig.fadeMaterials) {
-            mat.opacity = nextOpacity;
-            if (enableTransparent && !mat.transparent) {
-              mat.transparent = true;
-              mat.needsUpdate = true;
-            } else if (!engine.hardMode && mat.transparent) {
-              mat.transparent = false;
-              mat.needsUpdate = true;
-            }
-          }
-        }
-        if (e.rig.root) e.rig.root.visible = nextOpacity > 0.015;
-        if (e.rig.shadowMesh) e.rig.shadowMesh.visible = nextOpacity > 0.15;
-        if (e.rig.hpBarBg && e.rig.hpBarFill) {
-          e.rig.hpBarBg.visible = engine.aiDebugMode;
-          e.rig.hpBarFill.visible = engine.aiDebugMode;
-        }
-      }
+      this.syncEnemyVisibility(e, dt, distToPlayer);
 
       if (inContactRange(e, distToPlayer) && engine.enemyCombat.spendContactEnemy(e)) continue;
       if (e.hp <= 0 || e._removed) continue;

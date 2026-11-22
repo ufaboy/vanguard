@@ -223,6 +223,25 @@ export class ProjectilesController {
     engine.screenShake = Math.max(engine.screenShake || 0, 0.35);
   }
 
+  /** Detonates a missile that lost lock or was jammed, applying splash & building damage. */
+  detonateLostMissile(p) {
+    const { engine } = this;
+    engine.detonateMissile(p);
+    if (typeof engine.detonateExplosionAt === 'function') {
+      engine.detonateExplosionAt(
+        p.x,
+        p.z,
+        1.5,
+        p.damage,
+        p.fromPlayer,
+        null,
+        false,
+        p.penetration,
+        'ROCKET_LAUNCHER'
+      );
+    }
+  }
+
   /** Per-frame flight effects for a projectile moving from (px,pz) to its current position. */
   emitProjectileTrail(p, prevX, prevZ, y) {
     const { engine } = this;
@@ -458,7 +477,7 @@ export class ProjectilesController {
       ) {
         p.x = p.jammedTarget.x;
         p.z = p.jammedTarget.z;
-        engine.detonateMissile(p);
+        this.detonateLostMissile(p);
         engine.removeProjectile(i);
         continue;
       }
@@ -473,7 +492,7 @@ export class ProjectilesController {
       ) {
         p.x = p._fallbackTargetX;
         p.z = p._fallbackTargetZ;
-        engine.detonateMissile(p);
+        this.detonateLostMissile(p);
         engine.removeProjectile(i);
         continue;
       }
@@ -570,14 +589,21 @@ export class ProjectilesController {
         continue;
       }
 
-      // Player missiles cruise above every tile, crates included
-      if (cell?.type === TileType.BOXES && !(p.fromPlayer && p.isMissile)) {
+      // Player missiles cruise above every tile while aloft; once diving without a live lock,
+      // they collide with obstacles and buildings like any other ordnance.
+      const playerMissileAloft =
+        p.fromPlayer &&
+        p.isMissile &&
+        (flightY > 2.2 ||
+          (p.traveled || 0) < MISSILE_CLIMB_DIST ||
+          (!p.jammedTarget && Boolean(p.targetEnemy || p.targetBase)));
+      if (cell?.type === TileType.BOXES && !playerMissileAloft) {
         if (p.isMissile) engine.detonateMissile(p);
         engine.damageTileCell(cell, 1, p.x, p.z, p.fromPlayer);
         engine.removeProjectile(i);
         continue;
       }
-      if (cell && !(p.fromPlayer && p.isMissile)) {
+      if (cell && !playerMissileAloft) {
         if (cell.type === TileType.BARREL) {
           if (p.isMissile) engine.detonateMissile(p);
           engine.explodeBarrel(cell, p.fromPlayer);

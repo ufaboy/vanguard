@@ -4,6 +4,9 @@ import assert from 'node:assert/strict';
 import { ENEMY_VISIBILITY, MISSILE, TILE_SIZE } from '../public/src/game/constants.js';
 import { resolveHardModeMissileGuidance, selectInitialAtgmTarget } from '../public/src/sim/atgm.js';
 import { EnemyAiController } from '../public/src/game/engine/enemy-ai.js';
+import { ProjectilesController } from '../public/src/game/engine/projectiles.js';
+import { TileType } from '../public/src/game/terrains/surfaces.js';
+import { GRID_SIZE } from '../public/src/game/levels.js';
 
 test('selectInitialAtgmTarget blocks Hard Mode launch when no enemy or base is visible', () => {
   const hiddenEnemy = { x: 20, z: 20, hp: 20 };
@@ -123,4 +126,100 @@ test('Player HQ 15-cell recon perimeter reveals enemies while HQ is alive and st
   mockEngine.baseAlive = false;
   assert.equal(ai.hasPlayerLineOfSight(nearHq), false);
   assert.equal(ai.isEnemyVisibleToPlayer(nearHq), false);
+});
+
+test('Lost-lock diving ATGM damages HOUSE_1 on direct collision and triggers explosion at fallback point', () => {
+  const half = (GRID_SIZE * TILE_SIZE) / 2;
+  const grid = Array.from({ length: GRID_SIZE }, () =>
+    Array.from({ length: GRID_SIZE }, () => ({ type: TileType.EMPTY }))
+  );
+  // Place a HOUSE_1 at row 20, col 25 (world x = 11, z = 1)
+  const houseCell = { row: 20, col: 25, type: TileType.HOUSE_1, hp: 30 };
+  grid[20][25] = houseCell;
+
+  const tileDamageCalls = [];
+  const explosionCalls = [];
+  const makeEngine = () => ({
+    grid,
+    hardMode: true,
+    enemies: [],
+    mines: [],
+    enemyBaseAlive: false,
+    projectiles: [],
+    isPointInSmoke: () => false,
+    isEnemyVisibleToPlayer: () => false,
+    lerpAngle: (a, b) => b,
+    worldToGrid: (x, z) => ({
+      row: Math.floor((z + half) / TILE_SIZE),
+      col: Math.floor((x + half) / TILE_SIZE),
+    }),
+    gridToWorld: (r, c) => ({
+      x: -half + c * TILE_SIZE + TILE_SIZE / 2,
+      z: -half + r * TILE_SIZE + TILE_SIZE / 2,
+    }),
+    emitProjectileTrail: () => {},
+    tryBossApsIntercept: () => false,
+    detonateMissile: () => {},
+    detonateExplosionAt: (x, z, radius, damage, fromPlayer, _c, _e, penetration, weapon) => {
+      explosionCalls.push({ x, z, radius, damage, fromPlayer, penetration, weapon });
+    },
+    damageTileCell: (cell, dmg) => {
+      tileDamageCalls.push({ cell, dmg });
+    },
+    removeProjectile(idx) {
+      this.projectiles.splice(idx, 1);
+    },
+  });
+
+  // Case 1: Diving lost-lock ATGM enters HOUSE_1 cell before reaching fallback point -> damages building
+  const engine1 = makeEngine();
+  const proj1 = {
+    x: 10.6,
+    z: 1,
+    vx: 10,
+    vz: 0,
+    speed: 10,
+    life: 4,
+    traveled: 10,
+    flightY: 1.0,
+    fromPlayer: true,
+    isMissile: true,
+    damage: MISSILE.DAMAGE,
+    penetration: MISSILE.PENETRATION,
+    targetEnemy: null,
+    lastKnownTarget: { x: 14, z: 1 },
+    mesh: { position: { set: () => {} }, rotation: { order: 'YXZ', x: 0, y: 0 } },
+  };
+  engine1.projectiles.push(proj1);
+  new ProjectilesController(engine1).updateProjectiles(0.05);
+  assert.equal(tileDamageCalls.length, 1);
+  assert.equal(tileDamageCalls[0].cell, houseCell);
+  assert.equal(tileDamageCalls[0].dmg, 25);
+  assert.equal(engine1.projectiles.length, 0);
+
+  // Case 2: Lost-lock ATGM reaches its fallback point -> calls detonateExplosionAt
+  const engine2 = makeEngine();
+  const proj2 = {
+    x: 6.0,
+    z: 1,
+    vx: 10,
+    vz: 0,
+    speed: 10,
+    life: 4,
+    traveled: 10,
+    flightY: 1.0,
+    fromPlayer: true,
+    isMissile: true,
+    damage: MISSILE.DAMAGE,
+    penetration: MISSILE.PENETRATION,
+    targetEnemy: null,
+    lastKnownTarget: { x: 6.2, z: 1 },
+    mesh: { position: { set: () => {} }, rotation: { order: 'YXZ', x: 0, y: 0 } },
+  };
+  engine2.projectiles.push(proj2);
+  new ProjectilesController(engine2).updateProjectiles(0.05);
+  assert.equal(explosionCalls.length, 1);
+  assert.equal(explosionCalls[0].fromPlayer, true);
+  assert.equal(explosionCalls[0].damage, MISSILE.DAMAGE);
+  assert.equal(engine2.projectiles.length, 0);
 });

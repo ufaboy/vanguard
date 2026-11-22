@@ -156,3 +156,54 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
   // Launching while recharging on cooldown is blocked
   assert.equal(air.launchReconDrone(20, -20), false);
 });
+
+test('updateEnemies still reveals EMP-stunned enemies spotted by RECON_DRONE', () => {
+  const grid = createEmptyGrid();
+  grid[20][25].type = TileType.CONCRETE;
+  const half = (GRID_SIZE * TILE_SIZE) / 2;
+  let revealedByDrone = false;
+
+  const fadeMat = { opacity: 0, transparent: true, needsUpdate: false };
+  const enemy = {
+    id: 1,
+    hp: 20,
+    x: 15,
+    z: 1,
+    visibilityOpacity: 0,
+    _lastAppliedOpacity: 0,
+    _hardModeFadeInit: true,
+    rig: {
+      root: { visible: false, position: { x: 0, z: 0 } },
+      shadowMesh: { visible: false },
+      fadeMaterials: [fadeMat],
+    },
+  };
+
+  const engine = {
+    grid,
+    hardMode: true,
+    empTimer: 5,
+    playerX: 1,
+    playerZ: 1,
+    enemies: [enemy],
+    updateSquadDirector: () => {},
+    resolveEnemyCollisions: () => {},
+    updateAiDebugOverlay: () => {},
+    spawnSparks: () => {},
+    isSegmentInSmoke: () => false,
+    worldToGrid: (x, z) => ({
+      row: Math.floor((z + half) / TILE_SIZE),
+      col: Math.floor((x + half) / TILE_SIZE),
+    }),
+    isPointRevealedByReconDrone: () => revealedByDrone,
+  };
+
+  const ai = new EnemyAiController(engine);
+  ai.updateEnemies(0.5, 1.0);
+  assert.equal(enemy.rig.root.visible, false);
+
+  revealedByDrone = true;
+  ai.updateEnemies(0.5, 1.5);
+  assert.equal(enemy.rig.root.visible, true);
+  assert.ok(enemy.visibilityOpacity > 0.5, `expected enemy to fade in, got ${enemy.visibilityOpacity}`);
+});

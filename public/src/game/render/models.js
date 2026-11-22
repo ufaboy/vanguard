@@ -3025,50 +3025,143 @@ export class ModelFactory extends TextureGenerator {
   /** Seamless compacted stone & rocky bedrock surface patch at world (x, z). */
   createStoneBlock(x = 0, z = 0) {
     if (!this.stonePatchMats) {
+      const size = 256;
       const c = document.createElement('canvas');
-      c.width = 256;
-      c.height = 256;
+      c.width = size;
+      c.height = size;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#575c63';
-      ctx.fillRect(0, 0, 256, 256);
+
+      const bumpCanvas = document.createElement('canvas');
+      bumpCanvas.width = size;
+      bumpCanvas.height = size;
+      const bCtx = bumpCanvas.getContext('2d');
+
       let seed = 8822;
       const rand = () => {
         seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
         return seed / 4294967296;
       };
-      for (let i = 0; i < 70; i++) {
-        const px = rand() * 256;
-        const py = rand() * 256;
-        const r = 10 + rand() * 24;
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(110, 116, 124, 0.34)' : 'rgba(54, 58, 64, 0.38)';
-        ctx.beginPath();
-        ctx.arc(px, py, r, 0, Math.PI * 2);
-        ctx.fill();
+
+      // Tileable Voronoi rock-plate grid (6x6 jittered cells) for fractured bedrock slabs
+      const cells = 6;
+      const cellSize = size / cells;
+      const pts = [];
+      for (let gy = 0; gy < cells; gy++) {
+        for (let gx = 0; gx < cells; gx++) {
+          pts.push({
+            x: (gx + 0.15 + rand() * 0.7) * cellSize,
+            y: (gy + 0.15 + rand() * 0.7) * cellSize,
+            tone: (rand() - 0.5) * 26,
+            warm: (rand() - 0.5) * 10,
+          });
+        }
       }
-      for (let i = 0; i < 18; i++) {
-        const sx = rand() * 256;
-        const sy = rand() * 256;
-        ctx.strokeStyle = 'rgba(32, 35, 38, 0.36)';
-        ctx.lineWidth = 1.4;
+
+      const img = ctx.createImageData(size, size);
+      const bImg = bCtx.createImageData(size, size);
+      const data = img.data;
+      const bData = bImg.data;
+
+      for (let py = 0; py < size; py++) {
+        const gy = Math.floor(py / cellSize);
+        for (let px = 0; px < size; px++) {
+          const gx = Math.floor(px / cellSize);
+          let d1 = 1e9;
+          let d2 = 1e9;
+          let best = pts[0];
+          for (let oy = -1; oy <= 1; oy++) {
+            const ny = (gy + oy + cells) % cells;
+            for (let ox = -1; ox <= 1; ox++) {
+              const nx = (gx + ox + cells) % cells;
+              const p = pts[ny * cells + nx];
+              let dx = p.x - px;
+              let dy = p.y - py;
+              if (dx > size * 0.5) dx -= size;
+              else if (dx < -size * 0.5) dx += size;
+              if (dy > size * 0.5) dy -= size;
+              else if (dy < -size * 0.5) dy += size;
+              const d = Math.hypot(dx, dy);
+              if (d < d1) {
+                d2 = d1;
+                d1 = d;
+                best = p;
+              } else if (d < d2) {
+                d2 = d;
+              }
+            }
+          }
+
+          // Deterministic high-frequency rock grain & micro-pitting
+          let h = Math.imul(px * 374761393 + py * 668265263, 1274126177) >>> 0;
+          h ^= h >>> 13;
+          const grain = ((h & 255) / 255 - 0.5) * 22;
+          const edge = d2 - d1;
+          // Crisp dark fracture seam between rock slabs
+          const seam = edge < 2.2 ? (edge / 2.2) : 1;
+          const bevel = Math.min(1, edge / 9);
+          const base = 94 + best.tone + grain * 0.75 + (bevel - 0.5) * 14;
+          const seamShade = 0.42 + 0.58 * seam;
+
+          const idx = (py * size + px) * 4;
+          data[idx] = Math.max(24, Math.min(220, (base + best.warm) * seamShade));
+          data[idx + 1] = Math.max(24, Math.min(220, (base + 2) * seamShade));
+          data[idx + 2] = Math.max(26, Math.min(225, (base + 5 - best.warm * 0.5) * seamShade));
+          data[idx + 3] = 255;
+
+          const bumpVal = Math.max(10, Math.min(245, (115 + best.tone * 1.4 + grain * 1.2) * seam + bevel * 38));
+          bData[idx] = bumpVal;
+          bData[idx + 1] = bumpVal;
+          bData[idx + 2] = bumpVal;
+          bData[idx + 3] = 255;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+      bCtx.putImageData(bImg, 0, 0);
+
+      // Subtle jagged hairline cracks across bedrock plates
+      for (let i = 0; i < 14; i++) {
+        let sx = rand() * size;
+        let sy = rand() * size;
+        let ang = rand() * Math.PI * 2;
+        ctx.strokeStyle = 'rgba(28, 30, 34, 0.48)';
+        bCtx.strokeStyle = 'rgba(25, 25, 25, 0.65)';
+        ctx.lineWidth = 1.1;
+        bCtx.lineWidth = 1.4;
         ctx.beginPath();
+        bCtx.beginPath();
         ctx.moveTo(sx, sy);
-        ctx.lineTo(sx + (rand() - 0.5) * 32, sy + (rand() - 0.5) * 32);
+        bCtx.moveTo(sx, sy);
+        for (let s = 0; s < 4; s++) {
+          ang += (rand() - 0.5) * 0.9;
+          sx += Math.cos(ang) * (7 + rand() * 10);
+          sy += Math.sin(ang) * (7 + rand() * 10);
+          ctx.lineTo(sx, sy);
+          bCtx.lineTo(sx, sy);
+        }
         ctx.stroke();
+        bCtx.stroke();
       }
+
       const stoneTex = this.configureColorTexture(new THREE.CanvasTexture(c));
       stoneTex.wrapS = THREE.RepeatWrapping;
       stoneTex.wrapT = THREE.RepeatWrapping;
+      const stoneBump = new THREE.CanvasTexture(bumpCanvas);
+      stoneBump.wrapS = THREE.RepeatWrapping;
+      stoneBump.wrapT = THREE.RepeatWrapping;
+      stoneBump.needsUpdate = true;
 
       this.stonePatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
         const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
         mask.channel = 1;
         return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
           map: stoneTex,
+          bumpMap: stoneBump,
+          bumpScale: 0.045,
           alphaMap: mask,
           transparent: true,
           depthWrite: false,
-          roughness: 0.86,
-          metalness: 0.06,
+          roughness: 0.9,
+          metalness: 0.05,
           polygonOffset: true,
           polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
