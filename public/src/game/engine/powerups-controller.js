@@ -7,6 +7,10 @@ import {
   POWERUP_DROP_TYPES,
   POWERUP_MAX_ON_MAP,
   POWERUP_TYPES,
+  getMaxApsAmmo,
+  getMaxCannonAmmo,
+  getMaxMissileAmmo,
+  getMaxRepairKitCharges,
 } from '../constants.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { isUsefulPowerUp } from '../powerup-drops.js';
@@ -350,11 +354,15 @@ export class PowerupsController {
 
   isAirDropUseful(config) {
     const { engine } = this;
-    const needsShells = (Number(config.shells) || 0) > 0 && engine.cannonAmmo < engine.getPlayerMaxCannonAmmo();
+    const maxCannon = engine.getPlayerMaxCannonAmmo ? engine.getPlayerMaxCannonAmmo() : getMaxCannonAmmo(engine.upgrades?.frame || 1);
+    const maxAps = engine.getPlayerMaxApsAmmo ? engine.getPlayerMaxApsAmmo() : getMaxApsAmmo(engine.upgrades?.frame || 1);
+    const maxMissiles = engine.getPlayerMaxMissileAmmo ? engine.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(engine.upgrades?.frame || 1);
+    const maxRepairKits = engine.repairKitState?.maxCharges
+      ?? (engine.getPlayerMaxRepairKitCharges ? engine.getPlayerMaxRepairKitCharges() : getMaxRepairKitCharges(engine.upgrades?.frame || 1));
+    const needsShells = (Number(config.shells) || 0) > 0 && engine.cannonAmmo < maxCannon;
     const curAps = engine.apsAmmo.reduce((sum, r) => sum + r, 0);
-    const needsAps = (Number(config.aps) || 0) > 0 && curAps < engine.getPlayerMaxApsAmmo();
-    const needsMissiles = (Number(config.missiles) || 0) > 0 && engine.missileAmmo < engine.getPlayerMaxMissileAmmo();
-    const maxRepairKits = engine.repairKitState?.maxCharges ?? engine.getPlayerMaxRepairKitCharges();
+    const needsAps = (Number(config.aps) || 0) > 0 && curAps < maxAps;
+    const needsMissiles = (Number(config.missiles) || 0) > 0 && engine.missileAmmo < maxMissiles;
     const needsRepairKits =
       (Number(config.repairKits) || 0) > 0 && (engine.repairKitState?.charges ?? 0) < maxRepairKits;
     return needsShells || needsAps || needsMissiles || needsRepairKits;
@@ -371,22 +379,26 @@ export class PowerupsController {
       return Math.max(1, Math.round((maxVal * pct) / 100));
     };
 
-    const maxShells = engine.getPlayerMaxCannonAmmo();
+    const maxShells = engine.getPlayerMaxCannonAmmo ? engine.getPlayerMaxCannonAmmo() : getMaxCannonAmmo(engine.upgrades?.frame || 1);
     const addShells = resolvePctAmount(maxShells, config.shells);
     if (addShells > 0) {
       engine.cannonAmmo = Math.min(maxShells, engine.cannonAmmo + addShells);
       parts.push(`${t('SHELLS')} ${engine.cannonAmmo}/${maxShells}`);
     }
 
-    const maxAps = engine.getPlayerMaxApsAmmo();
+    const maxAps = engine.getPlayerMaxApsAmmo ? engine.getPlayerMaxApsAmmo() : getMaxApsAmmo(engine.upgrades?.frame || 1);
     const addAps = resolvePctAmount(maxAps, config.aps);
     if (addAps > 0) {
-      engine.addApsRounds(addAps);
+      if (engine.addApsRounds) {
+        engine.addApsRounds(addAps);
+      } else {
+        engine.playerController?.addApsRounds?.(addAps);
+      }
       const nextAps = engine.apsAmmo.reduce((sum, r) => sum + r, 0);
       parts.push(`APS ${nextAps}/${maxAps}`);
     }
 
-    const maxMissiles = engine.getPlayerMaxMissileAmmo();
+    const maxMissiles = engine.getPlayerMaxMissileAmmo ? engine.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(engine.upgrades?.frame || 1);
     const addMissiles = resolvePctAmount(maxMissiles, config.missiles);
     if (addMissiles > 0) {
       engine.missileAmmo = Math.min(maxMissiles, engine.missileAmmo + addMissiles);
@@ -395,10 +407,15 @@ export class PowerupsController {
 
     const addRepairKits = Math.max(0, Math.floor(Number(config.repairKits) || 0));
     if (addRepairKits > 0 && engine.repairKitState) {
-      const maxRepairKits = engine.repairKitState.maxCharges ?? engine.getPlayerMaxRepairKitCharges();
+      const maxRepairKits = engine.repairKitState.maxCharges
+        ?? (engine.getPlayerMaxRepairKitCharges ? engine.getPlayerMaxRepairKitCharges() : getMaxRepairKitCharges(engine.upgrades?.frame || 1));
       engine.repairKitState.maxCharges = maxRepairKits;
       engine.repairKitState.charges = Math.min(maxRepairKits, (engine.repairKitState.charges || 0) + addRepairKits);
-      engine.playerController?.persistRepairKitCharges?.();
+      if (engine.playerController?.persistRepairKitCharges) {
+        engine.playerController.persistRepairKitCharges();
+      } else if (engine.playerSave) {
+        engine.playerSave.repairKitCharges = engine.repairKitState.charges;
+      }
       parts.push(`RM-1 ${engine.repairKitState.charges}/${maxRepairKits}`);
     }
 
@@ -406,12 +423,12 @@ export class PowerupsController {
       engine.playerSave.missileAmmo = engine.missileAmmo;
       engine.saveRepo?.savePlayerSave?.(engine.playerSave);
     }
-    engine.recomputePlayerStats(true);
-    engine.setStatusBanner(
+    engine.recomputePlayerStats?.(true);
+    engine.setStatusBanner?.(
       parts.length ? t('AIR DROP SECURED: {items}', { items: parts.join(' · ') }) : t('AIR DROP SECURED'),
       3.2
     );
-    engine.emitHudUpdate();
+    engine.emitHudUpdate?.();
   }
 
   updatePowerUps(dt, elapsed) {
@@ -428,7 +445,11 @@ export class PowerupsController {
 
       if (Math.hypot(engine.playerX - item.x, engine.playerZ - item.z) <= 1.3) {
         if (!isUsefulPowerUp(item.type, engine)) continue;
-        engine.applyPowerUp(item.type);
+        if (engine.applyPowerUp) {
+          engine.applyPowerUp(item.type);
+        } else {
+          this.applyPowerUp(item.type);
+        }
         engine.entityGroup.remove(item.mesh);
         engine.powerUps.splice(i, 1);
       }
@@ -446,8 +467,8 @@ export class PowerupsController {
           engine.repairKitState.charges < engine.repairKitState.maxCharges
         ) {
           engine.repairKitState.charges++;
-          engine.playerController.persistRepairKitCharges();
-          engine.setStatusBanner(
+          engine.playerController?.persistRepairKitCharges?.();
+          engine.setStatusBanner?.(
             t('RM-1 FIELD REPAIR KIT ACQUIRED / PRESS [1] TO REPAIR'),
             2.6
           );
@@ -457,7 +478,7 @@ export class PowerupsController {
             maxOverheal,
             engine.playerHp + DURABILITY.REPAIR_POWERUP
           );
-          engine.setStatusBanner(
+          engine.setStatusBanner?.(
             t('HULL REPAIRED: +{REPAIR_POWERUP} HP (OVERHEAL UP TO 140%)', { REPAIR_POWERUP: DURABILITY.REPAIR_POWERUP }),
             2.6
           );
@@ -466,7 +487,7 @@ export class PowerupsController {
 
       case POWERUP.EMP:
         engine.empTimer = POWERUP_TYPES[POWERUP.EMP].duration;
-        engine.setStatusBanner(
+        engine.setStatusBanner?.(
           t('EMP BLAST ACTIVATED! ALL HOSTILE ARMOR DISABLED FOR 10s!'),
           2.8
         );
@@ -477,20 +498,24 @@ export class PowerupsController {
         break;
 
       case POWERUP.APS:
-        engine.addApsRounds(APS.PICKUP_ROUNDS);
-        engine.setStatusBanner(
+        if (engine.addApsRounds) {
+          engine.addApsRounds(APS.PICKUP_ROUNDS);
+        } else {
+          engine.playerController?.addApsRounds?.(APS.PICKUP_ROUNDS);
+        }
+        engine.setStatusBanner?.(
           t('ACTIVE PROTECTION SYSTEM (APS): +{PICKUP_ROUNDS} INTERCEPT CHARGES', { PICKUP_ROUNDS: APS.PICKUP_ROUNDS }),
           2.6
         );
         break;
 
       case POWERUP.AMMO: {
-        const maxShells = engine.getPlayerMaxCannonAmmo();
+        const maxShells = engine.getPlayerMaxCannonAmmo ? engine.getPlayerMaxCannonAmmo() : getMaxCannonAmmo(engine.upgrades?.frame || 1);
         const minShells = CANNON_AMMO.PICKUP_MIN ?? 3;
         const maxDrop = CANNON_AMMO.PICKUP_MAX ?? 7;
         const shells = minShells + Math.floor(Math.random() * (maxDrop - minShells + 1));
         engine.cannonAmmo = Math.min(maxShells, engine.cannonAmmo + shells);
-        engine.setStatusBanner(
+        engine.setStatusBanner?.(
           t('AMMO CRATE COLLECTED: +{shells} SHELLS ({cannonAmmo}/{maxShells})', { shells, cannonAmmo: engine.cannonAmmo, maxShells }),
           2.5
         );
@@ -498,15 +523,15 @@ export class PowerupsController {
       }
 
       case POWERUP.MISSILE: {
-        const maxMissiles = engine.getPlayerMaxMissileAmmo();
+        const maxMissiles = engine.getPlayerMaxMissileAmmo ? engine.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(engine.upgrades?.frame || 1);
         engine.missileAmmo = Math.min(
           maxMissiles,
           engine.missileAmmo + MISSILE.PICKUP_AMMO
         );
         engine.playerSave.missileAmmo = engine.missileAmmo;
-        engine.saveRepo.savePlayerSave(engine.playerSave);
-        engine.recomputePlayerStats(true);
-        engine.setStatusBanner(
+        engine.saveRepo?.savePlayerSave?.(engine.playerSave);
+        engine.recomputePlayerStats?.(true);
+        engine.setStatusBanner?.(
           t('HOMING ATGM MISSILE ACQUIRED ({missileAmmo}/{maxMissiles}) [SPACE / RMB]', { missileAmmo: engine.missileAmmo, maxMissiles }),
           2.6
         );
@@ -514,7 +539,7 @@ export class PowerupsController {
       }
     }
 
-    engine.emitHudUpdate();
+    engine.emitHudUpdate?.();
   }
 }
 

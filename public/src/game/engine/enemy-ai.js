@@ -919,7 +919,7 @@ export class EnemyAiController {
     const empStunned = engine.empTimer > 0;
     const spottedLastFrame = Boolean(engine.playerSpottedByEnemies);
     engine.playerSpottedByEnemies = false;
-    engine.updateSquadDirector(dt, spottedLastFrame);
+    engine.updateSquadDirector?.(dt, spottedLastFrame);
     this.rebuildFrameEnemyCells();
 
     const enemiesSnapshot = [...engine.enemies];
@@ -1016,7 +1016,7 @@ export class EnemyAiController {
           e.ai.lastKnownTargetPos = { x: engine.playerX, z: engine.playerZ };
         }
         if (newlySpotted || e.radioCooldown <= 0) {
-          engine.broadcastPlayerLocationFrom(e, engine.playerX, engine.playerZ);
+          engine.broadcastPlayerLocationFrom?.(e, engine.playerX, engine.playerZ);
         }
       } else {
         e.hasDetectedPlayer = false;
@@ -1074,15 +1074,17 @@ export class EnemyAiController {
           e.targetDirX = toTgtX / distToTgt;
           e.targetDirZ = toTgtZ / distToTgt;
           const desiredAngle = Math.atan2(e.targetDirX, e.targetDirZ);
-          e.hullAngle = engine.lerpAngle(e.hullAngle, desiredAngle, 10 * dt);
+          e.hullAngle = engine.lerpAngle
+            ? engine.lerpAngle(e.hullAngle, desiredAngle, 10 * dt)
+            : stepAngleTowards(e.hullAngle, desiredAngle, 10 * dt);
           const worldSpeed = Math.max(2.4, e.stats.moveSpeed * TILE_SIZE);
           const entryRadius = e.isBoss ? 1.12 : 0.72;
           const nextEntryX = e.x + e.targetDirX * worldSpeed * dt;
           const nextEntryZ = e.z + e.targetDirZ * worldSpeed * dt;
-          if (!engine.checkTankEnemyCollision(e, nextEntryX, e.z, entryRadius)) {
+          if (!engine.checkTankEnemyCollision?.(e, nextEntryX, e.z, entryRadius)) {
             e.x = nextEntryX;
           }
-          if (!engine.checkTankEnemyCollision(e, e.x, nextEntryZ, entryRadius)) {
+          if (!engine.checkTankEnemyCollision?.(e, e.x, nextEntryZ, entryRadius)) {
             e.z = nextEntryZ;
           }
           if (isInsideArena(e.x, e.z)) {
@@ -1096,8 +1098,8 @@ export class EnemyAiController {
         const maxBound = halfArena - entrySafeRadius - 0.02;
         if (Math.abs(e.x) > maxBound) e.x = Math.sign(e.x) * maxBound;
         if (Math.abs(e.z) > maxBound) e.z = Math.sign(e.z) * maxBound;
-        const roleTarget = engine.enemyRoleTarget(e, { canSeePlayer, hasActiveAlert, spotted: spottedLastFrame });
-        engine.updateEnemyMovement(e, dt, elapsed, {
+        const roleTarget = engine.enemyRoleTarget?.(e, { canSeePlayer, hasActiveAlert, spotted: spottedLastFrame }) ?? null;
+        engine.updateEnemyMovement?.(e, dt, elapsed, {
           canSeePlayer,
           hasActiveAlert,
           navTargetX,
@@ -1121,8 +1123,8 @@ export class EnemyAiController {
         const hpRatio = e.hp / e.maxHp;
         const lowSpeedMult =
           !e.isBoss && hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
-        const { row: eRow, col: eCol } = engine.worldToGrid(e.x, e.z);
-        const eCell = engine.grid[eRow]?.[eCol];
+        const { row: eRow, col: eCol } = engine.worldToGrid?.(e.x, e.z) ?? { row: 0, col: 0 };
+        const eCell = engine.grid?.[eRow]?.[eCol];
         if (eCell?.type === TileType.RUBBLE && e.loadout?.optionalEquipment?.includes('DOZER_BLADE')) {
           engine.terrainDestruction?.clearRubbleCell?.(eCell);
         }
@@ -1197,14 +1199,14 @@ export class EnemyAiController {
         const isTryingToMove = moveMag > 0.05;
 
         if (isTryingToMove) {
-          engine.enemyCombat.crushBoxObstacles(nextX, e.z, radius, false);
+          engine.enemyCombat?.crushBoxObstacles?.(nextX, e.z, radius, false);
           if (e.hp <= 0 || e._removed) continue;
-          if (e.isBoss) engine.crushBossObstacles(nextX, e.z, radius);
+          if (e.isBoss) engine.crushBossObstacles?.(nextX, e.z, radius);
         }
         let blocked = false;
         if (
-          !engine.checkTankWallCollision(nextX, e.z, radius, e.stats.canCrossWater) &&
-          !engine.checkTankEnemyCollision(e, nextX, e.z, radius) &&
+          !engine.checkTankWallCollision?.(nextX, e.z, radius, e.stats.canCrossWater) &&
+          !engine.checkTankEnemyCollision?.(e, nextX, e.z, radius) &&
           Math.hypot(nextX - engine.playerX, e.z - engine.playerZ) > radius + 0.72
         ) {
           e.x = nextX;
@@ -1213,13 +1215,13 @@ export class EnemyAiController {
         }
 
         if (isTryingToMove) {
-          engine.enemyCombat.crushBoxObstacles(e.x, nextZ, radius, false);
+          engine.enemyCombat?.crushBoxObstacles?.(e.x, nextZ, radius, false);
           if (e.hp <= 0 || e._removed) continue;
-          if (e.isBoss) engine.crushBossObstacles(e.x, nextZ, radius);
+          if (e.isBoss) engine.crushBossObstacles?.(e.x, nextZ, radius);
         }
         if (
-          !engine.checkTankWallCollision(e.x, nextZ, radius, e.stats.canCrossWater) &&
-          !engine.checkTankEnemyCollision(e, e.x, nextZ, radius) &&
+          !engine.checkTankWallCollision?.(e.x, nextZ, radius, e.stats.canCrossWater) &&
+          !engine.checkTankEnemyCollision?.(e, e.x, nextZ, radius) &&
           Math.hypot(e.x - engine.playerX, nextZ - engine.playerZ) > radius + 0.72
         ) {
           e.z = nextZ;
@@ -1315,7 +1317,7 @@ export class EnemyAiController {
       updateAbilities(e, engine, { brainActive, canSeePlayer });
       if (e.hp <= 0 || e._removed) continue;
 
-      engine.updateEnemyGunnery(e, dt, {
+      engine.updateEnemyGunnery?.(e, dt, {
         canSeePlayer,
         hasActiveAlert,
         navTargetX,
@@ -1332,8 +1334,8 @@ export class EnemyAiController {
         : 0;
       e.rig.root.position.set(e.x, enemyHoverY, e.z);
       e.rig.hull.rotation.y = e.hullAngle;
-      engine.driveGear(e.rig, e, e.x, e.z, e.hullAngle);
-      engine.syncEnemyTurretVisuals(e, dt);
+      engine.driveGear?.(e.rig, e, e.x, e.z, e.hullAngle);
+      engine.syncEnemyTurretVisuals?.(e, dt);
 
       if (e.rig.hpBarFill) {
         const ratio = Math.max(0.01, e.hp / e.maxHp);
@@ -1341,7 +1343,7 @@ export class EnemyAiController {
       }
     }
 
-    engine.resolveEnemyCollisions();
+    engine.resolveEnemyCollisions?.();
     for (let i = 0; i < engine.enemies.length; i++) {
       const e = engine.enemies[i];
       if (!e?.rig?.root) continue;
@@ -1349,7 +1351,7 @@ export class EnemyAiController {
       e.rig.root.position.z = e.z;
     }
 
-    engine.updateAiDebugOverlay();
+    engine.updateAiDebugOverlay?.();
   }
 }
 

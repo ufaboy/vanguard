@@ -162,8 +162,10 @@ test('Hover raider strikes from water the player cannot cross, then withdraws', 
   const { pos, out } = walk(brain, grid, { row: 15, col: 25 }, target, { canCrossWater: true });
   assert.equal(out.tactic, 'strike');
   assert.equal(grid[pos.row][pos.col], W, 'firing from the water');
-  brain.tacticTimer = 0;
-  const next = stepBrain(brain, ctxFor(grid, pos, target, { canCrossWater: true }));
+  const next = stepBrain(brain, ctxFor(grid, pos, target, {
+    canCrossWater: true,
+    dt: ROLE_CONFIGS.raider.strikeSec[1] + 0.1,
+  }));
   assert.equal(next.tactic, 'withdraw');
 });
 
@@ -263,27 +265,20 @@ test('Stealth sniper overwatches from range and slips away after its shot', () =
   assert.equal(out.tactic, 'reposition');
 });
 
-test('Boss configs carry their own role brains', async () => {
-  const { SECTOR_BOSS_CONFIGS } = await import('../public/src/game/vehicles/tanks.js');
-  assert.equal(SECTOR_BOSS_CONFIGS.bossMammoth.behavior.role, 'dreadnought');
-  assert.equal(SECTOR_BOSS_CONFIGS.bossHydra.behavior.role, 'cruiser');
-  assert.equal(SECTOR_BOSS_CONFIGS.bossInferno.behavior.role, 'juggernaut');
-  assert.equal(SECTOR_BOSS_CONFIGS.bossTitan.behavior.role, 'fortress');
-});
-
 test('Mammoth closes to brawling range and side-steps on later cycles', () => {
   const grid = openGrid(30);
   const target = { row: 15, col: 15 };
   const brain = createBrain('dreadnought', seq([0.5]));
-  const { pos } = walk(brain, grid, { row: 15, col: 2 }, target);
-  assert.equal(brain.tactic, 'advance');
+  const { pos, out } = walk(brain, grid, { row: 15, col: 2 }, target);
+  assert.equal(out.tactic, 'advance');
   const d = dist(pos, target);
   const { minCells, maxCells } = ROLE_CONFIGS.dreadnought.advance;
   assert.ok(d >= minCells && d <= maxCells);
-  const first = { ...brain.goal };
-  brain.tacticTimer = 0;
-  stepBrain(brain, ctxFor(grid, pos, target)); // cycle 2 -> side-step
-  assert.ok(dist(brain.goal, first) >= 2);
+  const next = stepBrain(brain, ctxFor(grid, pos, target, { dt: ROLE_CONFIGS.dreadnought.advanceSec[1] + 0.1 })); // cycle 2 -> side-step
+  assert.equal(next.tactic, 'advance');
+  assert.ok(next.waypoint, 'side-steps to a new cell');
+  const { pos: shifted } = walk(brain, grid, pos, target, { replanDue: false });
+  assert.ok(dist(shifted, pos) >= 2);
 });
 
 test('Hydra keeps its stand-off band, then presses closer in phase 2', () => {

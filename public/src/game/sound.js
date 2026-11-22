@@ -27,9 +27,29 @@ const AUDIO_ASSETS = {
   engine_loop: 'audio/tank_heavy_diesel_idle_loop_compact.ogg',
 };
 
-class SoundManager {
-  constructor() {
+const PRIORITY_AUDIO_KEYS = Object.freeze([
+  'cannon_std',
+  'cannon_heavy',
+  'armor_hit',
+  'brick_hit',
+  'explosion_std',
+  'explosion_large',
+  'tank_destruction',
+  'missile',
+  'engine_loop',
+]);
+
+/** Returns the priority audio asset paths in `./audio/...` manifest form. */
+export function getPriorityAudioAssets() {
+  return PRIORITY_AUDIO_KEYS.map((key) => `./${AUDIO_ASSETS[key]}`);
+}
+
+export class SoundManager {
+  constructor({ createContext = null, loadAssets = true, buffers = null } = {}) {
     this.ctx = null;
+    this._createContext = createContext;
+    this._loadAssets = loadAssets;
+    this._initialBuffers = buffers;
     this._enabled = true;
     this.paused = false;
     this.masterGain = null;
@@ -154,11 +174,18 @@ class SoundManager {
   }
 
   ensureContext() {
-    if (!this._enabled || this.paused || typeof window === 'undefined' || !this.hasUserGesture()) return null;
+    if (!this._enabled || this.paused || !this.hasUserGesture()) return null;
+    if (!this._createContext && typeof window === 'undefined') return null;
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        this.ctx = new AudioCtx();
+      let created = null;
+      if (this._createContext) {
+        created = this._createContext();
+      } else {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) created = new AudioCtx();
+      }
+      if (created) {
+        this.ctx = created;
 
         // Master dynamics compressor prevents digital clipping when multiple cannons/explosions overlap
         this.compressor = this.ctx.createDynamicsCompressor();
@@ -174,10 +201,12 @@ class SoundManager {
         this.compressor.connect(this.masterGain);
         this.masterGain.connect(this.ctx.destination);
 
-        this.buffers = {};
+        this.buffers = this._initialBuffers ? { ...this._initialBuffers } : {};
 
         // Asynchronously load and decode high-fidelity .ogg audio assets
-        this.loadAudioFiles();
+        if (this._loadAssets) {
+          this.loadAudioFiles();
+        }
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
@@ -190,17 +219,7 @@ class SoundManager {
     if (this.audioFilesLoading || !this.ctx || typeof fetch === 'undefined') return;
     this.audioFilesLoading = true;
 
-    const priorityKeys = new Set([
-      'cannon_std',
-      'cannon_heavy',
-      'armor_hit',
-      'brick_hit',
-      'explosion_std',
-      'explosion_large',
-      'tank_destruction',
-      'missile',
-      'engine_loop',
-    ]);
+    const priorityKeys = new Set(PRIORITY_AUDIO_KEYS);
     const entries = Object.entries(AUDIO_ASSETS);
     const primary = entries.filter(([key]) => priorityKeys.has(key));
     const secondary = entries.filter(([key]) => !priorityKeys.has(key));

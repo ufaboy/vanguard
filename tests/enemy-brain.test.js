@@ -90,25 +90,14 @@ test('Tactical query honours band, LOS rule, cover and flank direction', () => {
 });
 
 test('Every enemy tank type has its own configured role brain', () => {
-  const expected = {
-    standard: 'line',
-    scout: 'flanker',
-    armor: 'spearhead',
-    howitzer: 'artillery',
-    sapper: 'minelayer',
-    hover: 'raider',
-    kamikaze: 'hunter',
-    flamethrower: 'ambusher',
-    jammer: 'ewar',
-    engineer: 'support',
-    striker: 'standoff',
-    stealth: 'sniper',
-  };
-  for (const [type, role] of Object.entries(expected)) {
-    assert.equal(TANK_CONFIGS[type].behavior.role, role, type);
-    assert.ok(ROLE_CONFIGS[role], `${role} configured`);
+  const roles = [];
+  for (const [type, cfg] of Object.entries(TANK_CONFIGS)) {
+    const role = cfg.behavior?.role;
+    assert.ok(role, `${type} has a behavior role`);
+    assert.ok(ROLE_CONFIGS[role], `${type} role ${role} is configured`);
+    roles.push(role);
   }
-  assert.equal(new Set(Object.values(expected)).size, 12, 'roles are distinct');
+  assert.equal(new Set(roles).size, Object.keys(TANK_CONFIGS).length, 'roles are distinct');
   assert.equal(createBrain('legacy'), null);
 });
 
@@ -158,10 +147,10 @@ test('Line tank takes a firing cell with LOS, then ducks into cover when engage 
   const { minCells, maxCells } = ROLE_CONFIGS.line.engage;
   assert.ok(d >= minCells && d <= maxCells);
 
-  brain.tacticTimer = 0;
-  const next = stepBrain(brain, ctxFor(grid, pos, target));
+  const next = stepBrain(brain, ctxFor(grid, pos, target, { dt: ROLE_CONFIGS.line.engageSec[1] + 0.1 }));
   assert.equal(next.tactic, 'cover');
-  assert.equal(hasGridLineOfSight(grid, brain.goal, target), false);
+  const { pos: coverPos } = walk(brain, grid, pos, target, { replanDue: false });
+  assert.equal(hasGridLineOfSight(grid, coverPos, target), false);
 });
 
 test('Line tank retreats once when badly damaged', () => {
@@ -203,16 +192,13 @@ test('Howitzer emplaces hidden, relocates after its barrages and flees close thr
   for (let r = 8; r <= 22; r++) grid[r][10] = B;
   const target = { row: 15, col: 15 };
   const brain = createBrain('artillery', seq([0.5]));
-  const { pos } = walk(brain, grid, { row: 15, col: 3 }, target, { visible: false });
-  assert.equal(brain.tactic, 'emplace');
+  const { pos, out } = walk(brain, grid, { row: 15, col: 3 }, target, { visible: false });
+  assert.equal(out.tactic, 'emplace');
   assert.equal(hasGridLineOfSight(grid, pos, target), false);
-  const firstGoal = { ...brain.goal };
 
-  for (let k = 0; k < brain.relocateAfter; k++) notifyBrainFired(brain);
-  stepBrain(brain, ctxFor(grid, pos, target, { visible: false }));
-  assert.equal(brain.shotsSinceMove, 0, 'shoot-and-scoot resets the shot counter');
-  assert.ok(brain.goal, 'picked a new firing cell');
-  assert.equal(typeof firstGoal.row, 'number');
+  for (let k = 0; k < ROLE_CONFIGS.artillery.relocateAfterShots[1]; k++) notifyBrainFired(brain);
+  const relocated = stepBrain(brain, ctxFor(grid, pos, target, { visible: false }));
+  assert.equal(relocated.tactic, 'emplace');
 
   const closeDist = Math.max(1, ROLE_CONFIGS.artillery.fleeBelowCells - 1);
   const close = stepBrain(brain, ctxFor(grid, { row: 15, col: 15 - closeDist }, target, { distCells: closeDist }));

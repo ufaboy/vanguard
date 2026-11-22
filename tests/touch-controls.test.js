@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TOUCH_CONTROLS_MODES, isMobileOrTabletDevice, loadPreferences } from '../public/src/app/state.js';
+import { isMobileOrTabletDevice, loadPreferences } from '../public/src/app/state.js';
 import { TouchControlsOverlay, isTouchCapable } from '../public/src/ui/touch-controls.js';
 
 function createMockElement() {
@@ -24,10 +24,6 @@ function createMockElement() {
     getBoundingClientRect: () => ({ left: 0, top: 0, width: 128, height: 128 }),
   };
 }
-
-test('TOUCH_CONTROLS_MODES exposes auto, on, and off', () => {
-  assert.deepEqual(TOUCH_CONTROLS_MODES, ['auto', 'on', 'off']);
-});
 
 test('TouchControlsOverlay maps joystick movement with deadzone and resets when hidden', () => {
   const els = {

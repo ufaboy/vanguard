@@ -27,13 +27,17 @@ import { EnemySpawnerController } from './enemy-spawner.js';
 import { EnemyCombatController } from './enemy-combat.js';
 import { PlayerController } from './player-controller.js';
 import { EnemyAiController } from './enemy-ai.js';
+import {
+  computeFrameInterval,
+  createVictoryCinematics,
+  stepVictoryCinematics,
+} from './victory-cinematics.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import {
   APS,
   TITAN,
   CANNON_AMMO,
   MISSILE,
-  VICTORY_CINEMATICS,
   POWERUP_TYPES,
 } from '../constants.js';
 import { GameStatus } from '../types.js';
@@ -62,7 +66,6 @@ export const QUALITY_PRESETS = Object.freeze({
   medium: { label: 'Medium', pixelRatio: 1.5, shadows: true, fx: 0.8, antialias: true, physicalWater: false, envLighting: true },
   high: { label: 'High', pixelRatio: 2, shadows: true, fx: 1, antialias: true, physicalWater: true, envLighting: true },
 });
-const IDLE_SCREEN_FPS = 15;
 /** Half-amplitude (radians) of the KAMIKAZE zigzag during its final charge. */
 
 export class TankGameEngine {
@@ -539,14 +542,7 @@ export class TankGameEngine {
 
   /** Minimum time between rendered frames in ms (0 = render every display refresh). */
   getFrameInterval() {
-    const resultScreen =
-      this.status === GameStatus.PAUSED ||
-      (this.status === GameStatus.VICTORY && !(this.victoryCinematicsTimer > 0)) ||
-      (this.status === GameStatus.GAME_OVER && !(this.defeatCinematicsTimer > 0));
-    if (resultScreen && !this.isHangarOpen && !this.inspectMode && !this.cameraRotating) {
-      return 1000 / IDLE_SCREEN_FPS;
-    }
-    return this.fpsCap > 0 ? 1000 / this.fpsCap : 0;
+    return computeFrameInterval(this);
   }
 
   /** The UI reports whether an opaque screen fully hides the 3D canvas. */
@@ -1012,9 +1008,7 @@ export class TankGameEngine {
 
   update(dt) {
     const elapsed = this.clock.getElapsed();
-    if (this.isHangarOpen) {
-      this.hangarStage.update(dt, this.effectiveUpgrades, this.missileAmmo, this.apsAmmo, elapsed);
-      this.tickHangarBaseMaintenance(dt);
+    if (this.hangarOps.stepOpenFrame(dt, elapsed)) {
       return;
     }
 
@@ -1077,20 +1071,10 @@ export class TankGameEngine {
       this.updateBrickRubble(dt);
       this.forestFire.update(dt, elapsed);
     } else if (this.status === GameStatus.VICTORY && this.victoryCinematicsTimer > 0) {
-      this.victoryCinematicsTimer = Math.max(0, this.victoryCinematicsTimer - dt);
-      const vc = this.victoryCinematics;
-      if (vc && !vc.detonated) {
-        vc.detonateDelay -= dt;
-        vc.sparkAcc = (vc.sparkAcc || 0) + dt;
-        if (vc.sparkAcc >= VICTORY_CINEMATICS.SPARK_INTERVAL_SEC) {
-          vc.sparkAcc = 0;
-          this.spawnSparks?.(vc.x, 0.7, vc.z, 0xff8833, 2);
-        }
-        if (vc.detonateDelay <= 0) {
-          vc.detonated = true;
-          vc.onDetonate?.();
-        }
-      }
+      const { finished, restoredFrustum } = stepVictoryCinematics(this.victoryCinematics, dt, {
+        onSpark: (x, z) => this.spawnSparks?.(x, 0.7, z, 0xff8833, 2),
+      });
+      this.victoryCinematicsTimer = this.victoryCinematics?.remaining ?? 0;
       this.updateProjectiles(dt);
       this.explosions.updateHazardZones(dt, elapsed);
       this.updateBarrelExplosions(dt);
@@ -1103,13 +1087,9 @@ export class TankGameEngine {
         this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
         this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
       }
-      if (this.victoryCinematicsTimer <= 0) {
-        if (vc && !vc.detonated) {
-          vc.detonated = true;
-          vc.onDetonate?.();
-        }
-        if (vc?.baseFrustum) {
-          this.frustumSize = vc.baseFrustum;
+      if (finished) {
+        if (restoredFrustum) {
+          this.frustumSize = restoredFrustum;
           this.updateCameraProjection?.();
         }
         this.victoryCinematics = null;
@@ -1152,16 +1132,7 @@ export class TankGameEngine {
   }
 
   tickHangarBaseMaintenance(dt) {
-    if (!this.isHangarPaused || this.isAdPaused || this.status !== GameStatus.PLAYING) return;
-    const repairedAny = this.playerController?.updateBaseMaintenance?.(dt);
-    if (repairedAny) {
-      this.hudSyncAccumulator += dt;
-      const hudInterval = this.quality === 'low' ? 0.2 : 0.12;
-      if (this.hudSyncAccumulator >= hudInterval) {
-        this.hudSyncAccumulator = 0;
-        this.emitHudUpdate();
-      }
-    }
+    this.hangarOps.tickBaseMaintenance(dt);
   }
 
   updatePlayer(dt, elapsed) { this.playerController.updatePlayer(dt, elapsed); }
@@ -1401,21 +1372,15 @@ export class TankGameEngine {
   triggerMissionVictory(bannerText, focusTarget = null) {
     if (this.status === GameStatus.VICTORY) return;
     this.status = GameStatus.VICTORY;
-    const duration = VICTORY_CINEMATICS.DURATION_SEC;
-    this.victoryCinematicsTimer = duration;
     const baseFrustum = this.victoryCinematics?.baseFrustum ?? (this.frustumSize || 32);
-    this.victoryCinematics = {
-      x: focusTarget?.x ?? this.playerX,
-      z: focusTarget?.z ?? this.playerZ,
-      duration,
-      startAzimuth: this.cameraAzimuth ?? Math.PI * 0.25,
+    this.victoryCinematics = createVictoryCinematics({
+      x: this.playerX,
+      z: this.playerZ,
       baseFrustum,
-      targetFrustum: Math.max(VICTORY_CINEMATICS.MIN_FRUSTUM, baseFrustum * VICTORY_CINEMATICS.ZOOM_FACTOR),
-      detonateDelay: focusTarget?.detonateDelay ?? VICTORY_CINEMATICS.DETONATE_DELAY_SEC,
-      onDetonate: typeof focusTarget?.onDetonate === 'function' ? focusTarget.onDetonate : null,
-      detonated: !focusTarget?.onDetonate,
-      sparkAcc: 0,
-    };
+      cameraAzimuth: this.cameraAzimuth ?? Math.PI * 0.25,
+      focusTarget,
+    });
+    this.victoryCinematicsTimer = this.victoryCinematics.remaining;
     sound.stopEngineLoop();
     if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
       this.lastSettlementSummary = settleMission({

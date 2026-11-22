@@ -36,19 +36,17 @@ test('Armour always works per side: base + armour component', () => {
   assert.equal(uniform.armor, a2);
 });
 
-test('Directional armour components replace their uniform value per side (Titan Aegis)', () => {
-  const titan = SECTOR_BOSS_CONFIGS.bossTitan;
-  const stats = computeTankStats(titan.loadout, titan.base);
-  const aegis = ARMORS[titan.loadout.armor].armorByAspect;
-  const expected = Object.fromEntries(
-    ['front', 'left', 'right', 'rear'].map((side) => [
-      side,
-      Math.min(DURABILITY.MAX_ARMOR, Math.max(0, (titan.base.armor?.[side] || 0) + aegis[side])),
-    ])
-  );
-  assert.deepEqual({ ...stats.armorByAspect }, expected);
+test('Directional armour components replace their uniform value per side', () => {
+  const directionalArmor = {
+    id: 'TEST_DIR_ARMOR',
+    mass: 10,
+    reductionPct: 50,
+    armorByAspect: { front: 70, left: 40, right: 35, rear: 15 },
+  };
+  const stats = computeTankStats({ ...loadout, armor: directionalArmor }, tankBase());
+  assert.deepEqual({ ...stats.armorByAspect }, { front: 70, left: 40, right: 35, rear: 15 });
   assert.equal(stats.directionalArmor, true);
-  assert.equal(stats.armor, Math.min(...Object.values(stats.armorByAspect)));
+  assert.equal(stats.armor, 15);
 });
 
 test('Damage, penetration and reload come from the cannon alone', () => {

@@ -57,6 +57,26 @@ export class TileBatcher {
     if (tileRoot) this.dirty.add(tileRoot);
   }
 
+  /** Number of active instanced batches. */
+  getBatchCount() {
+    return this.batches.size;
+  }
+
+  /** Total active instances across all batches. */
+  getInstanceCount() {
+    let total = 0;
+    for (const batch of this.batches.values()) total += batch.mesh.count;
+    return total;
+  }
+
+  /** Reads the current batched world matrix for a registered tile root. */
+  getInstanceMatrix(tileRoot, index = 0, target = new THREE.Matrix4()) {
+    const entry = this.records.get(tileRoot)?.[index];
+    if (!entry) return null;
+    entry.batch.mesh.getMatrixAt(entry.slot, target);
+    return target;
+  }
+
   /** Drop every batch (call after the source group was cleared for a new sector). */
   reset() {
     for (const batch of this.batches.values()) {

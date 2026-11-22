@@ -21,26 +21,22 @@ import {
   getSurvivalAssets,
   shouldSkipPreload,
 } from '../public/src/app/asset-preloader.js';
+import { SECTORS } from '../public/src/game/levels.js';
+import { resolveMapRules } from '../public/src/game/mapRules.js';
+import { GLB_TANK_MODELS } from '../public/src/game/render/models.js';
+import { getPriorityAudioAssets } from '../public/src/game/sound.js';
+import { getLandmarkPack } from '../public/src/game/terrains/landmarks.js';
+import { EnemyClass } from '../public/src/game/types.js';
 
 const PUBLIC_DIR = path.resolve('public');
 
-function parseLandmarkKindToPack() {
-  const src = fs.readFileSync(path.join(PUBLIC_DIR, 'src/game/terrains/landmarks.js'), 'utf8');
-  const map = {};
-  for (const [, kind, body] of src.matchAll(/^\s+([A-Z0-9_]+):\s*Object\.freeze\(\{([^}]*)\}\)/gm)) {
-    const m = body.match(/pack:\s*'([^']+)'/);
-    map[kind] = m ? m[1] : 'paris';
-  }
-  return map;
-}
-
-function extractMapPacks(mapData, kindToPack) {
+function extractMapPacks(mapData) {
   const packs = new Set();
   for (const lm of mapData.landmarks3d || []) {
-    if (lm.kind) packs.add(kindToPack[lm.kind] || 'paris');
+    if (lm.kind) packs.add(getLandmarkPack(lm.kind));
   }
-  if (mapData.baseModel) packs.add(kindToPack[mapData.baseModel] || 'paris');
-  if (mapData.mineSigns?.length) packs.add(kindToPack.MINE_SIGN || 'paris');
+  if (mapData.baseModel) packs.add(getLandmarkPack(mapData.baseModel));
+  if (mapData.mineSigns?.length) packs.add(getLandmarkPack('MINE_SIGN'));
   return [...packs].sort();
 }
 
@@ -83,36 +79,27 @@ test('asset-preloader stays lightweight with no three or levels imports', () => 
 });
 
 test('ENEMY_MODEL_ASSETS stays in sync with GLB_TANK_MODELS in models.js', () => {
-  const modelsSrc = fs.readFileSync(path.join(PUBLIC_DIR, 'src/game/render/models.js'), 'utf8');
-  const bossUrls = {};
-  for (const [, name, url] of modelsSrc.matchAll(
-    /const\s+([A-Z]+)_GLB_MODEL\s*=\s*Object\.freeze\(\{\s*url:\s*'([^']+)'/g
-  )) {
-    bossUrls[`${name}_GLB_MODEL`] = url;
+  const actualByValue = {};
+  for (const [key, url] of Object.entries(ENEMY_MODEL_ASSETS)) {
+    const cls = EnemyClass[key];
+    assert.ok(cls, `ENEMY_MODEL_ASSETS key ${key} must exist in EnemyClass`);
+    actualByValue[cls] = url;
   }
+  const expectedByValue = Object.fromEntries(
+    Object.entries(GLB_TANK_MODELS).map(([cls, cfg]) => [cls, cfg.url])
+  );
 
-  const blockMatch = modelsSrc.match(/const GLB_TANK_MODELS = Object\.freeze\(\{([\s\S]*?)\n\}\);/);
-  assert.ok(blockMatch, 'Could not locate GLB_TANK_MODELS in models.js');
-
-  const expected = {};
-  for (const [, cls, directUrl, bossRef] of blockMatch[1].matchAll(
-    /\[EnemyClass\.([A-Z0-9_]+)\]:\s*(?:\{\s*url:\s*'([^']+)'|([A-Z]+_GLB_MODEL))/g
-  )) {
-    expected[cls] = directUrl || bossUrls[bossRef];
-  }
-
-  assert.deepEqual(ENEMY_MODEL_ASSETS, expected);
+  assert.equal(Object.keys(ENEMY_MODEL_ASSETS).length, Object.keys(GLB_TANK_MODELS).length);
+  assert.deepEqual(actualByValue, expectedByValue);
 });
 
-test('CAMPAIGN_LANDMARK_PACKS and CONTRACT_ASSETS stay in sync with map JSON files', () => {
-  const kindToPack = parseLandmarkKindToPack();
-
+test('CAMPAIGN_LANDMARK_PACKS, CONTRACT_ASSETS, MAP_JSON_ASSETS, and PRIORITY_AUDIO_ASSETS stay in sync with game manifests', () => {
   const campaignDir = path.join(PUBLIC_DIR, 'maps/campaign');
   const expectedCampaignPacks = {};
   for (const file of fs.readdirSync(campaignDir).sort()) {
     if (!file.endsWith('.json')) continue;
     const data = JSON.parse(fs.readFileSync(path.join(campaignDir, file), 'utf8'));
-    const packs = extractMapPacks(data, kindToPack);
+    const packs = extractMapPacks(data);
     if (packs.length > 0) {
       const missionId = `campaign-${String(data.id).padStart(2, '0')}`;
       expectedCampaignPacks[missionId] = packs;
@@ -128,30 +115,19 @@ test('CAMPAIGN_LANDMARK_PACKS and CONTRACT_ASSETS stay in sync with map JSON fil
     const id = data.contractId || data.mapId;
     const entry = {
       enemies: extractMapEnemies(data),
-      landmarkPacks: extractMapPacks(data, kindToPack),
+      landmarkPacks: extractMapPacks(data),
     };
-    if (CONTRACT_ASSETS[id]?.turrets) {
-      entry.turrets = [...CONTRACT_ASSETS[id].turrets];
+    if (resolveMapRules(data).hasEnemyFortifiedBase) {
+      entry.turrets = ['CANNON', 'HOWITZER'];
     }
     expectedContracts[id] = entry;
   }
   assert.deepEqual(CONTRACT_ASSETS, expectedContracts);
 
-  const levelsSrc = fs.readFileSync(path.join(PUBLIC_DIR, 'src/game/levels.js'), 'utf8');
-  const importedMapUrls = [...levelsSrc.matchAll(/from\s+['"]\.\.\/\.\.\/(maps\/[^'"]+\.json)['"]/g)]
-    .map((m) => `./${m[1]}`)
-    .sort();
-  assert.deepEqual([...Object.values(MAP_JSON_ASSETS)].sort(), importedMapUrls);
+  const sectorMapIds = SECTORS.map((s) => s.contractId || s.mapId).sort();
+  assert.deepEqual(Object.keys(MAP_JSON_ASSETS).sort(), sectorMapIds);
 
-  const soundSrc = fs.readFileSync(path.join(PUBLIC_DIR, 'src/game/sound.js'), 'utf8');
-  const audioAssetsBlock = soundSrc.match(/const AUDIO_ASSETS = \{([\s\S]*?)\};/)?.[1] || '';
-  const audioMap = {};
-  for (const [, k, v] of audioAssetsBlock.matchAll(/([a-z0-9_]+):\s*'([^']+)'/g)) {
-    audioMap[k] = `./${v}`;
-  }
-  const priorityBlock = soundSrc.match(/const priorityKeys = new Set\(\[([\s\S]*?)\]\);/)?.[1] || '';
-  const expectedPriorityAudio = [...priorityBlock.matchAll(/'([a-z0-9_]+)'/g)].map(([, k]) => audioMap[k]);
-  assert.deepEqual(PRIORITY_AUDIO_ASSETS, expectedPriorityAudio);
+  assert.deepEqual(PRIORITY_AUDIO_ASSETS, getPriorityAudioAssets());
 });
 
 test('shouldSkipPreload respects saveData and slow connections', () => {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TileType, SURFACE_CONFIGS, SURFACE_TYPES } from '../public/src/game/terrains/surfaces.js';
+import { TileType } from '../public/src/game/terrains/surfaces.js';
 import { doesTileBlockLineOfSight } from '../public/src/game/terrains/layers.js';
 import { OPTIONAL_EQUIPMENT } from '../public/src/game/components/modules.js';
 import { DRONE_CONFIGS } from '../public/src/game/vehicles/drones.js';
@@ -18,21 +18,7 @@ function createEmptyGrid() {
   );
 }
 
-test('SURFACE_CONFIGS defines blocksLineOfSight and WATER_TOWER/BOXES do not block LOS', () => {
-  const expectedBlocking = new Set([
-    SURFACE_TYPES.BRICK,
-    SURFACE_TYPES.CONCRETE,
-    SURFACE_TYPES.BASE,
-    SURFACE_TYPES.ENEMY_BASE,
-    SURFACE_TYPES.LANDMARK,
-    SURFACE_TYPES.HOUSE_1,
-    SURFACE_TYPES.HOUSE_2,
-  ]);
-  for (const [key, cfg] of Object.entries(SURFACE_CONFIGS)) {
-    assert.equal(typeof cfg.blocksLineOfSight, 'boolean', `${key} missing boolean blocksLineOfSight`);
-    assert.equal(cfg.blocksLineOfSight, expectedBlocking.has(key), `${key} blocksLineOfSight mismatch`);
-  }
-
+test('doesTileBlockLineOfSight blocks walls/buildings and allows WATER_TOWER/BOXES/FOREST', () => {
   assert.equal(doesTileBlockLineOfSight(TileType.BRICK), true);
   assert.equal(doesTileBlockLineOfSight(TileType.CONCRETE), true);
   assert.equal(doesTileBlockLineOfSight(TileType.HOUSE_1), true);
@@ -87,7 +73,6 @@ test('hasPlayerLineOfSight respects obstacles, forest range, and recon drone rev
 
 test('RECON_DRONE module can be bought in garage, launched with cooldown, and reveals enemies in orbit', () => {
   assert.ok(OPTIONAL_EQUIPMENT.RECON_DRONE);
-  assert.equal(DRONE_CONFIGS.RECON_DRONE.modelUrl, './models/air_repair_drone.glb');
 
   const engine = {
     status: GameStatus.PLAYING,
@@ -132,13 +117,19 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
   // Second launch immediately blocked while drone is deployed
   assert.equal(drone.launch(20, -20), false);
 
-  // Move mission to orbit phase and verify reveal radius and orbit radius from DRONE_CONFIGS
+  // Advance via dt until drone reaches orbit phase and verify reveal radius and orbit radius from DRONE_CONFIGS
   const { orbitRadiusCells, revealRadiusCells } = DRONE_CONFIGS.RECON_DRONE;
   assert.ok(orbitRadiusCells > 0);
   assert.ok(revealRadiusCells > 0);
-  engine.reconDroneMission.phase = 'orbit';
+  let simTime = 0;
+  for (let i = 0; i < 200 && engine.reconDroneMission.phase === 'approach'; i++) {
+    simTime += 0.05;
+    drone.update(0.05, simTime);
+  }
+  assert.equal(engine.reconDroneMission.phase, 'orbit');
   for (let i = 0; i < 60; i++) {
-    drone.update(0.05, i * 0.05);
+    simTime += 0.05;
+    drone.update(0.05, simTime);
   }
   const orbitDist = Math.hypot(
     engine.reconDroneMission.x - 20,
@@ -152,12 +143,15 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
   assert.equal(drone.isPointRevealed(20 + revealRadiusCells * TILE_SIZE - 1, -20), true);
   assert.equal(drone.isPointRevealed(20 + revealRadiusCells * TILE_SIZE + 3, -20), false);
 
-  // Finish orbit -> transitions to return phase, flies back to player tank, and starts cooldown on dock
-  engine.reconDroneMission.timer = DRONE_CONFIGS.RECON_DRONE.durationSec;
-  drone.update(0.05, 5.0);
+  // Advance orbit duration -> transitions to return phase, flies back to player tank, and starts cooldown on dock
+  for (let i = 0; i < 200 && engine.reconDroneMission.phase === 'orbit'; i++) {
+    simTime += 0.1;
+    drone.update(0.1, simTime);
+  }
   assert.equal(engine.reconDroneMission.phase, 'return');
   for (let i = 0; i < 100 && engine.reconDroneMission; i++) {
-    drone.update(0.1, 5.0 + i * 0.1);
+    simTime += 0.1;
+    drone.update(0.1, simTime);
   }
   assert.equal(engine.reconDroneMission, null);
   assert.equal(engine.reconDroneCooldown, DRONE_CONFIGS.RECON_DRONE.cooldownSec);

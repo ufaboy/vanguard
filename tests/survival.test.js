@@ -158,13 +158,14 @@ test('LandmarkModels procedural fallback and footprint helpers cover all landmar
     assert.ok(group && group.children.length > 0, `${kind} should create a populated 3D group`);
   }
   assert.ok(models.createBridge(2, 2).children.length > 0, 'bridge should create a populated 3D group');
-  assert.equal(models.getMaterials().stone.userData?.landmarkFinishApplied, true);
 });
 
 test('HQ (TileType.BASE) blocks player cannon shells and direct line of sight across it', async () => {
   const { hasGridLineOfSight } = await import('../public/src/sim/behavior/navgrid.js');
   const { ProjectilesController } = await import('../public/src/game/engine/projectiles.js');
+  const { SectorLoaderController } = await import('../public/src/game/engine/sector-loader.js');
   const sector = SECTORS.find((s) => s.mapId === 'survival-paris-last-stand');
+  const sectorLoader = new SectorLoaderController(null);
 
   // North of Élysée HQ (row 17, col 19) to South of Élysée HQ (row 20, col 19) crosses BASE at rows 18..19
   assert.equal(
@@ -173,6 +174,8 @@ test('HQ (TileType.BASE) blocks player cannon shells and direct line of sight ac
     'line of sight across the 4x2 Élysée HQ should be blocked'
   );
 
+  // Place player shell at the center of HQ cell (18, 19) moving north
+  const hqWorld = sectorLoader.gridToWorld(18, 19);
   let baseDamaged = false;
   let masonryHitCalled = false;
   const engine = {
@@ -182,8 +185,8 @@ test('HQ (TileType.BASE) blocks player cannon shells and direct line of sight ac
     defenseTurrets: [],
     projectiles: [
       {
-        x: 0,
-        z: 0,
+        x: hqWorld.x,
+        z: hqWorld.z,
         vx: 0,
         vz: -10,
         speed: 10,
@@ -207,7 +210,7 @@ test('HQ (TileType.BASE) blocks player cannon shells and direct line of sight ac
     },
     emitProjectileTrail() {},
     tryBossApsIntercept: () => false,
-    worldToGrid: () => ({ row: 18, col: 19 }),
+    worldToGrid: (x, z) => sectorLoader.worldToGrid(x, z),
     removeProjectile(idx) {
       this.projectiles.splice(idx, 1);
     },

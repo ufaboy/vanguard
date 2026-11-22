@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { ConcreteModels, concreteDamageState } from '../public/src/game/terrains/concrete-models.js';
 import { ModelFactory } from '../public/src/game/render/models.js';
 import { TileBatcher } from '../public/src/game/render/tile-batcher.js';
-import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
+import { TerrainDestructionController } from '../public/src/game/engine/terrain-destruction.js';
 import { TileType } from '../public/src/game/types.js';
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -21,11 +21,20 @@ function fixture() {
   models.prepareMaterials();
   const source = new THREE.Group();
   const batcher = new TileBatcher(source);
-  const factory = Object.assign(Object.create(ModelFactory.prototype), { concreteModels: models, useBlenderConcrete: true });
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
-    modelFactory: factory, mapGroup: source, tileBatcher: batcher, brickRubble: [], blocksDestroyed: 0,
-    gridToWorld: () => ({ x: 10, z: 20 }), fx: { masonryHit() {}, blockDestroyed() {} },
-  });
+  const factory = new ModelFactory(null, false, null, { headless: true, concreteModels: models, useBlenderConcrete: true });
+  const engine = {
+    modelFactory: factory,
+    mapGroup: source,
+    tileBatcher: batcher,
+    brickRubble: [],
+    blocksDestroyed: 0,
+    gridToWorld: () => ({ x: 10, z: 20 }),
+    fx: { masonryHit() {}, blockDestroyed() {} },
+  };
+  const destruction = new TerrainDestructionController(engine);
+  engine.damageTileCell = (...args) => destruction.damageTileCell(...args);
+  engine.destroyTileCell = (c) => destruction.destroyTileCell(c);
+  engine.updateBrickRubble = (dt) => destruction.updateBrickRubble(dt);
   const root = factory.createConcreteBlock();
   root.position.set(10, 0, 20);
   source.add(root);
@@ -33,8 +42,6 @@ function fixture() {
   const cell = { row: 3, col: 5, type: TileType.CONCRETE, hp: 16, maxHp: 16, mesh: root };
   return { models, source, batcher, factory, engine, root, cell };
 }
-
-const instances = batcher => [...batcher.batches.values()].reduce((sum, b) => sum + b.mesh.count, 0);
 
 test('Deployed CONCRETE asset includes every damage state with one shared texture and material', async () => {
   const io = new NodeIO()
@@ -87,17 +94,17 @@ test('Concrete breaks open toward the hits, darkens per hit and stays in one bat
   engine.damageTileCell(cell, 4, 11, 20); batcher.sync();
   assert.equal(root.children[0].geometry, models.variants.get('L2'), 'the earlier -Z hit now shows');
   assert.equal(root.rotation.y, Math.PI / 2, 'faces +X and -Z');
-  assert.equal(instances(batcher), 1);
+  assert.equal(batcher.getInstanceCount(), 1);
 
-  const before = batcher.batches.size;
+  const before = batcher.getBatchCount();
   const second = engine.modelFactory.createConcreteBlock();
   root.parent.add(second);
   engine.damageTileCell({ ...cell, hp: 16, mesh: second }, 6, 10.1, 21);
   engine.damageTileCell({ ...cell, hp: 10, mesh: second }, 1, 11, 20); batcher.sync();
   assert.equal(second.children[0].geometry, models.variants.get('L2'));
   assert.notEqual(second.children[0].material, tinted);
-  assert.equal(batcher.batches.size, before, 'differently tinted blocks share one instanced batch');
-  assert.equal(instances(batcher), 2);
+  assert.equal(batcher.getBatchCount(), before, 'differently tinted blocks share one instanced batch');
+  assert.equal(batcher.getInstanceCount(), 2);
   batcher.reset(); models.dispose();
 });
 
@@ -126,21 +133,23 @@ test('A blast breaches the corner it came from and destroyed concrete becomes pe
   assert.deepEqual(source.children, [rubbleGroup]);
   engine.updateBrickRubble(13); batcher.sync();
   assert.equal(source.children.length, 1);
-  assert.equal(instances(batcher), 1);
+  assert.equal(batcher.getInstanceCount(), 1);
   batcher.reset(); models.dispose();
 });
 
 test('Procedural concrete keeps working and upgrades in place once the models arrive', () => {
   const models = new ConcreteModels();
   const mat = () => new THREE.MeshStandardMaterial();
-  const factory = Object.assign(Object.create(ModelFactory.prototype), {
-    concreteModels: models, useBlenderConcrete: true,
+  const factory = new ModelFactory(null, false, null, {
+    headless: true,
+    concreteModels: models,
+    useBlenderConcrete: true,
     concreteMats: { side: mat(), top: mat(), cap: mat(), rebar: mat(), rustRebar: mat(), fracture: mat() },
   });
   const block = factory.createConcreteBlock();
-  assert.ok(block.userData.slabMesh, 'procedural until the GLB is loaded');
+  assert.ok(block.getObjectByName('concrete-slab'), 'procedural until the GLB is loaded');
   factory.updateConcreteBlockDamage(block, 8, 16, { dx: 0, dz: 1 });
-  assert.equal(block.userData.rebarGroup.visible, true);
+  assert.equal(block.getObjectByName('concrete-rebar').visible, true);
 
   models.material = mat();
   for (let state = 0; state <= 4; state++) models.states.set(state, new THREE.BoxGeometry(1, state + 1, 1));
@@ -148,6 +157,6 @@ test('Procedural concrete keeps working and upgrades in place once the models ar
   factory.updateConcreteBlockDamage(block, block.userData.concreteHp, block.userData.concreteMaxHp);
   assert.equal(block.children.length, 1);
   assert.equal(block.children[0].geometry, models.states.get(2));
-  assert.equal(block.userData.slabMesh, null);
+  assert.equal(block.getObjectByName('concrete-slab'), undefined);
   models.dispose();
 });

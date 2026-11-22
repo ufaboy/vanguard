@@ -6,6 +6,8 @@ import {
   MISSILE,
   TRACK_UPGRADE_COSTS,
   UPGRADE_MAX_LEVEL,
+  getMaxApsAmmo,
+  getMaxMissileAmmo,
 } from '../constants.js';
 import { DRONE_CONFIGS } from '../vehicles/drones.js';
 import { GameStatus, TileType } from '../types.js';
@@ -66,7 +68,7 @@ export class HangarOps {
     if (open) {
       if (e.status === GameStatus.PLAYING || e.status === GameStatus.BOSS_INTRO) {
         if (!e.inBaseRepairZone) {
-          e.setStatusBanner(
+          e.setStatusBanner?.(
             t('GARAGE UNAVAILABLE: RETURN TO ALLIED BASE REPAIR ZONE TO UPGRADE'),
             2.5
           );
@@ -79,17 +81,41 @@ export class HangarOps {
       e.isHangarPaused = e.status !== GameStatus.MENU;
       e.keys = {};
       e.isMouseDown = false;
-      e.hangarStage ||= new HangarStage(e.modelFactory, e.scene.environment, e.isSoftwareGl);
-      e.syncAudioPauseState();
-      e.emitHudUpdate();
+      if (!e.hangarStage && e.modelFactory && e.scene) {
+        e.hangarStage = new HangarStage(e.modelFactory, e.scene.environment, e.isSoftwareGl);
+      }
+      e.syncAudioPauseState?.();
+      e.emitHudUpdate?.();
       return true;
     } else {
       e.isHangarOpen = false;
       e.isHangarPaused = false;
-      e.setInspectMode(false);
-      e.syncAudioPauseState();
-      e.emitHudUpdate();
+      e.setInspectMode?.(false);
+      e.syncAudioPauseState?.();
+      e.emitHudUpdate?.();
       return true;
+    }
+  }
+
+  stepOpenFrame(dt, elapsed) {
+    const e = this.engine;
+    if (!e.isHangarOpen) return false;
+    e.hangarStage?.update?.(dt, e.effectiveUpgrades, e.missileAmmo, e.apsAmmo, elapsed);
+    this.tickBaseMaintenance(dt);
+    return true;
+  }
+
+  tickBaseMaintenance(dt) {
+    const e = this.engine;
+    if (!e.isHangarPaused || e.isAdPaused || e.status !== GameStatus.PLAYING) return;
+    const repairedAny = e.playerController?.updateBaseMaintenance?.(dt);
+    if (repairedAny) {
+      e.hudSyncAccumulator = (e.hudSyncAccumulator || 0) + dt;
+      const hudInterval = e.quality === 'low' ? 0.2 : 0.12;
+      if (e.hudSyncAccumulator >= hudInterval) {
+        e.hudSyncAccumulator = 0;
+        e.emitHudUpdate?.();
+      }
     }
   }
 
@@ -133,9 +159,13 @@ export class HangarOps {
     }
     e.playerSave.credits -= repairCost;
     e.componentDamage[track] = false;
-    e.recomputePlayerStats(true);
-    e.persistComponentDamage();
-    e.emitHudUpdate();
+    e.recomputePlayerStats?.(true);
+    if (e.persistComponentDamage) {
+      e.persistComponentDamage();
+    } else {
+      this.persistComponentDamage();
+    }
+    e.emitHudUpdate?.();
     return { success: true, reason: t('{track} restored to Tier {tier}. Paid ${repairCost}.', { track: trackLabel(track), tier: e.upgrades[track], repairCost }) };
   }
 
@@ -144,9 +174,13 @@ export class HangarOps {
     e.componentDamage = Object.fromEntries(COMPONENT_TRACKS.map((t) => [t, false]));
     e.componentDamageCooldown = 0;
     e.componentWaterEgress = false;
-    e.persistComponentDamage();
-    e.recomputePlayerStats(true);
-    e.emitHudUpdate();
+    if (e.persistComponentDamage) {
+      e.persistComponentDamage();
+    } else {
+      this.persistComponentDamage();
+    }
+    e.recomputePlayerStats?.(true);
+    e.emitHudUpdate?.();
   }
 
   upgradeTrack(track) {
@@ -171,16 +205,16 @@ export class HangarOps {
 
     e.playerSave.credits -= cost;
     e.upgrades[track] = nextTier;
-    e.syncCampaignCredits();
+    e.syncCampaignCredits?.();
     e.saveRepo?.savePlayerSave?.(e.playerSave);
-    e.saveProgress();
-    e.recomputePlayerStats(true);
+    e.saveProgress?.();
+    e.recomputePlayerStats?.(true);
     sound.playPowerUp();
-    e.setStatusBanner(
+    e.setStatusBanner?.(
       t('{track} UPGRADED TO TIER {nextTier}! (-${cost})', { track: trackLabel(track), nextTier, cost }),
       2.5
     );
-    e.emitHudUpdate();
+    e.emitHudUpdate?.();
     return { success: true, reason: t('Upgraded to Tier {nextTier}', { nextTier }) };
   }
 
@@ -208,7 +242,7 @@ export class HangarOps {
   buyMissile() {
     const e = this.engine;
     if (!e.isHangarOpen) return { success: false, reason: t('Open the garage to purchase missiles.') };
-    const maxMissiles = e.getPlayerMaxMissileAmmo();
+    const maxMissiles = e.getPlayerMaxMissileAmmo ? e.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(e.upgrades?.frame || 1);
     if (e.missileAmmo >= maxMissiles) {
       return { success: false, reason: t('Missile magazine is full ({maxMissiles}).', { maxMissiles }) };
     }
@@ -218,13 +252,13 @@ export class HangarOps {
     }
     e.playerSave.credits -= cost;
     e.missileAmmo++;
-    e.syncCampaignCredits();
+    e.syncCampaignCredits?.();
     e.playerSave.missileAmmo = e.missileAmmo;
-    e.saveRepo.savePlayerSave(e.playerSave);
-    e.recomputePlayerStats(true);
+    e.saveRepo?.savePlayerSave?.(e.playerSave);
+    e.recomputePlayerStats?.(true);
     sound.playPowerUp();
-    e.setStatusBanner(t('+1 MISSILE PURCHASED! ({missileAmmo}/{maxMissiles}) (-${cost})', { missileAmmo: e.missileAmmo, maxMissiles, cost }), 2.5);
-    e.emitHudUpdate();
+    e.setStatusBanner?.(t('+1 MISSILE PURCHASED! ({missileAmmo}/{maxMissiles}) (-${cost})', { missileAmmo: e.missileAmmo, maxMissiles, cost }), 2.5);
+    e.emitHudUpdate?.();
     return { success: true, reason: t('+1 missile purchased ({missileAmmo}/{maxMissiles}).', { missileAmmo: e.missileAmmo, maxMissiles }) };
   }
 
@@ -233,7 +267,7 @@ export class HangarOps {
     if (!e.isHangarOpen) {
       return { success: false, reason: t('Open the garage to purchase APS charges.') };
     }
-    const maxAps = e.getPlayerMaxApsAmmo();
+    const maxAps = e.getPlayerMaxApsAmmo ? e.getPlayerMaxApsAmmo() : getMaxApsAmmo(e.upgrades?.frame || 1);
     const currentTotal = e.apsAmmo.reduce((a, b) => a + b, 0);
     if (currentTotal >= maxAps) {
       return { success: false, reason: t('APS magazine is already at maximum capacity ({maxAps} charges).', { maxAps }) };
@@ -248,18 +282,22 @@ export class HangarOps {
     }
 
     e.playerSave.credits -= cost;
-    e.addApsRounds(1);
-    e.syncCampaignCredits();
+    if (e.addApsRounds) {
+      e.addApsRounds(1);
+    } else {
+      e.playerController?.addApsRounds?.(1);
+    }
+    e.syncCampaignCredits?.();
     e.playerSave.apsAmmo = [...e.apsAmmo];
     e.playerSave.repairKitCharges = e.repairKitState?.charges ?? 0;
-    e.saveRepo.savePlayerSave(e.playerSave);
+    e.saveRepo?.savePlayerSave?.(e.playerSave);
     sound.playPowerUp();
     const newTotal = e.apsAmmo.reduce((a, b) => a + b, 0);
-    e.setStatusBanner(
+    e.setStatusBanner?.(
       t('+1 APS CHARGE PURCHASED! ({newTotal}/{maxAps}) (-${cost})', { newTotal, maxAps, cost }),
       2.5
     );
-    e.emitHudUpdate();
+    e.emitHudUpdate?.();
     return { success: true, total: newTotal, reason: t('+1 APS charge purchased ({newTotal}/{maxAps}).', { newTotal, maxAps }) };
   }
 

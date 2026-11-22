@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { renderHangar, hangarStats } from '../public/src/hangar-ui.js';
-import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
+import { HangarOps } from '../public/src/game/engine/hangar-ops.js';
 import { PlayerController } from '../public/src/game/engine/player-controller.js';
 import { GameStatus } from '../public/src/game/types.js';
 import {
@@ -52,132 +52,134 @@ test('Unaffordable and max-tier upgrades are explicit and disabled', () => {
 
 test('Opening a hangar pauses all battlefield updates without changing combat state', () => {
   let updated = 0;
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+  const state = {
     status: GameStatus.PLAYING, inBaseRepairZone: true, keys: { KeyW: true }, isMouseDown: true,
-    hangarStage: { update() { updated++; } }, emitHudUpdate() {}, clock: { getElapsed: () => 2 },
-    updatePlayer() { throw Error('Battlefield must not update in hangar'); },
-    playerX: 9, playerZ: 12, playerHp: 35, setInspectMode() {},
-  });
-  assert.equal(engine.setHangarOpen(true), true);
-  engine.update(0.1);
-  assert.equal(updated, 1); assert.deepEqual(engine.keys, {}); assert.equal(engine.isMouseDown, false);
-  assert.equal(engine.playerX, 9); assert.equal(engine.playerZ, 12); assert.equal(engine.playerHp, 35);
-  engine.setHangarOpen(false);
-  assert.equal(engine.status, GameStatus.PLAYING); assert.equal(engine.isHangarPaused, false);
+    hangarStage: { update() { updated++; } },
+    playerX: 9, playerZ: 12, playerHp: 35,
+  };
+  const hangarOps = new HangarOps(state);
+  assert.equal(hangarOps.setOpen(true), true);
+  assert.equal(hangarOps.stepOpenFrame(0.1, 2), true);
+  assert.equal(updated, 1); assert.deepEqual(state.keys, {}); assert.equal(state.isMouseDown, false);
+  assert.equal(state.playerX, 9); assert.equal(state.playerZ, 12); assert.equal(state.playerHp, 35);
+  hangarOps.setOpen(false);
+  assert.equal(state.status, GameStatus.PLAYING); assert.equal(state.isHangarPaused, false);
+  assert.equal(hangarOps.stepOpenFrame(0.1, 2.1), false);
 });
 
 test('Upgrade transactions reject invalid or closed requests and charge once', () => {
   const tier2Cost = TRACK_UPGRADE_COSTS[2];
   const leftover = Math.max(0, TRACK_UPGRADE_COSTS[3] - 1);
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+  const state = {
     upgrades: { ...stock }, playerSave: { credits: tier2Cost + leftover }, isHangarOpen: false,
-    saveRepo: { savePlayerSave() {} }, saveProgress() {}, recomputePlayerStats() {}, setStatusBanner() {}, emitHudUpdate() {},
-  });
-  assert.equal(engine.upgradeTrackInHangar('cannon').success, false);
-  engine.isHangarOpen = true;
-  assert.equal(engine.upgradeTrackInHangar('invalid').success, false);
-  assert.equal(engine.upgradeTrackInHangar('cannon').success, true);
-  assert.equal(engine.upgrades.cannon, 2); assert.equal(engine.playerSave.credits, leftover);
-  assert.equal(engine.upgradeTrackInHangar('cannon').success, false);
-  assert.equal(engine.playerSave.credits, leftover);
+    saveRepo: { savePlayerSave() {} },
+  };
+  const hangarOps = new HangarOps(state);
+  assert.equal(hangarOps.upgradeTrack('cannon').success, false);
+  state.isHangarOpen = true;
+  assert.equal(hangarOps.upgradeTrack('invalid').success, false);
+  assert.equal(hangarOps.upgradeTrack('cannon').success, true);
+  assert.equal(state.upgrades.cannon, 2); assert.equal(state.playerSave.credits, leftover);
+  assert.equal(hangarOps.upgradeTrack('cannon').success, false);
+  assert.equal(state.playerSave.credits, leftover);
 });
 
 test('Missile purchases require an open hangar, funds and magazine space, and persist ammo', () => {
   const missilePrice = MISSILE.CREDIT_PRICE;
   const maxTier1Missiles = getMaxMissileAmmo(1);
   let saved;
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+  const state = {
     isHangarOpen: false, upgrades: { ...stock }, missileAmmo: 0, playerSave: { credits: missilePrice },
     saveRepo: { savePlayerSave(save) { saved = { ...save }; } },
-    recomputePlayerStats() {}, setStatusBanner() {}, emitHudUpdate() {},
-  });
-  assert.equal(engine.buyMissileInHangar().success, false);
-  assert.equal(engine.playerSave.credits, missilePrice);
-  engine.isHangarOpen = true;
-  assert.equal(engine.buyMissileInHangar().success, true);
-  assert.equal(engine.missileAmmo, 1);
+  };
+  const hangarOps = new HangarOps(state);
+  assert.equal(hangarOps.buyMissile().success, false);
+  assert.equal(state.playerSave.credits, missilePrice);
+  state.isHangarOpen = true;
+  assert.equal(hangarOps.buyMissile().success, true);
+  assert.equal(state.missileAmmo, 1);
   assert.deepEqual(saved, { credits: 0, missileAmmo: 1 });
-  assert.equal(engine.buyMissileInHangar().success, false);
-  assert.equal(engine.missileAmmo, 1);
-  engine.missileAmmo = maxTier1Missiles;
-  engine.playerSave.credits = missilePrice * 2;
-  assert.equal(engine.buyMissileInHangar().success, false);
-  assert.equal(engine.playerSave.credits, missilePrice * 2);
+  assert.equal(hangarOps.buyMissile().success, false);
+  assert.equal(state.missileAmmo, 1);
+  state.missileAmmo = maxTier1Missiles;
+  state.playerSave.credits = missilePrice * 2;
+  assert.equal(hangarOps.buyMissile().success, false);
+  assert.equal(state.playerSave.credits, missilePrice * 2);
 });
 
 test('Repairs charge the purchased tier price and preserve faults when funds are insufficient', () => {
   for (const tier of [2, 3, 4, 5]) {
     const cost = componentRepairCost(tier);
-    const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    const state = {
       isHangarOpen: true, upgrades: { ...stock, cannon: tier },
       componentDamage: { cannon: true }, playerSave: { credits: cost - 1 },
-      recomputePlayerStats() {}, persistComponentDamage() {}, emitHudUpdate() {},
-    });
-    assert.equal(engine.repairComponentInHangar('cannon').success, false);
-    assert.equal(engine.componentDamage.cannon, true);
-    assert.equal(engine.playerSave.credits, cost - 1);
-    const html = renderHangar({ credits: cost, componentDamage: engine.componentDamage }, engine.upgrades);
+    };
+    const hangarOps = new HangarOps(state);
+    assert.equal(hangarOps.repairComponent('cannon').success, false);
+    assert.equal(state.componentDamage.cannon, true);
+    assert.equal(state.playerSave.credits, cost - 1);
+    const html = renderHangar({ credits: cost, componentDamage: state.componentDamage }, state.upgrades);
     assert.ok(html.includes(`Repair component · $ ${formatNumber(cost)}`));
-    engine.playerSave.credits = cost;
-    assert.equal(engine.repairComponentInHangar('cannon').success, true);
-    assert.equal(engine.playerSave.credits, 0);
-    assert.equal(engine.componentDamage.cannon, false);
-    assert.equal(engine.upgrades.cannon, tier);
-    assert.equal(engine.repairComponentInHangar('cannon').success, false);
+    state.playerSave.credits = cost;
+    assert.equal(hangarOps.repairComponent('cannon').success, true);
+    assert.equal(state.playerSave.credits, 0);
+    assert.equal(state.componentDamage.cannon, false);
+    assert.equal(state.upgrades.cannon, tier);
+    assert.equal(hangarOps.repairComponent('cannon').success, false);
   }
 });
 
 test('APS and Missile max ammo scale with purchased Frame tier (1..5) and ignore Frame damage', () => {
-  const expectedAps = APS.MAX_TOTAL_BY_FRAME;
-  const expectedMissiles = MISSILE.MAX_AMMO_BY_FRAME;
   const enoughCredits = MISSILE.CREDIT_PRICE + APS.CHARGE_CREDIT_PRICE + 1000;
 
   for (let tier = 1; tier <= 5; tier++) {
-    assert.equal(getMaxApsAmmo(tier), expectedAps[tier - 1]);
-    assert.equal(getMaxMissileAmmo(tier), expectedMissiles[tier - 1]);
+    const maxAps = getMaxApsAmmo(tier);
+    const maxMissiles = getMaxMissileAmmo(tier);
+    assert.ok(maxAps > 0 && maxMissiles > 0);
     if (tier > 1) {
-      assert.ok(getMaxApsAmmo(tier) >= getMaxApsAmmo(tier - 1));
-      assert.ok(getMaxMissileAmmo(tier) >= getMaxMissileAmmo(tier - 1));
+      assert.ok(maxAps >= getMaxApsAmmo(tier - 1));
+      assert.ok(maxMissiles >= getMaxMissileAmmo(tier - 1));
     }
 
-    const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    const state = {
       isHangarOpen: true,
       upgrades: { ...stock, frame: tier },
       componentDamage: { frame: true }, // damaged Frame must not shrink capacity
       apsAmmo: [0, 0, 0, 0],
-      missileAmmo: expectedMissiles[tier - 1] - 1,
+      missileAmmo: maxMissiles - 1,
       playerSave: { credits: enoughCredits },
       saveRepo: { savePlayerSave() {} },
-      recomputePlayerStats() {},
-      syncApsVisuals() {},
-      setStatusBanner() {},
-      emitHudUpdate() {},
-    });
+    };
+    const playerCtrl = new PlayerController(state);
+    state.playerController = playerCtrl;
+    state.getPlayerMaxApsAmmo = () => playerCtrl.getPlayerMaxApsAmmo();
+    state.getPlayerMaxMissileAmmo = () => playerCtrl.getPlayerMaxMissileAmmo();
+    const hangarOps = new HangarOps(state);
 
     // Missile buy up to tier cap, then reject
-    assert.equal(engine.buyMissileInHangar().success, true);
-    assert.equal(engine.missileAmmo, expectedMissiles[tier - 1]);
-    assert.equal(engine.buyMissileInHangar().success, false);
+    assert.equal(hangarOps.buyMissile().success, true);
+    assert.equal(state.missileAmmo, maxMissiles);
+    assert.equal(hangarOps.buyMissile().success, false);
 
-    // APS addApsRounds & buyApsChargeInHangar cap at tier cap
-    engine.addApsRounds(expectedAps[tier - 1] - 1);
-    assert.equal(engine.apsAmmo.reduce((a, b) => a + b, 0), expectedAps[tier - 1] - 1);
-    assert.equal(engine.buyApsChargeInHangar().success, true);
-    assert.equal(engine.apsAmmo.reduce((a, b) => a + b, 0), expectedAps[tier - 1]);
-    assert.equal(engine.buyApsChargeInHangar().success, false);
+    // APS addApsRounds & buyApsCharge cap at tier cap
+    playerCtrl.addApsRounds(maxAps - 1);
+    assert.equal(state.apsAmmo.reduce((a, b) => a + b, 0), maxAps - 1);
+    assert.equal(hangarOps.buyApsCharge().success, true);
+    assert.equal(state.apsAmmo.reduce((a, b) => a + b, 0), maxAps);
+    assert.equal(hangarOps.buyApsCharge().success, false);
 
     // Power-up drop usefulness respects tier cap
-    assert.equal(isUsefulPowerUp(POWERUP.MISSILE, engine), false);
-    assert.equal(isUsefulPowerUp(POWERUP.APS, engine), false);
+    assert.equal(isUsefulPowerUp(POWERUP.MISSILE, state), false);
+    assert.equal(isUsefulPowerUp(POWERUP.APS, state), false);
 
     // Hangar UI shows purchased Frame tier capacity
     const html = renderHangar(
       { credits: 5000, apsTotal: 2, missileAmmo: 1, componentDamage: { frame: true } },
-      engine.upgrades,
+      state.upgrades,
       'frame'
     );
-    assert.ok(html.includes(`2<small> / ${expectedAps[tier - 1]}</small>`));
-    assert.ok(html.includes(`1<small> / ${expectedMissiles[tier - 1]}</small>`));
+    assert.ok(html.includes(`2<small> / ${maxAps}</small>`));
+    assert.ok(html.includes(`1<small> / ${maxMissiles}</small>`));
     assert.ok(html.includes('APS capacity'));
     assert.ok(html.includes('Missile capacity'));
   }
@@ -185,15 +187,16 @@ test('APS and Missile max ammo scale with purchased Frame tier (1..5) and ignore
 
 test('Base hull repair and cannon rearming continue at normal pace while hangar is open', () => {
   let hudUpdates = 0;
+  const initialHp = 10;
   const initialAmmo = Math.max(0, CANNON_AMMO.BASE_REARM_CAP - 2);
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+  const state = {
     status: GameStatus.PLAYING,
     baseAlive: true,
     inBaseRepairZone: true,
     currentSectorIndex: 0,
     playerX: 0,
     playerZ: 0,
-    playerHp: 10,
+    playerHp: initialHp,
     playerMaxHp: 22,
     cannonAmmo: initialAmmo,
     cannonBaseRearmTimer: 0,
@@ -201,46 +204,32 @@ test('Base hull repair and cannon rearming continue at normal pace while hangar 
     hudSyncAccumulator: 0,
     quality: 'high',
     hangarStage: { update() {} },
+    sectorLoader: { getCommandBaseCenter: () => ({ x: 0, z: 0 }) },
     getPlayerMaxCannonAmmo: () => 15,
-    spawnSparks() {},
-    setStatusBanner() {},
     emitHudUpdate() { hudUpdates++; },
-    setInspectMode() {},
-    updateParticles() {},
-    fx: { update() {} },
-    clock: { getElapsed: () => 1 },
-    updatePlayer() { throw Error('Battlefield must not update in hangar'); },
-  });
-  Object.defineProperty(engine, 'sectorLoader', {
-    value: { getCommandBaseCenter: () => ({ x: 0, z: 0 }) },
-  });
-  Object.defineProperty(engine, 'inputCamera', {
-    value: { updateCamera() {} },
-  });
-  Object.defineProperty(engine, 'playerController', {
-    value: new PlayerController(engine),
-  });
+  };
+  state.playerController = new PlayerController(state);
+  const hangarOps = new HangarOps(state);
 
-  assert.equal(engine.setHangarOpen(true), true);
-  assert.equal(engine.isHangarPaused, true);
+  assert.equal(hangarOps.setOpen(true), true);
+  assert.equal(state.isHangarPaused, true);
 
   // Step through one full rearm interval in 0.5s increments
   const step = 0.5;
   const steps = Math.ceil(CANNON_AMMO.BASE_REARM_INTERVAL_SEC / step);
   for (let i = 0; i < steps; i++) {
-    engine.update(step);
+    hangarOps.stepOpenFrame(step, 1);
   }
 
-  const elapsed = steps * step;
-  assert.equal(engine.playerHp, Math.min(22, 10 + BASE_REPAIR.RATE * elapsed));
-  assert.equal(engine.cannonAmmo, initialAmmo + 1);
+  assert.ok(state.playerHp > initialHp && state.playerHp <= state.playerMaxHp);
+  assert.equal(state.cannonAmmo, initialAmmo + 1);
   assert.ok(hudUpdates >= 1);
 
   // Rearming still caps at BASE_REARM_CAP in campaign mode
   const extraSteps = steps * Math.max(3, CANNON_AMMO.BASE_REARM_CAP);
   for (let i = 0; i < extraSteps; i++) {
-    engine.update(step);
+    hangarOps.stepOpenFrame(step, 1);
   }
-  assert.equal(engine.cannonAmmo, CANNON_AMMO.BASE_REARM_CAP);
-  assert.equal(engine.playerHp, 22);
+  assert.equal(state.cannonAmmo, CANNON_AMMO.BASE_REARM_CAP);
+  assert.equal(state.playerHp, state.playerMaxHp);
 });

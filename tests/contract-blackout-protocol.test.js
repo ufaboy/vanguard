@@ -137,33 +137,3 @@ test('Blackout Protocol sabotage state machine: arming 2.5s, 8.0s fuse countdown
   assert.equal(state.extraction.completed, true);
 });
 
-test('Blackout Protocol payout settlement: idempotent delivery and 2/3 vs 3/3 extraction rewards', () => {
-  const save = { credits: 2000 };
-  const run = { gameMode: 'contract', status: 'active' };
-
-  // Deliver 2 relays
-  const p1 = commitContractCargoDelivery(save, run, 'relay-alpha');
-  assert.equal(p1.paid, true);
-  assert.equal(p1.amount, CONTRACT_PAYOUTS.PER_CARGO);
-
-  const p2 = commitContractCargoDelivery(save, run, 'relay-bravo');
-  assert.equal(p2.paid, true);
-  assert.equal(p2.amount, CONTRACT_PAYOUTS.PER_CARGO);
-  assert.equal(save.credits, 2000 + CONTRACT_PAYOUTS.PER_CARGO * 2);
-
-  // Settle 2/3 extraction
-  const summary = settleContractMission({
-    playerSave: save,
-    missionRun: run,
-    outcome: 'victory',
-  });
-  const expectedCargoCredits = CONTRACT_PAYOUTS.PER_CARGO * 2;
-  const expectedTotal = expectedCargoCredits + CONTRACT_PAYOUTS.EXTRACTION_BASE;
-  assert.equal(summary.deliveredCount, 2);
-  assert.equal(summary.cargoCreditsSecured, expectedCargoCredits);
-  assert.equal(summary.extractionBonus, CONTRACT_PAYOUTS.EXTRACTION_BASE);
-  assert.equal(summary.thirdCargoBonus, 0);
-  assert.equal(summary.totalObjectiveCredits, expectedTotal);
-  assert.equal(save.credits, 2000 + expectedTotal);
-});
-

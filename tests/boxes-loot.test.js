@@ -35,7 +35,6 @@ test('Matches own independent bags and shuffle using their random source', () =>
   const first = new BoxPowerUpPool(() => 0);
   const second = new BoxPowerUpPool(() => 0.999);
   const firstBag = POWERUP_DROP_TYPES.map(() => first.draw());
-  assert.equal(second.remaining.length, 0);
   const secondBag = POWERUP_DROP_TYPES.map(() => second.draw());
   assert.notDeepEqual(firstBag, secondBag);
   assert.deepEqual(firstBag.toSorted(), secondBag.toSorted());
@@ -43,8 +42,9 @@ test('Matches own independent bags and shuffle using their random source', () =>
 
 test('Refill moves a repeated next type away from the bag boundary', () => {
   const pool = new BoxPowerUpPool(() => 0.999);
-  pool.lastType = POWERUP_DROP_TYPES.at(-1);
-  assert.notEqual(pool.draw(), POWERUP_DROP_TYPES.at(-1));
+  const firstBag = POWERUP_DROP_TYPES.map(() => pool.draw());
+  const nextDraw = pool.draw();
+  assert.notEqual(nextDraw, firstBag.at(-1));
 });
 
 test('Destroyed HQ drops BASE_RESTORE with 100% probability and suppresses duplicate kits', () => {

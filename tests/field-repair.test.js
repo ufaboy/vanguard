@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRepairKitState, activateRepairKit, stepRepairKit } from '../public/src/sim/subsystems.js';
-import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
+import { effectiveUpgradeTiers } from '../public/src/sim/component-damage.js';
+import { HangarOps } from '../public/src/game/engine/hangar-ops.js';
+import { PlayerController } from '../public/src/game/engine/player-controller.js';
+import { PowerupsController } from '../public/src/game/engine/powerups-controller.js';
 import { GameStatus } from '../public/src/game/types.js';
 import { POWERUP } from '../public/src/game/powerups.js';
 import { isUsefulPowerUp } from '../public/src/game/powerup-drops.js';
@@ -28,33 +31,37 @@ test('RM-1 consumes one earned charge and regenerates its restoreAmount over cha
 });
 
 test('Surplus REPAIR grants RM-1; activation restores purchased tiers without instant hull healing', () => {
-  const engine = Object.create(TankGameEngine.prototype);
-  Object.assign(engine, {
+  const state = {
     status: GameStatus.PLAYING, repairKitState: createRepairKitState(), subsystems: {},
     playerHp: 52, playerMaxHp: 52, missileAmmo: 0,
     upgrades: { cannon: 3, chassis: 3, frame: 3, engine: 3, armor: 3 },
     componentDamage: { cannon: true, frame: true, engine: true },
     componentDamageCooldown: 8, playerSave: { credits: 800 },
-    saveRepo: { savePlayerSave() {} }, emitHudUpdate() {}, setStatusBanner() {},
-  });
-  assert.equal(isUsefulPowerUp(POWERUP.REPAIR, engine), true);
-  engine.applyPowerUp(POWERUP.REPAIR);
-  assert.equal(engine.repairKitState.charges, 1);
-  assert.equal(engine.playerHp, 52);
-  engine.playerHp = 10;
-  engine.activateModuleSlot(1);
-  assert.equal(engine.playerHp, 10);
-  assert.equal(engine.repairKitState.charges, 0);
-  assert.equal(Object.values(engine.componentDamage).some(Boolean), false);
-  assert.equal(engine.effectiveUpgrades.frame, 3);
-  assert.equal(engine.playerSave.credits, 800);
-  assert.equal(Object.values(engine.playerSave.componentDamage).some(Boolean), false);
+    saveRepo: { savePlayerSave() {} },
+  };
+  const hangarOps = new HangarOps(state);
+  const playerCtrl = new PlayerController(state);
+  const powerups = new PowerupsController(state);
+  state.hangarOps = hangarOps;
+  state.playerController = playerCtrl;
+
+  assert.equal(isUsefulPowerUp(POWERUP.REPAIR, state), true);
+  powerups.applyPowerUp(POWERUP.REPAIR);
+  assert.equal(state.repairKitState.charges, 1);
+  assert.equal(state.playerHp, 52);
+  state.playerHp = 10;
+  playerCtrl.activateModuleSlot(1);
+  assert.equal(state.playerHp, 10);
+  assert.equal(state.repairKitState.charges, 0);
+  assert.equal(Object.values(state.componentDamage).some(Boolean), false);
+  assert.equal(effectiveUpgradeTiers(state.upgrades, state.componentDamage).frame, 3);
+  assert.equal(state.playerSave.credits, 800);
+  assert.equal(Object.values(state.playerSave.componentDamage).some(Boolean), false);
 });
 
 test('RM-1 charges persist in playerSave on pickup/use and restore across mission restarts', () => {
   let saved = null;
-  const engine = Object.create(TankGameEngine.prototype);
-  Object.assign(engine, {
+  const state = {
     status: GameStatus.PLAYING,
     repairKitState: createRepairKitState(0),
     subsystems: {},
@@ -65,14 +72,15 @@ test('RM-1 charges persist in playerSave on pickup/use and restore across missio
     playerSave: { credits: 0 },
     saveRepo: { savePlayerSave(s) { saved = { ...s }; } },
     restoreAllComponents() {},
-    emitHudUpdate() {},
-    setStatusBanner() {},
-  });
+  };
+  const playerCtrl = new PlayerController(state);
+  const powerups = new PowerupsController(state);
+  state.playerController = playerCtrl;
 
   // Surplus REPAIR grants +1 RM-1 charge and persists it
-  engine.applyPowerUp(POWERUP.REPAIR);
-  assert.equal(engine.repairKitState.charges, 1);
-  assert.equal(engine.playerSave.repairKitCharges, 1);
+  powerups.applyPowerUp(POWERUP.REPAIR);
+  assert.equal(state.repairKitState.charges, 1);
+  assert.equal(state.playerSave.repairKitCharges, 1);
   assert.equal(saved.repairKitCharges, 1);
 
   // Restoring from saved repairKitCharges keeps the earned charge
@@ -80,10 +88,10 @@ test('RM-1 charges persist in playerSave on pickup/use and restore across missio
   assert.equal(restored.charges, 1);
 
   // Activating RM-1 decrements and persists 0 charges
-  engine.playerHp = 30;
-  engine.activateModuleSlot(1);
-  assert.equal(engine.repairKitState.charges, 0);
-  assert.equal(engine.playerSave.repairKitCharges, 0);
+  state.playerHp = 30;
+  playerCtrl.activateModuleSlot(1);
+  assert.equal(state.repairKitState.charges, 0);
+  assert.equal(state.playerSave.repairKitCharges, 0);
   assert.equal(saved.repairKitCharges, 0);
 });
 
@@ -105,10 +113,9 @@ test('RM-1 maxCharges scales with Frame tier and has a positive cooldownDuration
 });
 
 test('Air drop repairKits restores RM-1 charges up to frame cap', () => {
-  const engine = Object.create(TankGameEngine.prototype);
   let persisted = null;
   const maxCharges = getMaxRepairKitCharges(5);
-  Object.assign(engine, {
+  const state = {
     upgrades: { cannon: 5, chassis: 5, frame: 5, engine: 5, armor: 5 },
     cannonAmmo: 30,
     apsAmmo: [3, 3, 3, 3],
@@ -116,19 +123,16 @@ test('Air drop repairKits restores RM-1 charges up to frame cap', () => {
     repairKitState: createRepairKitState(0, maxCharges),
     playerSave: { credits: 0 },
     saveRepo: { savePlayerSave(s) { persisted = { ...s }; } },
-    recomputePlayerStats() {},
-    setStatusBanner() {},
-    emitHudUpdate() {},
     getPlayerMaxCannonAmmo: () => 30,
     getPlayerMaxApsAmmo: () => 12,
     getPlayerMaxMissileAmmo: () => 6,
     getPlayerMaxRepairKitCharges: () => maxCharges,
-  });
-  const ctrl = engine.powerupsController;
+  };
+  const ctrl = new PowerupsController(state);
   const dropCfg = { shells: 50, aps: 12, missiles: 6, repairKits: maxCharges };
   assert.equal(ctrl.isAirDropUseful(dropCfg), true);
   ctrl.applyAirDrop(dropCfg);
-  assert.equal(engine.repairKitState.charges, maxCharges);
+  assert.equal(state.repairKitState.charges, maxCharges);
   assert.equal(persisted.repairKitCharges, maxCharges);
   assert.equal(ctrl.isAirDropUseful(dropCfg), false);
 });

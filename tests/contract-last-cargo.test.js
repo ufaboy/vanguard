@@ -12,7 +12,7 @@ import {
 import { SECTORS } from '../public/src/game/levels.js';
 import { APS } from '../public/src/game/constants.js';
 import { EnemyClass } from '../public/src/game/types.js';
-import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
+import { ProfileSaveController } from '../public/src/game/engine/profile-save.js';
 import { SaveRepository } from '../public/src/sim/hangar.js';
 import {
   CARGO_STATUS,
@@ -521,7 +521,7 @@ test('Contract and Survival sessions use sessionStorage stock Tier-1 tank withou
       componentDamageCooldown: 0,
     });
 
-    const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    const state = {
       profileMode: 'campaign',
       campaignSaveRepo,
       survivalSaveRepo,
@@ -531,22 +531,18 @@ test('Contract and Survival sessions use sessionStorage stock Tier-1 tank withou
       apsAmmo: [3, 3, 3, 3],
       missileAmmo: 6,
       repairKitState: { charges: 2, maxCharges: 2 },
-      componentDamage: { cannon: false, chassis: false, frame: false, engine: false, armor: false },
-      componentDamageCooldown: 0,
       playerSave: campaignSaveRepo.loadPlayerSave(),
-      syncApsVisuals() {},
-      recomputePlayerStats() {},
-      rebuildPlayerModel() {},
-    });
+    };
+    const profileSave = new ProfileSaveController(state);
 
     // Enter Contract mode with stock Tier-1 tank and isolated session credits in sessionStorage
-    engine.setProfileMode('contract', { resetTank: true });
-    assert.equal(engine.profileMode, 'contract');
-    assert.deepEqual(engine.upgrades, { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 });
-    assert.equal(engine.playerSave.credits, CONTRACT_CONFIG.STARTING_CREDITS);
-    assert.equal(engine.apsAmmo.reduce((a, b) => a + b, 0), APS.START_ROUNDS);
-    assert.equal(engine.missileAmmo, 2);
-    assert.equal(engine.repairKitState.charges, 0);
+    profileSave.setProfileMode('contract', { resetTank: true });
+    assert.equal(state.profileMode, 'contract');
+    assert.deepEqual(state.upgrades, { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 });
+    assert.equal(state.playerSave.credits, CONTRACT_CONFIG.STARTING_CREDITS);
+    assert.equal(state.apsAmmo.reduce((a, b) => a + b, 0), APS.START_ROUNDS);
+    assert.equal(state.missileAmmo, 2);
+    assert.equal(state.repairKitState.charges, 0);
 
     // Campaign localStorage must remain untouched
     assert.deepEqual(JSON.parse(mockLocal.getItem('iron_vanguard_upgrades_v3')), campaignUpgrades);
@@ -554,28 +550,28 @@ test('Contract and Survival sessions use sessionStorage stock Tier-1 tank withou
     assert.equal(campaignSaveRepo.loadPlayerSave().missileAmmo, 6);
 
     // Earn contract credits and spend temporary supplies during contract
-    engine.playerSave.credits += 3000;
-    engine.missileAmmo = 0;
-    engine.saveProgress();
-    engine.syncCampaignCredits();
+    state.playerSave.credits += 3000;
+    state.missileAmmo = 0;
+    profileSave.saveProgress();
+    profileSave.syncCampaignCredits();
 
     // Return to Campaign mode — Campaign credits and upgrades stay isolated
-    engine.setProfileMode('campaign');
-    assert.equal(engine.profileMode, 'campaign');
-    assert.deepEqual(engine.upgrades, campaignUpgrades);
-    assert.deepEqual(engine.apsAmmo, [3, 3, 3, 3]);
-    assert.equal(engine.missileAmmo, 6);
-    assert.equal(engine.repairKitState.charges, 2);
-    assert.equal(engine.playerSave.credits, 1200, 'Campaign credits remain isolated from Contract session credits');
+    profileSave.setProfileMode('campaign');
+    assert.equal(state.profileMode, 'campaign');
+    assert.deepEqual(state.upgrades, campaignUpgrades);
+    assert.deepEqual(state.apsAmmo, [3, 3, 3, 3]);
+    assert.equal(state.missileAmmo, 6);
+    assert.equal(state.repairKitState.charges, 2);
+    assert.equal(state.playerSave.credits, 1200, 'Campaign credits remain isolated from Contract session credits');
 
     // Enter Survival mode with stock Tier-1 tank in sessionStorage
-    engine.setProfileMode('survival', { resetTank: true });
-    assert.equal(engine.profileMode, 'survival');
-    assert.deepEqual(engine.upgrades, { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 });
-    assert.equal(engine.playerSave.credits, SURVIVAL_CONFIG.STARTING_CREDITS);
-    assert.equal(engine.apsAmmo.reduce((a, b) => a + b, 0), APS.START_ROUNDS);
-    assert.equal(engine.missileAmmo, 2);
-    assert.equal(engine.repairKitState.charges, 0);
+    profileSave.setProfileMode('survival', { resetTank: true });
+    assert.equal(state.profileMode, 'survival');
+    assert.deepEqual(state.upgrades, { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 });
+    assert.equal(state.playerSave.credits, SURVIVAL_CONFIG.STARTING_CREDITS);
+    assert.equal(state.apsAmmo.reduce((a, b) => a + b, 0), APS.START_ROUNDS);
+    assert.equal(state.missileAmmo, 2);
+    assert.equal(state.repairKitState.charges, 0);
     assert.deepEqual(JSON.parse(mockLocal.getItem('iron_vanguard_upgrades_v3')), campaignUpgrades);
     assert.equal(campaignSaveRepo.loadPlayerSave().credits, 1200);
   } finally {

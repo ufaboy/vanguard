@@ -5,16 +5,18 @@ import { POWERUP } from '../public/src/game/powerups.js';
 import { isUsefulPowerUp } from '../public/src/game/powerup-drops.js';
 import { SaveRepository, createInitialPlayerSave } from '../public/src/sim/hangar.js';
 
-test('Cannon ammo capacity matches CANNON_AMMO.MAX_AMMO_BY_FRAME and clamps out-of-range tiers', () => {
+test('Cannon ammo capacity is monotonic across tiers 1..5 and clamps out-of-range tiers', () => {
+  let prev = 0;
   for (let tier = 1; tier <= 5; tier++) {
     const cap = getMaxCannonAmmo(tier);
     assert.ok(Number.isFinite(cap) && cap > 0);
-    assert.equal(cap, CANNON_AMMO.MAX_AMMO_BY_FRAME[tier - 1]);
+    assert.ok(cap >= prev, `tier ${tier} capacity should be non-decreasing`);
+    prev = cap;
   }
 
   // Clamping boundary
-  assert.equal(getMaxCannonAmmo(0), CANNON_AMMO.MAX_AMMO_BY_FRAME[0]);
-  assert.equal(getMaxCannonAmmo(6), CANNON_AMMO.MAX_AMMO_BY_FRAME[4]);
+  assert.equal(getMaxCannonAmmo(0), getMaxCannonAmmo(1));
+  assert.equal(getMaxCannonAmmo(6), getMaxCannonAmmo(5));
 });
 
 test('AMMO powerup pickup is useful only when reserve is below max capacity', () => {

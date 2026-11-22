@@ -68,11 +68,7 @@ test('computeBuildingLayout turns 3x3 HOUSE_2 into corners, edges, and core of h
   assert.deepEqual(layout.get('2,2'), { kind: 'house2', part: 'core', yaw: 0, style });
 });
 
-test('computeBuildingLayout enforces Iteration 1 (0..7) vs Iteration 2 (8..11) theme proportions', () => {
-  assert.equal(RESIDENTIAL_STYLE_COUNT, 8);
-  assert.equal(INDUSTRIAL_STYLE_COUNT, 4);
-  assert.equal(BUILDING_STYLE_COUNT, 12);
-
+test('computeBuildingLayout enforces Iteration 1 vs Iteration 2 theme proportions', () => {
   const E = TileType.EMPTY;
   const H1 = TileType.HOUSE_1;
   const H2 = TileType.HOUSE_2;

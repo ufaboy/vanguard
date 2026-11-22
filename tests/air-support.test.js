@@ -215,30 +215,26 @@ test('STRATEGIC_BOMBER and AC130_SPOOKY spawn off-map and depart off-map', () =>
   const bomber = engine.airSupportMissions.find((m) => m.kind === 'BOMBER_FLYBY');
   assert.ok(bomber);
   assert.ok(Math.abs(bomber.z) > halfSpan, 'Bomber should spawn outside map boundary');
+  for (let i = 0; i < 40; i++) ctrl.update(0.25, i * 0.25);
+  assert.equal(engine.airSupportMissions.includes(bomber), false, 'Bomber should depart off-map after flyby');
 
   engine.airSupportMissions = [];
   ctrl.launchAirStrike('STRIKE_AC130', 0, 0);
   const ac130 = engine.airSupportMissions.find((m) => m.kind === 'AC130');
   assert.ok(ac130);
-  assert.equal(ac130.phase, 'approach');
   assert.ok(Math.abs(ac130.gunshipZ) > halfSpan, 'AC-130 should spawn outside map boundary');
 
   for (let i = 0; i < 12; i++) ctrl.update(0.25, i * 0.25);
-  assert.equal(ac130.phase, 'orbit');
+  assert.ok(
+    Math.hypot(ac130.gunshipX, ac130.gunshipZ) < halfSpan,
+    'AC-130 should enter the arena to orbit the target zone'
+  );
 
-  // Simulate zoneMesh cleanup when transitioning from orbit to depart
-  ac130.zoneMesh = {
-    geometry: { dispose() {}, userData: {} },
-    material: { dispose() {}, userData: {} },
-    userData: {},
-    traverse(fn) { fn(this); },
-  };
   for (let i = 0; i < 65; i++) ctrl.update(0.25, (12 + i) * 0.25);
   assert.ok(
-    ac130.phase === 'depart' || !engine.airSupportMissions.includes(ac130),
+    !engine.airSupportMissions.includes(ac130) || Math.hypot(ac130.gunshipX, ac130.gunshipZ) > halfSpan,
     'AC-130 should depart off-map after orbit duration'
   );
-  assert.equal(ac130.zoneMesh, null);
 });
 
 test('Air Mines is dropped by STRATEGIC_BOMBER flyby and plants mines on landing', () => {

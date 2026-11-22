@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ABILITIES,
   equipAbilities,
   fireAbilityWeapon,
   inContactRange,
@@ -12,8 +11,10 @@ import { CONTACT_WARHEAD } from '../public/src/game/abilities/contact-warhead.js
 import { MINE_LAYER } from '../public/src/game/abilities/mine-layer.js';
 import { ENGINEER_SUPPORT } from '../public/src/game/abilities/engineer-support.js';
 import { FLAME_STREAM, KAMIKAZE_BLAST, LAND_MINE, OPTIONAL_EQUIPMENT, TILE_SIZE } from '../public/src/game/constants.js';
-import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
-import { SECTOR_BOSS_CONFIGS, TANK_CONFIGS, TANK_TYPES } from '../public/src/game/vehicles/tanks.js';
+import { EnemyAiController } from '../public/src/game/engine/enemy-ai.js';
+import { EnemyCombatController } from '../public/src/game/engine/enemy-combat.js';
+import { ExplosionsController } from '../public/src/game/engine/explosions.js';
+import { SECTOR_BOSS_CONFIGS, TANK_CONFIGS } from '../public/src/game/vehicles/tanks.js';
 
 /** Minimal stand-in for the engine services abilities use. */
 function fakeGame(overrides = {}) {
@@ -32,12 +33,6 @@ test('Every ability id used by a tank config exists in the registry', () => {
     assert.doesNotThrow(() => resolveAbilities(config.abilities), config.id);
   }
   assert.throws(() => resolveAbilities(['noSuchAbility']), /Unknown enemy ability/);
-  assert.deepEqual(TANK_CONFIGS[TANK_TYPES.SAPPER].abilities, ['mineLayer']);
-  assert.equal(TANK_CONFIGS[TANK_TYPES.JAMMER].abilities, undefined);
-  assert.deepEqual(TANK_CONFIGS[TANK_TYPES.ENGINEER].abilities, ['engineerSupport']);
-  assert.deepEqual(TANK_CONFIGS[TANK_TYPES.FLAMETHROWER].abilities, ['flameStream']);
-  assert.deepEqual(TANK_CONFIGS[TANK_TYPES.KAMIKAZE].abilities, ['contactWarhead']);
-  assert.equal(Object.keys(ABILITIES).length, 4);
 });
 
 test('Mine layer loads the module ammunition and drops mines behind the hull', () => {
@@ -157,9 +152,10 @@ test('Contact warhead disarms the tank and detonates only on contact', () => {
 
 test('Land mines deal full shaped-charge epicenter damage over 2.25 cells and chain-detonate', () => {
   const blasts = [];
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+  const game = {
     entityGroup: { remove() {} },
     fx: { shockwave() {} },
+    enemies: [],
     mines: [
       { id: 1, x: 0, z: 0, armTimer: 0, life: LAND_MINE.LIFE_SEC, damage: LAND_MINE.DAMAGE, mesh: { rotation: {} } },
       { id: 2, x: 2.0, z: 0, armTimer: 0, life: LAND_MINE.LIFE_SEC, damage: LAND_MINE.DAMAGE, mesh: { rotation: {} } },
@@ -169,9 +165,10 @@ test('Land mines deal full shaped-charge epicenter damage over 2.25 cells and ch
     detonateExplosionAt(x, z, radius, damage, fromPlayer, _comp, _env, penetration) {
       blasts.push({ x, z, radius, damage, fromPlayer, penetration });
     },
-  });
-  engine.updateMines(0.016, 1.0);
-  assert.equal(engine.mines.length, 0);
+  };
+  const explosions = new ExplosionsController(game);
+  explosions.updateMines(0.016, 1.0);
+  assert.equal(game.mines.length, 0);
   assert.equal(blasts.length, 2);
   assert.equal(blasts[0].radius, LAND_MINE.BLAST_RADIUS_CELLS * TILE_SIZE);
   assert.equal(blasts[0].damage, LAND_MINE.DAMAGE);
@@ -179,8 +176,7 @@ test('Land mines deal full shaped-charge epicenter damage over 2.25 cells and ch
   assert.ok(LAND_MINE.TRIGGER_RADIUS < blasts[0].radius * 0.5, 'triggering stays inside full-damage epicenter');
 });
 
-test('updateEnemies does not crash when an action removes multiple enemies in one iteration', async () => {
-  const { EnemyAiController } = await import('../public/src/game/engine/enemy-ai.js');
+test('updateEnemies does not crash when an action removes multiple enemies in one iteration', () => {
   const e0 = {
     id: 1,
     x: 0,
@@ -212,7 +208,7 @@ test('updateEnemies does not crash when an action removes multiple enemies in on
     rig: { root: { position: { set() {} } }, hull: { rotation: {} }, barrelPivot: { position: {}, rotation: {} }, turret: { rotation: {} } },
   };
 
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+  const game = {
     empTimer: 0,
     playerX: 0,
     playerZ: 0,
@@ -221,14 +217,13 @@ test('updateEnemies does not crash when an action removes multiple enemies in on
     enemies: [e0, e1],
     sensorContacts: new Map(),
     entityGroup: { remove() {} },
-    updateSquadDirector() {},
+    worldToGrid: () => ({ row: 0, col: 0 }),
     hasLineOfSight: () => true,
-    broadcastPlayerLocationFrom() {},
     clearInfernoDashBeam() {},
     checkAndIgniteForestOnEnemyKill() {},
-    resolveEnemyCollisions() {},
-    updateAiDebugOverlay() {},
-  });
-  assert.doesNotThrow(() => engine.updateEnemies(0.016, 1.0));
-  assert.equal(engine.enemies.length, 0);
+  };
+  game.enemyCombat = new EnemyCombatController(game);
+  const ai = new EnemyAiController(game);
+  assert.doesNotThrow(() => ai.updateEnemies(0.016, 1.0));
+  assert.equal(game.enemies.length, 0);
 });

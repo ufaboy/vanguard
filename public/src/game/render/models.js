@@ -109,7 +109,7 @@ const INFERNO_GLB_MODEL = Object.freeze({
   muzzleX: 6.33,
   barrelBaseZ: 0.66,
 });
-const GLB_TANK_MODELS = Object.freeze({
+export const GLB_TANK_MODELS = Object.freeze({
   [EnemyClass.STANDARD]: { url: './models/tank_standard.glb', scale: 0.26, turretY: 1.55, gunY: 1.94, muzzleX: 7.25 },
   [EnemyClass.SCOUT]: { url: './models/tank_scout.glb', scale: 0.29, turretY: 1.36, gunY: 1.68, muzzleX: 5.18 },
   [EnemyClass.HOWITZER]: { url: './models/tank_howitzer.glb', scale: 0.26, turretY: 1.55, gunY: 2.2, muzzleX: 6.91, muzzleY: 4.84 },
@@ -341,61 +341,79 @@ function getTankGltfLoader(renderer) {
 
 export class ModelFactory extends TextureGenerator {
   /** @param {object} [pregenerated] results of texture-worker.js keyed by generator name;. */
-  constructor(renderer, isSoftwareGl, pregenerated = null) {
-    super({ maxAnisotropy: renderer.capabilities.getMaxAnisotropy() });
+  constructor(renderer, isSoftwareGl, pregenerated = null, options = {}) {
+    const headless = Boolean(options.headless);
+    super({ maxAnisotropy: renderer?.capabilities?.getMaxAnisotropy?.() ?? 1 });
     this.pregenerated = pregenerated || {};
     this.renderer = renderer;
-    this.maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+    this.maxAnisotropy = renderer?.capabilities?.getMaxAnisotropy?.() ?? 1;
     this.isSoftwareGl = isSoftwareGl;
-    this.brickTex = this.generated('createBrickTextures');
-    const brickSideMat = new THREE.MeshStandardMaterial({
-      map: this.brickTex.side,
-      bumpMap: isSoftwareGl ? null : this.brickTex.sideBump,
-      bumpScale: 1.6,
-      roughness: 0.86,
-      metalness: 0.02,
-    });
-    const brickTopMat = new THREE.MeshStandardMaterial({
-      map: this.brickTex.top,
-      bumpMap: isSoftwareGl ? null : this.brickTex.topBump,
-      bumpScale: 1.6,
-      roughness: 0.9,
-      metalness: 0.02,
-    });
-    applyBrickFinish(brickSideMat);
-    applyBrickFinish(brickTopMat);
-    this.brickMaterials = [brickSideMat, brickSideMat, brickTopMat, brickSideMat, brickSideMat, brickSideMat];
-    this.brickDamageMaterials = new Map([[4, this.brickMaterials]]);
-    for (let hp = 0; hp < 4; hp++) {
-      const side = applyBrickFinish(brickSideMat.clone(), hp);
-      const top = applyBrickFinish(brickTopMat.clone(), hp);
-      side.bumpScale *= hp / 4;
-      top.bumpScale *= hp / 4;
-      this.brickDamageMaterials.set(hp, [side, side, top, side, side, side]);
+    if (!headless) {
+      this.brickTex = this.generated('createBrickTextures');
+      const brickSideMat = new THREE.MeshStandardMaterial({
+        map: this.brickTex.side,
+        bumpMap: isSoftwareGl ? null : this.brickTex.sideBump,
+        bumpScale: 1.6,
+        roughness: 0.86,
+        metalness: 0.02,
+      });
+      const brickTopMat = new THREE.MeshStandardMaterial({
+        map: this.brickTex.top,
+        bumpMap: isSoftwareGl ? null : this.brickTex.topBump,
+        bumpScale: 1.6,
+        roughness: 0.9,
+        metalness: 0.02,
+      });
+      applyBrickFinish(brickSideMat);
+      applyBrickFinish(brickTopMat);
+      this.brickMaterials = [brickSideMat, brickSideMat, brickTopMat, brickSideMat, brickSideMat, brickSideMat];
+      this.brickDamageMaterials = new Map([[4, this.brickMaterials]]);
+      for (let hp = 0; hp < 4; hp++) {
+        const side = applyBrickFinish(brickSideMat.clone(), hp);
+        const top = applyBrickFinish(brickTopMat.clone(), hp);
+        side.bumpScale *= hp / 4;
+        top.bumpScale *= hp / 4;
+        this.brickDamageMaterials.set(hp, [side, side, top, side, side, side]);
+      }
+    } else {
+      this.brickDamageMaterials = options.brickDamageMaterials || new Map();
     }
-    this.brickModels = new BrickModels(renderer);
-    this.landmarkModels = new LandmarkModels(renderer);
-    this.useBlenderBricks = !isSoftwareGl;
-    this.brickModelsPromise = this.useBlenderBricks
-      ? this.loadTileModels(this.brickModels, () => this.onBrickModelsReady?.())
-      : Promise.resolve(false);
-    this.concreteModels = new ConcreteModels(renderer);
-    this.useBlenderConcrete = !isSoftwareGl;
-    this.concreteModelsPromise = this.useBlenderConcrete
-      ? this.loadTileModels(this.concreteModels, () => this.onConcreteModelsReady?.())
-      : Promise.resolve(false);
-    this.buildingModels = new BuildingModels(renderer);
-    this.useBlenderBuildings = !isSoftwareGl;
-    this.buildingModelsPromise = this.useBlenderBuildings
-      ? this.loadTileModels(this.buildingModels, () => this.onBuildingModelsReady?.())
-      : Promise.resolve(false);
-    this.concreteTex = this.generated('createConcreteTextures');
-    this.groundTex = this.generated('createGroundTexture');
-    this.iceTex = this.generated('createIceTextures');
-    this.waterTex = this.generated('createWaterTextures');
-    this.shadowTex = this.generated('createShadowTexture');
-    this.tankArmorTex = this.generated('createTankArmorTexture');
-    this.trackTreadTex = this.generated('createTrackTreadTexture');
+    this.brickModels = options.brickModels || new BrickModels(renderer);
+    this.landmarkModels = options.landmarkModels || new LandmarkModels(renderer);
+    this.useBlenderBricks = options.useBlenderBricks ?? !isSoftwareGl;
+    this.brickModelsPromise = options.brickModelsPromise ?? (
+      !headless && this.useBlenderBricks
+        ? this.loadTileModels(this.brickModels, () => this.onBrickModelsReady?.())
+        : Promise.resolve(false)
+    );
+    this.concreteModels = options.concreteModels || new ConcreteModels(renderer);
+    this.useBlenderConcrete = options.useBlenderConcrete ?? !isSoftwareGl;
+    this.concreteModelsPromise = options.concreteModelsPromise ?? (
+      !headless && this.useBlenderConcrete
+        ? this.loadTileModels(this.concreteModels, () => this.onConcreteModelsReady?.())
+        : Promise.resolve(false)
+    );
+    this.buildingModels = options.buildingModels || new BuildingModels(renderer);
+    this.useBlenderBuildings = options.useBlenderBuildings ?? !isSoftwareGl;
+    this.buildingModelsPromise = options.buildingModelsPromise ?? (
+      !headless && this.useBlenderBuildings
+        ? this.loadTileModels(this.buildingModels, () => this.onBuildingModelsReady?.())
+        : Promise.resolve(false)
+    );
+    if (!headless) {
+      this.concreteTex = this.generated('createConcreteTextures');
+      this.groundTex = this.generated('createGroundTexture');
+      this.iceTex = this.generated('createIceTextures');
+      this.waterTex = this.generated('createWaterTextures');
+      this.shadowTex = this.generated('createShadowTexture');
+      this.tankArmorTex = this.generated('createTankArmorTexture');
+      this.trackTreadTex = this.generated('createTrackTreadTexture');
+    } else {
+      this.concreteMats = options.concreteMats || null;
+      this.shadowTex = null;
+      this.tankArmorTex = null;
+      this.trackTreadTex = null;
+    }
     this.powerUpTexCache = new Map();
     this.glbTankParts = new Map();
     this.playerGlbParts = null;
@@ -412,7 +430,15 @@ export class ModelFactory extends TextureGenerator {
     this.glbTurretParts = new Map();
     this.pendingTurretRigs = new Map();
     this.glbTurretRequestedUrls = new Set();
-    this.playerGlbPromise = isSoftwareGl ? Promise.resolve() : this.loadPlayerGlbModel();
+    this.playerGlbPromise = options.playerGlbPromise ?? (
+      !headless && !isSoftwareGl ? this.loadPlayerGlbModel() : Promise.resolve()
+    );
+    if (options.loadGlbTankModel) {
+      this.loadGlbTankModel = options.loadGlbTankModel;
+    }
+    if (options.ensureEnemyModels) {
+      this.ensureEnemyModels = options.ensureEnemyModels;
+    }
   }
 
   /** Result of a texture generator: precomputed by the worker when available, else built now. */
@@ -431,6 +457,16 @@ export class ModelFactory extends TextureGenerator {
     this.physicalWater = physicalWater;
     this.waterMat = null;
     this.iceMat = null;
+  }
+
+  /** Returns true when GLB tank parts for `enemyClass` are currently cached. */
+  hasEnemyModel(enemyClass) {
+    return this.glbTankParts.has(enemyClass);
+  }
+
+  /** Registers loaded GLB parts for `enemyClass` (used by loader and tests). */
+  registerEnemyModelParts(enemyClass, parts) {
+    this.glbTankParts.set(enemyClass, parts);
   }
 
   /** Starts loading the GLBs of the given enemy classes (no-op for loaded or loading ones). */
@@ -2508,6 +2544,7 @@ export class ModelFactory extends TextureGenerator {
       this.sharedGeometry('BoxGeometry', TILE_SIZE - 0.06, 1.48, TILE_SIZE - 0.06),
       [concreteSideMat, concreteSideMat, concreteTopMat, concreteSideMat, concreteSideMat, concreteSideMat]
     );
+    base.name = 'concrete-slab';
     base.position.y = 0.74;
     base.castShadow = true;
     base.receiveShadow = true;
@@ -2553,6 +2590,7 @@ export class ModelFactory extends TextureGenerator {
     group.add(crackGroup);
 
     const rebarGroup = new THREE.Group();
+    rebarGroup.name = 'concrete-rebar';
     rebarGroup.visible = false;
     for (const offset of [-0.52, 0, 0.52]) {
       const rodX = new THREE.Mesh(
