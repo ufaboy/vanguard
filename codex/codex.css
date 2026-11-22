@@ -24,6 +24,8 @@
 
 .codex-header, .codex-footer, .codex-sidebar, .codex-inspector {
   pointer-events: auto;
+  user-select: text;
+  -webkit-user-select: text;
   background-color: rgba(11, 15, 23, 0.95);
   border: 1px solid rgba(51, 65, 85, 0.8);
   border-radius: 0.375rem;
@@ -99,6 +101,8 @@
   width: 100%;
   padding: 0.5rem 0.625rem;
   text-align: left;
+  user-select: text;
+  -webkit-user-select: text;
   background-color: #0f172a;
   border: 1px solid #1e293b;
   border-radius: 0.25rem;

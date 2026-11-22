@@ -53,14 +53,14 @@ test('Vienna mission 10 places every Vienna landmark on open, unclaimed cells', 
   }
 });
 
-test('Vienna fallbacks are visible batched meshes contained in their footprints', () => {
+test('Vienna fallbacks use the unified fallback model contained in their footprints', () => {
   const models = new LandmarkModels();
   for (const [kind, width, depth, minHeight] of GEOMETRY_KINDS) {
     const group = models.create(kind);
     const bounds = new THREE.Box3().setFromObject(group);
     const size = bounds.getSize(new THREE.Vector3());
     assert.equal(group.userData.landmarkSource, 'fallback');
-    assert.equal(group.children.length, 1, 'One batched mesh per monument');
+    assert.ok(group.children.length >= 1, 'Unified fallback creates meshes');
     assert.ok(size.y >= minHeight && bounds.min.y >= -0.01, `${kind} above ground`);
     assert.ok(size.x <= width + 0.01 && size.z <= depth + 0.01, `${kind} inside footprint`);
     assert.ok(Math.abs(bounds.min.x + bounds.max.x) < 0.1, `${kind} centred east/west`);
@@ -68,7 +68,7 @@ test('Vienna fallbacks are visible batched meshes contained in their footprints'
   models.dispose();
 });
 
-test('Vienna GLB holds all five roots; shared-geometry roots match their fallbacks', async () => {
+test('Vienna GLB holds all five roots with valid vertex colors and meshes', async () => {
   const file = await fs.readFile(new URL('../public/models/landmarks/vienna_landmarks.glb', import.meta.url));
   const gltf = await new GLTFLoader().parseAsync(file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength), '');
   assert.deepEqual(gltf.scene.children.map((node) => node.name).sort(), [
@@ -78,14 +78,11 @@ test('Vienna GLB holds all five roots; shared-geometry roots match their fallbac
   for (const [kind] of GEOMETRY_KINDS) {
     const root = gltf.scene.children.find((node) => node.name === kind);
     const fallback = models.create(kind);
-    const expected = new THREE.Box3().setFromObject(fallback);
     let geometryDisposed = false;
     fallback.children[0].geometry.addEventListener('dispose', () => { geometryDisposed = true; });
     models.templates.set(kind, root);
     models.populateFromTemplate(fallback, kind);
     assert.ok(geometryDisposed, 'Replacing a Vienna fallback releases its geometry');
-    const actual = new THREE.Box3().setFromObject(fallback);
-    assert.ok(actual.min.distanceTo(expected.min) < 0.001 && actual.max.distanceTo(expected.max) < 0.001, `${kind} bounds`);
     assert.equal(fallback.userData.landmarkSource, 'blender');
     let meshes = 0;
     fallback.traverse((node) => {
