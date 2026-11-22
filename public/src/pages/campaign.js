@@ -228,6 +228,62 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
   const workspace = document.querySelector('.campaign-workspace');
   if (workspace) workspace.style.setProperty('--region-accent', chapter.color);
 
+  const regionMapPanel = document.querySelector('.campaign-region-map-panel');
+  if (regionMapPanel) {
+    for (const card of regionMapPanel.querySelectorAll('.campaign-region-map-card')) {
+      const isTarget = card.dataset.regionMap === chapter.id;
+      card.hidden = !isTarget;
+      if (!isTarget) continue;
+
+      const regionNameEl = card.querySelector('[data-map-region-name]');
+      if (regionNameEl) regionNameEl.textContent = t(chapter.name).toUpperCase();
+
+      const statusByMission = new Map();
+      for (const m of chapter.missions) {
+        statusByMission.set(m.id, getMissionStatus(m, completedMissions));
+      }
+
+      for (const routeEl of card.querySelectorAll('.region-map-route')) {
+        const fromStatus = statusByMission.get(routeEl.dataset.routeFrom);
+        const toStatus = statusByMission.get(routeEl.dataset.routeTo);
+        const isActive = fromStatus === 'completed' || (fromStatus === 'available' && toStatus !== 'locked');
+        routeEl.classList.toggle('is-active', isActive);
+        routeEl.classList.toggle('is-locked', !isActive);
+      }
+
+      for (const markerEl of card.querySelectorAll('.region-map-marker')) {
+        const missionId = markerEl.dataset.mission;
+        const m = chapter.missions.find((item) => item.id === missionId);
+        if (!m) continue;
+        const mStatus = statusByMission.get(missionId) || 'locked';
+        const isSelected = missionId === selected.id;
+        const nameText = t(m.name);
+        const statusLabel =
+          mStatus === 'completed' ? t('completed') : mStatus === 'available' ? t('available') : t('locked');
+
+        markerEl.classList.toggle('is-completed', mStatus === 'completed');
+        markerEl.classList.toggle('is-available', mStatus === 'available');
+        markerEl.classList.toggle('is-locked', mStatus === 'locked');
+        markerEl.classList.toggle('is-selected', isSelected);
+        markerEl.setAttribute('aria-pressed', String(isSelected));
+        markerEl.setAttribute(
+          'aria-label',
+          t('Mission {n}: {name}. {status}.', { n: m.number, name: nameText, status: statusLabel })
+        );
+
+        const tooltipEl = markerEl.querySelector('.region-map-tooltip');
+        if (tooltipEl) {
+          tooltipEl.textContent = `${String(m.number).padStart(2, '0')} · ${nameText}`;
+        }
+      }
+
+      const selectedPillEl = card.querySelector('.region-map-selected-pill');
+      if (selectedPillEl) {
+        selectedPillEl.textContent = `${String(selected.number).padStart(2, '0')} · ${t(selected.name)}`;
+      }
+    }
+  }
+
   const reconSquare = document.querySelector('.campaign-recon-square');
   const reconImg = document.querySelector('.campaign-recon-img');
   const classifiedSub = document.querySelector('.campaign-classified-sub');

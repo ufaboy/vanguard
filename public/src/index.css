@@ -1269,10 +1269,339 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 .campaign-workspace {
   display: grid;
-  grid-template-columns: minmax(340px, 604px) 1fr;
-  gap: 28px;
+  grid-template-columns: minmax(270px, 1fr) minmax(350px, 1.25fr) minmax(270px, 1fr);
+  gap: 22px;
   align-items: stretch;
   margin-bottom: 28px;
+}
+
+.campaign-region-map-panel {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.campaign-region-map-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 2px solid color-mix(in srgb, var(--region-accent, #3b4b5e) 48%, #2d3b4b);
+  background: #060b12;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.78),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.campaign-region-map-card[hidden] {
+  display: none;
+}
+
+.region-map-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.region-map-sea {
+  fill: #060b12;
+}
+
+.region-map-grid-line {
+  stroke: rgba(56, 189, 248, 0.09);
+  stroke-width: 1;
+}
+
+.region-map-grid-label {
+  fill: rgba(148, 163, 184, 0.42);
+  font-family: var(--font-mono, monospace);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  user-select: none;
+}
+
+.region-map-context-land {
+  fill: #0c1420;
+  stroke: #1b2838;
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.region-map-active-land {
+  fill: #131f30;
+  stroke: color-mix(in srgb, var(--region-accent, #94a3b8) 65%, #334155);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.region-map-river {
+  fill: none;
+  stroke: rgba(56, 189, 248, 0.34);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.region-map-geo-label {
+  fill: rgba(148, 163, 184, 0.24);
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  user-select: none;
+}
+
+.region-map-route {
+  stroke-linecap: round;
+}
+
+.region-map-route.is-active {
+  stroke: var(--region-accent, #fbbf24);
+  stroke-width: 2.2;
+  stroke-dasharray: 6 4;
+  opacity: 0.92;
+}
+
+.region-map-route.is-locked {
+  stroke: rgba(148, 163, 184, 0.38);
+  stroke-width: 1.6;
+  stroke-dasharray: 4 5;
+}
+
+.region-map-markers {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.region-map-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: #f8fafc;
+}
+
+.region-map-marker:focus-visible {
+  outline: 2px solid #f8fafc;
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.region-map-marker .marker-node {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0b121c;
+  border: 2px solid var(--region-accent, #fbbf24);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+  transition: transform 0.16s ease, background-color 0.16s ease, border-color 0.16s ease;
+}
+
+.region-map-marker:hover .marker-node,
+.region-map-marker.is-selected .marker-node {
+  transform: scale(1.16);
+}
+
+.region-map-marker.is-completed .marker-node {
+  background: var(--region-accent, #22c55e);
+  color: #080d14;
+}
+
+.region-map-marker.is-locked .marker-node {
+  border-color: #475569;
+  background: #090e16;
+  color: #64748b;
+}
+
+.region-map-marker .marker-icon,
+.region-map-marker .marker-core,
+.region-map-marker .marker-pulse,
+.region-map-marker .marker-reticle {
+  display: none;
+}
+
+.region-map-marker .marker-icon {
+  width: 11px;
+  height: 11px;
+}
+
+.region-map-marker.is-completed .marker-icon-check {
+  display: block;
+}
+
+.region-map-marker.is-locked .marker-icon-lock {
+  display: block;
+}
+
+.region-map-marker.is-available .marker-core {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--region-accent, #fbbf24);
+}
+
+.region-map-marker.is-available .marker-pulse {
+  display: block;
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--region-accent, #fbbf24);
+  animation: hq-pulse 2.2s infinite ease-out;
+  pointer-events: none;
+}
+
+.region-map-marker.is-selected .marker-reticle {
+  display: block;
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1.5px dashed #f8fafc;
+  pointer-events: none;
+}
+
+.region-map-marker .marker-num {
+  position: absolute;
+  z-index: 2;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(11, 15, 23, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #e2e8f0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.region-map-marker.is-selected .marker-num {
+  border-color: var(--region-accent, #fbbf24);
+  color: var(--region-accent, #fbbf24);
+}
+
+.region-map-marker.is-locked .marker-num {
+  color: #64748b;
+}
+
+.region-map-marker.label-top .marker-num {
+  bottom: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.region-map-marker.label-bottom .marker-num {
+  top: calc(100% + 1px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.region-map-marker.label-left .marker-num {
+  right: calc(100% + 2px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.region-map-marker.label-right .marker-num {
+  left: calc(100% + 2px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.region-map-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #0b0f17;
+  border: 1px solid var(--region-accent, #fbbf24);
+  color: #f8fafc;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.14s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.85);
+}
+
+.region-map-marker:hover .region-map-tooltip,
+.region-map-marker:focus-visible .region-map-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.region-map-hud-top {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  right: 16px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.region-map-hud-bottom {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  right: 16px;
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.region-map-selected-pill {
+  max-width: 100%;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(11, 15, 23, 0.9);
+  border: 1px solid color-mix(in srgb, var(--region-accent, #fbbf24) 65%, #334155);
+  color: #f8fafc;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1180px) {
+  .campaign-workspace {
+    grid-template-columns: 1fr 1fr;
+  }
+  .campaign-briefing-panel {
+    grid-column: 1 / -1;
+    order: 3;
+  }
 }
 
 .campaign-recon-panel {

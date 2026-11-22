@@ -1,6 +1,7 @@
 ---
 // Static page: English source text; translations come from i18n/pages/<locale>.mjs.
 import PageLayout from '../../layouts/PageLayout.astro';
+import CampaignRegionMaps from '../../components/CampaignRegionMaps.astro';
 import { localHref, localeStaticPaths, useTranslations } from '../../i18n/index.js';
 
 export const getStaticPaths = () => localeStaticPaths("campaign");
@@ -133,34 +134,8 @@ const jsonLd = [
   </nav>
 
   <section class="campaign-workspace" style="--region-accent:#d6e7a0;" aria-label={t("Mission briefing")}>
-    <div class="campaign-recon-panel">
-      <div class="campaign-recon-square is-missing-img">
-        <img class="campaign-recon-img" width="600" height="600" src="./images/campaign/mission-01.webp" alt={t("Rome: Forum & Colosseum — Reconnaissance map")} />
-        <div class="campaign-recon-hud" aria-hidden="true">
-          <span class="recon-hud-corner is-tl"></span>
-          <span class="recon-hud-corner is-tr"></span>
-          <span class="recon-hud-corner is-bl"></span>
-          <span class="recon-hud-corner is-br"></span>
-          <svg class="recon-hud-reticle" viewBox="0 0 120 120" fill="none" aria-hidden="true">
-            <path d="M20 38V20H38M82 20H100V38M100 82V100H82M38 100H20V82" stroke="currentColor" stroke-width="2.2"/>
-            <path d="M60 10V28M60 92V110M10 60H28M92 60H110" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M44 60H53M67 60H76M60 44V53M60 67V76" stroke="currentColor" stroke-width="1.6"/>
-            <circle cx="60" cy="60" r="2" fill="currentColor"/>
-          </svg>
-          <div class="recon-hud-top">
-            <span class="recon-hud-pill" data-recon-sector>SEC-01</span>
-            <span class="recon-hud-pill"><span class="recon-live-dot"></span>RECON</span>
-          </div>
-        </div>
-        <div class="campaign-recon-fallback" aria-hidden="true">
-          <div class="recon-radar-rings"></div>
-          <span class="recon-pending-label">{t("Recon imagery pending")}</span>
-        </div>
-        <div class="campaign-recon-classified">
-          <span class="classified-stamp">{t("CLASSIFIED")}</span>
-          <span class="campaign-classified-sub">{t("Pass Sector {n} to unlock recon imagery", { n: 0 })}</span>
-        </div>
-      </div>
+    <div class="campaign-region-map-panel" aria-label={t("Campaign regions")}>
+      <CampaignRegionMaps />
     </div>
 
     <div class="campaign-briefing-panel">
@@ -210,6 +185,36 @@ const jsonLd = [
           </span>
           <span class="start-glow" aria-hidden="true"></span>
         </button>
+      </div>
+    </div>
+
+    <div class="campaign-recon-panel">
+      <div class="campaign-recon-square is-missing-img">
+        <img class="campaign-recon-img" width="600" height="600" src="./images/campaign/mission-01.webp" alt={t("Rome: Forum & Colosseum — Reconnaissance map")} />
+        <div class="campaign-recon-hud" aria-hidden="true">
+          <span class="recon-hud-corner is-tl"></span>
+          <span class="recon-hud-corner is-tr"></span>
+          <span class="recon-hud-corner is-bl"></span>
+          <span class="recon-hud-corner is-br"></span>
+          <svg class="recon-hud-reticle" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+            <path d="M20 38V20H38M82 20H100V38M100 82V100H82M38 100H20V82" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M60 10V28M60 92V110M10 60H28M92 60H110" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M44 60H53M67 60H76M60 44V53M60 67V76" stroke="currentColor" stroke-width="1.6"/>
+            <circle cx="60" cy="60" r="2" fill="currentColor"/>
+          </svg>
+          <div class="recon-hud-top">
+            <span class="recon-hud-pill" data-recon-sector>SEC-01</span>
+            <span class="recon-hud-pill"><span class="recon-live-dot"></span>RECON</span>
+          </div>
+        </div>
+        <div class="campaign-recon-fallback" aria-hidden="true">
+          <div class="recon-radar-rings"></div>
+          <span class="recon-pending-label">{t("Recon imagery pending")}</span>
+        </div>
+        <div class="campaign-recon-classified">
+          <span class="classified-stamp">{t("CLASSIFIED")}</span>
+          <span class="campaign-classified-sub">{t("Pass Sector {n} to unlock recon imagery", { n: 0 })}</span>
+        </div>
       </div>
     </div>
   </section>

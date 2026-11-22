@@ -534,9 +534,23 @@ export function renderBattlefieldHud({
         { length: 8 },
         (_, idx) => `<span class="${idx < activeHpSegs ? 'is-on' : ''}"></span>`
       ).join('');
-      const subKey = hud.subsystems
-        ? Object.entries(hud.subsystems).map(([k, s]) => `${k}:${s?.status || 'normal'}`).join(',')
+      const subPart = hud.subsystems
+        ? Object.entries(hud.subsystems)
+            .map(([k, s]) => `${k}:${s?.status || 'normal'}:${(s?.hp ?? 100) < (s?.maxHp || 100) * 0.7 ? 1 : 0}`)
+            .join(',')
         : '';
+      const faultPart = hud.componentDamage
+        ? Object.entries(hud.componentDamage)
+            .filter(([, v]) => Boolean(v))
+            .map(([k]) => k)
+            .join(',')
+        : '';
+      const panelPart = hud.playerArmorPanels
+        ? Object.entries(hud.playerArmorPanels)
+            .map(([k, p]) => `${k}:${p?.destroyed ? 2 : (p?.integrity ?? 100) < (p?.maxIntegrity || 100) * 0.7 ? 1 : 0}`)
+            .join(',')
+        : '';
+      const subKey = `${subPart}|${faultPart}|${panelPart}`;
       if (silhouetteSlot.__subKey !== subKey) {
         silhouetteSlot.__subKey = subKey;
         setHtml(silhouetteSlot, `

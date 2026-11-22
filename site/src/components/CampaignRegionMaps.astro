@@ -1,0 +1,451 @@
+---
+import { CAMPAIGN_CHAPTERS } from '../../../public/src/game/campaign.js';
+
+const SVG_SIZE = 520;
+const PAD = 26;
+
+const REGION_MAPS = {
+  italy: {
+    bounds: { minLon: 6.4, maxLon: 18.7, minLat: 36.4, maxLat: 47.3 },
+    gridStep: 2,
+    contextPolygons: [
+      [
+        [6.0, 47.5], [10.5, 47.5], [14.0, 47.5], [19.0, 47.5], [19.0, 41.8],
+        [17.6, 42.6], [16.4, 43.5], [15.0, 44.3], [13.9, 45.2], [13.6, 45.6],
+        [13.8, 46.5], [12.2, 46.7], [10.4, 46.6], [9.0, 46.2], [7.8, 45.9],
+        [6.8, 45.8], [6.7, 44.8], [7.5, 43.8], [6.0, 43.1], [6.0, 47.5],
+      ],
+      [
+        [9.35, 43.0], [9.55, 42.6], [9.4, 41.4], [8.85, 41.45], [8.6, 42.3], [9.0, 42.8], [9.35, 43.0],
+      ],
+      [
+        [8.5, 37.2], [11.1, 37.1], [11.1, 36.2], [8.5, 36.2], [8.5, 37.2],
+      ],
+    ],
+    countryPolygons: [
+      [
+        [6.7, 45.1], [7.0, 45.8], [7.9, 45.9], [9.0, 46.2], [10.4, 46.6],
+        [12.2, 46.7], [13.8, 46.5], [13.9, 45.6], [13.5, 45.6], [12.5, 45.4],
+        [12.3, 44.8], [12.6, 44.1], [13.5, 43.6], [14.1, 42.6], [15.1, 42.0],
+        [16.1, 41.9], [16.0, 41.4], [17.3, 41.0], [18.5, 40.1], [18.1, 39.8],
+        [17.6, 40.3], [16.8, 40.4], [16.5, 39.7], [17.1, 39.0], [16.6, 38.4],
+        [15.8, 37.9], [15.6, 38.2], [16.0, 39.0], [15.7, 40.0], [14.9, 40.5],
+        [14.2, 40.8], [13.4, 41.2], [12.5, 41.6], [11.8, 42.1], [11.1, 42.4],
+        [10.5, 43.2], [10.2, 43.9], [9.6, 44.2], [8.9, 44.4], [8.1, 43.9],
+        [7.5, 43.8], [7.6, 44.1], [6.9, 44.5], [6.7, 45.1],
+      ],
+      [
+        [12.4, 37.9], [13.4, 38.1], [14.6, 38.1], [15.6, 38.25], [15.2, 37.3],
+        [15.1, 36.7], [14.0, 37.0], [12.9, 37.5], [12.4, 37.9],
+      ],
+      [
+        [8.2, 41.0], [9.3, 41.25], [9.7, 40.6], [9.6, 39.6], [9.1, 39.0],
+        [8.4, 39.1], [8.3, 40.1], [8.2, 41.0],
+      ],
+    ],
+    geoLabels: [
+      { text: 'ADRIA', lon: 15.2, lat: 43.2 },
+      { text: 'TYRRHENIAN', lon: 11.9, lat: 39.8 },
+    ],
+  },
+
+  alps: {
+    bounds: { minLon: 9.4, maxLon: 17.3, minLat: 46.2, maxLat: 49.1 },
+    gridStep: 1,
+    contextPolygons: [
+      [
+        [9.0, 49.3], [17.7, 49.3], [17.7, 46.0], [9.0, 46.0], [9.0, 49.3],
+      ],
+    ],
+    countryPolygons: [
+      [
+        [9.55, 47.52], [9.75, 47.55], [10.45, 47.62], [10.8, 47.6], [11.5, 47.58],
+        [12.2, 47.65], [12.9, 47.78], [13.0, 48.1], [13.6, 48.55], [14.2, 48.62],
+        [15.0, 48.95], [16.1, 48.88], [16.95, 48.62], [17.08, 48.12], [16.65, 47.7],
+        [16.5, 47.2], [16.1, 46.85], [15.4, 46.65], [14.6, 46.42], [13.7, 46.52],
+        [12.7, 46.68], [12.1, 46.92], [11.4, 46.98], [10.5, 46.82], [10.1, 46.95],
+        [9.6, 47.1], [9.55, 47.52],
+      ],
+    ],
+    rivers: [
+      [
+        [10.0, 48.45], [11.5, 48.78], [13.0, 48.62], [13.8, 48.42], [14.3, 48.3],
+        [15.2, 48.25], [15.6, 48.4], [16.35, 48.25], [17.1, 48.13],
+      ],
+    ],
+    geoLabels: [
+      { text: 'ALPS', lon: 12.1, lat: 47.05 },
+      { text: 'DANUBE', lon: 14.9, lat: 48.45 },
+    ],
+  },
+
+  bohemia: {
+    bounds: { minLon: 11.7, maxLon: 18.9, minLat: 48.3, maxLat: 51.7 },
+    gridStep: 1,
+    contextPolygons: [
+      [
+        [11.4, 52.0], [19.2, 52.0], [19.2, 48.0], [11.4, 48.0], [11.4, 52.0],
+      ],
+    ],
+    countryPolygons: [
+      [
+        [12.1, 50.3], [12.7, 50.5], [13.3, 50.95], [13.65, 51.28], [14.2, 51.18],
+        [14.7, 50.9], [15.2, 50.95], [16.1, 50.65], [16.8, 50.25], [17.6, 50.32],
+        [18.5, 49.9], [18.85, 49.5], [18.1, 49.0], [17.2, 48.75], [16.5, 48.78],
+        [15.4, 48.95], [14.7, 48.65], [13.9, 48.75], [13.2, 49.15], [12.5, 49.65],
+        [12.1, 50.3],
+      ],
+    ],
+    rivers: [
+      [
+        [14.3, 49.3], [14.42, 50.08], [14.1, 50.65], [13.74, 51.05], [13.2, 51.4],
+      ],
+    ],
+    geoLabels: [
+      { text: 'BOHEMIA', lon: 14.5, lat: 49.6 },
+      { text: 'SAXONY', lon: 13.5, lat: 51.25 },
+    ],
+  },
+
+  germany: {
+    bounds: { minLon: 5.5, maxLon: 15.4, minLat: 47.1, maxLat: 55.2 },
+    gridStep: 2,
+    contextPolygons: [
+      [
+        [5.0, 47.0], [15.8, 47.0], [15.8, 54.4], [14.2, 54.1], [13.1, 54.4],
+        [11.1, 54.2], [9.9, 54.8], [8.5, 54.9], [8.6, 53.9], [7.2, 53.5],
+        [5.5, 53.0], [5.0, 52.0], [5.0, 47.0],
+      ],
+      [
+        [8.2, 54.8], [9.8, 54.8], [10.4, 55.6], [8.1, 55.6], [8.2, 54.8],
+      ],
+    ],
+    countryPolygons: [
+      [
+        [6.1, 51.8], [7.0, 52.3], [7.2, 53.4], [8.6, 53.9], [8.5, 54.9],
+        [9.9, 54.8], [11.1, 54.2], [12.5, 54.4], [13.9, 54.0], [14.4, 53.3],
+        [14.7, 52.1], [15.0, 51.1], [14.2, 50.8], [13.1, 50.5], [12.1, 50.2],
+        [13.1, 49.3], [13.8, 48.6], [12.9, 47.6], [11.4, 47.4], [10.2, 47.3],
+        [8.8, 47.7], [7.6, 47.6], [8.1, 48.9], [7.4, 49.1], [6.4, 49.5],
+        [6.1, 50.5], [5.9, 51.0], [6.1, 51.8],
+      ],
+    ],
+    rivers: [
+      [
+        [7.6, 47.6], [8.2, 49.5], [7.5, 50.35], [6.9, 51.0], [6.1, 51.8],
+      ],
+    ],
+    geoLabels: [
+      { text: 'NORTH SEA', lon: 6.8, lat: 54.3 },
+      { text: 'BALTIC', lon: 12.2, lat: 54.7 },
+    ],
+  },
+
+  low_countries: {
+    bounds: { minLon: 2.3, maxLon: 7.4, minLat: 49.4, maxLat: 53.6 },
+    gridStep: 1,
+    contextPolygons: [
+      [
+        [2.0, 49.2], [7.7, 49.2], [7.7, 53.8], [6.9, 53.4], [5.4, 53.1],
+        [4.7, 52.9], [4.1, 52.0], [3.4, 51.4], [2.5, 51.0], [2.0, 50.8], [2.0, 49.2],
+      ],
+    ],
+    countryPolygons: [
+      [
+        [3.4, 51.4], [4.1, 52.0], [4.6, 52.5], [4.8, 53.0], [5.5, 53.3],
+        [6.8, 53.4], [7.2, 52.9], [6.9, 52.2], [6.4, 51.9], [6.1, 51.4],
+        [5.8, 50.8], [5.1, 51.4], [4.2, 51.4], [3.4, 51.4],
+      ],
+      [
+        [2.55, 51.1], [3.35, 51.35], [4.3, 51.45], [5.1, 51.45], [5.75, 50.8],
+        [6.35, 50.3], [6.1, 49.6], [5.4, 49.55], [4.5, 50.0], [3.7, 50.3],
+        [2.8, 50.7], [2.55, 51.1],
+      ],
+    ],
+    geoLabels: [
+      { text: 'NORTH SEA', lon: 3.3, lat: 52.8 },
+    ],
+  },
+
+  france: {
+    bounds: { minLon: -5.2, maxLon: 8.5, minLat: 42.1, maxLat: 51.3 },
+    gridStep: 2,
+    contextPolygons: [
+      [
+        [-5.4, 50.1], [-3.2, 50.6], [-1.0, 50.8], [1.4, 51.2], [1.4, 51.6], [-5.4, 51.6], [-5.4, 50.1],
+      ],
+      [
+        [-2.0, 43.3], [3.2, 42.4], [3.2, 41.8], [-5.5, 41.8], [-5.5, 43.3], [-2.0, 43.3],
+      ],
+      [
+        [2.5, 51.1], [4.3, 51.3], [6.4, 51.3], [8.8, 51.3], [8.8, 43.5], [7.6, 43.8],
+        [6.8, 45.8], [6.1, 46.2], [7.5, 47.6], [8.2, 48.9], [6.4, 49.5], [4.5, 50.0], [2.5, 51.1],
+      ],
+    ],
+    countryPolygons: [
+      [
+        [-4.7, 48.4], [-2.8, 48.8], [-1.7, 49.7], [0.1, 49.5], [1.6, 50.6],
+        [2.5, 51.1], [4.2, 50.2], [5.8, 49.5], [6.4, 49.4], [8.2, 48.9],
+        [7.6, 47.6], [6.1, 46.2], [6.9, 45.8], [6.7, 44.5], [7.5, 43.8],
+        [6.1, 43.1], [4.8, 43.4], [3.2, 42.5], [1.5, 42.6], [-1.7, 43.3],
+        [-1.2, 45.5], [-2.2, 47.2], [-4.4, 47.9], [-4.7, 48.4],
+      ],
+    ],
+    geoLabels: [
+      { text: 'ATLANTIC', lon: -3.5, lat: 45.3 },
+      { text: 'MEDITERRANEAN', lon: 5.2, lat: 42.5 },
+    ],
+  },
+
+  pyrenees: {
+    bounds: { minLon: -2.4, maxLon: 3.5, minLat: 40.3, maxLat: 43.5 },
+    gridStep: 1,
+    contextPolygons: [
+      [
+        [-2.7, 43.7], [3.8, 43.7], [3.2, 42.4], [2.7, 42.0], [3.2, 41.8],
+        [2.2, 41.3], [1.2, 41.1], [0.8, 40.7], [0.2, 40.1], [-2.7, 40.1], [-2.7, 43.7],
+      ],
+    ],
+    countryPolygons: [
+      [
+        [-2.0, 43.2], [-0.4, 42.85], [0.8, 42.75], [1.7, 42.55], [3.15, 42.45],
+        [3.3, 42.2], [3.0, 41.8], [2.2, 41.35], [1.3, 41.1], [0.8, 40.75],
+        [0.4, 40.65], [-0.3, 41.2], [-1.2, 41.6], [-1.9, 42.1], [-2.0, 43.2],
+      ],
+    ],
+    geoLabels: [
+      { text: 'PYRENEES', lon: 0.3, lat: 42.75 },
+      { text: 'BALEARIC SEA', lon: 2.6, lat: 40.85 },
+    ],
+  },
+};
+
+const MISSION_GEO = {
+  'campaign-01': { lon: 12.485, lat: 41.890, labelPos: 'right' },
+  'campaign-02': { lon: 11.350, lat: 44.150, labelPos: 'right' },
+  'campaign-03': { lon: 9.190, lat: 45.464, labelPos: 'left' },
+  'campaign-04': { lon: 10.850, lat: 45.440, labelPos: 'bottom' },
+  'campaign-05': { lon: 11.880, lat: 46.540, labelPos: 'top' },
+
+  'campaign-06': { lon: 10.749, lat: 47.558, labelPos: 'left' },
+  'campaign-07': { lon: 11.404, lat: 47.269, labelPos: 'bottom' },
+  'campaign-08': { lon: 13.047, lat: 47.795, labelPos: 'top' },
+  'campaign-09': { lon: 15.420, lat: 48.360, labelPos: 'top' },
+  'campaign-10': { lon: 16.365, lat: 48.206, labelPos: 'bottom' },
+
+  'campaign-11': { lon: 16.720, lat: 49.360, labelPos: 'right' },
+  'campaign-12': { lon: 14.656, lat: 49.779, labelPos: 'right' },
+  'campaign-13': { lon: 14.411, lat: 50.086, labelPos: 'left' },
+  'campaign-14': { lon: 13.450, lat: 49.120, labelPos: 'left' },
+  'campaign-15': { lon: 13.737, lat: 51.050, labelPos: 'top' },
+
+  'campaign-16': { lon: 13.377, lat: 52.516, dx: -16, dy: -8, labelPos: 'left' },
+  'campaign-17': { lon: 13.377, lat: 52.516, dx: 0, dy: 14, labelPos: 'bottom' },
+  'campaign-18': { lon: 13.377, lat: 52.516, dx: 18, dy: -6, labelPos: 'right' },
+  'campaign-19': { lon: 10.615, lat: 51.799, labelPos: 'top' },
+  'campaign-20': { lon: 7.228, lat: 50.578, labelPos: 'bottom' },
+  'campaign-21': { lon: 7.012, lat: 51.455, labelPos: 'top' },
+
+  'campaign-22': { lon: 4.904, lat: 52.367, labelPos: 'right' },
+  'campaign-23': { lon: 4.140, lat: 51.950, labelPos: 'left' },
+  'campaign-24': { lon: 4.392, lat: 50.840, labelPos: 'bottom' },
+  'campaign-25': { lon: 4.390, lat: 51.240, labelPos: 'right' },
+  'campaign-26': { lon: 3.680, lat: 51.550, labelPos: 'left' },
+
+  'campaign-27': { lon: 2.307, lat: 48.869, dx: 8, dy: -6, labelPos: 'right' },
+  'campaign-28': { lon: 2.120, lat: 48.804, dx: -10, dy: 8, labelPos: 'left' },
+  'campaign-29': { lon: 4.835, lat: 45.764, labelPos: 'left' },
+  'campaign-30': { lon: 6.865, lat: 45.832, labelPos: 'right' },
+  'campaign-31': { lon: 5.980, lat: 43.920, labelPos: 'left' },
+  'campaign-32': { lon: 7.262, lat: 43.710, labelPos: 'right' },
+
+  'campaign-33': { lon: 1.733, lat: 42.542, labelPos: 'top' },
+  'campaign-34': { lon: -1.450, lat: 42.180, labelPos: 'bottom' },
+  'campaign-35': { lon: 1.837, lat: 41.593, labelPos: 'left' },
+  'campaign-36': { lon: 2.174, lat: 41.403, dx: 0, dy: -16, labelPos: 'top' },
+  'campaign-37': { lon: 2.156, lat: 41.363, dx: -16, dy: 6, labelPos: 'left' },
+  'campaign-38': { lon: 2.185, lat: 41.345, dx: 14, dy: 12, labelPos: 'right' },
+};
+
+function createProjector(bounds) {
+  const midLat = (bounds.minLat + bounds.maxLat) / 2;
+  const cosLat = Math.cos((midLat * Math.PI) / 180);
+  const geoW = (bounds.maxLon - bounds.minLon) * cosLat;
+  const geoH = bounds.maxLat - bounds.minLat;
+  const inner = SVG_SIZE - PAD * 2;
+  const scale = Math.min(inner / geoW, inner / geoH);
+  const offsetX = (SVG_SIZE - geoW * scale) / 2;
+  const offsetY = (SVG_SIZE - geoH * scale) / 2;
+
+  return (lon, lat, dx = 0, dy = 0) => ({
+    x: Number((offsetX + (lon - bounds.minLon) * cosLat * scale + dx).toFixed(1)),
+    y: Number((offsetY + (bounds.maxLat - lat) * scale + dy).toFixed(1)),
+  });
+}
+
+function pointsToPath(points, project, close = true) {
+  if (!points.length) return '';
+  const coords = points.map(([lon, lat], i) => {
+    const { x, y } = project(lon, lat);
+    return `${i === 0 ? 'M' : 'L'}${x} ${y}`;
+  });
+  return close ? `${coords.join(' ')} Z` : coords.join(' ');
+}
+
+function buildGridLines(bounds, gridStep, project) {
+  const verticals = [];
+  const horizontals = [];
+  const startLon = Math.ceil(bounds.minLon / gridStep) * gridStep;
+  for (let lon = startLon; lon <= bounds.maxLon; lon += gridStep) {
+    const p1 = project(lon, bounds.minLat);
+    verticals.push({ x: p1.x, label: `${lon}°E`, showLabel: p1.x > 26 && p1.x < SVG_SIZE - 26 });
+  }
+  const startLat = Math.ceil(bounds.minLat / gridStep) * gridStep;
+  for (let lat = startLat; lat <= bounds.maxLat; lat += gridStep) {
+    const p1 = project(bounds.minLon, lat);
+    horizontals.push({ y: p1.y, label: `${lat}°N`, showLabel: p1.y > 26 && p1.y < SVG_SIZE - 26 });
+  }
+  return { verticals, horizontals };
+}
+
+const maps = CAMPAIGN_CHAPTERS.map((chapter) => {
+  const cfg = REGION_MAPS[chapter.id] || REGION_MAPS.italy;
+  const project = createProjector(cfg.bounds);
+  const grid = buildGridLines(cfg.bounds, cfg.gridStep || 2, project);
+  const contextPaths = (cfg.contextPolygons || []).map((poly) => pointsToPath(poly, project, true));
+  const countryPaths = (cfg.countryPolygons || []).map((poly) => pointsToPath(poly, project, true));
+  const riverPaths = (cfg.rivers || []).map((river) => pointsToPath(river, project, false));
+  const geoLabels = (cfg.geoLabels || []).map((lbl) => ({
+    text: lbl.text,
+    ...project(lbl.lon, lbl.lat),
+  }));
+
+  const markers = chapter.missions.map((mission) => {
+    const geo = MISSION_GEO[mission.id] || {
+      lon: (cfg.bounds.minLon + cfg.bounds.maxLon) / 2,
+      lat: (cfg.bounds.minLat + cfg.bounds.maxLat) / 2,
+      labelPos: 'top',
+    };
+    const pt = project(geo.lon, geo.lat, geo.dx || 0, geo.dy || 0);
+    return {
+      mission,
+      num: String(mission.number).padStart(2, '0'),
+      x: pt.x,
+      y: pt.y,
+      leftPct: ((pt.x / SVG_SIZE) * 100).toFixed(2),
+      topPct: ((pt.y / SVG_SIZE) * 100).toFixed(2),
+      labelPos: geo.labelPos || 'top',
+    };
+  });
+
+  const routes = markers.slice(0, -1).map((curr, idx) => {
+    const next = markers[idx + 1];
+    return {
+      from: curr.mission.id,
+      to: next.mission.id,
+      x1: curr.x,
+      y1: curr.y,
+      x2: next.x,
+      y2: next.y,
+    };
+  });
+
+  return {
+    chapter,
+    firstNum: markers[0]?.num || '01',
+    lastNum: markers[markers.length - 1]?.num || '01',
+    grid,
+    contextPaths,
+    countryPaths,
+    riverPaths,
+    geoLabels,
+    routes,
+    markers,
+  };
+});
+---
+
+{maps.map((mapData, chIdx) => {
+  const isDefault = chIdx === 0;
+  return (
+    <div
+      class="campaign-region-map-card"
+      data-region-map={mapData.chapter.id}
+      style={`--region-accent:${mapData.chapter.color};`}
+      hidden={!isDefault}
+    >
+      <div class="region-map-hud-top">
+        <span class="recon-hud-pill" data-map-region-name>{mapData.chapter.name.toUpperCase()}</span>
+        <span class="recon-hud-pill">{mapData.firstNum}–{mapData.lastNum}</span>
+      </div>
+      <svg class="region-map-svg" viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`} aria-hidden="true">
+        <rect x="0" y="0" width={SVG_SIZE} height={SVG_SIZE} class="region-map-sea" />
+        {mapData.grid.verticals.map((v) => (
+          <>
+            <line x1={v.x} y1="0" x2={v.x} y2={SVG_SIZE} class="region-map-grid-line" />
+            {v.showLabel && <text x={v.x} y={SVG_SIZE - 8} text-anchor="middle" class="region-map-grid-label">{v.label}</text>}
+          </>
+        ))}
+        {mapData.grid.horizontals.map((h) => (
+          <>
+            <line x1="0" y1={h.y} x2={SVG_SIZE} y2={h.y} class="region-map-grid-line" />
+            {h.showLabel && <text x="8" y={h.y - 4} class="region-map-grid-label">{h.label}</text>}
+          </>
+        ))}
+        {mapData.contextPaths.map((d) => (
+          <path d={d} class="region-map-context-land" />
+        ))}
+        {mapData.countryPaths.map((d) => (
+          <path d={d} class="region-map-active-land" />
+        ))}
+        {mapData.riverPaths.map((d) => (
+          <path d={d} class="region-map-river" />
+        ))}
+        {mapData.geoLabels.map((lbl) => (
+          <text x={lbl.x} y={lbl.y} text-anchor="middle" class="region-map-geo-label">{lbl.text}</text>
+        ))}
+        {mapData.routes.map((r, rIdx) => (
+          <line
+            x1={r.x1}
+            y1={r.y1}
+            x2={r.x2}
+            y2={r.y2}
+            data-route-from={r.from}
+            data-route-to={r.to}
+            class={`region-map-route ${isDefault && rIdx === 0 ? 'is-locked' : 'is-locked'}`}
+          />
+        ))}
+      </svg>
+      <div class="region-map-markers">
+        {mapData.markers.map((m, mIdx) => {
+          const initialStatus = isDefault && mIdx === 0 ? 'available' : 'locked';
+          const isInitialSelected = isDefault && mIdx === 0;
+          return (
+            <button
+              type="button"
+              class={`region-map-marker is-${initialStatus}${isInitialSelected ? ' is-selected' : ''} label-${m.labelPos}`}
+              style={`left:${m.leftPct}%;top:${m.topPct}%;`}
+              data-action="select-campaign-mission"
+              data-mission={m.mission.id}
+              aria-pressed={isInitialSelected ? 'true' : 'false'}
+              aria-label={`Mission ${m.mission.number}: ${m.mission.name}. ${initialStatus}.`}
+            >
+              <span class="marker-pulse" aria-hidden="true"></span>
+              <span class="marker-reticle" aria-hidden="true"></span>
+              <span class="marker-node">
+                <svg class="marker-icon marker-icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg>
+                <svg class="marker-icon marker-icon-lock" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 10h-1V7a4 4 0 0 0-8 0v3H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zm-7-3a2 2 0 1 1 4 0v3h-4V7z" /></svg>
+                <span class="marker-core" aria-hidden="true"></span>
+              </span>
+              <span class="marker-num">{m.num}</span>
+              <span class="region-map-tooltip" role="tooltip">{m.num} · {m.mission.name}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div class="region-map-hud-bottom">
+        <span class="region-map-selected-pill">{mapData.markers[0]?.num} · {mapData.markers[0]?.mission.name}</span>
+      </div>
+    </div>
+  );
+})}
