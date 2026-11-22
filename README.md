@@ -7,9 +7,9 @@ A 3D isometric tactical tank assault game inspired by *Battle City*, built with 
 **BATTLE TANK** combines classic arcade base-defense with modular tank engineering, directional armor, destructible 40×40 arenas, and role-driven enemy AI.
 
 ### Game Modes
-- **Campaign**: Progress through 4 sectors and 35 missions against 12 specialized enemy tank classes and 4 unique Sector Bosses (`BOSS_MAMMOTH`, `BOSS_HYDRA`, `BOSS_TITAN`, `BOSS_INFERNO`). Campaign progress, credits, and Garage upgrades persist in `localStorage`.
-- **Survival (*Iron Crucible*)**: Endless wave defense starting with a stock Tier-1 tank in `sessionStorage` while saving personal records to `localStorage`.
-- **Contracts**: Standalone tactical operations (*Last Cargo*, *Blackout Protocol*) starting with a stock Tier-1 tank in `sessionStorage` and syncing earned credits back to your Campaign balance.
+- **Campaign**: Progress through 7 regions and 38 missions against 12 specialized enemy tank classes and 4 unique Sector Bosses (`BOSS_MAMMOTH`, `BOSS_HYDRA`, `BOSS_TITAN`, `BOSS_INFERNO`). Campaign progress, credits, and Garage upgrades persist in `localStorage`.
+- **Survival (*Iron Crucible*, *Paris Last Stand*)**: Endless wave defense starting with a stock Tier-1 tank in `sessionStorage` while saving personal records to `localStorage`.
+- **Contracts**: Standalone tactical operations (*Blackout Protocol*, *Last Cargo*, *Charles Bridge*, *Brandenburg Gate*, *Versailles*, *Brussels*, *Remagen Bridgehead*) starting with a stock Tier-1 tank in `sessionStorage` and syncing earned credits back to your Campaign balance.
 
 ### Key Features
 - **Modular 5×5 Tank Upgrades**: Upgrade **Cannon**, **Chassis**, **Frame**, **Engine**, and **Armor** across Tiers I–V in the Garage (`[U]`), with live 3D visual changes on the player tank.

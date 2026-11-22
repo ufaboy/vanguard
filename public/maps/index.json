@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "BATTLE TANK Campaign Map Registry. Each JSON file defines the 36x36 battlefield grid, gameMode rules (see src/game/mapRules.js), and a flat enemyPool queue (typically 24 tank names, spawning 4 initially and up to 8 simultaneously).",
+  "description": "BATTLE TANK Campaign Map Registry. Each JSON file defines the 40x40 battlefield grid, gameMode rules (see src/game/mapRules.js), and a flat enemyPool queue (typically 24 tank names, spawning 4 initially and up to 8 simultaneously).",
   "availableGameModes": {
     "extermination": "Default mode: Victory when all enemies (and sector boss) are destroyed. Player base is strictly a Field Repair Bay.",
     "stronghold_assault": "Stronghold Siege mode: Victory when the fortified Enemy Stronghold Core (E / enemyBase) guarded by enemies is destroyed.",

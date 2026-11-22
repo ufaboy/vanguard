@@ -55,7 +55,7 @@ export const ACTION_TUNING = Object.freeze({
   MOVE_PLAN_SEC: Object.freeze([8, 12]),
   /** A failed movement order (wrong zone) lasts at most this long. */
   FAILED_MOVE_SEC: Object.freeze([5, 8]),
-  /** Grid cells per zone side: the 36x36 arena is split into 6x6 zones. */
+  /** Grid cells per zone side: the 40x40 arena is split into 6x6-cell zones. */
   ZONE_CELLS: 6,
   /** A zone goal counts as reached within this distance. */
   ARRIVE_CELLS: 1.0,

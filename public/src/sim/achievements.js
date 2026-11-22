@@ -221,7 +221,7 @@ function buildEvalContext({
   accuracy,
   playerSave = null,
   upgrades = null,
-  totalCampaignMissions = 35,
+  totalCampaignMissions = 38,
 }) {
   const gameMode = hud?.gameMode || currentSector?.gameMode || 'extermination';
   const isVictory = hud?.status === 'VICTORY';
@@ -288,7 +288,7 @@ export function evaluateBattleAchievements({
   unlockedMap = {},
   playerSave = null,
   upgrades = null,
-  totalCampaignMissions = 35,
+  totalCampaignMissions = 38,
 }) {
   const ctx = buildEvalContext({
     hud,

@@ -271,7 +271,7 @@ export default {
 
   // Games Like Battle City
   "Games Like Battle City &amp; Tank 1990: 3D Tank Game Online — BATTLE TANK": "Jeux comme Battle City &amp; Tank 1990 : Jeu de Tank 3D en Ligne — BATTLE TANK",
-  "Looking for games like Battle City or Tank 1990 to play online? BATTLE TANK is a free 3D tank game in your browser with HQ defense, destructible walls and 35 missions.": "Vous cherchez des jeux comme Battle City ou Tank 1990 en ligne ? BATTLE TANK est un jeu de tank 3D gratuit par navigateur avec défense de QG, murs destructibles et 35 missions.",
+  "Looking for games like Battle City or Tank 1990 to play online? BATTLE TANK is a free 3D tank game in your browser with HQ defense, destructible walls, 38 campaign missions, survival and contracts.": "Vous cherchez des jeux comme Battle City ou Tank 1990 en ligne ? BATTLE TANK est un jeu de tank 3D gratuit par navigateur avec défense de QG, murs destructibles, 38 missions de campagne, survie et contrats.",
   "Games Like Battle City": "Jeux comme Battle City",
   "Games Like Battle City (Tank 1990): BATTLE TANK in 3D": "Jeux comme Battle City (Tank 1990) : BATTLE TANK en 3D",
   "If you grew up with the 1985 arcade tank classic Battle City, also known as Tank 1990, you remember the rules: protect your base, break through brick walls and stop wave after wave of enemy tanks. BATTLE TANK is a": "Si vous avez grandi avec le classique arcade Battle City (1985, aussi Tank 1990), vous connaissez les règles : protéger sa base, percer la brique et stopper les vagues de chars. BATTLE TANK est un",
