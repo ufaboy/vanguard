@@ -56,6 +56,7 @@ export class EnemyCombatController {
     if (engine.priorityTargetId === e.id) engine.priorityTargetId = null;
     engine.checkAndIgniteForestOnEnemyKill(e);
     engine.entityGroup.remove(e.rig.root);
+    e._removed = true;
     const index = engine.enemies.indexOf(e);
     if (index >= 0) engine.enemies.splice(index, 1);
     return true;
@@ -842,6 +843,7 @@ export class EnemyCombatController {
     if (enemy.hp <= DURABILITY.ZERO_HP) {
       const idx = engine.enemies.indexOf(enemy);
       if (idx === -1) return;
+      enemy._removed = true;
       if (idx !== -1) {
         engine.enemies.splice(idx, 1);
       }

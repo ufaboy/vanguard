@@ -1,7 +1,7 @@
 /** Blender tile models whose damage states break open toward the hits (BRICK, CONCRETE). */
 
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { getSharedGltfLoader } from '../render/gltf-loader.js';
 
 /** Half the 2x2 footprint of a tile model. */
 const HALF = 1;
@@ -69,9 +69,10 @@ export function breachYaw(breach) {
  * breached face, states 4..0) and `<PREFIX>_<C|L|O>_HP_<state>` (the other breach variants).
  */
 export class BreachModels {
-  constructor(url, prefix) {
+  constructor(url, prefix, renderer = null) {
     this.url = url;
     this.prefix = prefix;
+    this.renderer = renderer;
     this.states = new Map();
     /** Corner and two-face damage states, keyed like `C3` or `L2`. */
     this.variants = new Map();
@@ -81,7 +82,7 @@ export class BreachModels {
   }
 
   async load() {
-    const gltf = await new GLTFLoader().loadAsync(this.url);
+    const gltf = await getSharedGltfLoader(this.renderer).loadAsync(this.url);
     const pattern = new RegExp(`^${this.prefix}_(?:([CLO])_)?HP_(\\d)$`);
     gltf.scene.updateMatrixWorld(true);
     gltf.scene.traverse(node => {

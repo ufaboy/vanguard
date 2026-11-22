@@ -32,34 +32,37 @@ export function renderBattlefieldHud({
   if (topTelemetry) {
     const totalHostiles = Math.max(0, hud.totalEnemiesInSector || 0);
     const remainingHostiles = Math.max(0, hud.enemiesRemaining || 0);
-    const hostilesPct = totalHostiles > 0
-      ? Math.max(0, Math.min(100, (remainingHostiles / totalHostiles) * 100))
-      : 0;
-    const creditsFormatted = formatNumber(hud.credits ?? 0);
+    const citadelMax = hud.enemyBaseAlive ? Math.max(1, hud.enemyBaseMaxHp || 1) : 0;
+    const citadelHp = hud.enemyBaseAlive ? Math.max(0, Math.ceil(hud.enemyBaseHp || 0)) : 0;
+    const telemetryKey = `${currentSector.id}|${currentSector.code}|${currentSector.gameMode}|${currentSector.contractId || ''}|${remainingHostiles}/${totalHostiles}|${hud.credits ?? 0}|${hud.enemyBaseAlive ? `${citadelHp}/${citadelMax}` : ''}`;
+    if (topTelemetry.__telemetryKey !== telemetryKey) {
+      topTelemetry.__telemetryKey = telemetryKey;
+      const hostilesPct = totalHostiles > 0
+        ? Math.max(0, Math.min(100, (remainingHostiles / totalHostiles) * 100))
+        : 0;
+      const creditsFormatted = formatNumber(hud.credits ?? 0);
 
-    let enemyCitadelHtml = '';
-    if (hud.enemyBaseAlive) {
-      const citadelMax = Math.max(1, hud.enemyBaseMaxHp || 1);
-      const citadelHp = Math.max(0, Math.ceil(hud.enemyBaseHp || 0));
-      const citadelPct = Math.max(0, Math.min(100, (citadelHp / citadelMax) * 100));
-      enemyCitadelHtml = `
+      let enemyCitadelHtml = '';
+      if (hud.enemyBaseAlive) {
+        const citadelPct = Math.max(0, Math.min(100, (citadelHp / citadelMax) * 100));
+        enemyCitadelHtml = `
         <div class="hud-sector-stat is-citadel">
           <span class="hud-label">${t('CITADEL')}</span>
           <div class="hud-sector-val text-red-400">${citadelHp}<small>/${citadelMax}</small></div>
           <div class="hud-sector-bar" aria-hidden="true"><span class="bg-red-400" style="width:${citadelPct.toFixed(1)}%"></span></div>
         </div>
       `;
-    }
+      }
 
-    const isCampaignSector =
-      currentSector.gameMode !== 'contract' &&
-      currentSector.gameMode !== 'survival' &&
-      !currentSector.contractId;
-    const sectorTitle = isCampaignSector
-      ? t('MISSION {n}', { n: String(currentSector.id).padStart(2, '0') })
-      : `${t(currentSector.code)} · ${t(currentSector.name)}`;
+      const isCampaignSector =
+        currentSector.gameMode !== 'contract' &&
+        currentSector.gameMode !== 'survival' &&
+        !currentSector.contractId;
+      const sectorTitle = isCampaignSector
+        ? t('MISSION {n}', { n: String(currentSector.id).padStart(2, '0') })
+        : `${t(currentSector.code)} · ${t(currentSector.name)}`;
 
-    setHtml(topTelemetry, `
+      setHtml(topTelemetry, `
       <div class="hud-card hud-sector-strip">
         <div class="hud-sector-head">
           <span class="hud-sector-pip" aria-hidden="true"></span>
@@ -79,35 +82,42 @@ export function renderBattlefieldHud({
         </div>
       </div>
     `);
+    }
   }
 
   // 1b. Top-Center Live Compass (quantized to 2° steps to avoid redundant DOM rebuilds)
   if (topCompass) {
     const compassHeading = Math.round(turretAzimuthDeg / 2) * 2;
-    const compassLabels = { 0: t('N'), 45: t('NE'), 90: t('E'), 135: t('SE'), 180: t('S'), 225: t('SW'), 270: t('W'), 315: t('NW') };
-    const ticks = [];
-    for (let offset = -75; offset <= 75; offset += 15) {
-      const snapped = Math.round((compassHeading + offset) / 15) * 15;
-      const deg = ((snapped % 360) + 360) % 360;
-      const diff = snapped - compassHeading;
-      const pct = 50 + (diff / 150) * 100;
-      if (pct < 4 || pct > 96) continue;
-      const lbl = compassLabels[deg] || (deg % 30 === 0 ? String(deg).padStart(3, '0') : '');
-      const isCard = Boolean(compassLabels[deg]);
-      const isNorth = deg === 0;
-      ticks.push(
-        `<span class="hud-compass-tick${isCard ? ' is-cardinal' : ''}${isNorth ? ' is-north' : ''}" style="left:${pct.toFixed(1)}%">${lbl || '&nbsp;'}<i></i></span>`
+    if (topCompass.__compassHeading !== compassHeading) {
+      topCompass.__compassHeading = compassHeading;
+      const compassLabels = { 0: t('N'), 45: t('NE'), 90: t('E'), 135: t('SE'), 180: t('S'), 225: t('SW'), 270: t('W'), 315: t('NW') };
+      const ticks = [];
+      for (let offset = -75; offset <= 75; offset += 15) {
+        const snapped = Math.round((compassHeading + offset) / 15) * 15;
+        const deg = ((snapped % 360) + 360) % 360;
+        const diff = snapped - compassHeading;
+        const pct = 50 + (diff / 150) * 100;
+        if (pct < 4 || pct > 96) continue;
+        const lbl = compassLabels[deg] || (deg % 30 === 0 ? String(deg).padStart(3, '0') : '');
+        const isCard = Boolean(compassLabels[deg]);
+        const isNorth = deg === 0;
+        ticks.push(
+          `<span class="hud-compass-tick${isCard ? ' is-cardinal' : ''}${isNorth ? ' is-north' : ''}" style="left:${pct.toFixed(1)}%">${lbl || '&nbsp;'}<i></i></span>`
+        );
+      }
+      setHtml(
+        topCompass,
+        `<div class="hud-card hud-compass"><div class="hud-compass-track">${ticks.join('')}</div><span class="hud-compass-pointer"></span></div>`
       );
     }
-    setHtml(
-      topCompass,
-      `<div class="hud-card hud-compass"><div class="hud-compass-track">${ticks.join('')}</div><span class="hud-compass-pointer"></span></div>`
-    );
   }
 
   // 2. Top-Right Compact Utility Controls
   if (topControls) {
-    setHtml(topControls, `
+    const controlsKey = `${Boolean(hud.inBaseRepairZone)}|${state.cameraPreset}|${Boolean(state.missileFpvEnabled)}|${Boolean(state.soundEnabled)}|${hud.status}`;
+    if (topControls.__controlsKey !== controlsKey) {
+      topControls.__controlsKey = controlsKey;
+      setHtml(topControls, `
       <div class="hud-util-row">
         <button
           data-action="toggle-upgrades"
@@ -175,6 +185,7 @@ export function renderBattlefieldHud({
         }
       </div>
     `);
+    }
   }
 
   // 3. Boss Condition Banner

@@ -4,8 +4,8 @@ import { BreachModels } from './breach-models.js';
 import { applyBrickFinish } from './brick-finish.js';
 
 export class BrickModels extends BreachModels {
-  constructor() {
-    super(new URL('../../../models/terrain/brick.glb', import.meta.url).href, 'BRICK');
+  constructor(renderer = null) {
+    super(new URL('../../../models/terrain/brick.glb', import.meta.url).href, 'BRICK', renderer);
   }
 
   /** Gives every damage state its finished material; the intact state keeps the loaded one. */

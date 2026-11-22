@@ -4,7 +4,6 @@ import { attachSettingsModal } from '../app/shell.js';
 import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
 import { loadPlayerSave } from '../app/state.js';
 import { CAMPAIGN_CHAPTERS, CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from '../game/campaign.js';
-import { SECTORS } from '../game/levels.js';
 
 const NAV_ICONS = Object.freeze({
   completed:
@@ -217,10 +216,9 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
   if (nextBtn) nextBtn.disabled = selIdx < 0 || selIdx >= visible.length - 1;
 
   const chapter = CAMPAIGN_CHAPTERS.find((c) => c.id === selected.chapterId) || CAMPAIGN_CHAPTERS[0];
-  const sector = SECTORS.find((s) => s.mapId === selected.id);
   const status = getMissionStatus(selected, completedMissions);
   const isClassified = status === 'locked';
-  const playable = status !== 'locked' && Boolean(sector);
+  const playable = status !== 'locked' && selected.status === 'available';
 
   const workspace = document.querySelector('.campaign-workspace');
   if (workspace) workspace.style.setProperty('--region-accent', chapter.color);

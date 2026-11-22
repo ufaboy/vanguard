@@ -5,7 +5,7 @@
  */
 
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { getSharedGltfLoader } from '../render/gltf-loader.js';
 
 export const BUILDING_MAX_HP = Object.freeze({
   house1: 25,
@@ -31,7 +31,8 @@ export function buildingDamageState(hp, maxHp = 25, kind = 'house1') {
 }
 
 export class BuildingModels {
-  constructor() {
+  constructor(renderer = null) {
+    this.renderer = renderer;
     this.url = new URL('../../../models/terrain/buildings.glb', import.meta.url).href;
     /** Geometries keyed by `house1_s{0..11}_{part}_5`, `house1_r{0..7}_{part}_{3..4}`, `house1_{part}_{1..2}`, `house1_0`, etc. */
     this.geometries = new Map();
@@ -44,7 +45,7 @@ export class BuildingModels {
   }
 
   async load() {
-    const gltf = await new GLTFLoader().loadAsync(this.url);
+    const gltf = await getSharedGltfLoader(this.renderer).loadAsync(this.url);
     const pattern = /^house([12])_(?:([sr]\d+)_)?(?:(corner|edge|core)_)?hp_(\d)$/i;
     gltf.scene.updateMatrixWorld(true);
     gltf.scene.traverse((node) => {

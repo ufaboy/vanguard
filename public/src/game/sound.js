@@ -190,7 +190,22 @@ class SoundManager {
     if (this.audioFilesLoading || !this.ctx || typeof fetch === 'undefined') return;
     this.audioFilesLoading = true;
 
-    for (const [key, path] of Object.entries(AUDIO_ASSETS)) {
+    const priorityKeys = new Set([
+      'cannon_heavy',
+      'cannon_light',
+      'explosion_large',
+      'explosion_small',
+      'hit_metal',
+      'hit_brick',
+      'ui_click',
+      'engine_loop',
+      'powerup',
+    ]);
+    const entries = Object.entries(AUDIO_ASSETS);
+    const primary = entries.filter(([key]) => priorityKeys.has(key));
+    const secondary = entries.filter(([key]) => !priorityKeys.has(key));
+
+    const loadEntry = ([key, path]) =>
       fetch(path)
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -208,7 +223,10 @@ class SoundManager {
         .catch(() => {
           // Audio asset failed to load
         });
-    }
+
+    Promise.allSettled(primary.map(loadEntry)).then(() => {
+      for (const entry of secondary) loadEntry(entry);
+    });
   }
 
   // Rate-limiting check to prevent acoustic mud when dozens of entities collide or hit on the same frame

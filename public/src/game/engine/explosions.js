@@ -283,15 +283,22 @@ export class ExplosionsController {
     let rebuildWater = false;
     let rebuildIce = false;
 
-    for (let r = 0; r < engine.grid.length; r++) {
+    const searchSpan = radius + 0.5;
+    const minG = engine.worldToGrid(x - searchSpan, z - searchSpan);
+    const maxG = engine.worldToGrid(x + searchSpan, z + searchSpan);
+    const minRow = Math.max(0, minG.row - 1);
+    const maxRow = Math.min(engine.grid.length - 1, maxG.row + 1);
+    const minCol = Math.max(0, minG.col - 1);
+    for (let r = minRow; r <= maxRow; r++) {
       const row = engine.grid[r];
       if (!row) continue;
-      for (let c = 0; c < row.length; c++) {
+      const maxCol = Math.min(row.length - 1, maxG.col + 1);
+      for (let c = minCol; c <= maxCol; c++) {
         const cell = row[c];
         if (!cell || cell.type === TileType.EMPTY) continue;
         const pos = engine.gridToWorld(r, c);
         const dist = Math.hypot(pos.x - x, pos.z - z);
-        if (dist > radius + 0.5) continue;
+        if (dist > searchSpan) continue;
 
         const tileDmg = Math.max(2, Math.round(computeThermobaricDamage(damage, dist, radius)));
 
@@ -399,12 +406,19 @@ export class ExplosionsController {
     });
 
     let hitCommandBase = false;
-    for (let r = 0; r < GRID_SIZE; r++) {
-      for (let c = 0; c < GRID_SIZE; c++) {
+    const searchSpan = radius + 0.5;
+    const minG = engine.worldToGrid(x - searchSpan, z - searchSpan);
+    const maxG = engine.worldToGrid(x + searchSpan, z + searchSpan);
+    const minRow = Math.max(0, minG.row - 1);
+    const maxRow = Math.min(GRID_SIZE - 1, maxG.row + 1);
+    const minCol = Math.max(0, minG.col - 1);
+    const maxCol = Math.min(GRID_SIZE - 1, maxG.col + 1);
+    for (let r = minRow; r <= maxRow; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
         const cell = engine.grid[r][c];
         if (cell.type === TileType.EMPTY) continue;
         const pos = engine.gridToWorld(r, c);
-        if (Math.hypot(pos.x - x, pos.z - z) <= radius + 0.5) {
+        if (Math.hypot(pos.x - x, pos.z - z) <= searchSpan) {
           if (cell.type === TileType.BOXES) {
             engine.damageTileCell(cell, 1, pos.x, pos.z, fromPlayer);
           } else if (cell.type === TileType.RUBBLE) {

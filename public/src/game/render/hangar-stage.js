@@ -209,7 +209,7 @@ export class HangarStage {
     // Cut away the rear assembly before the orbit enters the workshop furniture.
     this.rearBackdrop.visible = this.camera.position.z > -3;
     this.camera.lookAt(0, 0.35, -0.25);
-    const size = renderer.getSize(new THREE.Vector2());
+    const size = renderer.getSize((this._sizeVec ||= new THREE.Vector2()));
     renderer.setViewport(rect.left, size.y - rect.bottom, rect.width, rect.height);
     renderer.setScissor(rect.left, size.y - rect.bottom, rect.width, rect.height);
     renderer.setScissorTest(true);

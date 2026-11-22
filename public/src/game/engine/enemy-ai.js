@@ -448,12 +448,7 @@ export class EnemyAiController {
     if (e.aiTimer <= 0 || plan.pathIdx >= plan.path.length) {
       e.aiTimer = 1.0;
       const from = { row: Math.floor(fz), col: Math.floor(fx) };
-      const occupiedCells = new Set();
-      for (const ally of engine.enemies) {
-        if (ally === e || ally.hp <= 0) continue;
-        const ag = engine.worldToGrid(ally.x, ally.z);
-        occupiedCells.add(ag.row * GRID_SIZE + ag.col);
-      }
+      const occupiedCells = this.getOccupiedCellsExcluding(e);
       const opts = {
         canCrossWater: Boolean(e.stats.canCrossWater),
         occupiedCells,
@@ -533,16 +528,8 @@ export class EnemyAiController {
     const replanDue = e.aiTimer <= 0;
     if (replanDue) e.aiTimer = engine.enemyAi.enemyReplanDelay(e);
 
-    const occupiedCells = new Set();
-    const allyGoals = [];
-    for (const ally of engine.enemies) {
-      if (ally !== e) {
-        if (ally.brain?.goal) allyGoals.push(ally.brain.goal);
-        const ag = engine.worldToGrid(ally.x, ally.z);
-        allyGoals.push(ag);
-        occupiedCells.add(ag.row * GRID_SIZE + ag.col);
-      }
-    }
+    const occupiedCells = this.getOccupiedCellsExcluding(e);
+    const allyGoals = this.getAllyGoalsExcluding(e);
     const flankDir = {
       x: -Math.sin(engine.playerHullAngle),
       z: -Math.cos(engine.playerHullAngle),
@@ -791,17 +778,70 @@ export class EnemyAiController {
     return null;
   }
 
+  rebuildFrameEnemyCells() {
+    const engine = this.engine;
+    const list = (this._frameEnemyCells ||= []);
+    list.length = 0;
+    for (const ally of engine.enemies) {
+      if (!ally || ally.hp <= 0 || ally._removed) continue;
+      const ag = engine.worldToGrid(ally.x, ally.z);
+      list.push({ enemy: ally, ag, key: ag.row * GRID_SIZE + ag.col });
+    }
+  }
+
+  getOccupiedCellsExcluding(e) {
+    const set = (this._occupiedCellsSet ||= new Set());
+    set.clear();
+    const list = this._frameEnemyCells;
+    if (list) {
+      for (let i = 0; i < list.length; i++) {
+        const entry = list[i];
+        if (entry.enemy === e || entry.enemy.hp <= 0 || entry.enemy._removed) continue;
+        set.add(entry.key);
+      }
+    } else {
+      for (const ally of this.engine.enemies) {
+        if (ally === e || ally.hp <= 0 || ally._removed) continue;
+        const ag = this.engine.worldToGrid(ally.x, ally.z);
+        set.add(ag.row * GRID_SIZE + ag.col);
+      }
+    }
+    return set;
+  }
+
+  getAllyGoalsExcluding(e) {
+    const goals = (this._allyGoalsScratch ||= []);
+    goals.length = 0;
+    const list = this._frameEnemyCells;
+    if (list) {
+      for (let i = 0; i < list.length; i++) {
+        const entry = list[i];
+        if (entry.enemy === e || entry.enemy.hp <= 0 || entry.enemy._removed) continue;
+        if (entry.enemy.brain?.goal) goals.push(entry.enemy.brain.goal);
+        goals.push(entry.ag);
+      }
+    } else {
+      for (const ally of this.engine.enemies) {
+        if (ally === e || ally.hp <= 0 || ally._removed) continue;
+        if (ally.brain?.goal) goals.push(ally.brain.goal);
+        goals.push(this.engine.worldToGrid(ally.x, ally.z));
+      }
+    }
+    return goals;
+  }
+
   updateEnemies(dt, elapsed) {
     const engine = this.engine;
     const empStunned = engine.empTimer > 0;
     const spottedLastFrame = Boolean(engine.playerSpottedByEnemies);
     engine.playerSpottedByEnemies = false;
     engine.updateSquadDirector(dt, spottedLastFrame);
+    this.rebuildFrameEnemyCells();
 
     const enemiesSnapshot = [...engine.enemies];
     for (let i = enemiesSnapshot.length - 1; i >= 0; i--) {
       const e = enemiesSnapshot[i];
-      if (!e || e.hp <= 0 || !engine.enemies.includes(e)) continue;
+      if (!e || e.hp <= 0 || e._removed) continue;
       if (e.phaseShieldTimer > 0) {
         e.phaseShieldTimer = Math.max(0, e.phaseShieldTimer - dt);
         engine.bossCombat.syncPhaseShieldVisual(e, elapsed);
@@ -947,12 +987,23 @@ export class EnemyAiController {
           ? THREE.MathUtils.damp(prevOpacity, targetOpacity, 8, dt)
           : 1.0;
         e.visibilityOpacity = nextOpacity;
-        const shouldBeTransparent = nextOpacity < 0.99;
-        for (const mat of e.rig.fadeMaterials) {
-          mat.opacity = nextOpacity;
-          if (mat.transparent !== shouldBeTransparent) {
-            mat.transparent = shouldBeTransparent;
-            mat.needsUpdate = true;
+        const lastApplied = e._lastAppliedOpacity ?? 1.0;
+        const needsMatUpdate =
+          Math.abs(lastApplied - nextOpacity) > 0.004 ||
+          (engine.hardMode && !e._hardModeFadeInit && nextOpacity < 0.99);
+        if (needsMatUpdate) {
+          e._lastAppliedOpacity = nextOpacity;
+          const enableTransparent = engine.hardMode && (e._hardModeFadeInit || nextOpacity < 0.99);
+          if (enableTransparent) e._hardModeFadeInit = true;
+          for (const mat of e.rig.fadeMaterials) {
+            mat.opacity = nextOpacity;
+            if (enableTransparent && !mat.transparent) {
+              mat.transparent = true;
+              mat.needsUpdate = true;
+            } else if (!engine.hardMode && mat.transparent) {
+              mat.transparent = false;
+              mat.needsUpdate = true;
+            }
           }
         }
         if (e.rig.root) e.rig.root.visible = nextOpacity > 0.015;
@@ -964,7 +1015,7 @@ export class EnemyAiController {
       }
 
       if (inContactRange(e, distToPlayer) && engine.enemyCombat.spendContactEnemy(e)) continue;
-      if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
+      if (e.hp <= 0 || e._removed) continue;
 
       // Seconds since the last hit (take_cover)
       e.sinceHit = e.prevHp !== undefined && e.hp < e.prevHp ? 0 : (e.sinceHit ?? Infinity) + dt;
@@ -1027,7 +1078,7 @@ export class EnemyAiController {
             toPlayerZ,
             distToPlayer,
           });
-          if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
+          if (e.hp <= 0 || e._removed) continue;
         }
 
         const hpRatio = e.hp / e.maxHp;
@@ -1110,7 +1161,7 @@ export class EnemyAiController {
 
         if (isTryingToMove) {
           engine.enemyCombat.crushBoxObstacles(nextX, e.z, radius, false);
-          if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
+          if (e.hp <= 0 || e._removed) continue;
           if (e.isBoss) engine.crushBossObstacles(nextX, e.z, radius);
         }
         let blocked = false;
@@ -1126,7 +1177,7 @@ export class EnemyAiController {
 
         if (isTryingToMove) {
           engine.enemyCombat.crushBoxObstacles(e.x, nextZ, radius, false);
-          if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
+          if (e.hp <= 0 || e._removed) continue;
           if (e.isBoss) engine.crushBossObstacles(e.x, nextZ, radius);
         }
         if (
@@ -1225,7 +1276,7 @@ export class EnemyAiController {
       // Special slot & gunnery remain active even while crossing the border onto the arena.
       const brainActive = Boolean(!e.entryTarget && e.brain && e.brain.tactic !== 'idle');
       updateAbilities(e, engine, { brainActive, canSeePlayer });
-      if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
+      if (e.hp <= 0 || e._removed) continue;
 
       engine.updateEnemyGunnery(e, dt, {
         canSeePlayer,
@@ -1237,7 +1288,7 @@ export class EnemyAiController {
         toPlayerX,
         toPlayerZ,
       });
-      if (e.hp <= 0 || !engine.enemies.includes(e)) continue;
+      if (e.hp <= 0 || e._removed) continue;
 
       const enemyHoverY = e.stats.canHover
         ? 0.05 + Math.sin(elapsed * 4.0 + e.id) * 0.012

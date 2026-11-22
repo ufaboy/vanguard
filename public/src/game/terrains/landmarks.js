@@ -15,7 +15,7 @@
  */
 
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { getSharedGltfLoader } from '../render/gltf-loader.js';
 import { autoDisposeOwned, disposeOwned, markOwned } from '../render/dispose.js';
 
 const ALL = (cols, rows) => {
@@ -285,7 +285,8 @@ function makeProceduralLandmarkTex(drawFn) {
 }
 
 export class LandmarkModels {
-  constructor() {
+  constructor(renderer = null) {
+    this.renderer = renderer;
     this.templates = new Map();
     this.sharedMaterials = new Set();
     this.fallbackMats = null;
@@ -299,7 +300,7 @@ export class LandmarkModels {
   /** Loads one Blender GLB pack of templates. Resolves to true when they are ready. */
   async loadPack(pack) {
     const glbUrl = new URL(LANDMARK_PACKS[pack], import.meta.url).href;
-    const gltf = await new GLTFLoader().loadAsync(glbUrl);
+    const gltf = await getSharedGltfLoader(this.renderer).loadAsync(glbUrl);
     if (this.disposed) return false;
     gltf.scene.updateMatrixWorld(true);
     for (const child of gltf.scene.children) {
@@ -469,7 +470,7 @@ export class LandmarkModels {
     for (const sz of [-1, 1]) {
       box(width + 0.5, 0.6, 0.45, m.stone, 0, -0.22, sz * (halfL - 0.05));
     }
-    return group;
+    return markOwned(group, { geometries: true, materials: false });
   }
 
   /** Swaps an existing landmark group (e.g. ELYSEE -> ELYSEE_RUINED when HQ falls). */

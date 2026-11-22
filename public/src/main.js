@@ -419,7 +419,7 @@ function initApp() {
           prevDefeatCinematics !== Boolean(snapshot.defeatCinematicsActive) ||
           prevVictoryCinematics !== Boolean(snapshot.victoryCinematicsActive)
       );
-    }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated });
+    }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated, deferInitialLoad: true });
     engine.applyUpgrades(state.upgrades);
     engine.setCameraPreset(state.cameraPreset);
     engine.setMissileFpvEnabled(state.missileFpvEnabled);
@@ -434,6 +434,20 @@ function initApp() {
     renderUI(true);
     resolveEngineReady();
   };
+  // Warm up critical GLB files in parallel while texture-worker generates procedural maps.
+  for (const href of [
+    './models/tank_player.glb',
+    './models/terrain/brick.glb',
+    './models/terrain/concrete.glb',
+    './models/terrain/buildings.glb',
+  ]) {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'fetch';
+    link.crossOrigin = 'anonymous';
+    link.href = href;
+    document.head.appendChild(link);
+  }
   pregenerateTextures().then(createEngine);
 
   window.addEventListener('keydown', (e) => {
@@ -709,6 +723,11 @@ async function startSector(sectorIndex) {
     engine?.setInspectMode(false);
     await engine?.waitForSectorModels?.(sectorIndex);
     engine?.startSector(sectorIndex);
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(() => engine?.airSupportController?.preloadGlbModels?.(), { timeout: 3500 });
+    } else {
+      setTimeout(() => engine?.airSupportController?.preloadGlbModels?.(), 2500);
+    }
     missionStartedAt = performance.now();
     syncCampaignProgressProperty();
     if (!gameReadyTracked && document.body?.dataset?.page === 'battlefield') {
