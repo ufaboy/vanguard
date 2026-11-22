@@ -2,14 +2,14 @@
 // The runner serves this in place of battlefield.html's main.js, so the save is seeded before the game boots.
 import { TankGameEngine } from '/src/game/engine/engineCore.js';
 import { componentRepairCost } from '/src/sim/component-damage.js';
-import { createInitialPlayerSave } from '/src/sim/hangar.js';
+import { createInitialPlayerSave } from '/src/sim/garage.js';
 
 // Mission 1 starts outside the base repair zone; these smokes test the garage UI, not driving back to base,
 // so every garage request counts the tank as parked in the zone. Same module instance as main.js imports.
-const openHangar = TankGameEngine.prototype.setHangarOpen;
-TankGameEngine.prototype.setHangarOpen = function setHangarOpen(open) {
+const openGarage = TankGameEngine.prototype.setGarageOpen;
+TankGameEngine.prototype.setGarageOpen = function setGarageOpen(open) {
   if (open) this.inBaseRepairZone = true;
-  return openHangar.call(this, open);
+  return openGarage.call(this, open);
 };
 
 
@@ -45,10 +45,10 @@ try {
   repair.click(); await wait(200);
   check(!document.querySelector('[data-action="repair-component"][data-track="cannon"]'), 'Repair button remained after repair');
   check(stored().credits === cost && !stored().componentDamage.cannon, 'Cannon repair did not save or charge correctly');
-  document.querySelector('[data-action="hangar-select"][data-track="engine"]').click();
+  document.querySelector('[data-action="garage-select"][data-track="engine"]').click();
   (await find('[data-action="repair-component"][data-track="engine"]')).click(); await wait(200);
   check(stored().credits === 0 && !stored().componentDamage.engine, 'Engine repair failed');
-  document.querySelector('[data-action="hangar-select"][data-track="armor"]').click();
+  document.querySelector('[data-action="garage-select"][data-track="armor"]').click();
   check((await find('[data-action="repair-component"][data-track="armor"]')).disabled, 'Unaffordable repair should be disabled');
   check(JSON.parse(localStorage.getItem('iron_vanguard_upgrades_v3')).cannon === tier, 'Purchased upgrade was lost');
   window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', bubbles: true }));

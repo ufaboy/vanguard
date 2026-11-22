@@ -1061,7 +1061,7 @@ export function stepContractScheduler(
 
   // Advance warning timers on queued groups; pause clock if postDeliveryPauseTimer > 0?
   // Note: "After a cargo delivery, pause new entry admissions for 8 seconds. Existing enemies continue
-  // to fight; this is not an invulnerability period. The warning and packet clocks pause with the simulation and Hangar."
+  // to fight; this is not an invulnerability period. The warning and packet clocks pause with the simulation and Garage."
   for (const group of sched.queue) {
     if (group.completed) continue;
     if (group.packetCooldown > 0) {

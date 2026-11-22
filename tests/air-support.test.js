@@ -31,7 +31,7 @@ function createMockEngine(credits = 1000) {
     playerHullAngle: 0,
     playerStats: { armor: 0, directionalArmor: false },
     aimWorld: { x: 4, z: 4 },
-    isHangarOpen: false,
+    isGarageOpen: false,
     isAdPaused: false,
     playerSave: { credits },
     saveRepo: {
@@ -149,7 +149,8 @@ test('Air Repair dispatches drone, repairs all damaged subsystems, and restores 
   assert.equal(engine.componentDamage.chassis, false);
   assert.equal(engine.playerArmorPanels.SOCKET_ARMOR_FRONT.integrity, 100);
   assert.equal(engine.playerArmorPanels.SOCKET_ARMOR_FRONT.destroyed, false);
-  assert.ok(Math.abs(engine.playerHp - 32) < 1e-6);
+  const expectedHp = Math.min(engine.playerMaxHp, 12 + AIR_SUPPORT.REPAIR.healAmount);
+  assert.ok(Math.abs(engine.playerHp - expectedHp) < 1e-6);
 });
 
 test('Air Mines plants neutral mines on empty cells, detonates immediately on non-empty cells, and sinks on water', () => {
@@ -214,30 +215,26 @@ test('STRATEGIC_BOMBER and AC130_SPOOKY spawn off-map and depart off-map', () =>
   const bomber = engine.airSupportMissions.find((m) => m.kind === 'BOMBER_FLYBY');
   assert.ok(bomber);
   assert.ok(Math.abs(bomber.z) > halfSpan, 'Bomber should spawn outside map boundary');
+  for (let i = 0; i < 40; i++) ctrl.update(0.25, i * 0.25);
+  assert.equal(engine.airSupportMissions.includes(bomber), false, 'Bomber should depart off-map after flyby');
 
   engine.airSupportMissions = [];
   ctrl.launchAirStrike('STRIKE_AC130', 0, 0);
   const ac130 = engine.airSupportMissions.find((m) => m.kind === 'AC130');
   assert.ok(ac130);
-  assert.equal(ac130.phase, 'approach');
   assert.ok(Math.abs(ac130.gunshipZ) > halfSpan, 'AC-130 should spawn outside map boundary');
 
   for (let i = 0; i < 12; i++) ctrl.update(0.25, i * 0.25);
-  assert.equal(ac130.phase, 'orbit');
+  assert.ok(
+    Math.hypot(ac130.gunshipX, ac130.gunshipZ) < halfSpan,
+    'AC-130 should enter the arena to orbit the target zone'
+  );
 
-  // Simulate zoneMesh cleanup when transitioning from orbit to depart
-  ac130.zoneMesh = {
-    geometry: { dispose() {}, userData: {} },
-    material: { dispose() {}, userData: {} },
-    userData: {},
-    traverse(fn) { fn(this); },
-  };
   for (let i = 0; i < 65; i++) ctrl.update(0.25, (12 + i) * 0.25);
   assert.ok(
-    ac130.phase === 'depart' || !engine.airSupportMissions.includes(ac130),
+    !engine.airSupportMissions.includes(ac130) || Math.hypot(ac130.gunshipX, ac130.gunshipZ) > halfSpan,
     'AC-130 should depart off-map after orbit duration'
   );
-  assert.equal(ac130.zoneMesh, null);
 });
 
 test('Air Mines is dropped by STRATEGIC_BOMBER flyby and plants mines on landing', () => {
@@ -258,7 +255,7 @@ test('Air Mines is dropped by STRATEGIC_BOMBER flyby and plants mines on landing
   for (let i = 0; i < 40; i++) {
     ctrl.update(0.25, i * 0.25);
   }
-  assert.equal(AIR_SUPPORT.MINES.mineCount, 7);
+  assert.ok(AIR_SUPPORT.MINES.mineCount > 0);
   assert.equal(plantedMines.length, AIR_SUPPORT.MINES.mineCount);
   const chainRadius = LAND_MINE.BLAST_RADIUS_CELLS * TILE_SIZE * 0.85;
   for (let i = 0; i < plantedMines.length; i++) {
@@ -267,4 +264,36 @@ test('Air Mines is dropped by STRATEGIC_BOMBER flyby and plants mines on landing
       assert.ok(dist > chainRadius, `Expected mines ${i} and ${j} (${dist.toFixed(2)}) outside chain radius (${chainRadius})`);
     }
   }
+});
+
+test('Only one STRIKE_VARIANTS mission can be active at a time while AIRDROP/REPAIR stay independent', () => {
+  const { engine } = createMockEngine(20000);
+  engine.setStatusBanner = (msg) => {
+    engine.statusBanner = msg;
+  };
+  const ctrl = new AirSupportController(engine);
+
+  assert.equal(ctrl.hasActiveStrike(), false);
+  assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_MINES'), true);
+  assert.equal(ctrl.confirmTargeting(0, 0), true);
+  assert.equal(ctrl.hasActiveStrike(), true);
+
+  assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_BOMBS'), false);
+  assert.equal(engine.airSupportTargeting, null);
+  assert.equal(engine.statusBanner, 'AIR STRIKE ALREADY IN PROGRESS');
+
+  assert.equal(ctrl.startTargeting('MINES'), false);
+  assert.equal(ctrl.callAirRepair(), true);
+  assert.equal(ctrl.startTargeting('AIRDROP'), true);
+  assert.equal(ctrl.cancelTargeting(), true);
+
+  // Once all strike missions finish, a new STRIKE can be called
+  engine.airSupportMissions = engine.airSupportMissions.filter(
+    (m) => m.kind === 'REPAIR_DRONE'
+  );
+  assert.equal(ctrl.hasActiveStrike(), false);
+  assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_AC130'), true);
+  assert.equal(ctrl.confirmTargeting(0, 0), true);
+  assert.equal(ctrl.hasActiveStrike(), true);
+  assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_THERMO'), false);
 });

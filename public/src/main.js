@@ -9,7 +9,7 @@ import {
   savePreferences as persistPreferences,
 } from './app/state.js';
 import { ENGINE_PAGES, parseRoute, setCurrentRoutePage, syncRoute } from './router.js';
-import { renderHangar } from './hangar-ui.js';
+import { renderGarage } from './garage-ui.js';
 import { TankGameEngine } from './game/engine/engineCore.js';
 import { pregenerateTextures } from './game/render/texture-gen.js';
 import { SECTORS, isContractMap } from './game/levels.js';
@@ -80,15 +80,15 @@ const state = {
   touchControlsMode: 'auto',
   hudCollapsed: false,
   showUpgradeDrawer: false,
-  hangarTrack: 'cannon',
-  hangarView: 'front',
-  hangarFeedback: '',
+  garageTrack: 'cannon',
+  garageView: 'front',
+  garageFeedback: '',
   adRewardClaimed: false,
   adRewardFeedback: '',
   battleAchievements: [],
   achievementBonusCredits: 0,
   shareFeedback: '',
-  upgradeTab: 'HANGAR',
+  upgradeTab: 'GARAGE',
   upgrades: {
     cannon: 1,
     chassis: 1,
@@ -220,7 +220,7 @@ function initApp() {
       <div id="target-badge" class="hidden fixed top-36 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-teal-500/70 px-4 py-1.5 rounded text-xs font-mono uppercase tracking-wider shadow-lg"></div>
       <div id="status-toast" class="hidden fixed top-48 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-amber-500/70 px-5 py-2 rounded text-xs font-mono uppercase tracking-[0.12em] text-amber-300 shadow-lg"></div>
       <div id="modifiers-strip" class="fixed top-64 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
-      <div id="upgrade-drawer" class="hidden hangar-shell" role="dialog" aria-modal="true" aria-label="${t('Vehicle maintenance garage')}"></div>
+      <div id="upgrade-drawer" class="hidden garage-shell" role="dialog" aria-modal="true" aria-label="${t('Vehicle maintenance garage')}"></div>
       <footer id="bottom-hud" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-20 w-[min(1120px,96vw)] bg-[#0B0F17]/95 border border-slate-700/70 px-5 py-3 rounded shadow-2xl flex flex-wrap items-center justify-between gap-4"></footer>
       <div id="touch-controls" class="hidden touch-controls-layer" aria-hidden="true"></div>
       <div id="status-modal" class="hidden fixed inset-0 z-30 flex items-center justify-center bg-black/75 p-4"></div>
@@ -473,14 +473,14 @@ function initApp() {
       if (state.hud.status === GameStatus.MENU) return;
       const willOpen = !state.showUpgradeDrawer;
       if (willOpen) {
-        const ok = engine ? engine.setHangarOpen(true) : false;
+        const ok = engine ? engine.setGarageOpen(true) : false;
         if (ok) {
           state.showUpgradeDrawer = true;
           renderUI(true);
         }
       } else {
         state.showUpgradeDrawer = false;
-        engine?.setHangarOpen(false);
+        engine?.setGarageOpen(false);
         renderUI(true);
       }
     } else if (e.code === 'KeyC') {
@@ -494,7 +494,7 @@ function initApp() {
       }
       if (state.showUpgradeDrawer) {
         state.showUpgradeDrawer = false;
-        engine?.setHangarOpen(false);
+        engine?.setGarageOpen(false);
         renderUI(true);
         return;
       }
@@ -590,7 +590,7 @@ function applyRoute(route) {
 
   if (state.showUpgradeDrawer) {
     state.showUpgradeDrawer = false;
-    engine?.setHangarOpen(false);
+    engine?.setGarageOpen(false);
   }
   if (CONTRACT_IDS.includes(route.page)) {
     const index = SECTORS.findIndex(
@@ -607,8 +607,8 @@ function applyRoute(route) {
 function cycleCameraPreset() {
   if (state.showUpgradeDrawer) {
     const views = ['front', 'side', 'rear'];
-    state.hangarView = views[(views.indexOf(state.hangarView) + 1) % views.length];
-    engine?.hangarStage?.setView(state.hangarView);
+    state.garageView = views[(views.indexOf(state.garageView) + 1) % views.length];
+    engine?.garageStage?.setView(state.garageView);
     renderUI(true);
     return;
   }
@@ -675,15 +675,19 @@ async function startSector(sectorIndex) {
     state.selectedSector = sectorIndex;
     state.adRewardClaimed = false;
     state.adRewardFeedback = '';
-    if (state.showUpgradeDrawer) engine?.setHangarOpen(false);
+    if (state.showUpgradeDrawer) engine?.setGarageOpen(false);
     state.showUpgradeDrawer = false;
     engine?.setInspectMode(false);
     await engine?.waitForSectorModels?.(sectorIndex);
     engine?.startSector(sectorIndex);
+    const preloadAirAndDrone = () => {
+      engine?.airSupportController?.preloadGlbModels?.();
+      engine?.reconDroneController?.preloadGlbModel?.();
+    };
     if (typeof requestIdleCallback === 'function') {
-      requestIdleCallback(() => engine?.airSupportController?.preloadGlbModels?.(), { timeout: 3500 });
+      requestIdleCallback(preloadAirAndDrone, { timeout: 3500 });
     } else {
-      setTimeout(() => engine?.airSupportController?.preloadGlbModels?.(), 2500);
+      setTimeout(preloadAirAndDrone, 2500);
     }
     missionStartedAt = performance.now();
     syncCampaignProgressProperty();
@@ -716,14 +720,14 @@ async function startSector(sectorIndex) {
   }
 }
 
-function renderHangarAndWorkshopDrawer(hud, upgrades) {
+function renderGarageAndWorkshopDrawer(hud, upgrades) {
   const drawer = document.getElementById('upgrade-drawer');
   if (!drawer) return;
   const opening = state.showUpgradeDrawer && drawer.classList.contains('hidden');
   setHidden(drawer, !state.showUpgradeDrawer);
   if (state.showUpgradeDrawer) {
-    setHtml(drawer, renderHangar(hud, upgrades, state.hangarTrack, state.hangarView, state.hangarFeedback));
-    if (opening) drawer.querySelector('.hangar-system.is-selected')?.focus({ preventScroll: true });
+    setHtml(drawer, renderGarage(hud, upgrades, state.garageTrack, state.garageView, state.garageFeedback));
+    if (opening) drawer.querySelector('.garage-system.is-selected')?.focus({ preventScroll: true });
   }
 }
 
@@ -779,7 +783,7 @@ function renderUI(forceModals = false) {
     for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'status-toast', 'modifiers-strip', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'status-modal']) {
       setHidden(document.getElementById(id), true);
     }
-    renderHangarAndWorkshopDrawer(hud, upgrades);
+    renderGarageAndWorkshopDrawer(hud, upgrades);
     return;
   }
   setHidden(upgradeDrawer, true);
@@ -805,7 +809,7 @@ function renderUI(forceModals = false) {
     return;
   }
 
-  renderHangarAndWorkshopDrawer(hud, upgrades);
+  renderGarageAndWorkshopDrawer(hud, upgrades);
   renderStatusModal({ statusModal, state, hud, currentSector, accuracy });
 }
 

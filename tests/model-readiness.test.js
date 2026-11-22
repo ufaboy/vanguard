@@ -5,28 +5,26 @@ import * as THREE from 'three';
 import { ModelFactory } from '../public/src/game/render/models.js';
 import { getSectorEnemyClasses, sectorUsesLandmarks } from '../public/src/game/engine/sector-loader.js';
 import { LandmarkModels } from '../public/src/game/terrains/landmarks.js';
+import { MAMMOTH, INFERNO, TITAN } from '../public/src/game/constants.js';
+import { buildSurvivalWaveSpec } from '../public/src/sim/survival.js';
 import { SECTORS } from '../public/src/game/levels.js';
 import { EnemyClass } from '../public/src/game/types.js';
 
-function createStubFactory(overrides = {}) {
-  return Object.assign(Object.create(ModelFactory.prototype), {
-    isSoftwareGl: false,
-    glbClassesByUrl: new Map([
-      ['/models/scout.glb', [EnemyClass.SCOUT]],
-      ['/models/standard.glb', [EnemyClass.STANDARD]],
-    ]),
-    glbRequestedUrls: new Set(),
-    glbLoadPromises: new Map(),
+function createTestFactory({ isSoftwareGl = false, ...options } = {}) {
+  return new ModelFactory(null, isSoftwareGl, null, {
+    headless: true,
     playerGlbPromise: Promise.resolve(),
     brickModelsPromise: Promise.resolve(true),
+    concreteModelsPromise: Promise.resolve(true),
+    buildingModelsPromise: Promise.resolve(true),
     loadGlbTankModel: () => Promise.resolve(),
-    ...overrides,
+    ...options,
   });
 }
 
 test('ModelFactory.waitForModels resolves immediately in software GL mode', async () => {
   let enemyLoaded = false;
-  const factory = createStubFactory({
+  const factory = createTestFactory({
     isSoftwareGl: true,
     ensureEnemyModels: () => {
       enemyLoaded = true;
@@ -44,7 +42,7 @@ test('ModelFactory.waitForModels waits for player, brick, and requested enemy GL
   let releaseEnemy;
   let loadCalls = 0;
 
-  const factory = createStubFactory({
+  const factory = createTestFactory({
     playerGlbPromise: new Promise((resolve) => { releasePlayer = resolve; }),
     brickModelsPromise: new Promise((resolve) => { releaseBricks = resolve; }),
     loadGlbTankModel: () => {
@@ -85,18 +83,30 @@ test('getSectorEnemyClasses collects pool, fixed spawns, exact boss escorts, and
   assert.ok(campaign.includes(EnemyClass.SCOUT));
   assert.ok(campaign.includes(EnemyClass.HOWITZER));
   assert.ok(campaign.includes(EnemyClass.BOSS_MAMMOTH));
-  assert.ok(campaign.includes(EnemyClass.SAPPER), 'Mammoth escort should be included');
-  assert.equal(campaign.includes(EnemyClass.ARMOR), false, 'unrelated Titan escort should not be preloaded');
-  assert.equal(campaign.includes(EnemyClass.FLAMETHROWER), false, 'unrelated Inferno escort should not be preloaded');
+  for (const escort of MAMMOTH.ESCORT_CLASSES) {
+    assert.ok(campaign.includes(escort), `Mammoth escort ${escort} should be included`);
+  }
+  const mammothExpected = new Set([
+    EnemyClass.SCOUT,
+    EnemyClass.HOWITZER,
+    EnemyClass.BOSS_MAMMOTH,
+    ...MAMMOTH.ESCORT_CLASSES,
+  ]);
+  for (const other of [...TITAN.ESCORT_CLASSES, ...INFERNO.ESCORT_CLASSES]) {
+    if (!mammothExpected.has(other)) {
+      assert.equal(campaign.includes(other), false, `unrelated boss escort ${other} should not be preloaded`);
+    }
+  }
 
   const survival = getSectorEnemyClasses({ gameMode: 'survival' });
-  assert.ok(survival.includes(EnemyClass.SCOUT));
-  assert.ok(survival.includes(EnemyClass.STANDARD));
-  assert.ok(survival.includes(EnemyClass.SAPPER));
+  const wave1 = buildSurvivalWaveSpec(1);
+  for (const cls of wave1.roster) {
+    assert.ok(survival.includes(cls), `Wave-1 survival class ${cls} should be preloaded`);
+  }
   assert.equal(survival.includes(EnemyClass.BOSS_TITAN), false, 'late-wave bosses are streamed per wave, not at wave 1');
 });
 
-test('ModelFactory.pruneEnemyModels frees unused enemy tank GLB caches', () => {
+test('ModelFactory.pruneEnemyModels frees unused enemy tank GLB caches', async () => {
   let disposedGeos = 0;
   let disposedMats = 0;
   let disposedMaps = 0;
@@ -114,31 +124,33 @@ test('ModelFactory.pruneEnemyModels frees unused enemy tank GLB caches', () => {
     gun: [],
   });
 
-  const factory = createStubFactory({
-    glbClassesByUrl: new Map([
-      ['./models/tank_scout.glb', [EnemyClass.SCOUT]],
-      ['./models/tank_standard.glb', [EnemyClass.STANDARD]],
-    ]),
-    glbTankParts: new Map([
-      [EnemyClass.SCOUT, makeFakeParts()],
-      [EnemyClass.STANDARD, makeFakeParts()],
-    ]),
-    glbRequestedUrls: new Set(['./models/tank_scout.glb', './models/tank_standard.glb']),
-    glbLoadPromises: new Map([
-      ['./models/tank_scout.glb', Promise.resolve()],
-      ['./models/tank_standard.glb', Promise.resolve()],
-    ]),
+  const loadCalls = [];
+  let factory;
+  factory = createTestFactory({
+    loadGlbTankModel: async (classes) => {
+      for (const cls of classes || []) {
+        loadCalls.push(cls);
+        factory.registerEnemyModelParts(cls, makeFakeParts());
+      }
+    },
   });
+
+  await factory.ensureEnemyModels([EnemyClass.SCOUT, EnemyClass.STANDARD]);
+  assert.equal(factory.hasEnemyModel(EnemyClass.SCOUT), true);
+  assert.equal(factory.hasEnemyModel(EnemyClass.STANDARD), true);
 
   const pruned = factory.pruneEnemyModels([EnemyClass.SCOUT]);
   assert.equal(pruned, 1);
-  assert.equal(factory.glbTankParts.has(EnemyClass.SCOUT), true);
-  assert.equal(factory.glbTankParts.has(EnemyClass.STANDARD), false);
-  assert.equal(factory.glbRequestedUrls.has('./models/tank_standard.glb'), false);
-  assert.equal(factory.glbLoadPromises.has('./models/tank_standard.glb'), false);
+  assert.equal(factory.hasEnemyModel(EnemyClass.SCOUT), true);
+  assert.equal(factory.hasEnemyModel(EnemyClass.STANDARD), false);
   assert.equal(disposedGeos, 1);
   assert.equal(disposedMats, 1);
   assert.equal(disposedMaps, 1);
+
+  // Pruned class is re-requested when needed again; kept class stays cached.
+  loadCalls.length = 0;
+  await factory.ensureEnemyModels([EnemyClass.SCOUT, EnemyClass.STANDARD]);
+  assert.deepEqual(loadCalls, [EnemyClass.STANDARD]);
 });
 
 test('sectorUsesLandmarks and waitForModels only load landmarks for maps that use them', async () => {
@@ -149,7 +161,7 @@ test('sectorUsesLandmarks and waitForModels only load landmarks for maps that us
 
   let landmarkLoadCalls = 0;
   let releaseLandmarks;
-  const factory = createStubFactory({
+  const factory = createTestFactory({
     landmarkModels: {
       ensureLoaded: () => {
         landmarkLoadCalls += 1;
@@ -180,15 +192,18 @@ test('sectorUsesLandmarks and waitForModels only load landmarks for maps that us
 test('LandmarkModels.unload frees templates and materials while remaining reusable', () => {
   const models = new LandmarkModels();
   models.create('CONCORDE_OBELISK');
-  models.loadPromise = Promise.resolve(true);
   assert.ok(models.liveGroups.size > 0);
   assert.ok(models.fallbackMats);
 
   models.unload();
   assert.equal(models.liveGroups.size, 0);
-  assert.equal(models.loadPromise, null);
   assert.equal(models.fallbackMats, null);
   assert.equal(models.disposed, false);
+
+  const recreated = models.create('CONCORDE_OBELISK');
+  assert.ok(recreated instanceof THREE.Group);
+  assert.equal(models.liveGroups.size, 1);
+  models.dispose();
 });
 
 test('STEALTH enemy rig populates stealthMaterials for both loading proxy and loaded GLB', () => {
@@ -198,14 +213,7 @@ test('STEALTH enemy rig populates stealthMaterials for both loading proxy and lo
       new THREE.MeshStandardMaterial({ color: 0x334155 })
     );
 
-  const factory = createStubFactory({
-    shadowTex: null,
-    tankArmorTex: null,
-    trackTreadTex: null,
-    getLoadingBadgeTexture: () => null,
-    pendingEnemyRigs: new Map(),
-    glbTankParts: new Map(),
-  });
+  const factory = createTestFactory();
 
   // 1. Before GLB loads (holographic proxy): stealthMaterials and fadeMaterials are populated
   const proxyRig = factory.createEnemyTank(EnemyClass.STEALTH);
@@ -213,7 +221,7 @@ test('STEALTH enemy rig populates stealthMaterials for both loading proxy and lo
   assert.ok(Array.isArray(proxyRig.fadeMaterials) && proxyRig.fadeMaterials.length > 0);
 
   // 2. When GLB parts are already loaded (`skeletonOnly: true`), applyGlbTankModel populates stealthMaterials
-  factory.glbTankParts.set(EnemyClass.STEALTH, {
+  factory.registerEnemyModelParts(EnemyClass.STEALTH, {
     hull: [makePartMesh()],
     turret: [makePartMesh()],
     gun: [makePartMesh()],

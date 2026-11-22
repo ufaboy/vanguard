@@ -85,7 +85,7 @@ export class ExplosionsController {
                 LAND_MINE.TRIGGER_RADIUS + (e.isBoss ? 0.45 : 0.15)
           );
         if (hitPlayer || hitEnemy) {
-          engine.detonateMine(i);
+          this.detonateMine(i);
           i = Math.min(i, engine.mines.length);
         }
       }
@@ -138,7 +138,7 @@ export class ExplosionsController {
       const other = engine.mines[i];
       if (!other) continue;
       if (Math.hypot(other.x - m.x, other.z - m.z) <= blastRadius * 0.85) {
-        engine.detonateMine(i);
+        this.detonateMine(i);
         i = Math.min(i, engine.mines.length);
       }
     }

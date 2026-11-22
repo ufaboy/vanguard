@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { ARMOR_PANEL_CATALOG } from '../../sim/catalog.js';
 import { CONTRACT_TYPES, CONTRACTS_CATALOG, LAST_CARGO_CONTRACT, createContractState, stepContractScheduler } from '../../sim/contract.js';
-import { resolveAssembledTank } from '../../sim/hangar.js';
+import { resolveAssembledTank } from '../../sim/garage.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
 import { buildSurvivalWaveSpec, createSurvivalState } from '../../sim/survival.js';
 import {
@@ -192,6 +192,7 @@ export class SectorLoaderController {
     engine.clearGroup(engine.mapGroup);
     engine.tileBatcher.reset();
     engine.airSupportController?.clear?.();
+    engine.reconDroneController?.clear?.();
     engine.clearGroup(engine.entityGroup);
     engine.clearGroup(engine.fxGroup);
     engine.fx.clear();

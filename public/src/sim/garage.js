@@ -1,5 +1,5 @@
 /**
- * Hangar, Inventory, Workshop, Mount Validation, Loot Lifecycle,
+ * Garage, Inventory, Workshop, Mount Validation, Loot Lifecycle,
  * Mission Settlement (Victory vs Defeat), and LocalStorage SaveRepository.
  */
 
@@ -265,7 +265,7 @@ function validateMountCompatibility(
   return { valid: true, reason: t('Compatible') };
 }
 
-export function mountPartInHangar(
+export function mountPartInGarage(
   playerSave,
   instanceId,
   targetSocketId = null

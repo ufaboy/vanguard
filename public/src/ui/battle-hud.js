@@ -648,9 +648,10 @@ export function renderBattlefieldHud({
         AIR_SUPPORT.STRIKE_AC130.cost,
         AIR_SUPPORT.MINES.cost
       );
-      const canStrike = credits >= minStrikeCost;
+      const strikeBusy = Boolean(hud.airStrikeActive);
+      const canStrike = !strikeBusy && credits >= minStrikeCost;
       const canDrop = credits >= AIR_SUPPORT.AIRDROP.cost;
-      const staticKey = `${rkValue}|${rkStateClass}|${rkTitle}|${smokeValue}|${smokeStateClass}|${reconValue}|${reconStateClass}|${reconReady}|${canStrike}|${canDrop}|${airTargetingType}`;
+      const staticKey = `${rkValue}|${rkStateClass}|${rkTitle}|${smokeValue}|${smokeStateClass}|${reconValue}|${reconStateClass}|${reconReady}|${canStrike}|${strikeBusy}|${canDrop}|${airTargetingType}`;
 
       if (centerSection.__staticKey === staticKey) {
         return;
@@ -662,6 +663,9 @@ export function renderBattlefieldHud({
         : canStrike
         ? 'tone-red is-ready'
         : 'is-empty';
+      const strikeTitle = strikeBusy
+        ? t('Air strike already in progress')
+        : t('Call Air Strike (Bombs, Thermobaric, AC-130, Mines) [Key 4]');
       const dropStateClass = airTargetingType === 'AIRDROP'
         ? 'is-channeling'
         : canDrop
@@ -731,7 +735,7 @@ export function renderBattlefieldHud({
               data-air-type="STRIKE"
               ${canStrike ? '' : 'disabled'}
               class="hud-mod-tile ${strikeStateClass}"
-              title="${t('Call Air Strike (Bombs, Thermobaric, AC-130, Mines) [Key 4]')}"
+              title="${strikeTitle}"
             >
               <div class="hud-mod-top">
                 <span class="hud-mod-key">4</span>

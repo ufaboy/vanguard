@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { settleMission } from '../../sim/hangar.js';
+import { settleMission } from '../../sim/garage.js';
 import { applySubsystemDamage } from '../../sim/subsystems.js';
 import { recordSurvivalRun } from '../../sim/survival.js';
 import { DURABILITY, ENEMY_VISIBILITY, computeEffectiveDamage } from '../constants.js';
@@ -30,6 +30,22 @@ const FLOODABLE_SURFACES = new Set([
   TileType.STONE,
   TileType.OIL_SLICK,
 ]);
+
+/** Applies the pure HQ restoration state transition onto `state.grid` cells. */
+export function applyBaseRestoration(state, layout, { mesh = null, onDestroyCell = null } = {}) {
+  if (state.baseAlive || state.status !== GameStatus.PLAYING) return false;
+  const cells = layout.cells.map(({ row, col }) => state.grid[row]?.[col]);
+  if (!cells.length || cells.some((cell) => !cell)) return false;
+  const maxHp = state.baseMaxHp || 1;
+  cells.forEach((cell, i) => {
+    if (cell.type !== TileType.EMPTY) onDestroyCell?.(cell);
+    setCellObject(cell, TileType.BASE);
+    Object.assign(cell, { hp: maxHp, maxHp, mesh: i === 0 ? mesh : null });
+  });
+  state.baseAlive = true;
+  state.baseHp = maxHp;
+  return true;
+}
 
 /** Manages terrain cell destruction, HQ/enemy base destruction & restoration, rubble, and barrel chains. */
 export class TerrainDestructionController {
@@ -247,7 +263,8 @@ export class TerrainDestructionController {
   restoreCommandBase() {
     const { engine } = this;
     if (engine.baseAlive || engine.status !== GameStatus.PLAYING) return;
-    const cells = engine.getBaseLayout().cells.map(({ row, col }) => engine.grid[row]?.[col]);
+    const layout = engine.getBaseLayout();
+    const cells = layout.cells.map(({ row, col }) => engine.grid[row]?.[col]);
     if (!cells.length || cells.some((cell) => !cell)) return;
     const pos = engine.sectorLoader.getCommandBaseCenter();
     const sector = SECTORS[engine.currentSectorIndex];
@@ -259,14 +276,9 @@ export class TerrainDestructionController {
       mesh.position.set(pos.x, 0, pos.z);
       engine.mapGroup.add(mesh);
     }
-    const maxHp = engine.baseMaxHp || 1;
-    cells.forEach((cell, i) => {
-      if (cell.type !== TileType.EMPTY) engine.destroyTileCell(cell);
-      setCellObject(cell, TileType.BASE);
-      Object.assign(cell, { hp: maxHp, maxHp, mesh: i === 0 ? mesh : null });
-    });
-    engine.baseAlive = true;
-    engine.baseHp = maxHp;
+    if (!applyBaseRestoration(engine, layout, { mesh, onDestroyCell: (cell) => engine.destroyTileCell(cell) })) {
+      return;
+    }
     engine.tileBatcher.sync();
     engine.setStatusBanner(t('ALLIED HQ REBUILT! FIELD REPAIR BAY ONLINE!'), 3);
     engine.saveProgress();
@@ -540,7 +552,7 @@ export class TerrainDestructionController {
 
   updateBarrelExplosions(dt) {
     const { engine } = this;
-    if (engine.isDisposed || engine.isHangarPaused || engine.isAdPaused || engine.status !== GameStatus.PLAYING) return;
+    if (engine.isDisposed || engine.isGaragePaused || engine.isAdPaused || engine.status !== GameStatus.PLAYING) return;
     const pending = engine.pendingBarrelExplosions || [];
     engine.enemySpawner.clearPendingTimeouts();
     engine.pendingBarrelExplosions = [];
@@ -735,7 +747,7 @@ export class TerrainDestructionController {
     const { engine } = this;
     if (
       engine.isDisposed ||
-      engine.isHangarPaused ||
+      engine.isGaragePaused ||
       engine.isAdPaused ||
       engine.status !== GameStatus.PLAYING ||
       !engine.burningOilCells?.length

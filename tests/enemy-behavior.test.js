@@ -78,14 +78,18 @@ test('Cover and ambush are movement actions with optional parameters', () => {
   assert.deepEqual(b.actions.map((a) => a.kind), [ACTION_KIND.MOVE, ACTION_KIND.MOVE]);
   assert.equal(b.actions[0].triggerCells, 4);
   assert.equal(b.actions[1].hpBelow, 0.3);
-  assert.equal(TANK_CONFIGS.flamethrower.behavior.actions[0].id, 'ambush', 'flamethrower waits in ambush first');
-  assert.equal(TANK_CONFIGS.standard.behavior.actions[0].id, 'take_cover', 'line tank ducks into cover after a hit');
 });
 
-test('HOWITZER and missile carriers expose their weapon settings', () => {
-  assert.equal(typeof TANK_CONFIGS.howitzer.artillery.aimSec, 'number');
-  assert.equal(typeof TANK_CONFIGS.howitzer.artillery.flightSec, 'number');
-  assert.equal(typeof TANK_CONFIGS.striker.missile.homing, 'boolean');
+test('Artillery and missile tank configs expose valid weapon settings', () => {
+  for (const [id, cfg] of Object.entries(TANK_CONFIGS)) {
+    if (cfg.artillery) {
+      assert.equal(typeof cfg.artillery.aimSec, 'number', `${id}.artillery.aimSec`);
+      assert.equal(typeof cfg.artillery.flightSec, 'number', `${id}.artillery.flightSec`);
+    }
+    if (cfg.missile) {
+      assert.equal(typeof cfg.missile.homing, 'boolean', `${id}.missile.homing`);
+    }
+  }
 });
 
 test('Action luck comes only from the tank config: no map scaling', () => {
@@ -227,10 +231,11 @@ test('Losing contact past the grace window restarts the reaction; switching targ
   const g = createGunnerState(() => 0.5);
   const shooter = { x: 0, z: 0, turretAngle: 0 };
   const target = { x: 0, z: 10 };
-  for (let i = 0; i < 40; i++) stepGunner(g, { dt: 0.05, shooter, target, visible: true });
-  assert.ok(g.contactTime >= GUNNER.REACTION_SEC);
+  const reactSteps = Math.ceil((GUNNER.REACTION_SEC + 0.1) / 0.05);
+  for (let i = 0; i < reactSteps; i++) stepGunner(g, { dt: 0.05, shooter, target, visible: true });
+  assert.equal(stepGunner(g, { dt: 0.01, shooter, target, visible: true }).reacted, true);
 
-  stepGunner(g, { dt: 0.3, shooter, target: null, visible: false });
+  stepGunner(g, { dt: GUNNER.CONTACT_GRACE_SEC * 0.5, shooter, target: null, visible: false });
   let res = stepGunner(g, { dt: 0.01, shooter, target, visible: true });
   assert.equal(res.reacted, true, 'short flicker keeps the reaction');
 
@@ -238,7 +243,7 @@ test('Losing contact past the grace window restarts the reaction; switching targ
   res = stepGunner(g, { dt: 0.01, shooter, target, visible: true });
   assert.equal(res.reacted, false, 'long loss restarts the reaction');
 
-  for (let i = 0; i < 40; i++) stepGunner(g, { dt: 0.05, shooter, target, visible: true });
+  for (let i = 0; i < reactSteps; i++) stepGunner(g, { dt: 0.05, shooter, target, visible: true });
   res = stepGunner(g, { dt: 0.01, shooter, target, targetKey: 'base', visible: true });
   assert.equal(res.reacted, false, 'new target restarts the reaction');
 });

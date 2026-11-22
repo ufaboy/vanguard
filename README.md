@@ -7,12 +7,12 @@ A 3D isometric tactical tank assault game inspired by *Battle City*, built with 
 **BATTLE TANK** combines classic arcade base-defense with modular tank engineering, directional armor, destructible 40×40 arenas, and role-driven enemy AI.
 
 ### Game Modes
-- **Campaign**: Progress through 4 sectors and 35 missions against 12 specialized enemy tank classes and 4 unique Sector Bosses (`BOSS_MAMMOTH`, `BOSS_HYDRA`, `BOSS_TITAN`, `BOSS_INFERNO`). Campaign progress, credits, and Hangar upgrades persist in `localStorage`.
+- **Campaign**: Progress through 4 sectors and 35 missions against 12 specialized enemy tank classes and 4 unique Sector Bosses (`BOSS_MAMMOTH`, `BOSS_HYDRA`, `BOSS_TITAN`, `BOSS_INFERNO`). Campaign progress, credits, and Garage upgrades persist in `localStorage`.
 - **Survival (*Iron Crucible*)**: Endless wave defense starting with a stock Tier-1 tank in `sessionStorage` while saving personal records to `localStorage`.
 - **Contracts**: Standalone tactical operations (*Last Cargo*, *Blackout Protocol*) starting with a stock Tier-1 tank in `sessionStorage` and syncing earned credits back to your Campaign balance.
 
 ### Key Features
-- **Modular 5×5 Tank Upgrades**: Upgrade **Cannon**, **Chassis**, **Frame**, **Engine**, and **Armor** across Tiers I–V in the Hangar (`[U]`), with live 3D visual changes on the player tank.
+- **Modular 5×5 Tank Upgrades**: Upgrade **Cannon**, **Chassis**, **Frame**, **Engine**, and **Armor** across Tiers I–V in the Garage (`[U]`), with live 3D visual changes on the player tank.
 - **Directional Armor & Ballistics**: Per-side armor (`front`, `left`, `right`, `rear`), armor penetration, mass-to-power mobility, and active component damage/repair.
 - **Standalone Equipment & Field Power-Ups**: 4-corner Active Protection System (APS), homing ATGM rocket pod, emergency repair kits (`RM-1`), EMP, smoke grenades, and base restoration.
 - **Destructible 40×40 Tactical Arenas**: Sub-block destructible Brick walls, multi-hit Reinforced Concrete, stealth Forest canopies, Water (crossable by `CH4`/`CH5`), low-friction Ice, Roads, Swamps, ignitable Oil Slicks, 3D Blast Craters, destructible Water Towers (flood nearby tiles & extinguish fires), Explosive Barrels, Wooden Crates, Anti-Tank Hedgehogs, Defense Turrets, Enemy Spawners, and a fortified Command Base HQ.

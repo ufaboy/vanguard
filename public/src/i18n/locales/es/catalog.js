@@ -367,7 +367,7 @@ export default {
   "Finish unloading current cargo first": "Primero termina de descargar la carga actual",
   "Wait for armed demolition charge to detonate first": "Espera a que detone la carga de demolición armada",
   "Must be on the Southern Extraction Pad": "Debes estar en la plataforma de extracción sur",
-  // Hangar parts
+  // Garage parts
   "Invalid part selection.": "Selección de pieza no válida.",
   "Unknown gun definition.": "Definición de cañón desconocida.",
   "{name} mass ({mass}t) exceeds {name2} limit ({maxGunMass}t). Mount T-02 Heavy Turret first.": "La masa de {name} ({mass}t) supera el límite de {name2} ({maxGunMass}t). Monta primero la torreta pesada T-02.",

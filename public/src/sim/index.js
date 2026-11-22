@@ -3,7 +3,7 @@ export * from './catalog.js';
 export * from './ballistics.js';
 export * from './subsystems.js';
 export * from './ai.js';
-export * from './hangar.js';
+export * from './garage.js';
 export * from './missions.js';
 export * from './contract.js';
 export * from './survival.js';

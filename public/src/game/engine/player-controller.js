@@ -43,11 +43,31 @@ import {
   stepAngleTowards,
   updatePlayerSensorContacts,
 } from '../../sim/ai.js';
-import { settleMission } from '../../sim/hangar.js';
+import { settleMission } from '../../sim/garage.js';
 import { recordSurvivalRun } from '../../sim/survival.js';
 import { t } from '../../i18n/index.js';
 
 const DEFAULT_SENSOR_TURRET = Object.freeze({ visionRange: 75 });
+
+/** Distributes up to `count` APS rounds across launchers in fill order without exceeding `maxTotal`. */
+export function distributeApsRounds(apsAmmo, count, maxTotal) {
+  const maxPerLauncher = Math.ceil(maxTotal / APS.LAUNCHERS.length);
+  let currentTotal = apsAmmo.reduce((a, b) => a + b, 0);
+  let remaining = count;
+  while (remaining > 0 && currentTotal < maxTotal) {
+    let addedAny = false;
+    for (const launcherIdx of APS.FILL_ORDER) {
+      if (currentTotal < maxTotal && apsAmmo[launcherIdx] < maxPerLauncher) {
+        apsAmmo[launcherIdx]++;
+        currentTotal++;
+        remaining--;
+        addedAny = true;
+        if (remaining <= 0 || currentTotal >= maxTotal) break;
+      }
+    }
+    if (!addedAny) break;
+  }
+}
 
 export class PlayerController {
   constructor(engine) {
@@ -144,29 +164,18 @@ export class PlayerController {
 
   initApsLaunchers(rounds) {
     this.engine.apsAmmo = [0, 0, 0, 0];
-    this.engine.addApsRounds(rounds);
+    if (this.engine.addApsRounds) {
+      this.engine.addApsRounds(rounds);
+    } else {
+      this.addApsRounds(rounds);
+    }
   }
 
   addApsRounds(count) {
     const engine = this.engine;
-    const maxTotal = engine.getPlayerMaxApsAmmo();
-    const maxPerLauncher = Math.ceil(maxTotal / APS.LAUNCHERS.length);
-    let currentTotal = engine.apsAmmo.reduce((a, b) => a + b, 0);
-    let remaining = count;
-    while (remaining > 0 && currentTotal < maxTotal) {
-      let addedAny = false;
-      for (const launcherIdx of APS.FILL_ORDER) {
-        if (currentTotal < maxTotal && engine.apsAmmo[launcherIdx] < maxPerLauncher) {
-          engine.apsAmmo[launcherIdx]++;
-          currentTotal++;
-          remaining--;
-          addedAny = true;
-          if (remaining <= 0 || currentTotal >= maxTotal) break;
-        }
-      }
-      if (!addedAny) break;
-    }
-    engine.syncApsVisuals();
+    const maxTotal = engine.getPlayerMaxApsAmmo ? engine.getPlayerMaxApsAmmo() : this.getPlayerMaxApsAmmo();
+    distributeApsRounds(engine.apsAmmo, count, maxTotal);
+    engine.syncApsVisuals?.();
   }
 
   syncApsVisuals() {
@@ -198,18 +207,26 @@ export class PlayerController {
       );
       if (res.started) {
         const hp = engine.playerHp;
-        engine.restoreAllComponents();
+        if (engine.restoreAllComponents) {
+          engine.restoreAllComponents();
+        } else {
+          engine.garageOps?.restoreAllComponents?.();
+        }
         engine.playerHp = hp;
-        engine.playerController.persistRepairKitCharges();
+        if (engine.playerController?.persistRepairKitCharges) {
+          engine.playerController.persistRepairKitCharges();
+        } else {
+          this.persistRepairKitCharges();
+        }
         sound.playEngineerWeld();
-        engine.setStatusBanner(
+        engine.setStatusBanner?.(
           t('RM-1: COMPONENTS RESTORED / REGENERATING 25 HP OVER 10s'),
           2.2
         );
       } else {
-        engine.setStatusBanner(t('[1] RM-1 REPAIR KIT: {reason}', { reason: res.reason.toUpperCase() }), 2.0);
+        engine.setStatusBanner?.(t('[1] RM-1 REPAIR KIT: {reason}', { reason: res.reason.toUpperCase() }), 2.0);
       }
-      engine.emitHudUpdate();
+      engine.emitHudUpdate?.();
       return;
     }
 
@@ -630,7 +647,7 @@ export class PlayerController {
 
     const playerSpeed = Math.hypot(engine.playerVx, engine.playerVz);
     const speedRatio = maxSpeed > 0 ? Math.min(1.0, playerSpeed / maxSpeed) : 0;
-    sound.updateEngineLoop(speedRatio, engine.hangarOpen || engine.status !== GameStatus.PLAYING);
+    sound.updateEngineLoop(speedRatio, engine.garageOpen || engine.status !== GameStatus.PLAYING);
 
     const radius = 0.72;
     const isMoving = Math.abs(engine.playerVx) > 0.05 || Math.abs(engine.playerVz) > 0.05;
@@ -827,7 +844,7 @@ export class PlayerController {
       }
 
       const isSurvival = Boolean(engine.survivalState);
-      const maxCannon = engine.getPlayerMaxCannonAmmo();
+      const maxCannon = engine.getPlayerMaxCannonAmmo ? engine.getPlayerMaxCannonAmmo() : this.getPlayerMaxCannonAmmo();
       const baseRearmCap = isSurvival
         ? maxCannon
         : Math.min(maxCannon, CANNON_AMMO.BASE_REARM_CAP);
@@ -839,9 +856,9 @@ export class PlayerController {
         if (engine.cannonBaseRearmTimer >= rearmInterval) {
           engine.cannonBaseRearmTimer = 0;
           engine.cannonAmmo = Math.min(baseRearmCap, engine.cannonAmmo + 1);
-          engine.spawnSparks(engine.playerX, 0.7, engine.playerZ, 0xf59e0b, 2);
+          engine.spawnSparks?.(engine.playerX, 0.7, engine.playerZ, 0xf59e0b, 2);
           repairedAny = true;
-          engine.emitHudUpdate();
+          engine.emitHudUpdate?.();
         }
       } else {
         engine.cannonBaseRearmTimer = 0;
@@ -849,7 +866,7 @@ export class PlayerController {
 
       if (repairedAny) {
         if (!wasInZone && !engine.statusMessage) {
-          engine.setStatusBanner(
+          engine.setStatusBanner?.(
             t('ALLIED BASE REPAIR & REARM BAY ACTIVE'),
             2.2
           );
@@ -857,7 +874,7 @@ export class PlayerController {
         engine.baseRepairSparkTimer -= dt;
         if (engine.baseRepairSparkTimer <= 0) {
           engine.baseRepairSparkTimer = BASE_REPAIR.SPARK_INTERVAL;
-          engine.spawnSparks(engine.playerX, 0.7, engine.playerZ, 0x10b981, 2);
+          engine.spawnSparks?.(engine.playerX, 0.7, engine.playerZ, 0x10b981, 2);
         }
       }
       return repairedAny;

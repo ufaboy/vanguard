@@ -1,9 +1,10 @@
 import { COMPONENT_TRACKS, normalizeComponentDamage } from '../../sim/component-damage.js';
 import { CONTRACT_CONFIG } from '../../sim/contract.js';
-import { getSafeStorage } from '../../sim/hangar.js';
+import { getSafeStorage } from '../../sim/garage.js';
 import { createRepairKitState } from '../../sim/subsystems.js';
 import { SURVIVAL_CONFIG } from '../../sim/survival.js';
-import { APS, MISSILE, UPGRADE_MAX_LEVEL, getMaxCannonAmmo, getMaxRepairKitCharges } from '../constants.js';
+import { APS, MISSILE, UPGRADE_MAX_LEVEL, getMaxApsAmmo, getMaxCannonAmmo, getMaxRepairKitCharges } from '../constants.js';
+import { distributeApsRounds } from './player-controller.js';
 
 /** Manages player profile persistence, mode saves, upgrades, and credit grants. */
 export class ProfileSaveController {
@@ -79,7 +80,12 @@ export class ProfileSaveController {
     engine.componentDamage = Object.fromEntries(COMPONENT_TRACKS.map((t) => [t, false]));
     engine.componentDamageCooldown = 0;
     engine.componentWaterEgress = false;
-    engine.playerController.initApsLaunchers(APS.START_ROUNDS);
+    if (engine.playerController?.initApsLaunchers) {
+      engine.playerController.initApsLaunchers(APS.START_ROUNDS);
+    } else {
+      engine.apsAmmo = [0, 0, 0, 0];
+      distributeApsRounds(engine.apsAmmo, APS.START_ROUNDS, getMaxApsAmmo(1));
+    }
     engine.missileAmmo = 2;
     engine.cannonAmmo = getMaxCannonAmmo(1);
     engine.repairKitState = createRepairKitState(0, getMaxRepairKitCharges(1));
@@ -130,9 +136,11 @@ export class ProfileSaveController {
         ? engine.playerSave.repairKitCharges
         : 0;
       engine.repairKitState = createRepairKitState(savedRepairCharges, getMaxRepairKitCharges(engine.upgrades?.frame || 1));
-      engine.cannonAmmo = engine.getPlayerMaxCannonAmmo();
+      engine.cannonAmmo = engine.getPlayerMaxCannonAmmo
+        ? engine.getPlayerMaxCannonAmmo()
+        : getMaxCannonAmmo(engine.upgrades?.frame || 1);
     }
-    engine.recomputePlayerStats(false);
+    engine.recomputePlayerStats?.(false);
   }
 
   applyUpgrades(newUpgrades) {

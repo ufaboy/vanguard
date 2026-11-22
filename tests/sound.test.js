@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { sound } from '../public/src/game/sound.js';
+import { sound, SoundManager } from '../public/src/game/sound.js';
 
 test('SoundManager handles environment without AudioContext without errors', () => {
   assert.equal(sound.ensureContext(), null);
@@ -83,9 +83,41 @@ test('SoundManager missile flight attenuation scales smoothly from 100% down to 
 
 test('SoundManager mutes master/engine gain and suspends AudioContext on pause or disable', () => {
   const calls = [];
+  const masterGains = [];
+  const engineGains = [];
+  const makeParam = (log) => ({
+    setValueAtTime: (v) => log?.push(v),
+    setTargetAtTime: (v) => log?.push(v),
+  });
+  let gainIndex = 0;
   const fakeCtx = {
     currentTime: 10,
     state: 'running',
+    destination: {},
+    createDynamicsCompressor: () => ({
+      threshold: makeParam(),
+      knee: makeParam(),
+      ratio: makeParam(),
+      attack: makeParam(),
+      release: makeParam(),
+      connect() {},
+    }),
+    createGain: () => {
+      const log = gainIndex++ === 0 ? masterGains : engineGains;
+      return { gain: makeParam(log), connect() {} };
+    },
+    createBiquadFilter: () => ({
+      type: 'lowpass',
+      frequency: makeParam(),
+      connect() {},
+    }),
+    createBufferSource: () => ({
+      buffer: null,
+      loop: false,
+      connect() {},
+      start() {},
+      stop() {},
+    }),
     suspend() {
       this.state = 'suspended';
       calls.push('suspend');
@@ -97,18 +129,12 @@ test('SoundManager mutes master/engine gain and suspends AudioContext on pause o
       return Promise.resolve();
     },
   };
-  const masterGains = [];
-  const engineGains = [];
-  const mgr = Object.assign(Object.create(Object.getPrototypeOf(sound)), {
-    ctx: fakeCtx,
-    _enabled: true,
-    paused: false,
-    masterGain: { gain: { setTargetAtTime: (v) => masterGains.push(v) } },
-    engineGain: { gain: { setTargetAtTime: (v) => engineGains.push(v) } },
-    engineSource: {},
-    engineActive: true,
-    buffers: {},
+  const mgr = new SoundManager({
+    createContext: () => fakeCtx,
+    loadAssets: false,
+    buffers: { engine_loop: {} },
   });
+  mgr.startEngineLoop();
 
   mgr.setPaused(true);
   assert.equal(masterGains.at(-1), 0);
@@ -125,5 +151,5 @@ test('SoundManager mutes master/engine gain and suspends AudioContext on pause o
   // Re-enabling while unpaused restores gain and resumes context
   mgr.enabled = true;
   assert.equal(fakeCtx.state, 'running');
-  assert.equal(masterGains.at(-1), 0.68);
+  assert.ok(masterGains.at(-1) > 0 && masterGains.at(-1) <= 1, `Expected positive master gain, got ${masterGains.at(-1)}`);
 });

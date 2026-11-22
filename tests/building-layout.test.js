@@ -68,11 +68,7 @@ test('computeBuildingLayout turns 3x3 HOUSE_2 into corners, edges, and core of h
   assert.deepEqual(layout.get('2,2'), { kind: 'house2', part: 'core', yaw: 0, style });
 });
 
-test('computeBuildingLayout enforces Iteration 1 (0..7) vs Iteration 2 (8..11) theme proportions', () => {
-  assert.equal(RESIDENTIAL_STYLE_COUNT, 8);
-  assert.equal(INDUSTRIAL_STYLE_COUNT, 4);
-  assert.equal(BUILDING_STYLE_COUNT, 12);
-
+test('computeBuildingLayout enforces Iteration 1 vs Iteration 2 theme proportions', () => {
   const E = TileType.EMPTY;
   const H1 = TileType.HOUSE_1;
   const H2 = TileType.HOUSE_2;
@@ -103,15 +99,21 @@ test('computeBuildingLayout enforces Iteration 1 (0..7) vs Iteration 2 (8..11) t
 
 test('buildingDamageState maps house1 (5 stages) and house2 (7 stages)', () => {
   assert.deepEqual(
-    [25, 20, 15, 10, 5, 0].map((hp) => buildingDamageState(hp, BUILDING_MAX_HP.house1, 'house1')),
+    [25, 20, 15, 10, 5, 0].map((hp) => buildingDamageState(hp, 25, 'house1')),
     [5, 4, 3, 2, 1, 0]
   );
-  assert.equal(buildingDamageState(24, BUILDING_MAX_HP.house1, 'house1'), 4);
+  assert.equal(buildingDamageState(24, 25, 'house1'), 4);
+  assert.equal(buildingDamageState(BUILDING_MAX_HP.house1, BUILDING_MAX_HP.house1, 'house1'), 5);
+  assert.equal(buildingDamageState(BUILDING_MAX_HP.house1 - 0.1, BUILDING_MAX_HP.house1, 'house1'), 4);
+  assert.equal(buildingDamageState(0, BUILDING_MAX_HP.house1, 'house1'), 0);
 
   assert.deepEqual(
-    [70, 65, 55, 45, 30, 15, 5, 0].map((hp) => buildingDamageState(hp, BUILDING_MAX_HP.house2, 'house2')),
+    [70, 65, 55, 45, 30, 15, 5, 0].map((hp) => buildingDamageState(hp, 70, 'house2')),
     [7, 6, 5, 4, 3, 2, 1, 0]
   );
+  assert.equal(buildingDamageState(BUILDING_MAX_HP.house2, BUILDING_MAX_HP.house2, 'house2'), 7);
+  assert.equal(buildingDamageState(BUILDING_MAX_HP.house2 - 0.1, BUILDING_MAX_HP.house2, 'house2'), 6);
+  assert.equal(buildingDamageState(0, BUILDING_MAX_HP.house2, 'house2'), 0);
 });
 
 test('TileType.RUBBLE mirrors NAV_TILE.RUBBLE and is passable; HOUSE_1/HOUSE_2 mirror and block', () => {

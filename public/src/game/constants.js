@@ -81,7 +81,7 @@ export const APS = Object.freeze({
   ROUNDS: 12, // Legacy constant for total rounds
   MAX_TOTAL_AMMO: 12, // Maximum intercept ammunition capacity across all 4 corner launchers (Frame Tier 5)
   MAX_TOTAL_BY_FRAME: Object.freeze([4, 6, 8, 10, 12]), // Max APS capacity per Frame tier 1..5
-  CHARGE_CREDIT_PRICE: 1000, // Credit cost in Hangar for one APS charge
+  CHARGE_CREDIT_PRICE: 1000, // Credit cost in Garage for one APS charge
   INITIAL_PER_LAUNCHER: Object.freeze([1, 0, 0, 1]), // Starting ammo per launcher index [FR, RR, RL, FL]
   DETECT_RADIUS: 2.6, // Threat detection radius in grid cells (2.6 cells = 5.2m world units)
   REARM_TIME: 0.35, // Cooldown in seconds between consecutive APS launcher interceptions
@@ -102,8 +102,8 @@ export const CANNON_AMMO = Object.freeze({
   PICKUP_MIN: 3, // Minimum cannon shells replenished from an AMMO power-up
   PICKUP_MAX: 7, // Maximum cannon shells replenished from an AMMO power-up
   PICKUP_AMMO: 5, // Expected average shells used for usefulness checks
-  CREDIT_PRICE_PER_PACK: 150, // Credit cost in Hangar per ammunition pack
-  SHELLS_PER_PACK: 5, // Shells added per Hangar pack purchase
+  CREDIT_PRICE_PER_PACK: 150, // Credit cost in Garage per ammunition pack
+  SHELLS_PER_PACK: 5, // Shells added per Garage pack purchase
   BASE_REARM_CAP: 5, // Free emergency shell cap replenished while parked in the Command Base repair zone
   BASE_REARM_INTERVAL_SEC: 1.25, // Auto-rearm interval in seconds while parked in the Command Base repair zone
 });
@@ -294,7 +294,7 @@ export function computeEffectiveDamage(
 export const RADAR_RANGE_CELLS = 16;
 
 export const MISSILE = Object.freeze({
-  CREDIT_PRICE: 3000, // Price per missile in the hangar
+  CREDIT_PRICE: 3000, // Price per missile in the garage
   GUIDED: true, // Whether missiles have active homing towards the target coordinate
   DAMAGE: 30, // Base explosion damage dealt upon impact
   PENETRATION: 80, // High armor penetration percentage (80%) of anti-tank guided missile

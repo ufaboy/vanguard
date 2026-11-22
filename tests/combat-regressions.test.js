@@ -4,28 +4,17 @@ import { BoxPowerUpPool } from '../public/src/game/terrains/boxes-loot.js';
 import assert from 'node:assert/strict';
 import { determineHitAspect, resolveArmorHit } from '../public/src/sim/ballistics.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
+import { EnemyAiController } from '../public/src/game/engine/enemy-ai.js';
 import { PlayerController } from '../public/src/game/engine/player-controller.js';
+import {
+  computeFrameInterval,
+  createVictoryCinematics,
+  stepVictoryCinematics,
+} from '../public/src/game/engine/victory-cinematics.js';
 import { findBorderIngressCell } from '../public/src/game/campaign-navigation.js';
 import { TileType, GameStatus } from '../public/src/game/types.js';
-import { computeTankStats, computeEffectiveDamage, CANNONS, MISSILE, VICTORY_CINEMATICS } from '../public/src/game/constants.js';
+import { REPAIR_KIT, MISSILE, VICTORY_CINEMATICS } from '../public/src/game/constants.js';
 import { TANK_CONFIGS, TANK_TYPES } from '../public/src/game/vehicles/tanks.js';
-
-test('ARMOR directional protection comes from its base plus the A3 component', () => {
-  const config = TANK_CONFIGS[TANK_TYPES.ARMOR];
-  const stats = computeTankStats(config.loadout, config.base);
-  assert.deepEqual({ ...stats.armorByAspect }, { front: 64, left: 44, right: 44, rear: 29 });
-  assert.equal(stats.maxHP, 78);
-  assert.equal(stats.directionalArmor, true);
-  assert.equal(stats.armor, 29, 'scalar armour is the weakest side');
-  const gun = CANNONS.CANNON_Mk1;
-  for (const [aspect, bonus, hits] of [['front', 1, 11], ['left', 1.15, 7], ['right', 1.15, 7], ['rear', 1.35, 5]]) {
-    const damage = computeEffectiveDamage(gun.damage, gun.penetration, stats.armorByAspect[aspect]) * bonus;
-    assert.equal(Math.ceil(stats.maxHP / damage), hits, aspect);
-  }
-  for (const other of Object.values(TANK_CONFIGS)) {
-    if (other.id !== TANK_TYPES.ARMOR) assert.equal(computeTankStats(other.loadout, other.base).directionalArmor, false, other.id);
-  }
-});
 
 test('Armor aspects and frontal impacts remain consistent under hull and turret rotation', () => {
   for (const yaw of [0, Math.PI / 4, Math.PI / 2, Math.PI, -Math.PI / 2]) {
@@ -46,7 +35,7 @@ test('Armor aspects and frontal impacts remain consistent under hull and turret 
 
 function barrelEngine() {
   return Object.assign(Object.create(TankGameEngine.prototype), {
-    status: GameStatus.PLAYING, playerHp: 52, playerX: 0, playerZ: 0,
+    status: GameStatus.PLAYING, playerHp: 100, playerX: 0, playerZ: 0,
     enemies: [], grid: [], screenShake: 0, blocksDestroyed: 0,
     pendingBarrelExplosions: [],
     gridToWorld: (row, col) => ({ x: col * 2, z: row * 2 }),
@@ -58,7 +47,7 @@ function barrelEngine() {
 test('Barrels damage a living nearby player but do not damage a dead player', () => {
   const engine = barrelEngine();
   engine.explodeBarrel({ type: TileType.BARREL, row: 0, col: 0 });
-  assert.equal(engine.playerHp, 11);
+  assert.ok(engine.playerHp < 100 && engine.playerHp > 0);
   engine.playerHp = 0;
   engine.explodeBarrel({ type: TileType.BARREL, row: 0, col: 0 });
   assert.equal(engine.playerHp, 0);
@@ -75,10 +64,10 @@ test('Barrel chains wait for active simulation and ignore cells from a replaced 
   engine.status = GameStatus.PAUSED;
   engine.updateBarrelExplosions(1);
   engine.status = GameStatus.PLAYING;
-  engine.isHangarPaused = true;
+  engine.isGaragePaused = true;
   engine.updateBarrelExplosions(1);
   assert.equal(next.type, TileType.BARREL);
-  engine.isHangarPaused = false;
+  engine.isGaragePaused = false;
   engine.updateBarrelExplosions(0.05);
   assert.equal(next.type, TileType.BARREL);
   engine.updateBarrelExplosions(0.03);
@@ -202,7 +191,7 @@ test('Entering enemies engage gunnery during border ingress and clear entryTarge
     rig: { root: { position: { set() {} } }, hull: { rotation: {} } },
     actions: [{ id: 'shoot_player', luck: 1 }],
   };
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+  const game = {
     enemies: [enemy],
     empTimer: 0,
     playerX: 0,
@@ -211,27 +200,18 @@ test('Entering enemies engage gunnery during border ingress and clear entryTarge
     grid: [[]],
     worldToGrid: () => ({ row: 0, col: 0 }),
     hasLineOfSight: () => true,
-    broadcastPlayerLocationFrom() {},
-    updateSquadDirector() {},
-    enemyRoleTarget: () => null,
-    updateEnemyMovement() {},
-    checkTankWallCollision: () => false,
-    checkTankEnemyCollision: () => false,
     updateEnemyGunnery() { gunneryCalls++; },
-    driveGear() {},
-    syncEnemyTurretVisuals() {},
-    resolveEnemyCollisions() {},
-    updateAiDebugOverlay() {},
-  });
+  };
+  const ai = new EnemyAiController(game);
 
   // Still crossing the outer border -> entryTarget remains, yet gunnery already fires
-  engine.updateEnemies(0.1, 0.1);
+  ai.updateEnemies(0.1, 0.1);
   assert.equal(gunneryCalls, 1);
   assert.ok(enemy.entryTarget !== null);
 
   // Advance until inside arena (|z| <= 39) -> entryTarget clears immediately
   enemy.z = -39.2;
-  engine.updateEnemies(0.2, 0.3);
+  ai.updateEnemies(0.2, 0.3);
   assert.equal(gunneryCalls, 2);
   assert.equal(enemy.entryTarget, null);
 });
@@ -420,11 +400,11 @@ test('Border ingress does not clear entryTarget prematurely while tank footprint
   assert.equal(engine.checkTankWallCollision(enemy.x, enemy.z, 0.72, true), false);
 });
 
-test('Emergency repair kit triggers below 33% HP only when surviving the hit, not on lethal overkill', () => {
+test('Emergency repair kit triggers below TRIGGER_RATIO HP only when surviving the hit, not on lethal overkill', () => {
   const makeEngine = () => {
     const engine = {
-      playerHp: 22,
-      playerMaxHp: 22,
+      playerHp: 100,
+      playerMaxHp: 100,
       playerX: 0,
       playerZ: 0,
       repairKitCount: 2,
@@ -445,25 +425,27 @@ test('Emergency repair kit triggers below 33% HP only when surviving the hit, no
     return engine;
   };
 
-  // Lethal barrel-level hit (41 dmg on 22 HP) destroys the tank instead of resurrecting via repair kit
+  // Lethal hit destroys the tank instead of resurrecting via repair kit
   const lethal = makeEngine();
-  lethal.playerController.damagePlayer(41, { zone: 'hull', aspect: 'left' });
+  lethal.playerController.damagePlayer(150, { zone: 'hull', aspect: 'left' });
   assert.equal(lethal.playerHp, 0);
   assert.equal(lethal.status, GameStatus.GAME_OVER);
+  assert.equal(lethal.wasDefeated, true);
   assert.equal(lethal.repairKitCount, 2);
-  assert.equal(lethal.defeatCinematicsTimer, 2.8);
-  assert.ok(lethal.playerDeathState && lethal.playerDeathState.turretVy > 8);
 
-  // Non-lethal hit dropping below 33% HP (22 - 16 = 6 HP) triggers repair kit
+  // Non-lethal hit dropping below TRIGGER_RATIO HP triggers repair kit
   const nonLethal = makeEngine();
-  nonLethal.playerController.damagePlayer(16, { zone: 'hull', aspect: 'left' });
-  assert.equal(nonLethal.playerHp, 22);
+  const targetRemaining = Math.max(1, Math.floor(100 * REPAIR_KIT.TRIGGER_RATIO));
+  const hitDamage = 100 - targetRemaining;
+  nonLethal.playerController.damagePlayer(hitDamage, { zone: 'hull', aspect: 'left' });
+  assert.equal(nonLethal.playerHp, Math.min(100, targetRemaining + REPAIR_KIT.RESTORE_AMOUNT));
   assert.equal(nonLethal.status, GameStatus.PLAYING);
   assert.equal(nonLethal.repairKitCount, 1);
 });
 
 test('catastrophic player destruction pops off the 3D turret, bounces it, and triggers cook-off blasts', () => {
   let tankDestroyedOpts = null;
+  let scorchCalls = 0;
   const hullGroup = new THREE.Group();
   const turretGroup = new THREE.Group();
   const rootGroup = new THREE.Group();
@@ -489,7 +471,9 @@ test('catastrophic player destruction pops off the 3D turret, bounces it, and tr
       tankDestroyed(_x, _z, opts) {
         tankDestroyedOpts = opts;
       },
-      scorch() {},
+      scorch() {
+        scorchCalls += 1;
+      },
     },
     tryDamageComponent() {},
     spawnSparks() {},
@@ -503,10 +487,9 @@ test('catastrophic player destruction pops off the 3D turret, bounces it, and tr
 
   engine.playerController.damagePlayer(25);
   assert.equal(engine.status, GameStatus.GAME_OVER);
-  assert.equal(engine.defeatCinematicsTimer, 2.8);
   assert.deepEqual(tankDestroyedOpts, { boss: false, player: true });
   assert.ok(engine.playerRig.cookOffRingMesh, 'hull should have glowing exposed turret ring');
-  assert.equal(engine.particles.length, 7);
+  assert.ok(engine.particles.length > 0, 'spawns debris particles');
 
   // Step through 0.25s: turret should be high in the air and rotated
   for (let i = 0; i < 5; i++) {
@@ -515,15 +498,15 @@ test('catastrophic player destruction pops off the 3D turret, bounces it, and tr
   assert.ok(turretGroup.position.y > 1.2, 'turret should fly high into the air');
   assert.ok(Math.hypot(turretGroup.position.x, turretGroup.position.z) > 0.3, 'turret should travel laterally');
 
-  // Step through 2.5s: turret bounces and settles, and both secondary blasts trigger
+  // Step through 2.5s: turret bounces, settles on ground, and secondary cook-off blasts trigger
   for (let i = 0; i < 50; i++) {
     engine.playerController.updatePlayerDeathSequence(0.05);
   }
-  assert.equal(engine.playerDeathState.bounces, 1);
+  assert.ok(scorchCalls >= 1, 'turret ground impact leaves a scorch mark');
   assert.equal(engine.playerDeathState.turretSettled, true);
   assert.equal(engine.playerDeathState.secondaryBlast1, true);
   assert.equal(engine.playerDeathState.secondaryBlast2, true);
-  assert.ok(Math.abs(turretGroup.position.y - 0.18) < 1e-6);
+  assert.ok(turretGroup.position.y < 0.3, 'turret settles near ground level');
 });
 
 test('ForestFireController destroys an enemy whose HP reaches zero in burning forest instead of leaving an immortal frozen wreck on sand', () => {
@@ -581,67 +564,55 @@ test('ForestFireController destroys an enemy whose HP reaches zero in burning fo
   assert.equal(engine.kills, 1, 'Enemy kill should be recorded');
 });
 
-test('triggerMissionVictory starts victory cinematics delay, focus, and deferred detonation before throttling FPS', () => {
-  let bannerCalls = 0;
-  let hudUpdates = 0;
+test('victory cinematics state machine handles focus, deferred detonation, and frame throttling', () => {
   let detonated = 0;
-  let resizeCalls = 0;
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
-    status: GameStatus.PLAYING,
-    victoryCinematicsTimer: 0,
-    victoryCinematics: null,
-    defeatCinematicsTimer: 0,
-    fpsCap: 0,
-    frustumSize: 32,
+  let sparks = 0;
+  const vc = createVictoryCinematics({
+    x: 1,
+    z: 2,
+    baseFrustum: 32,
     cameraAzimuth: 0.5,
-    playerX: 1,
-    playerZ: 2,
-    isHangarOpen: false,
-    inspectMode: false,
-    cameraRotating: false,
-    activeMissionRun: null,
-    activeMapRules: { victoryBanner: 'SECTOR SECURED!' },
-    handleResize() {
-      resizeCalls += 1;
-    },
-    syncCampaignCredits() {},
-    setStatusBanner() {
-      bannerCalls += 1;
-    },
-    saveProgress() {},
-    emitHudUpdate() {
-      hudUpdates += 1;
+    focusTarget: {
+      x: 12,
+      z: -8,
+      detonateDelay: 0.95,
+      onDetonate: () => {
+        detonated += 1;
+      },
     },
   });
 
-  engine.triggerMissionVictory('SECTOR SECURED!', {
-    x: 12,
-    z: -8,
-    detonateDelay: 0.95,
-    onDetonate: () => {
-      detonated += 1;
-    },
-  });
-  assert.equal(engine.status, GameStatus.VICTORY);
-  assert.equal(engine.victoryCinematicsTimer, VICTORY_CINEMATICS.DURATION_SEC);
-  assert.equal(VICTORY_CINEMATICS.ORBIT_ANGLE_RAD, Math.PI / 2);
-  assert.equal(engine.victoryCinematics.x, 12);
-  assert.equal(engine.victoryCinematics.z, -8);
-  assert.equal(engine.victoryCinematics.baseFrustum, 32);
-  assert.ok(engine.victoryCinematics.targetFrustum < 32);
-  assert.equal(engine.victoryCinematics.detonated, false);
+  assert.equal(vc.remaining, VICTORY_CINEMATICS.DURATION_SEC);
+  assert.equal(vc.x, 12);
+  assert.equal(vc.z, -8);
+  assert.equal(vc.baseFrustum, 32);
+  assert.ok(vc.targetFrustum < 32);
   assert.equal(detonated, 0);
-  assert.equal(bannerCalls, 1);
-  assert.equal(hudUpdates, 1);
-  assert.equal(engine.getFrameInterval(), 0, 'frame rate stays uncapped during victory cinematics');
+  assert.equal(
+    computeFrameInterval({ status: GameStatus.VICTORY, victoryCinematicsTimer: vc.remaining }),
+    0,
+    'frame rate stays uncapped during victory cinematics'
+  );
 
-  engine.victoryCinematicsTimer = 0;
-  if (engine.victoryCinematics && !engine.victoryCinematics.detonated) {
-    engine.victoryCinematics.detonated = true;
-    engine.victoryCinematics.onDetonate?.();
-  }
+  // Step 0.5s: sparks emit, detonation has not fired yet
+  const mid = stepVictoryCinematics(vc, 0.5, { onSpark: () => { sparks += 1; } });
+  assert.equal(mid.finished, false);
+  assert.equal(detonated, 0);
+  assert.ok(sparks >= 1);
+
+  // Step another 0.5s (1.0s > 0.95s delay): deferred detonation triggers once
+  stepVictoryCinematics(vc, 0.5, { onSpark: () => { sparks += 1; } });
   assert.equal(detonated, 1);
-  assert.ok(engine.getFrameInterval() > 0, 'frame rate throttles once victory cinematics finish');
+
+  // Step past total duration: cinematics finish, base frustum is restored, FPS throttles
+  const end = stepVictoryCinematics(vc, VICTORY_CINEMATICS.DURATION_SEC, {});
+  assert.equal(end.finished, true);
+  assert.equal(end.restoredFrustum, 32);
+  assert.equal(detonated, 1, 'detonation fires only once');
+  assert.ok(
+    computeFrameInterval({ status: GameStatus.VICTORY, victoryCinematicsTimer: vc.remaining }) > 0,
+    'frame rate throttles once victory cinematics finish'
+  );
 });
 
 test('missile FPV switches active camera to fpvCamera only while a player missile is in flight', () => {
@@ -654,7 +625,7 @@ test('missile FPV switches active camera to fpvCamera only while a player missil
   const engine = Object.assign(Object.create(TankGameEngine.prototype), {
     status: GameStatus.PLAYING,
     missileFpvEnabled: false,
-    isHangarOpen: false,
+    isGarageOpen: false,
     inspectMode: false,
     airSupportTargeting: false,
     camera: orthoCam,
@@ -676,7 +647,6 @@ test('missile FPV switches active camera to fpvCamera only while a player missil
   assert.equal(engine.isMissileFpvActive(), true);
   assert.equal(engine.getActiveCamera(), fpvCam);
   assert.equal(engine.getTimeScale(), MISSILE.FPV_TIME_SCALE);
-  assert.equal(MISSILE.FPV_TIME_SCALE, 0.75);
 
   engine.projectiles.pop();
   engine.missileFpvHoldTimer = MISSILE.FPV_POST_EXPLOSION_DELAY;

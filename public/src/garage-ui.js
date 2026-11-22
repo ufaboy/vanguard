@@ -6,7 +6,7 @@ import { renderTrackBadgeSvg } from './game/icons.js';
 import { PLAYER_TANK_CONFIG } from './game/vehicles/tanks.js';
 import { N_, formatNumber, t } from './i18n/index.js';
 
-export const HANGAR_TRACKS = [
+export const GARAGE_TRACKS = [
   { key: 'cannon', label: N_('Cannon'), role: N_('Firepower'), summary: N_('Hit harder. Defeat heavier armor.') },
   { key: 'chassis', label: N_('Chassis'), role: N_('Mobility'), summary: N_('Improve traction and cross difficult terrain.') },
   { key: 'frame', label: N_('Frame'), role: N_('Structure'), summary: N_('Strengthen the foundation of your tank.') },
@@ -18,7 +18,7 @@ const money = value => formatNumber(Math.round(value));
 const number = value => Number(value.toFixed(2)).toString();
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
-export function hangarStats(upgrades, missileAmmo = 0) {
+export function garageStats(upgrades, missileAmmo = 0) {
   const part = key => PLAYER_UPGRADES[key][(upgrades[key] || 1) - 1];
   return computeTankStats({
     gun: part('cannon'),
@@ -30,8 +30,8 @@ export function hangarStats(upgrades, missileAmmo = 0) {
   }, PLAYER_TANK_CONFIG.base);
 }
 
-export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front', feedback = '') {
-  const track = HANGAR_TRACKS.find(item => item.key === selected) || HANGAR_TRACKS[0];
+export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front', feedback = '') {
+  const track = GARAGE_TRACKS.find(item => item.key === selected) || GARAGE_TRACKS[0];
   const tier = upgrades[track.key] || 1;
   const maxed = tier >= 5;
   const current = PLAYER_UPGRADES[track.key][tier - 1];
@@ -62,6 +62,27 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       ? '<circle cx="12" cy="12" r="2.5"/><path d="M5 5l3.5 3.5M19 5l-3.5 3.5M5 19l3.5-3.5M19 19l-3.5-3.5"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>'
       : '<path d="M9 19V9L12 3L15 9V19H9Z"/><path d="M8 19H16"/>';
     const glyph = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">${icon}</svg>`;
+    if (kind === 'recon') {
+      return `
+        <div class="garage-supply-row supply-${kind} ${full ? 'is-full' : ''}">
+          <span class="garage-supply-icon">${glyph}</span>
+          <div class="garage-supply-info">
+            <div class="garage-supply-meta">
+              <strong>${t(label)}</strong>
+              <span>${full ? t('INSTALLED') : t('NOT INSTALLED')}</span>
+            </div>
+          </div>
+          <button
+            class="garage-supply-btn"
+            data-action="${action}"
+            ${full || !affordable ? 'disabled' : ''}
+            aria-label="${full ? t('Recon Drone installed') : t('Buy Recon Drone for {price} credits', { price })}"
+          >
+            ${full ? t('INSTALLED') : `${amountLabel} · $${money(price)}`}
+          </button>
+        </div>
+      `;
+    }
     return `
       <div class="garage-supply-row supply-${kind} ${full ? 'is-full' : ''}">
         <span class="garage-supply-icon">${glyph}</span>
@@ -87,8 +108,8 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
   const faults = hud.componentDamage || {};
   const damaged = Boolean(faults[track.key]);
   const repairCost = componentRepairCost(tier);
-  const before = hangarStats(effectiveUpgradeTiers(upgrades, faults), hud.missileAmmo);
-  const after = hangarStats(effectiveUpgradeTiers({ ...upgrades, [track.key]: Math.min(5, tier + 1) }, faults), hud.missileAmmo);
+  const before = garageStats(effectiveUpgradeTiers(upgrades, faults), hud.missileAmmo);
+  const after = garageStats(effectiveUpgradeTiers({ ...upgrades, [track.key]: Math.min(5, tier + 1) }, faults), hud.missileAmmo);
   before.apsMaxAmmo = getMaxApsAmmo(purchasedFrame);
   after.apsMaxAmmo = getMaxApsAmmo(Math.min(5, purchasedFrame + 1));
   before.missileMaxAmmo = getMaxMissileAmmo(purchasedFrame);
@@ -107,17 +128,17 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
   const comparison = metrics.map(([label, key, unit, lower]) => {
     const delta = after[key] - before[key];
     const good = lower ? delta < 0 : delta > 0;
-    return `<div class="hangar-stat-row"><span>${t(label)}</span><span>${number(before[key])}${unit}</span><b class="${delta ? (good ? 'positive' : 'tradeoff') : ''}">${maxed ? '—' : `${number(after[key])}${unit}`}</b></div>`;
+    return `<div class="garage-stat-row"><span>${t(label)}</span><span>${number(before[key])}${unit}</span><b class="${delta ? (good ? 'positive' : 'tradeoff') : ''}">${maxed ? '—' : `${number(after[key])}${unit}`}</b></div>`;
   }).join('');
 
-  const bars = level => `<span class="hangar-tier-bars" aria-label="${t('Tier {n} of 5', { n: level })}">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= level ? 'filled' : ''}"></i>`).join('')}</span>`;
+  const bars = level => `<span class="garage-tier-bars" aria-label="${t('Tier {n} of 5', { n: level })}">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= level ? 'filled' : ''}"></i>`).join('')}</span>`;
 
   return `
     <aside class="garage-sidebar" aria-label="${t('Garage upgrades and supplies')}">
       <div class="garage-sidebar-head">
         <div class="garage-brand">
           <h1>${t('GARAGE')}</h1>
-          <span class="garage-status-pill">${hud.isHangarPaused ? t('PAUSED') : t('SERVICE BAY')}</span>
+          <span class="garage-status-pill">${hud.isGaragePaused ? t('PAUSED') : t('SERVICE BAY')}</span>
         </div>
         <div class="garage-wallet">
           <span>${t('CREDITS')}</span>
@@ -126,13 +147,13 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       </div>
 
       <nav class="garage-tabs" aria-label="${t('Tank upgrade systems')}">
-        ${HANGAR_TRACKS.map(item => {
+        ${GARAGE_TRACKS.map(item => {
           const level = upgrades[item.key] || 1;
           const isFaulted = Boolean(faults[item.key]);
           return `
             <button
-              class="hangar-system ${item.key === track.key ? 'is-selected' : ''} ${isFaulted ? 'is-faulted' : ''}"
-              data-action="hangar-select"
+              class="garage-system ${item.key === track.key ? 'is-selected' : ''} ${isFaulted ? 'is-faulted' : ''}"
+              data-action="garage-select"
               data-track="${item.key}"
               aria-pressed="${item.key === track.key}"
             >
@@ -172,18 +193,18 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
           </div>
         ` : ''}
 
-        <div class="hangar-comparison">
-          <div class="hangar-stat-row hangar-stat-heading"><span>${t('STAT')}</span><span>${t('NOW')}</span><span>${t('AFTER')}</span></div>
+        <div class="garage-comparison">
+          <div class="garage-stat-row garage-stat-heading"><span>${t('STAT')}</span><span>${t('NOW')}</span><span>${t('AFTER')}</span></div>
           ${comparison}
-          ${track.key === 'chassis' ? `<div class="hangar-capability">${after.canCrossWater ? (after.canHover || after.waterSpeedMultiplier >= 1 ? `✓ ${t('Water crossing (full speed)')}` : `✓ ${t('Water crossing ({pct}% speed)', { pct: Math.round(after.waterSpeedMultiplier * 100) })}`) : t('Land traversal')} · ${after.allTerrain ? t('All-terrain traction') : t('Standard traction')}</div>` : ''}
+          ${track.key === 'chassis' ? `<div class="garage-capability">${after.canCrossWater ? (after.canHover || after.waterSpeedMultiplier >= 1 ? `✓ ${t('Water crossing (full speed)')}` : `✓ ${t('Water crossing ({pct}% speed)', { pct: Math.round(after.waterSpeedMultiplier * 100) })}`) : t('Land traversal')} · ${after.allTerrain ? t('All-terrain traction') : t('Standard traction')}</div>` : ''}
         </div>
 
-        <div class="hangar-purchase">
-          <button class="hangar-buy" data-action="upgrade-track" data-track="${track.key}" ${maxed || credits < cost ? 'disabled' : ''}>
+        <div class="garage-purchase">
+          <button class="garage-buy" data-action="upgrade-track" data-track="${track.key}" ${maxed || credits < cost ? 'disabled' : ''}>
             <span>${maxed ? t('System complete') : credits < cost ? t('Need $ {amount} more', { amount: money(cost - credits) }) : t('Install upgrade · $ {amount}', { amount: money(cost) })}</span>
-            <span class="hangar-buy-arrow" aria-hidden="true">${maxed ? '✓' : '↗'}</span>
+            <span class="garage-buy-arrow" aria-hidden="true">${maxed ? '✓' : '↗'}</span>
           </button>
-          ${feedback ? `<div class="hangar-feedback" role="status" aria-live="polite">${escape(feedback)}</div>` : ''}
+          ${feedback ? `<div class="garage-feedback" role="status" aria-live="polite">${escape(feedback)}</div>` : ''}
         </div>
       </div>
 
@@ -200,20 +221,20 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       </section>
     </aside>
 
-    <section class="hangar-visual" aria-label="${t('Player tank in the garage')}">
-      <div class="hangar-stage-window"></div>
+    <section class="garage-visual" aria-label="${t('Player tank in the garage')}">
+      <div class="garage-stage-window"></div>
       <div class="garage-stage-top">
-        <div class="hangar-vehicle-label">
-          <span class="hangar-eyebrow">${t('ASSIGNED VEHICLE')}</span>
+        <div class="garage-vehicle-label">
+          <span class="garage-eyebrow">${t('ASSIGNED VEHICLE')}</span>
           <h2>${t('PLAYER')} <span>${t('MBT')}</span></h2>
         </div>
-        <button class="hangar-exit" data-action="toggle-upgrades" aria-label="${t('Close garage')}">
-          ${hud.isHangarPaused ? t('Return to battle') : t('Back to operations')} <kbd>ESC</kbd>
+        <button class="garage-exit" data-action="toggle-upgrades" aria-label="${t('Close garage')}">
+          ${hud.isGaragePaused ? t('Return to battle') : t('Back to operations')} <kbd>ESC</kbd>
         </button>
       </div>
       <div class="garage-stage-bottom">
-        <div class="hangar-view-controls" aria-label="${t('Tank viewing angle')}">
-          ${['front', 'side', 'rear'].map(item => `<button data-action="hangar-view" data-view="${item}" aria-pressed="${view === item}" class="${view === item ? 'is-selected' : ''}">${item === 'front' ? t('Overview') : item === 'side' ? t('Side view') : t('Rear view')}</button>`).join('')}
+        <div class="garage-view-controls" aria-label="${t('Tank viewing angle')}">
+          ${['front', 'side', 'rear'].map(item => `<button data-action="garage-view" data-view="${item}" aria-pressed="${view === item}" class="${view === item ? 'is-selected' : ''}">${item === 'front' ? t('Overview') : item === 'side' ? t('Side view') : t('Rear view')}</button>`).join('')}
         </div>
         <div class="garage-loadout-pill" aria-label="${t('Current tank summary')}">
           <span>HP <b>${number(before.maxHP)}</b></span>

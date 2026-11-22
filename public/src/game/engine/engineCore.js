@@ -8,7 +8,7 @@ import { isCampaignMissionUnlocked } from '../campaign.js';
 import * as THREE from 'three';
 import { SurvivalDirector, ContractDirector } from './mode-directors.js';
 import { AiDebugOverlay } from './ai-debug-overlay.js';
-import { HangarOps } from './hangar-ops.js';
+import { GarageOps } from './garage-ops.js';
 import { BossCombat } from './boss-combat.js';
 import { DefenseTurretsController } from './defense-turrets.js';
 import { buildHudSnapshot } from './hud-snapshot.js';
@@ -16,6 +16,7 @@ import { ForestFireController } from '../terrains/forest-fire.js';
 import { ProfileSaveController } from './profile-save.js';
 import { PowerupsController } from './powerups-controller.js';
 import { AirSupportController } from './air-support-controller.js';
+import { ReconDroneController } from './recon-drone-controller.js';
 import { InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
@@ -26,13 +27,17 @@ import { EnemySpawnerController } from './enemy-spawner.js';
 import { EnemyCombatController } from './enemy-combat.js';
 import { PlayerController } from './player-controller.js';
 import { EnemyAiController } from './enemy-ai.js';
+import {
+  computeFrameInterval,
+  createVictoryCinematics,
+  stepVictoryCinematics,
+} from './victory-cinematics.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import {
   APS,
   TITAN,
   CANNON_AMMO,
   MISSILE,
-  VICTORY_CINEMATICS,
   POWERUP_TYPES,
 } from '../constants.js';
 import { GameStatus } from '../types.js';
@@ -52,7 +57,7 @@ import { sound } from '../sound.js';
 import { analyticsManager } from '../../app/analyticsManager.js';
 import { ARMOR_PANEL_CATALOG, TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
-import { getSafeStorage, resolveAssembledTank, SaveRepository, settleMission } from '../../sim/hangar.js';
+import { getSafeStorage, resolveAssembledTank, SaveRepository, settleMission } from '../../sim/garage.js';
 import { t } from '../../i18n/index.js';
 
 /** Graphics quality presets. Pixel ratio, shadows, IBL and particle budget apply immediately. */
@@ -61,7 +66,6 @@ export const QUALITY_PRESETS = Object.freeze({
   medium: { label: 'Medium', pixelRatio: 1.5, shadows: true, fx: 0.8, antialias: true, physicalWater: false, envLighting: true },
   high: { label: 'High', pixelRatio: 2, shadows: true, fx: 1, antialias: true, physicalWater: true, envLighting: true },
 });
-const IDLE_SCREEN_FPS = 15;
 /** Half-amplitude (radians) of the KAMIKAZE zigzag during its final charge. */
 
 export class TankGameEngine {
@@ -184,12 +188,13 @@ export class TankGameEngine {
     this.reconDroneOwned = Boolean(this.playerSave?.reconDroneOwned);
     this.reconDroneCooldown = 0;
     this.reconDroneActiveTimer = 0;
+    this.reconDroneMission = null;
     this.repairKitCount = 1;
     this.empTimer = 0;
     this.baseRepairSparkTimer = 0;
     this.inBaseRepairZone = false;
-    this.isHangarOpen = false;
-    this.isHangarPaused = false;
+    this.isGarageOpen = false;
+    this.isGaragePaused = false;
     this.isAdPaused = false;
     this.creditsEarnedThisMission = 0;
     this.baseAlive = true;
@@ -514,7 +519,7 @@ export class TankGameEngine {
     return (
       Boolean(this.missileFpvEnabled) &&
       this.status === GameStatus.PLAYING &&
-      !this.isHangarOpen &&
+      !this.isGarageOpen &&
       !this.inspectMode &&
       !this.airSupportTargeting &&
       Boolean(this.getActivePlayerMissile() || this.missileFpvHoldTimer > 0)
@@ -537,14 +542,7 @@ export class TankGameEngine {
 
   /** Minimum time between rendered frames in ms (0 = render every display refresh). */
   getFrameInterval() {
-    const resultScreen =
-      this.status === GameStatus.PAUSED ||
-      (this.status === GameStatus.VICTORY && !(this.victoryCinematicsTimer > 0)) ||
-      (this.status === GameStatus.GAME_OVER && !(this.defeatCinematicsTimer > 0));
-    if (resultScreen && !this.isHangarOpen && !this.inspectMode && !this.cameraRotating) {
-      return 1000 / IDLE_SCREEN_FPS;
-    }
-    return this.fpsCap > 0 ? 1000 / this.fpsCap : 0;
+    return computeFrameInterval(this);
   }
 
   /** The UI reports whether an opaque screen fully hides the 3D canvas. */
@@ -639,7 +637,7 @@ export class TankGameEngine {
   get survivalDirector() { return (this._survivalDirector ||= new SurvivalDirector(this)); }
   get contractDirector() { return (this._contractDirector ||= new ContractDirector(this)); }
   get aiDebugOverlay() { return (this._aiDebugOverlay ||= new AiDebugOverlay(this)); }
-  get hangarOps() { return (this._hangarOps ||= new HangarOps(this)); }
+  get garageOps() { return (this._garageOps ||= new GarageOps(this)); }
   get bossCombat() { return (this._bossCombat ||= new BossCombat(this)); }
   get defenseTurretsCtrl() { return (this._defenseTurretsCtrl ||= new DefenseTurretsController(this)); }
   get forestFire() { return (this._forestFire ||= new ForestFireController(this)); }
@@ -757,38 +755,38 @@ export class TankGameEngine {
 
   isSegmentInSmoke(x0, z0, x1, z1) { return this.playerController.isSegmentInSmoke(x0, z0, x1, z1); }
 
-  mountHangarPart(instanceId, socketId = null) { return this.hangarOps.mountPart(instanceId, socketId); }
+  mountGaragePart(instanceId, socketId = null) { return this.garageOps.mountPart(instanceId, socketId); }
 
-  setHangarOpen(open) { return this.hangarOps.setOpen(open); }
+  setGarageOpen(open) { return this.garageOps.setOpen(open); }
 
-  persistComponentDamage() { this.hangarOps.persistComponentDamage(); }
+  persistComponentDamage() { this.garageOps.persistComponentDamage(); }
 
-  tryDamageComponent(damage, hit) { this.hangarOps.tryDamageComponent(damage, hit); }
+  tryDamageComponent(damage, hit) { this.garageOps.tryDamageComponent(damage, hit); }
 
-  repairComponentInHangar(track) { return this.hangarOps.repairComponent(track); }
+  repairComponentInGarage(track) { return this.garageOps.repairComponent(track); }
 
-  restoreAllComponents() { this.hangarOps.restoreAllComponents(); }
+  restoreAllComponents() { this.garageOps.restoreAllComponents(); }
 
-  upgradeTrackInHangar(track) { return this.hangarOps.upgradeTrack(track); }
+  upgradeTrackInGarage(track) { return this.garageOps.upgradeTrack(track); }
 
-  buyCannonAmmoInHangar() { return this.hangarOps.buyCannonAmmo(); }
+  buyCannonAmmoInGarage() { return this.garageOps.buyCannonAmmo(); }
 
-  buyMissileInHangar() { return this.hangarOps.buyMissile(); }
+  buyMissileInGarage() { return this.garageOps.buyMissile(); }
 
-  buyApsChargeInHangar() { return this.hangarOps.buyApsCharge(); }
+  buyApsChargeInGarage() { return this.garageOps.buyApsCharge(); }
 
-  buyReconDroneInHangar() { return this.hangarOps.buyReconDrone(false); }
+  buyReconDroneInGarage() { return this.garageOps.buyReconDrone(false); }
 
   activateReconDroneAction() {
     if (!this.reconDroneOwned) {
-      return this.hangarOps.buyReconDrone(true).success;
+      return this.garageOps.buyReconDrone(true).success;
     }
     return this.launchReconDrone(this.aimWorld.x, this.aimWorld.z);
   }
 
-  toggleFavoritePart(instanceId) { this.hangarOps.toggleFavoritePart(instanceId); }
+  toggleFavoritePart(instanceId) { this.garageOps.toggleFavoritePart(instanceId); }
 
-  abortMissionToHangar() { this.hangarOps.abortMissionToHangar(); }
+  abortMissionToGarage() { this.garageOps.abortMissionToGarage(); }
 
   get inputCamera() {
     return (this._inputCamera ||= new InputCameraController(this));
@@ -824,7 +822,7 @@ export class TankGameEngine {
   syncAudioPauseState() {
     const audioPaused =
       this.status === GameStatus.PAUSED ||
-      Boolean(this.isHangarPaused) ||
+      Boolean(this.isGaragePaused) ||
       Boolean(this.isAdPaused);
     sound.setPaused(audioPaused);
   }
@@ -887,12 +885,19 @@ export class TankGameEngine {
     return this.airSupportController.callAirRepair();
   }
 
+  get reconDroneController() {
+    return (this._reconDroneController ||= new ReconDroneController(this));
+  }
+
   launchReconDrone(x, z) {
-    return this.airSupportController.launchReconDrone(x, z);
+    return this.reconDroneController.launch(x, z);
   }
 
   isPointRevealedByReconDrone(x, z) {
-    return this.airSupportController.isPointRevealedByReconDrone(x, z);
+    return Boolean(
+      this.reconDroneController.isPointRevealed(x, z) ||
+        this.airSupportController.isPointRevealedByAirSupport(x, z)
+    );
   }
 
   firePlayerHomingMissile() { this.playerController.firePlayerHomingMissile(); }
@@ -963,23 +968,23 @@ export class TankGameEngine {
         const simDt = dt * this.getTimeScale();
         this.update(simDt);
         this.modelFactory?.updateAnimatedTextures(simDt);
-        if (this.isHangarOpen) {
-          if (!this._hangarWindowEl?.isConnected) {
-            this._hangarWindowEl = document.querySelector('.hangar-stage-window');
-            this._hangarWindowRect = null;
-            this._hangarRectObserver?.disconnect();
-            this._hangarRectObserver = null;
-            if (this._hangarWindowEl && typeof ResizeObserver !== 'undefined') {
-              this._hangarRectObserver = new ResizeObserver(() => {
-                this._hangarWindowRect = this._hangarWindowEl?.getBoundingClientRect() || null;
+        if (this.isGarageOpen) {
+          if (!this._garageWindowEl?.isConnected) {
+            this._garageWindowEl = document.querySelector('.garage-stage-window');
+            this._garageWindowRect = null;
+            this._garageRectObserver?.disconnect();
+            this._garageRectObserver = null;
+            if (this._garageWindowEl && typeof ResizeObserver !== 'undefined') {
+              this._garageRectObserver = new ResizeObserver(() => {
+                this._garageWindowRect = this._garageWindowEl?.getBoundingClientRect() || null;
               });
-              this._hangarRectObserver.observe(this._hangarWindowEl);
+              this._garageRectObserver.observe(this._garageWindowEl);
             }
           }
-          if (!this._hangarWindowRect && this._hangarWindowEl) {
-            this._hangarWindowRect = this._hangarWindowEl.getBoundingClientRect();
+          if (!this._garageWindowRect && this._garageWindowEl) {
+            this._garageWindowRect = this._garageWindowEl.getBoundingClientRect();
           }
-          this.hangarStage.render(this.renderer, this._hangarWindowRect);
+          this.garageStage.render(this.renderer, this._garageWindowRect);
         } else {
           this.tileBatcher.sync();
           this.renderer.render(this.scene, this.getActiveCamera());
@@ -1003,9 +1008,7 @@ export class TankGameEngine {
 
   update(dt) {
     const elapsed = this.clock.getElapsed();
-    if (this.isHangarOpen) {
-      this.hangarStage.update(dt, this.effectiveUpgrades, this.missileAmmo, this.apsAmmo, elapsed);
-      this.tickHangarBaseMaintenance(dt);
+    if (this.garageOps.stepOpenFrame(dt, elapsed)) {
       return;
     }
 
@@ -1031,8 +1034,8 @@ export class TankGameEngine {
       }
     }
 
-    if (this.isHangarPaused || this.isAdPaused) {
-      this.tickHangarBaseMaintenance(dt);
+    if (this.isGaragePaused || this.isAdPaused) {
+      this.tickGarageBaseMaintenance(dt);
       if (this.playerRig) {
         this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;
         this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
@@ -1061,26 +1064,17 @@ export class TankGameEngine {
       this.updatePowerUps(dt, elapsed);
       this.powerupsController.updateAirDrops(dt, elapsed);
       this.airSupportController.update(dt, elapsed);
+      this.reconDroneController.update(dt, elapsed);
       this.playerController.updateSmokeAndLoot(dt);
       this.updateBarrelExplosions(dt);
       this.terrainDestruction.updateBurningOil(dt);
       this.updateBrickRubble(dt);
       this.forestFire.update(dt, elapsed);
     } else if (this.status === GameStatus.VICTORY && this.victoryCinematicsTimer > 0) {
-      this.victoryCinematicsTimer = Math.max(0, this.victoryCinematicsTimer - dt);
-      const vc = this.victoryCinematics;
-      if (vc && !vc.detonated) {
-        vc.detonateDelay -= dt;
-        vc.sparkAcc = (vc.sparkAcc || 0) + dt;
-        if (vc.sparkAcc >= VICTORY_CINEMATICS.SPARK_INTERVAL_SEC) {
-          vc.sparkAcc = 0;
-          this.spawnSparks?.(vc.x, 0.7, vc.z, 0xff8833, 2);
-        }
-        if (vc.detonateDelay <= 0) {
-          vc.detonated = true;
-          vc.onDetonate?.();
-        }
-      }
+      const { finished, restoredFrustum } = stepVictoryCinematics(this.victoryCinematics, dt, {
+        onSpark: (x, z) => this.spawnSparks?.(x, 0.7, z, 0xff8833, 2),
+      });
+      this.victoryCinematicsTimer = this.victoryCinematics?.remaining ?? 0;
       this.updateProjectiles(dt);
       this.explosions.updateHazardZones(dt, elapsed);
       this.updateBarrelExplosions(dt);
@@ -1093,13 +1087,9 @@ export class TankGameEngine {
         this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
         this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
       }
-      if (this.victoryCinematicsTimer <= 0) {
-        if (vc && !vc.detonated) {
-          vc.detonated = true;
-          vc.onDetonate?.();
-        }
-        if (vc?.baseFrustum) {
-          this.frustumSize = vc.baseFrustum;
+      if (finished) {
+        if (restoredFrustum) {
+          this.frustumSize = restoredFrustum;
           this.updateCameraProjection?.();
         }
         this.victoryCinematics = null;
@@ -1141,17 +1131,8 @@ export class TankGameEngine {
     }
   }
 
-  tickHangarBaseMaintenance(dt) {
-    if (!this.isHangarPaused || this.isAdPaused || this.status !== GameStatus.PLAYING) return;
-    const repairedAny = this.playerController?.updateBaseMaintenance?.(dt);
-    if (repairedAny) {
-      this.hudSyncAccumulator += dt;
-      const hudInterval = this.quality === 'low' ? 0.2 : 0.12;
-      if (this.hudSyncAccumulator >= hudInterval) {
-        this.hudSyncAccumulator = 0;
-        this.emitHudUpdate();
-      }
-    }
+  tickGarageBaseMaintenance(dt) {
+    this.garageOps.tickBaseMaintenance(dt);
   }
 
   updatePlayer(dt, elapsed) { this.playerController.updatePlayer(dt, elapsed); }
@@ -1391,21 +1372,15 @@ export class TankGameEngine {
   triggerMissionVictory(bannerText, focusTarget = null) {
     if (this.status === GameStatus.VICTORY) return;
     this.status = GameStatus.VICTORY;
-    const duration = VICTORY_CINEMATICS.DURATION_SEC;
-    this.victoryCinematicsTimer = duration;
     const baseFrustum = this.victoryCinematics?.baseFrustum ?? (this.frustumSize || 32);
-    this.victoryCinematics = {
-      x: focusTarget?.x ?? this.playerX,
-      z: focusTarget?.z ?? this.playerZ,
-      duration,
-      startAzimuth: this.cameraAzimuth ?? Math.PI * 0.25,
+    this.victoryCinematics = createVictoryCinematics({
+      x: this.playerX,
+      z: this.playerZ,
       baseFrustum,
-      targetFrustum: Math.max(VICTORY_CINEMATICS.MIN_FRUSTUM, baseFrustum * VICTORY_CINEMATICS.ZOOM_FACTOR),
-      detonateDelay: focusTarget?.detonateDelay ?? VICTORY_CINEMATICS.DETONATE_DELAY_SEC,
-      onDetonate: typeof focusTarget?.onDetonate === 'function' ? focusTarget.onDetonate : null,
-      detonated: !focusTarget?.onDetonate,
-      sparkAcc: 0,
-    };
+      cameraAzimuth: this.cameraAzimuth ?? Math.PI * 0.25,
+      focusTarget,
+    });
+    this.victoryCinematicsTimer = this.victoryCinematics.remaining;
     sound.stopEngineLoop();
     if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
       this.lastSettlementSummary = settleMission({
@@ -1418,7 +1393,7 @@ export class TankGameEngine {
       this.cannonAmmo = this.getPlayerMaxCannonAmmo();
       this.missileAmmo = this.getPlayerMaxMissileAmmo();
       this.playerController.initApsLaunchers(this.getPlayerMaxApsAmmo());
-      this.hangarOps.restoreAllComponents();
+      this.garageOps.restoreAllComponents();
       this.playerHp = this.playerMaxHp;
       this.playerSave.apsAmmo = [...this.apsAmmo];
       this.playerSave.missileAmmo = this.missileAmmo;
@@ -1548,7 +1523,7 @@ export class TankGameEngine {
 
   dispose() {
     this.isDisposed = true;
-    this.hangarStage?.dispose();
+    this.garageStage?.dispose();
     this.modelFactory.brickModels.dispose();
     this.modelFactory.concreteModels?.dispose?.();
     this.modelFactory.buildingModels?.dispose?.();
@@ -1557,6 +1532,7 @@ export class TankGameEngine {
     this.tileBatcher?.reset?.();
     this.enemySpawner.clearPendingTimeouts();
     this._airSupportController?.dispose?.();
+    this._reconDroneController?.dispose?.();
     this.pendingBarrelExplosions = [];
     this._aiDebugOverlay?.clear();
     this.clock?.dispose();
@@ -1568,9 +1544,9 @@ export class TankGameEngine {
     window.removeEventListener('resize', this.handleResize);
     this._resizeObserver?.disconnect();
     this._resizeObserver = null;
-    this._hangarRectObserver?.disconnect();
-    this._hangarRectObserver = null;
-    this._hangarWindowRect = null;
+    this._garageRectObserver?.disconnect();
+    this._garageRectObserver = null;
+    this._garageWindowRect = null;
     window.removeEventListener('pointerup', this.handlePointerUp);
     window.removeEventListener('pointercancel', this.handlePointerUp);
 

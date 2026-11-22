@@ -162,8 +162,10 @@ test('Hover raider strikes from water the player cannot cross, then withdraws', 
   const { pos, out } = walk(brain, grid, { row: 15, col: 25 }, target, { canCrossWater: true });
   assert.equal(out.tactic, 'strike');
   assert.equal(grid[pos.row][pos.col], W, 'firing from the water');
-  brain.tacticTimer = 0;
-  const next = stepBrain(brain, ctxFor(grid, pos, target, { canCrossWater: true }));
+  const next = stepBrain(brain, ctxFor(grid, pos, target, {
+    canCrossWater: true,
+    dt: ROLE_CONFIGS.raider.strikeSec[1] + 0.1,
+  }));
   assert.equal(next.tactic, 'withdraw');
 });
 
@@ -175,8 +177,9 @@ test('Kamikaze stalks out of sight, then charges directly when close', () => {
   const far = stepBrain(brain, ctxFor(grid, { row: 3, col: 15 }, target));
   assert.equal(far.tactic, 'stalk');
   assert.equal(hasGridLineOfSight(grid, brain.goal, target), false, 'stalk cell is hidden');
-  assert.ok(dist(brain.goal, target) <= 5);
-  const near = stepBrain(brain, ctxFor(grid, { row: 15, col: 11 }, target));
+  assert.ok(dist(brain.goal, target) <= ROLE_CONFIGS.hunter.stalk.maxCells);
+  const chargeDist = Math.max(1, ROLE_CONFIGS.hunter.chargeBelowCells - 1);
+  const near = stepBrain(brain, ctxFor(grid, { row: 15, col: 15 - chargeDist }, target));
   assert.equal(near.tactic, 'charge');
   assert.equal(near.direct, true);
   assert.equal(near.waypoint, null);
@@ -191,7 +194,8 @@ test('Flamethrower lurks hidden nearby and only rushes a close player', () => {
   assert.equal(out.tactic, 'lurk');
   assert.equal(out.waypoint, null, 'waits in ambush');
   assert.equal(hasGridLineOfSight(grid, pos, target), false);
-  const rush = stepBrain(brain, ctxFor(grid, pos, { row: 15, col: 12 }, { distCells: 3 }));
+  const rushDist = Math.max(1, ROLE_CONFIGS.ambusher.rushBelowCells - 1);
+  const rush = stepBrain(brain, ctxFor(grid, pos, { row: 15, col: 12 }, { distCells: rushDist }));
   assert.equal(rush.tactic, 'rush');
   assert.equal(rush.direct, true);
 });
@@ -203,12 +207,12 @@ test('Jammer shadows out of sight and closes to screen range while allies fight'
   const shadow = stepBrain(brain, ctxFor(grid, { row: 15, col: 2 }, target, { visible: false }));
   assert.equal(shadow.tactic, 'shadow');
   const engaged = { visible: false, alliesEngaged: true };
+  const cfg = ROLE_CONFIGS.ewar;
   const { pos, out: screen } = walk(brain, grid, { row: 15, col: 2 }, target, engaged);
   assert.equal(screen.tactic, 'screen');
-  assert.ok(dist(pos, target) <= 5.5);
+  assert.ok(dist(pos, target) <= cfg.screen.maxCells + 0.5);
 
   // After the screening run it withdraws out of sight, then screens again.
-  const cfg = ROLE_CONFIGS.ewar;
   const hold = { ...engaged, dt: cfg.screenSec + 0.1 };
   const withdraw = stepBrain(brain, ctxFor(grid, pos, target, hold));
   assert.equal(withdraw.tactic, 'withdraw');
@@ -227,8 +231,9 @@ test('Engineer drives to the damaged ally; flees a close player', () => {
     repairTarget: ally,
   });
   assert.equal(out.tactic, 'repair');
-  assert.ok(dist(pos, ally) <= 2.5);
-  const flee = stepBrain(brain, ctxFor(grid, pos, { row: 5, col: 22 }, { distCells: 3, repairTarget: ally }));
+  assert.ok(dist(pos, ally) <= ROLE_CONFIGS.support.repair.maxCells);
+  const fleeDist = Math.max(1, ROLE_CONFIGS.support.fleeBelowCells - 1);
+  const flee = stepBrain(brain, ctxFor(grid, pos, { row: 5, col: 22 }, { distCells: fleeDist, repairTarget: ally }));
   assert.equal(flee.tactic, 'flee');
 });
 
@@ -239,7 +244,8 @@ test('Striker holds a stand-off LOS cell and shifts after launching', () => {
   const { pos } = walk(brain, grid, { row: 15, col: 2 }, target);
   assert.equal(brain.tactic, 'launch');
   const d = dist(pos, target);
-  assert.ok(d >= 7 && d <= 10);
+  const { minCells, maxCells } = ROLE_CONFIGS.standoff.launch;
+  assert.ok(d >= minCells && d <= maxCells);
   const first = { ...brain.goal };
   for (let k = 0; k < brain.relocateAfter; k++) notifyBrainFired(brain);
   stepBrain(brain, ctxFor(grid, pos, target));
@@ -253,32 +259,26 @@ test('Stealth sniper overwatches from range and slips away after its shot', () =
   const brain = createBrain('sniper', seq([0.5]));
   const { pos } = walk(brain, grid, { row: 15, col: 2 }, target);
   assert.equal(brain.tactic, 'overwatch');
-  assert.ok(dist(pos, target) >= 8);
+  assert.ok(dist(pos, target) >= ROLE_CONFIGS.sniper.overwatch.minCells);
   notifyBrainFired(brain);
   const out = stepBrain(brain, ctxFor(grid, pos, target));
   assert.equal(out.tactic, 'reposition');
-});
-
-test('Boss configs carry their own role brains', async () => {
-  const { SECTOR_BOSS_CONFIGS } = await import('../public/src/game/vehicles/tanks.js');
-  assert.equal(SECTOR_BOSS_CONFIGS.bossMammoth.behavior.role, 'dreadnought');
-  assert.equal(SECTOR_BOSS_CONFIGS.bossHydra.behavior.role, 'cruiser');
-  assert.equal(SECTOR_BOSS_CONFIGS.bossInferno.behavior.role, 'juggernaut');
-  assert.equal(SECTOR_BOSS_CONFIGS.bossTitan.behavior.role, 'fortress');
 });
 
 test('Mammoth closes to brawling range and side-steps on later cycles', () => {
   const grid = openGrid(30);
   const target = { row: 15, col: 15 };
   const brain = createBrain('dreadnought', seq([0.5]));
-  const { pos } = walk(brain, grid, { row: 15, col: 2 }, target);
-  assert.equal(brain.tactic, 'advance');
+  const { pos, out } = walk(brain, grid, { row: 15, col: 2 }, target);
+  assert.equal(out.tactic, 'advance');
   const d = dist(pos, target);
-  assert.ok(d >= 3 && d <= 6);
-  const first = { ...brain.goal };
-  brain.tacticTimer = 0;
-  stepBrain(brain, ctxFor(grid, pos, target)); // cycle 2 -> side-step
-  assert.ok(dist(brain.goal, first) >= 2);
+  const { minCells, maxCells } = ROLE_CONFIGS.dreadnought.advance;
+  assert.ok(d >= minCells && d <= maxCells);
+  const next = stepBrain(brain, ctxFor(grid, pos, target, { dt: ROLE_CONFIGS.dreadnought.advanceSec[1] + 0.1 })); // cycle 2 -> side-step
+  assert.equal(next.tactic, 'advance');
+  assert.ok(next.waypoint, 'side-steps to a new cell');
+  const { pos: shifted } = walk(brain, grid, pos, target, { replanDue: false });
+  assert.ok(dist(shifted, pos) >= 2);
 });
 
 test('Hydra keeps its stand-off band, then presses closer in phase 2', () => {

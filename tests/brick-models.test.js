@@ -5,8 +5,8 @@ import { BrickModels } from '../public/src/game/terrains/brick-models.js';
 import { breachEntryOffset, breachPointToward, breachYaw, nextBreach } from '../public/src/game/terrains/breach-models.js';
 import { ModelFactory } from '../public/src/game/render/models.js';
 import { TileBatcher } from '../public/src/game/render/tile-batcher.js';
-import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
-import { engineerSupport } from '../public/src/game/abilities/engineer-support.js';
+import { TerrainDestructionController } from '../public/src/game/engine/terrain-destruction.js';
+import { ENGINEER_SUPPORT, engineerSupport } from '../public/src/game/abilities/engineer-support.js';
 import { TileType } from '../public/src/game/types.js';
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -41,21 +41,39 @@ test('Deployed BRICK asset includes every damage state with one shared texture a
   }
 });
 
+function createDestructionHost({ factory, source, batcher, grid = [], gridToWorld = () => ({ x: 10, z: 20 }) }) {
+  const host = {
+    grid,
+    enemies: [],
+    modelFactory: factory,
+    mapGroup: source,
+    tileBatcher: batcher,
+    brickRubble: [],
+    blocksDestroyed: 0,
+    gridToWorld,
+    worldToGrid: () => ({ row: 2, col: 2 }),
+    spawnSparks() {},
+    fx: { masonryHit() {}, blockDestroyed() {} },
+  };
+  const destruction = new TerrainDestructionController(host);
+  host.damageTileCell = (...args) => destruction.damageTileCell(...args);
+  host.destroyTileCell = (cell) => destruction.destroyTileCell(cell);
+  host.updateBrickRubble = (dt) => destruction.updateBrickRubble(dt);
+  return host;
+}
+
 test('Engineer repairs restore both brick HP and the intact model', () => {
   const { models, source, batcher } = fixture();
   const root = new THREE.Group(); root.userData.batchTile = true;
   models.apply(root, 1); source.add(root); batcher.sync();
   const cell = { type: TileType.BRICK, hp: 1, mesh: root };
   const grid = Array.from({ length: 5 }, () => []); grid[1][2] = cell;
-  const factory = Object.assign(Object.create(ModelFactory.prototype), { brickModels: models, useBlenderBricks: true });
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
-    grid, enemies: [], modelFactory: factory, tileBatcher: batcher,
-    worldToGrid: () => ({ row: 2, col: 2 }), gridToWorld: () => ({ x: 0, z: 0 }), spawnSparks() {},
-  });
+  const factory = new ModelFactory(null, false, null, { headless: true, brickModels: models, useBlenderBricks: true });
+  const engine = createDestructionHost({ factory, source, batcher, grid, gridToWorld: () => ({ x: 0, z: 0 }) });
   engineerSupport.tryUse({ id: 1, x: 0, z: 0 }, engine); batcher.sync();
-  assert.equal(cell.hp, 4);
-  assert.equal(root.children[0].geometry, models.states.get(4));
-  assert.equal([...batcher.batches.values()].reduce((sum, b) => sum + b.mesh.count, 0), 1);
+  assert.equal(cell.hp, ENGINEER_SUPPORT.BRICK_HP);
+  assert.equal(root.children[0].geometry, models.states.get(Math.min(4, ENGINEER_SUPPORT.BRICK_HP)));
+  assert.equal(batcher.getInstanceCount(), 1);
   batcher.reset(); models.dispose();
 });
 
@@ -66,16 +84,16 @@ test('Brick states share resources and batches replace damage geometry without r
     models.apply(root, 4); source.add(root); return root;
   });
   batcher.sync();
-  assert.equal(batcher.batches.size, 1);
+  assert.equal(batcher.getBatchCount(), 1);
   assert.equal(roots[0].children[0].geometry, roots[1].children[0].geometry);
   for (let hp = 3; hp >= 0; hp--) {
     for (const root of roots) models.apply(root, hp);
     batcher.sync();
-    assert.equal([...batcher.batches.values()].reduce((sum, b) => sum + b.mesh.count, 0), 40);
+    assert.equal(batcher.getInstanceCount(), 40);
     assert.equal(roots[0].children[0].geometry, models.states.get(hp));
   }
   source.clear(); batcher.sync();
-  assert.equal([...batcher.batches.values()].reduce((sum, b) => sum + b.mesh.count, 0), 0);
+  assert.equal(batcher.getInstanceCount(), 0);
   batcher.reset(); models.dispose();
 });
 
@@ -89,20 +107,21 @@ test('Dense batch removal preserves transforms and later updates of moved entrie
   source.remove(roots[1], roots[4], roots[6]); batcher.sync();
   roots[7].position.z = 12; batcher.markDirty(roots[7]); batcher.sync();
   for (const root of source.children) {
-    const entry = batcher.records.get(root)[0];
-    const actual = new THREE.Matrix4();
-    entry.batch.mesh.getMatrixAt(entry.slot, actual);
+    const actual = batcher.getInstanceMatrix(root);
     assert.deepEqual(actual.elements, root.children[0].matrixWorld.elements);
   }
-  assert.equal([...batcher.batches.values()][0].mesh.count, 5);
+  assert.equal(batcher.getInstanceCount(), 5);
   batcher.reset(); models.dispose();
 });
 
 test('Procedural fallback keeps HP damage and can upgrade in place after assets arrive', () => {
   const { models } = fixture();
   const damageMaterials = new Map([0, 1, 2, 3, 4].map(hp => [hp, [new THREE.MeshStandardMaterial()]]));
-  const factory = Object.assign(Object.create(ModelFactory.prototype), {
-    useBlenderBricks: false, brickModels: models, brickDamageMaterials: damageMaterials,
+  const factory = new ModelFactory(null, false, null, {
+    headless: true,
+    useBlenderBricks: false,
+    brickModels: models,
+    brickDamageMaterials: damageMaterials,
   });
   const group = new THREE.Group();
   for (let i = 0; i < 4; i++) group.add(new THREE.Object3D());
@@ -119,10 +138,12 @@ test('Procedural fallback keeps HP damage and can upgrade in place after assets 
 
 test('Destroyed brick rubble is nonblocking, capped, expires, and uses shared geometry', () => {
   const { models, source, batcher } = fixture();
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
-    modelFactory: { useBlenderBricks: true, brickModels: models }, mapGroup: source,
-    brickRubble: [], tileBatcher: batcher, blocksDestroyed: 0,
-    gridToWorld: (row, col) => ({ x: col * 2, z: row * 2 }), fx: { blockDestroyed() {} },
+  const factory = new ModelFactory(null, false, null, { headless: true, useBlenderBricks: true, brickModels: models });
+  const engine = createDestructionHost({
+    factory,
+    source,
+    batcher,
+    gridToWorld: (row, col) => ({ x: col * 2, z: row * 2 }),
   });
   for (let i = 0; i < 45; i++) {
     const cell = { row: 0, col: i, type: TileType.BRICK, hp: 1 };
@@ -173,23 +194,18 @@ test('Hits from two sides switch a brick tile to its two-face model and repairs 
   const root = new THREE.Group(); root.userData.batchTile = true; root.position.set(10, 0, 20);
   models.apply(root, 4); source.add(root); batcher.sync();
   const cell = { row: 3, col: 5, type: TileType.BRICK, hp: 4, mesh: root };
-  const factory = Object.assign(Object.create(ModelFactory.prototype), { brickModels: models, useBlenderBricks: true });
-  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
-    modelFactory: factory, mapGroup: source, tileBatcher: batcher, brickRubble: [], blocksDestroyed: 0,
-    gridToWorld: () => ({ x: 10, z: 20 }), fx: { masonryHit() {}, blockDestroyed() {} },
-  });
+  const factory = new ModelFactory(null, false, null, { headless: true, brickModels: models, useBlenderBricks: true });
+  const engine = createDestructionHost({ factory, source, batcher });
   engine.damageTileCell(cell, 1, 9, 20.3); batcher.sync();
   assert.equal(root.rotation.y, -Math.PI / 2, 'hit from -X opens the -X face');
   assert.equal(root.children[0].geometry, models.states.get(3));
-  const entry = batcher.records.get(root)[0];
-  const actual = new THREE.Matrix4();
-  entry.batch.mesh.getMatrixAt(entry.slot, actual);
+  const actual = batcher.getInstanceMatrix(root);
   assert.deepEqual(actual.elements, root.children[0].matrixWorld.elements);
 
   engine.damageTileCell(cell, 1, 10.1, 21); batcher.sync();
   assert.equal(root.children[0].geometry, models.variants.get('L2'), 'second hit from +Z');
   assert.equal(root.rotation.y, -Math.PI / 2);
-  assert.equal([...batcher.batches.values()].reduce((sum, b) => sum + b.mesh.count, 0), 1);
+  assert.equal(batcher.getInstanceCount(), 1);
 
   factory.updateBrickBlockDamage(root, 4);
   assert.equal(root.children[0].geometry, models.states.get(4));

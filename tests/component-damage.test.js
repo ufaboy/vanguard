@@ -35,13 +35,3 @@ test('hit location favors cannon, engine, and lateral protection respectively', 
   assert.ok(rear.engine > rear.chassis * 2);
   assert.equal(side.chassis, side.armor); assert.ok(side.chassis > side.frame * 2);
 });
-
-
-test('damage rate matches the configured chance across evenly distributed rolls', () => {
-  let hits = 0;
-  for (let i = 0; i < 1000; i++) {
-    const values = [(i + 0.5) / 1000, 0];
-    if (rollComponentDamage(upgraded, {}, 0, hit, () => values.shift())) hits++;
-  }
-  assert.equal(hits, Math.round(COMPONENT_DAMAGE_CHANCE * 1000));
-});

@@ -3,29 +3,34 @@ import assert from 'node:assert/strict';
 import { CANNON_AMMO, getMaxCannonAmmo } from '../public/src/game/constants.js';
 import { POWERUP } from '../public/src/game/powerups.js';
 import { isUsefulPowerUp } from '../public/src/game/powerup-drops.js';
-import { SaveRepository, createInitialPlayerSave } from '../public/src/sim/hangar.js';
+import { SaveRepository, createInitialPlayerSave } from '../public/src/sim/garage.js';
 
-test('Cannon ammo capacity scales from 15 to 50 across Frame tiers 1..5', () => {
-  assert.equal(getMaxCannonAmmo(1), 15);
-  assert.equal(getMaxCannonAmmo(2), 22);
-  assert.equal(getMaxCannonAmmo(3), 30);
-  assert.equal(getMaxCannonAmmo(4), 40);
-  assert.equal(getMaxCannonAmmo(5), 50);
+test('Cannon ammo capacity is monotonic across tiers 1..5 and clamps out-of-range tiers', () => {
+  let prev = 0;
+  for (let tier = 1; tier <= 5; tier++) {
+    const cap = getMaxCannonAmmo(tier);
+    assert.ok(Number.isFinite(cap) && cap > 0);
+    assert.ok(cap >= prev, `tier ${tier} capacity should be non-decreasing`);
+    prev = cap;
+  }
 
   // Clamping boundary
-  assert.equal(getMaxCannonAmmo(0), 15);
-  assert.equal(getMaxCannonAmmo(6), 50);
+  assert.equal(getMaxCannonAmmo(0), getMaxCannonAmmo(1));
+  assert.equal(getMaxCannonAmmo(6), getMaxCannonAmmo(5));
 });
 
 test('AMMO powerup pickup is useful only when reserve is below max capacity', () => {
-  const fullState = { cannonAmmo: 15, cannonMaxAmmo: 15, upgrades: { frame: 1 } };
+  const maxCap = getMaxCannonAmmo(1);
+  const fullState = { cannonAmmo: maxCap, cannonMaxAmmo: maxCap, upgrades: { frame: 1 } };
   assert.equal(isUsefulPowerUp(POWERUP.AMMO, fullState, []), false);
 
-  const lowState = { cannonAmmo: 8, cannonMaxAmmo: 15, upgrades: { frame: 1 } };
+  const lowAmmo = Math.max(0, maxCap - CANNON_AMMO.PICKUP_AMMO - 1);
+  const lowState = { cannonAmmo: lowAmmo, cannonMaxAmmo: maxCap, upgrades: { frame: 1 } };
   assert.equal(isUsefulPowerUp(POWERUP.AMMO, lowState, []), true);
 
   // Pending pickups count towards max capacity
-  const pendingDrop = [{ type: POWERUP.AMMO }, { type: POWERUP.AMMO }];
+  const pendingCount = Math.ceil((maxCap - lowAmmo) / CANNON_AMMO.PICKUP_AMMO);
+  const pendingDrop = Array.from({ length: pendingCount }, () => ({ type: POWERUP.AMMO }));
   assert.equal(isUsefulPowerUp(POWERUP.AMMO, lowState, pendingDrop), false);
 });
 

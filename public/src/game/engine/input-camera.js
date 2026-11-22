@@ -42,7 +42,7 @@ export class InputCameraController {
     const { engine } = this;
 
     engine.handleKeyDown = (e) => {
-      if (engine.isHangarOpen || engine.isAdPaused) return;
+      if (engine.isGarageOpen || engine.isAdPaused) return;
       engine.keys[e.code] = true;
       if (e.code === 'F3') {
         e.preventDefault();
@@ -117,7 +117,7 @@ export class InputCameraController {
     };
 
     engine.handlePointerMove = (e) => {
-      if (engine.isHangarOpen) return;
+      if (engine.isGarageOpen) return;
 
       if (e.pointerType === 'touch' && this.activeCanvasTouches.has(e.pointerId)) {
         this.activeCanvasTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -155,7 +155,7 @@ export class InputCameraController {
     };
 
     engine.handlePointerDown = (e) => {
-      if (engine.isHangarOpen) return;
+      if (engine.isGarageOpen) return;
 
       if (e.pointerType === 'touch') {
         this.activeCanvasTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -238,7 +238,7 @@ export class InputCameraController {
     };
 
     engine.handleWheel = (e) => {
-      if (engine.isHangarOpen) return;
+      if (engine.isGarageOpen) return;
       e.preventDefault();
       const delta = Math.sign(e.deltaY) * 2.2;
       const maxZoom = engine.airSupportTargeting ? 62 : 46;
@@ -314,7 +314,7 @@ export class InputCameraController {
     const canFpv =
       Boolean(engine.missileFpvEnabled) &&
       engine.status === GameStatus.PLAYING &&
-      !engine.isHangarOpen &&
+      !engine.isGarageOpen &&
       !engine.inspectMode &&
       !engine.airSupportTargeting &&
       Boolean(engine.fpvCamera);

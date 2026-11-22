@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import { inspectMap } from '../.agents/skills/create-map/scripts/inspect-map.mjs';
 import { SECTORS, normalizeMapDefinition } from '../public/src/game/levels.js';
 import { checkMapVictory } from '../public/src/game/mapRules.js';
-import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
+import { PowerupsController } from '../public/src/game/engine/powerups-controller.js';
 import { EnemyClass } from '../public/src/game/vehicles/tanks.js';
 import { POWERUP } from '../public/src/game/powerups.js';
 import { TileType } from '../public/src/game/types.js';
@@ -56,27 +56,32 @@ test('Map normalization rejects blocked, duplicate and unknown authored supplies
 });
 
 test('All released supplies survive travel time and collection removes each supply once', () => {
-  const engine = Object.create(TankGameEngine.prototype);
-  Object.assign(engine, { powerUps: [], playerX: 100, playerZ: 100,
-    playerHp: 20, playerMaxHp: 52, repairKitCount: 0,
+  let collected = 0;
+  const state = {
+    powerUps: [],
+    playerX: 100,
+    playerZ: 100,
+    playerHp: 20,
+    playerMaxHp: 52,
+    repairKitCount: 0,
     entityGroup: { add() {}, remove() {} },
     modelFactory: { createPowerUpMesh: () => ({ position: { set() {} }, rotation: {}, userData: {} }) },
-  });
-  engine.createPowerUpEntity(POWERUP.REPAIR, 0, 0);
-  engine.createPowerUpEntity(POWERUP.REPAIR, 10, 10);
-  engine.updatePowerUps(120, 120);
-  assert.equal(engine.powerUps.length, 2);
-  let collected = 0;
-  engine.applyPowerUp = () => collected++;
-  engine.playerX = engine.playerZ = 0;
-  engine.updatePowerUps(1, 121);
-  engine.updatePowerUps(1, 122);
+    applyPowerUp: () => collected++,
+  };
+  const ctrl = new PowerupsController(state);
+  ctrl.createPowerUpEntity(POWERUP.REPAIR, 0, 0);
+  ctrl.createPowerUpEntity(POWERUP.REPAIR, 10, 10);
+  ctrl.updatePowerUps(120, 120);
+  assert.equal(state.powerUps.length, 2);
+  state.playerX = state.playerZ = 0;
+  ctrl.updatePowerUps(1, 121);
+  ctrl.updatePowerUps(1, 122);
   assert.equal(collected, 1);
-  assert.equal(engine.powerUps.length, 1);
-  engine.playerX = engine.playerZ = 10;
-  engine.updatePowerUps(1, 123);
+  assert.equal(state.powerUps.length, 1);
+  state.playerX = state.playerZ = 10;
+  ctrl.updatePowerUps(1, 123);
   assert.equal(collected, 2);
-  assert.equal(engine.powerUps.length, 0);
+  assert.equal(state.powerUps.length, 0);
 });
 
 test('Former duplicate battlefields retain different cover and patrol geometry', () => {

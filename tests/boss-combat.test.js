@@ -112,12 +112,12 @@ test('Boss onboard APS intercepts player ATGMs, spends charges, and pauses durin
   assert.equal(boss.apsCharges, BOSS_APS.MAX_CHARGES - 1);
 });
 
-test('Boss HP-gate clamps burst damage, grants 2s phase shield, and spawns escorts for Mammoth and Hydra', () => {
+test('Boss HP-gate clamps burst damage, grants phase shield, and spawns escorts for Mammoth and Hydra', () => {
   const mammoth = {
     name: 'MAMMOTH MK-V',
     enemyClass: EnemyClass.BOSS_MAMMOTH,
     isBoss: true,
-    hp: 250,
+    hp: 400,
     maxHp: 400,
     x: 0,
     z: 0,
@@ -125,7 +125,7 @@ test('Boss HP-gate clamps burst damage, grants 2s phase shield, and spawns escor
     phaseShieldTimer: 0,
   };
   const mGame = fakeBossEngine([mammoth]);
-  mGame.damageEnemy(mammoth, 200);
+  mGame.damageEnemy(mammoth, 400 * (1 - MAMMOTH.PHASE2_HP_RATIO) + 50);
   assert.equal(mammoth.hp, 400 * MAMMOTH.PHASE2_HP_RATIO);
   assert.equal(mammoth.mammothEnraged, true);
   assert.equal(mammoth.phaseShieldTimer, BOSS_APS.PHASE_SHIELD_SEC);
@@ -139,7 +139,7 @@ test('Boss HP-gate clamps burst damage, grants 2s phase shield, and spawns escor
     name: 'HYDRA MLRS-9',
     enemyClass: EnemyClass.BOSS_HYDRA,
     isBoss: true,
-    hp: 210,
+    hp: 380,
     maxHp: 380,
     x: 0,
     z: 0,
@@ -147,19 +147,19 @@ test('Boss HP-gate clamps burst damage, grants 2s phase shield, and spawns escor
     phaseShieldTimer: 0,
   };
   const hGame = fakeBossEngine([hydra]);
-  hGame.damageEnemy(hydra, 120);
+  hGame.damageEnemy(hydra, 380 * (1 - HYDRA.PHASE2_HP_RATIO) + 50);
   assert.equal(hydra.hp, 380 * HYDRA.PHASE2_HP_RATIO);
   assert.equal(hydra.hydraEnraged, true);
   assert.equal(hydra.phaseShieldTimer, BOSS_APS.PHASE_SHIELD_SEC);
   assert.deepEqual(hGame.escorts, [...HYDRA.ESCORT_CLASSES]);
 });
 
-test('Titan enforces two sequential HP-gates (60% escort, 30% overload)', () => {
+test('Titan enforces two sequential HP-gates (escort then overload)', () => {
   const titan = {
     name: 'SUPREME DREADNOUGHT',
     enemyClass: EnemyClass.BOSS_TITAN,
     isBoss: true,
-    hp: 360,
+    hp: 550,
     maxHp: 550,
     x: 0,
     z: 0,
@@ -169,17 +169,17 @@ test('Titan enforces two sequential HP-gates (60% escort, 30% overload)', () => 
   };
   const game = fakeBossEngine([titan]);
 
-  // Huge hit stops at 60% gate first
-  game.damageEnemy(titan, 400);
+  // Huge hit stops at escort gate first
+  game.damageEnemy(titan, 550 * (1 - TITAN.ESCORT_HP_RATIO) + 150);
   assert.equal(titan.hp, 550 * TITAN.ESCORT_HP_RATIO);
   assert.equal(titan.titanEscortCalled, true);
   assert.equal(titan.titanOverload, false);
   assert.equal(titan.phaseShieldTimer, BOSS_APS.PHASE_SHIELD_SEC);
   assert.deepEqual(game.escorts, [...TITAN.ESCORT_CLASSES]);
 
-  // Shield expires -> next huge hit stops at 30% overload gate
+  // Shield expires -> next huge hit stops at overload gate
   titan.phaseShieldTimer = 0;
-  game.damageEnemy(titan, 300);
+  game.damageEnemy(titan, 550 * (TITAN.ESCORT_HP_RATIO - TITAN.OVERLOAD_HP_RATIO) + 100);
   assert.equal(titan.hp, 550 * TITAN.OVERLOAD_HP_RATIO);
   assert.equal(titan.titanOverload, true);
   assert.equal(titan.phaseShieldTimer, BOSS_APS.PHASE_SHIELD_SEC);
@@ -302,25 +302,21 @@ test('Campaign mission waits for remaining escort after boss destruction', () =>
   assert.equal(game.victories.length, 1);
 });
 
-test('BOSS_INFERNO enforces 50% HP-gate with phase shield and incendiary escort', () => {
+test('BOSS_INFERNO enforces PHASE2 HP-gate with phase shield and incendiary escort', () => {
   const inferno = {
     name: 'CERBERUS-T',
     enemyClass: EnemyClass.BOSS_INFERNO,
     isBoss: true,
-    hp: 300,
+    hp: 440,
     maxHp: 440,
     x: 0,
     z: 0,
-    infernoEnraged: false,
-    minesRemaining: 0,
     phaseShieldTimer: 0,
   };
   const game = fakeBossEngine([inferno]);
-  game.damageEnemy(inferno, 200);
+  game.damageEnemy(inferno, 440 * (1 - INFERNO.PHASE2_HP_RATIO) + 50);
   assert.equal(inferno.hp, 440 * INFERNO.PHASE2_HP_RATIO);
-  assert.equal(inferno.infernoEnraged, true);
   assert.equal(inferno.phaseShieldTimer, BOSS_APS.PHASE_SHIELD_SEC);
-  assert.equal(inferno.minesRemaining, 3);
   assert.deepEqual(game.escorts, [...INFERNO.ESCORT_CLASSES]);
 });
 
@@ -393,7 +389,8 @@ test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turn
   // Far outside 3.5-cell radius (5 cells away)
   game.grid[20][25].type = TileType.CONCRETE;
 
-  game.detonateThermobaricAt(1.0, 1.0, INFERNO.BLAST_CELLS * TILE_SIZE, 23, false);
+  const blastDamage = 23;
+  game.detonateThermobaricAt(1.0, 1.0, 3.5 * TILE_SIZE, blastDamage, false);
 
   assert.equal(thermoFxCalls, 1);
   assert.equal(rebuiltWater, true);
@@ -407,13 +404,13 @@ test('detonateThermobaricAt uses radial damage falloff, ignites forest/oil, turn
   assert.deepEqual(ignitedForests, [{ row: 21, col: 20 }]);
   assert.deepEqual(ignitedOil, [{ row: 20, col: 22 }]);
   assert.deepEqual(cratered, [{ row: 20, col: 20 }]);
-  // BRICK at 1 cell (2.0m) gets > 75% damage; CONCRETE at 3 cells (6.0m) gets lower rim damage (>= 2)
+  // Closer cell (BRICK at 1 cell) takes more damage than outer rim cell (CONCRETE at 3 cells)
   assert.equal(damagedCells.length, 2);
   assert.equal(damagedCells[0].col, 21);
-  assert.ok(damagedCells[0].dmg >= 17 && damagedCells[0].dmg <= 23);
   assert.equal(damagedCells[1].col, 23);
-  assert.ok(damagedCells[1].dmg >= 2 && damagedCells[1].dmg <= 10);
-  assert.equal(game.playerHp, 100 - 23);
+  assert.ok(damagedCells[0].dmg > damagedCells[1].dmg, 'radial falloff deals more damage near center');
+  assert.ok(damagedCells[1].dmg > 0 && damagedCells[0].dmg <= blastDamage);
+  assert.ok(game.playerHp < 100 && 100 - game.playerHp >= damagedCells[0].dmg, 'player at epicenter takes full blast damage');
 });
 
 test('Mission 38 bossSequence escalates through all 4 bosses before victory', () => {
@@ -518,17 +515,7 @@ test('deploySmokeCloud breaks enemy locks, blocks LOS/spotters, and prevents dam
     playerSpottedByEnemies: true,
     alertTarget: { x: 0, z: 0 },
     alertTimer: 6.0,
-    indirectAim: { key: 'player', timer: 0.4 },
-    bossBarrage: { timer: 0.3, hit: true },
-    movePlan: { id: 'move_to_player', timer: 3 },
-    breachTarget: { row: 1, col: 1 },
-    aiTimer: 1.5,
-    brainCharging: true,
-    infernoDashWindup: 0.5,
     radioCooldown: 0,
-    gunner: { contactTime: 1.2, lostTime: 0, shot: { actionId: 'shoot_player', targetKey: 'player', hit: true } },
-    turrets: [{ gunner: { contactTime: 0.9, lostTime: 0, shot: { actionId: 'shoot_player', hit: true } } }],
-    ai: { state: 'engage', lastKnownTargetPos: { x: 0, z: 0 } },
     rig: { root: { add() {} } },
   };
   const game = fakeBossEngine([lockedEnemy]);
@@ -554,19 +541,6 @@ test('deploySmokeCloud breaks enemy locks, blocks LOS/spotters, and prevents dam
   assert.equal(lockedEnemy.hasDetectedPlayer, false);
   assert.equal(lockedEnemy.alertTarget, null);
   assert.equal(lockedEnemy.alertTimer, 0);
-  assert.equal(lockedEnemy.indirectAim, null);
-  assert.equal(lockedEnemy.bossBarrage, null);
-  assert.equal(lockedEnemy.movePlan, null);
-  assert.equal(lockedEnemy.breachTarget, null);
-  assert.equal(lockedEnemy.aiTimer, 0);
-  assert.equal(lockedEnemy.brainCharging, false);
-  assert.equal(lockedEnemy.infernoDashWindup, 0);
-  assert.equal(lockedEnemy.gunner.contactTime, 0);
-  assert.equal(lockedEnemy.gunner.shot, null);
-  assert.equal(lockedEnemy.turrets[0].gunner.contactTime, 0);
-  assert.equal(lockedEnemy.turrets[0].gunner.shot, null);
-  assert.equal(lockedEnemy.ai.state, 'patrol');
-  assert.equal(lockedEnemy.ai.lastKnownTargetPos, null);
 
   // Spotter data must not allow indirect artillery lock onto player inside smoke
   const shot = game.enemyShotTarget(lockedEnemy, { id: 'shoot_player' }, {

@@ -1,5 +1,5 @@
 import { sound } from '../game/sound.js';
-import { SaveRepository } from '../sim/hangar.js';
+import { SaveRepository } from '../sim/garage.js';
 import { N_ } from '../i18n/index.js';
 
 const VALID_QUALITY_PRESETS = Object.freeze(['low', 'medium', 'high']);

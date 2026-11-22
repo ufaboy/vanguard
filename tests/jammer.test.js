@@ -116,7 +116,7 @@ test('Player cannot launch an ATGM from inside the 5-cell jammer bubble', () => 
     missileCooldown: 0,
     playerX: 0,
     playerZ: 0,
-    enemies: [{ id: 1, hp: 20, enemyClass: EnemyClass.JAMMER, x: 4, z: 0 }],
+    enemies: [{ id: 1, hp: 20, enemyClass: EnemyClass.JAMMER, x: JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE * 0.4, z: 0 }],
     setStatusBanner(text) { banners.push(text); },
   });
   game.firePlayerHomingMissile();
@@ -176,7 +176,7 @@ test('In-flight player ATGM gets jammed within 5 cells of JAMMER and detonates a
     projectiles: [
       {
         x: 0,
-        z: 5, // 5 world units (2.5 cells) from jammer -> inside 5-cell radius
+        z: jammerZ - JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE * 0.5, // inside jammer system radius
         vx: 0,
         vz: 16,
         speed: 16,
