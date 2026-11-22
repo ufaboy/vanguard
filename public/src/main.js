@@ -1,5 +1,5 @@
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
-import { CONTRACT_IDS, PAGE_PATHS, battlefieldUrl } from './app/routes.js';
+import { CONTRACT_IDS, PAGE_PATHS, battlefieldUrl, resolveBattlefieldMission } from './app/routes.js';
 import { attachSettingsModal } from './app/shell.js';
 import {
   CAMERA_LABELS,
@@ -419,7 +419,7 @@ function initApp() {
           prevDefeatCinematics !== Boolean(snapshot.defeatCinematicsActive) ||
           prevVictoryCinematics !== Boolean(snapshot.victoryCinematicsActive)
       );
-    }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated });
+    }, { quality: state.graphicsQuality, fpsCap: state.fpsCap, pregenerated, deferInitialLoad: true });
     engine.applyUpgrades(state.upgrades);
     engine.setCameraPreset(state.cameraPreset);
     engine.setMissileFpvEnabled(state.missileFpvEnabled);
@@ -434,6 +434,20 @@ function initApp() {
     renderUI(true);
     resolveEngineReady();
   };
+  // Warm up critical GLB files in parallel while texture-worker generates procedural maps.
+  for (const href of [
+    './models/tank_player.glb',
+    './models/terrain/brick.glb',
+    './models/terrain/concrete.glb',
+    './models/terrain/buildings.glb',
+  ]) {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'fetch';
+    link.crossOrigin = 'anonymous';
+    link.href = href;
+    document.head.appendChild(link);
+  }
   pregenerateTextures().then(createEngine);
 
   window.addEventListener('keydown', (e) => {
@@ -538,61 +552,18 @@ function routeFromState() {
 }
 
 function battlefieldUrlForSector(sector) {
-  if (sector.gameMode === 'survival') return battlefieldUrl({ mode: 'survival' });
-  if (isContractMap(sector)) {
-    return battlefieldUrl({ mode: 'contract', id: sector.contractId || sector.mapId });
-  }
-  return battlefieldUrl({ mode: 'campaign', mission: sector.mapId });
+  return battlefieldUrl(sector.mapId);
 }
 
 function resolveBattlefieldTarget() {
-  const params = new URLSearchParams(location.search);
-  const mode = params.get('mode') || '';
-  const mission = params.get('mission') || '';
-  const id = params.get('id') || '';
-  const sectorParam = params.get('sector');
   const completedMissions =
     state.hud?.playerSave?.completedMissions || loadPlayerSave()?.completedMissions || {};
-
-  if (mode === 'survival') {
-    const idx = SECTORS.findIndex(
-      (sector) => sector.gameMode === 'survival' || sector.mapId === 'survival-paris-last-stand'
-    );
-    return idx >= 0 ? { index: idx } : { redirect: PAGE_PATHS.survival };
-  }
-
-  if (mode === 'contract' || (!mode && id)) {
-    const idx = SECTORS.findIndex(
-      (sector) => isContractMap(sector) && (sector.contractId === id || sector.mapId === id)
-    );
-    return idx >= 0 ? { index: idx } : { redirect: PAGE_PATHS.contracts };
-  }
-
-  if (mode === 'campaign' || (!mode && mission)) {
-    const idx = SECTORS.findIndex(
-      (sector) =>
-        sector.mapId === mission && !isContractMap(sector) && sector.gameMode !== 'survival'
-    );
-    if (idx < 0 || !isCampaignMissionUnlocked(mission, completedMissions)) {
-      return { redirect: PAGE_PATHS.campaign };
-    }
-    return { index: idx };
-  }
-
-  if (sectorParam !== null && sectorParam !== '') {
-    const idx = Number.parseInt(sectorParam, 10);
-    const targetSector = Number.isInteger(idx) ? SECTORS[idx] : null;
-    if (
-      targetSector &&
-      (isContractMap(targetSector) ||
-        targetSector.gameMode === 'survival' ||
-        isCampaignMissionUnlocked(targetSector.mapId, completedMissions))
-    ) {
-      return { index: idx };
-    }
-  }
-
-  return { redirect: PAGE_PATHS.campaign };
+  return resolveBattlefieldMission(location.search, {
+    sectors: SECTORS,
+    isContractMap,
+    isCampaignMissionUnlocked,
+    completedMissions,
+  });
 }
 
 function applyRoute(route) {
@@ -709,6 +680,11 @@ async function startSector(sectorIndex) {
     engine?.setInspectMode(false);
     await engine?.waitForSectorModels?.(sectorIndex);
     engine?.startSector(sectorIndex);
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(() => engine?.airSupportController?.preloadGlbModels?.(), { timeout: 3500 });
+    } else {
+      setTimeout(() => engine?.airSupportController?.preloadGlbModels?.(), 2500);
+    }
     missionStartedAt = performance.now();
     syncCampaignProgressProperty();
     if (!gameReadyTracked && document.body?.dataset?.page === 'battlefield') {

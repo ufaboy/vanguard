@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { t } from '../../i18n/index.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { determineHitAspect } from '../../sim/ballistics.js';
@@ -16,6 +15,7 @@ import {
 } from '../constants.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { disposeOwned, markOwned } from '../render/dispose.js';
+import { getSharedGltfLoader } from '../render/gltf-loader.js';
 import { sound } from '../sound.js';
 import { GameStatus, TileType } from '../types.js';
 import { AIRCRAFT_CONFIGS } from '../vehicles/aircraft.js';
@@ -54,8 +54,6 @@ const AIR_GLB_URLS = Object.freeze({
   repairDrone: DRONE_CONFIGS.REPAIR_DRONE.modelUrl,
 });
 
-let airGltfLoader = null;
-
 /**
  * Manages tactical Air Support calls (Air Strike, Air Repair, Air Mines, Air Drop),
  * paused map-targeting UI state, and active airborne entities.
@@ -65,7 +63,6 @@ export class AirSupportController {
     this.engine = engine;
     this.glbCache = new Map();
     this.glbRequested = new Set();
-    this.preloadGlbModels();
   }
 
   preloadGlbModels() {
@@ -77,12 +74,12 @@ export class AirSupportController {
     ) {
       return;
     }
-    airGltfLoader ||= new GLTFLoader();
+    const loader = getSharedGltfLoader(this.engine?.renderer);
     for (const [key, relPath] of Object.entries(AIR_GLB_URLS)) {
       if (this.glbRequested.has(key) || this.glbCache.has(key)) continue;
       this.glbRequested.add(key);
       const url = document.baseURI ? new URL(relPath, document.baseURI).href : relPath;
-      airGltfLoader.load(
+      loader.load(
         url,
         (gltf) => {
           if (gltf?.scene) {
@@ -97,7 +94,10 @@ export class AirSupportController {
 
   cloneGlbRig(key) {
     const template = this.glbCache.get(key);
-    if (!template) return null;
+    if (!template) {
+      this.preloadGlbModels();
+      return null;
+    }
     const clone = template.clone(true);
     const rotors = [];
     const propellers = [];
@@ -105,18 +105,11 @@ export class AirSupportController {
       if (node.name?.startsWith('Rotor_')) rotors.push(node);
       if (node.name?.startsWith('Propeller_')) propellers.push(node);
       if (!node.isMesh) return;
-      if (node.geometry) node.geometry = node.geometry.clone();
-      if (Array.isArray(node.material)) {
-        node.material = node.material.map((m) => m.clone());
-      } else if (node.material) {
-        node.material = node.material.clone();
-      }
       node.castShadow = true;
       node.receiveShadow = true;
     });
     if (rotors.length) clone.userData.rotors = rotors;
     if (propellers.length) clone.userData.propellers = propellers;
-    markOwned(clone);
     return clone;
   }
 
@@ -1166,8 +1159,14 @@ export class AirSupportController {
       }
     }
     const candidates = [];
-    for (let r = 0; r < GRID_SIZE; r++) {
-      for (let c = 0; c < GRID_SIZE; c++) {
+    const minG = engine.worldToGrid(zoneX - radius, zoneZ - radius);
+    const maxG = engine.worldToGrid(zoneX + radius, zoneZ + radius);
+    const minRow = Math.max(0, minG.row - 1);
+    const maxRow = Math.min(GRID_SIZE - 1, maxG.row + 1);
+    const minCol = Math.max(0, minG.col - 1);
+    const maxCol = Math.min(GRID_SIZE - 1, maxG.col + 1);
+    for (let r = minRow; r <= maxRow; r++) {
+      for (let c = minCol; c <= maxCol; c++) {
         const cell = engine.grid?.[r]?.[c];
         if (!cell || !AC130_DESTRUCTIBLE_TILES.has(cell.type)) continue;
         const pos = engine.gridToWorld(r, c);
@@ -1498,5 +1497,31 @@ export class AirSupportController {
       this.disposeMissionVisuals(m);
     }
     engine.airSupportMissions = [];
+  }
+
+  dispose() {
+    this.clear();
+    const disposedMats = new Set();
+    const disposedTex = new Set();
+    for (const scene of this.glbCache.values()) {
+      scene.traverse((node) => {
+        if (!node.isMesh) return;
+        node.geometry?.dispose?.();
+        const mats = Array.isArray(node.material) ? node.material : [node.material];
+        for (const mat of mats) {
+          if (!mat || disposedMats.has(mat)) continue;
+          disposedMats.add(mat);
+          for (const val of Object.values(mat)) {
+            if (val?.isTexture && !disposedTex.has(val)) {
+              disposedTex.add(val);
+              val.dispose();
+            }
+          }
+          mat.dispose();
+        }
+      });
+    }
+    this.glbCache.clear();
+    this.glbRequested.clear();
   }
 }

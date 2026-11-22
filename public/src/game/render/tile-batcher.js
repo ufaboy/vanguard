@@ -101,8 +101,17 @@ export class TileBatcher {
       this.dirty.clear();
     }
 
-    for (const batch of this.batches.values()) {
+    for (const [key, batch] of this.batches) {
       if (!batch.needsUpload) continue;
+      if (batch.used === 0) {
+        this.root.remove(batch.mesh);
+        batch.mesh.dispose();
+        batch.geometry.dispose();
+        const mats = Array.isArray(batch.material) ? batch.material : [batch.material];
+        mats.forEach((m) => m.dispose());
+        this.batches.delete(key);
+        continue;
+      }
       batch.needsUpload = false;
       batch.mesh.count = batch.used;
       batch.mesh.instanceMatrix.needsUpdate = true;

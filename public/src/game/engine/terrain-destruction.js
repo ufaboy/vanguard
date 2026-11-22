@@ -691,14 +691,28 @@ export class TerrainDestructionController {
   igniteOilAt(x, z, radius = TILE_SIZE * 0.9) {
     const { engine } = this;
     if (!engine.grid?.length) return;
-    for (let r = 0; r < engine.grid.length; r++) {
+    const searchSpan = radius + 0.5;
+    let minRow = 0;
+    let maxRow = engine.grid.length - 1;
+    let minCol = 0;
+    let maxColBound = Infinity;
+    if (typeof engine.worldToGrid === 'function') {
+      const minG = engine.worldToGrid(x - searchSpan, z - searchSpan);
+      const maxG = engine.worldToGrid(x + searchSpan, z + searchSpan);
+      minRow = Math.max(0, minG.row - 1);
+      maxRow = Math.min(engine.grid.length - 1, maxG.row + 1);
+      minCol = Math.max(0, minG.col - 1);
+      maxColBound = maxG.col + 1;
+    }
+    for (let r = minRow; r <= maxRow; r++) {
       const row = engine.grid[r];
       if (!row) continue;
-      for (let c = 0; c < row.length; c++) {
+      const maxCol = Math.min(row.length - 1, maxColBound);
+      for (let c = minCol; c <= maxCol; c++) {
         const cell = row[c];
         if (!cell || (cell.surface !== TileType.OIL_SLICK && cell.type !== TileType.OIL_SLICK) || cell.isBurning) continue;
         const pos = engine.gridToWorld(r, c);
-        if (Math.hypot(pos.x - x, pos.z - z) <= radius + 0.5) {
+        if (Math.hypot(pos.x - x, pos.z - z) <= searchSpan) {
           this.igniteOilSlick(cell);
         }
       }

@@ -1,12 +1,10 @@
 /** 3D procedural meshes, texture application, and tank rigs. */
 
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { APS, POWERUP, POWERUP_TYPES } from '../constants.js';
 import { disposeOwned, markMaterialOwned, markOwned } from './dispose.js';
+import { getSharedGltfLoader, resolvePublicUrl } from './gltf-loader.js';
 import { createPowerUpEmblemCanvas, POWERUP_FAMILY } from '../icons.js';
 import { EnemyClass } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
@@ -337,23 +335,8 @@ function setPartActive(group, active) {
   }
 }
 
-let tankGltfLoader = null;
-const PUBLIC_ROOT_URL = new URL('../../../', import.meta.url).href;
-function resolvePublicUrl(relPath) {
-  return new URL(relPath, PUBLIC_ROOT_URL).href;
-}
 function getTankGltfLoader(renderer) {
-  if (!tankGltfLoader) {
-    const draco = new DRACOLoader();
-    draco.setDecoderPath(resolvePublicUrl('./vendor/three/examples/jsm/libs/draco/gltf/'));
-    const ktx2 = new KTX2Loader();
-    ktx2.setTranscoderPath(resolvePublicUrl('./vendor/three/examples/jsm/libs/basis/'));
-    ktx2.detectSupport(renderer);
-    tankGltfLoader = new GLTFLoader();
-    tankGltfLoader.setDRACOLoader(draco);
-    tankGltfLoader.setKTX2Loader(ktx2);
-  }
-  return tankGltfLoader;
+  return getSharedGltfLoader(renderer);
 }
 
 export class ModelFactory extends TextureGenerator {
@@ -390,18 +373,18 @@ export class ModelFactory extends TextureGenerator {
       top.bumpScale *= hp / 4;
       this.brickDamageMaterials.set(hp, [side, side, top, side, side, side]);
     }
-    this.brickModels = new BrickModels();
-    this.landmarkModels = new LandmarkModels();
+    this.brickModels = new BrickModels(renderer);
+    this.landmarkModels = new LandmarkModels(renderer);
     this.useBlenderBricks = !isSoftwareGl;
     this.brickModelsPromise = this.useBlenderBricks
       ? this.loadTileModels(this.brickModels, () => this.onBrickModelsReady?.())
       : Promise.resolve(false);
-    this.concreteModels = new ConcreteModels();
+    this.concreteModels = new ConcreteModels(renderer);
     this.useBlenderConcrete = !isSoftwareGl;
     this.concreteModelsPromise = this.useBlenderConcrete
       ? this.loadTileModels(this.concreteModels, () => this.onConcreteModelsReady?.())
       : Promise.resolve(false);
-    this.buildingModels = new BuildingModels();
+    this.buildingModels = new BuildingModels(renderer);
     this.useBlenderBuildings = !isSoftwareGl;
     this.buildingModelsPromise = this.useBlenderBuildings
       ? this.loadTileModels(this.buildingModels, () => this.onBuildingModelsReady?.())
@@ -860,8 +843,12 @@ export class ModelFactory extends TextureGenerator {
     barrelPivot.add(wrap(parts.gun, -gunY, -gunZ));
     muzzleFlash.position.set(0, ((cfg.muzzleY ?? cfg.gunY) - cfg.gunY) * s, cfg.muzzleX * s - gunZ);
     rig.radarDish = turretWrap.children.find((m) => m.name === 'Turret_Dish') || null;
-    if (stealthMaterials && rig.stealthMaterials) {
-      rig.stealthMaterials.splice(0, rig.stealthMaterials.length, ...stealthMaterials);
+    if (stealthMaterials) {
+      if (rig.stealthMaterials) {
+        rig.stealthMaterials.splice(0, rig.stealthMaterials.length, ...stealthMaterials);
+      } else {
+        rig.stealthMaterials = stealthMaterials;
+      }
     }
     rig.fadeMaterials = fadeMaterials;
     rig.muzzleDist = cfg.muzzleX * s;
@@ -1221,7 +1208,7 @@ export class ModelFactory extends TextureGenerator {
    * Visually indicates that the tank asset is actively loading via glowing cyan wireframe edges,
    * a translucent cybernetic hull, ground calibration ring, and a floating "LOADING..." badge.
    */
-  createLoadingTankRig({ isPlayer = false, enemyClass = null } = {}) {
+  createLoadingTankRig({ isPlayer = false, enemyClass = null, skeletonOnly = false } = {}) {
     const root = new THREE.Group();
     const hull = new THREE.Group();
     const turret = new THREE.Group();
@@ -1254,101 +1241,119 @@ export class ModelFactory extends TextureGenerator {
     shadowMesh.position.y = 0.02;
     root.add(shadowMesh);
 
-    // Glowing ground calibration ring (holographic projection pad)
-    const ringGeo = new THREE.RingGeometry(0.85 * scale, 0.95 * scale, 32);
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      transparent: true,
-      opacity: 0.65,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    });
-    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.rotation.x = -Math.PI / 2;
-    ringMesh.position.y = 0.025;
-    hull.add(ringMesh);
+    let addHoloBox = null;
+    let addHoloCylinder = null;
+    let badgeTex = null;
+    let holoStealthMaterials = null;
+    let holoFadeMaterials = null;
 
-    // Holographic cyber materials
-    const holoMat = new THREE.MeshStandardMaterial({
-      map: this.tankArmorTex,
-      color: 0x0f2b3c,
-      roughness: 0.35,
-      metalness: 0.7,
-      transparent: true,
-      opacity: 0.58,
-      emissive: 0x0284c7,
-      emissiveIntensity: 0.35,
-    });
-    const trackMat = new THREE.MeshStandardMaterial({
-      map: this.trackTreadTex,
-      color: 0x091e2f,
-      roughness: 0.45,
-      metalness: 0.6,
-      transparent: true,
-      opacity: 0.65,
-      emissive: 0x0284c7,
-      emissiveIntensity: 0.25,
-    });
-    const wireMat = new THREE.LineBasicMaterial({
-      color: 0x38bdf8,
-      transparent: true,
-      opacity: 0.85,
-    });
+    if (!skeletonOnly) {
+      // Glowing ground calibration ring (holographic projection pad)
+      const ringGeo = new THREE.RingGeometry(0.85 * scale, 0.95 * scale, 32);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.65,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      });
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+      ringMesh.rotation.x = -Math.PI / 2;
+      ringMesh.position.y = 0.025;
+      hull.add(ringMesh);
 
-    const addHoloBox = (parent, w, h, d, x = 0, y = 0, z = 0, rx = 0, mat = holoMat) => {
-      const geo = new THREE.BoxGeometry(w, h, d);
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.set(x, y, z);
-      if (rx) mesh.rotation.x = rx;
-      mesh.castShadow = true;
-      parent.add(mesh);
-      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), wireMat);
-      mesh.add(edges);
-      return mesh;
-    };
+      // Holographic cyber materials
+      const holoMat = new THREE.MeshStandardMaterial({
+        map: this.tankArmorTex,
+        color: 0x0f2b3c,
+        roughness: 0.35,
+        metalness: 0.7,
+        transparent: true,
+        opacity: 0.58,
+        emissive: 0x0284c7,
+        emissiveIntensity: 0.35,
+      });
+      const trackMat = new THREE.MeshStandardMaterial({
+        map: this.trackTreadTex,
+        color: 0x091e2f,
+        roughness: 0.45,
+        metalness: 0.6,
+        transparent: true,
+        opacity: 0.65,
+        emissive: 0x0284c7,
+        emissiveIntensity: 0.25,
+      });
+      const wireMat = new THREE.LineBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.85,
+      });
+      if (!isPlayer) {
+        holoFadeMaterials = [holoMat, trackMat];
+        if (enemyClass === EnemyClass.STEALTH) {
+          holoStealthMaterials = [holoMat, trackMat, ringMat, wireMat];
+        }
+      }
 
-    const addHoloCylinder = (parent, rt, rb, h, segs, x = 0, y = 0, z = 0, rx = 0) => {
-      const geo = new THREE.CylinderGeometry(rt, rb, h, segs);
-      const mesh = new THREE.Mesh(geo, holoMat);
-      mesh.position.set(x, y, z);
-      if (rx) mesh.rotation.x = rx;
-      mesh.castShadow = true;
-      parent.add(mesh);
-      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), wireMat);
-      mesh.add(edges);
-      return mesh;
-    };
+      addHoloBox = (parent, w, h, d, x = 0, y = 0, z = 0, rx = 0, mat = holoMat) => {
+        const geo = new THREE.BoxGeometry(w, h, d);
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(x, y, z);
+        if (rx) mesh.rotation.x = rx;
+        mesh.castShadow = true;
+        parent.add(mesh);
+        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), wireMat);
+        mesh.add(edges);
+        return mesh;
+      };
 
-    // Hull & tracks
-    addHoloBox(hull, 1.15 * scale, 0.36 * scale, 1.8 * scale, 0, 0.28 * scale, 0);
-    addHoloBox(hull, 1.05 * scale, 0.22 * scale, 0.6 * scale, 0, 0.2 * scale, 0.95 * scale, -0.35);
-    addHoloBox(hull, 0.32 * scale, 0.38 * scale, 2.1 * scale, -0.72 * scale, 0.22 * scale, 0, 0, trackMat);
-    addHoloBox(hull, 0.32 * scale, 0.38 * scale, 2.1 * scale, 0.72 * scale, 0.22 * scale, 0, 0, trackMat);
+      addHoloCylinder = (parent, rt, rb, h, segs, x = 0, y = 0, z = 0, rx = 0) => {
+        const geo = new THREE.CylinderGeometry(rt, rb, h, segs);
+        const mesh = new THREE.Mesh(geo, holoMat);
+        mesh.position.set(x, y, z);
+        if (rx) mesh.rotation.x = rx;
+        mesh.castShadow = true;
+        parent.add(mesh);
+        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), wireMat);
+        mesh.add(edges);
+        return mesh;
+      };
+
+      // Hull & tracks
+      addHoloBox(hull, 1.15 * scale, 0.36 * scale, 1.8 * scale, 0, 0.28 * scale, 0);
+      addHoloBox(hull, 1.05 * scale, 0.22 * scale, 0.6 * scale, 0, 0.2 * scale, 0.95 * scale, -0.35);
+      addHoloBox(hull, 0.32 * scale, 0.38 * scale, 2.1 * scale, -0.72 * scale, 0.22 * scale, 0, 0, trackMat);
+      addHoloBox(hull, 0.32 * scale, 0.38 * scale, 2.1 * scale, 0.72 * scale, 0.22 * scale, 0, 0, trackMat);
+    }
     root.add(hull);
 
     // Turret & Gun Barrel
     turret.position.set(0, 0.46 * scale, 0);
-    addHoloBox(turret, 0.8 * scale, 0.32 * scale, 1.05 * scale, 0, 0.16 * scale, 0);
-    addHoloBox(turret, 0.52 * scale, 0.24 * scale, 0.35 * scale, 0, 0.14 * scale, 0.55 * scale);
+    if (!skeletonOnly) {
+      addHoloBox(turret, 0.8 * scale, 0.32 * scale, 1.05 * scale, 0, 0.16 * scale, 0);
+      addHoloBox(turret, 0.52 * scale, 0.24 * scale, 0.35 * scale, 0, 0.14 * scale, 0.55 * scale);
 
-    // Floating Holographic "LOADING..." Badge on turret
-    const badgeTex = this.getLoadingBadgeTexture();
-    if (badgeTex) {
-      const badgeMat = new THREE.SpriteMaterial({
-        map: badgeTex,
-        transparent: true,
-        opacity: 0.9,
-        depthTest: false,
-      });
-      const badge = new THREE.Sprite(badgeMat);
-      badge.scale.set(1.4 * scale, 0.35 * scale, 1);
-      badge.position.set(0, 0.82 * scale, 0);
-      turret.add(badge);
+      // Floating Holographic "LOADING..." Badge on turret
+      badgeTex = this.getLoadingBadgeTexture();
+      if (badgeTex) {
+        const badgeMat = new THREE.SpriteMaterial({
+          map: badgeTex,
+          transparent: true,
+          opacity: 0.9,
+          depthTest: false,
+        });
+        const badge = new THREE.Sprite(badgeMat);
+        badge.scale.set(1.4 * scale, 0.35 * scale, 1);
+        badge.position.set(0, 0.82 * scale, 0);
+        turret.add(badge);
+      }
     }
 
     barrelPivot.position.set(0, 0.14 * scale, 0.55 * scale);
-    addHoloCylinder(barrelPivot, 0.06 * scale, 0.075 * scale, 1.25 * scale, 12, 0, 0, 0.65 * scale, Math.PI / 2);
-    addHoloCylinder(barrelPivot, 0.095 * scale, 0.095 * scale, 0.18 * scale, 12, 0, 0, 1.28 * scale, Math.PI / 2);
+    if (!skeletonOnly) {
+      addHoloCylinder(barrelPivot, 0.06 * scale, 0.075 * scale, 1.25 * scale, 12, 0, 0, 0.65 * scale, Math.PI / 2);
+      addHoloCylinder(barrelPivot, 0.095 * scale, 0.095 * scale, 0.18 * scale, 12, 0, 0, 1.28 * scale, Math.PI / 2);
+    }
 
     const flashMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
@@ -1403,26 +1408,30 @@ export class ModelFactory extends TextureGenerator {
         const rearTurret = new THREE.Group();
         rearTurret.position.set(0, 0.46 * scale, rearPivotZ);
         rearTurret.rotation.y = Math.PI;
-        addHoloBox(rearTurret, 0.8 * scale, 0.32 * scale, 1.05 * scale, 0, 0.16 * scale, 0);
-        addHoloBox(rearTurret, 0.52 * scale, 0.24 * scale, 0.35 * scale, 0, 0.14 * scale, 0.55 * scale);
+        if (!skeletonOnly) {
+          addHoloBox(rearTurret, 0.8 * scale, 0.32 * scale, 1.05 * scale, 0, 0.16 * scale, 0);
+          addHoloBox(rearTurret, 0.52 * scale, 0.24 * scale, 0.35 * scale, 0, 0.14 * scale, 0.55 * scale);
 
-        if (badgeTex) {
-          const rearBadgeMat = new THREE.SpriteMaterial({
-            map: badgeTex,
-            transparent: true,
-            opacity: 0.9,
-            depthTest: false,
-          });
-          const rearBadge = new THREE.Sprite(rearBadgeMat);
-          rearBadge.scale.set(1.4 * scale, 0.35 * scale, 1);
-          rearBadge.position.set(0, 0.82 * scale, 0);
-          rearTurret.add(rearBadge);
+          if (badgeTex) {
+            const rearBadgeMat = new THREE.SpriteMaterial({
+              map: badgeTex,
+              transparent: true,
+              opacity: 0.9,
+              depthTest: false,
+            });
+            const rearBadge = new THREE.Sprite(rearBadgeMat);
+            rearBadge.scale.set(1.4 * scale, 0.35 * scale, 1);
+            rearBadge.position.set(0, 0.82 * scale, 0);
+            rearTurret.add(rearBadge);
+          }
         }
 
         const rearBarrelPivot = new THREE.Group();
         rearBarrelPivot.position.set(0, 0.14 * scale, 0.55 * scale);
-        addHoloCylinder(rearBarrelPivot, 0.06 * scale, 0.075 * scale, 1.25 * scale, 12, 0, 0, 0.65 * scale, Math.PI / 2);
-        addHoloCylinder(rearBarrelPivot, 0.095 * scale, 0.095 * scale, 0.18 * scale, 12, 0, 0, 1.28 * scale, Math.PI / 2);
+        if (!skeletonOnly) {
+          addHoloCylinder(rearBarrelPivot, 0.06 * scale, 0.075 * scale, 1.25 * scale, 12, 0, 0, 0.65 * scale, Math.PI / 2);
+          addHoloCylinder(rearBarrelPivot, 0.095 * scale, 0.095 * scale, 0.18 * scale, 12, 0, 0, 1.28 * scale, Math.PI / 2);
+        }
 
         const rearFlash = new THREE.Mesh(new THREE.SphereGeometry(0.22 * scale, 8, 8), flashMat);
         rearFlash.visible = false;
@@ -1488,8 +1497,8 @@ export class ModelFactory extends TextureGenerator {
       hpBarBg,
       hpBarFill,
       radarDish: null,
-      stealthMaterials: null,
-      fadeMaterials: null,
+      stealthMaterials: holoStealthMaterials,
+      fadeMaterials: holoFadeMaterials,
       muzzleDist: barrelPivot.position.z + muzzleFlash.position.z,
       missileMounts: null,
       clearanceSources: [],
@@ -1514,9 +1523,10 @@ export class ModelFactory extends TextureGenerator {
    * Creates a player tank rig. While the player GLB is loading, uses the lightweight holographic loading proxy.
    */
   createPlayerTank() {
-    const rig = this.createLoadingTankRig({ isPlayer: true });
+    const hasGlb = Boolean(this.playerGlbParts);
+    const rig = this.createLoadingTankRig({ isPlayer: true, skeletonOnly: hasGlb });
     markOwned(rig.root);
-    if (this.playerGlbParts) {
+    if (hasGlb) {
       this.applyPlayerGlb(rig);
     } else if (!this.isSoftwareGl) {
       this.pendingPlayerRigs.push(rig);
@@ -1617,9 +1627,10 @@ export class ModelFactory extends TextureGenerator {
    * Creates an enemy tank rig. While the enemy GLB is loading, uses the lightweight holographic loading proxy.
    */
   createEnemyTank(enemyClass) {
-    const rig = this.createLoadingTankRig({ isPlayer: false, enemyClass });
+    const hasGlb = this.glbTankParts.has(enemyClass);
+    const rig = this.createLoadingTankRig({ isPlayer: false, enemyClass, skeletonOnly: hasGlb });
     markOwned(rig.root);
-    if (this.glbTankParts.has(enemyClass)) {
+    if (hasGlb) {
       this.applyGlbTankModel(enemyClass, rig);
     } else if (!this.isSoftwareGl && GLB_TANK_MODELS[enemyClass]) {
       const pending = this.pendingEnemyRigs.get(enemyClass) || [];
@@ -2278,6 +2289,38 @@ export class ModelFactory extends TextureGenerator {
     return geometry;
   }
 
+  getContractBadgeTexture(prefix, slot, code, accentHex) {
+    this.contractBadgeTexCache ||= new Map();
+    const key = `${prefix}:${slot}:${code}:${accentHex}`;
+    if (this.contractBadgeTexCache.has(key)) return this.contractBadgeTexCache.get(key);
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.clearRect(0, 0, 128, 128);
+      ctx.fillStyle = 'rgba(11, 15, 23, 0.92)';
+      ctx.beginPath();
+      ctx.arc(64, 64, 52, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = accentHex;
+      ctx.stroke();
+
+      ctx.fillStyle = accentHex;
+      ctx.font = prefix === 'DATA' ? 'bold 44px monospace' : 'bold 42px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${slot}${slot === 3 ? '★' : ''}`, 64, prefix === 'DATA' ? 56 : 54);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = prefix === 'DATA' ? 'bold 20px monospace' : 'bold 19px monospace';
+      ctx.fillText(`${prefix} ${code}`, 64, 92);
+    }
+    const tex = new THREE.CanvasTexture(canvas);
+    this.contractBadgeTexCache.set(key, tex);
+    return tex;
+  }
+
   clearPendingRigs() {
     this.pendingPlayerRigs.length = 0;
     this.pendingEnemyRigs.clear();
@@ -2286,36 +2329,139 @@ export class ModelFactory extends TextureGenerator {
 
   dispose() {
     this.clearPendingRigs();
-    if (this.geometryCache) {
-      for (const geo of this.geometryCache.values()) geo?.dispose?.();
-      this.geometryCache.clear();
-    }
-    this.craterRimGeo?.dispose?.();
-    if (this.craterMats) {
-      for (const mat of Object.values(this.craterMats)) mat?.dispose?.();
-    }
-    const disposeTexBag = (bag) => {
-      if (!bag) return;
-      if (bag.isTexture) {
-        bag.dispose();
-      } else if (typeof bag === 'object') {
-        for (const val of Object.values(bag)) {
-          if (val?.isTexture) val.dispose();
-        }
+    const disposedGeos = new Set();
+    const disposedMats = new Set();
+    const disposedTex = new Set();
+    const disposeGeo = (geo) => {
+      if (!geo || disposedGeos.has(geo)) return;
+      disposedGeos.add(geo);
+      geo.dispose?.();
+    };
+    const disposeTex = (tex) => {
+      if (!tex || !tex.isTexture || disposedTex.has(tex)) return;
+      disposedTex.add(tex);
+      tex.dispose?.();
+    };
+    const disposeMat = (mat) => {
+      if (!mat) return;
+      if (Array.isArray(mat)) {
+        mat.forEach(disposeMat);
+        return;
+      }
+      if (!mat.isMaterial || disposedMats.has(mat)) return;
+      disposedMats.add(mat);
+      for (const val of Object.values(mat)) {
+        if (val?.isTexture) disposeTex(val);
+      }
+      mat.dispose?.();
+    };
+    const disposeMeshList = (list) => {
+      if (!Array.isArray(list)) return;
+      for (const m of list) {
+        if (!m) continue;
+        disposeGeo(m.geometry);
+        disposeMat(m.material);
       }
     };
-    disposeTexBag(this.brickTex);
-    disposeTexBag(this.concreteTex);
-    disposeTexBag(this.groundTex);
-    disposeTexBag(this.iceTex);
-    disposeTexBag(this.waterTex);
-    disposeTexBag(this.shadowTex);
-    disposeTexBag(this.tankArmorTex);
-    disposeTexBag(this.trackTreadTex);
-    if (this.powerUpTexCache) {
-      for (const tex of this.powerUpTexCache.values()) tex?.dispose?.();
-      this.powerUpTexCache.clear();
+    const disposeBag = (bag) => {
+      if (!bag) return;
+      if (bag.isTexture) {
+        disposeTex(bag);
+      } else if (bag.isMaterial) {
+        disposeMat(bag);
+      } else if (bag.isBufferGeometry) {
+        disposeGeo(bag);
+      } else if (Array.isArray(bag)) {
+        bag.forEach(disposeBag);
+      } else if (bag instanceof Map) {
+        for (const val of bag.values()) disposeBag(val);
+        bag.clear();
+      } else if (typeof bag === 'object') {
+        for (const val of Object.values(bag)) disposeBag(val);
+      }
+    };
+
+    if (this.geometryCache) {
+      for (const geo of this.geometryCache.values()) disposeGeo(geo);
+      this.geometryCache.clear();
     }
+    disposeGeo(this.surfacePatchGeometry);
+    this.surfacePatchGeometry = null;
+    disposeGeo(this.craterRimGeo);
+    this.craterRimGeo = null;
+
+    if (this.playerGlbParts) {
+      for (const mesh of this.playerGlbParts.values()) {
+        disposeGeo(mesh?.geometry);
+        disposeMat(mesh?.material);
+      }
+      this.playerGlbParts.clear();
+      this.playerGlbParts = null;
+    }
+    if (this.glbTankParts) {
+      for (const parts of this.glbTankParts.values()) {
+        disposeMeshList(parts?.hull);
+        disposeMeshList(parts?.turret);
+        disposeMeshList(parts?.gun);
+        if (Array.isArray(parts?.turrets)) {
+          for (const t of parts.turrets) {
+            disposeMeshList(t?.turret);
+            disposeMeshList(t?.gun);
+          }
+        }
+      }
+      this.glbTankParts.clear();
+    }
+    if (this.glbTurretParts) {
+      for (const parts of this.glbTurretParts.values()) {
+        disposeMeshList(parts?.hull);
+        disposeMeshList(parts?.turret);
+        disposeMeshList(parts?.gun);
+      }
+      this.glbTurretParts.clear();
+    }
+    if (this.glbAirDropParts) {
+      disposeMeshList(this.glbAirDropParts.crate);
+      disposeMeshList(this.glbAirDropParts.chute);
+      this.glbAirDropParts = null;
+    }
+
+    disposeBag(this.craterMats);
+    disposeBag(this.hqMats);
+    disposeBag(this.enemyBaseMats);
+    disposeBag(this.forestMats);
+    disposeBag(this.concreteMats);
+    disposeBag(this.roadMats);
+    disposeBag(this.grassPatchMats);
+    disposeBag(this.stonePatchMats);
+    disposeBag(this.sandPatchMats);
+    disposeBag(this.swampPatchMats);
+    disposeBag(this.oilPatchMats);
+    disposeBag(this.oilFireBedMat);
+    disposeBag(this.oilFlameSheetMat);
+    disposeBag(this.oilBoilRingMat);
+    disposeBag(this.hedgehogMat);
+    disposeBag(this.barrelMats);
+    disposeBag(this.waterTowerMats);
+    disposeBag(this.themePropMats);
+    disposeBag(this.perimeterBuildingCatalog);
+    disposeBag(this.powerUpMatCache);
+    disposeBag(this.powerUpSpriteMatCache);
+    disposeBag(this.powerUpTexCache);
+    disposeBag(this.contractBadgeTexCache);
+    disposeTex(this._loadingBadgeTex);
+    this._loadingBadgeTex = null;
+    disposeTex(this.powerUpBeamTex);
+    this.powerUpBeamTex = null;
+
+    disposeBag(this.brickTex);
+    disposeBag(this.concreteTex);
+    disposeBag(this.groundTex);
+    disposeBag(this.iceTex);
+    disposeBag(this.waterTex);
+    disposeBag(this.shadowTex);
+    disposeBag(this.tankArmorTex);
+    disposeBag(this.trackTreadTex);
   }
 
   getForestMaterials() {
@@ -2557,7 +2703,7 @@ export class ModelFactory extends TextureGenerator {
       this.sandPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
         const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
         mask.channel = 1;
-        return new THREE.MeshStandardMaterial({
+        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
           map: sandTex,
           alphaMap: mask,
           transparent: true,
@@ -2568,31 +2714,10 @@ export class ModelFactory extends TextureGenerator {
           polygonOffset: true,
           polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
-        });
+        }));
       });
     }
-
-    const span = TILE_SIZE / SAND_PATCH_CELL_FRACTION;
-    const geometry = new THREE.PlaneGeometry(span, span);
-    geometry.setAttribute('uv1', geometry.attributes.uv.clone());
-    const pos = geometry.attributes.position;
-    const uv = geometry.attributes.uv;
-    const patternSpan = TILE_SIZE * SAND_PATTERN_CELLS;
-    for (let i = 0; i < pos.count; i++) {
-      // The plane is laid flat with rotation.x = -PI/2, so local +y points to world -z.
-      uv.setXY(i, (x + pos.getX(i)) / patternSpan, (z - pos.getY(i)) / patternSpan);
-    }
-
-    const cellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
-    const floor = new THREE.Mesh(geometry, this.sandPatchMats[cellHash % SAND_PATCH_VARIANTS]);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = 0.012;
-    floor.receiveShadow = true;
-
-    const group = new THREE.Group();
-    group.position.set(x, 0, z);
-    group.add(floor);
-    return markOwned(group, { materials: false });
+    return this.createSeamlessSurfacePatch(x, z, this.sandPatchMats, 0.012);
   }
 
   /** Water / ice material: physically based clearcoat on the High preset, plain standard. */
@@ -2903,7 +3028,8 @@ export class ModelFactory extends TextureGenerator {
       if (hasE) addDash(dashHGeo, 0.52, 0);
     }
     // T- and X-junctions (count >= 3, non-double-lane) stay clean inside the intersection box.
-    return markOwned(group, { materials: false });
+    group.userData.batchTile = true;
+    return markOwned(group, { geometries: false, materials: false });
   }
 
   /** Seamless wet mud & flooded puddle patch at world (x, z). */
@@ -2954,7 +3080,7 @@ export class ModelFactory extends TextureGenerator {
       this.swampPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
         const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
         mask.channel = 1;
-        return new THREE.MeshStandardMaterial({
+        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
           map: swampTex,
           alphaMap: mask,
           transparent: true,
@@ -2964,30 +3090,10 @@ export class ModelFactory extends TextureGenerator {
           polygonOffset: true,
           polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
-        });
+        }));
       });
     }
-
-    const span = TILE_SIZE / SAND_PATCH_CELL_FRACTION;
-    const geometry = new THREE.PlaneGeometry(span, span);
-    geometry.setAttribute('uv1', geometry.attributes.uv.clone());
-    const pos = geometry.attributes.position;
-    const uv = geometry.attributes.uv;
-    const patternSpan = TILE_SIZE * SAND_PATTERN_CELLS;
-    for (let i = 0; i < pos.count; i++) {
-      uv.setXY(i, (x + pos.getX(i)) / patternSpan, (z - pos.getY(i)) / patternSpan);
-    }
-
-    const cellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
-    const floor = new THREE.Mesh(geometry, this.swampPatchMats[cellHash % SAND_PATCH_VARIANTS]);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = 0.013;
-    floor.receiveShadow = true;
-
-    const group = new THREE.Group();
-    group.position.set(x, 0, z);
-    group.add(floor);
-    return markOwned(group, { materials: false });
+    return this.createSeamlessSurfacePatch(x, z, this.swampPatchMats, 0.013);
   }
 
   /** Seamless glossy crude oil slick patch at world (x, z) with a 3D burning inferno rig. */
@@ -3483,6 +3589,7 @@ export class ModelFactory extends TextureGenerator {
       rimGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
       rimGeo.setIndex(indices);
       rimGeo.computeVertexNormals();
+      rimGeo.userData.batchGeometryKey = 'crater-rim';
       this.craterRimGeo = rimGeo;
     }
 
@@ -3534,6 +3641,7 @@ export class ModelFactory extends TextureGenerator {
       group.add(chunk);
     });
 
+    group.userData.batchTile = true;
     return markOwned(group, { geometries: false, materials: false });
   }
 
@@ -3602,7 +3710,8 @@ export class ModelFactory extends TextureGenerator {
     cap.castShadow = true;
     group.add(cap);
 
-    return markOwned(group, { materials: false });
+    group.userData.batchTile = true;
+    return markOwned(group, { geometries: false, materials: false });
   }
 
   getPowerUpEmblemTexture(type) {
@@ -3748,22 +3857,10 @@ export class ModelFactory extends TextureGenerator {
     clearChildren(rig.chuteGroup);
 
     for (const src of parts.crate) {
-      const clone = src.clone();
-      clone.geometry = src.geometry?.clone() || src.geometry;
-      clone.material = Array.isArray(src.material)
-        ? src.material.map((material) => material.clone())
-        : src.material?.clone() || src.material;
-      markOwned(clone);
-      rig.crateGroup.add(clone);
+      rig.crateGroup.add(src.clone());
     }
     for (const src of parts.chute) {
-      const clone = src.clone();
-      clone.geometry = src.geometry?.clone() || src.geometry;
-      clone.material = Array.isArray(src.material)
-        ? src.material.map((material) => material.clone())
-        : src.material?.clone() || src.material;
-      markOwned(clone);
-      rig.chuteGroup.add(clone);
+      rig.chuteGroup.add(src.clone());
     }
   }
 
@@ -4463,32 +4560,8 @@ export class ModelFactory extends TextureGenerator {
     dataCrest.position.set(0, 0.52, 0);
     capsuleGroup.add(dataCrest);
 
-    // Floating numbered + data symbol canvas badge
-    const canvas = document.createElement('canvas');
-    canvas.width = 128;
-    canvas.height = 128;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.clearRect(0, 0, 128, 128);
-      ctx.fillStyle = 'rgba(11, 15, 23, 0.92)';
-      ctx.beginPath();
-      ctx.arc(64, 64, 52, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.lineWidth = 6;
-      ctx.strokeStyle = accentHex;
-      ctx.stroke();
-
-      // Inner data diamond symbol + slot number
-      ctx.fillStyle = accentHex;
-      ctx.font = 'bold 44px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`${slot}${slot === 3 ? '★' : ''}`, 64, 56);
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = 'bold 20px monospace';
-      ctx.fillText(`DATA ${code}`, 64, 92);
-    }
-    const tex = new THREE.CanvasTexture(canvas);
+    // Floating numbered + data symbol canvas badge (cached across reloads)
+    const tex = this.getContractBadgeTexture('DATA', slot, code, accentHex);
     const spriteMat = markMaterialOwned(
       new THREE.SpriteMaterial({
         map: tex,
@@ -4592,30 +4665,7 @@ export class ModelFactory extends TextureGenerator {
     emitter.position.set(0, 0.16, 0.22);
     dataCrest.add(emitter);
 
-    const canvas = document.createElement('canvas');
-    canvas.width = 128;
-    canvas.height = 128;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.clearRect(0, 0, 128, 128);
-      ctx.fillStyle = 'rgba(11, 15, 23, 0.92)';
-      ctx.beginPath();
-      ctx.arc(64, 64, 52, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.lineWidth = 6;
-      ctx.strokeStyle = accentHex;
-      ctx.stroke();
-
-      ctx.fillStyle = accentHex;
-      ctx.font = 'bold 42px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`${slot}${slot === 3 ? '★' : ''}`, 64, 54);
-      ctx.fillStyle = '#e2e8f0';
-      ctx.font = 'bold 19px monospace';
-      ctx.fillText(`RELAY ${code}`, 64, 92);
-    }
-    const tex = new THREE.CanvasTexture(canvas);
+    const tex = this.getContractBadgeTexture('RELAY', slot, code, accentHex);
     const spriteMat = markMaterialOwned(
       new THREE.SpriteMaterial({
         map: tex,

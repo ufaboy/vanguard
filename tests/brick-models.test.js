@@ -9,6 +9,8 @@ import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { engineerSupport } from '../public/src/game/abilities/engineer-support.js';
 import { TileType } from '../public/src/game/types.js';
 import { NodeIO } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
+import draco3d from 'draco3dgltf';
 import { fileURLToPath } from 'node:url';
 
 function fixture() {
@@ -22,7 +24,10 @@ function fixture() {
 }
 
 test('Deployed BRICK asset includes every damage state with one shared texture and material', async () => {
-  const doc = await new NodeIO().read(fileURLToPath(new URL('../public/models/terrain/brick.glb', import.meta.url)));
+  const io = new NodeIO()
+    .registerExtensions(ALL_EXTENSIONS)
+    .registerDependencies({ 'draco3d.decoder': await draco3d.createDecoderModule() });
+  const doc = await io.read(fileURLToPath(new URL('../public/models/terrain/brick.glb', import.meta.url)));
   const root = doc.getRoot();
   assert.equal(root.listMaterials().length, 1);
   assert.equal(root.listTextures().length, 1);

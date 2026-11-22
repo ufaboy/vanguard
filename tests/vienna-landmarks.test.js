@@ -69,8 +69,18 @@ test('Vienna fallbacks use the unified fallback model contained in their footpri
 });
 
 test('Vienna GLB holds all five roots with valid vertex colors and meshes', async () => {
-  const file = await fs.readFile(new URL('../public/models/landmarks/vienna_landmarks.glb', import.meta.url));
-  const gltf = await new GLTFLoader().parseAsync(file.buffer.slice(file.byteOffset, file.byteOffset + file.byteLength), '');
+  const [{ NodeIO }, { ALL_EXTENSIONS }, draco3d] = await Promise.all([
+    import('@gltf-transform/core'),
+    import('@gltf-transform/extensions'),
+    import('draco3dgltf'),
+  ]);
+  const io = new NodeIO()
+    .registerExtensions(ALL_EXTENSIONS)
+    .registerDependencies({ 'draco3d.decoder': await draco3d.default.createDecoderModule() });
+  const doc = await io.read(new URL('../public/models/landmarks/vienna_landmarks.glb', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
+  doc.getRoot().listExtensionsUsed().find((e) => e.extensionName === 'KHR_draco_mesh_compression')?.dispose();
+  const decoded = await io.writeBinary(doc);
+  const gltf = await new GLTFLoader().parseAsync(decoded.buffer.slice(decoded.byteOffset, decoded.byteOffset + decoded.byteLength), '');
   assert.deepEqual(gltf.scene.children.map((node) => node.name).sort(), [
     'BURGTOR', 'HELDENPLATZ_STATUE', 'HOFBURG_PALACE', 'MICHAELERTRAKT', 'ST_STEPHENS_CATHEDRAL',
   ]);

@@ -75,6 +75,7 @@ export class HangarOps {
         e.isHangarPaused = true;
       }
       e.isHangarOpen = true;
+      e._hangarWindowRect = null;
       e.isHangarPaused = e.status !== GameStatus.MENU;
       e.keys = {};
       e.isMouseDown = false;

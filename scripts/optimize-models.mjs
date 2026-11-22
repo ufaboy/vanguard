@@ -17,7 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { NodeIO, TextureInfo } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { draco, prune } from '@gltf-transform/functions';
+import { dedup, draco, prune } from '@gltf-transform/functions';
 import draco3d from 'draco3dgltf';
 import sharp from 'sharp';
 import { ktx2 } from 'ktx2-encoder/gltf-transform';
@@ -254,14 +254,126 @@ async function optimize(name) {
   );
 }
 
+async function optimizeWorldGlb(filePath) {
+  const doc = await io.read(filePath);
+  const before = fs.statSync(filePath).size;
+  const hasUncompressedTextures = doc
+    .getRoot()
+    .listTextures()
+    .some((t) => t.getMimeType() !== 'image/ktx2');
+  const encodeTextures = !NO_KTX2 && hasUncompressedTextures;
+
+  await doc.transform(
+    dedup(),
+    prune({ keepLeaves: true }),
+    ...(encodeTextures
+      ? [
+          ktx2({
+            slots: /^(baseColorTexture|emissiveTexture)$/,
+            isUASTC: false,
+            isPerceptual: true,
+            isSetKTX2SRGBTransferFunc: true,
+            qualityLevel: 192,
+            compressionLevel: 2,
+            generateMipmap: true,
+            enableDebug: false,
+            imageDecoder,
+          }),
+          ktx2({
+            slots: /^normalTexture$/,
+            isUASTC: false,
+            isNormalMap: true,
+            isPerceptual: false,
+            isSetKTX2SRGBTransferFunc: false,
+            qualityLevel: 255,
+            generateMipmap: true,
+            enableDebug: false,
+            imageDecoder,
+          }),
+          ktx2({
+            slots: /^(metallicRoughnessTexture|occlusionTexture)$/,
+            isUASTC: false,
+            isPerceptual: false,
+            isSetKTX2SRGBTransferFunc: false,
+            qualityLevel: 160,
+            compressionLevel: 2,
+            generateMipmap: true,
+            enableDebug: false,
+            imageDecoder,
+          }),
+        ]
+      : []),
+    ...(NO_DRACO
+      ? [
+          (d) =>
+            d
+              .getRoot()
+              .listExtensionsUsed()
+              .find((e) => e.extensionName === 'KHR_draco_mesh_compression')
+              ?.dispose(),
+        ]
+      : [
+          draco({
+            quantizePosition: 14,
+            quantizeNormal: 10,
+            quantizeTexcoord: 12,
+            quantizeGeneric: 14,
+          }),
+        ])
+  );
+
+  await io.write(filePath, doc);
+  const after = fs.statSync(filePath).size;
+  const root = doc.getRoot();
+  console.log(
+    `${path.relative(process.cwd(), filePath)}: ${(before / 1e6).toFixed(2)} MB -> ${(after / 1e6).toFixed(2)} MB, ` +
+      `${root.listMaterials().length} material(s), ${root.listTextures().length} texture(s)`
+  );
+  return { before, after };
+}
+
+function collectWorldGlbs() {
+  const targets = [];
+  for (const subdir of ['terrain', 'landmarks']) {
+    const dir = path.join(OUT_DIR, subdir);
+    if (!fs.existsSync(dir)) continue;
+    for (const f of fs.readdirSync(dir)) {
+      if (f.endsWith('.glb')) targets.push(path.join(dir, f));
+    }
+  }
+  for (const f of fs.readdirSync(OUT_DIR)) {
+    if (f.startsWith('air_') && f.endsWith('.glb')) {
+      targets.push(path.join(OUT_DIR, f));
+    }
+  }
+  return targets.sort();
+}
+
 const args = process.argv.slice(2);
 const NO_KTX2 = args.includes('--no-ktx2');
 const NO_DRACO = args.includes('--no-draco');
+const WORLD_MODE = args.includes('--world');
 const requested = args.filter((a) => !a.startsWith('--'));
-const names = requested.length
-  ? requested
-  : fs
-      .readdirSync(SRC_ROOT)
-      .map((dir) => `tank_${dir}`)
-      .filter((name) => fs.existsSync(path.join(SRC_ROOT, name.replace(/^tank_/, ''), `${name}.glb`)));
-for (const name of names) await optimize(name);
+
+if (WORLD_MODE) {
+  const files = requested.length ? requested : collectWorldGlbs();
+  let totalBefore = 0;
+  let totalAfter = 0;
+  for (const file of files) {
+    const { before, after } = await optimizeWorldGlb(file);
+    totalBefore += before;
+    totalAfter += after;
+  }
+  console.log(
+    `World GLBs total: ${(totalBefore / 1e6).toFixed(2)} MB -> ${(totalAfter / 1e6).toFixed(2)} MB ` +
+      `(-${(((totalBefore - totalAfter) / Math.max(1, totalBefore)) * 100).toFixed(1)}%)`
+  );
+} else {
+  const names = requested.length
+    ? requested
+    : fs
+        .readdirSync(SRC_ROOT)
+        .map((dir) => `tank_${dir}`)
+        .filter((name) => fs.existsSync(path.join(SRC_ROOT, name.replace(/^tank_/, ''), `${name}.glb`)));
+  for (const name of names) await optimize(name);
+}

@@ -7,6 +7,8 @@ import { TileBatcher } from '../public/src/game/render/tile-batcher.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { TileType } from '../public/src/game/types.js';
 import { NodeIO } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
+import draco3d from 'draco3dgltf';
 import { fileURLToPath } from 'node:url';
 
 const VARIANT_KEYS = ['C3', 'C2', 'C1', 'L2', 'L1', 'O2', 'O1'];
@@ -35,7 +37,10 @@ function fixture() {
 const instances = batcher => [...batcher.batches.values()].reduce((sum, b) => sum + b.mesh.count, 0);
 
 test('Deployed CONCRETE asset includes every damage state with one shared texture and material', async () => {
-  const doc = await new NodeIO().read(fileURLToPath(new URL('../public/models/terrain/concrete.glb', import.meta.url)));
+  const io = new NodeIO()
+    .registerExtensions(ALL_EXTENSIONS)
+    .registerDependencies({ 'draco3d.decoder': await draco3d.createDecoderModule() });
+  const doc = await io.read(fileURLToPath(new URL('../public/models/terrain/concrete.glb', import.meta.url)));
   const root = doc.getRoot();
   assert.equal(root.listMaterials().length, 1);
   assert.equal(root.listTextures().length, 1);

@@ -219,7 +219,10 @@ export class TankGameEngine {
     this.mines = [];
     this.lasers = [];
     this.hazardZones = [];
-    this.airSupportController.clear();
+    this.airSupportMissions = [];
+    this.airSupportTargeting = null;
+    this.airSupportPrePauseStatus = null;
+    this.airCamTarget = null;
     this.burningForests = [];
     this.burningOilCells = [];
     this.enemySpawner.clearPendingTimeouts();
@@ -345,7 +348,11 @@ export class TankGameEngine {
     this.scene.add(this.fxGroup);
     this.scene.add(this.fx.root);
 
-    this.loadSector(0, false);
+    if (!options.deferInitialLoad) {
+      this.loadSector(0, false);
+    } else {
+      this.sector = SECTORS[0];
+    }
 
     if (!this.isSoftwareGl) {
       this.renderer.compile(this.scene, this.camera);
@@ -959,8 +966,20 @@ export class TankGameEngine {
         if (this.isHangarOpen) {
           if (!this._hangarWindowEl?.isConnected) {
             this._hangarWindowEl = document.querySelector('.hangar-stage-window');
+            this._hangarWindowRect = null;
+            this._hangarRectObserver?.disconnect();
+            this._hangarRectObserver = null;
+            if (this._hangarWindowEl && typeof ResizeObserver !== 'undefined') {
+              this._hangarRectObserver = new ResizeObserver(() => {
+                this._hangarWindowRect = this._hangarWindowEl?.getBoundingClientRect() || null;
+              });
+              this._hangarRectObserver.observe(this._hangarWindowEl);
+            }
           }
-          this.hangarStage.render(this.renderer, this._hangarWindowEl?.getBoundingClientRect());
+          if (!this._hangarWindowRect && this._hangarWindowEl) {
+            this._hangarWindowRect = this._hangarWindowEl.getBoundingClientRect();
+          }
+          this.hangarStage.render(this.renderer, this._hangarWindowRect);
         } else {
           this.tileBatcher.sync();
           this.renderer.render(this.scene, this.getActiveCamera());
@@ -1533,7 +1552,7 @@ export class TankGameEngine {
     this.modelFactory?.dispose?.();
     this.tileBatcher?.reset?.();
     this.enemySpawner.clearPendingTimeouts();
-    this.airSupportController.clear();
+    this._airSupportController?.dispose?.();
     this.pendingBarrelExplosions = [];
     this._aiDebugOverlay?.clear();
     this.clock?.dispose();
@@ -1545,6 +1564,9 @@ export class TankGameEngine {
     window.removeEventListener('resize', this.handleResize);
     this._resizeObserver?.disconnect();
     this._resizeObserver = null;
+    this._hangarRectObserver?.disconnect();
+    this._hangarRectObserver = null;
+    this._hangarWindowRect = null;
     window.removeEventListener('pointerup', this.handlePointerUp);
     window.removeEventListener('pointercancel', this.handlePointerUp);
 

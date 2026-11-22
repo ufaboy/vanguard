@@ -138,11 +138,20 @@ export function t(source, params = null) {
   return interpolate(text, params);
 }
 
+const numberFormatCache = new Map();
+
 /** Locale-aware integer / decimal formatting (credits, HP, counters). */
 export function formatNumber(value, options) {
   const num = Number(value);
   if (!Number.isFinite(num)) return String(value ?? '');
-  return num.toLocaleString(NUMBER_LOCALE_TAGS[currentLocale] || 'en-US', options);
+  const tag = NUMBER_LOCALE_TAGS[currentLocale] || 'en-US';
+  const cacheKey = options ? `${tag}:${JSON.stringify(options)}` : tag;
+  let fmt = numberFormatCache.get(cacheKey);
+  if (!fmt) {
+    fmt = new Intl.NumberFormat(tag, options);
+    numberFormatCache.set(cacheKey, fmt);
+  }
+  return fmt.format(num);
 }
 
 /** Marks a source string for extraction without translating it (translate later with `t(value)`). */

@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.4.0 // PERFORMANCE &amp; FASTER BATTLEFIELD LOADING")}</span>
+            <strong>{t("Background Asset Preloading, Performance Audit Fixes &amp; Clean Mission URLs")}</strong>
+            <p>{t("Added silent low-priority HTTP-cache preloading on menu pages (Home, Campaign, Survival, and Contracts) after page load and idle to warm Three.js/Draco/Basis decoders, the player tank, terrain, and mission-specific enemy and landmark GLBs before entering Battlefield. Fixed memory leaks, reduced draw calls and CPU overhead, compressed world GLBs, and simplified Battlefield URLs to a single ?mission=campaign-01 parameter.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 4.3.0 // 3D CODEX LANDMARKS &amp; VISUAL OVERHAUL")}</span>
             <strong>{t("3D Codex Landmarks Tab, Realistic Monument Lighting &amp; Unified Fallback")}</strong>
             <p>{t("Added a dedicated LANDMARKS tab to the 3D Codex studio showcasing all 43 battlefield monuments with footprint, height, collision, and GLB pack telemetry, plus copyable text across Codex panels. Darkened overly bright stone/limestone/sandstone materials across Paris, Berlin, Versailles, Brussels, Rome, Vienna, Amsterdam, Alps, Italy, and Germany landmark packs, fixed water z-fighting on Manneken Pis, rebuilt ELYSEE_RUINED, SAGRADA_FAMILIA, BARCELONA_CATHEDRAL, MONTJUIC_CASTLE, NEUSCHWANSTEIN, and VERONA_ARENA with richer architectural detail, and replaced 40+ per-landmark code fallbacks with a single unified procedural fallback.")}</p>

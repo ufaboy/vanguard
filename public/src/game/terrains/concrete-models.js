@@ -13,8 +13,8 @@ export function concreteDamageState(hp, maxHp = 16) {
 }
 
 export class ConcreteModels extends BreachModels {
-  constructor() {
-    super(new URL('../../../models/terrain/concrete.glb', import.meta.url).href, 'CONCRETE');
+  constructor(renderer = null) {
+    super(new URL('../../../models/terrain/concrete.glb', import.meta.url).href, 'CONCRETE', renderer);
   }
 
   /**

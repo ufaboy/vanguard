@@ -21,7 +21,7 @@ export function markMaterialOwned(material) {
   return material;
 }
 
-/** Disposes every owned geometry and material in `root`'s subtree (textures are left alone). */
+/** Disposes every owned geometry, material, and owned material texture in `root`'s subtree. */
 export function disposeOwned(root) {
   root.traverse((node) => {
     const geo = node.geometry;
@@ -32,6 +32,10 @@ export function disposeOwned(root) {
     forEachMaterial(node, (m) => {
       if (!m.userData.owned) return;
       m.userData.owned = false;
+      if (m.map?.userData?.owned) {
+        m.map.userData.owned = false;
+        m.map.dispose();
+      }
       m.dispose();
     });
   });
