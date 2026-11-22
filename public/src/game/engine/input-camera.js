@@ -71,21 +71,17 @@ export class InputCameraController {
           e.preventDefault();
           engine.setAirStrikeVariant('STRIKE_AC130');
           return;
+        } else if (e.code === 'Digit4') {
+          e.preventDefault();
+          engine.setAirStrikeVariant('STRIKE_MINES');
+          return;
         }
       }
-      if (e.code === 'Digit5') {
+      if (e.code === 'Digit4') {
         e.preventDefault();
         engine.startAirSupportTargeting('STRIKE');
         return;
-      } else if (e.code === 'Digit6') {
-        e.preventDefault();
-        engine.callAirRepair();
-        return;
-      } else if (e.code === 'Digit7') {
-        e.preventDefault();
-        engine.startAirSupportTargeting('MINES');
-        return;
-      } else if (e.code === 'Digit8') {
+      } else if (e.code === 'Digit5') {
         e.preventDefault();
         engine.startAirSupportTargeting('AIRDROP');
         return;
@@ -95,6 +91,9 @@ export class InputCameraController {
         engine.activateModuleSlot(1);
       } else if (e.code === 'Digit2') {
         engine.activateModuleSlot(2);
+      } else if (e.code === 'Digit3' || e.code === 'KeyR') {
+        e.preventDefault();
+        engine.activateReconDroneAction();
       } else if (e.code === 'KeyE') {
         e.preventDefault();
         if (engine.contractState) {
@@ -107,9 +106,6 @@ export class InputCameraController {
           e.preventDefault();
           engine.callNextSurvivalWave();
         }
-      } else if (e.code === 'KeyR') {
-        e.preventDefault();
-        engine.launchReconDrone(engine.aimWorld.x, engine.aimWorld.z);
       } else if (e.code === 'Space') {
         e.preventDefault();
         engine.firePlayerHomingMissile();

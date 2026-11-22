@@ -25,6 +25,7 @@ const STRIKE_VARIANTS = Object.freeze({
   STRIKE_BOMBS: AIR_SUPPORT.STRIKE_BOMBS,
   STRIKE_THERMO: AIR_SUPPORT.STRIKE_THERMO,
   STRIKE_AC130: AIR_SUPPORT.STRIKE_AC130,
+  STRIKE_MINES: AIR_SUPPORT.MINES,
 });
 
 const EMPTY_MINE_SURFACES = new Set([
@@ -180,7 +181,8 @@ export class AirSupportController {
       const minStrikeCost = Math.min(
         AIR_SUPPORT.STRIKE_BOMBS.cost,
         AIR_SUPPORT.STRIKE_THERMO.cost,
-        AIR_SUPPORT.STRIKE_AC130.cost
+        AIR_SUPPORT.STRIKE_AC130.cost,
+        AIR_SUPPORT.MINES.cost
       );
       if (!this.canAfford(minStrikeCost)) {
         engine.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost: minStrikeCost }), 2.0);
@@ -258,7 +260,11 @@ export class AirSupportController {
     engine.airSupportPrePauseStatus = null;
 
     if (type === 'STRIKE') {
-      this.launchAirStrike(strikeVariant, x, z);
+      if (strikeVariant === 'STRIKE_MINES') {
+        this.launchAirMines(x, z);
+      } else {
+        this.launchAirStrike(strikeVariant, x, z);
+      }
     } else if (type === 'MINES') {
       this.launchAirMines(x, z);
     } else if (type === 'AIRDROP') {
@@ -281,13 +287,15 @@ export class AirSupportController {
           ? 0xf97316
           : targeting.strikeVariant === 'STRIKE_AC130'
           ? 0x38bdf8
+          : targeting.strikeVariant === 'STRIKE_MINES'
+          ? 0xf59e0b
           : 0xef4444
         : targeting.type === 'MINES'
         ? 0xf59e0b
         : 0x10b981;
 
     const group = new THREE.Group();
-    if (targeting.type === 'MINES') {
+    if (targeting.type === 'MINES' || (targeting.type === 'STRIKE' && targeting.strikeVariant === 'STRIKE_MINES')) {
       const boxGeo = new THREE.RingGeometry(radius * 1.15 - 0.16, radius * 1.15, 4);
       boxGeo.rotateX(-Math.PI / 2);
       boxGeo.rotateY(Math.PI / 4);

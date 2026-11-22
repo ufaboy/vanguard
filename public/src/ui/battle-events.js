@@ -314,7 +314,7 @@ export function setupDelegatedEvents(
         }
         break;
       case 'launch-recon-drone':
-        engine?.launchReconDrone(engine.aimWorld.x, engine.aimWorld.z);
+        engine?.activateReconDroneAction();
         break;
       case 'hangar-select':
         if (HANGAR_TRACKS.some((item) => item.key === btn.dataset.track)) {

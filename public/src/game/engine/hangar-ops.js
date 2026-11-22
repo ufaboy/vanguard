@@ -262,9 +262,9 @@ export class HangarOps {
     return { success: true, total: newTotal, reason: t('+1 APS charge purchased ({newTotal}/{maxAps}).', { newTotal, maxAps }) };
   }
 
-  buyReconDrone() {
+  buyReconDrone(allowInBattle = false) {
     const e = this.engine;
-    if (!e.isHangarOpen) {
+    if (!allowInBattle && !e.isHangarOpen) {
       return { success: false, reason: t('Open the garage to purchase the Recon Drone.') };
     }
     if (e.reconDroneOwned) {
@@ -272,7 +272,9 @@ export class HangarOps {
     }
     const cost = DRONE_CONFIGS.RECON_DRONE.creditPrice;
     if ((e.playerSave?.credits || 0) < cost) {
-      return { success: false, reason: t('Insufficient Credits (Need ${cost}).', { cost }) };
+      const msg = t('Insufficient Credits (Need ${cost}).', { cost });
+      if (allowInBattle) e.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost }), 2.0);
+      return { success: false, reason: msg };
     }
     e.playerSave.credits -= cost;
     e.reconDroneOwned = true;

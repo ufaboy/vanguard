@@ -186,6 +186,10 @@ export class PlayerController {
     if (engine.status !== GameStatus.PLAYING) return;
 
     if (slotNumber === 1) {
+      if ((engine.repairKitState?.charges ?? 0) <= 0) {
+        engine.callAirRepair();
+        return;
+      }
       const res = activateRepairKit(
         engine.repairKitState,
         engine.subsystems,

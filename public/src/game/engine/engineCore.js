@@ -770,7 +770,14 @@ export class TankGameEngine {
 
   buyApsChargeInHangar() { return this.hangarOps.buyApsCharge(); }
 
-  buyReconDroneInHangar() { return this.hangarOps.buyReconDrone(); }
+  buyReconDroneInHangar() { return this.hangarOps.buyReconDrone(false); }
+
+  activateReconDroneAction() {
+    if (!this.reconDroneOwned) {
+      return this.hangarOps.buyReconDrone(true).success;
+    }
+    return this.launchReconDrone(this.aimWorld.x, this.aimWorld.z);
+  }
 
   toggleFavoritePart(instanceId) { this.hangarOps.toggleFavoritePart(instanceId); }
 
