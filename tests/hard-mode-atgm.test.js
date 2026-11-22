@@ -52,7 +52,7 @@ test('selectInitialAtgmTarget picks nearest visible enemy in Hard Mode and allow
 });
 
 test('resolveHardModeMissileGuidance flies to lastKnownTarget on loss and re-acquires within SEEK_RADIUS_CELLS', () => {
-  assert.equal(MISSILE.SEEK_RADIUS_CELLS, 4);
+  assert.equal(MISSILE.SEEK_RADIUS_CELLS, 5);
 
   const primary = { id: 'primary', x: 20, z: 0, hp: 20 };
   const missile = { x: 0, z: 0, targetEnemy: primary, lastKnownTarget: { x: 20, z: 0 } };
@@ -94,8 +94,8 @@ test('resolveHardModeMissileGuidance flies to lastKnownTarget on loss and re-acq
   assert.equal(g.detonateAtPoint, false);
 });
 
-test('Player HQ 10-cell recon perimeter reveals enemies while HQ is alive and stops when destroyed', () => {
-  assert.equal(ENEMY_VISIBILITY.HQ_RECON_RADIUS_CELLS, 10);
+test('Player HQ 15-cell recon perimeter reveals enemies while HQ is alive and stops when destroyed', () => {
+  assert.equal(ENEMY_VISIBILITY.HQ_RECON_RADIUS_CELLS, 15);
 
   const mockEngine = {
     baseAlive: true,
@@ -112,8 +112,8 @@ test('Player HQ 10-cell recon perimeter reveals enemies while HQ is alive and st
   const ai = new EnemyAiController(mockEngine);
   ai.hasLineOfSight = () => false; // Walls block direct player LOS.
 
-  const nearHq = { x: 40 + 9 * TILE_SIZE, z: 40, hp: 20, enemyClass: 'STEALTH' };
-  const farFromHq = { x: 40 + 11 * TILE_SIZE, z: 40, hp: 20, enemyClass: 'STANDARD' };
+  const nearHq = { x: 40 + 14 * TILE_SIZE, z: 40, hp: 20, enemyClass: 'STEALTH' };
+  const farFromHq = { x: 40 + 16 * TILE_SIZE, z: 40, hp: 20, enemyClass: 'STANDARD' };
 
   assert.equal(ai.hasPlayerLineOfSight(nearHq), true);
   assert.equal(ai.isEnemyVisibleToPlayer(nearHq), true);
