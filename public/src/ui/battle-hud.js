@@ -398,17 +398,13 @@ export function renderBattlefieldHud({
       const rkCharges = rk?.charges ?? 0;
       const rkChanneling = Boolean(rk?.channeling);
       const rkOnCd = !rkChanneling && (rk?.cooldown || 0) > 0;
+      const credits = hud.credits ?? 0;
+      const rkDroneCost = AIR_SUPPORT.REPAIR.cost;
+      const rkCanDrone = rkCharges <= 0 && credits >= rkDroneCost;
       const rkValue = rkChanneling
         ? `${Math.max(0, rk.channelDuration - rk.channelProgress).toFixed(1)}s`
         : rkOnCd
         ? `${Math.ceil(rk.cooldown)}s`
-        : `${rkCharges}`;
-      const credits = hud.credits ?? 0;
-      const rkCharges = hud.repairKitState?.charges ?? 0;
-      const rkDroneCost = AIR_SUPPORT.REPAIR.cost;
-      const rkCanDrone = rkCharges <= 0 && credits >= rkDroneCost;
-      const rkValue = rkChanneling
-        ? `${Math.ceil(hud.repairKitState.remaining)}s`
         : rkCharges > 0
         ? `${rkCharges}`
         : `$${rkDroneCost}`;
