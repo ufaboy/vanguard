@@ -191,15 +191,15 @@ class SoundManager {
     this.audioFilesLoading = true;
 
     const priorityKeys = new Set([
+      'cannon_std',
       'cannon_heavy',
-      'cannon_light',
+      'armor_hit',
+      'brick_hit',
+      'explosion_std',
       'explosion_large',
-      'explosion_small',
-      'hit_metal',
-      'hit_brick',
-      'ui_click',
+      'tank_destruction',
+      'missile',
       'engine_loop',
-      'powerup',
     ]);
     const entries = Object.entries(AUDIO_ASSETS);
     const primary = entries.filter(([key]) => priorityKeys.has(key));

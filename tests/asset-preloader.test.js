@@ -3,11 +3,15 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
+  CAMPAIGN_DEFENSE_TURRETS,
   CAMPAIGN_LANDMARK_PACKS,
   CONTRACT_ASSETS,
+  DEFENSE_TURRET_ASSETS,
   ENEMY_MODEL_ASSETS,
   LANDMARK_PACK_ASSETS,
+  MAP_JSON_ASSETS,
   PLAYER_MODEL_ASSET,
+  PRIORITY_AUDIO_ASSETS,
   TERRAIN_MODEL_ASSETS,
   VENDOR_RUNTIME_ASSETS,
   createAssetPreloader,
@@ -59,6 +63,9 @@ test('all manifest assets exist on disk under public/', () => {
     ...VENDOR_RUNTIME_ASSETS,
     PLAYER_MODEL_ASSET,
     ...TERRAIN_MODEL_ASSETS,
+    ...PRIORITY_AUDIO_ASSETS,
+    ...Object.values(DEFENSE_TURRET_ASSETS),
+    ...Object.values(MAP_JSON_ASSETS),
     ...Object.values(ENEMY_MODEL_ASSETS),
     ...Object.values(LANDMARK_PACK_ASSETS),
   ];
@@ -119,12 +126,32 @@ test('CAMPAIGN_LANDMARK_PACKS and CONTRACT_ASSETS stay in sync with map JSON fil
     if (!file.endsWith('.json')) continue;
     const data = JSON.parse(fs.readFileSync(path.join(contractsDir, file), 'utf8'));
     const id = data.contractId || data.mapId;
-    expectedContracts[id] = {
+    const entry = {
       enemies: extractMapEnemies(data),
       landmarkPacks: extractMapPacks(data, kindToPack),
     };
+    if (CONTRACT_ASSETS[id]?.turrets) {
+      entry.turrets = [...CONTRACT_ASSETS[id].turrets];
+    }
+    expectedContracts[id] = entry;
   }
   assert.deepEqual(CONTRACT_ASSETS, expectedContracts);
+
+  const levelsSrc = fs.readFileSync(path.join(PUBLIC_DIR, 'src/game/levels.js'), 'utf8');
+  const importedMapUrls = [...levelsSrc.matchAll(/from\s+['"]\.\.\/\.\.\/(maps\/[^'"]+\.json)['"]/g)]
+    .map((m) => `./${m[1]}`)
+    .sort();
+  assert.deepEqual([...Object.values(MAP_JSON_ASSETS)].sort(), importedMapUrls);
+
+  const soundSrc = fs.readFileSync(path.join(PUBLIC_DIR, 'src/game/sound.js'), 'utf8');
+  const audioAssetsBlock = soundSrc.match(/const AUDIO_ASSETS = \{([\s\S]*?)\};/)?.[1] || '';
+  const audioMap = {};
+  for (const [, k, v] of audioAssetsBlock.matchAll(/([a-z0-9_]+):\s*'([^']+)'/g)) {
+    audioMap[k] = `./${v}`;
+  }
+  const priorityBlock = soundSrc.match(/const priorityKeys = new Set\(\[([\s\S]*?)\]\);/)?.[1] || '';
+  const expectedPriorityAudio = [...priorityBlock.matchAll(/'([a-z0-9_]+)'/g)].map(([, k]) => audioMap[k]);
+  assert.deepEqual(PRIORITY_AUDIO_ASSETS, expectedPriorityAudio);
 });
 
 test('shouldSkipPreload respects saveData and slow connections', () => {
@@ -139,9 +166,11 @@ test('helper asset selectors return expected deduplicated lists', () => {
   const coreNoTerrain = getCoreAssets({ includeTerrain: false });
   assert.equal(coreNoTerrain.includes(PLAYER_MODEL_ASSET), true);
   assert.equal(coreNoTerrain.includes(TERRAIN_MODEL_ASSETS[0]), false);
+  assert.equal(coreNoTerrain.includes(PRIORITY_AUDIO_ASSETS[0]), false);
 
   const coreWithTerrain = getCoreAssets({ includeTerrain: true });
   assert.equal(coreWithTerrain.includes(TERRAIN_MODEL_ASSETS[0]), true);
+  assert.equal(coreWithTerrain.includes(PRIORITY_AUDIO_ASSETS[0]), true);
 
   const missionAssets = getCampaignMissionAssets({
     id: 'campaign-01',
@@ -151,22 +180,34 @@ test('helper asset selectors return expected deduplicated lists', () => {
       { type: 'SCOUT', count: 2 },
     ],
   });
-  assert.deepEqual(missionAssets, [
+  assert.deepEqual(missionAssets.slice(0, 5), [
     ENEMY_MODEL_ASSETS.STANDARD,
     ENEMY_MODEL_ASSETS.SCOUT,
     LANDMARK_PACK_ASSETS.italy,
     LANDMARK_PACK_ASSETS.rome,
+    MAP_JSON_ASSETS['campaign-01'],
   ]);
+
+  const fortifiedMissionAssets = getCampaignMissionAssets({
+    id: 'campaign-30',
+    enemyRoster: [{ type: 'ARMOR', count: 4 }],
+  });
+  assert.ok(fortifiedMissionAssets.includes(DEFENSE_TURRET_ASSETS.CANNON));
+  assert.ok(fortifiedMissionAssets.includes(DEFENSE_TURRET_ASSETS.HOWITZER));
+  assert.ok(fortifiedMissionAssets.includes(DEFENSE_TURRET_ASSETS.MLRS));
+  assert.ok(CAMPAIGN_DEFENSE_TURRETS['campaign-30'].includes('MLRS'));
 
   const contractAssets = getContractAssets('contract-brandenburg-gate');
   assert.ok(contractAssets.includes(LANDMARK_PACK_ASSETS.berlin));
   assert.ok(contractAssets.includes(ENEMY_MODEL_ASSETS.STRIKER));
+  assert.ok(contractAssets.includes(MAP_JSON_ASSETS['contract-brandenburg-gate']));
 
   const survivalAssets = getSurvivalAssets(['STANDARD', 'SCOUT', 'STANDARD']);
-  assert.deepEqual(survivalAssets, [
+  assert.deepEqual(survivalAssets.slice(0, 4), [
     ENEMY_MODEL_ASSETS.STANDARD,
     ENEMY_MODEL_ASSETS.SCOUT,
     LANDMARK_PACK_ASSETS.paris,
+    MAP_JSON_ASSETS['survival-paris-last-stand'],
   ]);
 });
 

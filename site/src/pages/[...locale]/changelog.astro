@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.4.1 // EXTENDED PRELOADING &amp; MODULEPRELOAD")}</span>
+            <strong>{t("Three.js Addons, Map JSONs, Priority Audio &amp; Engine Modulepreload")}</strong>
+            <p>{t("Extended background HTTP-cache preloading on menu pages to include the Three.js GLTF/Draco/KTX2 addon module chain, all 46 map JSON files (prioritizing the selected mission), fortified enemy base defense turret GLBs, and priority combat audio files. Aligned SoundManager priority keys with actual audio assets and added modulepreload links in battlefield.html for critical engine modules.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 4.4.0 // PERFORMANCE &amp; FASTER BATTLEFIELD LOADING")}</span>
             <strong>{t("Background Asset Preloading, Performance Audit Fixes &amp; Clean Mission URLs")}</strong>
             <p>{t("Added silent low-priority HTTP-cache preloading on menu pages (Home, Campaign, Survival, and Contracts) after page load and idle to warm Three.js/Draco/Basis decoders, the player tank, terrain, and mission-specific enemy and landmark GLBs before entering Battlefield. Fixed memory leaks, reduced draw calls and CPU overhead, compressed world GLBs, and simplified Battlefield URLs to a single ?mission=campaign-01 parameter.")}</p>
