@@ -215,4 +215,11 @@ export default {
   "How to Play": "Como Jogar",
   "Enemy Tanks &amp; Boss Fights — BATTLE TANK": "Tanques Inimigos e Lutas contra Chefes — BATTLE TANK",
   "Field guide to all 12 enemy classes and 4 Sector Bosses in BATTLE TANK.": "Guia de campo para todas as 12 classes inimigas e 4 Chefes de Setor em BATTLE TANK.",
+  "38 Missions · 4 Bosses": "38 Missões · 4 Chefes",
+  "Conquer 38 Campaign missions across 7 regions, hold out in Endless Survival waves, or run Blackout Protocol and Last Cargo raids.": "Conquiste 38 missões da Campanha em 7 regiões, resista a ondas infinitas em Sobrevivência ou execute incursões em Blackout Protocol e Last Cargo.",
+  "The Campaign has 38 missions across 7 regions with 4 Sector Bosses. Survival throws endless enemy waves at you, and Contracts are special operations such as Blackout Protocol and Last Cargo.": "A Campanha tem 38 missões em 7 regiões com 4 Chefes de Setor. Sobrevivência lança ondas infinitas de inimigos e Contratos são operações especiais como Blackout Protocol e Last Cargo.",
+  "has 38 missions across 7 regions with 4 Sector Bosses.": "tem 38 missões em 7 regiões com 4 Chefes de Setor.",
+  "Free 3D isometric tactical tank game for the web browser, inspired by the classic Battle City, with 38 campaign missions, Command Base defense, destructible 40x40 arenas, 5-tier modular tank upgrades, directional armor, 4-Corner APS, homing ATGM missiles, 12 enemy classes and 4 Sector Bosses.": "Jogo tático de tanques 3D isométrico gratuito para navegador, inspirado no clássico Battle City, com 38 missões de campanha, defesa da Base de Comando, arenas destrutíveis 40x40, melhorias modulares de 5 níveis, blindagem direcional, APS de 4 cantos, mísseis ATGM guiados, 12 classes de inimigos e 4 Chefes de Setor.",
+  "38-mission Road to the Capital Campaign across 7 tactical regions": "Campanha Caminho para a Capital de 38 missões em 7 regiões táticas",
+  "Free online tank game in your browser, no download or sign-up: 3D tactical tank battles inspired by Battle City, with 38 missions and destructible maps.": "Jogo de tanques online grátis no navegador, sem download nem cadastro: batalhas táticas de tanques em 3D inspiradas em Battle City, com 38 missões e mapas destrutíveis.",
 };
