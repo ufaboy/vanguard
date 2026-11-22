@@ -3380,15 +3380,16 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   pointer-events: auto;
 }
 
-.hud-left-stack {
+.hud-left-rows {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.hud-left-stack .hud-weapon-card,
-.hud-left-stack .hud-hp-card {
-  width: 100%;
+.hud-left-row {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
 }
 
 .hud-silhouette-card {

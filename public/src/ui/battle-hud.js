@@ -477,17 +477,21 @@ export function renderBattlefieldHud({
 
       if (!bottomHud.__sections) {
         bottomHud.innerHTML =
-          '<div class="hud-bottom-left"><div style="display: contents"></div><div class="hud-left-stack"><div style="display: contents"></div><div style="display: contents"></div></div></div><div class="hud-bottom-center"></div>';
+          '<div class="hud-bottom-left"><div style="display: contents"></div><div class="hud-left-rows"><div class="hud-left-row"><div style="display: contents"></div><div style="display: contents"></div></div><div class="hud-left-row"><div style="display: contents"></div><div style="display: contents"></div></div></div></div><div class="hud-bottom-center"></div>';
         const leftRoot = bottomHud.children[0];
-        const stackRoot = leftRoot.children[1];
+        const rowsRoot = leftRoot.children[1];
+        const topRow = rowsRoot.children[0];
+        const botRow = rowsRoot.children[1];
         bottomHud.__sections = [
           leftRoot.children[0],
-          stackRoot.children[0],
-          stackRoot.children[1],
+          topRow.children[0],
+          topRow.children[1],
+          botRow.children[0],
+          botRow.children[1],
           bottomHud.children[1],
         ];
       }
-      const [silhouetteSlot, weaponSlot, hpSlot, centerSection] = bottomHud.__sections;
+      const [silhouetteSlot, weaponSlot, reconSlot, hpSlot, defenseSlot, centerSection] = bottomHud.__sections;
       const activeHpSegs = isOverhealed
         ? 8
         : Math.max(0, Math.min(8, Math.ceil((hpPercent / 100) * 8)));
@@ -569,13 +573,81 @@ export function renderBattlefieldHud({
         `);
       }
 
+      const reconKey = `${reconValue}|${reconStateClass}|${reconReady}`;
+      if (reconSlot.__reconKey !== reconKey) {
+        reconSlot.__reconKey = reconKey;
+        setHtml(reconSlot, `
+          <div class="hud-card hud-modules-card">
+            <button
+              data-action="launch-recon-drone"
+              ${reconReady ? '' : 'disabled'}
+              class="hud-mod-tile ${reconStateClass}"
+              title="${t('Launch Tactical Recon Drone to cursor [Key R]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">R</span>
+                <span class="hud-mod-name">${t('RECON')}</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="2.5" fill="${reconIconColor}" fill-opacity="0.25" stroke="${reconIconColor}" stroke-width="1.8"/>
+                  <path d="M5 5l3.5 3.5M19 5l-3.5 3.5M5 19l3.5-3.5M19 19l-3.5-3.5" stroke="${reconIconColor}" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span class="hud-mod-val">${reconValue}</span>
+              </div>
+            </button>
+          </div>
+        `);
+      }
+
+      const defenseKey = `${canFireMissile}|${hud.missileAmmo}|${missileMax}|${apsValueText}|${apsStateClass}`;
+      if (defenseSlot.__defenseKey !== defenseKey) {
+        defenseSlot.__defenseKey = defenseKey;
+        setHtml(defenseSlot, `
+          <div class="hud-card hud-modules-card">
+            <div
+              class="hud-mod-tile is-passive ${apsStateClass}"
+              title="${t('Active Protection System (Automatic)')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key is-auto">${t('AUTO')}</span>
+                <span class="hud-mod-name">APS</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <path d="M12 3l7 3v5c0 4.8-3 8.6-7 10-4-1.4-7-5.2-7-10V6l7-3z" fill="${apsFill}" stroke="${apsStroke}" stroke-width="1.8"/>
+                  <path d="M9 12l2 2 4-4" stroke="${apsStroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="hud-mod-val">${apsValueText}</span>
+              </div>
+            </div>
+
+            <button
+              data-action="fire-missile"
+              ${canFireMissile ? '' : 'disabled'}
+              class="hud-mod-tile ${missileStateClass}"
+              title="${t('Launch Homing ATGM Missile [Space]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">SPC</span>
+                <span class="hud-mod-name">ATGM</span>
+              </div>
+              <div class="hud-mod-val-row">
+                ${renderPowerUpBadgeSvg(POWERUP.MISSILE, 16, false)}
+                <span class="hud-mod-val">${hud.missileAmmo}<small>/${missileMax}</small></span>
+              </div>
+            </button>
+          </div>
+        `);
+      }
+
       const credits = hud.credits ?? 0;
       const airTargetingType = hud.airSupportTargeting?.type || '';
       const canStrike = credits >= AIR_SUPPORT.STRIKE_BOMBS.cost;
       const canRepair = credits >= AIR_SUPPORT.REPAIR.cost;
       const canMines = credits >= AIR_SUPPORT.MINES.cost;
       const canDrop = credits >= AIR_SUPPORT.AIRDROP.cost;
-      const staticKey = `${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canFireMissile}|${hud.missileAmmo}|${missileMax}|${reconValue}|${reconStateClass}|${apsValueText}|${apsStateClass}|${canStrike}|${canRepair}|${canMines}|${canDrop}|${airTargetingType}`;
+      const staticKey = `${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canStrike}|${canRepair}|${canMines}|${canDrop}|${airTargetingType}`;
 
       if (centerSection.__staticKey === staticKey) {
         return;
@@ -627,60 +699,6 @@ export function renderBattlefieldHud({
 
       setHtml(centerSection, `
         <div class="hud-center-bar">
-          <div class="hud-card hud-modules-card">
-            <button
-              data-action="fire-missile"
-              ${canFireMissile ? '' : 'disabled'}
-              class="hud-mod-tile ${missileStateClass}"
-              title="${t('Launch Homing ATGM Missile [Space]')}"
-            >
-              <div class="hud-mod-top">
-                <span class="hud-mod-key">SPC</span>
-                <span class="hud-mod-name">ATGM</span>
-              </div>
-              <div class="hud-mod-val-row">
-                ${renderPowerUpBadgeSvg(POWERUP.MISSILE, 16, false)}
-                <span class="hud-mod-val">${hud.missileAmmo}<small>/${missileMax}</small></span>
-              </div>
-            </button>
-
-            <button
-              data-action="launch-recon-drone"
-              ${reconReady ? '' : 'disabled'}
-              class="hud-mod-tile ${reconStateClass}"
-              title="${t('Launch Tactical Recon Drone to cursor [Key R]')}"
-            >
-              <div class="hud-mod-top">
-                <span class="hud-mod-key">R</span>
-                <span class="hud-mod-name">${t('RECON')}</span>
-              </div>
-              <div class="hud-mod-val-row">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                  <circle cx="12" cy="12" r="2.5" fill="${reconIconColor}" fill-opacity="0.25" stroke="${reconIconColor}" stroke-width="1.8"/>
-                  <path d="M5 5l3.5 3.5M19 5l-3.5 3.5M5 19l3.5-3.5M19 19l-3.5-3.5" stroke="${reconIconColor}" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-                <span class="hud-mod-val">${reconValue}</span>
-              </div>
-            </button>
-
-            <div
-              class="hud-mod-tile is-passive ${apsStateClass}"
-              title="${t('Active Protection System (Automatic)')}"
-            >
-              <div class="hud-mod-top">
-                <span class="hud-mod-key is-auto">${t('AUTO')}</span>
-                <span class="hud-mod-name">APS</span>
-              </div>
-              <div class="hud-mod-val-row">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                  <path d="M12 3l7 3v5c0 4.8-3 8.6-7 10-4-1.4-7-5.2-7-10V6l7-3z" fill="${apsFill}" stroke="${apsStroke}" stroke-width="1.8"/>
-                  <path d="M9 12l2 2 4-4" stroke="${apsStroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span class="hud-mod-val">${apsValueText}</span>
-              </div>
-            </div>
-          </div>
-
           <div class="hud-card hud-modules-card">
             <button
               data-action="activate-module-slot"
