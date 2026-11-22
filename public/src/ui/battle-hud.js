@@ -477,10 +477,17 @@ export function renderBattlefieldHud({
 
       if (!bottomHud.__sections) {
         bottomHud.innerHTML =
-          '<div style="display: contents"></div><div class="hud-bottom-center"></div>';
-        bottomHud.__sections = Array.from(bottomHud.children);
+          '<div class="hud-bottom-left"><div style="display: contents"></div><div class="hud-left-stack"><div style="display: contents"></div><div style="display: contents"></div></div></div><div class="hud-bottom-center"></div>';
+        const leftRoot = bottomHud.children[0];
+        const stackRoot = leftRoot.children[1];
+        bottomHud.__sections = [
+          leftRoot.children[0],
+          stackRoot.children[0],
+          stackRoot.children[1],
+          bottomHud.children[1],
+        ];
       }
-      const [silhouetteSection, centerSection] = bottomHud.__sections;
+      const [silhouetteSlot, weaponSlot, hpSlot, centerSection] = bottomHud.__sections;
       const activeHpSegs = isOverhealed
         ? 8
         : Math.max(0, Math.min(8, Math.ceil((hpPercent / 100) * 8)));
@@ -493,28 +500,30 @@ export function renderBattlefieldHud({
       const subKey = hud.subsystems
         ? Object.entries(hud.subsystems).map(([k, s]) => `${k}:${s?.status || 'normal'}`).join(',')
         : '';
-      const silhouetteKey = `${Math.ceil(hud.playerHp)}|${hud.playerMaxHp}|${isLowHp}|${isOverhealed}|${subKey}`;
-      if (silhouetteSection.__silhouetteKey !== silhouetteKey) {
-        silhouetteSection.__silhouetteKey = silhouetteKey;
-        setHtml(silhouetteSection, `
-          <div class="hud-bottom-left">
-            ${renderTankSilhouette(hud)}
-            <div class="hud-card hud-hp-card${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}">
-              <div class="hud-icon-box" aria-hidden="true">
-                <svg viewBox="0 0 36 22" width="34" height="22" fill="none">
-                  <path d="M5 12h24l3 4v3H3v-3l2-4z" fill="#4ade80" fill-opacity="0.25" stroke="#4ade80" stroke-width="1.5"/>
-                  <path d="M11 7h11l3 5H9l2-5z" fill="#4ade80" fill-opacity="0.45" stroke="#86efac" stroke-width="1.4"/>
-                  <path d="M22 9h12" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+      if (silhouetteSlot.__subKey !== subKey) {
+        silhouetteSlot.__subKey = subKey;
+        setHtml(silhouetteSlot, renderTankSilhouette(hud));
+      }
+
+      const hpKey = `${Math.ceil(hud.playerHp)}|${hud.playerMaxHp}|${isLowHp}|${isOverhealed}`;
+      if (hpSlot.__hpKey !== hpKey) {
+        hpSlot.__hpKey = hpKey;
+        setHtml(hpSlot, `
+          <div class="hud-card hud-hp-card${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}">
+            <div class="hud-icon-box" aria-hidden="true">
+              <svg viewBox="0 0 36 22" width="34" height="22" fill="none">
+                <path d="M5 12h24l3 4v3H3v-3l2-4z" fill="#4ade80" fill-opacity="0.25" stroke="#4ade80" stroke-width="1.5"/>
+                <path d="M11 7h11l3 5H9l2-5z" fill="#4ade80" fill-opacity="0.45" stroke="#86efac" stroke-width="1.4"/>
+                <path d="M22 9h12" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="hud-hp-body">
+              <div class="hud-hp-head">
+                <span class="hud-label">${t('HULL HP')}</span>
+                <span class="hud-hp-pct ${hpPctColor}">${hpPctText}</span>
               </div>
-              <div class="hud-hp-body">
-                <div class="hud-hp-head">
-                  <span class="hud-label">${t('HULL HP')}</span>
-                  <span class="hud-hp-pct ${hpPctColor}">${hpPctText}</span>
-                </div>
-                <div class="hud-hp-segs" aria-hidden="true">${hpSegsHtml}</div>
-                <div class="hud-hp-val">${Math.ceil(hud.playerHp)} <small>/ ${hud.playerMaxHp}</small></div>
-              </div>
+              <div class="hud-hp-segs" aria-hidden="true">${hpSegsHtml}</div>
+              <div class="hud-hp-val">${Math.ceil(hud.playerHp)} <small>/ ${hud.playerMaxHp}</small></div>
             </div>
           </div>
         `);
@@ -522,17 +531,10 @@ export function renderBattlefieldHud({
 
       const reloadText = cannonAmmo <= 0 ? t('EMPTY') : reloadReady ? t('READY') : `${reloadRemaining.toFixed(1)}s`;
       const reloadStatusClass = cannonAmmo <= 0 ? ' is-empty' : reloadReady ? ' is-ready' : ' is-charging';
-      const credits = hud.credits ?? 0;
-      const airTargetingType = hud.airSupportTargeting?.type || '';
-      const canStrike = credits >= AIR_SUPPORT.STRIKE_BOMBS.cost;
-      const canRepair = credits >= AIR_SUPPORT.REPAIR.cost;
-      const canMines = credits >= AIR_SUPPORT.MINES.cost;
-      const canDrop = credits >= AIR_SUPPORT.AIRDROP.cost;
-      const staticKey = `${hud.cannonName}|${cannonAmmo}|${cannonMax}|${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canFireMissile}|${hud.missileAmmo}|${missileMax}|${reconValue}|${reconStateClass}|${apsValueText}|${apsStateClass}|${canStrike}|${canRepair}|${canMines}|${canDrop}|${airTargetingType}`;
-
-      if (centerSection.__staticKey === staticKey) {
-        const segsEl = centerSection.querySelector('.hud-reload-segs');
-        const timeEl = centerSection.querySelector('.hud-reload-time');
+      const weaponKey = `${hud.cannonName}|${cannonAmmo}|${cannonMax}`;
+      if (weaponSlot.__weaponKey === weaponKey) {
+        const segsEl = weaponSlot.querySelector('.hud-reload-segs');
+        const timeEl = weaponSlot.querySelector('.hud-reload-time');
         if (segsEl && timeEl) {
           segsEl.className = `hud-reload-segs${reloadReady ? ' is-ready' : ''}`;
           for (let idx = 0; idx < segsEl.children.length; idx += 1) {
@@ -542,8 +544,41 @@ export function renderBattlefieldHud({
           if (timeEl.textContent !== reloadText) {
             timeEl.textContent = reloadText;
           }
-          return;
         }
+      } else {
+        weaponSlot.__weaponKey = weaponKey;
+        setHtml(weaponSlot, `
+          <div class="hud-card hud-weapon-card">
+            <div class="hud-ammo-block">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
+                <path d="M7 20V9l2-5 2 5v11H7zM13 20V9l2-5 2 5v11h-4z" fill="#cbd5e1" fill-opacity="0.9"/>
+              </svg>
+              <div>
+                <span class="hud-label">${t(hud.cannonName)}</span>
+                <div class="hud-ammo-val"><span class="${cannonAmmo <= 5 ? 'text-amber-400 animate-pulse' : ''}">${cannonAmmo}</span> <small>/ ${cannonMax}</small></div>
+              </div>
+            </div>
+            <div class="hud-reload-block">
+              <span class="hud-label">${t('RELOAD')}</span>
+              <div class="hud-reload-row">
+                <div class="hud-reload-segs${reloadReady ? ' is-ready' : ''}" aria-hidden="true">${reloadSegsHtml}</div>
+                <span class="hud-reload-time${reloadStatusClass}">${reloadText}</span>
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      const credits = hud.credits ?? 0;
+      const airTargetingType = hud.airSupportTargeting?.type || '';
+      const canStrike = credits >= AIR_SUPPORT.STRIKE_BOMBS.cost;
+      const canRepair = credits >= AIR_SUPPORT.REPAIR.cost;
+      const canMines = credits >= AIR_SUPPORT.MINES.cost;
+      const canDrop = credits >= AIR_SUPPORT.AIRDROP.cost;
+      const staticKey = `${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canFireMissile}|${hud.missileAmmo}|${missileMax}|${reconValue}|${reconStateClass}|${apsValueText}|${apsStateClass}|${canStrike}|${canRepair}|${canMines}|${canDrop}|${airTargetingType}`;
+
+      if (centerSection.__staticKey === staticKey) {
+        return;
       }
       centerSection.__staticKey = staticKey;
 
@@ -591,7 +626,99 @@ export function renderBattlefieldHud({
       ];
 
       setHtml(centerSection, `
-        <div class="flex flex-col items-center gap-1.5">
+        <div class="hud-center-bar">
+          <div class="hud-card hud-modules-card">
+            <button
+              data-action="fire-missile"
+              ${canFireMissile ? '' : 'disabled'}
+              class="hud-mod-tile ${missileStateClass}"
+              title="${t('Launch Homing ATGM Missile [Space]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">SPC</span>
+                <span class="hud-mod-name">ATGM</span>
+              </div>
+              <div class="hud-mod-val-row">
+                ${renderPowerUpBadgeSvg(POWERUP.MISSILE, 16, false)}
+                <span class="hud-mod-val">${hud.missileAmmo}<small>/${missileMax}</small></span>
+              </div>
+            </button>
+
+            <button
+              data-action="launch-recon-drone"
+              ${reconReady ? '' : 'disabled'}
+              class="hud-mod-tile ${reconStateClass}"
+              title="${t('Launch Tactical Recon Drone to cursor [Key R]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">R</span>
+                <span class="hud-mod-name">${t('RECON')}</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="2.5" fill="${reconIconColor}" fill-opacity="0.25" stroke="${reconIconColor}" stroke-width="1.8"/>
+                  <path d="M5 5l3.5 3.5M19 5l-3.5 3.5M5 19l3.5-3.5M19 19l-3.5-3.5" stroke="${reconIconColor}" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span class="hud-mod-val">${reconValue}</span>
+              </div>
+            </button>
+
+            <div
+              class="hud-mod-tile is-passive ${apsStateClass}"
+              title="${t('Active Protection System (Automatic)')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key is-auto">${t('AUTO')}</span>
+                <span class="hud-mod-name">APS</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <path d="M12 3l7 3v5c0 4.8-3 8.6-7 10-4-1.4-7-5.2-7-10V6l7-3z" fill="${apsFill}" stroke="${apsStroke}" stroke-width="1.8"/>
+                  <path d="M9 12l2 2 4-4" stroke="${apsStroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="hud-mod-val">${apsValueText}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hud-card hud-modules-card">
+            <button
+              data-action="activate-module-slot"
+              data-slot="1"
+              class="hud-mod-tile ${rkStateClass}"
+              title="${t('Activate RM-1 Field Repair Kit [Key 1]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">1</span>
+                <span class="hud-mod-name">${t('REPAIR')}</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <path d="M9 4h6v5h5v6h-5v5H9v-5H4V9h5V4z" fill="${rkIconColor}" fill-opacity="0.22" stroke="${rkIconColor}" stroke-width="1.8" stroke-linejoin="round"/>
+                </svg>
+                <span class="hud-mod-val">${rkValue}</span>
+              </div>
+            </button>
+
+            <button
+              data-action="activate-module-slot"
+              data-slot="2"
+              class="hud-mod-tile ${smokeStateClass}"
+              title="${t('Deploy Aerosol Smoke Screen [Key 2]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">2</span>
+                <span class="hud-mod-name">${t('SMOKE')}</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <path d="M6.5 18h11a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 8.2 9.5 3.5 3.5 0 0 0 6.5 18z" fill="${smokeIconColor}" fill-opacity="0.22" stroke="${smokeIconColor}" stroke-width="1.8" stroke-linejoin="round"/>
+                </svg>
+                <span class="hud-mod-val">${smokeValue}</span>
+              </div>
+            </button>
+          </div>
+
           <div class="hud-card hud-air-support-card">
             ${airButtons
               .map(
@@ -610,116 +737,6 @@ export function renderBattlefieldHud({
                 `
               )
               .join('')}
-          </div>
-          <div class="flex flex-wrap items-center justify-center gap-2">
-            <div class="hud-card hud-weapon-card">
-              <div class="hud-ammo-block">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
-                  <path d="M7 20V9l2-5 2 5v11H7zM13 20V9l2-5 2 5v11h-4z" fill="#cbd5e1" fill-opacity="0.9"/>
-                </svg>
-                <div>
-                  <span class="hud-label">${t(hud.cannonName)}</span>
-                  <div class="hud-ammo-val"><span class="${cannonAmmo <= 5 ? 'text-amber-400 animate-pulse' : ''}">${cannonAmmo}</span> <small>/ ${cannonMax}</small></div>
-                </div>
-              </div>
-              <div class="hud-reload-block">
-                <span class="hud-label">${t('RELOAD')}</span>
-                <div class="hud-reload-row">
-                  <div class="hud-reload-segs${reloadReady ? ' is-ready' : ''}" aria-hidden="true">${reloadSegsHtml}</div>
-                  <span class="hud-reload-time${reloadStatusClass}">${reloadText}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="hud-card hud-modules-card">
-              <button
-                data-action="activate-module-slot"
-                data-slot="1"
-                class="hud-mod-tile ${rkStateClass}"
-                title="${t('Activate RM-1 Field Repair Kit [Key 1]')}"
-              >
-                <div class="hud-mod-top">
-                  <span class="hud-mod-key">1</span>
-                  <span class="hud-mod-name">${t('REPAIR')}</span>
-                </div>
-                <div class="hud-mod-val-row">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                    <path d="M9 4h6v5h5v6h-5v5H9v-5H4V9h5V4z" fill="${rkIconColor}" fill-opacity="0.22" stroke="${rkIconColor}" stroke-width="1.8" stroke-linejoin="round"/>
-                  </svg>
-                  <span class="hud-mod-val">${rkValue}</span>
-                </div>
-              </button>
-
-              <button
-                data-action="activate-module-slot"
-                data-slot="2"
-                class="hud-mod-tile ${smokeStateClass}"
-                title="${t('Deploy Aerosol Smoke Screen [Key 2]')}"
-              >
-                <div class="hud-mod-top">
-                  <span class="hud-mod-key">2</span>
-                  <span class="hud-mod-name">${t('SMOKE')}</span>
-                </div>
-                <div class="hud-mod-val-row">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                    <path d="M6.5 18h11a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 8.2 9.5 3.5 3.5 0 0 0 6.5 18z" fill="${smokeIconColor}" fill-opacity="0.22" stroke="${smokeIconColor}" stroke-width="1.8" stroke-linejoin="round"/>
-                  </svg>
-                  <span class="hud-mod-val">${smokeValue}</span>
-                </div>
-              </button>
-
-              <button
-                data-action="fire-missile"
-                ${canFireMissile ? '' : 'disabled'}
-                class="hud-mod-tile ${missileStateClass}"
-                title="${t('Launch Homing ATGM Missile [Space]')}"
-              >
-                <div class="hud-mod-top">
-                  <span class="hud-mod-key">SPC</span>
-                  <span class="hud-mod-name">ATGM</span>
-                </div>
-                <div class="hud-mod-val-row">
-                  ${renderPowerUpBadgeSvg(POWERUP.MISSILE, 16, false)}
-                  <span class="hud-mod-val">${hud.missileAmmo}<small>/${missileMax}</small></span>
-                </div>
-              </button>
-
-              <button
-                data-action="launch-recon-drone"
-                ${reconReady ? '' : 'disabled'}
-                class="hud-mod-tile ${reconStateClass}"
-                title="${t('Launch Tactical Recon Drone to cursor [Key R]')}"
-              >
-                <div class="hud-mod-top">
-                  <span class="hud-mod-key">R</span>
-                  <span class="hud-mod-name">${t('RECON')}</span>
-                </div>
-                <div class="hud-mod-val-row">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                    <circle cx="12" cy="12" r="2.5" fill="${reconIconColor}" fill-opacity="0.25" stroke="${reconIconColor}" stroke-width="1.8"/>
-                    <path d="M5 5l3.5 3.5M19 5l-3.5 3.5M5 19l3.5-3.5M19 19l-3.5-3.5" stroke="${reconIconColor}" stroke-width="1.8" stroke-linecap="round"/>
-                  </svg>
-                  <span class="hud-mod-val">${reconValue}</span>
-                </div>
-              </button>
-
-              <div
-                class="hud-mod-tile is-passive ${apsStateClass}"
-                title="${t('Active Protection System (Automatic)')}"
-              >
-                <div class="hud-mod-top">
-                  <span class="hud-mod-key is-auto">${t('AUTO')}</span>
-                  <span class="hud-mod-name">APS</span>
-                </div>
-                <div class="hud-mod-val-row">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                    <path d="M12 3l7 3v5c0 4.8-3 8.6-7 10-4-1.4-7-5.2-7-10V6l7-3z" fill="${apsFill}" stroke="${apsStroke}" stroke-width="1.8"/>
-                    <path d="M9 12l2 2 4-4" stroke="${apsStroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span class="hud-mod-val">${apsValueText}</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       `);
