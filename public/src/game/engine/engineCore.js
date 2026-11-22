@@ -74,6 +74,8 @@ export class TankGameEngine {
     this.quality = QUALITY_PRESETS[options.quality] ? options.quality : 'high';
     this.fpsCap = options.fpsCap ?? 60;
     this.onHudUpdate = onHudUpdate;
+    this.scriptedMode = Boolean(options.scriptedMode);
+    this.onBeforeStep = typeof options.onBeforeStep === 'function' ? options.onBeforeStep : null;
     this.frameId = 0;
     this.isDisposed = false;
 
@@ -1047,6 +1049,7 @@ export class TankGameEngine {
     }
 
     if (this.status === GameStatus.PLAYING) {
+      this.onBeforeStep?.(dt, elapsed);
       this.componentDamageCooldown = Math.max(0, this.componentDamageCooldown - dt);
       this.updatePlayer(dt, elapsed);
       this.playerController.updateBaseMaintenance(dt);

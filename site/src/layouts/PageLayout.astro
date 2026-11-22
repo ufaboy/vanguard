@@ -58,7 +58,10 @@ const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, loca
     <link rel="canonical" href={url} />
     {alternates && LOCALES.map((lang) => <link rel="alternate" hreflang={HTML_LANG[lang] ?? lang} href={pageUrl(slug, lang)} />)}
     {alternates && <link rel="alternate" hreflang="x-default" href={pageUrl(slug, DEFAULT_LOCALE)} />}
+    <link rel="icon" href={assetHref('favicon.ico', locale)} sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href={assetHref('images/icon.svg', locale)} />
+    <link rel="icon" type="image/png" sizes="96x96" href={assetHref('images/icon-96.png', locale)} />
+    <link rel="icon" type="image/png" sizes="48x48" href={assetHref('images/icon-48.png', locale)} />
     <link rel="apple-touch-icon" sizes="180x180" href={assetHref('images/apple-touch-icon.png', locale)} />
     <link rel="manifest" href={assetHref('manifest.webmanifest', locale)} />
     <meta property="og:site_name" content="BATTLE TANK" />

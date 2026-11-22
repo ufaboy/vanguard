@@ -1,13 +1,14 @@
 {
   "name": "battle-tank",
   "private": true,
-  "version": "4.6.3",
+  "version": "4.6.4",
   "packageManager": "pnpm@12.21.0",
   "type": "module",
   "scripts": {
     "dev": "pnpm run build:site && pnpm dlx serve dist/site -l 3000",
     "editor": "pnpm dlx serve . -l 3002",
     "codex": "pnpm dlx serve . -l 3001",
+    "showcase": "pnpm dlx serve . -l 3003",
     "start": "pnpm run build:site && pnpm dlx serve dist/site -l 3000",
     "build": "pnpm run lint && pnpm run build:site",
     "build:itch": "node scripts/build-itch.mjs",
