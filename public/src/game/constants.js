@@ -151,7 +151,7 @@ export const ENEMY_VISIBILITY = Object.freeze({
   MEMORY_DURATION_SEC: 6.0, // Duration in seconds enemies remember last confirmed player position
   ALERT_PURSUIT_DURATION_SEC: 8.5, // Time enemies stay in active alert pursuit before resuming patrol
   ALERT_ARRIVAL_RADIUS: 4.0, // Distance to destination at which an alerted enemy considers alert reached
-  HQ_RECON_RADIUS_CELLS: 10, // Recon perimeter radius around living player HQ in grid cells
+  HQ_RECON_RADIUS_CELLS: 15, // Recon perimeter radius around living player HQ in grid cells
 });
 
 const ARMOR_ASPECTS = Object.freeze(['front', 'left', 'right', 'rear']);
@@ -307,7 +307,7 @@ export const MISSILE = Object.freeze({
   MAX_AMMO_BY_FRAME: Object.freeze([2, 3, 4, 5, 6]), // Max ATGM reserve missiles per Frame tier 1..5
   PICKUP_AMMO: 1, // Missiles replenished per battlefield ATGM power-up pickup
   RETARGET_RADIUS: 3, // World unit radius to seek alternative target if primary is lost
-  SEEK_RADIUS_CELLS: 4, // Seeker acquisition radius in grid cells when re-acquiring a target in Hard Mode
+  SEEK_RADIUS_CELLS: 5, // Seeker acquisition radius in grid cells when re-acquiring a target in Hard Mode
   POOL_SIZE: 6, // Maximum concurrent active missiles in the physics/rendering pool
   PLAYER_RESERVED_SLOTS: 2, // Reserved missile slots allocated exclusively for player fire
   FPV_TIME_SCALE: 0.75, // Slow-motion simulation time scale while riding a player missile in FPV

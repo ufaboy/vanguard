@@ -413,6 +413,12 @@ export class SectorLoaderController {
         } else if (type === TileType.CRATER && engine.modelFactory.createCraterBlock) {
           mesh = engine.modelFactory.createCraterBlock(x, z);
           engine.mapGroup.add(mesh);
+        } else if (type === TileType.RUBBLE && engine.modelFactory.createRubbleBlock) {
+          mesh = engine.modelFactory.createRubbleBlock('house2');
+          mesh.position.set(x, 0, z);
+          mesh.rotation.y = ((r * 7 + c * 13) % 4) * (Math.PI / 2);
+          engine.mapGroup.add(mesh);
+          hp = 1;
         } else if (type === TileType.WATER_TOWER && engine.modelFactory.createWaterTowerBlock) {
           mesh = engine.modelFactory.createWaterTowerBlock();
           mesh.position.set(x, 0, z);

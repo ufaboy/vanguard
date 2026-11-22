@@ -370,25 +370,24 @@ export class TerrainDestructionController {
       engine.medalTracker?.recordConcreteDestroyed();
     }
 
-    if (buildingInfo) {
-      // Destroyed buildings collapse into persistent concrete rubble (passable with severe speed penalty).
+    if (buildingInfo || wasConcrete) {
+      // Destroyed buildings and reinforced concrete walls collapse into persistent concrete rubble (passable with severe speed penalty).
       cell.object = TileType.RUBBLE;
       syncCellType(cell);
       cell.hp = 1;
       cell.maxHp = 1;
       if (factory?.createRubbleBlock && engine.mapGroup) {
-        const rubble = factory.createRubbleBlock(buildingInfo.kind);
+        const rubble = factory.createRubbleBlock(buildingInfo ? buildingInfo.kind : 'house2');
         rubble.position.set(x, 0, z);
-        rubble.rotation.y = ((cell.row * 7 + cell.col * 13) % 4) * (Math.PI / 2);
+        rubble.rotation.y = prevMesh?.userData?.breach
+          ? prevMesh.rotation.y
+          : ((cell.row * 7 + cell.col * 13) % 4) * (Math.PI / 2);
         engine.mapGroup.add(rubble);
         cell.mesh = rubble;
         engine.tileBatcher?.markDirty(rubble);
       }
     } else {
-      const rubbleModels =
-        cell.type === TileType.BRICK && factory.useBlenderBricks ? factory.brickModels
-          : cell.type === TileType.CONCRETE && factory.useBlenderConcrete ? factory.concreteModels
-            : null;
+      const rubbleModels = cell.type === TileType.BRICK && factory.useBlenderBricks ? factory.brickModels : null;
       if (rubbleModels?.states.size) {
         const rubble = new THREE.Group();
         rubble.userData.batchTile = true;

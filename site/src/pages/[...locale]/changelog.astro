@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.5.2 // Z-FIGHTING &amp; SHIMMER FIX")}</span>
+            <strong>{t("3D Landmarks, Terrain GLBs, HQ &amp; Bridge Z-Fighting Elimination")}</strong>
+            <p>{t("Eliminated coplanar z-fighting and camera-motion shimmering across all 12 landmark GLB packs (including St. Stephen's Cathedral, Verona Arena, Colosseum, Eiffel Tower, and Barcelona Cathedral), terrain GLBs (brick, concrete, and modular buildings), procedural structures (Allied HQ, Enemy Stronghold, Concrete, Crates, Barrels, and Bridges), and landmark masonry mortar lines via fwidth antialiasing. Added scripts/check-zfighting.mjs to verify zero coplanar geometry conflicts across elements and surface combinations.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 4.5.1 // HARD MODE ATGM &amp; HQ RECON")}</span>
             <strong>{t("Hard Mode ATGM Seeker, 10-Cell HQ Recon &amp; Campaign Layout Polish")}</strong>
             <p>{t("Fixed Hard Mode ATGM targeting so missiles require a visible target at launch, fly to the target's last known position if sight is lost, re-acquire non-cloaked enemies within a 4-cell seeker radius (MISSILE.SEEK_RADIUS_CELLS), and detonate at the last known point if none are found. Added a 10-cell recon perimeter around the player's living HQ (ENEMY_VISIBILITY.HQ_RECON_RADIUS_CELLS) and refined the 3-column Campaign workspace flex sizing.")}</p>

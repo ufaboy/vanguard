@@ -1741,13 +1741,13 @@ export class ModelFactory extends TextureGenerator {
 
     // Apron slab with low kerbs, corner bollards and kerb lights.
     box(W, 0.1, D, m.apron, 0, 0.05, 0, false);
-    for (const z of [-D / 2 + 0.05, D / 2 - 0.05]) {
-      for (const x of [-1.45, 1.45]) box(0.9, 0.12, 0.1, m.trim, x, 0.16, z);
+    for (const z of [-D / 2 + 0.06, D / 2 - 0.06]) {
+      for (const x of [-1.45, 1.45]) box(0.9, 0.13, 0.1, m.trim, x, 0.155, z);
     }
-    for (const x of [-W / 2 + 0.05, W / 2 - 0.05]) {
-      box(0.1, 0.12, D, m.trim, x, 0.16, 0);
+    for (const x of [-W / 2 + 0.06, W / 2 - 0.06]) {
+      box(0.1, 0.128, D - 0.24, m.trim, x, 0.146, 0);
       for (const z of [-0.45, 0.45]) box(0.02, 0.04, 0.16, m.lamp, x + Math.sign(x) * 0.05, 0.16, z, false);
-      for (const z of [-D / 2 + 0.1, D / 2 - 0.1]) box(0.16, 0.24, 0.16, m.trim, x - Math.sign(x) * 0.05, 0.22, z);
+      for (const z of [-D / 2 + 0.1, D / 2 - 0.1]) box(0.16, 0.266, 0.16, m.trim, x - Math.sign(x) * 0.05, 0.207, z);
     }
 
     // Hangar shell: three full-depth piers, roof deck, and headers with a red band over both open faces.
@@ -1759,9 +1759,9 @@ export class ModelFactory extends TextureGenerator {
     const doorH = 0.76;
     const headerH = wallH - doorH;
     for (const x of [HX - HW / 2, HX, HX + HW / 2]) {
-      // End piers rise above the roof deck like the buttresses of the concept; the centre pier sits flush.
-      const pierH = wallH + (x === HX ? 0.12 : 0.3);
-      box(pierW, pierH, HD + 0.08, m.wall, x, 0.1 + pierH / 2, 0);
+      // End piers rise above the roof deck like the buttresses of the concept; the centre pier stops just under the roof surface.
+      const pierH = wallH + (x === HX ? 0.11 : 0.3);
+      box(pierW, pierH + 0.01, HD + 0.08, m.wall, x, 0.095 + pierH / 2, 0);
       if (x !== HX) box(pierW + 0.04, 0.04, HD + 0.12, m.trim, x, 0.12 + pierH, 0, false);
       for (const z of [-1, 1]) box(pierW + 0.01, 0.42, 0.02, m.hazard, x, 0.33, z * (HD / 2 + 0.05), false);
     }
@@ -1770,9 +1770,9 @@ export class ModelFactory extends TextureGenerator {
       box(0.02, 0.02, HD - 0.1, m.trim, HX + (i * HW) / 8, 0.1 + wallH + 0.13, 0, false);
     }
     for (const z of [-1, 1]) {
-      const fz = z * (HD / 2 - 0.04);
+      const fz = z * (HD / 2 - 0.05);
       const headerY = 0.1 + doorH + headerH / 2;
-      box(HW, headerH, 0.12, m.wall, HX, headerY, fz);
+      box(HW - 0.02, headerH, 0.12, m.wall, HX, headerY, fz);
       box(HW + 0.01, 0.07, 0.13, m.red, HX, headerY + 0.02, fz);
       for (const bx of [HX - HW / 4, HX + HW / 4]) box(0.22, 0.03, 0.05, m.lamp, bx, 0.1 + doorH - 0.02, fz - z * 0.06, false);
       const sign = add(group, new THREE.Mesh(this.sharedGeometry('PlaneGeometry', 0.92, 0.345), m.sign), HX, headerY, z * (HD / 2 + 0.065), false);
@@ -1781,10 +1781,10 @@ export class ModelFactory extends TextureGenerator {
 
     // Bays: dark floor plates, ceiling lights and a yellow gantry crane with a hook in each bay.
     for (const bx of [HX - HW / 4, HX + HW / 4]) {
-      box(HW / 2 - pierW, 0.012, HD - 0.04, m.bay, bx, 0.106, 0, false);
-      box(HW / 2 - pierW, 0.02, HD, m.interior, bx, 0.1 + wallH - 0.01, 0, false);
+      box(HW / 2 - pierW, 0.014, HD - 0.04, m.bay, bx, 0.108, 0, false);
+      box(HW / 2 - pierW, 0.02, HD, m.interior, bx, 0.1 + wallH - 0.015, 0, false);
       box(HW / 2 - pierW, 0.08, 0.1, m.crane, bx, 0.1 + doorH - 0.08, 0);
-      box(0.12, 0.08, 0.1, m.crane, bx + 0.12, 0.1 + doorH - 0.15, 0);
+      box(0.12, 0.08, 0.11, m.crane, bx + 0.12, 0.1 + doorH - 0.15, 0);
       box(0.015, 0.12, 0.015, m.steel, bx + 0.12, 0.1 + doorH - 0.25, 0, false);
       box(0.06, 0.05, 0.03, m.crane, bx + 0.12, 0.1 + doorH - 0.33, 0, false);
       for (const z of [-0.3, 0.3]) box(0.16, 0.025, 0.06, m.lamp, bx, 0.1 + wallH - 0.03, z, false);
@@ -1795,7 +1795,7 @@ export class ModelFactory extends TextureGenerator {
     for (const z of [-0.26, 0.26]) box(0.9, 0.04, 0.12, m.steel, 0, 0.02, z, true, tank);
     for (const x of [-0.26, 0.26]) box(0.14, 0.15, 0.82, m.track, x, 0.13, 0, true, tank);
     box(0.42, 0.14, 0.86, m.tank, 0, 0.21, 0, true, tank);
-    box(0.66, 0.03, 0.78, m.tank, 0, 0.22, 0, true, tank);
+    box(0.67, 0.03, 0.78, m.tank, 0, 0.215, 0, true, tank);
     box(0.36, 0.13, 0.38, m.tank, 0, 0.345, 0.05, true, tank);
     box(0.12, 0.05, 0.14, m.tank, 0.08, 0.43, 0.08, true, tank);
     const barrel = add(tank, new THREE.Mesh(this.sharedGeometry('CylinderGeometry', 0.03, 0.035, 0.42, 8), m.tank), 0, 0.35, -0.33, true);
@@ -1806,9 +1806,9 @@ export class ModelFactory extends TextureGenerator {
 
     // East bay: tool chest and parts cabinet.
     const toolX = HX + HW / 2 - pierW / 2 - 0.15;
-    box(0.26, 0.2, 0.14, m.red, toolX, 0.2, -0.3);
+    box(0.26, 0.21, 0.14, m.red, toolX, 0.195, -0.3);
     box(0.27, 0.02, 0.15, m.steel, toolX, 0.31, -0.3, false);
-    box(0.16, 0.36, 0.2, m.cabinet, toolX + 0.03, 0.28, 0.32);
+    box(0.16, 0.37, 0.2, m.cabinet, toolX + 0.03, 0.275, 0.32);
 
     // Fuel depot at the east end: tank on saddles inside a yellow guard rail.
     const fuelX = W / 2 - 0.36;
@@ -1819,19 +1819,19 @@ export class ModelFactory extends TextureGenerator {
       cap.scale.set(1, 0.35, 1);
       cap.rotation.x = z * Math.PI / 2;
     }
-    for (const z of [-0.25, 0.25]) box(0.32, 0.14, 0.08, m.steel, fuelX, 0.17, z);
+    for (const z of [-0.25, 0.25]) box(0.32, 0.15, 0.08, m.steel, fuelX, 0.165, z);
     box(0.08, 0.06, 0.08, m.fuelCap, fuelX, 0.58, -0.32);
     const railY = 0.32;
     for (const x of [fuelX - 0.29, fuelX + 0.29]) {
-      box(0.025, 0.025, 1.1, m.crane, x, railY, 0, false);
-      for (const z of [-0.54, 0, 0.54]) box(0.025, railY - 0.1, 0.025, m.crane, x, 0.1 + (railY - 0.1) / 2, z, false);
+      box(0.03, 0.03, 1.13, m.crane, x, railY, 0, false);
+      for (const z of [-0.51, 0, 0.51]) box(0.018, railY - 0.074, 0.018, m.crane, x, 0.074 + (railY - 0.074) / 2, z, false);
     }
-    for (const z of [-0.55, 0.55]) box(0.6, 0.025, 0.025, m.crane, fuelX, railY, z, false);
+    for (const z of [-0.545, 0.545]) box(0.56, 0.018, 0.018, m.crane, fuelX, railY, z, false);
 
     // Ammunition crates at the west end.
     const crateX = -W / 2 + 0.3;
-    box(0.36, 0.3, 0.42, m.crate, crateX, 0.25, 0.26);
-    box(0.26, 0.2, 0.26, m.crate, crateX + 0.02, 0.2, -0.3).rotation.y = 0.25;
+    box(0.36, 0.318, 0.42, m.crate, crateX, 0.241, 0.26);
+    box(0.26, 0.218, 0.26, m.crate, crateX + 0.02, 0.191, -0.3).rotation.y = 0.25;
     box(0.22, 0.16, 0.24, m.crate, crateX - 0.01, 0.48, 0.24).rotation.y = -0.15;
 
     const repairGeo = new THREE.CircleGeometry(7.0, 64);
@@ -1921,21 +1921,404 @@ export class ModelFactory extends TextureGenerator {
     return { group, subMeshes };
   }
 
-  /** Creates persistent concrete rubble for a destroyed building cell. */
+  /** Builds and caches shared textures, materials, and faceted rock/slab geometries for rubble tiles. */
+  ensureRubbleAssets() {
+    if (this.rubbleMats && this.rubbleGeos) return;
+
+    let seed = 7331;
+    const rand = () => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return seed / 4294967296;
+    };
+
+    // 1. Irregular crushed-mortar & gravel ground decal (transparent edges, no puddle look)
+    const decalCanvas = document.createElement('canvas');
+    decalCanvas.width = 256;
+    decalCanvas.height = 256;
+    const dCtx = decalCanvas.getContext('2d');
+    dCtx.clearRect(0, 0, 256, 256);
+
+    // Jagged polygonal dust/gravel patches instead of smooth radial circles
+    for (let p = 0; p < 14; p++) {
+      const ang = (p / 14) * Math.PI * 2 + (rand() - 0.5) * 0.4;
+      const dist = p < 4 ? rand() * 22 : 22 + rand() * 48;
+      const px = 128 + Math.cos(ang) * dist;
+      const py = 128 + Math.sin(ang) * dist;
+      const rad = p < 4 ? 38 + rand() * 22 : 18 + rand() * 26;
+      const sides = 6 + Math.floor(rand() * 4);
+      dCtx.fillStyle =
+        p % 3 === 0
+          ? 'rgba(118, 110, 99, 0.56)'
+          : p % 3 === 1
+            ? 'rgba(92, 86, 78, 0.52)'
+            : 'rgba(66, 61, 56, 0.48)';
+      dCtx.beginPath();
+      for (let s = 0; s < sides; s++) {
+        const sa = (s / sides) * Math.PI * 2;
+        const sr = rad * (0.65 + rand() * 0.5);
+        const vx = px + Math.cos(sa) * sr;
+        const vy = py + Math.sin(sa) * sr;
+        if (s === 0) dCtx.moveTo(vx, vy);
+        else dCtx.lineTo(vx, vy);
+      }
+      dCtx.closePath();
+      dCtx.fill();
+    }
+
+    // Dark shadow pockets beneath the main debris pile
+    for (let i = 0; i < 8; i++) {
+      const ang = rand() * Math.PI * 2;
+      const dist = rand() * 44;
+      const px = 128 + Math.cos(ang) * dist;
+      const py = 128 + Math.sin(ang) * dist;
+      const rad = 14 + rand() * 22;
+      const grad = dCtx.createRadialGradient(px, py, 2, px, py, rad);
+      grad.addColorStop(0, 'rgba(20, 18, 16, 0.72)');
+      grad.addColorStop(1, 'rgba(20, 18, 16, 0)');
+      dCtx.fillStyle = grad;
+      dCtx.beginPath();
+      dCtx.arc(px, py, rad, 0, Math.PI * 2);
+      dCtx.fill();
+    }
+
+    // Crisp gravel grit, crushed brick chips, and soot flecks
+    for (let i = 0; i < 280; i++) {
+      const ang = rand() * Math.PI * 2;
+      const dist = Math.pow(rand(), 0.72) * 108;
+      const gx = 128 + Math.cos(ang) * dist;
+      const gy = 128 + Math.sin(ang) * dist;
+      const sz = 1.2 + rand() * 3.4;
+      const tone = rand();
+      dCtx.fillStyle =
+        tone < 0.22
+          ? 'rgba(138, 72, 54, 0.82)'
+          : tone < 0.55
+            ? 'rgba(148, 140, 128, 0.78)'
+            : tone < 0.82
+              ? 'rgba(84, 79, 73, 0.82)'
+              : 'rgba(32, 29, 26, 0.85)';
+      dCtx.save();
+      dCtx.translate(gx, gy);
+      dCtx.rotate(rand() * Math.PI);
+      dCtx.fillRect(-sz * 0.5, -sz * 0.35, sz, sz * 0.7);
+      dCtx.restore();
+    }
+
+    const decalTex = this.configureColorTexture(new THREE.CanvasTexture(decalCanvas));
+
+    // 2. Weathered fractured concrete/stone albedo + matching bump map
+    const stoneCanvas = document.createElement('canvas');
+    stoneCanvas.width = 256;
+    stoneCanvas.height = 256;
+    const sCtx = stoneCanvas.getContext('2d');
+
+    const bumpCanvas = document.createElement('canvas');
+    bumpCanvas.width = 256;
+    bumpCanvas.height = 256;
+    const bCtx = bumpCanvas.getContext('2d');
+
+    sCtx.fillStyle = '#847e75';
+    sCtx.fillRect(0, 0, 256, 256);
+    bCtx.fillStyle = '#808080';
+    bCtx.fillRect(0, 0, 256, 256);
+
+    for (let i = 0; i < 90; i++) {
+      const x = rand() * 256;
+      const y = rand() * 256;
+      const r = 8 + rand() * 24;
+      const light = rand() > 0.45;
+      sCtx.fillStyle = light ? 'rgba(162, 154, 142, 0.28)' : 'rgba(72, 68, 62, 0.32)';
+      bCtx.fillStyle = light ? 'rgba(210, 210, 210, 0.25)' : 'rgba(55, 55, 55, 0.28)';
+      sCtx.beginPath();
+      bCtx.beginPath();
+      for (let v = 0; v < 5; v++) {
+        const va = (v / 5) * Math.PI * 2;
+        const vr = r * (0.6 + rand() * 0.5);
+        const vx = x + Math.cos(va) * vr;
+        const vy = y + Math.sin(va) * vr;
+        if (v === 0) {
+          sCtx.moveTo(vx, vy);
+          bCtx.moveTo(vx, vy);
+        } else {
+          sCtx.lineTo(vx, vy);
+          bCtx.lineTo(vx, vy);
+        }
+      }
+      sCtx.closePath();
+      bCtx.closePath();
+      sCtx.fill();
+      bCtx.fill();
+    }
+
+    // Aggregate speckles (basalt & quartz)
+    for (let i = 0; i < 420; i++) {
+      const x = rand() * 256;
+      const y = rand() * 256;
+      const sz = 1 + rand() * 2.2;
+      const bright = rand() > 0.55;
+      sCtx.fillStyle = bright ? 'rgba(195, 188, 176, 0.45)' : 'rgba(44, 41, 38, 0.5)';
+      sCtx.fillRect(x, y, sz, sz);
+      bCtx.fillStyle = bright ? 'rgba(230, 230, 230, 0.4)' : 'rgba(35, 35, 35, 0.45)';
+      bCtx.fillRect(x, y, sz, sz);
+    }
+
+    // Hairline fracture cracks
+    for (let i = 0; i < 18; i++) {
+      let cx = rand() * 256;
+      let cy = rand() * 256;
+      let ang = rand() * Math.PI * 2;
+      sCtx.strokeStyle = 'rgba(34, 31, 28, 0.65)';
+      bCtx.strokeStyle = 'rgba(20, 20, 20, 0.8)';
+      sCtx.lineWidth = 1.1 + rand() * 1.2;
+      bCtx.lineWidth = sCtx.lineWidth + 0.5;
+      sCtx.beginPath();
+      bCtx.beginPath();
+      sCtx.moveTo(cx, cy);
+      bCtx.moveTo(cx, cy);
+      for (let seg = 0; seg < 4; seg++) {
+        ang += (rand() - 0.5) * 0.9;
+        cx += Math.cos(ang) * (10 + rand() * 16);
+        cy += Math.sin(ang) * (10 + rand() * 16);
+        sCtx.lineTo(cx, cy);
+        bCtx.lineTo(cx, cy);
+      }
+      sCtx.stroke();
+      bCtx.stroke();
+    }
+
+    const stoneTex = this.configureColorTexture(new THREE.CanvasTexture(stoneCanvas));
+    stoneTex.wrapS = THREE.RepeatWrapping;
+    stoneTex.wrapT = THREE.RepeatWrapping;
+    const stoneBumpTex = new THREE.CanvasTexture(bumpCanvas);
+    stoneBumpTex.wrapS = THREE.RepeatWrapping;
+    stoneBumpTex.wrapT = THREE.RepeatWrapping;
+    stoneBumpTex.needsUpdate = true;
+
+    // 3. Broken terracotta brick & mortar texture
+    const brickCanvas = document.createElement('canvas');
+    brickCanvas.width = 128;
+    brickCanvas.height = 128;
+    const brCtx = brickCanvas.getContext('2d');
+    brCtx.fillStyle = '#8b4a38';
+    brCtx.fillRect(0, 0, 128, 128);
+    for (let i = 0; i < 55; i++) {
+      brCtx.fillStyle =
+        i % 3 === 0
+          ? 'rgba(176, 166, 152, 0.42)'
+          : i % 3 === 1
+            ? 'rgba(104, 48, 35, 0.52)'
+            : 'rgba(158, 92, 68, 0.44)';
+      brCtx.fillRect(rand() * 128, rand() * 128, 6 + rand() * 18, 4 + rand() * 12);
+    }
+    const brickTex = this.configureColorTexture(new THREE.CanvasTexture(brickCanvas));
+    brickTex.wrapS = THREE.RepeatWrapping;
+    brickTex.wrapT = THREE.RepeatWrapping;
+
+    const makeBatchMat = (key, opts) => {
+      const mat = new THREE.MeshStandardMaterial(opts);
+      mat.userData.batchKey = key;
+      return mat;
+    };
+
+    this.rubbleMats = {
+      decal: makeBatchMat('rubble-decal', {
+        map: decalTex,
+        transparent: true,
+        depthWrite: false,
+        roughness: 0.98,
+        metalness: 0.02,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1,
+      }),
+      stoneLight: makeBatchMat('rubble-stone-light', {
+        color: 0xffffff,
+        map: stoneTex,
+        bumpMap: stoneBumpTex,
+        bumpScale: 0.055,
+        roughness: 0.9,
+        metalness: 0.04,
+      }),
+      stoneDark: makeBatchMat('rubble-stone-dark', {
+        color: 0x7a756e,
+        map: stoneTex,
+        bumpMap: stoneBumpTex,
+        bumpScale: 0.06,
+        roughness: 0.94,
+        metalness: 0.05,
+      }),
+      brick: makeBatchMat('rubble-brick', {
+        color: 0xffffff,
+        map: brickTex,
+        bumpMap: stoneBumpTex,
+        bumpScale: 0.04,
+        roughness: 0.92,
+        metalness: 0.03,
+      }),
+      rebar: makeBatchMat('rubble-rebar', {
+        color: 0x4a3b34,
+        roughness: 0.65,
+        metalness: 0.72,
+      }),
+    };
+
+    // Sculpted flat-shaded fractured rock & broken slab geometries (cached for TileBatcher)
+    const makeRockGeo = (key, radius, detail, geoSeed, sx = 1, sy = 0.7, sz = 1) => {
+      let gSeed = geoSeed;
+      const gRand = () => {
+        gSeed = (Math.imul(gSeed, 1664525) + 1013904223) >>> 0;
+        return gSeed / 4294967296;
+      };
+      const base = new THREE.IcosahedronGeometry(radius, detail);
+      const pos = base.attributes.position;
+      const vertOffsets = new Map();
+      for (let i = 0; i < pos.count; i++) {
+        const vx = pos.getX(i);
+        const vy = pos.getY(i);
+        const vz = pos.getZ(i);
+        const vKey = `${Math.round(vx * 1000)},${Math.round(vy * 1000)},${Math.round(vz * 1000)}`;
+        let factor = vertOffsets.get(vKey);
+        if (factor === undefined) {
+          factor = 0.72 + gRand() * 0.56;
+          vertOffsets.set(vKey, factor);
+        }
+        const yFactor = vy < 0 ? factor * 0.55 : factor;
+        pos.setXYZ(i, vx * factor * sx, vy * yFactor * sy, vz * factor * sz);
+      }
+      const faceted = base.toNonIndexed();
+      base.dispose();
+      faceted.computeVertexNormals();
+      faceted.userData.batchGeometryKey = key;
+      return faceted;
+    };
+
+    const makeSlabGeo = (key, w, h, d, geoSeed) => {
+      let gSeed = geoSeed;
+      const gRand = () => {
+        gSeed = (Math.imul(gSeed, 1664525) + 1013904223) >>> 0;
+        return gSeed / 4294967296;
+      };
+      const base = new THREE.BoxGeometry(w, h, d, 3, 1, 3);
+      const pos = base.attributes.position;
+      const vertOffsets = new Map();
+      for (let i = 0; i < pos.count; i++) {
+        const vx = pos.getX(i);
+        const vy = pos.getY(i);
+        const vz = pos.getZ(i);
+        const vKey = `${Math.round(vx * 1000)},${Math.round(vy * 1000)},${Math.round(vz * 1000)}`;
+        let off = vertOffsets.get(vKey);
+        if (!off) {
+          off = [(gRand() - 0.5) * 0.14, (gRand() - 0.5) * 0.03, (gRand() - 0.5) * 0.14];
+          vertOffsets.set(vKey, off);
+        }
+        pos.setXYZ(i, vx + off[0], vy + off[1], vz + off[2]);
+      }
+      const faceted = base.toNonIndexed();
+      base.dispose();
+      faceted.computeVertexNormals();
+      faceted.userData.batchGeometryKey = key;
+      return faceted;
+    };
+
+    const decalGeo = new THREE.PlaneGeometry(TILE_SIZE * 1.15, TILE_SIZE * 1.15);
+    decalGeo.userData.batchGeometryKey = 'rubble-decal-plane';
+
+    const rebarGeo = new THREE.CylinderGeometry(0.016, 0.016, 0.44, 5);
+    rebarGeo.userData.batchGeometryKey = 'rubble-rebar';
+
+    this.rubbleGeos = {
+      decal: decalGeo,
+      rockA: makeRockGeo('rubble-rock-a', 0.24, 1, 101, 1.15, 0.72, 0.95),
+      rockB: makeRockGeo('rubble-rock-b', 0.2, 0, 202, 1.25, 0.65, 0.85),
+      rockC: makeRockGeo('rubble-rock-c', 0.14, 0, 303, 1.1, 0.62, 1.05),
+      slabA: makeSlabGeo('rubble-slab-a', 0.78, 0.11, 0.58, 404),
+      slabB: makeSlabGeo('rubble-slab-b', 0.56, 0.09, 0.44, 505),
+      rebar: rebarGeo,
+    };
+  }
+
+  /** Creates persistent concrete, masonry, and rock rubble for a destroyed building or rubble cell. */
   createRubbleBlock(kind = 'house1') {
+    this.ensureRubbleAssets();
+    const { decal, stoneLight, stoneDark, brick, rebar } = this.rubbleMats;
+    const { decal: decalGeo, rockA, rockB, rockC, slabA, slabB, rebar: rebarGeo } = this.rubbleGeos;
+
     const group = new THREE.Group();
     group.userData.batchTile = true;
-    if (this.useBlenderBuildings && this.buildingModels.ready) {
-      this.buildingModels.apply(group, kind, 'core', 0, 0);
-    } else {
-      const mat = markMaterialOwned(new THREE.MeshStandardMaterial({ color: 0x6e6963, roughness: 0.94 }));
-      const geo = this.sharedGeometry('BoxGeometry', 1.6, 0.18, 1.6);
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.position.y = 0.09;
-      mesh.receiveShadow = true;
-      group.add(mesh);
+
+    // Ground crushed-mortar & gravel scatter decal
+    const decalMesh = new THREE.Mesh(decalGeo, decal);
+    decalMesh.rotation.x = -Math.PI / 2;
+    decalMesh.position.y = 0.008;
+    decalMesh.receiveShadow = true;
+    group.add(decalMesh);
+
+    const isHeavy = kind === 'house2';
+
+    // Tilted broken concrete slabs forming the core of the collapse
+    const slabs = [
+      { geo: slabA, mat: stoneLight, x: -0.14, y: 0.17, z: 0.08, rx: 0.34, ry: 0.42, rz: -0.28 },
+      { geo: slabB, mat: isHeavy ? stoneDark : brick, x: 0.26, y: 0.15, z: -0.16, rx: -0.4, ry: -0.65, rz: 0.24 },
+    ];
+    if (isHeavy) {
+      slabs.push({ geo: slabB, mat: stoneLight, x: -0.22, y: 0.24, z: -0.22, rx: 0.48, ry: 1.15, rz: 0.3 });
     }
-    return group;
+    for (const s of slabs) {
+      const m = new THREE.Mesh(s.geo, s.mat);
+      m.position.set(s.x, s.y, s.z);
+      m.rotation.set(s.rx, s.ry, s.rz);
+      m.castShadow = true;
+      m.receiveShadow = true;
+      group.add(m);
+    }
+
+    // Angular fractured rock, concrete, and masonry boulders
+    const rocks = [
+      { geo: rockA, mat: stoneLight, x: 0.04, y: 0.2, z: -0.02, rx: 0.3, ry: 0.8, rz: 0.2, s: 1.3 },
+      { geo: rockA, mat: stoneDark, x: -0.34, y: 0.14, z: 0.28, rx: 0.8, ry: 1.9, rz: 0.4, s: 1.1 },
+      { geo: rockB, mat: isHeavy ? stoneLight : brick, x: 0.38, y: 0.13, z: 0.24, rx: 0.5, ry: 2.4, rz: 0.9, s: 1.15 },
+      { geo: rockB, mat: stoneDark, x: 0.18, y: 0.22, z: 0.14, rx: 1.2, ry: 0.4, rz: 0.6, s: 1.05 },
+      { geo: rockB, mat: brick, x: -0.12, y: 0.08, z: -0.38, rx: 0.4, ry: 1.1, rz: 1.3, s: 1.0 },
+      { geo: rockB, mat: stoneLight, x: 0.46, y: 0.07, z: -0.34, rx: 0.9, ry: 2.8, rz: 0.2, s: 0.85 },
+      { geo: rockC, mat: stoneDark, x: -0.58, y: 0.05, z: -0.12, rx: 0.2, ry: 0.7, rz: 0.5, s: 1.1 },
+      { geo: rockC, mat: brick, x: 0.58, y: 0.05, z: 0.05, rx: 1.1, ry: 1.5, rz: 0.3, s: 1.0 },
+      { geo: rockC, mat: stoneLight, x: -0.25, y: 0.05, z: 0.58, rx: 0.6, ry: 2.1, rz: 0.8, s: 1.15 },
+      { geo: rockC, mat: stoneDark, x: 0.24, y: 0.04, z: 0.54, rx: 0.3, ry: 0.9, rz: 1.2, s: 0.9 },
+      { geo: rockC, mat: brick, x: -0.48, y: 0.04, z: -0.48, rx: 0.9, ry: 1.8, rz: 0.4, s: 0.95 },
+      { geo: rockC, mat: stoneLight, x: 0.1, y: 0.04, z: -0.62, rx: 0.5, ry: 2.6, rz: 0.7, s: 1.05 },
+      { geo: rockC, mat: stoneDark, x: -0.66, y: 0.04, z: 0.32, rx: 1.4, ry: 0.3, rz: 0.9, s: 0.85 },
+      { geo: rockC, mat: stoneLight, x: 0.64, y: 0.04, z: 0.46, rx: 0.7, ry: 1.4, rz: 0.2, s: 0.8 },
+    ];
+    for (const r of rocks) {
+      const m = new THREE.Mesh(r.geo, r.mat);
+      m.position.set(r.x, r.y, r.z);
+      m.rotation.set(r.rx, r.ry, r.rz);
+      m.scale.setScalar(r.s);
+      m.castShadow = true;
+      m.receiveShadow = true;
+      group.add(m);
+    }
+
+    // Protruding bent steel rebar rods from broken concrete
+    const rebars = [
+      { x: -0.02, y: 0.19, z: 0.14, rx: 0.85, ry: 0.4, rz: 0.65 },
+      { x: 0.24, y: 0.16, z: -0.08, rx: -0.95, ry: 1.2, rz: -0.45 },
+    ];
+    if (isHeavy) {
+      rebars.push(
+        { x: -0.24, y: 0.22, z: -0.18, rx: 0.75, ry: -0.8, rz: -0.7 },
+        { x: 0.08, y: 0.21, z: -0.02, rx: -0.65, ry: 0.3, rz: 0.85 }
+      );
+    }
+    for (const rb of rebars) {
+      const m = new THREE.Mesh(rebarGeo, rebar);
+      m.position.set(rb.x, rb.y, rb.z);
+      m.rotation.set(rb.rx, rb.ry, rb.rz);
+      m.castShadow = true;
+      group.add(m);
+    }
+
+    return markOwned(group, { geometries: false, materials: false });
   }
 
   /** Updates a modular building tile to match its current HP. */
@@ -2025,7 +2408,8 @@ export class ModelFactory extends TextureGenerator {
     for (let i = 0; i < 4; i++) {
       const crate = new THREE.Group();
       const height = i < 2 ? 0.9 : 1.25;
-      crate.position.set(i % 2 ? 0.48 : -0.48, 0, i < 2 ? 0.48 : -0.48);
+      crate.position.set(i % 2 ? 0.49 : -0.49, 0, i < 2 ? 0.49 : -0.49);
+      crate.scale.setScalar(0.95);
       const add = (w, h, d, x, y, z, mat) => {
         const mesh = new THREE.Mesh(this.sharedGeometry('BoxGeometry', w, h, d), this.boxMats[mat]);
         mesh.position.set(x, y, z);
@@ -2041,12 +2425,12 @@ export class ModelFactory extends TextureGenerator {
           add(0.166, height - 0.04, 0.025, offset, height / 2, sign * 0.445, (i + n) % 2);
           add(0.025, height - 0.04, 0.166, sign * 0.445, height / 2, offset, (i + n + 1) % 2);
         }
-        add(0.166, 0.03, 0.88, offset, height + 0.015, 0, n % 2);
+        add(0.166, 0.03, 0.88, offset, height + 0.008, 0, n % 2);
       }
       for (const sign of [-1, 1]) {
         for (const y of [0.11, height - 0.11]) {
           add(0.91, 0.12, 0.055, 0, y, sign * 0.47, 1);
-          add(0.055, 0.12, 0.91, sign * 0.47, y, 0, 1);
+          add(0.055, 0.108, 0.91, sign * 0.47, y, 0, 1);
         }
         const brace = add(0.09, Math.hypot(0.65, height - 0.24), 0.055, 0, height / 2, sign * 0.475, 1);
         brace.rotation.z = Math.atan2(0.65, height - 0.24) * sign;
@@ -2141,10 +2525,10 @@ export class ModelFactory extends TextureGenerator {
     for (const sx of [-1, 1]) {
       for (const sz of [-1, 1]) {
         const pilaster = new THREE.Mesh(
-          this.sharedGeometry('BoxGeometry', 0.16, 1.46, 0.16),
+          this.sharedGeometry('BoxGeometry', 0.16, 1.45, 0.16),
           rebarMat
         );
-        pilaster.position.set(sx * cornerOffset, 0.73, sz * cornerOffset);
+        pilaster.position.set(sx * cornerOffset, 0.735, sz * cornerOffset);
         group.add(pilaster);
       }
     }
@@ -2188,10 +2572,10 @@ export class ModelFactory extends TextureGenerator {
       rebarGroup.add(rodZ);
 
       const rodV = new THREE.Mesh(
-        this.sharedGeometry('CylinderGeometry', 0.035, 0.035, 1.62, 6),
+        this.sharedGeometry('CylinderGeometry', 0.035, 0.035, 1.60, 6),
         rustRebarMat
       );
-      rodV.position.set(offset, 0.81, offset * -0.7);
+      rodV.position.set(offset + 0.06, 0.82, offset * -0.7);
       rodV.rotation.z = offset * 0.12;
       rebarGroup.add(rodV);
     }
@@ -2389,6 +2773,10 @@ export class ModelFactory extends TextureGenerator {
     this.surfacePatchGeometry = null;
     disposeGeo(this.craterRimGeo);
     this.craterRimGeo = null;
+    if (this.rubbleGeos) {
+      for (const geo of Object.values(this.rubbleGeos)) disposeGeo(geo);
+      this.rubbleGeos = null;
+    }
 
     if (this.playerGlbParts) {
       for (const mesh of this.playerGlbParts.values()) {
@@ -2427,6 +2815,7 @@ export class ModelFactory extends TextureGenerator {
     }
 
     disposeBag(this.craterMats);
+    disposeBag(this.rubbleMats);
     disposeBag(this.hqMats);
     disposeBag(this.enemyBaseMats);
     disposeBag(this.forestMats);
@@ -2851,15 +3240,15 @@ export class ModelFactory extends TextureGenerator {
 
     const { bodyMat, hazardStripeMat, rimMat } = this.barrelMats;
 
-    const drumGeo = this.sharedGeometry('CylinderGeometry', 0.28, 0.28, 0.68, 14);
+    const drumGeo = this.sharedGeometry('CylinderGeometry', 0.28, 0.28, 0.67, 14);
     const stripeGeo = this.sharedGeometry('CylinderGeometry', 0.286, 0.286, 0.18, 14);
     const rimGeo = this.sharedGeometry('CylinderGeometry', 0.295, 0.295, 0.04, 14);
     const capGeo = this.sharedGeometry('CylinderGeometry', 0.045, 0.045, 0.03, 8);
 
     const drums = [
-      { x: -0.28, z: -0.24, rot: 0.2 },
-      { x: 0.30, z: -0.18, rot: -0.4 },
-      { x: -0.04, z: 0.30, rot: 0.9 },
+      { x: -0.30, z: -0.26, rot: 0.2 },
+      { x: 0.32, z: -0.20, rot: -0.4 },
+      { x: -0.03, z: 0.33, rot: 0.9 },
     ];
 
     for (const d of drums) {
@@ -2868,7 +3257,7 @@ export class ModelFactory extends TextureGenerator {
       drumGroup.rotation.y = d.rot;
 
       const drum = new THREE.Mesh(drumGeo, bodyMat);
-      drum.position.y = 0.34;
+      drum.position.y = 0.345;
       drum.castShadow = true;
       drum.receiveShadow = true;
       drumGroup.add(drum);
