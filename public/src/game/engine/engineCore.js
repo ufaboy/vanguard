@@ -1186,6 +1186,10 @@ export class TankGameEngine {
 
   hasPlayerLineOfSight(enemy) { return this.enemyAi.hasPlayerLineOfSight(enemy); }
 
+  isPointRevealedByPlayerBase(x, z) { return this.enemyAi.isPointRevealedByPlayerBase(x, z); }
+
+  isEnemyVisibleToPlayer(enemy) { return this.enemyAi.isEnemyVisibleToPlayer(enemy); }
+
   broadcastPlayerLocationFrom(spotter, targetX, targetZ) { this.enemyAi.broadcastPlayerLocationFrom(spotter, targetX, targetZ); }
 
   enemyRoleTarget(e, situation) { return this.enemyAi.enemyRoleTarget(e, situation); }

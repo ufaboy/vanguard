@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { resolveArmorHit } from '../../sim/ballistics.js';
+import { resolveHardModeMissileGuidance } from '../../sim/atgm.js';
 import { HULL_CATALOG, TURRET_CATALOG } from '../../sim/catalog.js';
 import { applySubsystemDamage } from '../../sim/subsystems.js';
 import {
@@ -327,10 +328,24 @@ export class ProjectilesController {
             sound.playJammerPulse?.({ x: p.x, z: p.z });
           }
 
+          let detonateAtFallback = false;
           if (p.jammedTarget) {
             missileTargetX = p.jammedTarget.x;
             missileTargetZ = p.jammedTarget.z;
             hasMissileTarget = true;
+          } else if (engine.hardMode) {
+            const guidance = resolveHardModeMissileGuidance(p, {
+              enemies: engine.enemies,
+              enemyBaseAlive: engine.enemyBaseAlive,
+              enemyBaseCenter: engine.getEnemyBaseCenter?.() || null,
+              isEnemyVisible: (e) => engine.isEnemyVisibleToPlayer?.(e) ?? true,
+              isStealthEnemy: (e) => e?.enemyClass === EnemyClass.STEALTH,
+              seekRadiusWorld: MISSILE.SEEK_RADIUS_CELLS * TILE_SIZE,
+            });
+            missileTargetX = guidance.x;
+            missileTargetZ = guidance.z;
+            hasMissileTarget = guidance.hasTarget;
+            detonateAtFallback = guidance.detonateAtPoint;
           } else {
             let nearest = null;
             let minDist = Infinity;
@@ -355,6 +370,9 @@ export class ProjectilesController {
               }
             }
           }
+          p._detonateAtFallbackPoint = detonateAtFallback;
+          p._fallbackTargetX = missileTargetX;
+          p._fallbackTargetZ = missileTargetZ;
           if (!p.jammedTarget) {
             const curAngle = Math.atan2(p.vx, p.vz);
             const rawAngle = Math.atan2(missileTargetX - p.x, missileTargetZ - p.z);
@@ -440,6 +458,21 @@ export class ProjectilesController {
       ) {
         p.x = p.jammedTarget.x;
         p.z = p.jammedTarget.z;
+        engine.detonateMissile(p);
+        engine.removeProjectile(i);
+        continue;
+      }
+
+      if (
+        p.isMissile &&
+        p.fromPlayer &&
+        !p.jammedTarget &&
+        p._detonateAtFallbackPoint &&
+        ((p._fallbackTargetX - p.x) * p.vx + (p._fallbackTargetZ - p.z) * p.vz <= 0 ||
+          Math.hypot(p._fallbackTargetX - p.x, p._fallbackTargetZ - p.z) <= 0.45)
+      ) {
+        p.x = p._fallbackTargetX;
+        p.z = p._fallbackTargetZ;
         engine.detonateMissile(p);
         engine.removeProjectile(i);
         continue;

@@ -27,6 +27,7 @@ import { markMaterialOwned, markOwned } from '../render/dispose.js';
 import { cellMovement } from '../terrains/layers.js';
 import { deckClearance } from '../render/models.js';
 import { apsInterceptCost } from '../../sim/aps.js';
+import { selectInitialAtgmTarget } from '../../sim/atgm.js';
 import { JAMMER_ECM, isPointWithinJammerRadius } from '../../sim/jammer.js';
 import { resetBrain } from '../../sim/behavior/index.js';
 import { TERRAIN_SURFACES } from '../../sim/catalog.js';
@@ -373,6 +374,22 @@ export class PlayerController {
       return;
     }
 
+    const initialSelection = selectInitialAtgmTarget({
+      hardMode: engine.hardMode,
+      playerX: engine.playerX,
+      playerZ: engine.playerZ,
+      enemies: engine.enemies,
+      enemyBaseAlive: engine.enemyBaseAlive,
+      enemyBaseCenter: engine.getEnemyBaseCenter?.() || null,
+      hasLineOfSight: (x0, z0, x1, z1) => engine.hasLineOfSight?.(x0, z0, x1, z1) ?? true,
+      isEnemyVisible: (e) => engine.isEnemyVisibleToPlayer?.(e) ?? true,
+      isBaseRevealed: (x, z) => engine.isPointRevealedByPlayerBase?.(x, z) ?? false,
+    });
+    if (!initialSelection.allowed) {
+      engine.setStatusBanner(t('NO VISIBLE TARGET FOR ATGM'), 2.0);
+      return;
+    }
+
     engine.missileAmmo--;
     engine.medalTracker?.recordPlayerMissileFired();
     engine.playerSave.missileAmmo = engine.missileAmmo;
@@ -408,6 +425,9 @@ export class PlayerController {
       life: MISSILE.MAX_LIFETIME,
       isHeavy: true,
       isMissile: true,
+      targetEnemy: initialSelection.targetEnemy || null,
+      targetBase: Boolean(initialSelection.targetBase),
+      lastKnownTarget: initialSelection.lastKnownTarget || null,
       soundHandle,
       mesh,
     });

@@ -92,10 +92,20 @@ export class EnemyAiController {
     return true;
   }
 
+  isPointRevealedByPlayerBase(x, z) {
+    const engine = this.engine;
+    if (!engine.baseAlive) return false;
+    const baseCenter = engine.sectorLoader?.getCommandBaseCenter?.();
+    if (!baseCenter) return false;
+    const radiusWorld = ENEMY_VISIBILITY.HQ_RECON_RADIUS_CELLS * TILE_SIZE;
+    return Math.hypot(x - baseCenter.x, z - baseCenter.z) <= radiusWorld;
+  }
+
   hasPlayerLineOfSight(enemy) {
     const engine = this.engine;
     if (!enemy) return false;
     if (engine.isPointRevealedByReconDrone?.(enemy.x, enemy.z)) return true;
+    if (this.isPointRevealedByPlayerBase(enemy.x, enemy.z)) return true;
     const dist = Math.hypot(enemy.x - engine.playerX, enemy.z - engine.playerZ);
     if (dist <= 2 * TILE_SIZE) return true;
     if (!this.hasLineOfSight(engine.playerX, engine.playerZ, enemy.x, enemy.z)) return false;
@@ -103,6 +113,20 @@ export class EnemyAiController {
     const eCell = engine.worldToGrid?.(enemy.x, enemy.z);
     const cell = eCell ? engine.grid[eCell.row]?.[eCell.col] : null;
     if (cell?.type === TileType.FOREST) return false;
+    return true;
+  }
+
+  isEnemyVisibleToPlayer(enemy) {
+    const engine = this.engine;
+    if (!enemy || enemy.hp <= 0) return false;
+    if (!engine.hardMode) return true;
+    if (!this.hasPlayerLineOfSight(enemy)) return false;
+    if (enemy.enemyClass === EnemyClass.STEALTH) {
+      const spottedByDrone = Boolean(engine.isPointRevealedByReconDrone?.(enemy.x, enemy.z));
+      const spottedByHq = this.isPointRevealedByPlayerBase(enemy.x, enemy.z);
+      const dist = Math.hypot(enemy.x - engine.playerX, enemy.z - engine.playerZ);
+      return spottedByDrone || spottedByHq || dist < 6.2 || (enemy.stealthRevealTimer ?? 0) > 0;
+    }
     return true;
   }
 
@@ -964,10 +988,11 @@ export class EnemyAiController {
 
       if (e.enemyClass === EnemyClass.STEALTH && e.rig.stealthMaterials) {
         const spottedByDrone = Boolean(engine.isPointRevealedByReconDrone?.(e.x, e.z));
+        const spottedByHq = this.isPointRevealedByPlayerBase(e.x, e.z);
         const hasLos = !engine.hardMode || this.hasPlayerLineOfSight(e);
-        const revealed = spottedByDrone || (hasLos && (distToPlayer < 6.2 || e.stealthRevealTimer > 0));
+        const revealed = spottedByDrone || spottedByHq || (hasLos && (distToPlayer < 6.2 || e.stealthRevealTimer > 0));
         const moving = Math.hypot(e.targetDirX, e.targetDirZ) > 0.05;
-        const targetOpacity = !hasLos && !spottedByDrone ? 0.0 : revealed ? 0.96 : moving ? 0.3 : 0.12;
+        const targetOpacity = !hasLos && !spottedByDrone && !spottedByHq ? 0.0 : revealed ? 0.96 : moving ? 0.3 : 0.12;
         let currentOpacity = 0;
         for (const mat of e.rig.stealthMaterials) {
           mat.opacity = THREE.MathUtils.damp(mat.opacity, targetOpacity, 8, dt);

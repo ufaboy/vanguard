@@ -1268,15 +1268,16 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 }
 
 .campaign-workspace {
-  display: grid;
-  grid-template-columns: minmax(270px, 1fr) minmax(350px, 1.25fr) minmax(270px, 1fr);
+  display: flex;
   gap: 22px;
   align-items: stretch;
   margin-bottom: 28px;
 }
 
 .campaign-region-map-panel {
-  width: 100%;
+  flex: 1 1 0;
+  min-width: 270px;
+  max-width: 604px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -1284,7 +1285,8 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 .campaign-region-map-card {
   position: relative;
-  width: 100%;
+  width: min(100%, 604px);
+  margin: 0 auto;
   aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: 10px;
@@ -1596,16 +1598,25 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 
 @media (max-width: 1180px) {
   .campaign-workspace {
+    display: grid;
     grid-template-columns: 1fr 1fr;
+  }
+  .campaign-region-map-panel,
+  .campaign-recon-panel {
+    max-width: none;
+    min-width: 0;
   }
   .campaign-briefing-panel {
     grid-column: 1 / -1;
     order: 3;
+    min-width: 0;
   }
 }
 
 .campaign-recon-panel {
-  width: 100%;
+  flex: 1 1 0;
+  min-width: 270px;
+  max-width: 604px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -1887,6 +1898,8 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 }
 
 .campaign-briefing-panel {
+  flex: 1.25 1 0;
+  min-width: 350px;
   user-select: text;
   -webkit-user-select: text;
   display: flex;
