@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import * as THREE from 'three';
 
 import { ModelFactory } from '../public/src/game/render/models.js';
 import { getSectorEnemyClasses, sectorUsesLandmarks } from '../public/src/game/engine/sector-loader.js';
@@ -189,4 +190,41 @@ test('LandmarkModels.unload frees templates and materials while remaining reusab
   assert.equal(models.fallbackMats, null);
   assert.equal(models.disposed, false);
 });
+
+test('STEALTH enemy rig populates stealthMaterials for both loading proxy and loaded GLB', () => {
+  const makePartMesh = () =>
+    new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshStandardMaterial({ color: 0x334155 })
+    );
+
+  const factory = createStubFactory({
+    shadowTex: null,
+    tankArmorTex: null,
+    trackTreadTex: null,
+    getLoadingBadgeTexture: () => null,
+    pendingEnemyRigs: new Map(),
+    glbTankParts: new Map(),
+  });
+
+  // 1. Before GLB loads (holographic proxy): stealthMaterials and fadeMaterials are populated
+  const proxyRig = factory.createEnemyTank(EnemyClass.STEALTH);
+  assert.ok(Array.isArray(proxyRig.stealthMaterials) && proxyRig.stealthMaterials.length > 0);
+  assert.ok(Array.isArray(proxyRig.fadeMaterials) && proxyRig.fadeMaterials.length > 0);
+
+  // 2. When GLB parts are already loaded (`skeletonOnly: true`), applyGlbTankModel populates stealthMaterials
+  factory.glbTankParts.set(EnemyClass.STEALTH, {
+    hull: [makePartMesh()],
+    turret: [makePartMesh()],
+    gun: [makePartMesh()],
+    clearance: null,
+  });
+  const glbRig = factory.createEnemyTank(EnemyClass.STEALTH);
+  assert.ok(Array.isArray(glbRig.stealthMaterials) && glbRig.stealthMaterials.length === 3);
+  for (const mat of glbRig.stealthMaterials) {
+    assert.equal(mat.transparent, true);
+    assert.equal(mat.opacity, 0.22);
+  }
+});
+
 

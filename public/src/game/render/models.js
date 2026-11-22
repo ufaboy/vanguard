@@ -843,8 +843,12 @@ export class ModelFactory extends TextureGenerator {
     barrelPivot.add(wrap(parts.gun, -gunY, -gunZ));
     muzzleFlash.position.set(0, ((cfg.muzzleY ?? cfg.gunY) - cfg.gunY) * s, cfg.muzzleX * s - gunZ);
     rig.radarDish = turretWrap.children.find((m) => m.name === 'Turret_Dish') || null;
-    if (stealthMaterials && rig.stealthMaterials) {
-      rig.stealthMaterials.splice(0, rig.stealthMaterials.length, ...stealthMaterials);
+    if (stealthMaterials) {
+      if (rig.stealthMaterials) {
+        rig.stealthMaterials.splice(0, rig.stealthMaterials.length, ...stealthMaterials);
+      } else {
+        rig.stealthMaterials = stealthMaterials;
+      }
     }
     rig.fadeMaterials = fadeMaterials;
     rig.muzzleDist = cfg.muzzleX * s;
@@ -1240,6 +1244,8 @@ export class ModelFactory extends TextureGenerator {
     let addHoloBox = null;
     let addHoloCylinder = null;
     let badgeTex = null;
+    let holoStealthMaterials = null;
+    let holoFadeMaterials = null;
 
     if (!skeletonOnly) {
       // Glowing ground calibration ring (holographic projection pad)
@@ -1282,6 +1288,12 @@ export class ModelFactory extends TextureGenerator {
         transparent: true,
         opacity: 0.85,
       });
+      if (!isPlayer) {
+        holoFadeMaterials = [holoMat, trackMat];
+        if (enemyClass === EnemyClass.STEALTH) {
+          holoStealthMaterials = [holoMat, trackMat, ringMat, wireMat];
+        }
+      }
 
       addHoloBox = (parent, w, h, d, x = 0, y = 0, z = 0, rx = 0, mat = holoMat) => {
         const geo = new THREE.BoxGeometry(w, h, d);
@@ -1485,8 +1497,8 @@ export class ModelFactory extends TextureGenerator {
       hpBarBg,
       hpBarFill,
       radarDish: null,
-      stealthMaterials: null,
-      fadeMaterials: null,
+      stealthMaterials: holoStealthMaterials,
+      fadeMaterials: holoFadeMaterials,
       muzzleDist: barrelPivot.position.z + muzzleFlash.position.z,
       missileMounts: null,
       clearanceSources: [],
