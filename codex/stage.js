@@ -339,9 +339,35 @@ export class CodexStage {
       crate.position.set(0, 0.35, 0);
       e.codexStageGroup.add(crate);
       e.codexTankRig = { root: crate, isCrate: true };
+    } else if (item.category === 'LANDMARKS' && item.landmarkKind) {
+      const kind = item.landmarkKind;
+      const landmark = e.modelFactory.landmarkModels.create(kind);
+      e.codexStageGroup.add(landmark);
+      this.fitLandmarkOnPedestal(landmark);
+      e.modelFactory.landmarkModels.ensureLoaded([kind]).then(() => {
+        if (e.codexOpen && e.codexItem?.id === item.id && landmark.parent === e.codexStageGroup) {
+          this.fitLandmarkOnPedestal(landmark);
+        }
+      });
     } else if (item.category === 'EFFECTS') {
       this.setupEffectScene(item.effectType);
     }
+  }
+
+  fitLandmarkOnPedestal(landmark) {
+    if (!landmark) return;
+    landmark.scale.setScalar(1);
+    landmark.position.set(0, 0, 0);
+    landmark.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(landmark);
+    if (box.isEmpty()) return;
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const maxHoriz = Math.max(size.x, size.z, 0.01);
+    const maxHeight = Math.max(size.y, 0.01);
+    const scale = Math.min(1.35, 5.4 / maxHoriz, 6.2 / maxHeight);
+    landmark.scale.setScalar(scale);
+    landmark.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
   }
 
   setupEffectScene(effectType) {

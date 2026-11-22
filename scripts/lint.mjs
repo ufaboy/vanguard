@@ -47,6 +47,7 @@ const htmlFiles = fs
 const consumers = [
   ...getJsFiles('tests', ['.js', '.mjs']),
   ...getJsFiles('scripts', ['.js', '.mjs']),
+  ...getJsFiles('codex', ['.js']),
   ...htmlFiles,
   ...getJsFiles('site/src', ['.astro', '.js', '.mjs']),
 ].filter((file) => fs.existsSync(file));
