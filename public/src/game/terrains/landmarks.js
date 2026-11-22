@@ -420,11 +420,11 @@ export class LandmarkModels {
 
     // Roadway slab with darker asphalt strip and a stone kerb band each side.
     box(width + 0.2, 0.42, length, m.darkStone, 0, deckTop - 0.21, 0);
-    box(width - 0.7, 0.02, length, m.asphalt, 0, deckTop + 0.01, 0);
+    box(width - 0.7, 0.03, length - 0.02, m.asphalt, 0, deckTop + 0.005, 0);
     const dashes = Math.max(2, Math.round(length / 0.9));
     for (let i = 0; i < dashes; i++) {
       const z = -halfL + (length * (i + 0.5)) / dashes;
-      box(0.08, 0.01, 0.45, m.roadPaint, 0, deckTop + 0.025, z);
+      box(0.08, 0.01, 0.45, m.roadPaint, 0, deckTop + 0.023, z);
     }
     // Spandrel fascia: a thick cornice band under the parapets reads as the bridge body.
     for (const sx of [-1, 1]) {
@@ -437,7 +437,7 @@ export class LandmarkModels {
     const balusterGeo = new THREE.CylinderGeometry(0.035, 0.05, 0.26, 6);
     for (const sx of [-1, 1]) {
       const px = sx * parapetX;
-      box(0.24, 0.08, length - 0.3, m.stone, px, deckTop + 0.04, 0);
+      box(0.24, 0.09, length - 0.3, m.stone, px, deckTop + 0.035, 0);
       box(0.28, 0.07, length - 0.3, m.whiteStone, px, deckTop + 0.39, 0);
       const count = Math.max(4, Math.round((length - 1.0) / 0.22));
       for (let i = 0; i < count; i++) {
@@ -448,7 +448,7 @@ export class LandmarkModels {
       const pierZs = [-halfL + 0.25, halfL - 0.25];
       for (let s = 1; s < spanCells; s++) pierZs.push(-spanCells + s * cell);
       for (const z of pierZs) {
-        box(0.34, 0.5, 0.34, m.stone, px, deckTop + 0.25, z);
+        box(0.34, 0.52, 0.34, m.stone, px, deckTop + 0.24, z);
         box(0.4, 0.06, 0.4, m.whiteStone, px, deckTop + 0.53, z);
       }
       for (const z of [-halfL + 0.25, halfL - 0.25]) {
@@ -462,7 +462,7 @@ export class LandmarkModels {
     const cutwater = new THREE.CylinderGeometry(0.42, 0.42, 0.7, 4);
     for (let s = 1; s < spanCells; s++) {
       const z = -spanCells + s * cell;
-      box(width + 0.3, 0.7, 0.7, m.darkStone, 0, -0.35, z);
+      box(width + 0.3, 0.7, 0.7, m.darkStone, 0, -0.36, z);
       for (const sx of [-1, 1]) {
         add(cutwater, m.darkStone, sx * (halfW + 0.15), -0.3, z).scale.set(1, 1, 0.83);
         box(0.5, 0.06, 0.5, m.stone, sx * (halfW + 0.15), 0.06, z).rotation.y = Math.PI / 4;
@@ -470,7 +470,7 @@ export class LandmarkModels {
     }
     // Abutments where the bridge meets each bank.
     for (const sz of [-1, 1]) {
-      box(width + 0.5, 0.6, 0.45, m.stone, 0, -0.22, sz * (halfL - 0.05));
+      box(width + 0.5, 0.59, 0.45, m.stone, 0, -0.225, sz * (halfL - 0.05));
     }
     return markOwned(group, { geometries: true, materials: false });
   }

@@ -1741,13 +1741,13 @@ export class ModelFactory extends TextureGenerator {
 
     // Apron slab with low kerbs, corner bollards and kerb lights.
     box(W, 0.1, D, m.apron, 0, 0.05, 0, false);
-    for (const z of [-D / 2 + 0.05, D / 2 - 0.05]) {
-      for (const x of [-1.45, 1.45]) box(0.9, 0.12, 0.1, m.trim, x, 0.16, z);
+    for (const z of [-D / 2 + 0.06, D / 2 - 0.06]) {
+      for (const x of [-1.45, 1.45]) box(0.9, 0.13, 0.1, m.trim, x, 0.155, z);
     }
-    for (const x of [-W / 2 + 0.05, W / 2 - 0.05]) {
-      box(0.1, 0.12, D - 0.2, m.trim, x, 0.16, 0);
+    for (const x of [-W / 2 + 0.06, W / 2 - 0.06]) {
+      box(0.1, 0.128, D - 0.24, m.trim, x, 0.146, 0);
       for (const z of [-0.45, 0.45]) box(0.02, 0.04, 0.16, m.lamp, x + Math.sign(x) * 0.05, 0.16, z, false);
-      for (const z of [-D / 2 + 0.1, D / 2 - 0.1]) box(0.16, 0.24, 0.16, m.trim, x - Math.sign(x) * 0.05, 0.22, z);
+      for (const z of [-D / 2 + 0.1, D / 2 - 0.1]) box(0.16, 0.266, 0.16, m.trim, x - Math.sign(x) * 0.05, 0.207, z);
     }
 
     // Hangar shell: three full-depth piers, roof deck, and headers with a red band over both open faces.
@@ -1761,7 +1761,7 @@ export class ModelFactory extends TextureGenerator {
     for (const x of [HX - HW / 2, HX, HX + HW / 2]) {
       // End piers rise above the roof deck like the buttresses of the concept; the centre pier stops just under the roof surface.
       const pierH = wallH + (x === HX ? 0.11 : 0.3);
-      box(pierW, pierH, HD + 0.08, m.wall, x, 0.1 + pierH / 2, 0);
+      box(pierW, pierH + 0.01, HD + 0.08, m.wall, x, 0.095 + pierH / 2, 0);
       if (x !== HX) box(pierW + 0.04, 0.04, HD + 0.12, m.trim, x, 0.12 + pierH, 0, false);
       for (const z of [-1, 1]) box(pierW + 0.01, 0.42, 0.02, m.hazard, x, 0.33, z * (HD / 2 + 0.05), false);
     }
@@ -1770,9 +1770,9 @@ export class ModelFactory extends TextureGenerator {
       box(0.02, 0.02, HD - 0.1, m.trim, HX + (i * HW) / 8, 0.1 + wallH + 0.13, 0, false);
     }
     for (const z of [-1, 1]) {
-      const fz = z * (HD / 2 - 0.04);
+      const fz = z * (HD / 2 - 0.05);
       const headerY = 0.1 + doorH + headerH / 2;
-      box(HW, headerH, 0.12, m.wall, HX, headerY, fz);
+      box(HW - 0.02, headerH, 0.12, m.wall, HX, headerY, fz);
       box(HW + 0.01, 0.07, 0.13, m.red, HX, headerY + 0.02, fz);
       for (const bx of [HX - HW / 4, HX + HW / 4]) box(0.22, 0.03, 0.05, m.lamp, bx, 0.1 + doorH - 0.02, fz - z * 0.06, false);
       const sign = add(group, new THREE.Mesh(this.sharedGeometry('PlaneGeometry', 0.92, 0.345), m.sign), HX, headerY, z * (HD / 2 + 0.065), false);
@@ -1781,10 +1781,10 @@ export class ModelFactory extends TextureGenerator {
 
     // Bays: dark floor plates, ceiling lights and a yellow gantry crane with a hook in each bay.
     for (const bx of [HX - HW / 4, HX + HW / 4]) {
-      box(HW / 2 - pierW, 0.012, HD - 0.04, m.bay, bx, 0.106, 0, false);
+      box(HW / 2 - pierW, 0.014, HD - 0.04, m.bay, bx, 0.108, 0, false);
       box(HW / 2 - pierW, 0.02, HD, m.interior, bx, 0.1 + wallH - 0.015, 0, false);
       box(HW / 2 - pierW, 0.08, 0.1, m.crane, bx, 0.1 + doorH - 0.08, 0);
-      box(0.12, 0.08, 0.1, m.crane, bx + 0.12, 0.1 + doorH - 0.15, 0);
+      box(0.12, 0.08, 0.11, m.crane, bx + 0.12, 0.1 + doorH - 0.15, 0);
       box(0.015, 0.12, 0.015, m.steel, bx + 0.12, 0.1 + doorH - 0.25, 0, false);
       box(0.06, 0.05, 0.03, m.crane, bx + 0.12, 0.1 + doorH - 0.33, 0, false);
       for (const z of [-0.3, 0.3]) box(0.16, 0.025, 0.06, m.lamp, bx, 0.1 + wallH - 0.03, z, false);
@@ -1795,7 +1795,7 @@ export class ModelFactory extends TextureGenerator {
     for (const z of [-0.26, 0.26]) box(0.9, 0.04, 0.12, m.steel, 0, 0.02, z, true, tank);
     for (const x of [-0.26, 0.26]) box(0.14, 0.15, 0.82, m.track, x, 0.13, 0, true, tank);
     box(0.42, 0.14, 0.86, m.tank, 0, 0.21, 0, true, tank);
-    box(0.66, 0.03, 0.78, m.tank, 0, 0.22, 0, true, tank);
+    box(0.67, 0.03, 0.78, m.tank, 0, 0.215, 0, true, tank);
     box(0.36, 0.13, 0.38, m.tank, 0, 0.345, 0.05, true, tank);
     box(0.12, 0.05, 0.14, m.tank, 0.08, 0.43, 0.08, true, tank);
     const barrel = add(tank, new THREE.Mesh(this.sharedGeometry('CylinderGeometry', 0.03, 0.035, 0.42, 8), m.tank), 0, 0.35, -0.33, true);
@@ -1806,9 +1806,9 @@ export class ModelFactory extends TextureGenerator {
 
     // East bay: tool chest and parts cabinet.
     const toolX = HX + HW / 2 - pierW / 2 - 0.15;
-    box(0.26, 0.2, 0.14, m.red, toolX, 0.2, -0.3);
+    box(0.26, 0.21, 0.14, m.red, toolX, 0.195, -0.3);
     box(0.27, 0.02, 0.15, m.steel, toolX, 0.31, -0.3, false);
-    box(0.16, 0.36, 0.2, m.cabinet, toolX + 0.03, 0.28, 0.32);
+    box(0.16, 0.37, 0.2, m.cabinet, toolX + 0.03, 0.275, 0.32);
 
     // Fuel depot at the east end: tank on saddles inside a yellow guard rail.
     const fuelX = W / 2 - 0.36;
@@ -1819,19 +1819,19 @@ export class ModelFactory extends TextureGenerator {
       cap.scale.set(1, 0.35, 1);
       cap.rotation.x = z * Math.PI / 2;
     }
-    for (const z of [-0.25, 0.25]) box(0.32, 0.14, 0.08, m.steel, fuelX, 0.17, z);
+    for (const z of [-0.25, 0.25]) box(0.32, 0.15, 0.08, m.steel, fuelX, 0.165, z);
     box(0.08, 0.06, 0.08, m.fuelCap, fuelX, 0.58, -0.32);
     const railY = 0.32;
     for (const x of [fuelX - 0.29, fuelX + 0.29]) {
-      box(0.025, 0.025, 1.1, m.crane, x, railY, 0, false);
-      for (const z of [-0.54, 0, 0.54]) box(0.025, railY - 0.1, 0.025, m.crane, x, 0.1 + (railY - 0.1) / 2, z, false);
+      box(0.03, 0.03, 1.13, m.crane, x, railY, 0, false);
+      for (const z of [-0.51, 0, 0.51]) box(0.018, railY - 0.074, 0.018, m.crane, x, 0.074 + (railY - 0.074) / 2, z, false);
     }
-    for (const z of [-0.55, 0.55]) box(0.6, 0.025, 0.025, m.crane, fuelX, railY, z, false);
+    for (const z of [-0.545, 0.545]) box(0.56, 0.018, 0.018, m.crane, fuelX, railY, z, false);
 
     // Ammunition crates at the west end.
     const crateX = -W / 2 + 0.3;
-    box(0.36, 0.3, 0.42, m.crate, crateX, 0.25, 0.26);
-    box(0.26, 0.2, 0.26, m.crate, crateX + 0.02, 0.2, -0.3).rotation.y = 0.25;
+    box(0.36, 0.318, 0.42, m.crate, crateX, 0.241, 0.26);
+    box(0.26, 0.218, 0.26, m.crate, crateX + 0.02, 0.191, -0.3).rotation.y = 0.25;
     box(0.22, 0.16, 0.24, m.crate, crateX - 0.01, 0.48, 0.24).rotation.y = -0.15;
 
     const repairGeo = new THREE.CircleGeometry(7.0, 64);
@@ -2135,15 +2135,15 @@ export class ModelFactory extends TextureGenerator {
         color: 0xffffff,
         map: stoneTex,
         bumpMap: stoneBumpTex,
-        bumpScale: 0.04,
-        roughness: 0.92,
+        bumpScale: 0.055,
+        roughness: 0.9,
         metalness: 0.04,
       }),
       stoneDark: makeBatchMat('rubble-stone-dark', {
-        color: 0xa09b93,
+        color: 0x7a756e,
         map: stoneTex,
         bumpMap: stoneBumpTex,
-        bumpScale: 0.045,
+        bumpScale: 0.06,
         roughness: 0.94,
         metalness: 0.05,
       }),
@@ -2151,8 +2151,8 @@ export class ModelFactory extends TextureGenerator {
         color: 0xffffff,
         map: brickTex,
         bumpMap: stoneBumpTex,
-        bumpScale: 0.03,
-        roughness: 0.93,
+        bumpScale: 0.04,
+        roughness: 0.92,
         metalness: 0.03,
       }),
       rebar: makeBatchMat('rubble-rebar', {
@@ -2257,11 +2257,11 @@ export class ModelFactory extends TextureGenerator {
 
     // Tilted broken concrete slabs forming the core of the collapse
     const slabs = [
-      { geo: slabA, mat: stoneLight, x: -0.14, y: 0.13, z: 0.08, rx: 0.28, ry: 0.42, rz: -0.22 },
-      { geo: slabB, mat: isHeavy ? stoneDark : brick, x: 0.26, y: 0.11, z: -0.16, rx: -0.34, ry: -0.65, rz: 0.18 },
+      { geo: slabA, mat: stoneLight, x: -0.14, y: 0.17, z: 0.08, rx: 0.34, ry: 0.42, rz: -0.28 },
+      { geo: slabB, mat: isHeavy ? stoneDark : brick, x: 0.26, y: 0.15, z: -0.16, rx: -0.4, ry: -0.65, rz: 0.24 },
     ];
     if (isHeavy) {
-      slabs.push({ geo: slabB, mat: stoneLight, x: -0.22, y: 0.19, z: -0.22, rx: 0.42, ry: 1.15, rz: 0.25 });
+      slabs.push({ geo: slabB, mat: stoneLight, x: -0.22, y: 0.24, z: -0.22, rx: 0.48, ry: 1.15, rz: 0.3 });
     }
     for (const s of slabs) {
       const m = new THREE.Mesh(s.geo, s.mat);
@@ -2274,10 +2274,10 @@ export class ModelFactory extends TextureGenerator {
 
     // Angular fractured rock, concrete, and masonry boulders
     const rocks = [
-      { geo: rockA, mat: stoneLight, x: 0.04, y: 0.14, z: -0.02, rx: 0.3, ry: 0.8, rz: 0.2, s: 1.15 },
-      { geo: rockA, mat: stoneDark, x: -0.34, y: 0.1, z: 0.28, rx: 0.8, ry: 1.9, rz: 0.4, s: 0.95 },
-      { geo: rockB, mat: isHeavy ? stoneLight : brick, x: 0.38, y: 0.09, z: 0.24, rx: 0.5, ry: 2.4, rz: 0.9, s: 1.05 },
-      { geo: rockB, mat: stoneDark, x: 0.18, y: 0.16, z: 0.14, rx: 1.2, ry: 0.4, rz: 0.6, s: 0.9 },
+      { geo: rockA, mat: stoneLight, x: 0.04, y: 0.2, z: -0.02, rx: 0.3, ry: 0.8, rz: 0.2, s: 1.3 },
+      { geo: rockA, mat: stoneDark, x: -0.34, y: 0.14, z: 0.28, rx: 0.8, ry: 1.9, rz: 0.4, s: 1.1 },
+      { geo: rockB, mat: isHeavy ? stoneLight : brick, x: 0.38, y: 0.13, z: 0.24, rx: 0.5, ry: 2.4, rz: 0.9, s: 1.15 },
+      { geo: rockB, mat: stoneDark, x: 0.18, y: 0.22, z: 0.14, rx: 1.2, ry: 0.4, rz: 0.6, s: 1.05 },
       { geo: rockB, mat: brick, x: -0.12, y: 0.08, z: -0.38, rx: 0.4, ry: 1.1, rz: 1.3, s: 1.0 },
       { geo: rockB, mat: stoneLight, x: 0.46, y: 0.07, z: -0.34, rx: 0.9, ry: 2.8, rz: 0.2, s: 0.85 },
       { geo: rockC, mat: stoneDark, x: -0.58, y: 0.05, z: -0.12, rx: 0.2, ry: 0.7, rz: 0.5, s: 1.1 },
@@ -2408,7 +2408,8 @@ export class ModelFactory extends TextureGenerator {
     for (let i = 0; i < 4; i++) {
       const crate = new THREE.Group();
       const height = i < 2 ? 0.9 : 1.25;
-      crate.position.set(i % 2 ? 0.48 : -0.48, 0, i < 2 ? 0.48 : -0.48);
+      crate.position.set(i % 2 ? 0.49 : -0.49, 0, i < 2 ? 0.49 : -0.49);
+      crate.scale.setScalar(0.95);
       const add = (w, h, d, x, y, z, mat) => {
         const mesh = new THREE.Mesh(this.sharedGeometry('BoxGeometry', w, h, d), this.boxMats[mat]);
         mesh.position.set(x, y, z);
@@ -2424,12 +2425,12 @@ export class ModelFactory extends TextureGenerator {
           add(0.166, height - 0.04, 0.025, offset, height / 2, sign * 0.445, (i + n) % 2);
           add(0.025, height - 0.04, 0.166, sign * 0.445, height / 2, offset, (i + n + 1) % 2);
         }
-        add(0.166, 0.03, 0.88, offset, height + 0.015, 0, n % 2);
+        add(0.166, 0.03, 0.88, offset, height + 0.008, 0, n % 2);
       }
       for (const sign of [-1, 1]) {
         for (const y of [0.11, height - 0.11]) {
           add(0.91, 0.12, 0.055, 0, y, sign * 0.47, 1);
-          add(0.055, 0.12, 0.91, sign * 0.47, y, 0, 1);
+          add(0.055, 0.108, 0.91, sign * 0.47, y, 0, 1);
         }
         const brace = add(0.09, Math.hypot(0.65, height - 0.24), 0.055, 0, height / 2, sign * 0.475, 1);
         brace.rotation.z = Math.atan2(0.65, height - 0.24) * sign;
@@ -2524,10 +2525,10 @@ export class ModelFactory extends TextureGenerator {
     for (const sx of [-1, 1]) {
       for (const sz of [-1, 1]) {
         const pilaster = new THREE.Mesh(
-          this.sharedGeometry('BoxGeometry', 0.16, 1.46, 0.16),
+          this.sharedGeometry('BoxGeometry', 0.16, 1.45, 0.16),
           rebarMat
         );
-        pilaster.position.set(sx * cornerOffset, 0.73, sz * cornerOffset);
+        pilaster.position.set(sx * cornerOffset, 0.735, sz * cornerOffset);
         group.add(pilaster);
       }
     }
@@ -2571,10 +2572,10 @@ export class ModelFactory extends TextureGenerator {
       rebarGroup.add(rodZ);
 
       const rodV = new THREE.Mesh(
-        this.sharedGeometry('CylinderGeometry', 0.035, 0.035, 1.62, 6),
+        this.sharedGeometry('CylinderGeometry', 0.035, 0.035, 1.60, 6),
         rustRebarMat
       );
-      rodV.position.set(offset, 0.81, offset * -0.7);
+      rodV.position.set(offset + 0.06, 0.82, offset * -0.7);
       rodV.rotation.z = offset * 0.12;
       rebarGroup.add(rodV);
     }
@@ -3239,15 +3240,15 @@ export class ModelFactory extends TextureGenerator {
 
     const { bodyMat, hazardStripeMat, rimMat } = this.barrelMats;
 
-    const drumGeo = this.sharedGeometry('CylinderGeometry', 0.28, 0.28, 0.68, 14);
+    const drumGeo = this.sharedGeometry('CylinderGeometry', 0.28, 0.28, 0.67, 14);
     const stripeGeo = this.sharedGeometry('CylinderGeometry', 0.286, 0.286, 0.18, 14);
     const rimGeo = this.sharedGeometry('CylinderGeometry', 0.295, 0.295, 0.04, 14);
     const capGeo = this.sharedGeometry('CylinderGeometry', 0.045, 0.045, 0.03, 8);
 
     const drums = [
-      { x: -0.28, z: -0.24, rot: 0.2 },
-      { x: 0.30, z: -0.18, rot: -0.4 },
-      { x: -0.04, z: 0.30, rot: 0.9 },
+      { x: -0.30, z: -0.26, rot: 0.2 },
+      { x: 0.32, z: -0.20, rot: -0.4 },
+      { x: -0.03, z: 0.33, rot: 0.9 },
     ];
 
     for (const d of drums) {
@@ -3256,7 +3257,7 @@ export class ModelFactory extends TextureGenerator {
       drumGroup.rotation.y = d.rot;
 
       const drum = new THREE.Mesh(drumGeo, bodyMat);
-      drum.position.y = 0.34;
+      drum.position.y = 0.345;
       drum.castShadow = true;
       drum.receiveShadow = true;
       drumGroup.add(drum);

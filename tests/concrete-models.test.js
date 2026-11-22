@@ -101,21 +101,32 @@ test('Concrete breaks open toward the hits, darkens per hit and stays in one bat
   batcher.reset(); models.dispose();
 });
 
-test('A blast breaches the corner it came from and destroyed concrete leaves rubble there', () => {
-  const { models, source, batcher, engine, root, cell } = fixture();
+test('A blast breaches the corner it came from and destroyed concrete becomes persistent rubble', () => {
+  const { models, source, batcher, factory, engine, root, cell } = fixture();
+  const rubbleMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 0.2, 1), new THREE.MeshStandardMaterial());
+  const rubbleGroup = new THREE.Group();
+  rubbleGroup.userData.batchTile = true;
+  rubbleGroup.add(rubbleMesh);
+  let requestedKind = null;
+  factory.createRubbleBlock = (kind) => {
+    requestedKind = kind;
+    return rubbleGroup;
+  };
+
   engine.damageTileCell(cell, 6, 9, 21); batcher.sync();
   assert.equal(root.children[0].geometry, models.variants.get('C2'));
   assert.equal(root.rotation.y, -Math.PI / 2, '-X/+Z corner');
   engine.damageTileCell(cell, 12, 10, 20); batcher.sync();
-  assert.equal(cell.type, TileType.EMPTY);
-  assert.equal(engine.brickRubble.length, 1);
-  const rubble = engine.brickRubble[0].mesh;
-  assert.equal(rubble.children[0].geometry, models.states.get(0));
-  assert.equal(rubble.rotation.y, -Math.PI / 2);
-  assert.deepEqual(source.children, [rubble]);
+  assert.equal(cell.type, TileType.RUBBLE);
+  assert.equal(cell.hp, 1);
+  assert.equal(requestedKind, 'house2');
+  assert.equal(engine.brickRubble.length, 0);
+  assert.equal(cell.mesh, rubbleGroup);
+  assert.equal(rubbleGroup.rotation.y, -Math.PI / 2);
+  assert.deepEqual(source.children, [rubbleGroup]);
   engine.updateBrickRubble(13); batcher.sync();
-  assert.equal(source.children.length, 0);
-  assert.equal(instances(batcher), 0);
+  assert.equal(source.children.length, 1);
+  assert.equal(instances(batcher), 1);
   batcher.reset(); models.dispose();
 });
 
