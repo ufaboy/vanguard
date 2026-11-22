@@ -377,7 +377,6 @@ export default {
   "Tactical Recon Drone": "Dron de reconocimiento táctico",
   "Standalone quadrotor UAV launched to your cursor to reveal hidden and camouflaged enemies within 6 cells for 12s.": "UAV cuadricóptero autónomo lanzado hacia tu cursor para revelar enemigos ocultos y camuflados en un radio de 6 casillas durante 12s.",
   "RECON DRONE NOT INSTALLED — BUY IN GARAGE": "DRON DE RECONOCIMIENTO NO INSTALADO — CÓMPRALO EN EL GARAJE",
-  "RECON DRONE ON COOLDOWN ({sec}s)": "DRON DE RECONOCIMIENTO EN ENFRIAMIENTO ({sec}s)",
   "RECON DRONE DISPATCHED — SCANNING TARGET ZONE": "DRON DE RECONOCIMIENTO ENVIADO — ESCANEANDO ZONA",
   "Open the garage to purchase the Recon Drone.": "Abre el garaje para comprar el dron de reconocimiento.",
   "Recon Drone is already installed.": "El dron de reconocimiento ya está instalado.",
@@ -392,4 +391,8 @@ export default {
   "RDY": "LISTO",
   "Launch Tactical Recon Drone to cursor [Key R]": "Lanzar dron de reconocimiento al cursor [Tecla R]",
   "RECON": "RECON",
+  "RECON DRONE ALREADY DEPLOYED": "DRON DE RECONOCIMIENTO YA DESPLEGADO",
+  "RECON DRONE RECHARGING ({sec}s)": "DRON DE RECONOCIMIENTO RECARGANDO ({sec}s)",
+  "FLY": "VUELO",
+  "RTB": "REGRESO",
 };

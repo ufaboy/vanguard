@@ -377,7 +377,6 @@ export default {
   "Tactical Recon Drone": "Taktische Aufklärungsdrohne",
   "Standalone quadrotor UAV launched to your cursor to reveal hidden and camouflaged enemies within 6 cells for 12s.": "Eigenständiges Quadrocopter-UAV, das zum Cursor gestartet wird und versteckte sowie getarnte Feinde im Umkreis von 6 Feldern 12s lang aufdeckt.",
   "RECON DRONE NOT INSTALLED — BUY IN GARAGE": "AUFKLÄRUNGSDROHNE NICHT INSTALLIERT — IN DER GARAGE KAUFEN",
-  "RECON DRONE ON COOLDOWN ({sec}s)": "AUFKLÄRUNGSDROHNE LÄDT ({sec}s)",
   "RECON DRONE DISPATCHED — SCANNING TARGET ZONE": "AUFKLÄRUNGSDROHNE GESTARTET — SCANNE ZIELZONE",
   "Open the garage to purchase the Recon Drone.": "Öffne die Garage, um die Aufklärungsdrohne zu kaufen.",
   "Recon Drone is already installed.": "Aufklärungsdrohne ist bereits installiert.",
@@ -392,4 +391,8 @@ export default {
   "RDY": "BEREIT",
   "Launch Tactical Recon Drone to cursor [Key R]": "Taktische Aufklärungsdrohne zum Cursor starten [Taste R]",
   "RECON": "AUFKL.",
+  "RECON DRONE ALREADY DEPLOYED": "AUFKLÄRUNGSDROHNE BEREITS IM EINSATZ",
+  "RECON DRONE RECHARGING ({sec}s)": "AUFKLÄRUNGSDROHNE LÄDT AUF ({sec}s)",
+  "FLY": "FLUG",
+  "RTB": "RÜCKKEHR",
 };

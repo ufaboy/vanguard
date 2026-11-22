@@ -432,21 +432,27 @@ export function renderBattlefieldHud({
 
       const reconOwned = Boolean(hud.reconDroneOwned);
       const reconCd = hud.reconDroneCooldown || 0;
-      const reconActive = (hud.reconDroneActiveTimer || 0) > 0;
-      const reconReady = reconOwned && reconCd <= 0;
+      const reconPhase = hud.reconDronePhase || null;
+      const reconDeployed = Boolean(reconPhase);
+      const reconActive = reconPhase === 'orbit' && (hud.reconDroneActiveTimer || 0) > 0;
+      const reconReady = reconOwned && !reconDeployed && reconCd <= 0;
       const reconValue = !reconOwned
         ? t('OFF')
+        : reconPhase === 'approach'
+        ? t('FLY')
         : reconActive
         ? `${Math.ceil(hud.reconDroneActiveTimer)}s`
+        : reconPhase === 'return'
+        ? t('RTB')
         : reconCd > 0
         ? `${Math.ceil(reconCd)}s`
         : t('RDY');
       const reconStateClass = !reconOwned
         ? 'is-empty'
-        : reconActive || reconCd > 0
+        : reconDeployed || reconCd > 0
         ? 'is-cooldown'
         : 'tone-sky is-ready';
-      const reconIconColor = !reconOwned ? '#64748b' : reconActive ? '#22d3ee' : reconCd > 0 ? '#fbbf24' : '#38bdf8';
+      const reconIconColor = !reconOwned ? '#64748b' : reconDeployed ? '#22d3ee' : reconCd > 0 ? '#fbbf24' : '#38bdf8';
 
       const apsTotal = hud.apsTotal ?? 0;
       const apsMax = hud.apsMaxAmmo ?? 0;

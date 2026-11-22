@@ -151,6 +151,7 @@ export function buildHudSnapshot(engine) {
     reconDroneOwned: Boolean(engine.reconDroneOwned),
     reconDroneCooldown: Math.max(0, engine.reconDroneCooldown || 0),
     reconDroneActiveTimer: Math.max(0, engine.reconDroneActiveTimer || 0),
+    reconDronePhase: (engine.airSupportMissions || []).find((m) => m.kind === 'RECON_DRONE')?.phase || null,
     repairKitCount: engine.repairKitCount,
     empTimer: engine.empTimer,
     radarJammed,

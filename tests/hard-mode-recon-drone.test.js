@@ -117,13 +117,16 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
   const air = new AirSupportController(engine);
   // Mock mesh creation to avoid Three.js scene/GLB loader in unit test
   air.createRepairDroneMesh = () => null;
-  const launched = air.launchReconDrone(10, -10);
+  const launched = air.launchReconDrone(20, -20);
   assert.equal(launched, true);
   assert.equal(engine.airSupportMissions.length, 1);
-  assert.equal(engine.reconDroneCooldown, DRONE_CONFIGS.RECON_DRONE.cooldownSec);
+  // Cooldown does NOT start until the drone returns to the player tank
+  assert.equal(engine.reconDroneCooldown, 0);
+  assert.equal(engine.airSupportMissions[0].x, engine.playerX);
+  assert.equal(engine.airSupportMissions[0].z, engine.playerZ);
 
-  // Second launch immediately blocked by cooldown
-  assert.equal(air.launchReconDrone(10, -10), false);
+  // Second launch immediately blocked while drone is deployed
+  assert.equal(air.launchReconDrone(20, -20), false);
 
   // Move mission to orbit phase and verify reveal radius (6 cells = 12m) and 4-cell orbit radius (8m)
   assert.equal(DRONE_CONFIGS.RECON_DRONE.orbitRadiusCells, 4);
@@ -132,11 +135,24 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
     air.updateReconDrone(engine.airSupportMissions[0], 0.05, i * 0.05);
   }
   const orbitDist = Math.hypot(
-    engine.airSupportMissions[0].x - 10,
-    engine.airSupportMissions[0].z - (-10)
+    engine.airSupportMissions[0].x - 20,
+    engine.airSupportMissions[0].z - (-20)
   );
   assert.ok(Math.abs(orbitDist - 4 * TILE_SIZE) < 0.05, `expected 4-cell orbit radius, got ${orbitDist}`);
-  assert.equal(air.isPointRevealedByReconDrone(10, -10), true);
-  assert.equal(air.isPointRevealedByReconDrone(10 + 11, -10), true);
-  assert.equal(air.isPointRevealedByReconDrone(10 + 15, -10), false);
+  assert.equal(air.isPointRevealedByReconDrone(20, -20), true);
+  assert.equal(air.isPointRevealedByReconDrone(20 + 11, -20), true);
+  assert.equal(air.isPointRevealedByReconDrone(20 + 15, -20), false);
+
+  // Finish orbit -> transitions to return phase, flies back to player tank, and starts cooldown on dock
+  engine.airSupportMissions[0].timer = DRONE_CONFIGS.RECON_DRONE.durationSec;
+  air.updateReconDrone(engine.airSupportMissions[0], 0.05, 5.0);
+  assert.equal(engine.airSupportMissions[0].phase, 'return');
+  let docked = false;
+  for (let i = 0; i < 100 && !docked; i++) {
+    docked = air.updateReconDrone(engine.airSupportMissions[0], 0.1, 5.0 + i * 0.1);
+  }
+  assert.equal(docked, true);
+  assert.equal(engine.reconDroneCooldown, DRONE_CONFIGS.RECON_DRONE.cooldownSec);
+  // Launching while recharging on cooldown is blocked
+  assert.equal(air.launchReconDrone(20, -20), false);
 });

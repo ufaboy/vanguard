@@ -394,9 +394,14 @@ export class AirSupportController {
       engine.setStatusBanner(t('RECON DRONE NOT INSTALLED — BUY IN GARAGE'), 2.2);
       return false;
     }
+    const activeRecon = (engine.airSupportMissions || []).find((m) => m.kind === 'RECON_DRONE');
+    if (activeRecon) {
+      engine.setStatusBanner(t('RECON DRONE ALREADY DEPLOYED'), 1.8);
+      return false;
+    }
     if ((engine.reconDroneCooldown || 0) > 0) {
       engine.setStatusBanner(
-        t('RECON DRONE ON COOLDOWN ({sec}s)', { sec: Math.ceil(engine.reconDroneCooldown) }),
+        t('RECON DRONE RECHARGING ({sec}s)', { sec: Math.ceil(engine.reconDroneCooldown) }),
         1.8
       );
       return false;
@@ -406,25 +411,24 @@ export class AirSupportController {
     const halfLimit = (GRID_SIZE * TILE_SIZE) / 2 - 1.2;
     const tx = THREE.MathUtils.clamp(Number.isFinite(targetX) ? targetX : engine.playerX, -halfLimit, halfLimit);
     const tz = THREE.MathUtils.clamp(Number.isFinite(targetZ) ? targetZ : engine.playerZ, -halfLimit, halfLimit);
-    const launch = this.getAlliedSideLaunchPos(tx, tz);
+    const startX = engine.playerX;
+    const startZ = engine.playerZ;
+    const startY = 1.6;
     const droneRig = this.createRepairDroneMesh();
     if (droneRig && engine.fxGroup) {
-      droneRig.position.set(launch.x, droneCfg.approachAltitude, launch.z);
+      droneRig.position.set(startX, startY, startZ);
       engine.fxGroup.add(droneRig);
     }
 
-    engine.reconDroneCooldown = droneCfg.cooldownSec;
-    engine.reconDroneActiveTimer = droneCfg.durationSec;
+    engine.reconDroneActiveTimer = 0;
     engine.airSupportMissions ||= [];
     engine.airSupportMissions.push({
       kind: 'RECON_DRONE',
-      x: launch.x,
-      y: droneCfg.approachAltitude,
-      z: launch.z,
+      x: startX,
+      y: startY,
+      z: startZ,
       targetX: tx,
       targetZ: tz,
-      exitX: launch.x,
-      exitZ: launch.z,
       revealRadius: droneCfg.revealRadiusCells * TILE_SIZE,
       phase: 'approach',
       timer: 0,
@@ -806,6 +810,7 @@ export class AirSupportController {
   }
 
   updateReconDrone(m, dt, elapsed) {
+    const { engine } = this;
     const droneCfg = DRONE_CONFIGS.RECON_DRONE;
     const orbitRadius = (droneCfg.orbitRadiusCells ?? 4) * TILE_SIZE;
     this.spinDroneRotors(m.mesh, dt);
@@ -816,6 +821,7 @@ export class AirSupportController {
       if (dist <= orbitRadius + 0.5) {
         m.phase = 'orbit';
         m.timer = 0;
+        engine.reconDroneActiveTimer = m.duration;
         m.orbitAngle = dist > 0.01 ? Math.atan2(m.z - m.targetZ, m.x - m.targetX) : 0;
         m.currentOrbitRadius = dist;
       } else {
@@ -853,25 +859,35 @@ export class AirSupportController {
         }
       }
       if (m.timer >= m.duration) {
-        m.phase = 'depart';
+        m.phase = 'return';
         m.timer = 0;
+        engine.reconDroneActiveTimer = 0;
       }
       return false;
     }
 
-    // Depart phase
-    m.timer += dt;
-    const dx = m.exitX - m.x;
-    const dz = m.exitZ - m.z;
-    const dist = Math.hypot(dx, dz) || 1;
-    m.x += (dx / dist) * droneCfg.departSpeed * dt;
-    m.z += (dz / dist) * droneCfg.departSpeed * dt;
-    m.y += droneCfg.departClimbSpeed * dt;
+    // Return phase: fly back to player tank and dock to start recharge cooldown
+    if (engine.playerHp <= DURABILITY.ZERO_HP) {
+      return true;
+    }
+    const dx = engine.playerX - m.x;
+    const dz = engine.playerZ - m.z;
+    const dist = Math.hypot(dx, dz);
+    if (dist <= 1.2) {
+      engine.reconDroneCooldown = droneCfg.cooldownSec;
+      engine.reconDroneActiveTimer = 0;
+      engine.emitHudUpdate?.();
+      return true;
+    }
+    const step = Math.min(dist, droneCfg.departSpeed * dt);
+    m.x += (dx / dist) * step;
+    m.z += (dz / dist) * step;
+    m.y = THREE.MathUtils.lerp(m.y, 1.6, Math.min(1, dt * 4));
     if (m.mesh) {
       m.mesh.position.set(m.x, m.y, m.z);
       m.mesh.rotation.y = Math.atan2(dx, dz);
     }
-    return m.timer >= 1.8 || dist < 1.5;
+    return false;
   }
 
   repairPlayerSubsystems() {

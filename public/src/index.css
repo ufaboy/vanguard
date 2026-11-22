@@ -1278,7 +1278,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 .campaign-recon-panel {
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
@@ -1587,17 +1587,6 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   color: var(--region-accent, #fbbf24);
 }
 
-.campaign-brief-difficulty {
-  padding: 5px 12px;
-  background: #141c27;
-  border: 1px solid #334155;
-  border-radius: 5px;
-  color: #f1f5f9;
-  font-family: var(--font-mono, monospace);
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
 
 .campaign-brief-title {
   margin: 0;
