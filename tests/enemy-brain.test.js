@@ -155,7 +155,8 @@ test('Line tank takes a firing cell with LOS, then ducks into cover when engage 
   assert.equal(out.waypoint, null, 'holds the firing position');
   assert.equal(hasGridLineOfSight(grid, pos, target), true);
   const d = Math.hypot(pos.row - target.row, pos.col - target.col);
-  assert.ok(d >= 4 && d <= 9);
+  const { minCells, maxCells } = ROLE_CONFIGS.line.engage;
+  assert.ok(d >= minCells && d <= maxCells);
 
   brain.tacticTimer = 0;
   const next = stepBrain(brain, ctxFor(grid, pos, target));
@@ -168,7 +169,8 @@ test('Line tank retreats once when badly damaged', () => {
   for (let c = 0; c <= 23; c++) if (c !== 12) grid[4][c] = B;
   const brain = createBrain('line', seq([0.5]));
   stepBrain(brain, ctxFor(grid, { row: 10, col: 10 }, { row: 14, col: 10 }));
-  const out = stepBrain(brain, ctxFor(grid, { row: 10, col: 10 }, { row: 14, col: 10 }, { hp: 3 }));
+  const lowHp = Math.max(0.1, ROLE_CONFIGS.line.retreatHpRatio * 10 * 0.5);
+  const out = stepBrain(brain, ctxFor(grid, { row: 10, col: 10 }, { row: 14, col: 10 }, { hp: lowHp }));
   assert.equal(out.tactic, 'retreat');
 });
 
@@ -192,7 +194,8 @@ test('Armor closes to 2-4 cells and holds', () => {
   const { pos, out } = walk(brain, grid, { row: 15, col: 2 }, target);
   assert.equal(out.tactic, 'advance');
   const d = Math.hypot(pos.row - target.row, pos.col - target.col);
-  assert.ok(d >= 2 && d <= 4);
+  const { minCells, maxCells } = ROLE_CONFIGS.spearhead.advance;
+  assert.ok(d >= minCells && d <= maxCells);
 });
 
 test('Howitzer emplaces hidden, relocates after its barrages and flees close threats', () => {
@@ -211,7 +214,8 @@ test('Howitzer emplaces hidden, relocates after its barrages and flees close thr
   assert.ok(brain.goal, 'picked a new firing cell');
   assert.equal(typeof firstGoal.row, 'number');
 
-  const close = stepBrain(brain, ctxFor(grid, { row: 15, col: 13 }, target, { distCells: 2 }));
+  const closeDist = Math.max(1, ROLE_CONFIGS.artillery.fleeBelowCells - 1);
+  const close = stepBrain(brain, ctxFor(grid, { row: 15, col: 15 - closeDist }, target, { distCells: closeDist }));
   assert.equal(close.tactic, 'flee');
 });
 
@@ -223,7 +227,8 @@ test('A far-away howitzer still drives to a firing cell instead of idling', () =
   assert.equal(out.tactic, 'emplace');
   assert.ok(brain.goal, 'has a goal');
   const d = Math.hypot(brain.goal.row - target.row, brain.goal.col - target.col);
-  assert.ok(d >= 7 && d <= 11, 'goal sits inside the firing band');
+  const { minCells, maxCells } = ROLE_CONFIGS.artillery.emplace;
+  assert.ok(d >= minCells && d <= maxCells, 'goal sits inside the firing band');
   assert.ok(out.waypoint, 'is moving');
 });
 

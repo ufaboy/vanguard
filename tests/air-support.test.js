@@ -149,7 +149,8 @@ test('Air Repair dispatches drone, repairs all damaged subsystems, and restores 
   assert.equal(engine.componentDamage.chassis, false);
   assert.equal(engine.playerArmorPanels.SOCKET_ARMOR_FRONT.integrity, 100);
   assert.equal(engine.playerArmorPanels.SOCKET_ARMOR_FRONT.destroyed, false);
-  assert.ok(Math.abs(engine.playerHp - 32) < 1e-6);
+  const expectedHp = Math.min(engine.playerMaxHp, 12 + AIR_SUPPORT.REPAIR.healAmount);
+  assert.ok(Math.abs(engine.playerHp - expectedHp) < 1e-6);
 });
 
 test('Air Mines plants neutral mines on empty cells, detonates immediately on non-empty cells, and sinks on water', () => {
@@ -258,7 +259,7 @@ test('Air Mines is dropped by STRATEGIC_BOMBER flyby and plants mines on landing
   for (let i = 0; i < 40; i++) {
     ctrl.update(0.25, i * 0.25);
   }
-  assert.equal(AIR_SUPPORT.MINES.mineCount, 7);
+  assert.ok(AIR_SUPPORT.MINES.mineCount > 0);
   assert.equal(plantedMines.length, AIR_SUPPORT.MINES.mineCount);
   const chainRadius = LAND_MINE.BLAST_RADIUS_CELLS * TILE_SIZE * 0.85;
   for (let i = 0; i < plantedMines.length; i++) {

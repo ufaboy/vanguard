@@ -9,6 +9,7 @@ import { ReconDroneController } from '../public/src/game/engine/recon-drone-cont
 import { EnemyAiController } from '../public/src/game/engine/enemy-ai.js';
 import { HangarOps } from '../public/src/game/engine/hangar-ops.js';
 import { GameStatus } from '../public/src/game/types.js';
+import { ENEMY_VISIBILITY } from '../public/src/game/constants.js';
 import { GRID_SIZE, TILE_SIZE } from '../public/src/game/levels.js';
 
 function createEmptyGrid() {
@@ -70,9 +71,9 @@ test('hasPlayerLineOfSight respects obstacles, forest range, and recon drone rev
   };
   const ai = new EnemyAiController(engine);
 
-  // Within 5 cells (10m) of player -> full visibility without penalties even behind concrete
+  // Within PLAYER_PROXIMITY_RADIUS_CELLS of player -> full visibility without penalties even behind concrete
   grid[20][21].type = TileType.CONCRETE;
-  assert.equal(ai.hasPlayerLineOfSight({ x: 1 + 5 * TILE_SIZE, z: 1 }), true);
+  assert.equal(ai.hasPlayerLineOfSight({ x: 1 + ENEMY_VISIBILITY.PLAYER_PROXIMITY_RADIUS_CELLS * TILE_SIZE, z: 1 }), true);
   // Behind concrete beyond 5 cells -> blocked
   assert.equal(ai.hasPlayerLineOfSight({ x: 15, z: 1 }), false);
   // Behind water tower -> visible
@@ -131,8 +132,10 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
   // Second launch immediately blocked while drone is deployed
   assert.equal(drone.launch(20, -20), false);
 
-  // Move mission to orbit phase and verify reveal radius (6 cells = 12m) and 4-cell orbit radius (8m)
-  assert.equal(DRONE_CONFIGS.RECON_DRONE.orbitRadiusCells, 4);
+  // Move mission to orbit phase and verify reveal radius and orbit radius from DRONE_CONFIGS
+  const { orbitRadiusCells, revealRadiusCells } = DRONE_CONFIGS.RECON_DRONE;
+  assert.ok(orbitRadiusCells > 0);
+  assert.ok(revealRadiusCells > 0);
   engine.reconDroneMission.phase = 'orbit';
   for (let i = 0; i < 60; i++) {
     drone.update(0.05, i * 0.05);
@@ -141,10 +144,13 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
     engine.reconDroneMission.x - 20,
     engine.reconDroneMission.z - (-20)
   );
-  assert.ok(Math.abs(orbitDist - 4 * TILE_SIZE) < 0.05, `expected 4-cell orbit radius, got ${orbitDist}`);
+  assert.ok(
+    Math.abs(orbitDist - orbitRadiusCells * TILE_SIZE) < 0.05,
+    `expected ${orbitRadiusCells}-cell orbit radius, got ${orbitDist}`
+  );
   assert.equal(drone.isPointRevealed(20, -20), true);
-  assert.equal(drone.isPointRevealed(20 + 11, -20), true);
-  assert.equal(drone.isPointRevealed(20 + 15, -20), false);
+  assert.equal(drone.isPointRevealed(20 + revealRadiusCells * TILE_SIZE - 1, -20), true);
+  assert.equal(drone.isPointRevealed(20 + revealRadiusCells * TILE_SIZE + 3, -20), false);
 
   // Finish orbit -> transitions to return phase, flies back to player tank, and starts cooldown on dock
   engine.reconDroneMission.timer = DRONE_CONFIGS.RECON_DRONE.durationSec;

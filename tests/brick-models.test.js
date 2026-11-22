@@ -6,7 +6,7 @@ import { breachEntryOffset, breachPointToward, breachYaw, nextBreach } from '../
 import { ModelFactory } from '../public/src/game/render/models.js';
 import { TileBatcher } from '../public/src/game/render/tile-batcher.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
-import { engineerSupport } from '../public/src/game/abilities/engineer-support.js';
+import { ENGINEER_SUPPORT, engineerSupport } from '../public/src/game/abilities/engineer-support.js';
 import { TileType } from '../public/src/game/types.js';
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -53,8 +53,8 @@ test('Engineer repairs restore both brick HP and the intact model', () => {
     worldToGrid: () => ({ row: 2, col: 2 }), gridToWorld: () => ({ x: 0, z: 0 }), spawnSparks() {},
   });
   engineerSupport.tryUse({ id: 1, x: 0, z: 0 }, engine); batcher.sync();
-  assert.equal(cell.hp, 4);
-  assert.equal(root.children[0].geometry, models.states.get(4));
+  assert.equal(cell.hp, ENGINEER_SUPPORT.BRICK_HP);
+  assert.equal(root.children[0].geometry, models.states.get(Math.min(4, ENGINEER_SUPPORT.BRICK_HP)));
   assert.equal([...batcher.batches.values()].reduce((sum, b) => sum + b.mesh.count, 0), 1);
   batcher.reset(); models.dispose();
 });

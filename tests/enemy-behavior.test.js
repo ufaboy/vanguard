@@ -227,10 +227,11 @@ test('Losing contact past the grace window restarts the reaction; switching targ
   const g = createGunnerState(() => 0.5);
   const shooter = { x: 0, z: 0, turretAngle: 0 };
   const target = { x: 0, z: 10 };
-  for (let i = 0; i < 40; i++) stepGunner(g, { dt: 0.05, shooter, target, visible: true });
+  const reactSteps = Math.ceil((GUNNER.REACTION_SEC + 0.1) / 0.05);
+  for (let i = 0; i < reactSteps; i++) stepGunner(g, { dt: 0.05, shooter, target, visible: true });
   assert.ok(g.contactTime >= GUNNER.REACTION_SEC);
 
-  stepGunner(g, { dt: 0.3, shooter, target: null, visible: false });
+  stepGunner(g, { dt: GUNNER.CONTACT_GRACE_SEC * 0.5, shooter, target: null, visible: false });
   let res = stepGunner(g, { dt: 0.01, shooter, target, visible: true });
   assert.equal(res.reacted, true, 'short flicker keeps the reaction');
 
@@ -238,7 +239,7 @@ test('Losing contact past the grace window restarts the reaction; switching targ
   res = stepGunner(g, { dt: 0.01, shooter, target, visible: true });
   assert.equal(res.reacted, false, 'long loss restarts the reaction');
 
-  for (let i = 0; i < 40; i++) stepGunner(g, { dt: 0.05, shooter, target, visible: true });
+  for (let i = 0; i < reactSteps; i++) stepGunner(g, { dt: 0.05, shooter, target, visible: true });
   res = stepGunner(g, { dt: 0.01, shooter, target, targetKey: 'base', visible: true });
   assert.equal(res.reacted, false, 'new target restarts the reaction');
 });

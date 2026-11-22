@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { ModelFactory } from '../public/src/game/render/models.js';
 import { getSectorEnemyClasses, sectorUsesLandmarks } from '../public/src/game/engine/sector-loader.js';
 import { LandmarkModels } from '../public/src/game/terrains/landmarks.js';
+import { MAMMOTH, INFERNO, TITAN } from '../public/src/game/constants.js';
+import { buildSurvivalWaveSpec } from '../public/src/sim/survival.js';
 import { SECTORS } from '../public/src/game/levels.js';
 import { EnemyClass } from '../public/src/game/types.js';
 
@@ -85,14 +87,26 @@ test('getSectorEnemyClasses collects pool, fixed spawns, exact boss escorts, and
   assert.ok(campaign.includes(EnemyClass.SCOUT));
   assert.ok(campaign.includes(EnemyClass.HOWITZER));
   assert.ok(campaign.includes(EnemyClass.BOSS_MAMMOTH));
-  assert.ok(campaign.includes(EnemyClass.SAPPER), 'Mammoth escort should be included');
-  assert.equal(campaign.includes(EnemyClass.ARMOR), false, 'unrelated Titan escort should not be preloaded');
-  assert.equal(campaign.includes(EnemyClass.FLAMETHROWER), false, 'unrelated Inferno escort should not be preloaded');
+  for (const escort of MAMMOTH.ESCORT_CLASSES) {
+    assert.ok(campaign.includes(escort), `Mammoth escort ${escort} should be included`);
+  }
+  const mammothExpected = new Set([
+    EnemyClass.SCOUT,
+    EnemyClass.HOWITZER,
+    EnemyClass.BOSS_MAMMOTH,
+    ...MAMMOTH.ESCORT_CLASSES,
+  ]);
+  for (const other of [...TITAN.ESCORT_CLASSES, ...INFERNO.ESCORT_CLASSES]) {
+    if (!mammothExpected.has(other)) {
+      assert.equal(campaign.includes(other), false, `unrelated boss escort ${other} should not be preloaded`);
+    }
+  }
 
   const survival = getSectorEnemyClasses({ gameMode: 'survival' });
-  assert.ok(survival.includes(EnemyClass.SCOUT));
-  assert.ok(survival.includes(EnemyClass.STANDARD));
-  assert.ok(survival.includes(EnemyClass.SAPPER));
+  const wave1 = buildSurvivalWaveSpec(1);
+  for (const cls of wave1.roster) {
+    assert.ok(survival.includes(cls), `Wave-1 survival class ${cls} should be preloaded`);
+  }
   assert.equal(survival.includes(EnemyClass.BOSS_TITAN), false, 'late-wave bosses are streamed per wave, not at wave 1');
 });
 

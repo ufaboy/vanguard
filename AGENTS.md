@@ -2,7 +2,7 @@
 
 ## 1. Core Project Rules (CRITICAL)
 
-- **User balance edits**: The user may change gameplay constants and code directly. Treat current implementation values as the runtime source of truth; documentation and pinned balance expectations may be stale. Preserve unrelated tuning and report mismatches rather than reverting game characteristics to match documentation or tests.
+- **User balance edits & Test Policy**: The user may change gameplay constants and code directly. Treat current implementation values as the runtime source of truth; documentation may be stale. Preserve unrelated tuning and report mismatches rather than reverting game characteristics to match documentation. **Tests MUST verify formulas, mechanics, and invariants** (using synthetic fixtures, dynamic imports of constants, and validity/capability invariants) — **never hardcode tunable balance numbers** (HP, armour, damage, reload, speeds, prices, hits-to-kill tables, etc.) in test assertions.
 
 1. **Language Policy (English Source, Localized UI)**:
    - **All source content — UI text, HUD labels, status banners, code comments, identifiers, and documentation — MUST be written in English.** English is the source language and the fallback.
@@ -37,7 +37,7 @@
      3. **Armour always works per side**: `base.armor[side]` + the armour component (its `armorByAspect`, otherwise its uniform `reductionPct`) + module `armorBonusByAspect`, capped at `DURABILITY.MAX_ARMOR`. Shell hits and blast splash both use the side that is hit; `stats.armor` is the weakest side.
      4. **Damage, penetration and reload** come from the cannon alone.
      5. **Sight and radio** come from the base; modules may add `sightBonus` / `radioBonus`.
-   - **Tune a single tank type through its `base`**, never through a stat-only module. `OPTIONAL_EQUIPMENT` holds only equipment with its own mechanic. The balance table (Cannon Mk1 hits per type) is pinned in `tests/tank-stats.test.js`.
+   - **Tune a single tank type through its `base`**, never through a stat-only module. `OPTIONAL_EQUIPMENT` holds only equipment with its own mechanic. Stat computation invariants are verified in `tests/tank-stats.test.js`.
    - For 3D models and textures (procedural rigs in `render/models.js` and Blender builds in `assets/blender/`), a component's description is a **recommendation, not a strict specification**. A model may interpret, simplify, or omit a component's suggested visual details as long as the tank stays recognizable and stats are untouched.
    - **Bolt-on attachments are standalone modules, not part of a core component.** Elements such as a dozer blade (`DOZER_BLADE`) belong in `OPTIONAL_EQUIPMENT` and appear on a model only when the tank's loadout lists that module.
 6. **Clarify Before Building a Tank Model**:
