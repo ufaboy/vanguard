@@ -245,8 +245,10 @@ function applyLandmarkFinish(material) {
       float weather = lmNoise(wp * vec3(0.9, 0.45, 0.9) + 11.7);
 
       if (isMasonry) {
-        float mortarH = 1.0 - smoothstep(0.0, 0.08, min(rowFrac, 1.0 - rowFrac));
-        float mortarV = 1.0 - smoothstep(0.0, 0.05, min(colFrac, 1.0 - colFrac));
+        float fwH = fwidth(wp.y / courseH);
+        float fwV = fwidth(wallU / blockW);
+        float mortarH = (1.0 - smoothstep(0.0, max(0.08, fwH * 1.25), min(rowFrac, 1.0 - rowFrac))) * (1.0 - smoothstep(0.18, 0.45, fwH));
+        float mortarV = (1.0 - smoothstep(0.0, max(0.05, fwV * 1.25), min(colFrac, 1.0 - colFrac))) * (1.0 - smoothstep(0.18, 0.45, fwV));
         float mortar = max(mortarH, mortarV);
         float blockTone = (lmHash(vec3(colIdx, rowIdx, floor((wn.x > wn.z ? wp.x : wp.z) * 2.0))) - 0.5) * 0.11;
         diffuseColor.rgb *= (1.0 + blockTone + (fineGrain - 0.5) * 0.09);
