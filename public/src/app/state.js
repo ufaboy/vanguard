@@ -14,8 +14,8 @@ export const CAMERA_LABELS = Object.freeze({
 export const FPS_CAP_OPTIONS = Object.freeze([60, 30, 0]);
 export const TOUCH_CONTROLS_MODES = Object.freeze(['auto', 'on', 'off']);
 
-const UPGRADES_KEY = 'iron_vanguard_upgrades_v3';
-const SETTINGS_KEY = 'iron_vanguard_settings_v1';
+const UPGRADES_KEY = 'battle_tank_upgrades_v3';
+const SETTINGS_KEY = 'battle_tank_settings_v1';
 
 function clampTier(val, fallback = 1) {
   const num = Number(val);
@@ -109,13 +109,13 @@ export function loadPlayerSave() {
 }
 
 const PROGRESS_STORAGE_KEYS = Object.freeze([
-  'iron_vanguard_player_save_v1',
-  'iron_vanguard_survival_save_v1',
-  'iron_vanguard_contract_save_v1',
-  'iron_vanguard_upgrades_v3',
-  'iron_vanguard_survival_upgrades_v1',
-  'iron_vanguard_contract_upgrades_v1',
-  'iron_vanguard_highscore',
+  'battle_tank_player_save_v1',
+  'battle_tank_survival_save_v1',
+  'battle_tank_contract_save_v1',
+  'battle_tank_upgrades_v3',
+  'battle_tank_survival_upgrades_v1',
+  'battle_tank_contract_upgrades_v1',
+  'battle_tank_highscore',
 ]);
 
 /** Clears all campaign, survival, contract, upgrade, and medal progress while preserving user preferences. */

@@ -17,18 +17,18 @@ export class ProfileSaveController {
     if (engine.profileMode === 'survival') {
       return {
         storage: getSafeStorage('session'),
-        key: 'iron_vanguard_survival_upgrades_v1',
+        key: 'battle_tank_survival_upgrades_v1',
       };
     }
     if (engine.profileMode === 'contract') {
       return {
         storage: getSafeStorage('session'),
-        key: 'iron_vanguard_contract_upgrades_v1',
+        key: 'battle_tank_contract_upgrades_v1',
       };
     }
     return {
       storage: getSafeStorage('local'),
-      key: 'iron_vanguard_upgrades_v3',
+      key: 'battle_tank_upgrades_v3',
     };
   }
 
@@ -36,7 +36,7 @@ export class ProfileSaveController {
     const { engine } = this;
     try {
       if (engine.profileMode === 'campaign') {
-        getSafeStorage('local')?.removeItem('iron_vanguard_highscore');
+        getSafeStorage('local')?.removeItem('battle_tank_highscore');
       }
       const { storage, key } = this.getUpgradesStorage();
       const savedUpgrades = storage?.getItem(key);

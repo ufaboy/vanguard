@@ -38,8 +38,8 @@ const credits = () => document.querySelector('.garage-wallet strong').textConten
 const tier = track => document.querySelector(`.garage-system[data-track="${track}"] .garage-tab-tier`).textContent;
 try {
   localStorage.clear();
-  localStorage.setItem('iron_vanguard_player_save_v1', JSON.stringify({ ...createInitialPlayerSave(), credits: 700 }));
-  localStorage.setItem('iron_vanguard_upgrades_v3', JSON.stringify({ cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 }));
+  localStorage.setItem('battle_tank_player_save_v1', JSON.stringify({ ...createInitialPlayerSave(), credits: 700 }));
+  localStorage.setItem('battle_tank_upgrades_v3', JSON.stringify({ cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 }));
   await import('/src/main.js');
   await openGarage();
   await find('.garage-stage-window');

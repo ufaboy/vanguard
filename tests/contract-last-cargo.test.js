@@ -505,12 +505,12 @@ test('Contract and Survival sessions use sessionStorage stock Tier-1 tank withou
   globalThis.sessionStorage = mockSession;
 
   try {
-    const campaignSaveRepo = new SaveRepository('iron_vanguard_player_save_v1', mockLocal);
-    const survivalSaveRepo = new SaveRepository('iron_vanguard_survival_save_v1', mockSession);
-    const contractSaveRepo = new SaveRepository('iron_vanguard_contract_save_v1', mockSession);
+    const campaignSaveRepo = new SaveRepository('battle_tank_player_save_v1', mockLocal);
+    const survivalSaveRepo = new SaveRepository('battle_tank_survival_save_v1', mockSession);
+    const contractSaveRepo = new SaveRepository('battle_tank_contract_save_v1', mockSession);
 
     const campaignUpgrades = { cannon: 4, chassis: 3, frame: 5, engine: 4, armor: 3 };
-    mockLocal.setItem('iron_vanguard_upgrades_v3', JSON.stringify(campaignUpgrades));
+    mockLocal.setItem('battle_tank_upgrades_v3', JSON.stringify(campaignUpgrades));
     campaignSaveRepo.savePlayerSave({
       credits: 1200,
       parts: [],
@@ -545,7 +545,7 @@ test('Contract and Survival sessions use sessionStorage stock Tier-1 tank withou
     assert.equal(state.repairKitState.charges, 0);
 
     // Campaign localStorage must remain untouched
-    assert.deepEqual(JSON.parse(mockLocal.getItem('iron_vanguard_upgrades_v3')), campaignUpgrades);
+    assert.deepEqual(JSON.parse(mockLocal.getItem('battle_tank_upgrades_v3')), campaignUpgrades);
     assert.equal(campaignSaveRepo.loadPlayerSave().credits, 1200);
     assert.equal(campaignSaveRepo.loadPlayerSave().missileAmmo, 6);
 
@@ -572,7 +572,7 @@ test('Contract and Survival sessions use sessionStorage stock Tier-1 tank withou
     assert.equal(state.apsAmmo.reduce((a, b) => a + b, 0), APS.START_ROUNDS);
     assert.equal(state.missileAmmo, 2);
     assert.equal(state.repairKitState.charges, 0);
-    assert.deepEqual(JSON.parse(mockLocal.getItem('iron_vanguard_upgrades_v3')), campaignUpgrades);
+    assert.deepEqual(JSON.parse(mockLocal.getItem('battle_tank_upgrades_v3')), campaignUpgrades);
     assert.equal(campaignSaveRepo.loadPlayerSave().credits, 1200);
   } finally {
     globalThis.localStorage = prevLocal;

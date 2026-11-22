@@ -380,7 +380,7 @@ export function getSafeStorage(kind = 'local') {
 
 export class SaveRepository {
   constructor(
-    storageKey = 'iron_vanguard_player_save_v1',
+    storageKey = 'battle_tank_player_save_v1',
     storage = getSafeStorage('local')
   ) {
     this.storageKey = storageKey;

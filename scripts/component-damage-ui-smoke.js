@@ -24,7 +24,7 @@ async function find(selector, tries = 300) {
   throw Error(`Missing ${selector}`);
 }
 const drawerOpen = () => !document.querySelector('#upgrade-drawer').classList.contains('hidden');
-const stored = () => JSON.parse(localStorage.getItem('iron_vanguard_player_save_v1'));
+const stored = () => JSON.parse(localStorage.getItem('battle_tank_player_save_v1'));
 const errors = [];
 window.addEventListener('error', event => errors.push(event.message));
 window.addEventListener('unhandledrejection', event => errors.push(String(event.reason)));
@@ -32,8 +32,8 @@ try {
   const tier = 3;
   const cost = componentRepairCost(tier);
   localStorage.clear();
-  localStorage.setItem('iron_vanguard_player_save_v1', JSON.stringify({ ...createInitialPlayerSave(), credits: cost * 2, componentDamage: { cannon: true, engine: true, armor: true } }));
-  localStorage.setItem('iron_vanguard_upgrades_v3', JSON.stringify({ cannon: tier, chassis: tier, frame: tier, engine: tier, armor: tier }));
+  localStorage.setItem('battle_tank_player_save_v1', JSON.stringify({ ...createInitialPlayerSave(), credits: cost * 2, componentDamage: { cannon: true, engine: true, armor: true } }));
+  localStorage.setItem('battle_tank_upgrades_v3', JSON.stringify({ cannon: tier, chassis: tier, frame: tier, engine: tier, armor: tier }));
   await import('/src/main.js');
   for (let i = 0; i < 100 && !drawerOpen(); i++) {
     (await find('#top-controls [data-action="toggle-upgrades"]')).click();
@@ -50,7 +50,7 @@ try {
   check(stored().credits === 0 && !stored().componentDamage.engine, 'Engine repair failed');
   document.querySelector('[data-action="garage-select"][data-track="armor"]').click();
   check((await find('[data-action="repair-component"][data-track="armor"]')).disabled, 'Unaffordable repair should be disabled');
-  check(JSON.parse(localStorage.getItem('iron_vanguard_upgrades_v3')).cannon === tier, 'Purchased upgrade was lost');
+  check(JSON.parse(localStorage.getItem('battle_tank_upgrades_v3')).cannon === tier, 'Purchased upgrade was lost');
   window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', bubbles: true }));
   await wait(300);
   check(!drawerOpen(), 'Escape must close the garage');

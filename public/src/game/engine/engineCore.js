@@ -115,15 +115,15 @@ export class TankGameEngine {
     };
 
     this.campaignSaveRepo = new SaveRepository(
-      'iron_vanguard_player_save_v1',
+      'battle_tank_player_save_v1',
       getSafeStorage('local')
     );
     this.survivalSaveRepo = new SaveRepository(
-      'iron_vanguard_survival_save_v1',
+      'battle_tank_survival_save_v1',
       getSafeStorage('session')
     );
     this.contractSaveRepo = new SaveRepository(
-      'iron_vanguard_contract_save_v1',
+      'battle_tank_contract_save_v1',
       getSafeStorage('session')
     );
     this.profileMode = 'campaign';

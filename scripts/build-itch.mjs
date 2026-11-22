@@ -1,6 +1,6 @@
 /**
  * Builds an ad-free, tracker-free HTML5 distribution package for itch.io in `dist/itch/`
- * (and `dist/iron-vanguard-itch.zip` when zipping is available).
+ * (and `dist/battle-tank-itch.zip` when zipping is available).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,7 +11,7 @@ const ROOT_DIR = process.cwd();
 // The built site (Astro pages + public/), rebuilt so the package matches the current sources.
 const PUBLIC_DIR = buildSite();
 const OUT_DIR = path.resolve(ROOT_DIR, 'dist', 'itch');
-const ZIP_PATH = path.resolve(ROOT_DIR, 'dist', 'iron-vanguard-itch.zip');
+const ZIP_PATH = path.resolve(ROOT_DIR, 'dist', 'battle-tank-itch.zip');
 
 const EXCLUDED_ROOT_FILES = new Set([
   'ads.txt',
