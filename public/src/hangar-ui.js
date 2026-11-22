@@ -62,6 +62,27 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       ? '<circle cx="12" cy="12" r="2.5"/><path d="M5 5l3.5 3.5M19 5l-3.5 3.5M5 19l3.5-3.5M19 19l-3.5-3.5"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>'
       : '<path d="M9 19V9L12 3L15 9V19H9Z"/><path d="M8 19H16"/>';
     const glyph = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">${icon}</svg>`;
+    if (kind === 'recon') {
+      return `
+        <div class="garage-supply-row supply-${kind} ${full ? 'is-full' : ''}">
+          <span class="garage-supply-icon">${glyph}</span>
+          <div class="garage-supply-info">
+            <div class="garage-supply-meta">
+              <strong>${t(label)}</strong>
+              <span>${full ? t('INSTALLED') : t('NOT INSTALLED')}</span>
+            </div>
+          </div>
+          <button
+            class="garage-supply-btn"
+            data-action="${action}"
+            ${full || !affordable ? 'disabled' : ''}
+            aria-label="${full ? t('Recon Drone installed') : t('Buy Recon Drone for {price} credits', { price })}"
+          >
+            ${full ? t('INSTALLED') : `${amountLabel} · $${money(price)}`}
+          </button>
+        </div>
+      `;
+    }
     return `
       <div class="garage-supply-row supply-${kind} ${full ? 'is-full' : ''}">
         <span class="garage-supply-icon">${glyph}</span>

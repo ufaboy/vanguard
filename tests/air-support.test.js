@@ -268,3 +268,35 @@ test('Air Mines is dropped by STRATEGIC_BOMBER flyby and plants mines on landing
     }
   }
 });
+
+test('Only one STRIKE_VARIANTS mission can be active at a time while AIRDROP/REPAIR stay independent', () => {
+  const { engine } = createMockEngine(20000);
+  engine.setStatusBanner = (msg) => {
+    engine.statusBanner = msg;
+  };
+  const ctrl = new AirSupportController(engine);
+
+  assert.equal(ctrl.hasActiveStrike(), false);
+  assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_MINES'), true);
+  assert.equal(ctrl.confirmTargeting(0, 0), true);
+  assert.equal(ctrl.hasActiveStrike(), true);
+
+  assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_BOMBS'), false);
+  assert.equal(engine.airSupportTargeting, null);
+  assert.equal(engine.statusBanner, 'AIR STRIKE ALREADY IN PROGRESS');
+
+  assert.equal(ctrl.startTargeting('MINES'), false);
+  assert.equal(ctrl.callAirRepair(), true);
+  assert.equal(ctrl.startTargeting('AIRDROP'), true);
+  assert.equal(ctrl.cancelTargeting(), true);
+
+  // Once all strike missions finish, a new STRIKE can be called
+  engine.airSupportMissions = engine.airSupportMissions.filter(
+    (m) => m.kind === 'REPAIR_DRONE'
+  );
+  assert.equal(ctrl.hasActiveStrike(), false);
+  assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_AC130'), true);
+  assert.equal(ctrl.confirmTargeting(0, 0), true);
+  assert.equal(ctrl.hasActiveStrike(), true);
+  assert.equal(ctrl.startTargeting('STRIKE', 'STRIKE_THERMO'), false);
+});

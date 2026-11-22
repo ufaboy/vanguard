@@ -680,10 +680,14 @@ async function startSector(sectorIndex) {
     engine?.setInspectMode(false);
     await engine?.waitForSectorModels?.(sectorIndex);
     engine?.startSector(sectorIndex);
+    const preloadAirAndDrone = () => {
+      engine?.airSupportController?.preloadGlbModels?.();
+      engine?.reconDroneController?.preloadGlbModel?.();
+    };
     if (typeof requestIdleCallback === 'function') {
-      requestIdleCallback(() => engine?.airSupportController?.preloadGlbModels?.(), { timeout: 3500 });
+      requestIdleCallback(preloadAirAndDrone, { timeout: 3500 });
     } else {
-      setTimeout(() => engine?.airSupportController?.preloadGlbModels?.(), 2500);
+      setTimeout(preloadAirAndDrone, 2500);
     }
     missionStartedAt = performance.now();
     syncCampaignProgressProperty();

@@ -17,6 +17,7 @@ import {
 } from '../../sim/jammer.js';
 import { buildSurvivalHudSnapshot } from '../../sim/survival.js';
 import { N_ } from '../../i18n/index.js';
+import { isActiveAirStrikeMission } from './air-support-controller.js';
 
 export function buildHudSnapshot(engine) {
   const sector = SECTORS[engine.currentSectorIndex];
@@ -151,7 +152,8 @@ export function buildHudSnapshot(engine) {
     reconDroneOwned: Boolean(engine.reconDroneOwned),
     reconDroneCooldown: Math.max(0, engine.reconDroneCooldown || 0),
     reconDroneActiveTimer: Math.max(0, engine.reconDroneActiveTimer || 0),
-    reconDronePhase: (engine.airSupportMissions || []).find((m) => m.kind === 'RECON_DRONE')?.phase || null,
+    reconDronePhase: engine.reconDroneMission?.phase || null,
+    airStrikeActive: (engine.airSupportMissions || []).some(isActiveAirStrikeMission),
     repairKitCount: engine.repairKitCount,
     empTimer: engine.empTimer,
     radarJammed,

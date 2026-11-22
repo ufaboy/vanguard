@@ -5,6 +5,7 @@ import { doesTileBlockLineOfSight } from '../public/src/game/terrains/layers.js'
 import { OPTIONAL_EQUIPMENT } from '../public/src/game/components/modules.js';
 import { DRONE_CONFIGS } from '../public/src/game/vehicles/drones.js';
 import { AirSupportController } from '../public/src/game/engine/air-support-controller.js';
+import { ReconDroneController } from '../public/src/game/engine/recon-drone-controller.js';
 import { EnemyAiController } from '../public/src/game/engine/enemy-ai.js';
 import { HangarOps } from '../public/src/game/engine/hangar-ops.js';
 import { GameStatus } from '../public/src/game/types.js';
@@ -97,6 +98,7 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
     reconDroneOwned: false,
     reconDroneCooldown: 0,
     reconDroneActiveTimer: 0,
+    reconDroneMission: null,
     airSupportMissions: [],
     playerSave: { credits: 2000, reconDroneOwned: false },
     syncCampaignCredits: () => {},
@@ -114,47 +116,47 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
   assert.equal(engine.playerSave.credits, 2000 - DRONE_CONFIGS.RECON_DRONE.creditPrice);
 
   engine.isHangarOpen = false;
-  const air = new AirSupportController(engine);
+  const drone = new ReconDroneController(engine);
   // Mock mesh creation to avoid Three.js scene/GLB loader in unit test
-  air.createRepairDroneMesh = () => null;
-  const launched = air.launchReconDrone(20, -20);
+  drone.createDroneMesh = () => null;
+  const launched = drone.launch(20, -20);
   assert.equal(launched, true);
-  assert.equal(engine.airSupportMissions.length, 1);
+  assert.ok(engine.reconDroneMission);
+  assert.equal(engine.airSupportMissions.length, 0);
   // Cooldown does NOT start until the drone returns to the player tank
   assert.equal(engine.reconDroneCooldown, 0);
-  assert.equal(engine.airSupportMissions[0].x, engine.playerX);
-  assert.equal(engine.airSupportMissions[0].z, engine.playerZ);
+  assert.equal(engine.reconDroneMission.x, engine.playerX);
+  assert.equal(engine.reconDroneMission.z, engine.playerZ);
 
   // Second launch immediately blocked while drone is deployed
-  assert.equal(air.launchReconDrone(20, -20), false);
+  assert.equal(drone.launch(20, -20), false);
 
   // Move mission to orbit phase and verify reveal radius (6 cells = 12m) and 4-cell orbit radius (8m)
   assert.equal(DRONE_CONFIGS.RECON_DRONE.orbitRadiusCells, 4);
-  engine.airSupportMissions[0].phase = 'orbit';
+  engine.reconDroneMission.phase = 'orbit';
   for (let i = 0; i < 60; i++) {
-    air.updateReconDrone(engine.airSupportMissions[0], 0.05, i * 0.05);
+    drone.update(0.05, i * 0.05);
   }
   const orbitDist = Math.hypot(
-    engine.airSupportMissions[0].x - 20,
-    engine.airSupportMissions[0].z - (-20)
+    engine.reconDroneMission.x - 20,
+    engine.reconDroneMission.z - (-20)
   );
   assert.ok(Math.abs(orbitDist - 4 * TILE_SIZE) < 0.05, `expected 4-cell orbit radius, got ${orbitDist}`);
-  assert.equal(air.isPointRevealedByReconDrone(20, -20), true);
-  assert.equal(air.isPointRevealedByReconDrone(20 + 11, -20), true);
-  assert.equal(air.isPointRevealedByReconDrone(20 + 15, -20), false);
+  assert.equal(drone.isPointRevealed(20, -20), true);
+  assert.equal(drone.isPointRevealed(20 + 11, -20), true);
+  assert.equal(drone.isPointRevealed(20 + 15, -20), false);
 
   // Finish orbit -> transitions to return phase, flies back to player tank, and starts cooldown on dock
-  engine.airSupportMissions[0].timer = DRONE_CONFIGS.RECON_DRONE.durationSec;
-  air.updateReconDrone(engine.airSupportMissions[0], 0.05, 5.0);
-  assert.equal(engine.airSupportMissions[0].phase, 'return');
-  let docked = false;
-  for (let i = 0; i < 100 && !docked; i++) {
-    docked = air.updateReconDrone(engine.airSupportMissions[0], 0.1, 5.0 + i * 0.1);
+  engine.reconDroneMission.timer = DRONE_CONFIGS.RECON_DRONE.durationSec;
+  drone.update(0.05, 5.0);
+  assert.equal(engine.reconDroneMission.phase, 'return');
+  for (let i = 0; i < 100 && engine.reconDroneMission; i++) {
+    drone.update(0.1, 5.0 + i * 0.1);
   }
-  assert.equal(docked, true);
+  assert.equal(engine.reconDroneMission, null);
   assert.equal(engine.reconDroneCooldown, DRONE_CONFIGS.RECON_DRONE.cooldownSec);
   // Launching while recharging on cooldown is blocked
-  assert.equal(air.launchReconDrone(20, -20), false);
+  assert.equal(drone.launch(20, -20), false);
 });
 
 test('updateEnemies still reveals EMP-stunned enemies spotted by RECON_DRONE', () => {
@@ -219,10 +221,10 @@ test('STRATEGIC_BOMBER and AC130_SPOOKY reveal enemies within 20 cells of their 
   const r20 = 20 * TILE_SIZE;
 
   // Within 20 cells of STRATEGIC_BOMBER (10, -10)
-  assert.equal(air.isPointRevealedByReconDrone(10 + r20 - 1, -10), true);
-  assert.equal(air.isPointRevealedByReconDrone(10 + r20 + 2, -10), false);
+  assert.equal(air.isPointRevealedByAirSupport(10 + r20 - 1, -10), true);
+  assert.equal(air.isPointRevealedByAirSupport(10 + r20 + 2, -10), false);
 
   // Within 20 cells of AC130_SPOOKY live gunship position (-20, 16)
-  assert.equal(air.isPointRevealedByReconDrone(-20, 16 + r20 - 1), true);
-  assert.equal(air.isPointRevealedByReconDrone(-20, 16 + r20 + 2), false);
+  assert.equal(air.isPointRevealedByAirSupport(-20, 16 + r20 - 1), true);
+  assert.equal(air.isPointRevealedByAirSupport(-20, 16 + r20 + 2), false);
 });

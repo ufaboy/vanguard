@@ -16,6 +16,7 @@ import { ForestFireController } from '../terrains/forest-fire.js';
 import { ProfileSaveController } from './profile-save.js';
 import { PowerupsController } from './powerups-controller.js';
 import { AirSupportController } from './air-support-controller.js';
+import { ReconDroneController } from './recon-drone-controller.js';
 import { InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
@@ -184,6 +185,7 @@ export class TankGameEngine {
     this.reconDroneOwned = Boolean(this.playerSave?.reconDroneOwned);
     this.reconDroneCooldown = 0;
     this.reconDroneActiveTimer = 0;
+    this.reconDroneMission = null;
     this.repairKitCount = 1;
     this.empTimer = 0;
     this.baseRepairSparkTimer = 0;
@@ -887,12 +889,19 @@ export class TankGameEngine {
     return this.airSupportController.callAirRepair();
   }
 
+  get reconDroneController() {
+    return (this._reconDroneController ||= new ReconDroneController(this));
+  }
+
   launchReconDrone(x, z) {
-    return this.airSupportController.launchReconDrone(x, z);
+    return this.reconDroneController.launch(x, z);
   }
 
   isPointRevealedByReconDrone(x, z) {
-    return this.airSupportController.isPointRevealedByReconDrone(x, z);
+    return Boolean(
+      this.reconDroneController.isPointRevealed(x, z) ||
+        this.airSupportController.isPointRevealedByAirSupport(x, z)
+    );
   }
 
   firePlayerHomingMissile() { this.playerController.firePlayerHomingMissile(); }
@@ -1061,6 +1070,7 @@ export class TankGameEngine {
       this.updatePowerUps(dt, elapsed);
       this.powerupsController.updateAirDrops(dt, elapsed);
       this.airSupportController.update(dt, elapsed);
+      this.reconDroneController.update(dt, elapsed);
       this.playerController.updateSmokeAndLoot(dt);
       this.updateBarrelExplosions(dt);
       this.terrainDestruction.updateBurningOil(dt);
@@ -1557,6 +1567,7 @@ export class TankGameEngine {
     this.tileBatcher?.reset?.();
     this.enemySpawner.clearPendingTimeouts();
     this._airSupportController?.dispose?.();
+    this._reconDroneController?.dispose?.();
     this.pendingBarrelExplosions = [];
     this._aiDebugOverlay?.clear();
     this.clock?.dispose();

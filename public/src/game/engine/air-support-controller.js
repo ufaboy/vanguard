@@ -28,6 +28,13 @@ const STRIKE_VARIANTS = Object.freeze({
   STRIKE_MINES: AIR_SUPPORT.MINES,
 });
 
+const STRIKE_MISSION_KINDS = new Set(['BOMBER_FLYBY', 'AIR_ORDNANCE', 'AIR_MINE', 'AC130']);
+
+/** Returns true when an airborne mission belongs to one of the STRIKE_VARIANTS. */
+export function isActiveAirStrikeMission(mission) {
+  return Boolean(mission && STRIKE_MISSION_KINDS.has(mission.kind));
+}
+
 const EMPTY_MINE_SURFACES = new Set([
   TileType.EMPTY,
   TileType.ROAD,
@@ -156,6 +163,10 @@ export class AirSupportController {
     return { x: startX, z: edgeZ };
   }
 
+  hasActiveStrike() {
+    return (this.engine.airSupportMissions || []).some(isActiveAirStrikeMission);
+  }
+
   startTargeting(type, strikeVariant = 'STRIKE_BOMBS') {
     const { engine } = this;
     if (engine.status !== GameStatus.PLAYING && !engine.airSupportTargeting) return false;
@@ -165,6 +176,11 @@ export class AirSupportController {
 
     const cfg = this.getTargetingConfig(type, strikeVariant);
     if (!cfg) return false;
+
+    if ((type === 'STRIKE' || type === 'MINES') && this.hasActiveStrike()) {
+      engine.setStatusBanner(t('AIR STRIKE ALREADY IN PROGRESS'), 2.0);
+      return false;
+    }
 
     if (type !== 'STRIKE' && !this.canAfford(cfg.cost)) {
       engine.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost: cfg.cost }), 2.0);
@@ -197,7 +213,7 @@ export class AirSupportController {
 
     engine.airSupportTargeting = {
       type,
-      strikeVariant: type === 'STRIKE' ? cfg.id : 'STRIKE_BOMBS',
+      strikeVariant: type === 'STRIKE' ? (STRIKE_VARIANTS[strikeVariant] ? strikeVariant : 'STRIKE_BOMBS') : 'STRIKE_BOMBS',
     };
     this.createOrUpdateReticle(engine.aimWorld?.x ?? engine.playerX, engine.aimWorld?.z ?? engine.playerZ);
     engine.emitHudUpdate?.();
@@ -235,6 +251,11 @@ export class AirSupportController {
     if (!targeting) return false;
     const cfg = this.getTargetingConfig(targeting.type, targeting.strikeVariant);
     if (!cfg) return false;
+
+    if ((targeting.type === 'STRIKE' || targeting.type === 'MINES') && this.hasActiveStrike()) {
+      engine.setStatusBanner(t('AIR STRIKE ALREADY IN PROGRESS'), 2.0);
+      return false;
+    }
 
     if (!this.canAfford(cfg.cost)) {
       engine.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost: cfg.cost }), 2.0);
@@ -385,71 +406,11 @@ export class AirSupportController {
     return true;
   }
 
-  launchReconDrone(targetX, targetZ) {
-    const { engine } = this;
-    if (engine.status !== GameStatus.PLAYING) return false;
-    if (engine.playerHp <= DURABILITY.ZERO_HP || engine.isHangarOpen || engine.isAdPaused) {
-      return false;
-    }
-    if (!engine.reconDroneOwned) {
-      engine.setStatusBanner(t('RECON DRONE NOT INSTALLED — BUY IN GARAGE'), 2.2);
-      return false;
-    }
-    const activeRecon = (engine.airSupportMissions || []).find((m) => m.kind === 'RECON_DRONE');
-    if (activeRecon) {
-      engine.setStatusBanner(t('RECON DRONE ALREADY DEPLOYED'), 1.8);
-      return false;
-    }
-    if ((engine.reconDroneCooldown || 0) > 0) {
-      engine.setStatusBanner(
-        t('RECON DRONE RECHARGING ({sec}s)', { sec: Math.ceil(engine.reconDroneCooldown) }),
-        1.8
-      );
-      return false;
-    }
-
-    const droneCfg = DRONE_CONFIGS.RECON_DRONE;
-    const halfLimit = (GRID_SIZE * TILE_SIZE) / 2 - 1.2;
-    const tx = THREE.MathUtils.clamp(Number.isFinite(targetX) ? targetX : engine.playerX, -halfLimit, halfLimit);
-    const tz = THREE.MathUtils.clamp(Number.isFinite(targetZ) ? targetZ : engine.playerZ, -halfLimit, halfLimit);
-    const startX = engine.playerX;
-    const startZ = engine.playerZ;
-    const startY = 1.6;
-    const droneRig = this.createRepairDroneMesh();
-    if (droneRig && engine.fxGroup) {
-      droneRig.position.set(startX, startY, startZ);
-      engine.fxGroup.add(droneRig);
-    }
-
-    engine.reconDroneActiveTimer = 0;
-    engine.airSupportMissions ||= [];
-    engine.airSupportMissions.push({
-      kind: 'RECON_DRONE',
-      x: startX,
-      y: startY,
-      z: startZ,
-      targetX: tx,
-      targetZ: tz,
-      revealRadius: droneCfg.revealRadiusCells * TILE_SIZE,
-      phase: 'approach',
-      timer: 0,
-      duration: droneCfg.durationSec,
-      mesh: droneRig,
-    });
-    engine.setStatusBanner(t('RECON DRONE DISPATCHED — SCANNING TARGET ZONE'), 2.4);
-    engine.emitHudUpdate?.();
-    return true;
-  }
-
-  isPointRevealedByReconDrone(x, z) {
+  isPointRevealedByAirSupport(x, z) {
     const missions = this.engine.airSupportMissions;
     if (!missions || missions.length === 0) return false;
     for (const m of missions) {
-      if (m.kind === 'RECON_DRONE') {
-        if (m.phase === 'orbit' && Math.hypot(x - m.targetX, z - m.targetZ) <= m.revealRadius) {
-          return true;
-        }
-      } else if (m.kind === 'BOMBER_FLYBY') {
+      if (m.kind === 'BOMBER_FLYBY') {
         const r = (AIRCRAFT_CONFIGS.STRATEGIC_BOMBER.reconRadiusCells ?? 0) * TILE_SIZE;
         if (r > 0 && Math.hypot(x - m.x, z - m.z) <= r) {
           return true;
@@ -700,11 +661,6 @@ export class AirSupportController {
           this.disposeMissionVisuals(m);
           missions.splice(i, 1);
         }
-      } else if (m.kind === 'RECON_DRONE') {
-        if (this.updateReconDrone(m, dt, elapsed)) {
-          this.disposeMissionVisuals(m);
-          missions.splice(i, 1);
-        }
       } else if (m.kind === 'AIR_ORDNANCE') {
         if (this.updateAirOrdnance(m, dt, elapsed)) {
           this.disposeMissionVisuals(m);
@@ -829,87 +785,6 @@ export class AirSupportController {
       m.mesh.rotation.y = Math.atan2(dx, dz);
     }
     return m.timer >= 1.8 || dist < 1.5;
-  }
-
-  updateReconDrone(m, dt, elapsed) {
-    const { engine } = this;
-    const droneCfg = DRONE_CONFIGS.RECON_DRONE;
-    const orbitRadius = (droneCfg.orbitRadiusCells ?? 4) * TILE_SIZE;
-    this.spinDroneRotors(m.mesh, dt);
-    if (m.phase === 'approach') {
-      const dx = m.targetX - m.x;
-      const dz = m.targetZ - m.z;
-      const dist = Math.hypot(dx, dz);
-      if (dist <= orbitRadius + 0.5) {
-        m.phase = 'orbit';
-        m.timer = 0;
-        engine.reconDroneActiveTimer = m.duration;
-        m.orbitAngle = dist > 0.01 ? Math.atan2(m.z - m.targetZ, m.x - m.targetX) : 0;
-        m.currentOrbitRadius = dist;
-      } else {
-        const step = Math.min(dist, droneCfg.approachSpeed * dt);
-        m.x += (dx / dist) * step;
-        m.z += (dz / dist) * step;
-        m.y = THREE.MathUtils.lerp(m.y, droneCfg.hoverAltitude, Math.min(1, dt * 4));
-        if (m.mesh) {
-          m.mesh.position.set(m.x, m.y, m.z);
-          m.mesh.rotation.y = Math.atan2(dx, dz);
-        }
-      }
-      return false;
-    }
-
-    if (m.phase === 'orbit') {
-      m.timer += dt;
-      m.orbitAngle = (m.orbitAngle || 0) + dt * (droneCfg.orbitAngularSpeed ?? 1.6);
-      m.currentOrbitRadius = THREE.MathUtils.lerp(
-        m.currentOrbitRadius ?? orbitRadius,
-        orbitRadius,
-        Math.min(1, dt * 4)
-      );
-      const nx = m.targetX + Math.cos(m.orbitAngle) * m.currentOrbitRadius;
-      const nz = m.targetZ + Math.sin(m.orbitAngle) * m.currentOrbitRadius;
-      const vx = nx - m.x;
-      const vz = nz - m.z;
-      m.x = nx;
-      m.z = nz;
-      m.y = droneCfg.hoverAltitude + Math.sin(elapsed * 4.5) * 0.18;
-      if (m.mesh) {
-        m.mesh.position.set(m.x, m.y, m.z);
-        if (Math.hypot(vx, vz) > 1e-4) {
-          m.mesh.rotation.y = Math.atan2(vx, vz);
-        }
-      }
-      if (m.timer >= m.duration) {
-        m.phase = 'return';
-        m.timer = 0;
-        engine.reconDroneActiveTimer = 0;
-      }
-      return false;
-    }
-
-    // Return phase: fly back to player tank and dock to start recharge cooldown
-    if (engine.playerHp <= DURABILITY.ZERO_HP) {
-      return true;
-    }
-    const dx = engine.playerX - m.x;
-    const dz = engine.playerZ - m.z;
-    const dist = Math.hypot(dx, dz);
-    if (dist <= 1.2) {
-      engine.reconDroneCooldown = droneCfg.cooldownSec;
-      engine.reconDroneActiveTimer = 0;
-      engine.emitHudUpdate?.();
-      return true;
-    }
-    const step = Math.min(dist, droneCfg.departSpeed * dt);
-    m.x += (dx / dist) * step;
-    m.z += (dz / dist) * step;
-    m.y = THREE.MathUtils.lerp(m.y, 1.6, Math.min(1, dt * 4));
-    if (m.mesh) {
-      m.mesh.position.set(m.x, m.y, m.z);
-      m.mesh.rotation.y = Math.atan2(dx, dz);
-    }
-    return false;
   }
 
   repairPlayerSubsystems() {
