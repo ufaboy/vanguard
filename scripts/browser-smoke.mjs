@@ -15,7 +15,7 @@ import { ensureSite } from './site.mjs';
  * dist/site (`replace` swaps that script for the smoke script, otherwise the smoke script is appended); the rest use
  * smoke-canvas.html. `shot` names the final page screenshot (false skips it).
  */
-const MISSION_1 = '?mode=campaign&mission=campaign-01';
+const MISSION_1 = '?mission=campaign-01';
 const MODES = {
   bricks: { script: 'brick-benchmark.js', output: 'brick-benchmark' },
   damage: { script: 'component-damage-smoke.js', output: 'component-damage' },

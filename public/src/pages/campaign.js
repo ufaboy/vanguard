@@ -324,7 +324,7 @@ if (root) {
       const targetId = isCampaignMissionUnlocked(challenge.missionId, completedMissions)
         ? challenge.missionId
         : selectedMissionId;
-      location.href = battlefieldUrl({ mode: 'campaign', mission: targetId });
+      location.href = battlefieldUrl(targetId);
     },
   });
 
@@ -373,7 +373,7 @@ if (root) {
           (item) => item.id === missionId && item.status === 'available'
         );
         if (mission && isCampaignMissionUnlocked(mission.id, completedMissions)) {
-          location.href = battlefieldUrl({ mode: 'campaign', mission: mission.id });
+          location.href = battlefieldUrl(mission.id);
         }
         break;
       }

@@ -24,8 +24,36 @@ export const PAGE_PATHS = Object.freeze({
 /** Contract ids that legacy URLs (`#/contract/<id>`) may name; they open the battlefield directly. */
 export const CONTRACT_IDS = Object.freeze(['contract-last-cargo', 'contract-blackout-protocol']);
 
-export function battlefieldUrl({ mode, mission, id, sector } = {}) {
-  return pageUrl('battlefield', { mode, mission, id, sector });
+/** Default survival arena map id. */
+export const SURVIVAL_MAP_ID = 'survival-paris-last-stand';
+
+export function battlefieldUrl(mission) {
+  return pageUrl('battlefield', mission ? { mission } : null);
+}
+
+/**
+ * Resolves `battlefield?mission=<mapId>` to either a sector index or a redirect target.
+ * Unknown or missing missions redirect to home; locked campaign missions redirect to campaign.
+ */
+export function resolveBattlefieldMission(
+  search,
+  { sectors, isContractMap, isCampaignMissionUnlocked, completedMissions = {} }
+) {
+  const params = new URLSearchParams(search || '');
+  const mission = params.get('mission') || '';
+  if (!mission) {
+    return { redirect: PAGE_PATHS.index };
+  }
+  const idx = sectors.findIndex((sector) => sector.mapId === mission);
+  if (idx < 0) {
+    return { redirect: PAGE_PATHS.index };
+  }
+  const sector = sectors[idx];
+  const isCampaign = !isContractMap(sector) && sector.gameMode !== 'survival';
+  if (isCampaign && !isCampaignMissionUnlocked(sector.mapId, completedMissions)) {
+    return { redirect: PAGE_PATHS.campaign };
+  }
+  return { index: idx };
 }
 
 export function pageUrl(page, params = null) {
@@ -68,7 +96,7 @@ export function resolveLegacyHashRedirect(hash) {
       return pageUrl('campaign', param ? { mission: param } : null);
     case 'contracts':
     case 'contract':
-      return CONTRACT_IDS.includes(param) ? battlefieldUrl({ mode: 'contract', id: param }) : PAGE_PATHS.contracts;
+      return CONTRACT_IDS.includes(param) ? battlefieldUrl(param) : PAGE_PATHS.contracts;
     case 'survival':
       return PAGE_PATHS.survival;
     case 'hangar':

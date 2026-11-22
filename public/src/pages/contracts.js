@@ -13,7 +13,7 @@ if (root) {
     container: root.querySelector('main') || root,
     pageHint: 'contracts',
     onAccept: (challenge) => {
-      location.href = battlefieldUrl({ mode: 'contract', id: challenge.missionId || 'contract-last-cargo' });
+      location.href = battlefieldUrl(challenge.missionId || 'contract-last-cargo');
     },
   });
 

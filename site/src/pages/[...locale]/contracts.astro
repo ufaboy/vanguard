@@ -98,7 +98,7 @@ const jsonLd = [
 
         <a
           class="contract-banner-select"
-          href={h("./battlefield?mode=contract&id=contract-last-cargo")}
+          href={h("./battlefield?mission=contract-last-cargo")}
         >
           <div class="contract-shield-wrap">
             <div class="contract-shield">
@@ -145,7 +145,7 @@ const jsonLd = [
           </div>
           <a
             class="contract-quick-go"
-            href={h("./battlefield?mode=contract&id=contract-last-cargo")}
+            href={h("./battlefield?mission=contract-last-cargo")}
             aria-label={t("Deploy Last Cargo")}
           ><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg></a>
         </div>
@@ -162,7 +162,7 @@ const jsonLd = [
 
         <a
           class="contract-banner-select"
-          href={h("./battlefield?mode=contract&id=contract-blackout-protocol")}
+          href={h("./battlefield?mission=contract-blackout-protocol")}
         >
           <div class="contract-shield-wrap">
             <div class="contract-shield">
@@ -210,7 +210,7 @@ const jsonLd = [
           </div>
           <a
             class="contract-quick-go"
-            href={h("./battlefield?mode=contract&id=contract-blackout-protocol")}
+            href={h("./battlefield?mission=contract-blackout-protocol")}
             aria-label={t("Deploy Blackout Protocol")}
           ><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg></a>
         </div>
@@ -222,7 +222,7 @@ const jsonLd = [
           <span class="plate-rivet tr" aria-hidden="true"></span>
           <span class="plate-rivet bl" aria-hidden="true"></span>
           <span class="plate-rivet br" aria-hidden="true"></span>
-          <a class="contract-banner-select" href={h(`./battlefield?mode=contract&id=${op.id}`)}>
+          <a class="contract-banner-select" href={h(`./battlefield?mission=${op.id}`)}>
             <div class="contract-shield-wrap">
               <div class="contract-shield">
                 <svg viewBox="0 0 36 36" width="32" height="32" fill="none" aria-hidden="true">
@@ -258,7 +258,7 @@ const jsonLd = [
               <strong class="reward-amount">{op.reward}</strong>
               <small class="reward-sub">{t("ON COMPLETION")}</small>
             </div>
-            <a class="contract-quick-go" href={h(`./battlefield?mode=contract&id=${op.id}`)} aria-label={t("Deploy {name}").replace("{name}", t(op.title))}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg></a>
+            <a class="contract-quick-go" href={h(`./battlefield?mission=${op.id}`)} aria-label={t("Deploy {name}").replace("{name}", t(op.title))}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/></svg></a>
           </div>
         </div>
       ))}
@@ -308,8 +308,8 @@ const jsonLd = [
         </div>
 
         <div class="menu-actions">
-          <a class="menu-primary" href={h("./battlefield?mode=contract&amp;id=contract-last-cargo")}>{t("Deploy: Last Cargo →")}</a>
-          <a class="menu-secondary" href={h("./battlefield?mode=contract&amp;id=contract-blackout-protocol")}>{t("Deploy: Blackout Protocol")}</a>
+          <a class="menu-primary" href={h("./battlefield?mission=contract-last-cargo")}>{t("Deploy: Last Cargo →")}</a>
+          <a class="menu-secondary" href={h("./battlefield?mission=contract-blackout-protocol")}>{t("Deploy: Blackout Protocol")}</a>
           <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
           <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
         </div>

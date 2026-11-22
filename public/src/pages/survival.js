@@ -1,4 +1,4 @@
-import { battlefieldUrl } from '../app/routes.js';
+import { SURVIVAL_MAP_ID, battlefieldUrl } from '../app/routes.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { loadPlayerSave } from '../app/state.js';
 import { createDefaultSurvivalRecords } from '../sim/survival.js';
@@ -24,7 +24,7 @@ if (root) {
     container: root.querySelector('main') || root,
     pageHint: 'survival',
     onAccept: () => {
-      location.href = battlefieldUrl({ mode: 'survival' });
+      location.href = battlefieldUrl(SURVIVAL_MAP_ID);
     },
   });
 
@@ -39,7 +39,7 @@ if (root) {
   root.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-action="start-survival"]');
     if (!btn) return;
-    location.href = battlefieldUrl({ mode: 'survival' });
+    location.href = battlefieldUrl(SURVIVAL_MAP_ID);
   });
 }
 
