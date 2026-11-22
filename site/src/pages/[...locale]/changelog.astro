@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.6.0 // AIR STRIKES, GARAGE &amp; TEST ARCHITECTURE")}</span>
+            <strong>{t("Air Strike Concurrency, Garage Rename &amp; Contract-Based Test Suite")}</strong>
+            <p>{t("Limited concurrent air strikes while keeping air drops and field repairs independent, slowed aircraft flybys, and decoupled the Tactical Recon Drone module. Renamed Hangar to Garage across the game, UI, static pages, and scripts, and refactored the test suite to verify formulas, mechanics, and invariants rather than hardcoded balance numbers or engine internals.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 4.5.2 // Z-FIGHTING &amp; SHIMMER FIX")}</span>
             <strong>{t("3D Landmarks, Terrain GLBs, HQ &amp; Bridge Z-Fighting Elimination")}</strong>
             <p>{t("Eliminated coplanar z-fighting and camera-motion shimmering across all 12 landmark GLB packs (including St. Stephen's Cathedral, Verona Arena, Colosseum, Eiffel Tower, and Barcelona Cathedral), terrain GLBs (brick, concrete, and modular buildings), procedural structures (Allied HQ, Enemy Stronghold, Concrete, Crates, Barrels, and Bridges), and landmark masonry mortar lines via fwidth antialiasing. Added scripts/check-zfighting.mjs to verify zero coplanar geometry conflicts across elements and surface combinations.")}</p>
@@ -401,9 +407,9 @@ const jsonLd = [
           </article>
 
           <article class="menu-card" style="cursor:default">
-            <span class="menu-kicker">{t("VERSION 1.22.2 // CONTINUOUS BASE REPAIR &amp; REARM IN HANGAR")}</span>
-            <strong>{t("Base Repair &amp; Ammo Rearming Continue Inside Hangar")}</strong>
-            <p>{t("Allied base hull, subsystem, and armor panel repairs as well as cannon shell rearming (up to")} <code>{t("BASE_REARM_CAP")}</code>{t(") now continue at their normal pace while the player is inside the base hangar, keeping combat units and projectiles paused.")}</p>
+            <span class="menu-kicker">{t("VERSION 1.22.2 // CONTINUOUS BASE REPAIR &amp; REARM IN GARAGE")}</span>
+            <strong>{t("Base Repair &amp; Ammo Rearming Continue Inside Garage")}</strong>
+            <p>{t("Allied base hull, subsystem, and armor panel repairs as well as cannon shell rearming (up to")} <code>{t("BASE_REARM_CAP")}</code>{t(") now continue at their normal pace while the player is inside the base garage, keeping combat units and projectiles paused.")}</p>
           </article>
 
           <article class="menu-card" style="cursor:default">
@@ -571,7 +577,7 @@ const jsonLd = [
           <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 1.13.1 // UI POLISH &amp; HUD CLARITY")}</span>
             <strong>{t("Button Redesign &amp; Tank Damage Silhouette Fix")}</strong>
-            <p>{t("Redesigned menu, modal, share, and drawer-handle buttons with crisp borders and steady glow-ring hover states, centered the contract quick-deploy chevron icon, and updated the battlefield tank silhouette so red highlights persistent component faults requiring paid hangar repair while combat damage displays in yellow.")}</p>
+            <p>{t("Redesigned menu, modal, share, and drawer-handle buttons with crisp borders and steady glow-ring hover states, centered the contract quick-deploy chevron icon, and updated the battlefield tank silhouette so red highlights persistent component faults requiring paid garage repair while combat damage displays in yellow.")}</p>
           </article>
 
           <article class="menu-card" style="cursor:default">

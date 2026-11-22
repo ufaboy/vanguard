@@ -13,7 +13,7 @@ import { SECTORS } from '../public/src/game/levels.js';
 import { APS } from '../public/src/game/constants.js';
 import { EnemyClass } from '../public/src/game/types.js';
 import { ProfileSaveController } from '../public/src/game/engine/profile-save.js';
-import { SaveRepository } from '../public/src/sim/hangar.js';
+import { SaveRepository } from '../public/src/sim/garage.js';
 import {
   CARGO_STATUS,
   CONTRACT_CONFIG,

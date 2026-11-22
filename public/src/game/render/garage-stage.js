@@ -3,7 +3,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { disposeOwned } from './dispose.js';
 
 // A separate workshop scene keeps inspection and refitting out of battlefield state.
-export class HangarStage {
+export class GarageStage {
   constructor(factory, environment, lowQuality = false) {
     this.factory = factory;
     this.scene = new THREE.Scene();

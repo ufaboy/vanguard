@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRepairKitState, activateRepairKit, stepRepairKit } from '../public/src/sim/subsystems.js';
 import { effectiveUpgradeTiers } from '../public/src/sim/component-damage.js';
-import { HangarOps } from '../public/src/game/engine/hangar-ops.js';
+import { GarageOps } from '../public/src/game/engine/garage-ops.js';
 import { PlayerController } from '../public/src/game/engine/player-controller.js';
 import { PowerupsController } from '../public/src/game/engine/powerups-controller.js';
 import { GameStatus } from '../public/src/game/types.js';
@@ -39,10 +39,10 @@ test('Surplus REPAIR grants RM-1; activation restores purchased tiers without in
     componentDamageCooldown: 8, playerSave: { credits: 800 },
     saveRepo: { savePlayerSave() {} },
   };
-  const hangarOps = new HangarOps(state);
+  const garageOps = new GarageOps(state);
   const playerCtrl = new PlayerController(state);
   const powerups = new PowerupsController(state);
-  state.hangarOps = hangarOps;
+  state.garageOps = garageOps;
   state.playerController = playerCtrl;
 
   assert.equal(isUsefulPowerUp(POWERUP.REPAIR, state), true);

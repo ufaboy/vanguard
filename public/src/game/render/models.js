@@ -1786,7 +1786,7 @@ export class ModelFactory extends TextureGenerator {
       for (const z of [-D / 2 + 0.1, D / 2 - 0.1]) box(0.16, 0.266, 0.16, m.trim, x - Math.sign(x) * 0.05, 0.207, z);
     }
 
-    // Hangar shell: three full-depth piers, roof deck, and headers with a red band over both open faces.
+    // Garage shell: three full-depth piers, roof deck, and headers with a red band over both open faces.
     const HX = -0.15;
     const HW = 2.5;
     const HD = 1.5;
@@ -1875,7 +1875,7 @@ export class ModelFactory extends TextureGenerator {
     const repairZone = new THREE.Mesh(repairGeo, m.repair);
     repairZone.position.y = 0.03;
     repairZone.renderOrder = 1;
-    // Only the repair disc geometry is per-instance; hangar parts use the shared geometry cache.
+    // Only the repair disc geometry is per-instance; garage parts use the shared geometry cache.
     group.add(markOwned(repairZone, { materials: false }));
     return group;
   }

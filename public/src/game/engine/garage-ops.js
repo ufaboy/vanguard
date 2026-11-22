@@ -1,4 +1,4 @@
-/** Hangar transactions, component damage/repair, and mission abort settlement. */
+/** Garage transactions, component damage/repair, and mission abort settlement. */
 
 import {
   APS,
@@ -11,7 +11,7 @@ import {
 } from '../constants.js';
 import { DRONE_CONFIGS } from '../vehicles/drones.js';
 import { GameStatus, TileType } from '../types.js';
-import { HangarStage } from '../render/hangar-stage.js';
+import { GarageStage } from '../render/garage-stage.js';
 import { sound } from '../sound.js';
 import { analyticsManager } from '../../app/analyticsManager.js';
 import {
@@ -21,10 +21,10 @@ import {
   rollComponentDamage,
 } from '../../sim/component-damage.js';
 import {
-  mountPartInHangar,
+  mountPartInGarage,
   resolveAssembledTank,
   settleMission,
-} from '../../sim/hangar.js';
+} from '../../sim/garage.js';
 import { recordSurvivalRun } from '../../sim/survival.js';
 import { N_, t } from '../../i18n/index.js';
 
@@ -37,14 +37,14 @@ const TRACK_LABELS = Object.freeze({
 });
 const trackLabel = (track) => t(TRACK_LABELS[track] || track).toUpperCase();
 
-export class HangarOps {
+export class GarageOps {
   constructor(engine) {
     this.engine = engine;
   }
 
   mountPart(instanceId, socketId = null) {
     const e = this.engine;
-    const res = mountPartInHangar(e.playerSave, instanceId, socketId);
+    const res = mountPartInGarage(e.playerSave, instanceId, socketId);
     if (res.success) {
       e.saveRepo.savePlayerSave(e.playerSave);
       e.assembledTank = resolveAssembledTank(e.playerSave);
@@ -74,22 +74,22 @@ export class HangarOps {
           );
           return false;
         }
-        e.isHangarPaused = true;
+        e.isGaragePaused = true;
       }
-      e.isHangarOpen = true;
-      e._hangarWindowRect = null;
-      e.isHangarPaused = e.status !== GameStatus.MENU;
+      e.isGarageOpen = true;
+      e._garageWindowRect = null;
+      e.isGaragePaused = e.status !== GameStatus.MENU;
       e.keys = {};
       e.isMouseDown = false;
-      if (!e.hangarStage && e.modelFactory && e.scene) {
-        e.hangarStage = new HangarStage(e.modelFactory, e.scene.environment, e.isSoftwareGl);
+      if (!e.garageStage && e.modelFactory && e.scene) {
+        e.garageStage = new GarageStage(e.modelFactory, e.scene.environment, e.isSoftwareGl);
       }
       e.syncAudioPauseState?.();
       e.emitHudUpdate?.();
       return true;
     } else {
-      e.isHangarOpen = false;
-      e.isHangarPaused = false;
+      e.isGarageOpen = false;
+      e.isGaragePaused = false;
       e.setInspectMode?.(false);
       e.syncAudioPauseState?.();
       e.emitHudUpdate?.();
@@ -99,15 +99,15 @@ export class HangarOps {
 
   stepOpenFrame(dt, elapsed) {
     const e = this.engine;
-    if (!e.isHangarOpen) return false;
-    e.hangarStage?.update?.(dt, e.effectiveUpgrades, e.missileAmmo, e.apsAmmo, elapsed);
+    if (!e.isGarageOpen) return false;
+    e.garageStage?.update?.(dt, e.effectiveUpgrades, e.missileAmmo, e.apsAmmo, elapsed);
     this.tickBaseMaintenance(dt);
     return true;
   }
 
   tickBaseMaintenance(dt) {
     const e = this.engine;
-    if (!e.isHangarPaused || e.isAdPaused || e.status !== GameStatus.PLAYING) return;
+    if (!e.isGaragePaused || e.isAdPaused || e.status !== GameStatus.PLAYING) return;
     const repairedAny = e.playerController?.updateBaseMaintenance?.(dt);
     if (repairedAny) {
       e.hudSyncAccumulator = (e.hudSyncAccumulator || 0) + dt;
@@ -149,7 +149,7 @@ export class HangarOps {
 
   repairComponent(track) {
     const e = this.engine;
-    if (!e.isHangarOpen) return { success: false, reason: t('Open the garage to repair components.') };
+    if (!e.isGarageOpen) return { success: false, reason: t('Open the garage to repair components.') };
     if (!Object.hasOwn(e.componentDamage, track) || !e.componentDamage[track]) {
       return { success: false, reason: t('This component does not need repair.') };
     }
@@ -185,7 +185,7 @@ export class HangarOps {
 
   upgradeTrack(track) {
     const e = this.engine;
-    if (!e.isHangarOpen || !Object.hasOwn(UPGRADE_MAX_LEVEL, track)) {
+    if (!e.isGarageOpen || !Object.hasOwn(UPGRADE_MAX_LEVEL, track)) {
       return { success: false, reason: t('Select a system in the garage first.') };
     }
     const curLvl = e.upgrades[track] || 1;
@@ -220,7 +220,7 @@ export class HangarOps {
 
   buyCannonAmmo() {
     const e = this.engine;
-    if (!e.isHangarOpen) return { success: false, reason: t('Open the garage to purchase ammunition.') };
+    if (!e.isGarageOpen) return { success: false, reason: t('Open the garage to purchase ammunition.') };
     const maxAmmo = e.getPlayerMaxCannonAmmo();
     if (e.cannonAmmo >= maxAmmo) {
       return { success: false, reason: t('Ammunition magazine is full ({maxAmmo} shells).', { maxAmmo }) };
@@ -241,7 +241,7 @@ export class HangarOps {
 
   buyMissile() {
     const e = this.engine;
-    if (!e.isHangarOpen) return { success: false, reason: t('Open the garage to purchase missiles.') };
+    if (!e.isGarageOpen) return { success: false, reason: t('Open the garage to purchase missiles.') };
     const maxMissiles = e.getPlayerMaxMissileAmmo ? e.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(e.upgrades?.frame || 1);
     if (e.missileAmmo >= maxMissiles) {
       return { success: false, reason: t('Missile magazine is full ({maxMissiles}).', { maxMissiles }) };
@@ -264,7 +264,7 @@ export class HangarOps {
 
   buyApsCharge() {
     const e = this.engine;
-    if (!e.isHangarOpen) {
+    if (!e.isGarageOpen) {
       return { success: false, reason: t('Open the garage to purchase APS charges.') };
     }
     const maxAps = e.getPlayerMaxApsAmmo ? e.getPlayerMaxApsAmmo() : getMaxApsAmmo(e.upgrades?.frame || 1);
@@ -303,7 +303,7 @@ export class HangarOps {
 
   buyReconDrone(allowInBattle = false) {
     const e = this.engine;
-    if (!allowInBattle && !e.isHangarOpen) {
+    if (!allowInBattle && !e.isGarageOpen) {
       return { success: false, reason: t('Open the garage to purchase the Recon Drone.') };
     }
     if (e.reconDroneOwned) {
@@ -337,7 +337,7 @@ export class HangarOps {
     }
   }
 
-  abortMissionToHangar() {
+  abortMissionToGarage() {
     const e = this.engine;
     // Players usually quit from the pause menu, so a paused mission counts as an abort too.
     if (e.status === GameStatus.PLAYING || e.status === GameStatus.PAUSED) {

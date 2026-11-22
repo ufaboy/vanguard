@@ -55,7 +55,7 @@ function createMockEngine(grid) {
     subsystems: {},
     status: GameStatus.PLAYING,
     isDisposed: false,
-    isHangarPaused: false,
+    isGaragePaused: false,
     isAdPaused: false,
     screenShake: 0,
     mapGroup: { add() {}, remove() {} },

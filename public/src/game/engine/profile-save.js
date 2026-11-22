@@ -1,6 +1,6 @@
 import { COMPONENT_TRACKS, normalizeComponentDamage } from '../../sim/component-damage.js';
 import { CONTRACT_CONFIG } from '../../sim/contract.js';
-import { getSafeStorage } from '../../sim/hangar.js';
+import { getSafeStorage } from '../../sim/garage.js';
 import { createRepairKitState } from '../../sim/subsystems.js';
 import { SURVIVAL_CONFIG } from '../../sim/survival.js';
 import { APS, MISSILE, UPGRADE_MAX_LEVEL, getMaxApsAmmo, getMaxCannonAmmo, getMaxRepairKitCharges } from '../constants.js';

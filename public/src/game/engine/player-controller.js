@@ -43,7 +43,7 @@ import {
   stepAngleTowards,
   updatePlayerSensorContacts,
 } from '../../sim/ai.js';
-import { settleMission } from '../../sim/hangar.js';
+import { settleMission } from '../../sim/garage.js';
 import { recordSurvivalRun } from '../../sim/survival.js';
 import { t } from '../../i18n/index.js';
 
@@ -210,7 +210,7 @@ export class PlayerController {
         if (engine.restoreAllComponents) {
           engine.restoreAllComponents();
         } else {
-          engine.hangarOps?.restoreAllComponents?.();
+          engine.garageOps?.restoreAllComponents?.();
         }
         engine.playerHp = hp;
         if (engine.playerController?.persistRepairKitCharges) {
@@ -647,7 +647,7 @@ export class PlayerController {
 
     const playerSpeed = Math.hypot(engine.playerVx, engine.playerVz);
     const speedRatio = maxSpeed > 0 ? Math.min(1.0, playerSpeed / maxSpeed) : 0;
-    sound.updateEngineLoop(speedRatio, engine.hangarOpen || engine.status !== GameStatus.PLAYING);
+    sound.updateEngineLoop(speedRatio, engine.garageOpen || engine.status !== GameStatus.PLAYING);
 
     const radius = 0.72;
     const isMoving = Math.abs(engine.playerVx) > 0.05 || Math.abs(engine.playerVz) > 0.05;

@@ -7,7 +7,7 @@ import { QUALITY_PRESETS } from '../game/engine/engineCore.js';
 import { SECTORS } from '../game/levels.js';
 import { sound } from '../game/sound.js';
 import { GameStatus } from '../game/types.js';
-import { HANGAR_TRACKS } from '../hangar-ui.js';
+import { GARAGE_TRACKS } from '../garage-ui.js';
 import { buildBattleSharePayload, CONTRACTS_CATALOG } from '../sim/index.js';
 import { downloadBattleShareCard } from './share-card.js';
 import { t } from '../i18n/index.js';
@@ -169,7 +169,7 @@ export function setupDelegatedEvents(
         break;
       case 'return-survival':
         // Settle first (saves the survival record and reports mission_abort), then leave.
-        engine?.abortMissionToHangar();
+        engine?.abortMissionToGarage();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.survival;
           break;
@@ -182,7 +182,7 @@ export function setupDelegatedEvents(
         renderUI(false);
         break;
       case 'return-contracts':
-        engine?.abortMissionToHangar();
+        engine?.abortMissionToGarage();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.contracts;
           break;
@@ -199,7 +199,7 @@ export function setupDelegatedEvents(
         renderUI(false);
         break;
       case 'return-campaign':
-        engine?.abortMissionToHangar();
+        engine?.abortMissionToGarage();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.campaign;
           break;
@@ -208,7 +208,7 @@ export function setupDelegatedEvents(
         renderUI(true);
         break;
       case 'main-menu':
-        engine?.abortMissionToHangar();
+        engine?.abortMissionToGarage();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.index;
           break;
@@ -226,17 +226,17 @@ export function setupDelegatedEvents(
         const willOpen = !state.showUpgradeDrawer;
         if (willOpen) {
           if (state.hud.status === GameStatus.MENU) break;
-          const ok = engine ? engine.setHangarOpen(true) : false;
+          const ok = engine ? engine.setGarageOpen(true) : false;
           if (ok) {
             state.showUpgradeDrawer = true;
-            analyticsManager.trackEvent('hangar_open', {
+            analyticsManager.trackEvent('garage_open', {
               source: state.hud.status === GameStatus.PLAYING ? 'battle_hud' : 'menu',
             });
             renderUI(true);
           }
         } else {
           state.showUpgradeDrawer = false;
-          engine?.setHangarOpen(false);
+          engine?.setGarageOpen(false);
           renderUI(true);
         }
         break;
@@ -244,15 +244,15 @@ export function setupDelegatedEvents(
       case 'upgrade-track': {
         const track = btn.getAttribute('data-track');
         if (track && engine) {
-          const res = engine.upgradeTrackInHangar(track);
+          const res = engine.upgradeTrackInGarage(track);
           if (res.success) {
             analyticsManager.trackEvent('upgrade_purchase', {
               track,
               tier: state.upgrades?.[track],
             });
           }
-          state.hangarFeedback = res.success
-            ? t('{system} upgraded. Ready for deployment.', { system: t(HANGAR_TRACKS.find((item) => item.key === track)?.label || 'System') })
+          state.garageFeedback = res.success
+            ? t('{system} upgraded. Ready for deployment.', { system: t(GARAGE_TRACKS.find((item) => item.key === track)?.label || 'System') })
             : res.reason;
           if (!res.success && res.reason) {
             engine.setStatusBanner(t('UPGRADE BLOCKED: {reason}', { reason: res.reason.toUpperCase() }), 2.4);
@@ -263,40 +263,40 @@ export function setupDelegatedEvents(
       }
       case 'repair-component':
         if (engine) {
-          const result = engine.repairComponentInHangar(btn.dataset.track);
+          const result = engine.repairComponentInGarage(btn.dataset.track);
           if (result.success) {
             analyticsManager.trackEvent('supply_purchase', { item: 'component_repair', track: btn.dataset.track });
           }
-          state.hangarFeedback = result.reason;
+          state.garageFeedback = result.reason;
           renderUI(true);
         }
         break;
       case 'buy-cannon-ammo': {
-        const res = engine?.buyCannonAmmoInHangar();
+        const res = engine?.buyCannonAmmoInGarage();
         if (res?.success) {
           analyticsManager.trackEvent('supply_purchase', { item: 'cannon_ammo' });
         }
-        if (res?.reason) state.hangarFeedback = res.reason;
+        if (res?.reason) state.garageFeedback = res.reason;
         renderUI(true);
         break;
       }
       case 'buy-missile':
         if (engine) {
-          const result = engine.buyMissileInHangar();
+          const result = engine.buyMissileInGarage();
           if (result.success) {
             analyticsManager.trackEvent('supply_purchase', { item: 'missile' });
           }
-          state.hangarFeedback = result.reason;
+          state.garageFeedback = result.reason;
           renderUI(true);
         }
         break;
       case 'buy-aps-charge':
         if (engine) {
-          const res = engine.buyApsChargeInHangar();
+          const res = engine.buyApsChargeInGarage();
           if (res.success) {
             analyticsManager.trackEvent('supply_purchase', { item: 'aps_charge' });
           }
-          state.hangarFeedback = res.reason;
+          state.garageFeedback = res.reason;
           if (!res.success && res.reason) {
             engine.setStatusBanner(t('APS RESUPPLY BLOCKED: {reason}', { reason: res.reason.toUpperCase() }), 2.4);
           }
@@ -305,35 +305,35 @@ export function setupDelegatedEvents(
         break;
       case 'buy-recon-drone':
         if (engine) {
-          const res = engine.buyReconDroneInHangar();
+          const res = engine.buyReconDroneInGarage();
           if (res.success) {
             analyticsManager.trackEvent('supply_purchase', { item: 'recon_drone' });
           }
-          state.hangarFeedback = res.reason;
+          state.garageFeedback = res.reason;
           renderUI(true);
         }
         break;
       case 'launch-recon-drone':
         engine?.activateReconDroneAction();
         break;
-      case 'hangar-select':
-        if (HANGAR_TRACKS.some((item) => item.key === btn.dataset.track)) {
-          state.hangarTrack = btn.dataset.track;
-          state.hangarFeedback = '';
+      case 'garage-select':
+        if (GARAGE_TRACKS.some((item) => item.key === btn.dataset.track)) {
+          state.garageTrack = btn.dataset.track;
+          state.garageFeedback = '';
           renderUI(true);
-          document.querySelector(`.hangar-system[data-track="${state.hangarTrack}"]`)?.focus({ preventScroll: true });
+          document.querySelector(`.garage-system[data-track="${state.garageTrack}"]`)?.focus({ preventScroll: true });
         }
         break;
-      case 'hangar-view':
-        state.hangarView = btn.dataset.view;
-        engine?.hangarStage?.setView(state.hangarView);
+      case 'garage-view':
+        state.garageView = btn.dataset.view;
+        engine?.garageStage?.setView(state.garageView);
         renderUI(true);
         break;
       case 'mount-part': {
         const instanceId = btn.getAttribute('data-instance');
         const socketId = btn.getAttribute('data-socket') || null;
         if (instanceId && engine) {
-          const res = engine.mountHangarPart(instanceId, socketId);
+          const res = engine.mountGaragePart(instanceId, socketId);
           const errReason = res.reason || res.reasons?.[0];
           if (!res.success && errReason) {
             engine.setStatusBanner(t('MOUNT REJECTED: {reason}', { reason: errReason.toUpperCase() }), 2.6);
@@ -365,7 +365,7 @@ export function setupDelegatedEvents(
         break;
       }
       case 'abort-mission':
-        engine?.abortMissionToHangar();
+        engine?.abortMissionToGarage();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.index;
           break;

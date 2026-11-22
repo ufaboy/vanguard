@@ -74,7 +74,7 @@ export function computeFrameInterval({
   status,
   victoryCinematicsTimer = 0,
   defeatCinematicsTimer = 0,
-  isHangarOpen = false,
+  isGarageOpen = false,
   inspectMode = false,
   cameraRotating = false,
   fpsCap = 0,
@@ -83,7 +83,7 @@ export function computeFrameInterval({
     status === GameStatus.PAUSED ||
     (status === GameStatus.VICTORY && !(victoryCinematicsTimer > 0)) ||
     (status === GameStatus.GAME_OVER && !(defeatCinematicsTimer > 0));
-  if (resultScreen && !isHangarOpen && !inspectMode && !cameraRotating) {
+  if (resultScreen && !isGarageOpen && !inspectMode && !cameraRotating) {
     return 1000 / IDLE_SCREEN_FPS;
   }
   return fpsCap > 0 ? 1000 / fpsCap : 0;

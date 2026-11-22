@@ -170,7 +170,7 @@ export class AirSupportController {
   startTargeting(type, strikeVariant = 'STRIKE_BOMBS') {
     const { engine } = this;
     if (engine.status !== GameStatus.PLAYING && !engine.airSupportTargeting) return false;
-    if (engine.playerHp <= DURABILITY.ZERO_HP || engine.isHangarOpen || engine.isAdPaused) {
+    if (engine.playerHp <= DURABILITY.ZERO_HP || engine.isGarageOpen || engine.isAdPaused) {
       return false;
     }
 
@@ -367,7 +367,7 @@ export class AirSupportController {
   callAirRepair() {
     const { engine } = this;
     if (engine.status !== GameStatus.PLAYING) return false;
-    if (engine.playerHp <= DURABILITY.ZERO_HP || engine.isHangarOpen || engine.isAdPaused) {
+    if (engine.playerHp <= DURABILITY.ZERO_HP || engine.isGarageOpen || engine.isAdPaused) {
       return false;
     }
     const cfg = AIR_SUPPORT.REPAIR;

@@ -31,7 +31,7 @@ function createMockEngine(credits = 1000) {
     playerHullAngle: 0,
     playerStats: { armor: 0, directionalArmor: false },
     aimWorld: { x: 4, z: 4 },
-    isHangarOpen: false,
+    isGarageOpen: false,
     isAdPaused: false,
     playerSave: { credits },
     saveRepo: {

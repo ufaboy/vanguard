@@ -268,7 +268,7 @@
             <a class="menu-nav-link is-active" href="#cta-buttons" data-demo="Nav Link (Active)">CTAs</a>
             <a class="menu-nav-link" href="#modal-menu-buttons" data-demo="Nav Link">Menu &amp; Modals</a>
             <a class="menu-nav-link" href="#tabs-pills" data-demo="Nav Link">Tabs &amp; Pills</a>
-            <a class="menu-nav-link" href="#hangar-hud" data-demo="Nav Link">Hangar &amp; HUD</a>
+            <a class="menu-nav-link" href="#garage-hud" data-demo="Nav Link">Garage &amp; HUD</a>
             <a class="menu-nav-link" href="#links-footer" data-demo="Nav Link">Links &amp; Footer</a>
           </nav>
         </div>
@@ -284,7 +284,7 @@
           </div>
           <h1>Tactical Buttons &amp; Links Demo</h1>
           <p>
-            Complete reference of all interactive buttons, links, tabs, pills, HUD controls, hangar actions,
+            Complete reference of all interactive buttons, links, tabs, pills, HUD controls, garage actions,
             and armored navigation plates styled with the IRON VANGUARD design system.
           </p>
         </div>
@@ -379,7 +379,7 @@
                   <span class="btn-rivet top-right" aria-hidden="true"></span>
                   <span class="btn-rivet bottom-left" aria-hidden="true"></span>
                   <span class="btn-rivet bottom-right" aria-hidden="true"></span>
-                  <span>⚙ HANGAR [U]</span>
+                  <span>⚙ GARAGE [U]</span>
                 </button>
               </div>
             </div>
@@ -469,7 +469,7 @@
         <section id="tabs-pills" class="demo-section">
           <div class="demo-section-head">
             <h2>4. Tabs, Filter Buttons &amp; Segmented Controls</h2>
-            <span>.codex-tab · .codex-tier-btn · .hangar-view-controls</span>
+            <span>.codex-tab · .codex-tier-btn · .garage-view-controls</span>
           </div>
 
           <div class="demo-col">
@@ -505,8 +505,8 @@
             </div>
 
             <div>
-              <div class="demo-sublabel">Hangar Camera Angle Segmented Toggle</div>
-              <div class="hangar-view-controls" style="position: static; width: fit-content;" data-toggle-group="view-ctrl">
+              <div class="demo-sublabel">Garage Camera Angle Segmented Toggle</div>
+              <div class="garage-view-controls" style="position: static; width: fit-content;" data-toggle-group="view-ctrl">
                 <button type="button" class="is-selected" data-demo="View: 3/4">3/4 VIEW</button>
                 <button type="button" data-demo="View: Front">FRONT</button>
                 <button type="button" data-demo="View: Side">SIDE</button>
@@ -516,11 +516,11 @@
           </div>
         </section>
 
-        <!-- 5. Hangar & Engineering Buttons -->
-        <section id="hangar-hud" class="demo-section">
+        <!-- 5. Garage & Engineering Buttons -->
+        <section id="garage-hud" class="demo-section">
           <div class="demo-section-head">
-            <h2>5. Hangar &amp; Supply Controls</h2>
-            <span>.hangar-buy · .hangar-supply-buy · .hangar-exit</span>
+            <h2>5. Garage &amp; Supply Controls</h2>
+            <span>.garage-buy · .garage-supply-buy · .garage-exit</span>
           </div>
 
           <div class="demo-col">
@@ -528,11 +528,11 @@
               <div style="flex: 1; min-width: 220px;">
                 <div class="demo-sublabel">Upgrade Purchase (Active &amp; Disabled)</div>
                 <div class="demo-col">
-                  <button type="button" class="hangar-buy" data-demo="Hangar Upgrade Buy">
+                  <button type="button" class="garage-buy" data-demo="Garage Upgrade Buy">
                     <strong>INSTALL MK III</strong>
                     <span>$2,400</span>
                   </button>
-                  <button type="button" class="hangar-buy" disabled data-demo="Hangar Upgrade Maxed">
+                  <button type="button" class="garage-buy" disabled data-demo="Garage Upgrade Maxed">
                     <strong>MAX TIER REACHED</strong>
                     <span>—</span>
                   </button>
@@ -542,9 +542,9 @@
               <div style="flex: 1; min-width: 220px;">
                 <div class="demo-sublabel">Supply Refill &amp; Emergency Repair</div>
                 <div class="demo-col">
-                  <button type="button" class="hangar-supply-buy" style="--supply-color: #7dd3fc;" data-demo="Buy APS Charge">
-                    <span class="hangar-supply-add">+1 APS</span>
-                    <span class="hangar-supply-price"><span class="hangar-credit-coin">$</span> 1000</span>
+                  <button type="button" class="garage-supply-buy" style="--supply-color: #7dd3fc;" data-demo="Buy APS Charge">
+                    <span class="garage-supply-add">+1 APS</span>
+                    <span class="garage-supply-price"><span class="garage-credit-coin">$</span> 1000</span>
                   </button>
                   <div class="component-repair">
                     <button type="button" data-demo="Repair Damaged Component">REPAIR CANNON ($900)</button>
@@ -554,13 +554,13 @@
             </div>
 
             <div>
-              <div class="demo-sublabel">Hangar Exit &amp; System Selector</div>
+              <div class="demo-sublabel">Garage Exit &amp; System Selector</div>
               <div class="demo-row">
-                <button type="button" class="hangar-exit" data-demo="Exit Hangar">
+                <button type="button" class="garage-exit" data-demo="Exit Garage">
                   RETURN TO BATTLE <kbd>ESC</kbd>
                 </button>
-                <button type="button" class="hangar-system is-selected" style="max-width: 260px;" data-demo="Hangar System: Cannon">
-                  <span class="hangar-system-copy">
+                <button type="button" class="garage-system is-selected" style="max-width: 260px;" data-demo="Garage System: Cannon">
+                  <span class="garage-system-copy">
                     <strong>CANNON</strong>
                     <small>105mm Rifled Gun</small>
                   </span>
@@ -585,16 +585,16 @@
                 <button
                   type="button"
                   class="flex items-center gap-1.5 bg-[#0B0F17]/95 border border-amber-500/60 text-amber-400 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider cursor-pointer"
-                  data-demo="HUD Hangar [U]"
+                  data-demo="HUD Garage [U]"
                 >
                   <span>⚙</span>
-                  <span>HANGAR [U]</span>
+                  <span>GARAGE [U]</span>
                 </button>
 
                 <button
                   type="button"
                   class="flex items-center gap-1.5 bg-[#0B0F17]/95 border border-teal-400 text-teal-300 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider cursor-pointer"
-                  data-demo="HUD Hangar (In Repair Bay)"
+                  data-demo="HUD Garage (In Repair Bay)"
                 >
                   <span>⚙</span>
                   <span>REPAIR BAY [U]</span>

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { settleMission } from '../../sim/hangar.js';
+import { settleMission } from '../../sim/garage.js';
 import { applySubsystemDamage } from '../../sim/subsystems.js';
 import { recordSurvivalRun } from '../../sim/survival.js';
 import { DURABILITY, ENEMY_VISIBILITY, computeEffectiveDamage } from '../constants.js';
@@ -552,7 +552,7 @@ export class TerrainDestructionController {
 
   updateBarrelExplosions(dt) {
     const { engine } = this;
-    if (engine.isDisposed || engine.isHangarPaused || engine.isAdPaused || engine.status !== GameStatus.PLAYING) return;
+    if (engine.isDisposed || engine.isGaragePaused || engine.isAdPaused || engine.status !== GameStatus.PLAYING) return;
     const pending = engine.pendingBarrelExplosions || [];
     engine.enemySpawner.clearPendingTimeouts();
     engine.pendingBarrelExplosions = [];
@@ -747,7 +747,7 @@ export class TerrainDestructionController {
     const { engine } = this;
     if (
       engine.isDisposed ||
-      engine.isHangarPaused ||
+      engine.isGaragePaused ||
       engine.isAdPaused ||
       engine.status !== GameStatus.PLAYING ||
       !engine.burningOilCells?.length

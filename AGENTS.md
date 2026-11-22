@@ -107,8 +107,8 @@
 - **5 Tactical Field Power-Ups (`src/game/powerups.js` — `POWERUP` & `POWERUP_TYPES`)**:
   - `REPAIR`, `EMP`, `BASE_RESTORE`, `APS`, and `MISSILE`. Field Power-Ups are strictly situational combat abilities.
   - **BOX Supply Rules**: Tanks award credits; fully opened BOX caches roll `BOX_POWERUP_DROP_CHANCE` (currently 33%). Successful drops draw from the match's shuffled pool without replacement; exhausted pools reshuffle without adjacent repeats. Pickups stay at the cache location until collected or the mission ends. `BASE_RESTORE` has priority while HQ is destroyed and no reconstruction pickup is pending; emergency priority may override the bag cycle. Legacy map pickup types do not predetermine BOX contents.
-  - **Hangar Supplies and Repairs**: Buy one APS charge for `APS.CHARGE_CREDIT_PRICE` (currently 1000) or one missile for `MISSILE.CREDIT_PRICE` (currently 3000), up to their current capacity limits. Component repair is priced by purchased tier through `componentRepairCost`: II 600, III 900, IV 1200, V 1500 credits; Tier I cannot currently fault.
-  - **Credit Economy & Hangar Upgrades**: Destroying enemies and clearing missions yields **Credits ($)**. Upgrading core tracks (`CANNON_Mk1..CANNON_Mk5`, `CH1..CH5`, `F1..F5`, `E1..E5`, `A1..A5`) is performed in the **Hangar (`[U]`, shown in the UI as the Garage; `src/hangar-ui.js`)** accessible within the repair radius of the Allied Command Base (or from the menu). Entering the Hangar in combat pauses battlefield simulation.
+  - **Garage Supplies and Repairs**: Buy one APS charge for `APS.CHARGE_CREDIT_PRICE` (currently 1000) or one missile for `MISSILE.CREDIT_PRICE` (currently 3000), up to their current capacity limits. Component repair is priced by purchased tier through `componentRepairCost`: II 600, III 900, IV 1200, V 1500 credits; Tier I cannot currently fault.
+  - **Credit Economy & Garage Upgrades**: Destroying enemies and clearing missions yields **Credits ($)**. Upgrading core tracks (`CANNON_Mk1..CANNON_Mk5`, `CH1..CH5`, `F1..F5`, `E1..E5`, `A1..A5`) is performed in the **Garage (`[U]`, shown in the UI as the Garage; `src/garage-ui.js`)** accessible within the repair radius of the Allied Command Base (or from the menu). Entering the Garage in combat pauses battlefield simulation.
   - **Fortified Allied Base**: The player's Command Base is a two-bay tank workshop (`createCommandBaseBlock` in `render/models.js`) that occupies 2×1 cells (`baseCell` + its right neighbour) on the outermost row. Every map authors its own HQ cover in `objectLayout`: a 4-cell line of reinforced Concrete (16 HP) two rows towards the enemy, with the lane between it and the HQ and the cells beside the HQ left open so tanks can drive up to it. The loader never adds walls or clears cells around the HQ (only the map file decides the terrain); `getBaseLayout` (`levels.js`) only describes the HQ footprint and where the cover row sits, and the Survival boss-wave reward restores only the cells the map authored as concrete. Either HQ cell being hit destroys the base.
   - **Victory Cinematics (`VICTORY_CINEMATICS`, `constants.js`)**: `triggerMissionVictory(banner, focusTarget)` sets `GameStatus.VICTORY` immediately (rewards, medals and stats settle at once) but holds the results modal for `DURATION_SEC` (`victoryCinematicsTimer`, `hud.victoryCinematicsActive`). The camera (`InputCameraController.updateCamera`) focuses the final destroyed tank or enemy HQ, pushes in (`ZOOM_FACTOR`) and orbits `ORBIT_ANGLE_RAD` (90°); the target is removed from `engine.enemies` right away but its model/tile explosion (`onDetonate`) fires `DETONATE_DELAY_SEC` into the orbit. Contract extraction has no target and orbits the player. Zoom changes go through `engine.updateCameraProjection()` (camera bounds only); `handleResize()` is reserved for real viewport resizes because it resizes the renderer.
   - **Missile FPV Chase Camera (`MISSILE.FPV_*`, `constants.js`)**: optional (`V`, HUD `FPV [V]` button, Settings toggle; saved as `missileFpvEnabled`). While a player ATGM is in flight the engine renders `fpvCamera` (perspective) trailing the missile, runs the simulation at `MISSILE.FPV_TIME_SCALE` (`getTimeScale()`) and, after impact, holds the view for `FPV_POST_EXPLOSION_DELAY` before returning to the isometric camera. Mouse aim updates are paused while it is active. Tune every distance, height, smoothing and FOV value in `MISSILE.FPV_*`, never inline.
@@ -137,7 +137,7 @@ The game and every file it needs reside inside `/public` and are served as writt
 │       ├── i18n/index.js   # LOCALIZED_SLUGS, t() over i18n/pages dictionaries, localHref / pageHref / pageUrl, localizeJsonLd
 │       └── pages/[...locale]/  # One .astro file per page; localized pages build to /<slug> and /es/<slug>
 ├── i18n/pages/             # Static page dictionaries (es.mjs + es/*.mjs), keyed by English text
-├── tests/                  # `pnpm test`: node:test suites (tank stats, AI behavior, bosses, maps, hangar, ...)
+├── tests/                  # `pnpm test`: node:test suites (tank stats, AI behavior, bosses, maps, garage, ...)
 ├── metadata.json           # AI Studio applet metadata (dev/config)
 ├── package.json            # Single runtime dependency ("three"); dev-only GLB tooling and wrangler in devDependencies
 ├── assets/                 # (git-ignored) Blender builds (assets/blender/<model>/) and source art
@@ -154,7 +154,7 @@ The game and every file it needs reside inside `/public` and are served as writt
 │   ├── audit-maps.mjs      # Map JSON consistency audit
 │   ├── sync-vendor.mjs     # `pnpm run vendor`: copies only the used Three.js files into public/vendor
 │   ├── optimize-models.mjs # `pnpm run optimize-models`: Blender GLBs -> public/models (player atlas, 512 px cap, KTX2, Draco)
-│   ├── browser-smoke.mjs   # `pnpm run smoke <mode> [--software] [--mobile]`: headless-Chrome runner for the page scripts below (bricks, damage, damage-ui, mountains, sand, water, ice, hero, home, hangar); output in artifacts/
+│   ├── browser-smoke.mjs   # `pnpm run smoke <mode> [--software] [--mobile]`: headless-Chrome runner for the page scripts below (bricks, damage, damage-ui, mountains, sand, water, ice, hero, home, garage); output in artifacts/
 │   └── *-smoke.js, brick-benchmark.js, home-art.js, smoke-canvas.html  # Page scripts run by browser-smoke.mjs
 └── public/                 # Game and static assets, copied untouched into dist/site (the static SEO pages live in site/)
     ├── battlefield.html    # The WebGL game page (noindex); loads src/main.js
@@ -173,18 +173,18 @@ The game and every file it needs reside inside `/public` and are served as writt
     └── src/
         ├── main.js         # Battlefield page: DOM UI, HUD telemetry, modals, event delegation, engine bootstrap
         ├── router.js       # Battlefield page titles and in-page URL state
-        ├── hangar-ui.js    # Hangar / Garage & Workshop drawer
+        ├── garage-ui.js    # Garage / Garage & Workshop drawer
         ├── component-condition-ui.js # Component damage / repair UI
         ├── index.css       # Standalone compiled CSS stylesheet
         ├── app/            # Shared page shell: routes.js (PAGE_PATHS, legacy hash redirects), shell.js, state.js, ads.js, analyticsManager.js
         ├── i18n/           # index.js (t, N_, formatNumber, locale resolution) + locales/<locale>.js dictionaries (Spanish: es/ui, banners, catalog, maps)
         ├── pages/          # One module per static page (home.js, campaign.js, survival.js, contracts.js, how-to-play.js, settings.js, ...)
         ├── ui/             # Battle HUD widgets: battle-hud, minimap, contract-hud, medals-modal, share-card, touch-controls, ...
-        ├── sim/            # Pure simulation modules (catalog, ballistics, APS, jammer, component damage, hangar, missions, survival, contracts, medals)
+        ├── sim/            # Pure simulation modules (catalog, ballistics, APS, jammer, component damage, garage, missions, survival, contracts, medals)
         │   └── behavior/   # Enemy behavior system: actions + Luck rolls + zones (actions.js), no-lead Gunner (gunner.js), A* + grid LOS (navgrid.js), tactical cell queries (positions.js), role brains (brain.js), Squad Director (squad.js)
         └── game/
-            ├── engine/         # TankGameEngine (engineCore.js) + subsystems: physics, player-controller, enemy-ai, enemy-combat, enemy-spawner, boss-combat, projectiles, explosions, terrain-destruction, sector-loader, mode-directors, powerups-controller, hangar-ops, hud-snapshot, input-camera, defense-turrets, profile-save, ai-debug-overlay
-            ├── render/         # models.js (procedural rigs + GLB tank models), tile-batcher.js, texture-gen.js + texture-worker.js, decoration.js, hangar-stage.js, dispose.js
+            ├── engine/         # TankGameEngine (engineCore.js) + subsystems: physics, player-controller, enemy-ai, enemy-combat, enemy-spawner, boss-combat, projectiles, explosions, terrain-destruction, sector-loader, mode-directors, powerups-controller, garage-ops, hud-snapshot, input-camera, defense-turrets, profile-save, ai-debug-overlay
+            ├── render/         # models.js (procedural rigs + GLB tank models), tile-batcher.js, texture-gen.js + texture-worker.js, decoration.js, garage-stage.js, dispose.js
             ├── effects/        # FxSystem particle effects (fx-system.js, pools.js, atlas.js, projectile-visuals.js)
             ├── components/     # Catalog modules: cannons, chassis, frames, engines, armors, modules, types, upgrades
             ├── terrains/       # Surfaces catalog (surfaces.js), cell layers (layers.js), water / ice / sand, brick / concrete / breach models, buildings, landmarks, forest fire, BOX loot, enemy stronghold, mountains

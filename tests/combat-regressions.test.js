@@ -64,10 +64,10 @@ test('Barrel chains wait for active simulation and ignore cells from a replaced 
   engine.status = GameStatus.PAUSED;
   engine.updateBarrelExplosions(1);
   engine.status = GameStatus.PLAYING;
-  engine.isHangarPaused = true;
+  engine.isGaragePaused = true;
   engine.updateBarrelExplosions(1);
   assert.equal(next.type, TileType.BARREL);
-  engine.isHangarPaused = false;
+  engine.isGaragePaused = false;
   engine.updateBarrelExplosions(0.05);
   assert.equal(next.type, TileType.BARREL);
   engine.updateBarrelExplosions(0.03);
@@ -625,7 +625,7 @@ test('missile FPV switches active camera to fpvCamera only while a player missil
   const engine = Object.assign(Object.create(TankGameEngine.prototype), {
     status: GameStatus.PLAYING,
     missileFpvEnabled: false,
-    isHangarOpen: false,
+    isGarageOpen: false,
     inspectMode: false,
     airSupportTargeting: false,
     camera: orthoCam,

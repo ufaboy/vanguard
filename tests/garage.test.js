@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { renderHangar, hangarStats } from '../public/src/hangar-ui.js';
-import { HangarOps } from '../public/src/game/engine/hangar-ops.js';
+import { renderGarage, garageStats } from '../public/src/garage-ui.js';
+import { GarageOps } from '../public/src/game/engine/garage-ops.js';
 import { PlayerController } from '../public/src/game/engine/player-controller.js';
 import { GameStatus } from '../public/src/game/types.js';
 import {
@@ -22,13 +22,13 @@ import { POWERUP } from '../public/src/game/powerups.js';
 
 const stock = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 };
 
-test('Hangar shows five systems and actual component-derived upgrade effects', () => {
+test('Garage shows five systems and actual component-derived upgrade effects', () => {
   const tier2Cost = TRACK_UPGRADE_COSTS[2];
-  const html = renderHangar({ credits: tier2Cost + 200, missileAmmo: 0, trackUpgradeCosts: TRACK_UPGRADE_COSTS }, stock);
-  assert.equal((html.match(/data-action="hangar-select"/g) || []).length, 5);
+  const html = renderGarage({ credits: tier2Cost + 200, missileAmmo: 0, trackUpgradeCosts: TRACK_UPGRADE_COSTS }, stock);
+  assert.equal((html.match(/data-action="garage-select"/g) || []).length, 5);
   assert.ok(html.includes(`Install upgrade · $ ${formatNumber(tier2Cost)}`));
-  const now = hangarStats(stock);
-  const next = hangarStats({ ...stock, cannon: 2 });
+  const now = garageStats(stock);
+  const next = garageStats({ ...stock, cannon: 2 });
   assert.equal(now.damage, PLAYER_UPGRADES.cannon[0].damage);
   assert.equal(next.damage, PLAYER_UPGRADES.cannon[1].damage);
   assert.equal(now.fireCooldown, PLAYER_UPGRADES.cannon[0].fireCooldown);
@@ -42,68 +42,68 @@ test('Unaffordable and max-tier upgrades are explicit and disabled', () => {
   const tier2Cost = TRACK_UPGRADE_COSTS[2];
   const poorCredits = Math.floor(tier2Cost / 3);
   const shortfall = tier2Cost - poorCredits;
-  const poor = renderHangar({ credits: poorCredits, trackUpgradeCosts: TRACK_UPGRADE_COSTS }, stock);
+  const poor = renderGarage({ credits: poorCredits, trackUpgradeCosts: TRACK_UPGRADE_COSTS }, stock);
   assert.match(poor, /data-track="cannon" disabled/);
   assert.ok(poor.includes(`Need $ ${formatNumber(shortfall)} more`));
-  const max = renderHangar({ credits: 9000, trackUpgradeCosts: TRACK_UPGRADE_COSTS }, { ...stock, cannon: 5 });
+  const max = renderGarage({ credits: 9000, trackUpgradeCosts: TRACK_UPGRADE_COSTS }, { ...stock, cannon: 5 });
   assert.ok(max.includes('System complete')); assert.ok(max.includes('MAX TIER'));
   assert.ok(!max.includes('TIER 5 → 6'));
 });
 
-test('Opening a hangar pauses all battlefield updates without changing combat state', () => {
+test('Opening a garage pauses all battlefield updates without changing combat state', () => {
   let updated = 0;
   const state = {
     status: GameStatus.PLAYING, inBaseRepairZone: true, keys: { KeyW: true }, isMouseDown: true,
-    hangarStage: { update() { updated++; } },
+    garageStage: { update() { updated++; } },
     playerX: 9, playerZ: 12, playerHp: 35,
   };
-  const hangarOps = new HangarOps(state);
-  assert.equal(hangarOps.setOpen(true), true);
-  assert.equal(hangarOps.stepOpenFrame(0.1, 2), true);
+  const garageOps = new GarageOps(state);
+  assert.equal(garageOps.setOpen(true), true);
+  assert.equal(garageOps.stepOpenFrame(0.1, 2), true);
   assert.equal(updated, 1); assert.deepEqual(state.keys, {}); assert.equal(state.isMouseDown, false);
   assert.equal(state.playerX, 9); assert.equal(state.playerZ, 12); assert.equal(state.playerHp, 35);
-  hangarOps.setOpen(false);
-  assert.equal(state.status, GameStatus.PLAYING); assert.equal(state.isHangarPaused, false);
-  assert.equal(hangarOps.stepOpenFrame(0.1, 2.1), false);
+  garageOps.setOpen(false);
+  assert.equal(state.status, GameStatus.PLAYING); assert.equal(state.isGaragePaused, false);
+  assert.equal(garageOps.stepOpenFrame(0.1, 2.1), false);
 });
 
 test('Upgrade transactions reject invalid or closed requests and charge once', () => {
   const tier2Cost = TRACK_UPGRADE_COSTS[2];
   const leftover = Math.max(0, TRACK_UPGRADE_COSTS[3] - 1);
   const state = {
-    upgrades: { ...stock }, playerSave: { credits: tier2Cost + leftover }, isHangarOpen: false,
+    upgrades: { ...stock }, playerSave: { credits: tier2Cost + leftover }, isGarageOpen: false,
     saveRepo: { savePlayerSave() {} },
   };
-  const hangarOps = new HangarOps(state);
-  assert.equal(hangarOps.upgradeTrack('cannon').success, false);
-  state.isHangarOpen = true;
-  assert.equal(hangarOps.upgradeTrack('invalid').success, false);
-  assert.equal(hangarOps.upgradeTrack('cannon').success, true);
+  const garageOps = new GarageOps(state);
+  assert.equal(garageOps.upgradeTrack('cannon').success, false);
+  state.isGarageOpen = true;
+  assert.equal(garageOps.upgradeTrack('invalid').success, false);
+  assert.equal(garageOps.upgradeTrack('cannon').success, true);
   assert.equal(state.upgrades.cannon, 2); assert.equal(state.playerSave.credits, leftover);
-  assert.equal(hangarOps.upgradeTrack('cannon').success, false);
+  assert.equal(garageOps.upgradeTrack('cannon').success, false);
   assert.equal(state.playerSave.credits, leftover);
 });
 
-test('Missile purchases require an open hangar, funds and magazine space, and persist ammo', () => {
+test('Missile purchases require an open garage, funds and magazine space, and persist ammo', () => {
   const missilePrice = MISSILE.CREDIT_PRICE;
   const maxTier1Missiles = getMaxMissileAmmo(1);
   let saved;
   const state = {
-    isHangarOpen: false, upgrades: { ...stock }, missileAmmo: 0, playerSave: { credits: missilePrice },
+    isGarageOpen: false, upgrades: { ...stock }, missileAmmo: 0, playerSave: { credits: missilePrice },
     saveRepo: { savePlayerSave(save) { saved = { ...save }; } },
   };
-  const hangarOps = new HangarOps(state);
-  assert.equal(hangarOps.buyMissile().success, false);
+  const garageOps = new GarageOps(state);
+  assert.equal(garageOps.buyMissile().success, false);
   assert.equal(state.playerSave.credits, missilePrice);
-  state.isHangarOpen = true;
-  assert.equal(hangarOps.buyMissile().success, true);
+  state.isGarageOpen = true;
+  assert.equal(garageOps.buyMissile().success, true);
   assert.equal(state.missileAmmo, 1);
   assert.deepEqual(saved, { credits: 0, missileAmmo: 1 });
-  assert.equal(hangarOps.buyMissile().success, false);
+  assert.equal(garageOps.buyMissile().success, false);
   assert.equal(state.missileAmmo, 1);
   state.missileAmmo = maxTier1Missiles;
   state.playerSave.credits = missilePrice * 2;
-  assert.equal(hangarOps.buyMissile().success, false);
+  assert.equal(garageOps.buyMissile().success, false);
   assert.equal(state.playerSave.credits, missilePrice * 2);
 });
 
@@ -111,21 +111,21 @@ test('Repairs charge the purchased tier price and preserve faults when funds are
   for (const tier of [2, 3, 4, 5]) {
     const cost = componentRepairCost(tier);
     const state = {
-      isHangarOpen: true, upgrades: { ...stock, cannon: tier },
+      isGarageOpen: true, upgrades: { ...stock, cannon: tier },
       componentDamage: { cannon: true }, playerSave: { credits: cost - 1 },
     };
-    const hangarOps = new HangarOps(state);
-    assert.equal(hangarOps.repairComponent('cannon').success, false);
+    const garageOps = new GarageOps(state);
+    assert.equal(garageOps.repairComponent('cannon').success, false);
     assert.equal(state.componentDamage.cannon, true);
     assert.equal(state.playerSave.credits, cost - 1);
-    const html = renderHangar({ credits: cost, componentDamage: state.componentDamage }, state.upgrades);
+    const html = renderGarage({ credits: cost, componentDamage: state.componentDamage }, state.upgrades);
     assert.ok(html.includes(`Repair component · $ ${formatNumber(cost)}`));
     state.playerSave.credits = cost;
-    assert.equal(hangarOps.repairComponent('cannon').success, true);
+    assert.equal(garageOps.repairComponent('cannon').success, true);
     assert.equal(state.playerSave.credits, 0);
     assert.equal(state.componentDamage.cannon, false);
     assert.equal(state.upgrades.cannon, tier);
-    assert.equal(hangarOps.repairComponent('cannon').success, false);
+    assert.equal(garageOps.repairComponent('cannon').success, false);
   }
 });
 
@@ -142,7 +142,7 @@ test('APS and Missile max ammo scale with purchased Frame tier (1..5) and ignore
     }
 
     const state = {
-      isHangarOpen: true,
+      isGarageOpen: true,
       upgrades: { ...stock, frame: tier },
       componentDamage: { frame: true }, // damaged Frame must not shrink capacity
       apsAmmo: [0, 0, 0, 0],
@@ -154,26 +154,26 @@ test('APS and Missile max ammo scale with purchased Frame tier (1..5) and ignore
     state.playerController = playerCtrl;
     state.getPlayerMaxApsAmmo = () => playerCtrl.getPlayerMaxApsAmmo();
     state.getPlayerMaxMissileAmmo = () => playerCtrl.getPlayerMaxMissileAmmo();
-    const hangarOps = new HangarOps(state);
+    const garageOps = new GarageOps(state);
 
     // Missile buy up to tier cap, then reject
-    assert.equal(hangarOps.buyMissile().success, true);
+    assert.equal(garageOps.buyMissile().success, true);
     assert.equal(state.missileAmmo, maxMissiles);
-    assert.equal(hangarOps.buyMissile().success, false);
+    assert.equal(garageOps.buyMissile().success, false);
 
     // APS addApsRounds & buyApsCharge cap at tier cap
     playerCtrl.addApsRounds(maxAps - 1);
     assert.equal(state.apsAmmo.reduce((a, b) => a + b, 0), maxAps - 1);
-    assert.equal(hangarOps.buyApsCharge().success, true);
+    assert.equal(garageOps.buyApsCharge().success, true);
     assert.equal(state.apsAmmo.reduce((a, b) => a + b, 0), maxAps);
-    assert.equal(hangarOps.buyApsCharge().success, false);
+    assert.equal(garageOps.buyApsCharge().success, false);
 
     // Power-up drop usefulness respects tier cap
     assert.equal(isUsefulPowerUp(POWERUP.MISSILE, state), false);
     assert.equal(isUsefulPowerUp(POWERUP.APS, state), false);
 
-    // Hangar UI shows purchased Frame tier capacity
-    const html = renderHangar(
+    // Garage UI shows purchased Frame tier capacity
+    const html = renderGarage(
       { credits: 5000, apsTotal: 2, missileAmmo: 1, componentDamage: { frame: true } },
       state.upgrades,
       'frame'
@@ -185,7 +185,7 @@ test('APS and Missile max ammo scale with purchased Frame tier (1..5) and ignore
   }
 });
 
-test('Base hull repair and cannon rearming continue at normal pace while hangar is open', () => {
+test('Base hull repair and cannon rearming continue at normal pace while garage is open', () => {
   let hudUpdates = 0;
   const initialHp = 10;
   const initialAmmo = Math.max(0, CANNON_AMMO.BASE_REARM_CAP - 2);
@@ -203,22 +203,22 @@ test('Base hull repair and cannon rearming continue at normal pace while hangar 
     baseRepairSparkTimer: 0,
     hudSyncAccumulator: 0,
     quality: 'high',
-    hangarStage: { update() {} },
+    garageStage: { update() {} },
     sectorLoader: { getCommandBaseCenter: () => ({ x: 0, z: 0 }) },
     getPlayerMaxCannonAmmo: () => 15,
     emitHudUpdate() { hudUpdates++; },
   };
   state.playerController = new PlayerController(state);
-  const hangarOps = new HangarOps(state);
+  const garageOps = new GarageOps(state);
 
-  assert.equal(hangarOps.setOpen(true), true);
-  assert.equal(state.isHangarPaused, true);
+  assert.equal(garageOps.setOpen(true), true);
+  assert.equal(state.isGaragePaused, true);
 
   // Step through one full rearm interval in 0.5s increments
   const step = 0.5;
   const steps = Math.ceil(CANNON_AMMO.BASE_REARM_INTERVAL_SEC / step);
   for (let i = 0; i < steps; i++) {
-    hangarOps.stepOpenFrame(step, 1);
+    garageOps.stepOpenFrame(step, 1);
   }
 
   assert.ok(state.playerHp > initialHp && state.playerHp <= state.playerMaxHp);
@@ -228,7 +228,7 @@ test('Base hull repair and cannon rearming continue at normal pace while hangar 
   // Rearming still caps at BASE_REARM_CAP in campaign mode
   const extraSteps = steps * Math.max(3, CANNON_AMMO.BASE_REARM_CAP);
   for (let i = 0; i < extraSteps; i++) {
-    hangarOps.stepOpenFrame(step, 1);
+    garageOps.stepOpenFrame(step, 1);
   }
   assert.equal(state.cannonAmmo, CANNON_AMMO.BASE_REARM_CAP);
   assert.equal(state.playerHp, state.playerMaxHp);

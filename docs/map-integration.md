@@ -15,7 +15,7 @@ This is a navigation guide to the current repository, not a promise that every A
 | Campaign buttons, labels, statuses | `public/src/views/campaign.js`, `public/src/main.js`, `public/src/menu.js` |
 | Component-defined stats and canonical enemy IDs | `public/src/game/components.js`, `public/src/game/tanks.js` |
 | Ground/dressing/FX and batch lifecycle | `urban-ground.js`, `models.js`, `fx.js`, `tile-batcher.js`, `dispose.js` under `public/src/game/` |
-| Completion saves and loot settlement | `public/src/sim/hangar.js`, engine victory/abort methods |
+| Completion saves and loot settlement | `public/src/sim/garage.js`, engine victory/abort methods |
 | Existing behavioral tests | `tests/` |
 
 Initial cells in authored encounter maps consume the first group's roster; do not add their counts again. `enemyPool` must agree with the ordered flattened encounter roster when the current loader uses both. Fixed spawns have different legacy semantics; inspect their accounting rather than assuming they consume a queue.

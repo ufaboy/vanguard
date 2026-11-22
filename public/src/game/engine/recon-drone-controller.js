@@ -76,7 +76,7 @@ export class ReconDroneController {
   launch(targetX, targetZ) {
     const { engine } = this;
     if (engine.status !== GameStatus.PLAYING) return false;
-    if (engine.playerHp <= DURABILITY.ZERO_HP || engine.isHangarOpen || engine.isAdPaused) {
+    if (engine.playerHp <= DURABILITY.ZERO_HP || engine.isGarageOpen || engine.isAdPaused) {
       return false;
     }
     if (!engine.reconDroneOwned) {

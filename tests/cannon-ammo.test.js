@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { CANNON_AMMO, getMaxCannonAmmo } from '../public/src/game/constants.js';
 import { POWERUP } from '../public/src/game/powerups.js';
 import { isUsefulPowerUp } from '../public/src/game/powerup-drops.js';
-import { SaveRepository, createInitialPlayerSave } from '../public/src/sim/hangar.js';
+import { SaveRepository, createInitialPlayerSave } from '../public/src/sim/garage.js';
 
 test('Cannon ammo capacity is monotonic across tiers 1..5 and clamps out-of-range tiers', () => {
   let prev = 0;

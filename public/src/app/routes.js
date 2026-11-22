@@ -99,8 +99,6 @@ export function resolveLegacyHashRedirect(hash) {
       return CONTRACT_IDS.includes(param) ? battlefieldUrl(param) : PAGE_PATHS.contracts;
     case 'survival':
       return PAGE_PATHS.survival;
-    case 'hangar':
-      return PAGE_PATHS.index;
     case 'guide':
     case 'faq':
     case 'how-to-play':

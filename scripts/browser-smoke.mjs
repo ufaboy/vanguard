@@ -26,7 +26,7 @@ const MODES = {
   ice: { script: 'water-smoke.js', output: 'ice-smoke', query: '?surface=ice' },
   hero: { script: 'home-art.js', output: 'home-art' },
   home: { script: 'home-smoke.js', output: 'home-smoke', site: 'index.html', shot: 'home' },
-  hangar: { script: 'hangar-smoke.js', output: 'hangar-smoke', site: 'battlefield.html', replace: './src/main.js', query: MISSION_1, shot: 'hangar' },
+  garage: { script: 'garage-smoke.js', output: 'garage-smoke', site: 'battlefield.html', replace: './src/main.js', query: MISSION_1, shot: 'garage' },
 };
 
 const modeName = process.argv[2];

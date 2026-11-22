@@ -9,7 +9,7 @@
  * - Wave 7 at 6:00 deploys the Finale Sector Boss (MAMMOTH MK-V) with an armored escort.
  * - Reaching 7:00 with the HQ standing achieves Victory; the player may Extract or continue into Endless
  *   Overtime (rotating Sector Bosses every 5th wave: waves 10, 15, 20, 25...) to set higher records.
- * - Credits earned in Survival are spent in the field Hangar [U] during the run and never carry over
+ * - Credits earned in Survival are spent in the field Garage [U] during the run and never carry over
  *   to the main Campaign/Contracts profile.
  */
 

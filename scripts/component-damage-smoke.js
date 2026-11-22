@@ -1,7 +1,7 @@
 import { TankGameEngine } from '/src/game/engine/engineCore.js';
-import { renderHangar } from '/src/hangar-ui.js';
+import { renderGarage } from '/src/garage-ui.js';
 import { renderComponentCondition } from '/src/component-condition-ui.js';
-import { SaveRepository } from '/src/sim/hangar.js';
+import { SaveRepository } from '/src/sim/garage.js';
 import { normalizeComponentDamage, componentRepairCost } from '/src/sim/component-damage.js';
 
 // The damaged cannon is purchased at tier 5, and repair is priced by the purchased tier.
@@ -32,25 +32,25 @@ try {
   engine.tryDamageComponent(1, { zone: 'hull', aspect: 'rear' });
   assert(Object.values(engine.componentDamage).filter(Boolean).length === 1, 'Cooldown failed');
   assert(engine.saveRepo.loadPlayerSave().componentDamage.cannon, 'Fault was not saved');
-  engine.isHangarOpen = false;
-  assert(!engine.repairComponentInHangar('cannon').success, 'Repair outside hangar');
-  engine.isHangarOpen = true; engine.playerSave.credits = COMPONENT_REPAIR_COST - 1;
-  assert(!engine.repairComponentInHangar('cannon').success, 'Underfunded repair');
+  engine.isGarageOpen = false;
+  assert(!engine.repairComponentInGarage('cannon').success, 'Repair outside garage');
+  engine.isGarageOpen = true; engine.playerSave.credits = COMPONENT_REPAIR_COST - 1;
+  assert(!engine.repairComponentInGarage('cannon').success, 'Underfunded repair');
   assert(engine.playerSave.credits === COMPONENT_REPAIR_COST - 1 && engine.componentDamage.cannon, 'Failed repair mutated state');
   engine.playerSave.credits = COMPONENT_REPAIR_COST * 2;
-  assert(engine.repairComponentInHangar('cannon').success, 'Paid repair failed');
+  assert(engine.repairComponentInGarage('cannon').success, 'Paid repair failed');
   assert(engine.playerSave.credits === COMPONENT_REPAIR_COST && engine.effectiveUpgrades.cannon === 5, 'Wrong repair balance or tier');
-  assert(!engine.repairComponentInHangar('cannon').success && engine.playerSave.credits === COMPONENT_REPAIR_COST, 'Duplicate repair charged');
+  assert(!engine.repairComponentInGarage('cannon').success && engine.playerSave.credits === COMPONENT_REPAIR_COST, 'Duplicate repair charged');
   assert(!engine.saveRepo.loadPlayerSave().componentDamage.cannon, 'Repair was not persisted');
   Math.random = originalRandom;
   const faults = { cannon: true, engine: true, armor: true };
   const hud = { componentDamage: faults, credits: 1500, apsTotal: 2, apsAmmo: [1, 0, 0, 1], missileAmmo: 0 };
   const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/src/index.css';
   document.head.append(css); await new Promise(resolve => { css.onload = resolve; });
-  document.body.innerHTML = `<div class="hangar-shell">${renderHangar(hud, engine.upgrades, 'cannon')}</div>`;
-  const stage = document.querySelector('.hangar-stage-window');
+  document.body.innerHTML = `<div class="garage-shell">${renderGarage(hud, engine.upgrades, 'cannon')}</div>`;
+  const stage = document.querySelector('.garage-stage-window');
   stage.style.cssText = 'display:grid;place-items:center';
-  stage.innerHTML = `<div style="background:#0b0f17;padding:24px;border:1px solid #334155"><p>COMBAT CONDITION</p>${renderComponentCondition(engine.upgrades, faults)}<p style="font-size:12px;color:#94a3b8">Red: damaged component · Repair in hangar</p></div>`;
+  stage.innerHTML = `<div style="background:#0b0f17;padding:24px;border:1px solid #334155"><p>COMBAT CONDITION</p>${renderComponentCondition(engine.upgrades, faults)}<p style="font-size:12px;color:#94a3b8">Red: damaged component · Repair in garage</p></div>`;
   assert(document.querySelectorAll('.condition-part.is-damaged').length === 3, 'Schematic highlights mismatch');
   assert(document.querySelector('[data-action="repair-component"]'), 'Repair button missing');
   await fetch('/__results', { method: 'POST', body: JSON.stringify({ passed: true, purchasedTiersPreserved: true, cooldown: true, repairCost: COMPONENT_REPAIR_COST, persistence: true, highlights: 3 }) });

@@ -1,7 +1,7 @@
 {
   "name": "iron-vanguard",
   "private": true,
-  "version": "4.5.6",
+  "version": "4.6.0",
   "packageManager": "pnpm@12.21.0",
   "type": "module",
   "scripts": {
@@ -23,7 +23,7 @@
     "deploy": "node scripts/deploy.mjs",
     "deploy:preview": "node scripts/deploy.mjs --preview",
     "pages:dev": "pnpm run build:site && pnpm exec wrangler pages dev dist/site",
-    "test:hangar": "node scripts/browser-smoke.mjs hangar",
+    "test:garage": "node scripts/browser-smoke.mjs garage",
     "prepare": "git config core.hooksPath .githooks",
     "dev:site": "astro dev --root site --port 4321",
     "build:site": "astro build --root site"

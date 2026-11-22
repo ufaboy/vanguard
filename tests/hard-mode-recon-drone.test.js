@@ -7,7 +7,7 @@ import { DRONE_CONFIGS } from '../public/src/game/vehicles/drones.js';
 import { AirSupportController } from '../public/src/game/engine/air-support-controller.js';
 import { ReconDroneController } from '../public/src/game/engine/recon-drone-controller.js';
 import { EnemyAiController } from '../public/src/game/engine/enemy-ai.js';
-import { HangarOps } from '../public/src/game/engine/hangar-ops.js';
+import { GarageOps } from '../public/src/game/engine/garage-ops.js';
 import { GameStatus } from '../public/src/game/types.js';
 import { ENEMY_VISIBILITY } from '../public/src/game/constants.js';
 import { GRID_SIZE, TILE_SIZE } from '../public/src/game/levels.js';
@@ -76,7 +76,7 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
 
   const engine = {
     status: GameStatus.PLAYING,
-    isHangarOpen: true,
+    isGarageOpen: true,
     isAdPaused: false,
     playerHp: 22,
     playerX: 0,
@@ -94,14 +94,14 @@ test('RECON_DRONE module can be bought in garage, launched with cooldown, and re
     emitHudUpdate: () => {},
   };
 
-  const hangar = new HangarOps(engine);
-  const buyRes = hangar.buyReconDrone();
+  const garage = new GarageOps(engine);
+  const buyRes = garage.buyReconDrone();
   assert.equal(buyRes.success, true);
   assert.equal(engine.reconDroneOwned, true);
   assert.equal(engine.playerSave.reconDroneOwned, true);
   assert.equal(engine.playerSave.credits, 2000 - DRONE_CONFIGS.RECON_DRONE.creditPrice);
 
-  engine.isHangarOpen = false;
+  engine.isGarageOpen = false;
   const drone = new ReconDroneController(engine);
   // Mock mesh creation to avoid Three.js scene/GLB loader in unit test
   drone.createDroneMesh = () => null;

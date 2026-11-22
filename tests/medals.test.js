@@ -9,7 +9,7 @@ import {
   getRankProgress,
   recordMedalsAndRank,
 } from '../public/src/sim/medals.js';
-import { createInitialPlayerSave } from '../public/src/sim/hangar.js';
+import { createInitialPlayerSave } from '../public/src/sim/garage.js';
 
 test('MEDAL_CATALOG has unique medals with valid grades', () => {
   assert.ok(MEDAL_CATALOG.length > 0);
