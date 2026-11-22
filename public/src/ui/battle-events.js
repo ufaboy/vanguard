@@ -303,6 +303,19 @@ export function setupDelegatedEvents(
           renderUI(true);
         }
         break;
+      case 'buy-recon-drone':
+        if (engine) {
+          const res = engine.buyReconDroneInHangar();
+          if (res.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: 'recon_drone' });
+          }
+          state.hangarFeedback = res.reason;
+          renderUI(true);
+        }
+        break;
+      case 'launch-recon-drone':
+        engine?.activateReconDroneAction();
+        break;
       case 'hangar-select':
         if (HANGAR_TRACKS.some((item) => item.key === btn.dataset.track)) {
           state.hangarTrack = btn.dataset.track;

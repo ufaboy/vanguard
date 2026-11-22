@@ -1,6 +1,7 @@
 import { effectiveUpgradeTiers, componentRepairCost } from './sim/component-damage.js';
 import { PLAYER_UPGRADES } from './game/components/index.js';
 import { computeTankStats, APS, MISSILE, CANNON_AMMO, getMaxApsAmmo, getMaxMissileAmmo, getMaxCannonAmmo } from './game/constants.js';
+import { DRONE_CONFIGS } from './game/vehicles/drones.js';
 import { renderTrackBadgeSvg } from './game/icons.js';
 import { PLAYER_TANK_CONFIG } from './game/vehicles/tanks.js';
 import { N_, formatNumber, t } from './i18n/index.js';
@@ -45,6 +46,8 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
   const missileMax = hud.missileMaxAmmo ?? getMaxMissileAmmo(purchasedFrame);
   const cannonTotal = hud.cannonAmmo ?? 15;
   const cannonMax = hud.cannonMaxAmmo ?? getMaxCannonAmmo(purchasedFrame);
+  const reconDroneOwned = Boolean(hud.reconDroneOwned);
+  const reconDronePrice = DRONE_CONFIGS.RECON_DRONE.creditPrice;
 
   const supplyRow = (kind, sourceLabel, count, max, price, action, amountLabel = '+1') => {
     const label = t(sourceLabel);
@@ -55,6 +58,8 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
       ? '<path d="M12 2.5L20 5.5V11.5C20 16.5 16.5 20 12 22C7.5 20 4 16.5 4 11.5V5.5Z"/><path d="M8 12L11 15L16.5 9"/>'
       : kind === 'missile'
       ? '<path d="M12 2.5C8 6 8 12 9 15.5H15C16 12 16 6 12 2.5Z"/><path d="M9 12L5 16.5V19.5L10 17M15 12L19 16.5V19.5L14 17M10.5 19L12 22L13.5 19"/>'
+      : kind === 'recon'
+      ? '<circle cx="12" cy="12" r="2.5"/><path d="M5 5l3.5 3.5M19 5l-3.5 3.5M5 19l3.5-3.5M19 19l-3.5-3.5"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>'
       : '<path d="M9 19V9L12 3L15 9V19H9Z"/><path d="M8 19H16"/>';
     const glyph = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">${icon}</svg>`;
     return `
@@ -190,6 +195,7 @@ export function renderHangar(hud, upgrades, selected = 'cannon', view = 'front',
           ${supplyRow('cannon', N_('Shells'), cannonTotal, cannonMax, CANNON_AMMO.CREDIT_PRICE_PER_PACK, 'buy-cannon-ammo', `+${CANNON_AMMO.SHELLS_PER_PACK}`)}
           ${supplyRow('aps', N_('APS'), apsTotal, apsMax, apsPrice, 'buy-aps-charge', '+1')}
           ${supplyRow('missile', N_('Missile'), missileTotal, missileMax, MISSILE.CREDIT_PRICE, 'buy-missile', '+1')}
+          ${supplyRow('recon', N_('Recon Drone'), reconDroneOwned ? 1 : 0, 1, reconDronePrice, 'buy-recon-drone', t('BUY'))}
         </div>
       </section>
     </aside>

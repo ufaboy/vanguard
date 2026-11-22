@@ -7,6 +7,7 @@ import {
   TRACK_UPGRADE_COSTS,
   UPGRADE_MAX_LEVEL,
 } from '../constants.js';
+import { DRONE_CONFIGS } from '../vehicles/drones.js';
 import { GameStatus, TileType } from '../types.js';
 import { HangarStage } from '../render/hangar-stage.js';
 import { sound } from '../sound.js';
@@ -259,6 +260,32 @@ export class HangarOps {
     );
     e.emitHudUpdate();
     return { success: true, total: newTotal, reason: t('+1 APS charge purchased ({newTotal}/{maxAps}).', { newTotal, maxAps }) };
+  }
+
+  buyReconDrone(allowInBattle = false) {
+    const e = this.engine;
+    if (!allowInBattle && !e.isHangarOpen) {
+      return { success: false, reason: t('Open the garage to purchase the Recon Drone.') };
+    }
+    if (e.reconDroneOwned) {
+      return { success: false, reason: t('Recon Drone is already installed.') };
+    }
+    const cost = DRONE_CONFIGS.RECON_DRONE.creditPrice;
+    if ((e.playerSave?.credits || 0) < cost) {
+      const msg = t('Insufficient Credits (Need ${cost}).', { cost });
+      if (allowInBattle) e.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost }), 2.0);
+      return { success: false, reason: msg };
+    }
+    e.playerSave.credits -= cost;
+    e.reconDroneOwned = true;
+    e.playerSave.reconDroneOwned = true;
+    e.syncCampaignCredits();
+    e.saveRepo.savePlayerSave(e.playerSave);
+    e.recomputePlayerStats(true);
+    sound.playPowerUp();
+    e.setStatusBanner(t('RECON DRONE INSTALLED! (-${cost})', { cost }), 2.5);
+    e.emitHudUpdate();
+    return { success: true, reason: t('Recon Drone installed.') };
   }
 
   toggleFavoritePart(instanceId) {

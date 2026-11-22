@@ -77,6 +77,7 @@ export class TankGameEngine {
     this.cameraAzimuth = Math.PI * 0.25;
     this.missileFpvEnabled = false;
     this.missileFpvHoldTimer = 0;
+    this.hardMode = false;
     this.cameraRotating = false;
     this.cameraDragPrevX = 0;
     this.aiDebugMode = false;
@@ -180,6 +181,9 @@ export class TankGameEngine {
     this.cannonAmmo = CANNON_AMMO.START_ROUNDS;
     this.cannonBaseRearmTimer = 0;
     this.missileCooldown = 0;
+    this.reconDroneOwned = Boolean(this.playerSave?.reconDroneOwned);
+    this.reconDroneCooldown = 0;
+    this.reconDroneActiveTimer = 0;
     this.repairKitCount = 1;
     this.empTimer = 0;
     this.baseRepairSparkTimer = 0;
@@ -486,6 +490,10 @@ export class TankGameEngine {
     }
   }
 
+  setHardMode(enabled) {
+    this.hardMode = Boolean(enabled);
+  }
+
   getActivePlayerMissile() {
     if (!Array.isArray(this.projectiles)) return null;
     for (let i = this.projectiles.length - 1; i >= 0; i -= 1) {
@@ -762,6 +770,15 @@ export class TankGameEngine {
 
   buyApsChargeInHangar() { return this.hangarOps.buyApsCharge(); }
 
+  buyReconDroneInHangar() { return this.hangarOps.buyReconDrone(false); }
+
+  activateReconDroneAction() {
+    if (!this.reconDroneOwned) {
+      return this.hangarOps.buyReconDrone(true).success;
+    }
+    return this.launchReconDrone(this.aimWorld.x, this.aimWorld.z);
+  }
+
   toggleFavoritePart(instanceId) { this.hangarOps.toggleFavoritePart(instanceId); }
 
   abortMissionToHangar() { this.hangarOps.abortMissionToHangar(); }
@@ -861,6 +878,14 @@ export class TankGameEngine {
 
   callAirRepair() {
     return this.airSupportController.callAirRepair();
+  }
+
+  launchReconDrone(x, z) {
+    return this.airSupportController.launchReconDrone(x, z);
+  }
+
+  isPointRevealedByReconDrone(x, z) {
+    return this.airSupportController.isPointRevealedByReconDrone(x, z);
   }
 
   firePlayerHomingMissile() { this.playerController.firePlayerHomingMissile(); }
@@ -1139,6 +1164,8 @@ export class TankGameEngine {
   /** Checks optical line-of-sight between two world coordinates (x0, z0) and (x1, z1). */
 
   hasLineOfSight(x0, z0, x1, z1) { return this.enemyAi.hasLineOfSight(x0, z0, x1, z1); }
+
+  hasPlayerLineOfSight(enemy) { return this.enemyAi.hasPlayerLineOfSight(enemy); }
 
   broadcastPlayerLocationFrom(spotter, targetX, targetZ) { this.enemyAi.broadcastPlayerLocationFrom(spotter, targetX, targetZ); }
 

@@ -73,6 +73,7 @@ const state = {
   selectedSector: 0,
   cameraPreset: 'ISOMETRIC',
   missileFpvEnabled: false,
+  hardMode: false,
   soundEnabled: true,
   graphicsQuality: 'high',
   fpsCap: 60,
@@ -176,6 +177,7 @@ state.soundEnabled = initialPrefs.soundEnabled;
 state.cameraPreset = initialPrefs.cameraPreset;
 state.cameraZoom = initialPrefs.cameraZoom;
 state.missileFpvEnabled = Boolean(initialPrefs.missileFpvEnabled);
+state.hardMode = Boolean(initialPrefs.hardMode);
 state.graphicsQuality = initialPrefs.graphicsQuality;
 state.fpsCap = initialPrefs.fpsCap;
 state.touchControlsMode = initialPrefs.touchControlsMode;
@@ -186,6 +188,7 @@ function savePreferences() {
     cameraPreset: state.cameraPreset,
     cameraZoom: state.cameraZoom,
     missileFpvEnabled: state.missileFpvEnabled,
+    hardMode: state.hardMode,
     graphicsQuality: state.graphicsQuality,
     fpsCap: state.fpsCap,
     touchControlsMode: state.touchControlsMode,
@@ -420,6 +423,7 @@ function initApp() {
     engine.applyUpgrades(state.upgrades);
     engine.setCameraPreset(state.cameraPreset);
     engine.setMissileFpvEnabled(state.missileFpvEnabled);
+    engine.setHardMode(state.hardMode);
     if (typeof state.cameraZoom === 'number') {
       engine.setCameraZoom(state.cameraZoom);
     }
@@ -504,11 +508,13 @@ function initApp() {
     state.soundEnabled = prefs.soundEnabled;
     state.cameraPreset = prefs.cameraPreset;
     state.missileFpvEnabled = Boolean(prefs.missileFpvEnabled);
+    state.hardMode = Boolean(prefs.hardMode);
     state.graphicsQuality = prefs.graphicsQuality;
     state.fpsCap = prefs.fpsCap;
     state.touchControlsMode = prefs.touchControlsMode;
     engine?.setCameraPreset(prefs.cameraPreset);
     engine?.setMissileFpvEnabled(state.missileFpvEnabled);
+    engine?.setHardMode(state.hardMode);
     engine?.setQuality(prefs.graphicsQuality);
     engine?.setFpsCap(prefs.fpsCap);
     renderUI(true);

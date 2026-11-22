@@ -239,3 +239,24 @@ test('STRATEGIC_BOMBER and AC130_SPOOKY spawn off-map and depart off-map', () =>
   );
   assert.equal(ac130.zoneMesh, null);
 });
+
+test('Air Mines is dropped by STRATEGIC_BOMBER flyby and plants mines on landing', () => {
+  const { engine, ctrl, plantedMines } = createMockEngine(3000);
+  const halfSpan = (GRID_SIZE * TILE_SIZE) / 2;
+
+  ctrl.launchAirMines(16, 16);
+  const bomber = engine.airSupportMissions.find((m) => m.kind === 'BOMBER_FLYBY');
+  const mines = engine.airSupportMissions.filter((m) => m.kind === 'AIR_MINE');
+  assert.ok(bomber, 'STRATEGIC_BOMBER flyby should be spawned for air mines');
+  assert.ok(Math.abs(bomber.z) > halfSpan, 'Bomber should spawn outside map boundary');
+  assert.equal(mines.length, AIR_SUPPORT.MINES.mineCount);
+  assert.ok(
+    mines.every((m) => m.startY === bomber.y - 0.5 && m.delay > 0),
+    'Mines should release from STRATEGIC_BOMBER altitude after flyby delay'
+  );
+
+  for (let i = 0; i < 40; i++) {
+    ctrl.update(0.25, i * 0.25);
+  }
+  assert.equal(plantedMines.length, AIR_SUPPORT.MINES.mineCount);
+});

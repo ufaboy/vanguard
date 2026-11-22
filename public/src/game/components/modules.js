@@ -105,5 +105,16 @@ export const OPTIONAL_EQUIPMENT = Object.freeze({
     nominalMass: 4,
     hpBonus: 0,
   }),
+  RECON_DRONE: Object.freeze({
+    id: 'RECON_DRONE',
+    name: N_('Tactical Recon Drone'),
+    description: N_('Standalone quadrotor UAV launched to your cursor to reveal hidden and camouflaged enemies within 6 cells for 12s.'),
+    leveled: false,
+    installMass: 3,
+    ammoCount: 0,
+    ammoMass: 0,
+    nominalMass: 3,
+    hpBonus: 0,
+  }),
 });
 

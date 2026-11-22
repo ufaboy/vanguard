@@ -264,11 +264,7 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
   if (sectorEl) {
     sectorEl.textContent = `${t('SECTOR {n} // 38', { n: String(selected.number).padStart(2, '0') })} · ${t(chapter.name).toUpperCase()}`;
   }
-  const diffEl = document.querySelector('.campaign-brief-difficulty');
-  if (diffEl) {
-    diffEl.hidden = isClassified;
-    diffEl.textContent = isClassified ? '' : t(selected.difficulty);
-  }
+
   const titleEl = document.querySelector('.campaign-brief-title');
   if (titleEl) titleEl.textContent = t(selected.name);
   const objEl = document.querySelector('.campaign-brief-objective');

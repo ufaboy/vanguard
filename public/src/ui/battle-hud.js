@@ -1,7 +1,8 @@
 import { AIR_SUPPORT, POWERUP, getMaxMissileAmmo } from '../game/constants.js';
+import { DRONE_CONFIGS } from '../game/vehicles/drones.js';
 import { renderPowerUpBadgeSvg } from '../game/icons.js';
 import { GameStatus } from '../game/types.js';
-import { formatNumber, t } from '../i18n/index.js';
+import { N_, formatNumber, t } from '../i18n/index.js';
 import { setHidden, setHtml } from './dom-helpers.js';
 import { renderTankSilhouette } from './tank-silhouette.js';
 
@@ -292,6 +293,7 @@ export function renderBattlefieldHud({
           AIR_SUPPORT.STRIKE_BOMBS,
           AIR_SUPPORT.STRIKE_THERMO,
           AIR_SUPPORT.STRIKE_AC130,
+          { ...AIR_SUPPORT.MINES, id: 'STRIKE_MINES', label: N_('Air Mines') },
         ];
         variantHtml = `
           <div class="hud-air-variants">
@@ -396,25 +398,33 @@ export function renderBattlefieldHud({
       const rkCharges = rk?.charges ?? 0;
       const rkChanneling = Boolean(rk?.channeling);
       const rkOnCd = !rkChanneling && (rk?.cooldown || 0) > 0;
+      const credits = hud.credits ?? 0;
+      const rkDroneCost = AIR_SUPPORT.REPAIR.cost;
+      const rkCanDrone = rkCharges <= 0 && credits >= rkDroneCost;
       const rkValue = rkChanneling
         ? `${Math.max(0, rk.channelDuration - rk.channelProgress).toFixed(1)}s`
         : rkOnCd
         ? `${Math.ceil(rk.cooldown)}s`
-        : `${rkCharges}`;
+        : rkCharges > 0
+        ? `${rkCharges}`
+        : `$${rkDroneCost}`;
       const rkStateClass = rkChanneling
         ? 'is-channeling animate-pulse'
         : rkOnCd
         ? 'is-cooldown'
-        : rkCharges > 0
+        : rkCharges > 0 || rkCanDrone
         ? 'tone-emerald is-ready'
         : 'is-empty';
       const rkIconColor = rkChanneling
         ? '#5eead4'
         : rkOnCd
         ? '#fbbf24'
-        : rkCharges > 0
+        : rkCharges > 0 || rkCanDrone
         ? '#34d399'
         : '#64748b';
+      const rkTitle = rkCharges > 0
+        ? t('Activate RM-1 Field Repair Kit [Key 1]')
+        : t('Call Repair Drone (+20 HP & Fix Modules) (${cost}) [Key 1]', { cost: rkDroneCost });
 
       const smokeCharges = hud.smokeCharges ?? 2;
       const smokeOnCd = (hud.smokeCooldown || 0) > 0;
@@ -429,6 +439,45 @@ export function renderBattlefieldHud({
       const canFireMissile = hud.missileAmmo > 0 && hud.missileCooldown <= 0;
       const missileMax = hud.missileMaxAmmo ?? getMaxMissileAmmo(upgrades.frame);
       const missileStateClass = canFireMissile ? 'tone-amber is-ready' : 'is-empty';
+
+      const reconOwned = Boolean(hud.reconDroneOwned);
+      const reconPrice = DRONE_CONFIGS.RECON_DRONE.creditPrice;
+      const reconCd = hud.reconDroneCooldown || 0;
+      const reconPhase = hud.reconDronePhase || null;
+      const reconDeployed = Boolean(reconPhase);
+      const reconActive = reconPhase === 'orbit' && (hud.reconDroneActiveTimer || 0) > 0;
+      const reconCanBuy = !reconOwned && credits >= reconPrice;
+      const reconReady = reconOwned ? !reconDeployed && reconCd <= 0 : reconCanBuy;
+      const reconValue = !reconOwned
+        ? `$${reconPrice}`
+        : reconPhase === 'approach'
+        ? t('FLY')
+        : reconActive
+        ? `${Math.ceil(hud.reconDroneActiveTimer)}s`
+        : reconPhase === 'return'
+        ? t('RTB')
+        : reconCd > 0
+        ? `${Math.ceil(reconCd)}s`
+        : t('RDY');
+      const reconStateClass = !reconOwned
+        ? reconCanBuy
+          ? 'tone-sky is-ready'
+          : 'is-empty'
+        : reconDeployed || reconCd > 0
+        ? 'is-cooldown'
+        : 'tone-sky is-ready';
+      const reconIconColor = !reconOwned
+        ? reconCanBuy
+          ? '#38bdf8'
+          : '#64748b'
+        : reconDeployed
+        ? '#22d3ee'
+        : reconCd > 0
+        ? '#fbbf24'
+        : '#38bdf8';
+      const reconTitle = reconOwned
+        ? t('Launch Tactical Recon Drone to cursor [Key 3 / R]')
+        : t('Buy & Install Tactical Recon Drone (${cost}) [Key 3 / R]', { cost: reconPrice });
 
       const apsTotal = hud.apsTotal ?? 0;
       const apsMax = hud.apsMaxAmmo ?? 0;
@@ -453,10 +502,20 @@ export function renderBattlefieldHud({
 
       if (!bottomHud.__sections) {
         bottomHud.innerHTML =
-          '<div style="display: contents"></div><div class="hud-bottom-center"></div>';
-        bottomHud.__sections = Array.from(bottomHud.children);
+          '<div class="hud-bottom-left"><div style="display: contents"></div><div class="hud-left-rows"><div class="hud-left-row"><div style="display: contents"></div><div style="display: contents"></div></div><div class="hud-left-row"><div style="display: contents"></div></div></div></div><div class="hud-bottom-center"></div>';
+        const leftRoot = bottomHud.children[0];
+        const rowsRoot = leftRoot.children[1];
+        const topRow = rowsRoot.children[0];
+        const botRow = rowsRoot.children[1];
+        bottomHud.__sections = [
+          leftRoot.children[0],
+          topRow.children[0],
+          topRow.children[1],
+          botRow.children[0],
+          bottomHud.children[1],
+        ];
       }
-      const [silhouetteSection, centerSection] = bottomHud.__sections;
+      const [silhouetteSlot, hpSlot, weaponSlot, defenseSlot, centerSection] = bottomHud.__sections;
       const activeHpSegs = isOverhealed
         ? 8
         : Math.max(0, Math.min(8, Math.ceil((hpPercent / 100) * 8)));
@@ -464,219 +523,215 @@ export function renderBattlefieldHud({
         { length: 8 },
         (_, idx) => `<span class="${idx < activeHpSegs ? 'is-on' : ''}"></span>`
       ).join('');
-      const hpPctText = `${Math.max(0, Math.round(hpPercent))}%`;
-      const hpPctColor = isLowHp ? 'text-red-400' : isOverhealed ? 'text-cyan-300' : 'text-emerald-400';
       const subKey = hud.subsystems
         ? Object.entries(hud.subsystems).map(([k, s]) => `${k}:${s?.status || 'normal'}`).join(',')
         : '';
-      const silhouetteKey = `${Math.ceil(hud.playerHp)}|${hud.playerMaxHp}|${isLowHp}|${isOverhealed}|${subKey}`;
-      if (silhouetteSection.__silhouetteKey !== silhouetteKey) {
-        silhouetteSection.__silhouetteKey = silhouetteKey;
-        setHtml(silhouetteSection, `
-          <div class="hud-bottom-left">
+      if (silhouetteSlot.__subKey !== subKey) {
+        silhouetteSlot.__subKey = subKey;
+        setHtml(silhouetteSlot, `
+          <div class="hud-card hud-silhouette-frame">
+            <div class="hud-hp-segs${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}" aria-hidden="true">${hpSegsHtml}</div>
             ${renderTankSilhouette(hud)}
-            <div class="hud-card hud-hp-card${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}">
-              <div class="hud-icon-box" aria-hidden="true">
-                <svg viewBox="0 0 36 22" width="34" height="22" fill="none">
-                  <path d="M5 12h24l3 4v3H3v-3l2-4z" fill="#4ade80" fill-opacity="0.25" stroke="#4ade80" stroke-width="1.5"/>
-                  <path d="M11 7h11l3 5H9l2-5z" fill="#4ade80" fill-opacity="0.45" stroke="#86efac" stroke-width="1.4"/>
-                  <path d="M22 9h12" stroke="#86efac" stroke-width="2" stroke-linecap="round"/>
-                </svg>
+            <div class="hud-reload-segs${reloadReady ? ' is-ready' : ''}" aria-hidden="true">${reloadSegsHtml}</div>
+          </div>
+        `);
+      } else {
+        const hpSegsEl = silhouetteSlot.querySelector('.hud-hp-segs');
+        if (hpSegsEl) {
+          hpSegsEl.className = `hud-hp-segs${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}`;
+          for (let idx = 0; idx < hpSegsEl.children.length; idx += 1) {
+            hpSegsEl.children[idx].className = idx < activeHpSegs ? 'is-on' : '';
+          }
+        }
+        const reloadSegsEl = silhouetteSlot.querySelector('.hud-reload-segs');
+        if (reloadSegsEl) {
+          reloadSegsEl.className = `hud-reload-segs${reloadReady ? ' is-ready' : ''}`;
+          for (let idx = 0; idx < reloadSegsEl.children.length; idx += 1) {
+            reloadSegsEl.children[idx].className = idx < filledReloadSegs ? 'is-filled' : '';
+          }
+        }
+      }
+
+      const hpKey = `${Math.ceil(hud.playerHp)}|${hud.playerMaxHp}|${isLowHp}|${isOverhealed}`;
+      if (hpSlot.__hpKey !== hpKey) {
+        hpSlot.__hpKey = hpKey;
+        setHtml(hpSlot, `
+          <div class="hud-card hud-hp-card${isLowHp ? ' is-low' : isOverhealed ? ' is-overhealed' : ''}">
+            <div class="hud-hp-val">${Math.ceil(hud.playerHp)} <small>/ ${hud.playerMaxHp}</small></div>
+          </div>
+        `);
+      }
+
+      const weaponKey = `${cannonAmmo}|${cannonMax}`;
+      if (weaponSlot.__weaponKey !== weaponKey) {
+        weaponSlot.__weaponKey = weaponKey;
+        setHtml(weaponSlot, `
+          <div class="hud-card hud-weapon-card">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+              <path d="M7 20V9l2-5 2 5v11H7zM13 20V9l2-5 2 5v11h-4z" fill="#cbd5e1" fill-opacity="0.9"/>
+            </svg>
+            <div class="hud-ammo-val"><span class="${cannonAmmo <= 5 ? 'text-amber-400 animate-pulse' : ''}">${cannonAmmo}</span> <small>/ ${cannonMax}</small></div>
+          </div>
+        `);
+      }
+
+      const defenseKey = `${canFireMissile}|${hud.missileAmmo}|${missileMax}|${apsValueText}|${apsStateClass}`;
+      if (defenseSlot.__defenseKey !== defenseKey) {
+        defenseSlot.__defenseKey = defenseKey;
+        setHtml(defenseSlot, `
+          <div class="hud-card hud-modules-card">
+            <button
+              data-action="fire-missile"
+              ${canFireMissile ? '' : 'disabled'}
+              class="hud-mod-tile ${missileStateClass}"
+              title="${t('Launch Homing ATGM Missile [Space]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">SPC</span>
+                <span class="hud-mod-name">ATGM</span>
               </div>
-              <div class="hud-hp-body">
-                <div class="hud-hp-head">
-                  <span class="hud-label">${t('HULL HP')}</span>
-                  <span class="hud-hp-pct ${hpPctColor}">${hpPctText}</span>
-                </div>
-                <div class="hud-hp-segs" aria-hidden="true">${hpSegsHtml}</div>
-                <div class="hud-hp-val">${Math.ceil(hud.playerHp)} <small>/ ${hud.playerMaxHp}</small></div>
+              <div class="hud-mod-val-row">
+                ${renderPowerUpBadgeSvg(POWERUP.MISSILE, 16, false)}
+                <span class="hud-mod-val">${hud.missileAmmo}<small>/${missileMax}</small></span>
+              </div>
+            </button>
+
+            <div
+              class="hud-mod-tile is-passive ${apsStateClass}"
+              title="${t('Active Protection System (Automatic)')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key is-auto">${t('AUTO')}</span>
+                <span class="hud-mod-name">APS</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <path d="M12 3l7 3v5c0 4.8-3 8.6-7 10-4-1.4-7-5.2-7-10V6l7-3z" fill="${apsFill}" stroke="${apsStroke}" stroke-width="1.8"/>
+                  <path d="M9 12l2 2 4-4" stroke="${apsStroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="hud-mod-val">${apsValueText}</span>
               </div>
             </div>
           </div>
         `);
       }
 
-      const reloadText = cannonAmmo <= 0 ? t('EMPTY') : reloadReady ? t('READY') : `${reloadRemaining.toFixed(1)}s`;
-      const reloadStatusClass = cannonAmmo <= 0 ? ' is-empty' : reloadReady ? ' is-ready' : ' is-charging';
-      const credits = hud.credits ?? 0;
       const airTargetingType = hud.airSupportTargeting?.type || '';
-      const canStrike = credits >= AIR_SUPPORT.STRIKE_BOMBS.cost;
-      const canRepair = credits >= AIR_SUPPORT.REPAIR.cost;
-      const canMines = credits >= AIR_SUPPORT.MINES.cost;
+      const minStrikeCost = Math.min(
+        AIR_SUPPORT.STRIKE_BOMBS.cost,
+        AIR_SUPPORT.STRIKE_THERMO.cost,
+        AIR_SUPPORT.STRIKE_AC130.cost,
+        AIR_SUPPORT.MINES.cost
+      );
+      const canStrike = credits >= minStrikeCost;
       const canDrop = credits >= AIR_SUPPORT.AIRDROP.cost;
-      const staticKey = `${hud.cannonName}|${cannonAmmo}|${cannonMax}|${rkValue}|${rkStateClass}|${smokeValue}|${smokeStateClass}|${canFireMissile}|${hud.missileAmmo}|${missileMax}|${apsValueText}|${apsStateClass}|${canStrike}|${canRepair}|${canMines}|${canDrop}|${airTargetingType}`;
+      const staticKey = `${rkValue}|${rkStateClass}|${rkTitle}|${smokeValue}|${smokeStateClass}|${reconValue}|${reconStateClass}|${reconReady}|${canStrike}|${canDrop}|${airTargetingType}`;
 
       if (centerSection.__staticKey === staticKey) {
-        const segsEl = centerSection.querySelector('.hud-reload-segs');
-        const timeEl = centerSection.querySelector('.hud-reload-time');
-        if (segsEl && timeEl) {
-          segsEl.className = `hud-reload-segs${reloadReady ? ' is-ready' : ''}`;
-          for (let idx = 0; idx < segsEl.children.length; idx += 1) {
-            segsEl.children[idx].className = idx < filledReloadSegs ? 'is-filled' : '';
-          }
-          timeEl.className = `hud-reload-time${reloadStatusClass}`;
-          if (timeEl.textContent !== reloadText) {
-            timeEl.textContent = reloadText;
-          }
-          return;
-        }
+        return;
       }
       centerSection.__staticKey = staticKey;
 
-      const airButtons = [
-        {
-          type: 'STRIKE',
-          key: '5',
-          label: t('AIR STRIKE'),
-          cost: `${AIR_SUPPORT.STRIKE_BOMBS.cost}+`,
-          ready: canStrike,
-          active: airTargetingType === 'STRIKE',
-          tone: 'tone-red',
-          title: t('Call Air Strike (Bombs, Thermobaric, AC-130) [Key 5]'),
-        },
-        {
-          type: 'REPAIR',
-          key: '6',
-          label: t('AIR REPAIR'),
-          cost: `${AIR_SUPPORT.REPAIR.cost}`,
-          ready: canRepair,
-          active: false,
-          tone: 'tone-teal',
-          title: t('Call Repair Drone (+20 HP & Fix Modules) [Key 6]'),
-        },
-        {
-          type: 'MINES',
-          key: '7',
-          label: t('AIR MINES'),
-          cost: `${AIR_SUPPORT.MINES.cost}`,
-          ready: canMines,
-          active: airTargetingType === 'MINES',
-          tone: 'tone-amber',
-          title: t('Call Carpet Air Mines [Key 7]'),
-        },
-        {
-          type: 'AIRDROP',
-          key: '8',
-          label: t('AIR DROP'),
-          cost: `${AIR_SUPPORT.AIRDROP.cost}`,
-          ready: canDrop,
-          active: airTargetingType === 'AIRDROP',
-          tone: 'tone-emerald',
-          title: t('Call Supply Air Drop [Key 8]'),
-        },
-      ];
+      const strikeStateClass = airTargetingType === 'STRIKE'
+        ? 'is-channeling'
+        : canStrike
+        ? 'tone-red is-ready'
+        : 'is-empty';
+      const dropStateClass = airTargetingType === 'AIRDROP'
+        ? 'is-channeling'
+        : canDrop
+        ? 'tone-emerald is-ready'
+        : 'is-empty';
 
       setHtml(centerSection, `
-        <div class="flex flex-col items-center gap-1.5">
-          <div class="hud-card hud-air-support-card">
-            ${airButtons
-              .map(
-                (b) => `
-                  <button
-                    data-action="air-support-select"
-                    data-air-type="${b.type}"
-                    ${b.ready ? '' : 'disabled'}
-                    class="hud-air-btn ${b.tone}${b.ready ? ' is-ready' : ' is-empty'}${b.active ? ' is-active' : ''}"
-                    title="${b.title}"
-                  >
-                    <span class="hud-mod-key">${b.key}</span>
-                    <span class="hud-air-name">${b.label}</span>
-                    <span class="hud-air-cost">$${b.cost}</span>
-                  </button>
-                `
-              )
-              .join('')}
-          </div>
-          <div class="flex flex-wrap items-center justify-center gap-2">
-            <div class="hud-card hud-weapon-card">
-              <div class="hud-ammo-block">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true">
-                  <path d="M7 20V9l2-5 2 5v11H7zM13 20V9l2-5 2 5v11h-4z" fill="#cbd5e1" fill-opacity="0.9"/>
+        <div class="hud-center-bar">
+          <div class="hud-card hud-modules-card">
+            <button
+              data-action="activate-module-slot"
+              data-slot="1"
+              class="hud-mod-tile ${rkStateClass}"
+              title="${rkTitle}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">1</span>
+                <span class="hud-mod-name">${t('REPAIR')}</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <path d="M9 4h6v5h5v6h-5v5H9v-5H4V9h5V4z" fill="${rkIconColor}" fill-opacity="0.22" stroke="${rkIconColor}" stroke-width="1.8" stroke-linejoin="round"/>
                 </svg>
-                <div>
-                  <span class="hud-label">${t(hud.cannonName)}</span>
-                  <div class="hud-ammo-val"><span class="${cannonAmmo <= 5 ? 'text-amber-400 animate-pulse' : ''}">${cannonAmmo}</span> <small>/ ${cannonMax}</small></div>
-                </div>
+                <span class="hud-mod-val">${rkValue}</span>
               </div>
-              <div class="hud-reload-block">
-                <span class="hud-label">${t('RELOAD')}</span>
-                <div class="hud-reload-row">
-                  <div class="hud-reload-segs${reloadReady ? ' is-ready' : ''}" aria-hidden="true">${reloadSegsHtml}</div>
-                  <span class="hud-reload-time${reloadStatusClass}">${reloadText}</span>
-                </div>
+            </button>
+
+            <button
+              data-action="activate-module-slot"
+              data-slot="2"
+              class="hud-mod-tile ${smokeStateClass}"
+              title="${t('Deploy Aerosol Smoke Screen [Key 2]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">2</span>
+                <span class="hud-mod-name">${t('SMOKE')}</span>
               </div>
-            </div>
-
-            <div class="hud-card hud-modules-card">
-              <button
-                data-action="activate-module-slot"
-                data-slot="1"
-                class="hud-mod-tile ${rkStateClass}"
-                title="${t('Activate RM-1 Field Repair Kit [Key 1]')}"
-              >
-                <div class="hud-mod-top">
-                  <span class="hud-mod-key">1</span>
-                  <span class="hud-mod-name">${t('REPAIR')}</span>
-                </div>
-                <div class="hud-mod-val-row">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                    <path d="M9 4h6v5h5v6h-5v5H9v-5H4V9h5V4z" fill="${rkIconColor}" fill-opacity="0.22" stroke="${rkIconColor}" stroke-width="1.8" stroke-linejoin="round"/>
-                  </svg>
-                  <span class="hud-mod-val">${rkValue}</span>
-                </div>
-              </button>
-
-              <button
-                data-action="activate-module-slot"
-                data-slot="2"
-                class="hud-mod-tile ${smokeStateClass}"
-                title="${t('Deploy Aerosol Smoke Screen [Key 2]')}"
-              >
-                <div class="hud-mod-top">
-                  <span class="hud-mod-key">2</span>
-                  <span class="hud-mod-name">${t('SMOKE')}</span>
-                </div>
-                <div class="hud-mod-val-row">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                    <path d="M6.5 18h11a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 8.2 9.5 3.5 3.5 0 0 0 6.5 18z" fill="${smokeIconColor}" fill-opacity="0.22" stroke="${smokeIconColor}" stroke-width="1.8" stroke-linejoin="round"/>
-                  </svg>
-                  <span class="hud-mod-val">${smokeValue}</span>
-                </div>
-              </button>
-
-              <button
-                data-action="fire-missile"
-                ${canFireMissile ? '' : 'disabled'}
-                class="hud-mod-tile ${missileStateClass}"
-                title="${t('Launch Homing ATGM Missile [Space]')}"
-              >
-                <div class="hud-mod-top">
-                  <span class="hud-mod-key">SPC</span>
-                  <span class="hud-mod-name">ATGM</span>
-                </div>
-                <div class="hud-mod-val-row">
-                  ${renderPowerUpBadgeSvg(POWERUP.MISSILE, 16, false)}
-                  <span class="hud-mod-val">${hud.missileAmmo}<small>/${missileMax}</small></span>
-                </div>
-              </button>
-
-              <div
-                class="hud-mod-tile is-passive ${apsStateClass}"
-                title="${t('Active Protection System (Automatic)')}"
-              >
-                <div class="hud-mod-top">
-                  <span class="hud-mod-key is-auto">${t('AUTO')}</span>
-                  <span class="hud-mod-name">APS</span>
-                </div>
-                <div class="hud-mod-val-row">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                    <path d="M12 3l7 3v5c0 4.8-3 8.6-7 10-4-1.4-7-5.2-7-10V6l7-3z" fill="${apsFill}" stroke="${apsStroke}" stroke-width="1.8"/>
-                    <path d="M9 12l2 2 4-4" stroke="${apsStroke}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <span class="hud-mod-val">${apsValueText}</span>
-                </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <path d="M6.5 18h11a3.5 3.5 0 0 0 .4-6.98A5 5 0 0 0 8.2 9.5 3.5 3.5 0 0 0 6.5 18z" fill="${smokeIconColor}" fill-opacity="0.22" stroke="${smokeIconColor}" stroke-width="1.8" stroke-linejoin="round"/>
+                </svg>
+                <span class="hud-mod-val">${smokeValue}</span>
               </div>
-            </div>
+            </button>
+
+            <button
+              data-action="launch-recon-drone"
+              ${reconReady ? '' : 'disabled'}
+              class="hud-mod-tile ${reconStateClass}"
+              title="${reconTitle}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">3</span>
+                <span class="hud-mod-name">${t('RECON')}</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="2.5" fill="${reconIconColor}" fill-opacity="0.25" stroke="${reconIconColor}" stroke-width="1.8"/>
+                  <path d="M5 5l3.5 3.5M19 5l-3.5 3.5M5 19l3.5-3.5M19 19l-3.5-3.5" stroke="${reconIconColor}" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <span class="hud-mod-val">${reconValue}</span>
+              </div>
+            </button>
+
+            <button
+              data-action="air-support-select"
+              data-air-type="STRIKE"
+              ${canStrike ? '' : 'disabled'}
+              class="hud-mod-tile ${strikeStateClass}"
+              title="${t('Call Air Strike (Bombs, Thermobaric, AC-130, Mines) [Key 4]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">4</span>
+                <span class="hud-mod-name">${t('STRIKE')}</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <span class="hud-mod-val">$${minStrikeCost}+</span>
+              </div>
+            </button>
+
+            <button
+              data-action="air-support-select"
+              data-air-type="AIRDROP"
+              ${canDrop ? '' : 'disabled'}
+              class="hud-mod-tile ${dropStateClass}"
+              title="${t('Call Supply Air Drop [Key 5]')}"
+            >
+              <div class="hud-mod-top">
+                <span class="hud-mod-key">5</span>
+                <span class="hud-mod-name">${t('DROP')}</span>
+              </div>
+              <div class="hud-mod-val-row">
+                <span class="hud-mod-val">$${AIR_SUPPORT.AIRDROP.cost}</span>
+              </div>
+            </button>
           </div>
         </div>
       `);
