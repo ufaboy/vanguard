@@ -69,7 +69,10 @@ test('hasPlayerLineOfSight respects obstacles, forest range, and recon drone rev
   };
   const ai = new EnemyAiController(engine);
 
-  // Behind concrete -> blocked
+  // Within 2 cells (4m) of player -> full visibility without penalties even behind concrete
+  grid[20][21].type = TileType.CONCRETE;
+  assert.equal(ai.hasPlayerLineOfSight({ x: 1 + 2 * TILE_SIZE, z: 1 }), true);
+  // Behind concrete beyond 2 cells -> blocked
   assert.equal(ai.hasPlayerLineOfSight({ x: 15, z: 1 }), false);
   // Behind water tower -> visible
   assert.equal(ai.hasPlayerLineOfSight({ x: -13, z: 1 }), true);
