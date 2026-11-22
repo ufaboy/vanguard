@@ -24,6 +24,7 @@ import {
   TANK_TYPES,
 } from '../public/src/game/vehicles/tanks.js';
 import { SURFACE_CATALOG } from '../public/src/game/terrains/surfaces.js';
+import { LANDMARK_SPECS } from '../public/src/game/terrains/landmarks.js';
 import { POWERUP_TYPES } from '../public/src/game/powerups.js';
 
 /** Codex firepower line, described by weapon type (flame stream and contact warhead have no shell stats). */
@@ -62,6 +63,90 @@ const NON_BOSS_TANK_KEYS = [
   TANK_TYPES.STEALTH,
 ];
 
+const LANDMARK_META = Object.freeze({
+  ELYSEE: { name: 'Élysée Palace', region: 'Paris', accentHex: '#E2E8F0', summary: 'Presidential palace compound with classical stonework and courtyard facade.' },
+  ELYSEE_RUINED: { name: 'Élysée Palace (Ruined)', region: 'Paris', accentHex: '#94A3B8', summary: 'Shell-torn ruins of the Élysée Palace; passable debris footprint for Last Cargo.' },
+  EIFFEL_TOWER: { name: 'Eiffel Tower', region: 'Paris', accentHex: '#F59E0B', summary: 'Wrought-iron lattice tower; its four corner piers block movement while the central span remains open.' },
+  ARC_DE_TRIOMPHE: { name: 'Arc de Triomphe', region: 'Paris', accentHex: '#E2E8F0', summary: 'Triumphal monument with massive side piers and an open central archway for tanks and fire.' },
+  NOTRE_DAME: { name: 'Notre-Dame Cathedral', region: 'Paris', accentHex: '#CBD5E1', summary: 'Twin-towered Gothic cathedral with flying buttresses and central spire.' },
+  LOUVRE_PYRAMID: { name: 'Louvre Pyramid', region: 'Paris', accentHex: '#38BDF8', summary: 'Steel-and-glass courtyard pyramid acting as solid tactical cover.' },
+  SACRE_COEUR: { name: 'Sacré-Cœur Basilica', region: 'Paris', accentHex: '#F8FAFC', summary: 'Romano-Byzantine white travertine basilica crowned by tiered domes.' },
+  CONCORDE_OBELISK: { name: 'Luxor Obelisk (Concorde)', region: 'Paris', accentHex: '#FBBF24', summary: 'Gilded-tip red granite obelisk on Place de la Concorde.' },
+  MINE_SIGN: { name: 'Minefield Warning Sign', region: 'Paris', accentHex: '#EF4444', summary: 'Roadside hazard marker indicating live anti-tank minefields; fully passable.' },
+  BRANDENBURG_GATE: { name: 'Brandenburg Gate', region: 'Berlin', accentHex: '#E2E8F0', summary: 'Neoclassical Quadriga gatehouse with four pylon walls and three drivable passages.' },
+  VICTORY_COLUMN: { name: 'Berlin Victory Column', region: 'Berlin', accentHex: '#FBBF24', summary: 'Tiered sandstone column topped with the gilded Victoria statue.' },
+  VERSAILLES_PALACE: { name: 'Palace of Versailles', region: 'Versailles', accentHex: '#FDE047', summary: 'Expansive 16×3-cell royal palace facade forming an impenetrable northern bastion.' },
+  LATONA_FOUNTAIN: { name: 'Latona Fountain', region: 'Versailles', accentHex: '#38BDF8', summary: 'Tiered marble garden fountain in the Versailles parterre.' },
+  APOLLO_FOUNTAIN: { name: 'Apollo Fountain', region: 'Versailles', accentHex: '#38BDF8', summary: 'Sculpted gilded chariot fountain basin anchoring the Grand Canal axis.' },
+  ATOMIUM: { name: 'Atomium', region: 'Brussels', accentHex: '#93C5FD', summary: 'Nine interconnected stainless-steel spheres supported on bipod struts.' },
+  CINQUANTENAIRE_ARCH: { name: 'Cinquantenaire Arch', region: 'Brussels', accentHex: '#CBD5E1', summary: 'Triple-arch colonnade monument with three open north-south firing lanes.' },
+  BRUSSELS_TOWN_HALL: { name: 'Brussels Town Hall', region: 'Brussels', accentHex: '#D6D3D1', summary: 'Brabantine Gothic town hall with an ornate central belfry spire.' },
+  MANNEKEN_PIS: { name: 'Manneken Pis', region: 'Brussels', accentHex: '#60A5FA', summary: 'Compact corner fountain monument marking the Brussels sector.' },
+  COLOSSEUM: { name: 'Colosseum', region: 'Rome', accentHex: '#D6D3D1', summary: 'Elliptical travertine amphitheatre with open axial gates and a playable inner arena.' },
+  ARCH_OF_CONSTANTINE: { name: 'Arch of Constantine', region: 'Rome', accentHex: '#E7E5E4', summary: 'Triple-bay Roman triumphal arch with three passable central corridors.' },
+  FORUM_COLUMNS: { name: 'Roman Forum Columns', region: 'Rome', accentHex: '#D6D3D1', summary: 'Corinthian colonnade remnant from the ancient Roman Forum.' },
+  HOFBURG_PALACE: { name: 'Hofburg Palace', region: 'Vienna', accentHex: '#FDE68A', summary: 'Imperial Habsburg palace wing with mansard roofs and classical facade.' },
+  ST_STEPHENS_CATHEDRAL: { name: "St. Stephen's Cathedral", region: 'Vienna', accentHex: '#CBD5E1', summary: 'Gothic cathedral featuring a polychrome tiled roof and towering south spire.' },
+  MICHAELERTRAKT: { name: 'Hofburg Michaelertrakt', region: 'Vienna', accentHex: '#FDE68A', summary: 'Curved imperial rotunda wing with a central domed gate passage.' },
+  BURGTOR: { name: 'Äußeres Burgtor', region: 'Vienna', accentHex: '#E7E5E4', summary: 'Neoclassical Heldenplatz gatehouse with three drivable archways.' },
+  HELDENPLATZ_STATUE: { name: 'Heldenplatz Equestrian Statue', region: 'Vienna', accentHex: '#FBBF24', summary: 'Bronze equestrian monument on a tall stone plinth.' },
+  AMSTERDAM_CANAL_HOUSES: { name: 'Amsterdam Canal Houses', region: 'Amsterdam', accentHex: '#F97316', summary: 'Row of narrow gabled Dutch brick townhouses lining the canal.' },
+  WESTERKERK: { name: 'Westerkerk', region: 'Amsterdam', accentHex: '#93C5FD', summary: 'Renaissance Protestant church topped by the Imperial Crown spire.' },
+  SAGRADA_FAMILIA: { name: 'Sagrada Família', region: 'Barcelona', accentHex: '#FDBA74', summary: 'Monumental Modernista basilica with towering sculpted bell spires.' },
+  BARCELONA_CATHEDRAL: { name: 'Barcelona Cathedral', region: 'Barcelona', accentHex: '#D6D3D1', summary: 'Catalan Gothic cathedral with twin octagonal bell towers and central cimborio.' },
+  MONTJUIC_CASTLE: { name: 'Montjuïc Castle', region: 'Barcelona', accentHex: '#A8A29E', summary: 'Star-fortress coastal bastion overlooking Barcelona harbor.' },
+  COLUMBUS_MONUMENT: { name: 'Columbus Monument', region: 'Barcelona', accentHex: '#FBBF24', summary: 'Tall cast-iron Corinthian column at the foot of La Rambla.' },
+  W_HOTEL_BARCELONA: { name: 'W Barcelona (Sail Tower)', region: 'Barcelona', accentHex: '#38BDF8', summary: 'Iconic sail-shaped beachfront glass skyscraper on Barceloneta.' },
+  NEUSCHWANSTEIN: { name: 'Neuschwanstein Castle', region: 'Alps', accentHex: '#F8FAFC', summary: 'Romanesque Revival cliffside palace with slate turrets and courtyard keep.' },
+  HOHENSALZBURG: { name: 'Hohensalzburg Fortress', region: 'Alps', accentHex: '#E2E8F0', summary: 'Hilltop medieval fortress complex with bastions and high citadel keep.' },
+  MONTSERRAT_MONASTERY: { name: 'Montserrat Monastery', region: 'Alps', accentHex: '#D6D3D1', summary: 'Mountain-ridge Benedictine abbey nestled against serrated rock.' },
+  MILAN_DUOMO: { name: 'Milan Cathedral (Duomo)', region: 'Italy', accentHex: '#F8FAFC', summary: 'Flamboyant Gothic marble cathedral bristling with pinnacles and flying buttresses.' },
+  VERONA_ARENA: { name: 'Verona Arena', region: 'Italy', accentHex: '#FCA5A5', summary: 'Pink-marble Roman amphitheatre with open axial entrances and central arena.' },
+  PANTHEON: { name: 'Pantheon', region: 'Italy', accentHex: '#E7E5E4', summary: 'Ancient Roman rotunda with a Corinthian portico and coffered oculus dome.' },
+  REICHSTAG_DOME: { name: 'Reichstag Building', region: 'Germany', accentHex: '#38BDF8', summary: 'Neoclassical parliament building crowned by a modern glass-and-steel dome.' },
+  FRAUENKIRCHE: { name: 'Dresden Frauenkirche', region: 'Germany', accentHex: '#FDE68A', summary: 'Baroque sandstone church topped by the iconic bell-shaped stone dome.' },
+  ZOLLVEREIN_TOWER: { name: 'Zollverein Shaft XII', region: 'Germany', accentHex: '#EF4444', summary: 'Bauhaus industrial coal-mine winding tower and brick boiler hall.' },
+  ERASMUS_BRIDGE: { name: 'Erasmus Bridge', region: 'Rotterdam', accentHex: '#38BDF8', summary: 'Asymmetric cable-stayed harp bridge spanning the Nieuwe Maas; fully drivable.' },
+});
+
+const LANDMARK_CATALOG = Object.freeze(
+  Object.entries(LANDMARK_SPECS).map(([kind, spec]) => {
+    const meta = LANDMARK_META[kind] || {};
+    const totalCells = spec.cols * spec.rows;
+    const blockedCount = spec.blocked.length;
+    const collisionText =
+      blockedCount === 0
+        ? 'Passable (0 blocked)'
+        : blockedCount === totalCells
+        ? `Solid (${blockedCount}/${totalCells} blocked)`
+        : `Partial (${blockedCount}/${totalCells} blocked)`;
+    const tacticalNotes =
+      blockedCount === 0
+        ? 'Non-blocking landmark: tanks can drive across its entire footprint.'
+        : blockedCount < totalCells
+        ? 'Open archway/gate cells allow tank passage and direct line of fire; piers act as indestructible cover.'
+        : 'All footprint cells act as indestructible LANDMARK cover blocking shells and movement.';
+    const packLabel = (spec.pack || 'paris').toUpperCase();
+    return Object.freeze({
+      id: `lm_${kind.toLowerCase()}`,
+      category: 'LANDMARKS',
+      code: `LM-${packLabel}`,
+      name: meta.name || kind.replace(/_/g, ' '),
+      badge: `${meta.region || packLabel} Landmark`,
+      accentHex: meta.accentHex || '#E2E8F0',
+      landmarkKind: kind,
+      summary: meta.summary || `${meta.region || packLabel} 3D battlefield landmark.`,
+      tacticalNotes,
+      specs: [
+        { label: 'FOOTPRINT', value: `${spec.cols}×${spec.rows} cells (${spec.cols * 2}×${spec.rows * 2}m)` },
+        { label: 'HEIGHT', value: `${spec.height.toFixed(1)}m` },
+        { label: 'COLLISION', value: collisionText },
+        { label: 'GLB PACK', value: packLabel },
+      ],
+    });
+  })
+);
+
 export const CODEX_CATEGORIES = Object.freeze([
   Object.freeze({
     id: 'TANKS',
@@ -74,6 +159,12 @@ export const CODEX_CATEGORIES = Object.freeze([
     label: 'SURFACES & DEFENSES',
     count: SURFACE_CATALOG.length,
     icon: '▣',
+  }),
+  Object.freeze({
+    id: 'LANDMARKS',
+    label: 'LANDMARKS',
+    count: LANDMARK_CATALOG.length,
+    icon: '❖',
   }),
   Object.freeze({
     id: 'POWERUPS',
@@ -173,6 +264,8 @@ export const CODEX_ITEMS = Object.freeze([
       specs: surface.specs,
     })
   ),
+
+  ...LANDMARK_CATALOG,
 
   ...Object.values(POWERUP_TYPES).map((p) =>
     Object.freeze({
@@ -361,6 +454,8 @@ export const CODEX_ITEMS = Object.freeze([
         ? 'POWERUP'
         : item.category === 'SURFACES'
         ? 'SURFACE'
+        : item.category === 'LANDMARKS'
+        ? 'LANDMARK'
         : 'EFFECT'),
     isBoss: Boolean(item.id?.startsWith('boss_')),
   })

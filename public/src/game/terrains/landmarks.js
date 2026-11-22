@@ -45,7 +45,7 @@ const LANDMARK_PACKS = Object.freeze({
 /** Cells `cols` of every row in a `cols` x `rows` footprint. */
 const COLUMNS = (cols, rows) => ALL(Math.max(...cols) + 1, rows).filter(([, dc]) => cols.includes(dc));
 
-const LANDMARK_SPECS = Object.freeze({
+export const LANDMARK_SPECS = Object.freeze({
   ELYSEE: Object.freeze({ cols: 4, rows: 2, blocked: ALL(4, 2), height: 4.5 }),
   ELYSEE_RUINED: Object.freeze({ cols: 4, rows: 2, blocked: [], height: 3.0 }),
   EIFFEL_TOWER: Object.freeze({ cols: 3, rows: 3, blocked: [[0, 0], [0, 2], [2, 0], [2, 2]], height: 13 }),
