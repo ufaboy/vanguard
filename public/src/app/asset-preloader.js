@@ -13,6 +13,16 @@ function resolveAssetUrl(relPath) {
 
 export const VENDOR_RUNTIME_ASSETS = Object.freeze([
   './vendor/three/build/three.module.js',
+  './vendor/three/examples/jsm/loaders/GLTFLoader.js',
+  './vendor/three/examples/jsm/loaders/DRACOLoader.js',
+  './vendor/three/examples/jsm/loaders/KTX2Loader.js',
+  './vendor/three/examples/jsm/utils/BufferGeometryUtils.js',
+  './vendor/three/examples/jsm/utils/SkeletonUtils.js',
+  './vendor/three/examples/jsm/utils/WorkerPool.js',
+  './vendor/three/examples/jsm/environments/RoomEnvironment.js',
+  './vendor/three/examples/jsm/libs/ktx-parse.module.js',
+  './vendor/three/examples/jsm/libs/zstddec.module.js',
+  './vendor/three/examples/jsm/math/ColorSpaces.js',
   './vendor/three/examples/jsm/libs/draco/gltf/draco_wasm_wrapper.js',
   './vendor/three/examples/jsm/libs/draco/gltf/draco_decoder.wasm',
   './vendor/three/examples/jsm/libs/basis/basis_transcoder.js',
@@ -26,6 +36,90 @@ export const TERRAIN_MODEL_ASSETS = Object.freeze([
   './models/terrain/concrete.glb',
   './models/terrain/buildings.glb',
 ]);
+
+export const PRIORITY_AUDIO_ASSETS = Object.freeze([
+  './audio/cannon_shot.ogg',
+  './audio/heavy_howitzer_fire.ogg',
+  './audio/cannon_impact.ogg',
+  './audio/tank_masonry_projectile_impact.ogg',
+  './audio/atgm_impact_explosion.ogg',
+  './audio/heavy_artillery_he_impact.ogg',
+  './audio/tank_destruction.ogg',
+  './audio/atgm_launch.ogg',
+  './audio/tank_heavy_diesel_idle_loop_compact.ogg',
+]);
+
+export const DEFENSE_TURRET_ASSETS = Object.freeze({
+  CANNON: './models/turret_cannon.glb',
+  HOWITZER: './models/turret_howitzer.glb',
+  MLRS: './models/turret_mlrs.glb',
+});
+
+export const MAP_JSON_ASSETS = Object.freeze({
+  'campaign-01': './maps/campaign/mission-01-rome-forum-colosseum.json',
+  'campaign-02': './maps/campaign/mission-02-apennine-gorge.json',
+  'campaign-03': './maps/campaign/mission-03-milan-industrial.json',
+  'campaign-04': './maps/campaign/mission-04-lake-garda-verona.json',
+  'campaign-05': './maps/campaign/mission-05-dolomites-pass.json',
+  'campaign-06': './maps/campaign/mission-06-fussen-neuschwanstein.json',
+  'campaign-07': './maps/campaign/mission-07-innsbruck-rail-tunnel.json',
+  'campaign-08': './maps/campaign/mission-08-hohensalzburg-fortress.json',
+  'campaign-09': './maps/campaign/mission-09-wachau-danube-valley.json',
+  'campaign-10': './maps/campaign/mission-10-vienna-hofburg.json',
+  'campaign-11': './maps/campaign/mission-11-moravian-karst.json',
+  'campaign-12': './maps/campaign/mission-12-konopiste-castle.json',
+  'campaign-13': './maps/campaign/mission-13-prague-charles-bridge.json',
+  'campaign-14': './maps/campaign/mission-14-bohemian-forest.json',
+  'campaign-15': './maps/campaign/mission-15-dresden-elbe.json',
+  'campaign-16': './maps/campaign/mission-16-berlin-brandenburg-gate.json',
+  'campaign-17': './maps/campaign/mission-17-berlin-reichstag-spree.json',
+  'campaign-18': './maps/campaign/mission-18-east-berlin-rail-yards.json',
+  'campaign-19': './maps/campaign/mission-19-harz-mountains.json',
+  'campaign-20': './maps/campaign/mission-20-remagen-bridgehead.json',
+  'campaign-21': './maps/campaign/mission-21-ruhr-coal-steel.json',
+  'campaign-22': './maps/campaign/mission-22-amsterdam-canals.json',
+  'campaign-23': './maps/campaign/mission-23-rotterdam-europoort.json',
+  'campaign-24': './maps/campaign/mission-24-brussels-cinquantenaire.json',
+  'campaign-25': './maps/campaign/mission-25-antwerp-docks.json',
+  'campaign-26': './maps/campaign/mission-26-scheldt-delta-dams.json',
+  'campaign-27': './maps/campaign/mission-27-paris-champs-elysees.json',
+  'campaign-28': './maps/campaign/mission-28-versailles.json',
+  'campaign-29': './maps/campaign/mission-29-lyon-industrial.json',
+  'campaign-30': './maps/campaign/mission-30-mont-blanc.json',
+  'campaign-31': './maps/campaign/mission-31-provence-lavender.json',
+  'campaign-32': './maps/campaign/mission-32-nice-cote-dazur.json',
+  'campaign-33': './maps/campaign/mission-33-andorra-pas-de-la-casa.json',
+  'campaign-34': './maps/campaign/mission-34-bardenas-reales-range.json',
+  'campaign-35': './maps/campaign/mission-35-montserrat.json',
+  'campaign-36': './maps/campaign/mission-36-barcelona-gothic-sagrada.json',
+  'campaign-37': './maps/campaign/mission-37-barcelona-montjuic.json',
+  'campaign-38': './maps/campaign/mission-38-barcelona-port.json',
+  'contract-remagen-bridgehead': './maps/contracts/remagen-bridgehead.json',
+  'contract-brussels': './maps/contracts/brussels.json',
+  'contract-versailles': './maps/contracts/versailles.json',
+  'contract-brandenburg-gate': './maps/contracts/brandenburg-gate.json',
+  'contract-charles-bridge': './maps/contracts/charles-bridge.json',
+  'contract-last-cargo': './maps/contracts/last-cargo.json',
+  'contract-blackout-protocol': './maps/contracts/blackout-protocol.json',
+  'survival-paris-last-stand': './maps/survival/paris-last-stand.json',
+});
+
+/** Campaign mission IDs with fortified enemy bases and their defense turret types. */
+export const CAMPAIGN_DEFENSE_TURRETS = Object.freeze({
+  'campaign-03': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-05': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-06': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-07': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-12': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-17': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-18': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-23': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-24': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-29': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-30': Object.freeze(['CANNON', 'HOWITZER', 'MLRS']),
+  'campaign-35': Object.freeze(['CANNON', 'HOWITZER']),
+  'campaign-37': Object.freeze(['CANNON', 'HOWITZER']),
+});
 
 export const ENEMY_MODEL_ASSETS = Object.freeze({
   STANDARD: './models/tank_standard.glb',
@@ -139,6 +233,7 @@ export const CONTRACT_ASSETS = Object.freeze({
   'contract-brussels': Object.freeze({
     enemies: Object.freeze(['ARMOR', 'HOWITZER', 'SCOUT', 'STANDARD']),
     landmarkPacks: Object.freeze(['brussels']),
+    turrets: Object.freeze(['CANNON', 'HOWITZER']),
   }),
   'contract-remagen-bridgehead': Object.freeze({
     enemies: Object.freeze([
@@ -155,11 +250,12 @@ export const CONTRACT_ASSETS = Object.freeze({
   }),
 });
 
-export function getCoreAssets({ includeTerrain = true } = {}) {
+export function getCoreAssets({ includeTerrain = true, includeAudio = includeTerrain } = {}) {
   return [
     ...VENDOR_RUNTIME_ASSETS,
     PLAYER_MODEL_ASSET,
     ...(includeTerrain ? TERRAIN_MODEL_ASSETS : []),
+    ...(includeAudio ? PRIORITY_AUDIO_ASSETS : []),
   ];
 }
 
@@ -189,21 +285,56 @@ function getLandmarkPackAssets(packNames = []) {
   return out;
 }
 
+function getDefenseTurretAssets(turretTypes = []) {
+  const seen = new Set();
+  const out = [];
+  for (const t of turretTypes) {
+    const relPath = DEFENSE_TURRET_ASSETS[t];
+    if (relPath && !seen.has(relPath)) {
+      seen.add(relPath);
+      out.push(relPath);
+    }
+  }
+  return out;
+}
+
+function getOrderedMapJsonAssets(priorityId = null) {
+  const priorityPath = priorityId ? MAP_JSON_ASSETS[priorityId] : null;
+  const all = Object.values(MAP_JSON_ASSETS);
+  if (!priorityPath) return all;
+  return [priorityPath, ...all.filter((p) => p !== priorityPath)];
+}
+
 export function getCampaignMissionAssets(mission) {
   if (!mission) return [];
   const enemyClasses = (mission.enemyRoster || []).map((entry) => entry.type);
   const packs = CAMPAIGN_LANDMARK_PACKS[mission.id] || [];
-  return [...getEnemyModelAssets(enemyClasses), ...getLandmarkPackAssets(packs)];
+  const turrets = CAMPAIGN_DEFENSE_TURRETS[mission.id] || [];
+  return [
+    ...getEnemyModelAssets(enemyClasses),
+    ...getLandmarkPackAssets(packs),
+    ...getDefenseTurretAssets(turrets),
+    ...getOrderedMapJsonAssets(mission.id),
+  ];
 }
 
 export function getContractAssets(contractId) {
   const spec = CONTRACT_ASSETS[contractId];
   if (!spec) return [];
-  return [...getEnemyModelAssets(spec.enemies), ...getLandmarkPackAssets(spec.landmarkPacks)];
+  return [
+    ...getEnemyModelAssets(spec.enemies),
+    ...getLandmarkPackAssets(spec.landmarkPacks),
+    ...getDefenseTurretAssets(spec.turrets || []),
+    ...getOrderedMapJsonAssets(contractId),
+  ];
 }
 
 export function getSurvivalAssets(wave1Classes = []) {
-  return [...getEnemyModelAssets(wave1Classes), ...getLandmarkPackAssets(['paris'])];
+  return [
+    ...getEnemyModelAssets(wave1Classes),
+    ...getLandmarkPackAssets(['paris']),
+    ...getOrderedMapJsonAssets('survival-paris-last-stand'),
+  ];
 }
 
 export function shouldSkipPreload(nav = globalThis.navigator) {
