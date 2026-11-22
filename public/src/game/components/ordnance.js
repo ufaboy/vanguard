@@ -257,8 +257,8 @@ export const AIR_ORDNANCE = Object.freeze({
   }),
   AIR_MINE: Object.freeze({
     id: 'AIR_MINE',
-    mineCount: 9,
-    zoneHalfCells: 2.2,
+    mineCount: 7,
+    zoneHalfCells: 4.0,
     flightSec: 1.0,
     staggerSec: 0.06,
     launchAltitude: 16,

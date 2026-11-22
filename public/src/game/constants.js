@@ -323,10 +323,11 @@ export const MISSILE = Object.freeze({
   FPV_MIN_LOOK_HEIGHT: 0.4, // Lowest altitude of the look-at point
 });
 
-/** Victory cinematics: the camera frames the final kill, orbits 360° around it and holds the results modal back. */
+/** Victory cinematics: the camera frames the final kill, orbits 90° around it and holds the results modal back. */
 export const VICTORY_CINEMATICS = Object.freeze({
-  DURATION_SEC: 3.2, // Total cinematics time before the results modal opens
-  DETONATE_DELAY_SEC: 0.95, // Seconds into the orbit before the final target explodes
+  DURATION_SEC: 2.0, // Total cinematics time before the results modal opens
+  ORBIT_ANGLE_RAD: Math.PI / 2, // 90° camera sweep around the final target
+  DETONATE_DELAY_SEC: 0.7, // Seconds into the orbit before the final target explodes
   ZOOM_FACTOR: 0.72, // Frustum scale at the end of the push-in (smaller = closer)
   MIN_FRUSTUM: 15, // Closest allowed frustum size during the push-in
   LOOK_DAMP: 8.5, // Smoothing rate of the camera focus moving onto the final target

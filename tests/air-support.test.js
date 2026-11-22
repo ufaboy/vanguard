@@ -258,5 +258,13 @@ test('Air Mines is dropped by STRATEGIC_BOMBER flyby and plants mines on landing
   for (let i = 0; i < 40; i++) {
     ctrl.update(0.25, i * 0.25);
   }
+  assert.equal(AIR_SUPPORT.MINES.mineCount, 7);
   assert.equal(plantedMines.length, AIR_SUPPORT.MINES.mineCount);
+  const chainRadius = LAND_MINE.BLAST_RADIUS_CELLS * TILE_SIZE * 0.85;
+  for (let i = 0; i < plantedMines.length; i++) {
+    for (let j = i + 1; j < plantedMines.length; j++) {
+      const dist = Math.hypot(plantedMines[i].x - plantedMines[j].x, plantedMines[i].z - plantedMines[j].z);
+      assert.ok(dist > chainRadius, `Expected mines ${i} and ${j} (${dist.toFixed(2)}) outside chain radius (${chainRadius})`);
+    }
+  }
 });

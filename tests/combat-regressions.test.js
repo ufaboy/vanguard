@@ -7,7 +7,7 @@ import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { PlayerController } from '../public/src/game/engine/player-controller.js';
 import { findBorderIngressCell } from '../public/src/game/campaign-navigation.js';
 import { TileType, GameStatus } from '../public/src/game/types.js';
-import { computeTankStats, computeEffectiveDamage, CANNONS, MISSILE } from '../public/src/game/constants.js';
+import { computeTankStats, computeEffectiveDamage, CANNONS, MISSILE, VICTORY_CINEMATICS } from '../public/src/game/constants.js';
 import { TANK_CONFIGS, TANK_TYPES } from '../public/src/game/vehicles/tanks.js';
 
 test('ARMOR directional protection comes from its base plus the A3 component', () => {
@@ -623,7 +623,8 @@ test('triggerMissionVictory starts victory cinematics delay, focus, and deferred
     },
   });
   assert.equal(engine.status, GameStatus.VICTORY);
-  assert.equal(engine.victoryCinematicsTimer, 3.2);
+  assert.equal(engine.victoryCinematicsTimer, VICTORY_CINEMATICS.DURATION_SEC);
+  assert.equal(VICTORY_CINEMATICS.ORBIT_ANGLE_RAD, Math.PI / 2);
   assert.equal(engine.victoryCinematics.x, 12);
   assert.equal(engine.victoryCinematics.z, -8);
   assert.equal(engine.victoryCinematics.baseFrustum, 32);

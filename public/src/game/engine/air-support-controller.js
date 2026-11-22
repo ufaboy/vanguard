@@ -624,25 +624,33 @@ export class AirSupportController {
     engine.airSupportMissions ||= [];
     const flyby = this.spawnStrategicBomberFlyby(launch, targetX, targetZ, cfg.flightSec);
 
-    // 3x3 grid with jitter across the ~5x5 cell carpet zone, released from the bomber
-    for (let gy = -1; gy <= 1; gy++) {
-      for (let gx = -1; gx <= 1; gx++) {
-        const mx = targetX + gx * (half * 0.68) + (Math.random() - 0.5) * TILE_SIZE * 0.65;
-        const mz = targetZ + gy * (half * 0.68) + (Math.random() - 0.5) * TILE_SIZE * 0.65;
-        const { releaseX, releaseZ, releaseDelay } = this.computeBomberRelease(flyby, mx, mz);
-        engine.airSupportMissions.push({
-          kind: 'AIR_MINE',
-          startX: releaseX,
-          startY: flyby.altitude - 0.5,
-          startZ: releaseZ,
-          targetX: mx,
-          targetZ: mz,
-          delay: releaseDelay,
-          timer: cfg.flightSec,
-          maxTimer: cfg.flightSec,
-          mesh: null,
-        });
-      }
+    // Center mine + hex ring across the 8x8 cell zone so mines stay outside chain-detonation range
+    const count = Math.max(1, cfg.mineCount || 7);
+    const ringCount = count - 1;
+    const ringRadius = half * 0.78;
+    const baseAngle = Math.random() * Math.PI * 2;
+    const offsets = [{ dx: (Math.random() - 0.5) * 0.7, dz: (Math.random() - 0.5) * 0.7 }];
+    for (let i = 0; i < ringCount; i++) {
+      const ang = baseAngle + (i / ringCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.2;
+      const r = ringRadius + (Math.random() - 0.5) * 0.7;
+      offsets.push({ dx: Math.cos(ang) * r, dz: Math.sin(ang) * r });
+    }
+    for (const { dx, dz } of offsets) {
+      const mx = targetX + dx;
+      const mz = targetZ + dz;
+      const { releaseX, releaseZ, releaseDelay } = this.computeBomberRelease(flyby, mx, mz);
+      engine.airSupportMissions.push({
+        kind: 'AIR_MINE',
+        startX: releaseX,
+        startY: flyby.altitude - 0.5,
+        startZ: releaseZ,
+        targetX: mx,
+        targetZ: mz,
+        delay: releaseDelay,
+        timer: cfg.flightSec,
+        maxTimer: cfg.flightSec,
+        mesh: null,
+      });
     }
     engine.setStatusBanner(t('AIR MINES DEPLOYED — CARPET MINEFIELD INBOUND'), 2.8);
   }

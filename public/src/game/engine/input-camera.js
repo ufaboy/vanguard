@@ -524,7 +524,7 @@ export class InputCameraController {
         0,
         1
       );
-      azimuth = vc.startAzimuth + progress * Math.PI * 2;
+      azimuth = vc.startAzimuth + progress * VICTORY_CINEMATICS.ORBIT_ANGLE_RAD;
     }
 
     const offsetX = Math.sin(azimuth) * horizontalDist;
