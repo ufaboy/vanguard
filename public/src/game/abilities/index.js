@@ -27,7 +27,7 @@ import { engineerSupport } from './engineer-support.js';
 import { flameStream } from './flame-stream.js';
 import { contactWarhead } from './contact-warhead.js';
 
-export const ABILITIES = Object.freeze({
+const ABILITIES = Object.freeze({
   [mineLayer.id]: mineLayer,
   [engineerSupport.id]: engineerSupport,
   [flameStream.id]: flameStream,
