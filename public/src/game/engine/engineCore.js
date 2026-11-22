@@ -351,7 +351,6 @@ export class TankGameEngine {
     if (!options.deferInitialLoad) {
       this.loadSector(0, false);
     } else {
-      this.sectorIndex = 0;
       this.sector = SECTORS[0];
     }
 

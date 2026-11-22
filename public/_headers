@@ -21,8 +21,8 @@
   Cache-Control: no-cache
 
 /maps/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=7200
 
 /models/*
-  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+  Cache-Control: public, max-age=7200
 

@@ -21,12 +21,6 @@ export function markMaterialOwned(material) {
   return material;
 }
 
-/** Marks a single texture as owned so disposeOwned releases it along with its material. */
-export function markTextureOwned(texture) {
-  if (texture) texture.userData.owned = true;
-  return texture;
-}
-
 /** Disposes every owned geometry, material, and owned material texture in `root`'s subtree. */
 export function disposeOwned(root) {
   root.traverse((node) => {
