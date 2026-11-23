@@ -389,6 +389,10 @@ class MapEditorApp {
   }
 
   _startMoveAt(cell) {
+    if (this.brushSize > 1) {
+      this._startRegionMoveAt(cell);
+      return;
+    }
     const { row, col } = cell;
 
     // 1. Landmark (anchor cell)
@@ -451,6 +455,108 @@ class MapEditorApp {
     this._toast('Nothing to move on this cell');
   }
 
+  _startRegionMoveAt(cell) {
+    const size = this.state.size;
+    const r0 = cell.row;
+    const c0 = cell.col;
+    const r1 = Math.min(size - 1, r0 + this.brushSize - 1);
+    const c1 = Math.min(size - 1, c0 + this.brushSize - 1);
+    const inBox = (r, c) => r >= r0 && r <= r1 && c >= c0 && c <= c1;
+
+    const landmarks = this.state.landmarks3d
+      .filter((l) => inBox(l.row, l.col))
+      .map((item) => ({ item, originRow: item.row, originCol: item.col }));
+    const decorations = (this.state.decoration?.landmarks || [])
+      .filter((d) => inBox(d.row, d.col))
+      .map((item) => ({ item, originRow: item.row, originCol: item.col }));
+    const powerups = this.state.powerups
+      .filter((p) => inBox(p.row, p.col))
+      .map((item) => ({ item, originRow: item.row, originCol: item.col }));
+    const playerSpawn = inBox(this.state.playerSpawnCell.row, this.state.playerSpawnCell.col)
+      ? { originRow: this.state.playerSpawnCell.row, originCol: this.state.playerSpawnCell.col }
+      : null;
+    const baseCell =
+      inBox(this.state.baseCell.row, this.state.baseCell.col) ||
+      inBox(this.state.baseCell.row, this.state.baseCell.col + 1)
+        ? { originRow: this.state.baseCell.row, originCol: this.state.baseCell.col }
+        : null;
+
+    const objects = [];
+    const surfaces = [];
+    for (let r = r0; r <= r1; r++) {
+      for (let c = c0; c <= c1; c++) {
+        const obj = this.state.objectGrid[r][c];
+        if (obj !== null) objects.push({ row: r, col: c, value: obj });
+        const surf = this.state.surfaceGrid[r][c];
+        if (surf !== TileType.EMPTY) surfaces.push({ row: r, col: c, value: surf });
+      }
+    }
+
+    const total =
+      landmarks.length +
+      decorations.length +
+      powerups.length +
+      (playerSpawn ? 1 : 0) +
+      (baseCell ? 1 : 0) +
+      objects.length +
+      surfaces.length;
+    if (total === 0) {
+      this._toast('Nothing to move in brush area');
+      return;
+    }
+
+    this.moveDrag = {
+      kind: 'region',
+      fromRow: r0,
+      fromCol: c0,
+      landmarks,
+      decorations,
+      powerups,
+      playerSpawn,
+      baseCell,
+      objects,
+      surfaces,
+      snapshot: this._snapshot(),
+    };
+    this._toast(`Moving ${total} element(s) (${this.brushSize}×${this.brushSize})`);
+  }
+
+  _applyRegionOffsets(drag, dRow, dCol) {
+    const size = this.state.size;
+    const clamp = (v, max) => Math.max(0, Math.min(max, v));
+    for (const entry of drag.landmarks) {
+      entry.item.row = clamp(entry.originRow + dRow, size - 1);
+      entry.item.col = clamp(entry.originCol + dCol, size - 1);
+    }
+    if (drag.landmarks.length) this.viewport.rebuildLandmarks();
+
+    for (const entry of drag.decorations) {
+      entry.item.row = clamp(entry.originRow + dRow, size - 1);
+      entry.item.col = clamp(entry.originCol + dCol, size - 1);
+    }
+    if (drag.decorations.length) this.viewport.rebuildDecorations();
+
+    for (const entry of drag.powerups) {
+      entry.item.row = clamp(entry.originRow + dRow, size - 1);
+      entry.item.col = clamp(entry.originCol + dCol, size - 1);
+    }
+    if (drag.playerSpawn) {
+      this.state.playerSpawnCell = {
+        row: clamp(drag.playerSpawn.originRow + dRow, size - 1),
+        col: clamp(drag.playerSpawn.originCol + dCol, size - 1),
+      };
+    }
+    if (drag.baseCell) {
+      this.state.baseCell = {
+        row: clamp(drag.baseCell.originRow + dRow, size - 1),
+        col: clamp(drag.baseCell.originCol + dCol, size - 2),
+      };
+    }
+    if (drag.powerups.length || drag.playerSpawn || drag.baseCell) {
+      this.viewport.rebuildMarkers();
+    }
+  }
+
   _onPointerDownCell(cell) {
     if (this.activeTool === 'eyedropper') {
       this._pickFromCell(cell);
@@ -497,6 +603,8 @@ class MapEditorApp {
       } else if (this.moveDrag.kind === 'baseCell') {
         this.state.baseCell = { row: cell.row, col: Math.min(cell.col, this.state.size - 2) };
         this.viewport.rebuildMarkers();
+      } else if (this.moveDrag.kind === 'region') {
+        this._applyRegionOffsets(this.moveDrag, cell.row - this.moveDrag.fromRow, cell.col - this.moveDrag.fromCol);
       }
       return;
     }
@@ -513,6 +621,55 @@ class MapEditorApp {
     if (this.activeTool === 'move' && this.moveDrag) {
       const drag = this.moveDrag;
       this.moveDrag = null;
+      if (drag.kind === 'region') {
+        const dRow = cell ? cell.row - drag.fromRow : 0;
+        const dCol = cell ? cell.col - drag.fromCol : 0;
+        if (!cell || (dRow === 0 && dCol === 0)) {
+          this._applyRegionOffsets(drag, 0, 0);
+          return;
+        }
+        const size = this.state.size;
+        this._applyRegionOffsets(drag, dRow, dCol);
+
+        for (const o of drag.objects) {
+          this.state.objectGrid[o.row][o.col] = null;
+          this.viewport.updateCell(o.row, o.col);
+        }
+        for (const o of drag.objects) {
+          const nr = o.row + dRow;
+          const nc = o.col + dCol;
+          if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+            this.state.objectGrid[nr][nc] = o.value;
+            this.viewport.updateCell(nr, nc);
+          }
+        }
+
+        for (const s of drag.surfaces) {
+          this.state.surfaceGrid[s.row][s.col] = TileType.EMPTY;
+          this.viewport.updateCell(s.row, s.col);
+        }
+        for (const s of drag.surfaces) {
+          const nr = s.row + dRow;
+          const nc = s.col + dCol;
+          if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+            this.state.surfaceGrid[nr][nc] = s.value;
+            this.viewport.updateCell(nr, nc);
+          }
+        }
+
+        if (
+          drag.landmarks.length ||
+          drag.decorations.length ||
+          drag.powerups.length ||
+          drag.playerSpawn ||
+          drag.baseCell
+        ) {
+          this._syncLists();
+        }
+        this._commitSnapshot(drag.snapshot);
+        this._toast(`Moved region by (${dRow >= 0 ? '+' : ''}${dRow}, ${dCol >= 0 ? '+' : ''}${dCol})`);
+        return;
+      }
       if (!cell || (cell.row === drag.fromRow && cell.col === drag.fromCol)) {
         return;
       }
