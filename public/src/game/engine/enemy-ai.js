@@ -989,22 +989,6 @@ export class EnemyAiController {
         e.rig.radarDish.rotation.y = elapsed * 3.5;
       }
 
-      if (e.scripted) {
-        const distToPlayer = Math.hypot(engine.playerX - e.x, engine.playerZ - e.z);
-        this.syncEnemyVisibility(e, dt, distToPlayer);
-        const enemyHoverY = e.stats.canHover
-          ? 0.05 + Math.sin(elapsed * 4.0 + e.id) * 0.012
-          : 0;
-        e.rig.root.position.set(e.x, enemyHoverY, e.z);
-        e.rig.hull.rotation.y = e.hullAngle;
-        engine.driveGear?.(e.rig, e, e.x, e.z, e.hullAngle);
-        engine.syncEnemyTurretVisuals?.(e, dt);
-        if (e.rig.hpBarFill) {
-          e.rig.hpBarFill.scale.x = Math.max(0.01, e.hp / e.maxHp);
-        }
-        continue;
-      }
-
       const toPlayerX = engine.playerX - e.x;
       const toPlayerZ = engine.playerZ - e.z;
       const distToPlayer = Math.hypot(toPlayerX, toPlayerZ);
