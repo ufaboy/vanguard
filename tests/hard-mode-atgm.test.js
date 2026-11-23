@@ -223,3 +223,61 @@ test('Lost-lock diving ATGM damages HOUSE_1 on direct collision and triggers exp
   assert.equal(explosionCalls[0].damage, MISSILE.DAMAGE);
   assert.equal(engine2.projectiles.length, 0);
 });
+
+test('Hard Mode ATGM can target Enemy HQ after all enemies are destroyed when LOS is clear', () => {
+  const half = (GRID_SIZE * TILE_SIZE) / 2;
+  const gridToWorld = (row, col) => ({
+    x: -half + col * TILE_SIZE + TILE_SIZE / 2,
+    z: -half + row * TILE_SIZE + TILE_SIZE / 2,
+  });
+  const grid = Array.from({ length: GRID_SIZE }, (_, row) =>
+    Array.from({ length: GRID_SIZE }, (_, col) => ({ row, col, type: TileType.EMPTY, hp: 0 })),
+  );
+  // Two-cell Enemy HQ at row 0, cols 19 and 20
+  grid[0][19] = { row: 0, col: 19, type: TileType.ENEMY_BASE, hp: 20 };
+  grid[0][20] = { row: 0, col: 20, type: TileType.ENEMY_BASE, hp: 20 };
+
+  const engine = {
+    grid,
+    enemyBaseAlive: true,
+    isSegmentInSmoke: () => false,
+    gridToWorld,
+    enemyBaseCell: () => ({ row: 0, col: 19 }),
+  };
+  const ai = new EnemyAiController(engine);
+  engine.enemyAi = ai;
+  const enemyBaseCenter = ai.getEnemyBaseCenter();
+
+  // Player is several cells away on the right side (ray to col 19 passes through col 20)
+  const playerPos = gridToWorld(8, 25);
+  const clearRes = selectInitialAtgmTarget({
+    hardMode: true,
+    playerX: playerPos.x,
+    playerZ: playerPos.z,
+    enemies: [],
+    enemyBaseAlive: true,
+    enemyBaseCenter,
+    hasLineOfSight: (x0, z0) => ai.hasEnemyBaseLineOfSight(x0, z0),
+    isBaseRevealed: () => false,
+  });
+  assert.equal(clearRes.allowed, true);
+  assert.equal(clearRes.targetBase, true);
+
+  // Place concrete wall blocking direct LOS to both HQ cells
+  for (let c = 18; c <= 22; c++) {
+    grid[2][c] = { row: 2, col: c, type: TileType.CONCRETE, hp: 16 };
+  }
+  const blockedPos = gridToWorld(8, 20);
+  const blockedRes = selectInitialAtgmTarget({
+    hardMode: true,
+    playerX: blockedPos.x,
+    playerZ: blockedPos.z,
+    enemies: [],
+    enemyBaseAlive: true,
+    enemyBaseCenter,
+    hasLineOfSight: (x0, z0) => ai.hasEnemyBaseLineOfSight(x0, z0),
+    isBaseRevealed: () => false,
+  });
+  assert.equal(blockedRes.allowed, false);
+  assert.equal(blockedRes.reason, 'NO_VISIBLE_TARGET');
+});
