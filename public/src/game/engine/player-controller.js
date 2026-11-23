@@ -398,9 +398,13 @@ export class PlayerController {
       enemies: engine.enemies,
       enemyBaseAlive: engine.enemyBaseAlive,
       enemyBaseCenter: engine.getEnemyBaseCenter?.() || null,
-      hasLineOfSight: (x0, z0, x1, z1) => engine.hasLineOfSight?.(x0, z0, x1, z1) ?? true,
+      hasLineOfSight: (x0, z0, x1, z1) =>
+        engine.enemyAi?.hasEnemyBaseLineOfSight?.(x0, z0) ??
+        engine.hasLineOfSight?.(x0, z0, x1, z1) ??
+        true,
       isEnemyVisible: (e) => engine.isEnemyVisibleToPlayer?.(e) ?? true,
-      isBaseRevealed: (x, z) => engine.isPointRevealedByPlayerBase?.(x, z) ?? false,
+      isBaseRevealed: (x, z) =>
+        Boolean(engine.isPointRevealedByPlayerBase?.(x, z) || engine.isPointRevealedByReconDrone?.(x, z)),
     });
     if (!initialSelection.allowed) {
       engine.setStatusBanner(t('NO VISIBLE TARGET FOR ATGM'), 2.0);

@@ -67,7 +67,7 @@ export class EnemyAiController {
     return true;
   }
 
-  hasLineOfSight(x0, z0, x1, z1) {
+  hasLineOfSight(x0, z0, x1, z1, ignoreTileType = null) {
     const engine = this.engine;
     const dx = x1 - x0;
     const dz = z1 - z0;
@@ -77,6 +77,8 @@ export class EnemyAiController {
     if (engine.isSegmentInSmoke(x0, z0, x1, z1)) return false;
 
     const half = (GRID_SIZE * TILE_SIZE) / 2;
+    const targetCol = Math.floor((x1 + half) / TILE_SIZE);
+    const targetRow = Math.floor((z1 + half) / TILE_SIZE);
     const steps = Math.max(2, Math.ceil(dist / (TILE_SIZE * 0.45)));
     for (let s = 1; s < steps; s++) {
       const t = s / steps;
@@ -84,12 +86,43 @@ export class EnemyAiController {
       const sz = z0 + dz * t;
       const col = Math.floor((sx + half) / TILE_SIZE);
       const row = Math.floor((sz + half) / TILE_SIZE);
+      if (row === targetRow && col === targetCol) continue;
       const cell = engine.grid[row]?.[col];
-      if (cell && doesTileBlockLineOfSight(cell.type)) {
+      if (cell && cell.type !== ignoreTileType && doesTileBlockLineOfSight(cell.type)) {
         return false;
       }
     }
     return true;
+  }
+
+  /**
+   * True when the player at (x0, z0) has unobstructed LOS to (or drone recon over)
+   * at least one living Enemy HQ cell, ignoring Enemy HQ cells themselves.
+   */
+  hasEnemyBaseLineOfSight(x0, z0) {
+    const engine = this.engine;
+    if (!engine.enemyBaseAlive) return false;
+    let foundCell = false;
+    if (engine.grid && engine.grid.length > 0) {
+      for (let r = 0; r < engine.grid.length; r++) {
+        const rowCells = engine.grid[r];
+        if (!rowCells) continue;
+        for (let c = 0; c < rowCells.length; c++) {
+          const cell = rowCells[c];
+          if (cell?.type === TileType.ENEMY_BASE && cell.hp > 0) {
+            foundCell = true;
+            const pos = engine.gridToWorld(r, c);
+            if (engine.isPointRevealedByReconDrone?.(pos.x, pos.z)) return true;
+            if (this.hasLineOfSight(x0, z0, pos.x, pos.z, TileType.ENEMY_BASE)) return true;
+          }
+        }
+      }
+    }
+    if (foundCell) return false;
+    const center = this.getEnemyBaseCenter();
+    if (!center) return false;
+    if (engine.isPointRevealedByReconDrone?.(center.x, center.z)) return true;
+    return this.hasLineOfSight(x0, z0, center.x, center.z, TileType.ENEMY_BASE);
   }
 
   isPointRevealedByPlayerBase(x, z) {
