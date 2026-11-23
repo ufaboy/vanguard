@@ -43,6 +43,7 @@ async function initShowcase() {
     },
   };
 
+  let engine = null;
   let director = null;
   let pregenerated = null;
   try {
@@ -53,6 +54,8 @@ async function initShowcase() {
 
   const renderHud = (snapshot, syncedUpgrades) => {
     state.hud = snapshot;
+    state.cameraPreset = engine?.cameraPreset || state.cameraPreset;
+    state.missileFpvEnabled = Boolean(engine?.missileFpvEnabled);
     if (syncedUpgrades) state.upgrades = syncedUpgrades;
 
     for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'modifiers-strip', 'sensor-minimap', 'bottom-hud']) {
@@ -76,7 +79,7 @@ async function initShowcase() {
     });
   };
 
-  const engine = new TankGameEngine(mountEl, renderHud, {
+  engine = new TankGameEngine(mountEl, renderHud, {
     quality: 'high',
     fpsCap: 60,
     pregeneratedTextures: pregenerated,
@@ -85,12 +88,34 @@ async function initShowcase() {
       director?.step(dt);
     },
   });
+  engine.setHardMode(false);
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'KeyC') {
+      const order = ['ISOMETRIC', 'TACTICAL', 'CLOSE'];
+      const next = order[(order.indexOf(engine.cameraPreset) + 1) % order.length];
+      engine.setCameraPreset(next);
+      state.cameraPreset = next;
+      engine.emitHudUpdate?.();
+    } else if (e.code === 'KeyV') {
+      const next = !engine.missileFpvEnabled;
+      engine.setMissileFpvEnabled(next);
+      state.missileFpvEnabled = next;
+      engine.emitHudUpdate?.();
+    }
+  });
 
   await engine.waitForSectorModels(showcaseSectorIndex);
   engine.airSupportController?.preloadGlbModels?.();
   engine.reconDroneController?.preloadGlbModel?.();
 
+  const params = new URLSearchParams(window.location.search);
+  const sceneParam = Number.parseInt(params.get('scene') || '', 10);
+  const hasSceneParam = Number.isInteger(sceneParam) && sceneParam >= 1;
+
   director = new ShowcaseDirector(engine, showcaseSectorIndex, {
+    initialScene: hasSceneParam ? sceneParam - 1 : 0,
+    lockScene: hasSceneParam && params.get('lock') === '1',
     onFade: (opacity) => {
       if (fadeEl) fadeEl.style.opacity = String(opacity);
     },

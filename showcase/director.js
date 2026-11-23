@@ -1,35 +1,36 @@
-import * as THREE from 'three';
-import { normalizeAngleSigned, stepAngleTowards } from '../public/src/sim/ai.js';
+import { stepAngleTowards } from '../public/src/sim/ai.js';
 import { TILE_SIZE } from '../public/src/game/levels.js';
 import { EnemyClass, GameStatus } from '../public/src/game/types.js';
 
 /**
- * Deterministic highlight director for the promo showcase reel.
- * Runs 6 choreographed tactical scenes on a continuous loop:
- * 1. Forest Ambush (Stealth + Flank Strike)
- * 2. Urban Corner-Peek & Brick Destruction
- * 3. River/Ford Crossing + Flamethrower & Howitzer
- * 4. ATGM + Missile FPV Strike
- * 5. Recon Drone + Air Strike
- * 6. BOSS_MAMMOTH Climax Duel
+ * Interactive highlight director for the promo showcase reel on Prague: Charles Bridge.
+ * - The player controls VANGUARD directly (WASD, mouse aim/fire, Space/Right-Click ATGM, 1..5 abilities, C/V camera & FPV).
+ * - Enemy formations follow scripted routes and return fire when they have line-of-sight.
+ * - Transitions to the next highlight 3.0 seconds after the last enemy tank in the scene is destroyed.
  */
 export class ShowcaseDirector {
-  constructor(engine, sectorIndex, { onFade } = {}) {
+  constructor(engine, sectorIndex, { onFade, initialScene = 0, lockScene = false } = {}) {
     this.engine = engine;
     this.sectorIndex = sectorIndex;
     this.onFade = onFade || (() => {});
-    this.sceneIndex = 0;
+    this.sceneIndex = Math.max(0, initialScene);
+    this.lockScene = lockScene;
     this.sceneElapsed = 0;
+    this.clearTimer = 0;
+    this.clearDelaySec = 3.0;
     this.fadeState = 'idle'; // 'idle' | 'fading_out' | 'fading_in'
     this.fadeTimer = 0;
     this.fadeDuration = 0.35;
     this.eventsFired = new Set();
     this.actors = {};
     this.scenes = this.buildScenes();
+    if (this.sceneIndex >= this.scenes.length) {
+      this.sceneIndex = 0;
+    }
   }
 
   start() {
-    this.loadScene(0);
+    this.loadScene(this.sceneIndex);
     this.fadeState = 'fading_in';
     this.fadeTimer = this.fadeDuration;
     this.onFade(1);
@@ -45,13 +46,16 @@ export class ShowcaseDirector {
     return this.engine.gridToWorld(row, col);
   }
 
-  configureLoadout({ cannon, chassis, frame, engine: eng, armor, aps = 0, missiles = 0, reconDrone = false }) {
+  configureLoadout({ cannon, chassis, frame, engine: eng, armor, aps = 0, missiles = 0, reconDrone = false, missileFpv = false }) {
     const { engine } = this;
+    engine.setHardMode(false);
+    engine.setMissileFpvEnabled(Boolean(missileFpv));
     engine.missileAmmo = missiles;
-    engine.apsAmmo = aps;
+    engine.apsAmmo = [0, 0, 0, 0];
+    if (aps > 0) engine.addApsRounds(aps);
     engine.reconDroneOwned = reconDrone;
     engine.reconDroneCooldown = 0;
-    engine.playerCannonAmmo = engine.getPlayerMaxCannonAmmo?.() ?? 20;
+    engine.cannonAmmo = engine.getPlayerMaxCannonAmmo?.() ?? 36;
     engine.credits = 9999;
     engine.applyUpgrades({ cannon, chassis, frame, engine: eng, armor });
     engine.recomputePlayerStats(false);
@@ -67,10 +71,12 @@ export class ShowcaseDirector {
     engine.playerZ = pos.z;
     engine.playerVx = 0;
     engine.playerVz = 0;
+    engine.touchMoveX = 0;
+    engine.touchMoveY = 0;
     engine.playerHullAngle = hullAngle;
     engine.playerTurretAngle = turretAngle;
     engine.camCurrentLook.set(pos.x, 0, pos.z);
-    engine.aimWorld.set(pos.x + Math.sin(turretAngle) * 10, 0, pos.z + Math.cos(turretAngle) * 10);
+    engine.aimWorld.set(pos.x + Math.sin(turretAngle) * 12, 0, pos.z + Math.cos(turretAngle) * 12);
     if (engine.playerRig) {
       engine.playerRig.root.position.set(pos.x, 0, pos.z);
       engine.playerRig.hull.rotation.y = hullAngle;
@@ -78,12 +84,15 @@ export class ShowcaseDirector {
     }
   }
 
-  spawnActor(key, enemyClass, row, col, { hullAngle = 0, turretAngle = hullAngle, hp = null, isBoss = false } = {}) {
+  spawnActor(key, enemyClass, row, col, { hullAngle = 0, turretAngle = hullAngle, hp = null, isBoss = false, fireDelay = 1.0, worldSpeed = null } = {}) {
     const { engine } = this;
     const pos = this.cellToWorld(row, col);
     const enemy = engine.createEnemyAt(enemyClass, pos.x, pos.z, isBoss);
     if (!enemy) return null;
     enemy.scripted = true;
+    enemy.scriptedFireTimer = fireDelay;
+    enemy.scriptedRouteIdx = 0;
+    enemy.scriptedWorldSpeed = worldSpeed;
     enemy.hullAngle = hullAngle;
     enemy.turretAngle = turretAngle;
     if (hp !== null) {
@@ -106,48 +115,45 @@ export class ShowcaseDirector {
     const dist = Math.hypot(dx, dz);
     if (dist < 0.25) return true;
     const desiredHull = Math.atan2(dx, dz);
-    actor.hullAngle = stepAngleTowards(actor.hullAngle, desiredHull, 3.6 * dt);
-    const moveSpeed = (actor.stats?.moveSpeed ?? 2.2) * TILE_SIZE * speedScale;
+    actor.hullAngle = stepAngleTowards(actor.hullAngle, desiredHull, 4.0 * dt);
+    const moveSpeed = actor.scriptedWorldSpeed ?? ((actor.stats?.moveSpeed ?? 2.2) * TILE_SIZE * speedScale);
     const step = Math.min(dist, moveSpeed * dt);
     actor.x += (dx / dist) * step;
     actor.z += (dz / dist) * step;
     return false;
   }
 
-  aimActorAt(actor, tx, tz, dt, turnRate = 4.2) {
-    if (!actor || actor.hp <= 0 || actor._removed) return;
-    const desired = Math.atan2(tx - actor.x, tz - actor.z);
-    actor.turretAngle = stepAngleTowards(actor.turretAngle, desired, turnRate * dt);
-  }
-
-  fireActorAt(actor, tx, tz) {
-    if (!actor || actor.hp <= 0 || actor._removed) return;
-    actor.turretAngle = Math.atan2(tx - actor.x, tz - actor.z);
-    actor.fireCooldown = 0;
-    this.engine.enemyCombat.fireEnemyWeapon(actor, { homing: false });
-  }
-
-  drivePlayer({ keys = {}, aimX, aimZ, fire = false } = {}, dt) {
-    const { engine } = this;
-    engine.keys = keys;
-    if (Number.isFinite(aimX) && Number.isFinite(aimZ)) {
-      const alpha = 1 - Math.exp(-8 * dt);
-      engine.aimWorld.x = THREE.MathUtils.lerp(engine.aimWorld.x, aimX, alpha);
-      engine.aimWorld.z = THREE.MathUtils.lerp(engine.aimWorld.z, aimZ, alpha);
+  followActorRoute(actor, waypoints, dt, speedScale = 1.0) {
+    if (!actor || actor.hp <= 0 || actor._removed || !waypoints?.length) return false;
+    const idx = Math.min(actor.scriptedRouteIdx || 0, waypoints.length - 1);
+    const [r, c] = waypoints[idx];
+    const reached = this.steerActor(actor, r, c, dt, speedScale);
+    if (reached && idx < waypoints.length - 1) {
+      actor.scriptedRouteIdx = idx + 1;
     }
-    engine.isMouseDown = Boolean(fire);
+    return reached && idx === waypoints.length - 1;
   }
 
-  lerpCamera({ azimuth, frustumSize }, dt, speed = 2.2) {
+  aimAndAutoFireActor(actor, intervalSec, dt, { homing = false, spread = 0.5 } = {}) {
+    if (!actor || actor.hp <= 0 || actor._removed) return;
     const { engine } = this;
-    const alpha = 1 - Math.exp(-speed * dt);
-    if (Number.isFinite(azimuth)) {
-      const diff = normalizeAngleSigned(azimuth - engine.cameraAzimuth);
-      engine.cameraAzimuth += diff * alpha;
-    }
-    if (Number.isFinite(frustumSize) && Math.abs(engine.frustumSize - frustumSize) > 0.01) {
-      engine.frustumSize = THREE.MathUtils.lerp(engine.frustumSize, frustumSize, alpha);
-      engine.updateCameraProjection?.();
+    const canSeePlayer =
+      !engine.inSmoke &&
+      (!engine.inForest || Math.hypot(engine.playerX - actor.x, engine.playerZ - actor.z) <= 8.5) &&
+      engine.hasLineOfSight(actor.x, actor.z, engine.playerX, engine.playerZ);
+
+    const desired = canSeePlayer
+      ? Math.atan2(engine.playerX - actor.x, engine.playerZ - actor.z)
+      : actor.hullAngle;
+    actor.turretAngle = stepAngleTowards(actor.turretAngle, desired, 3.6 * dt);
+    actor.scriptedFireTimer = (actor.scriptedFireTimer ?? intervalSec) - dt;
+    if (actor.scriptedFireTimer <= 0) {
+      actor.scriptedFireTimer = intervalSec;
+      if (!canSeePlayer) return;
+      const offsetAngle = (Math.random() - 0.5) * spread * 0.2;
+      actor.turretAngle = desired + offsetAngle;
+      actor.fireCooldown = 0;
+      engine.enemyCombat.fireEnemyWeapon(actor, { homing });
     }
   }
 
@@ -155,12 +161,15 @@ export class ShowcaseDirector {
     const { engine } = this;
     this.sceneIndex = index % this.scenes.length;
     this.sceneElapsed = 0;
+    this.clearTimer = 0;
     this.eventsFired.clear();
     this.actors = {};
 
     engine.keys = {};
+    engine.touchMoveX = 0;
+    engine.touchMoveY = 0;
     engine.isMouseDown = false;
-    engine.setMissileFpvEnabled(false);
+    engine.setHardMode(false);
     engine.loadSector(this.sectorIndex, true);
     engine.status = GameStatus.PLAYING;
     engine.bossActive = false;
@@ -174,8 +183,14 @@ export class ShowcaseDirector {
 
   step(dt) {
     const { engine } = this;
-    if (engine.status !== GameStatus.PLAYING) {
+    if (engine.status !== GameStatus.PLAYING && !engine.airSupportTargeting) {
       engine.status = GameStatus.PLAYING;
+    }
+    if (engine.playerHp < engine.playerMaxHp * 0.35) {
+      engine.playerHp = engine.playerMaxHp * 0.35;
+    }
+    if ((engine.cannonAmmo ?? 0) < 10) {
+      engine.cannonAmmo = engine.getPlayerMaxCannonAmmo?.() ?? 36;
     }
 
     if (this.fadeState === 'fading_out') {
@@ -183,7 +198,8 @@ export class ShowcaseDirector {
       const p = Math.min(1, this.fadeTimer / this.fadeDuration);
       this.onFade(p);
       if (p >= 1) {
-        this.loadScene((this.sceneIndex + 1) % this.scenes.length);
+        const nextIdx = this.lockScene ? this.sceneIndex : (this.sceneIndex + 1) % this.scenes.length;
+        this.loadScene(nextIdx);
         this.fadeState = 'fading_in';
         this.fadeTimer = 0;
       }
@@ -203,209 +219,169 @@ export class ShowcaseDirector {
     this.sceneElapsed += dt;
     scene.update(this.sceneElapsed, dt);
 
-    if (this.sceneElapsed >= scene.duration && this.fadeState === 'idle') {
-      engine.keys = {};
-      engine.isMouseDown = false;
-      this.fadeState = 'fading_out';
-      this.fadeTimer = 0;
+    // Transition 3.0 seconds after the last enemy tank in the scene is destroyed
+    const anyAlive = engine.enemies.some((e) => e && e.hp > 0 && !e._removed);
+    if (!anyAlive && this.sceneElapsed > 0.5) {
+      this.clearTimer += dt;
+      if (this.clearTimer >= this.clearDelaySec && this.fadeState === 'idle') {
+        this.fadeState = 'fading_out';
+        this.fadeTimer = 0;
+      }
+    } else {
+      this.clearTimer = 0;
     }
   }
 
   buildScenes() {
     const { engine } = this;
 
-    // 1. Forest Ambush (Stealth + Flank Strike)
+    // 1. Forest Ambush — 4-tank convoy marching in single file along the Petrin forest edge
     const forestAmbush = {
-      duration: 10.5,
       setup: () => {
-        this.configureLoadout({ cannon: 2, chassis: 2, frame: 2, engine: 2, armor: 2 });
-        this.placePlayer(30, 8, 0.25, 0.4);
+        this.configureLoadout({ cannon: 3, chassis: 3, frame: 3, engine: 3, armor: 3, missiles: 4 });
+        // Player starts concealed inside the roadside forest at (row 7, col 9) facing north toward the convoy road
+        this.placePlayer(7, 9, Math.PI, Math.PI);
+        engine.cameraAzimuth = Math.PI * 0.25;
+        engine.frustumSize = 25;
+        engine.updateCameraProjection?.();
+
+        // 4-tank single-file convoy marching west along row 6 (right alongside the forest at row 7..8, cols 4..10)
+        // Uniform convoy speed (2.7 world units/sec) keeps all 4 tanks spaced evenly one behind another
+        const convoySpeed = 2.7;
+        this.spawnActor('c1', EnemyClass.SCOUT, 6, 15, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 0.9 });
+        this.spawnActor('c2', EnemyClass.STANDARD, 6, 18, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 1.1 });
+        this.spawnActor('c3', EnemyClass.SAPPER, 6, 21, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 1.3 });
+        this.spawnActor('c4', EnemyClass.ARMOR, 6, 24, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 1.5 });
+        engine.setStatusBanner('HIGHLIGHT 01 // FOREST CONVOY AMBUSH', 2.6);
+      },
+      update: (_t, dt) => {
+        const { c1, c2, c3, c4 } = this.actors;
+        // Single-file convoy route along the forest edge (row 6, col -> 4), then turning south-east if unstopped
+        this.followActorRoute(c1, [[6, 4], [5, 18]], dt);
+        this.followActorRoute(c2, [[6, 6], [5, 20]], dt);
+        this.followActorRoute(c3, [[6, 8], [5, 22]], dt);
+        this.followActorRoute(c4, [[6, 10], [5, 24]], dt);
+
+        this.aimAndAutoFireActor(c1, 1.5, dt);
+        this.aimAndAutoFireActor(c2, 1.6, dt);
+        this.aimAndAutoFireActor(c3, 1.8, dt);
+        this.aimAndAutoFireActor(c4, 1.9, dt);
+      },
+    };
+
+    // 2. Urban Corner-Peek & Bridge Barricade Breach
+    const urbanCorner = {
+      setup: () => {
+        this.configureLoadout({ cannon: 4, chassis: 3, frame: 3, engine: 4, armor: 3, aps: 6, missiles: 3 });
+        this.placePlayer(16, 21, Math.PI, Math.PI);
+        engine.cameraAzimuth = Math.PI * 0.25;
+        engine.frustumSize = 25;
+        engine.updateCameraProjection?.();
+        this.spawnActor('std', EnemyClass.STANDARD, 13, 22, { hullAngle: 0, fireDelay: 0.8 });
+        this.spawnActor('sapper', EnemyClass.SAPPER, 12, 24, { hullAngle: -Math.PI / 2, fireDelay: 1.0 });
+        this.spawnActor('armor', EnemyClass.ARMOR, 13, 25, { hullAngle: -Math.PI / 2, fireDelay: 1.2 });
+        this.spawnActor('striker', EnemyClass.STRIKER, 12, 27, { hullAngle: -Math.PI / 2, fireDelay: 1.4 });
+        engine.setStatusBanner('HIGHLIGHT 02 // CORNER PEEK & BREACH', 2.6);
+      },
+      update: (_t, dt) => {
+        const { std, sapper, armor, striker } = this.actors;
+        this.followActorRoute(armor, [[13, 23]], dt, 0.55);
+        this.followActorRoute(striker, [[12, 24]], dt, 0.6);
+
+        this.aimAndAutoFireActor(std, 1.5, dt);
+        this.aimAndAutoFireActor(sapper, 1.6, dt);
+        this.aimAndAutoFireActor(armor, 1.7, dt);
+        this.aimAndAutoFireActor(striker, 2.2, dt, { homing: true });
+      },
+    };
+
+    // 3. All-Terrain Vltava River Assault
+    const riverCrossing = {
+      setup: () => {
+        this.configureLoadout({ cannon: 4, chassis: 4, frame: 4, engine: 4, armor: 4, missiles: 4 });
+        this.placePlayer(22, 12, Math.PI, Math.PI);
         engine.cameraAzimuth = Math.PI * 0.25;
         engine.frustumSize = 26;
         engine.updateCameraProjection?.();
-        this.spawnActor('scout', EnemyClass.SCOUT, 27, 15, { hullAngle: -Math.PI / 2, hp: 36 });
-        this.spawnActor('std', EnemyClass.STANDARD, 27, 17, { hullAngle: -Math.PI / 2, hp: 48 });
-        engine.setStatusBanner('HIGHLIGHT 01 // FOREST AMBUSH', 2.6);
-      },
-      update: (t, dt) => {
-        const { scout, std } = this.actors;
-        this.steerActor(scout, 27, 8, dt, 0.85);
-        this.steerActor(std, 27, 11, dt, 0.78);
-        this.lerpCamera({ azimuth: 0.92, frustumSize: 22 }, dt, 1.4);
-
-        const target = scout && scout.hp > 0 ? scout : std;
-        const aimPos = target && target.hp > 0 ? { x: target.x, z: target.z } : this.cellToWorld(25, 10);
-
-        if (t < 2.4) {
-          this.drivePlayer({ aimX: aimPos.x, aimZ: aimPos.z, fire: false }, dt);
-        } else if (t < 4.5) {
-          this.drivePlayer({ keys: { KeyW: true }, aimX: aimPos.x, aimZ: aimPos.z, fire: true }, dt);
-        } else {
-          this.drivePlayer({ keys: { KeyW: t < 5.5 }, aimX: aimPos.x, aimZ: aimPos.z, fire: true }, dt);
-        }
-      },
-    };
-
-    // 2. Urban Corner-Peek & Brick Destruction
-    const urbanCorner = {
-      duration: 11.5,
-      setup: () => {
-        this.configureLoadout({ cannon: 3, chassis: 3, frame: 3, engine: 3, armor: 3 });
-        this.placePlayer(23, 18, 0, 0.35);
-        engine.cameraAzimuth = 0.72;
-        engine.frustumSize = 25;
-        engine.updateCameraProjection?.();
-        this.spawnActor('std', EnemyClass.STANDARD, 19, 20, { hullAngle: Math.PI, hp: 46 });
-        this.spawnActor('armor', EnemyClass.ARMOR, 18, 22, { hullAngle: Math.PI, hp: 72 });
-        engine.setStatusBanner('HIGHLIGHT 02 // CORNER PEEK & BREACH', 2.6);
-      },
-      update: (t, dt) => {
-        const { std, armor } = this.actors;
-        if (std && std.hp > 0) this.aimActorAt(std, engine.playerX, engine.playerZ, dt);
-        if (armor && armor.hp > 0) this.aimActorAt(armor, engine.playerX, engine.playerZ, dt);
-
-        this.lerpCamera({ azimuth: 0.98, frustumSize: 23 }, dt, 1.2);
-
-        if (t > 3.6 && t < 3.8) {
-          this.once('armor_shot', () => this.fireActorAt(armor, engine.playerX, engine.playerZ));
-        }
-        if (t > 6.2 && t < 6.4) {
-          this.once('armor_shot2', () => this.fireActorAt(armor, engine.playerX, engine.playerZ));
-        }
-
-        const barrelPos = this.cellToWorld(19, 21);
-        const primary = std && std.hp > 0 ? std : armor;
-        const aimX = t < 2.2 ? barrelPos.x : primary ? primary.x : barrelPos.x;
-        const aimZ = t < 2.2 ? barrelPos.z : primary ? primary.z : barrelPos.z;
-
-        if (t < 1.0) {
-          this.drivePlayer({ aimX, aimZ, fire: false }, dt);
-        } else if (t < 3.2) {
-          // Peek out past concrete corner and blast brick + barrel
-          this.drivePlayer({ keys: { KeyW: true, KeyD: true }, aimX, aimZ, fire: true }, dt);
-        } else if (t < 4.7) {
-          // Pull back into cover as enemy fires
-          this.drivePlayer({ keys: { KeyS: true, KeyA: true }, aimX, aimZ, fire: false }, dt);
-        } else {
-          // Re-peek and finish plaza defenders
-          this.drivePlayer({ keys: { KeyW: t < 6.0, KeyD: t < 5.6 }, aimX, aimZ, fire: true }, dt);
-        }
-      },
-    };
-
-    // 3. River/Ford Crossing (CH4) + Flamethrower & Howitzer
-    const riverCrossing = {
-      duration: 12.5,
-      setup: () => {
-        this.configureLoadout({ cannon: 4, chassis: 4, frame: 4, engine: 4, armor: 4 });
-        this.placePlayer(24, 27, Math.PI / 2, Math.PI / 2);
-        engine.cameraAzimuth = 0.65;
-        engine.frustumSize = 27;
-        engine.updateCameraProjection?.();
-        this.spawnActor('flame', EnemyClass.FLAMETHROWER, 23, 33, { hullAngle: -Math.PI / 2, hp: 52 });
-        this.spawnActor('howie', EnemyClass.HOWITZER, 19, 34, { hullAngle: -Math.PI * 0.75, hp: 50 });
+        this.spawnActor('scout', EnemyClass.SCOUT, 15, 13, { hullAngle: 0, fireDelay: 0.8 });
+        this.spawnActor('flame', EnemyClass.FLAMETHROWER, 13, 13, { hullAngle: 0, fireDelay: 0.9 });
+        this.spawnActor('armor', EnemyClass.ARMOR, 13, 16, { hullAngle: -Math.PI / 2, fireDelay: 1.1 });
+        this.spawnActor('howie', EnemyClass.HOWITZER, 12, 18, { hullAngle: -Math.PI * 0.25, fireDelay: 1.4 });
         engine.setStatusBanner('HIGHLIGHT 03 // ALL-TERRAIN RIVER ASSAULT', 2.6);
       },
       update: (t, dt) => {
-        const { flame, howie } = this.actors;
-        if (flame && flame.hp > 0) {
-          this.steerActor(flame, 24, 32, dt, 0.55);
-          this.aimActorAt(flame, engine.playerX, engine.playerZ, dt);
-        }
-        if (howie && howie.hp > 0) {
-          this.aimActorAt(howie, engine.playerX, engine.playerZ, dt);
-        }
-        if (t > 2.2) {
-          this.once('howie_barrage', () => {
-            if (howie && howie.hp > 0) {
-              const behind = this.cellToWorld(24, 28);
-              engine.enemyCombat.triggerEnemyArtilleryBarrage(howie, behind);
-            }
+        const { scout, flame, armor, howie } = this.actors;
+        this.followActorRoute(flame, [[14, 12]], dt, 0.5);
+        this.followActorRoute(armor, [[13, 14]], dt, 0.55);
+
+        this.aimAndAutoFireActor(scout, 1.5, dt);
+        this.aimAndAutoFireActor(flame, 1.0, dt);
+        this.aimAndAutoFireActor(armor, 1.7, dt);
+
+        if (t > 1.5 && howie && howie.hp > 0) {
+          this.once('howie_barrage_1', () => {
+            engine.enemyCombat.triggerEnemyArtilleryBarrage(howie, this.cellToWorld(18, 12));
           });
         }
-        if (t > 3.2 && t < 3.4) {
-          this.once('flame_burst', () => this.fireActorAt(flame, engine.playerX, engine.playerZ));
+        if (t > 5.5 && howie && howie.hp > 0) {
+          this.once('howie_barrage_2', () => {
+            engine.enemyCombat.triggerEnemyArtilleryBarrage(howie, this.cellToWorld(15, 12));
+          });
         }
-
-        this.lerpCamera({ azimuth: 1.05, frustumSize: 24 }, dt, 1.3);
-        const target = flame && flame.hp > 0 ? flame : howie;
-        const aim = target && target.hp > 0 ? { x: target.x, z: target.z } : this.cellToWorld(21, 34);
-        this.drivePlayer({ keys: { KeyW: t < 7.2 }, aimX: aim.x, aimZ: aim.z, fire: t > 1.4 }, dt);
       },
     };
 
-    // 4. ATGM + Missile FPV Strike
+    // 4. ATGM + Missile FPV (FPV enabled by default — press Space or Right-Click to launch in FPV!)
     const atgmFpv = {
-      duration: 9.5,
       setup: () => {
-        this.configureLoadout({ cannon: 4, chassis: 4, frame: 4, engine: 4, armor: 4, missiles: 4 });
-        this.placePlayer(9, 11, Math.PI / 2, Math.PI / 2);
-        engine.cameraAzimuth = 0.78;
+        this.configureLoadout({ cannon: 5, chassis: 4, frame: 4, engine: 4, armor: 4, missiles: 8, missileFpv: true });
+        this.placePlayer(5, 11, Math.PI / 2, Math.PI / 2);
+        engine.cameraAzimuth = Math.PI * 0.25;
+        engine.frustumSize = 27;
+        engine.updateCameraProjection?.();
+        this.spawnActor('target', EnemyClass.ARMOR, 5, 24, { hullAngle: -Math.PI / 2, fireDelay: 1.0 });
+        this.spawnActor('striker', EnemyClass.STRIKER, 6, 27, { hullAngle: -Math.PI / 2, fireDelay: 1.3 });
+        this.spawnActor('std', EnemyClass.STANDARD, 5, 29, { hullAngle: -Math.PI / 2, fireDelay: 1.5 });
+        engine.setStatusBanner('HIGHLIGHT 04 // ATGM MISSILE FPV [RIGHT CLICK / SPACE]', 3.0);
+      },
+      update: (_t, dt) => {
+        const { target, striker, std } = this.actors;
+        this.followActorRoute(target, [[6, 18]], dt, 0.55);
+        this.followActorRoute(striker, [[6, 21]], dt, 0.55);
+        this.followActorRoute(std, [[5, 23]], dt, 0.6);
+
+        this.aimAndAutoFireActor(target, 1.7, dt);
+        this.aimAndAutoFireActor(striker, 2.2, dt, { homing: true });
+        this.aimAndAutoFireActor(std, 1.6, dt);
+      },
+    };
+
+    // 5. Recon Drone + Air Strike Depot Wipeout (Press 3/R for Recon Drone, 4 for Air Strike!)
+    const reconAirStrike = {
+      setup: () => {
+        this.configureLoadout({ cannon: 5, chassis: 4, frame: 4, engine: 4, armor: 4, missiles: 6, reconDrone: true });
+        this.placePlayer(6, 18, Math.PI * 0.45, Math.PI * 0.45);
+        engine.cameraAzimuth = Math.PI * 0.25;
         engine.frustumSize = 28;
         engine.updateCameraProjection?.();
-        this.spawnActor('target', EnemyClass.ARMOR, 7, 25, { hullAngle: Math.PI, hp: 55 });
-        engine.setStatusBanner('HIGHLIGHT 04 // ATGM MISSILE FPV', 2.4);
+        this.spawnActor('e1', EnemyClass.STANDARD, 8, 28, { hullAngle: Math.PI, fireDelay: 0.9 });
+        this.spawnActor('e2', EnemyClass.SAPPER, 9, 30, { hullAngle: -Math.PI / 2, fireDelay: 1.1 });
+        this.spawnActor('e3', EnemyClass.HOWITZER, 10, 29, { hullAngle: -Math.PI / 2, fireDelay: 1.3 });
+        this.spawnActor('e4', EnemyClass.FLAMETHROWER, 8, 30, { hullAngle: Math.PI, fireDelay: 1.0 });
+        this.spawnActor('e5', EnemyClass.STRIKER, 7, 27, { hullAngle: -Math.PI / 2, fireDelay: 1.2 });
+        engine.setStatusBanner('HIGHLIGHT 05 // RECON DRONE [3] & AIR STRIKE [4]', 3.0);
       },
-      update: (t, dt) => {
-        const { target } = this.actors;
-        if (target && target.hp > 0) {
-          this.steerActor(target, 11, 25, dt, 0.75);
-        }
-        const aim = target && target.hp > 0 ? { x: target.x, z: target.z } : this.cellToWorld(10, 25);
-        this.drivePlayer({ aimX: aim.x, aimZ: aim.z, fire: false }, dt);
-
-        if (t > 1.1) {
-          this.once('launch_fpv_atgm', () => {
-            engine.setMissileFpvEnabled(true);
-            engine.playerController.firePlayerHomingMissile();
-          });
-        }
-        if (t > 6.0) {
-          this.once('exit_fpv', () => engine.setMissileFpvEnabled(false));
-          this.lerpCamera({ azimuth: 0.9, frustumSize: 25 }, dt, 2.0);
-        }
+      update: (_t, dt) => {
+        const { e1, e2, e4, e5 } = this.actors;
+        this.aimAndAutoFireActor(e1, 1.6, dt);
+        this.aimAndAutoFireActor(e2, 1.8, dt);
+        this.aimAndAutoFireActor(e4, 1.1, dt);
+        this.aimAndAutoFireActor(e5, 2.2, dt, { homing: true });
       },
     };
 
-    // 5. Recon Drone + Air Strike
-    const reconAirStrike = {
-      duration: 12.0,
-      setup: () => {
-        this.configureLoadout({ cannon: 4, chassis: 4, frame: 4, engine: 4, armor: 4, reconDrone: true });
-        this.placePlayer(11, 14, Math.PI * 0.35, Math.PI * 0.35);
-        engine.cameraAzimuth = 0.78;
-        engine.frustumSize = 26;
-        engine.updateCameraProjection?.();
-        this.spawnActor('e1', EnemyClass.STANDARD, 6, 23, { hullAngle: Math.PI, hp: 44 });
-        this.spawnActor('e2', EnemyClass.SAPPER, 7, 25, { hullAngle: -Math.PI / 2, hp: 44 });
-        this.spawnActor('e3', EnemyClass.HOWITZER, 6, 26, { hullAngle: Math.PI, hp: 48 });
-        engine.setStatusBanner('HIGHLIGHT 05 // RECON DRONE & AIR STRIKE', 2.8);
-      },
-      update: (t, dt) => {
-        const cluster = this.cellToWorld(6, 24);
-        this.drivePlayer({ aimX: cluster.x, aimZ: cluster.z, fire: false }, dt);
-
-        if (t > 0.9) {
-          this.once('launch_recon', () => {
-            engine.reconDroneController.launch(cluster.x, cluster.z);
-          });
-        }
-        if (t > 3.6) {
-          this.once('call_airstrike', () => {
-            engine.airSupportController.launchAirStrike('STRIKE_BOMBS', cluster.x, cluster.z);
-          });
-        }
-        if (t > 3.4) {
-          this.lerpCamera({ azimuth: 0.85, frustumSize: 34 }, dt, 1.4);
-        } else {
-          this.lerpCamera({ azimuth: 0.78, frustumSize: 26 }, dt, 1.4);
-        }
-      },
-    };
-
-    // 6. BOSS_MAMMOTH Climax Duel (Flagship Tier 5 VANGUARD)
+    // 6. BOSS_MAMMOTH & Escort Climax Duel
     const bossMammoth = {
-      duration: 16.0,
       setup: () => {
         this.configureLoadout({
           cannon: 5,
@@ -413,54 +389,51 @@ export class ShowcaseDirector {
           frame: 5,
           engine: 5,
           armor: 5,
-          aps: 12,
-          missiles: 4,
+          aps: 16,
+          missiles: 8,
           reconDrone: true,
         });
-        this.placePlayer(10, 12, Math.PI / 2, Math.PI / 2);
-        engine.cameraAzimuth = 0.75;
-        engine.frustumSize = 28;
+        this.placePlayer(24, 11, Math.PI / 2, Math.PI / 2);
+        engine.cameraAzimuth = Math.PI * 0.25;
+        engine.frustumSize = 27;
         engine.updateCameraProjection?.();
-        this.spawnActor('boss', EnemyClass.BOSS_MAMMOTH, 8, 24, {
+        this.spawnActor('escort1', EnemyClass.STANDARD, 24, 20, { hullAngle: -Math.PI / 2, fireDelay: 0.8 });
+        this.spawnActor('escort2', EnemyClass.STRIKER, 25, 22, { hullAngle: -Math.PI / 2, fireDelay: 1.0 });
+        this.spawnActor('boss', EnemyClass.BOSS_MAMMOTH, 25, 26, {
           hullAngle: -Math.PI / 2,
-          hp: 210,
+          hp: 180,
           isBoss: true,
+          fireDelay: 1.0,
         });
         engine.setStatusBanner('FINAL HIGHLIGHT // BOSS: MAMMOTH MK-V', 3.0);
       },
       update: (t, dt) => {
-        const { boss } = this.actors;
-        this.lerpCamera({ azimuth: 0.75 + Math.min(0.42, t * 0.03), frustumSize: 26 }, dt, 1.2);
+        const { escort1, escort2, boss } = this.actors;
+        this.followActorRoute(escort1, [[24, 16]], dt, 0.65);
+        this.followActorRoute(escort2, [[25, 18]], dt, 0.6);
+
+        this.aimAndAutoFireActor(escort1, 1.5, dt);
+        this.aimAndAutoFireActor(escort2, 2.0, dt, { homing: true });
 
         if (boss && boss.hp > 0) {
-          this.steerActor(boss, 9, 20, dt, 0.45);
-          this.aimActorAt(boss, engine.playerX, engine.playerZ, dt, 2.8);
+          this.followActorRoute(boss, [[25, 19]], dt, 0.45);
+          this.aimAndAutoFireActor(boss, 1.7, dt);
 
-          if (t > 1.8) {
-            this.once('boss_shot_1', () => this.fireActorAt(boss, engine.playerX, engine.playerZ));
-          }
-          if (t > 4.2) {
-            this.once('boss_missile', () => {
-              engine.enemyCombat.fireBossMissileSalvo(boss, 2, {
-                x: engine.playerX,
-                z: engine.playerZ,
-              });
+          if (t > 3.5) {
+            this.once('boss_missile_1', () => {
+              engine.enemyCombat.fireBossMissileSalvo(boss, 2, { x: engine.playerX, z: engine.playerZ });
             });
           }
-          if (t > 6.5 && !boss.phaseShieldTriggered) {
+          if (boss.hp <= boss.maxHp * 0.5 && !boss.phaseShieldTriggered) {
             boss.phaseShieldTriggered = true;
             engine.bossCombat.triggerPhaseTransition(boss, 'shield');
           }
-          if (t > 9.5) {
-            this.once('player_atgm_finish', () => {
-              engine.playerController.firePlayerHomingMissile();
+          if (t > 9.0) {
+            this.once('boss_missile_2', () => {
+              engine.enemyCombat.fireBossMissileSalvo(boss, 2, { x: engine.playerX, z: engine.playerZ });
             });
           }
         }
-
-        const aim = boss && boss.hp > 0 ? { x: boss.x, z: boss.z } : this.cellToWorld(9, 20);
-        const moveKeys = t < 3.5 ? { KeyW: true } : t < 7.5 ? { KeyW: true, KeyD: true } : { KeyA: true };
-        this.drivePlayer({ keys: moveKeys, aimX: aim.x, aimZ: aim.z, fire: t > 1.0 }, dt);
       },
     };
 

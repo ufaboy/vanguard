@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/public/" />
     <title>Showcase Reel — BATTLE TANK</title>
-    <link rel="icon" type="image/svg+xml" href="/public/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/public/images/icon.svg" />
     <link rel="stylesheet" href="/public/src/index.css" />
     <script type="importmap">
       {
@@ -17,11 +18,11 @@
   </head>
   <body data-page="battlefield" class="text-slate-100 overflow-hidden bg-[#0B0F17]">
     <div id="game-shell" class="relative w-screen h-screen overflow-hidden bg-[#0B0F17] font-sans">
-      <div id="canvas-mount" class="fixed inset-0 w-full h-full"></div>
+      <div id="canvas-mount" class="fixed inset-0 w-full h-full cursor-crosshair"></div>
 
       <header id="top-telemetry" class="hidden fixed left-4 z-20 flex flex-col gap-1.5 pointer-events-none"></header>
       <div id="top-compass" class="hidden fixed left-1/2 -translate-x-1/2 z-20 pointer-events-none"></div>
-      <div id="top-controls" class="hidden fixed right-4 z-20 flex flex-col items-end gap-1.5 pointer-events-none"></div>
+      <div id="top-controls" class="hidden fixed right-4 z-20 flex flex-col items-end gap-1.5"></div>
       <div id="sensor-minimap" class="hidden fixed right-4 z-20 pointer-events-none"></div>
       <div id="boss-banner" class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-20 w-[min(560px,90vw)] bg-[#0B0F17]/95 border border-red-500/70 px-5 py-3 rounded shadow-2xl"></div>
       <div id="target-badge" class="hidden fixed top-36 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-teal-500/70 px-4 py-1.5 rounded text-xs font-mono uppercase tracking-wider shadow-lg"></div>
