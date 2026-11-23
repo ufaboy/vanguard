@@ -324,6 +324,10 @@ export function getSharedTextures() {
 let glowSprite = null;
 export function glowSpriteTexture() {
   if (glowSprite) return glowSprite;
+  if (typeof document === 'undefined') {
+    glowSprite = new THREE.Texture();
+    return glowSprite;
+  }
   const size = 64;
   const canvas = document.createElement('canvas');
   canvas.width = size;

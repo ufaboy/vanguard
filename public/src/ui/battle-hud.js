@@ -133,6 +133,17 @@ export function renderBattlefieldHud({
         </button>
 
         <button
+          data-action="rotate-camera"
+          data-dir="-1"
+          class="flex items-center gap-1 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
+          title="${t('Rotate Camera Left 90° [Q]')}"
+          aria-label="${t('Rotate Camera Left 90° [Q]')}"
+        >
+          <span>↶</span>
+          <span class="hidden sm:inline">Q</span>
+        </button>
+
+        <button
           data-action="cycle-camera"
           class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
           title="${t('Cycle Camera Angle [C]')}"
@@ -143,6 +154,17 @@ export function renderBattlefieldHud({
             <circle cx="12" cy="13" r="3"/>
           </svg>
           <span class="hidden sm:inline">${t(cameraLabels[state.cameraPreset])} [C]</span>
+        </button>
+
+        <button
+          data-action="rotate-camera"
+          data-dir="1"
+          class="flex items-center gap-1 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
+          title="${t('Rotate Camera Right 90° [E]')}"
+          aria-label="${t('Rotate Camera Right 90° [E]')}"
+        >
+          <span class="hidden sm:inline">E</span>
+          <span>↷</span>
         </button>
 
         <button

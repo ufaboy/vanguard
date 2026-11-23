@@ -3,7 +3,7 @@
  *
  * Implements:
  * - Cargo state machine: available -> loading -> carried -> unloading -> delivered
- * - Explicit loading interaction (stop within 1.5 cells, press E / Cargo button for 2s;
+ * - Explicit loading interaction (stop within 1.5 cells, press F / Cargo button for 2s;
  *   movement or leaving range cancels, damage does not)
  * - Automatic delivery pad unloading (remain stationary on pad for 2s; movement pauses,
  *   leaving pad resets progress)
@@ -481,7 +481,7 @@ const BLACKOUT_PROTOCOL_CONTRACT = Object.freeze({
   targetDuration: '7–11 minutes (8.0s blast fuses)',
   difficulty: 'Very High (Stealth / Jammer / Breacher QRF)',
   summary:
-    'Infiltrate the northern communications array, plant timed demolition charges [E] on at least two of three armored radar/ECM relays, clear the 3-cell blast zone before the 8-second fuse detonates, and extract from the southern pad.',
+    'Infiltrate the northern communications array, plant timed demolition charges [F] on at least two of three armored radar/ECM relays, clear the 3-cell blast zone before the 8-second fuse detonates, and extract from the southern pad.',
   containers: BLACKOUT_RELAYS,
   deliveryPad: LAST_CARGO_DELIVERY_PAD,
   gates: LAST_CARGO_GATES,

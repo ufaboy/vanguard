@@ -5,7 +5,9 @@ import assert from 'node:assert/strict';
 import { determineHitAspect, resolveArmorHit } from '../public/src/sim/ballistics.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { EnemyAiController } from '../public/src/game/engine/enemy-ai.js';
+import { DEFAULT_CAMERA_AZIMUTH, InputCameraController } from '../public/src/game/engine/input-camera.js';
 import { PlayerController } from '../public/src/game/engine/player-controller.js';
+import { getRadarCameraRotationRad } from '../public/src/ui/minimap.js';
 import {
   computeFrameInterval,
   createVictoryCinematics,
@@ -657,4 +659,150 @@ test('missile FPV switches active camera to fpvCamera only while a player missil
   assert.equal(engine.isMissileFpvActive(), false);
   assert.equal(engine.getActiveCamera(), orthoCam);
   assert.equal(engine.getTimeScale(), 1);
+});
+
+test('discrete 4-corner camera rotation steps by 90°, preserves angle across presets, and aligns radar rotation', () => {
+  const cam = new THREE.OrthographicCamera(-16, 16, 16, -16, 0.1, 300);
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    status: GameStatus.PLAYING,
+    isGarageOpen: false,
+    isAdPaused: false,
+    inspectMode: false,
+    cameraPreset: 'ISOMETRIC',
+    frustumSize: 32,
+    cameraAzimuth: DEFAULT_CAMERA_AZIMUTH,
+    targetCameraAzimuth: DEFAULT_CAMERA_AZIMUTH,
+    camCurrentLook: new THREE.Vector3(0, 0, 0),
+    playerX: 0,
+    playerZ: 0,
+    aimWorld: new THREE.Vector3(0, 0, 0),
+    screenShake: 0,
+    camera: cam,
+    emitHudUpdate() {},
+    handleResize() {},
+  });
+  engine._inputCamera = new InputCameraController(engine);
+
+  assert.equal(getRadarCameraRotationRad(engine.cameraAzimuth), 0);
+
+  // Rotate right (+90° -> 135° / 0.75 * PI)
+  const step1 = engine.rotateCameraStep(1);
+  assert.ok(Math.abs(step1 - Math.PI * 0.75) < 1e-6);
+  assert.equal(engine.cameraAzimuth, DEFAULT_CAMERA_AZIMUTH, 'azimuth animates smoothly rather than snapping');
+
+  // Advance camera damping until settled
+  for (let i = 0; i < 40; i++) {
+    engine.inputCamera.updateCamera(0.05, i * 0.05);
+  }
+  assert.ok(Math.abs(engine.cameraAzimuth - Math.PI * 0.75) < 1e-3);
+  assert.ok(Math.abs(getRadarCameraRotationRad(engine.cameraAzimuth) - Math.PI * 0.5) < 1e-3);
+
+  // Cycling camera preset [C] preserves the current rotated corner
+  engine.cycleCameraPreset();
+  assert.equal(engine.cameraPreset, 'TACTICAL_HIGH');
+  assert.ok(Math.abs(engine.targetCameraAzimuth - Math.PI * 0.75) < 1e-6);
+  assert.ok(Math.abs(engine.cameraAzimuth - Math.PI * 0.75) < 1e-3);
+
+  // Three more right steps return to the default 45° corner
+  engine.rotateCameraStep(1);
+  engine.rotateCameraStep(1);
+  const step4 = engine.rotateCameraStep(1);
+  assert.ok(Math.abs(step4 - DEFAULT_CAMERA_AZIMUTH) < 1e-6);
+
+  // Left step (-90° -> -45° / -0.25 * PI)
+  const stepLeft = engine.rotateCameraStep(-1);
+  assert.ok(Math.abs(stepLeft - (-Math.PI * 0.25)) < 1e-6);
+});
+
+test('FPV chase camera rides a player cannon shell only when it is predicted to deal the final victory blow', () => {
+  const orthoCam = { isOrthographicCamera: true };
+  const fpvCam = { isPerspectiveCamera: true };
+  const grid = Array.from({ length: 40 }, () =>
+    Array.from({ length: 40 }, () => ({ type: TileType.EMPTY }))
+  );
+  const finalEnemy = {
+    id: 1,
+    enemyClass: 'SCOUT',
+    isBoss: false,
+    hp: 5,
+    maxHp: 20,
+    x: 0,
+    z: -10,
+    hullAngle: 0,
+    turretAngle: 0,
+    stats: { armor: 0, armorByAspect: { front: 0, left: 0, right: 0, rear: 0 } },
+  };
+
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    status: GameStatus.PLAYING,
+    currentSectorIndex: 0,
+    missileFpvEnabled: true,
+    isGarageOpen: false,
+    inspectMode: false,
+    airSupportTargeting: false,
+    camera: orthoCam,
+    fpvCamera: fpvCam,
+    grid,
+    enemies: [finalEnemy],
+    projectiles: [],
+    mines: [],
+    defenseTurrets: [],
+    vanguardRemainingToSpawn: 0,
+    bossSpawned: true,
+    enemyBaseAlive: false,
+    upgrades: { cannon: 1 },
+    componentDamage: {},
+    activeMapRules: {
+      victoryOnAllEnemiesDestroyed: true,
+      spawnSectorBossOnClear: false,
+    },
+    fxGroup: new THREE.Group(),
+  });
+
+  // 1. Non-lethal shot (enemy has 50 HP -> survives 20 dmg) is NOT a victory FPV shot
+  finalEnemy.hp = 50;
+  engine.spawnProjectile(0, 0, 0, -1, true, 20, 0, 'normal', 16, false);
+  assert.equal(engine.projectiles.at(-1).isVictoryFpvShot, undefined);
+  assert.equal(engine.isMissileFpvActive(), false);
+  assert.equal(engine.getActiveCamera(), orthoCam);
+  assert.equal(engine.getTimeScale(), 1);
+  engine.projectiles.length = 0;
+
+  // 2. Lethal shot blocked by a brick wall on the flight line is NOT a victory FPV shot
+  finalEnemy.hp = 5;
+  const wallCell = engine.worldToGrid(0, -5);
+  grid[wallCell.row][wallCell.col] = { type: TileType.BRICK, hp: 4 };
+  engine.spawnProjectile(0, 0, 0, -1, true, 20, 0, 'normal', 16, false);
+  assert.equal(engine.projectiles.at(-1).isVictoryFpvShot, undefined);
+  assert.equal(engine.isMissileFpvActive(), false);
+  grid[wallCell.row][wallCell.col] = { type: TileType.EMPTY };
+  engine.projectiles.length = 0;
+
+  // 3. Unobstructed lethal shot against the last remaining enemy activates FPV chase camera and slow-motion
+  engine.spawnProjectile(0, 0, 0, -1, true, 20, 0, 'normal', 16, false);
+  const winningShell = engine.projectiles.at(-1);
+  assert.equal(winningShell.isVictoryFpvShot, true);
+  assert.equal(engine.getActivePlayerMissile(), winningShell);
+  assert.equal(engine.isMissileFpvActive(), true);
+  assert.equal(engine.getActiveCamera(), fpvCam);
+  assert.equal(engine.getTimeScale(), MISSILE.FPV_VICTORY_SHELL_TIME_SCALE);
+  engine.projectiles.length = 0;
+
+  // 4. Final shot destroying the Enemy Command Base HQ in stronghold_assault mode also activates FPV
+  const baseCoords = engine.worldToGrid(0, -12);
+  grid[baseCoords.row][baseCoords.col] = { type: TileType.ENEMY_BASE, hp: 4 };
+  engine.enemies = [];
+  engine.enemyBaseAlive = true;
+  engine.enemyBaseHp = 4;
+  engine._enemyBaseCell = baseCoords;
+  engine.activeMapRules = {
+    victoryOnEnemyBaseDestroyed: true,
+    hasEnemyFortifiedBase: true,
+    spawnSectorBossOnClear: false,
+  };
+  engine.spawnProjectile(0, 0, 0, -1, true, 20, 0, 'normal', 16, false);
+  const baseWinningShell = engine.projectiles.at(-1);
+  assert.equal(baseWinningShell.isVictoryFpvShot, true);
+  assert.equal(engine.isMissileFpvActive(), true);
+  assert.equal(engine.getActiveCamera(), fpvCam);
 });

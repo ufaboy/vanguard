@@ -12,6 +12,7 @@ import {
   TITAN,
 } from '../constants.js';
 import { createEncounterState, remainingEncounterEnemies } from '../encounters.js';
+import { DEFAULT_CAMERA_AZIMUTH } from './input-camera.js';
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout, isContractMap } from '../levels.js';
 import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
@@ -528,6 +529,8 @@ export class SectorLoaderController {
     engine.defeatCinematicsTimer = 0;
     engine.victoryCinematicsTimer = 0;
     engine.missileFpvHoldTimer = 0;
+    engine.cameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
+    engine.targetCameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
     if (engine.victoryCinematics?.baseFrustum) {
       engine.frustumSize = engine.victoryCinematics.baseFrustum;
       engine.updateCameraProjection?.();

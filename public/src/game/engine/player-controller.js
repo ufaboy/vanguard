@@ -602,8 +602,11 @@ export class PlayerController {
     const drag = (lowTraction ? 1.8 : 20.0) * (allTerrain ? Math.max(1.0, surfBrake) : surfBrake);
 
     if (!subMods.immobilized && len > 0) {
+      const activeAzimuth = Number.isFinite(engine.targetCameraAzimuth)
+        ? engine.targetCameraAzimuth
+        : engine.cameraAzimuth;
       const quadrantOffset =
-        Math.round((engine.cameraAzimuth - Math.PI * 0.25) / (Math.PI * 0.5)) *
+        Math.round((activeAzimuth - Math.PI * 0.25) / (Math.PI * 0.5)) *
         (Math.PI * 0.5);
       const rawX = inRight;
       const rawZ = -inFwd;

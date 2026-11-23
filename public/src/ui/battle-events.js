@@ -219,6 +219,11 @@ export function setupDelegatedEvents(
       case 'cycle-camera':
         cycleCameraPreset();
         break;
+      case 'rotate-camera': {
+        const dir = Number(btn.getAttribute('data-dir')) || 1;
+        engine?.rotateCameraStep(dir);
+        break;
+      }
       case 'toggle-missile-fpv':
         toggleMissileFpv();
         break;

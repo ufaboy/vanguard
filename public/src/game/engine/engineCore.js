@@ -17,7 +17,7 @@ import { ProfileSaveController } from './profile-save.js';
 import { PowerupsController } from './powerups-controller.js';
 import { AirSupportController } from './air-support-controller.js';
 import { ReconDroneController } from './recon-drone-controller.js';
-import { InputCameraController } from './input-camera.js';
+import { DEFAULT_CAMERA_AZIMUTH, InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
 import { TerrainDestructionController } from './terrain-destruction.js';
@@ -78,12 +78,11 @@ export class TankGameEngine {
     this.isDisposed = false;
 
     this.cameraPreset = 'ISOMETRIC';
-    this.cameraAzimuth = Math.PI * 0.25;
+    this.cameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
+    this.targetCameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
     this.missileFpvEnabled = false;
     this.missileFpvHoldTimer = 0;
     this.hardMode = false;
-    this.cameraRotating = false;
-    this.cameraDragPrevX = 0;
     this.aiDebugMode = false;
     this.inspectMode = false;
 
@@ -510,7 +509,7 @@ export class TankGameEngine {
     if (!Array.isArray(this.projectiles)) return null;
     for (let i = this.projectiles.length - 1; i >= 0; i -= 1) {
       const p = this.projectiles[i];
-      if (p?.fromPlayer && p?.isMissile) return p;
+      if (p?.fromPlayer && (p?.isMissile || p?.isVictoryFpvShot)) return p;
     }
     return null;
   }
@@ -530,9 +529,14 @@ export class TankGameEngine {
     return this.isMissileFpvActive() && this.fpvCamera ? this.fpvCamera : this.camera;
   }
 
-  /** Slow-motion time scale while riding a player missile in FPV chase cam. */
+  /** Slow-motion time scale while riding a player missile or final victory shell in FPV chase cam. */
   getTimeScale() {
-    return this.isMissileFpvActive() ? MISSILE.FPV_TIME_SCALE : 1;
+    if (!this.isMissileFpvActive()) return 1;
+    const activeProj = this.getActivePlayerMissile();
+    if (activeProj && activeProj.isVictoryFpvShot && !activeProj.isMissile) {
+      return MISSILE.FPV_VICTORY_SHELL_TIME_SCALE;
+    }
+    return MISSILE.FPV_TIME_SCALE;
   }
 
   /** Frame-rate cap in fps (0 = unlimited, follow the display refresh rate). */
@@ -834,7 +838,6 @@ export class TankGameEngine {
     this.isAdPaused = next;
     this.keys = {};
     this.isMouseDown = false;
-    this.cameraRotating = false;
     this.syncAudioPauseState();
     if (!next && this.status === GameStatus.PLAYING) {
       this.renderer?.domElement?.focus?.({ preventScroll: true });
@@ -904,6 +907,10 @@ export class TankGameEngine {
 
   cycleCameraPreset(preset) {
     return this.inputCamera.cycleCameraPreset(preset);
+  }
+
+  rotateCameraStep(steps = 1) {
+    return this.inputCamera.rotateCameraStep(steps);
   }
 
   get powerupsController() {

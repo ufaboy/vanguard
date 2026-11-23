@@ -312,15 +312,16 @@ export const MISSILE = Object.freeze({
   POOL_SIZE: 6, // Maximum concurrent active missiles in the physics/rendering pool
   PLAYER_RESERVED_SLOTS: 2, // Reserved missile slots allocated exclusively for player fire
   FPV_TIME_SCALE: 0.75, // Slow-motion simulation time scale while riding a player missile in FPV
+  FPV_VICTORY_SHELL_TIME_SCALE: 0.35, // Slow-motion simulation time scale while riding the final victory cannon shell in FPV
   FPV_POST_EXPLOSION_DELAY: 1.0, // Seconds to hold the FPV view on the explosion before returning
   FPV_FOV: 62, // Vertical field of view (degrees) of the FPV chase camera
-  FPV_CHASE_DISTANCE: 3.0, // World units the chase camera trails behind the missile
-  FPV_CHASE_HEIGHT: 0.95, // World units the chase camera sits above the missile's flight altitude
+  FPV_CHASE_DISTANCE: 4.2, // World units the chase camera trails behind the missile
+  FPV_CHASE_HEIGHT: 1.5, // World units the chase camera sits above the missile's flight altitude
   FPV_MIN_HEIGHT: 1.1, // Lowest camera altitude so the chase cam never dips into the ground
   FPV_FOLLOW_DAMP: 18, // Position smoothing rate of the chase camera (higher = tighter)
-  FPV_LOOK_AHEAD: 9.0, // World units ahead of the missile the camera looks at
-  FPV_LOOK_DROP: 0.15, // World units the look-at point sits below the missile's altitude
-  FPV_MIN_LOOK_HEIGHT: 0.4, // Lowest altitude of the look-at point
+  FPV_LOOK_AHEAD: 7.5, // World units ahead of the missile the camera looks at
+  FPV_LOOK_DROP: 0.5, // World units the look-at point sits below the missile's altitude
+  FPV_MIN_LOOK_HEIGHT: 0.25, // Lowest altitude of the look-at point
 });
 
 /** Victory cinematics: the camera frames the final kill, orbits 90° around it and holds the results modal back. */
