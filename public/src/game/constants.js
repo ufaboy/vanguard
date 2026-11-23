@@ -312,6 +312,7 @@ export const MISSILE = Object.freeze({
   POOL_SIZE: 6, // Maximum concurrent active missiles in the physics/rendering pool
   PLAYER_RESERVED_SLOTS: 2, // Reserved missile slots allocated exclusively for player fire
   FPV_TIME_SCALE: 0.75, // Slow-motion simulation time scale while riding a player missile in FPV
+  FPV_VICTORY_SHELL_TIME_SCALE: 0.35, // Slow-motion simulation time scale while riding the final victory cannon shell in FPV
   FPV_POST_EXPLOSION_DELAY: 1.0, // Seconds to hold the FPV view on the explosion before returning
   FPV_FOV: 62, // Vertical field of view (degrees) of the FPV chase camera
   FPV_CHASE_DISTANCE: 3.0, // World units the chase camera trails behind the missile

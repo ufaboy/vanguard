@@ -10,6 +10,7 @@ import {
 } from '../../sim/jammer.js';
 import {
   BULLET_POWER,
+  DURABILITY,
   FLAME_STREAM,
   INFERNO,
   MISSILE,
@@ -17,10 +18,10 @@ import {
   computeEffectiveDamage,
 } from '../constants.js';
 import { animateMissileVisual, createProjectileVisual } from '../effects/index.js';
-import { GRID_SIZE, TILE_SIZE } from '../levels.js';
+import { GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { breachEntryOffset } from '../terrains/breach-models.js';
-import { EnemyClass, TileType } from '../types.js';
+import { EnemyClass, GameStatus, TileType, checkMapVictory } from '../types.js';
 import { t } from '../../i18n/index.js';
 
 const MISSILE_CRUISE_Y = 4.4;
@@ -174,7 +175,7 @@ export class ProjectilesController {
     mesh.rotation.y = Math.atan2(dirX, dirZ);
     engine.fxGroup.add(mesh);
 
-    engine.projectiles.push({
+    const proj = {
       x,
       z,
       vx: dirX * speed,
@@ -201,7 +202,193 @@ export class ProjectilesController {
       trailColor: color,
       trailWidth: isThermobaric ? 0.32 : isHeavy ? 0.2 : 0.15,
       trailLife: isThermobaric ? 0.22 : isHeavy ? 0.16 : 0.12,
-    });
+    };
+    if (fromPlayer && !opts.isMissile && !isThermobaric && this.isPredictedVictoryShot(proj)) {
+      proj.isVictoryFpvShot = true;
+    }
+    engine.projectiles.push(proj);
+  }
+
+  /**
+   * Predicts at muzzle exit whether a straight-flying player cannon shell will strike and destroy
+   * the final enemy tank or Enemy Command Base HQ needed to trigger mission victory.
+   */
+  isPredictedVictoryShot(p) {
+    const { engine } = this;
+    if (
+      !engine ||
+      engine.status !== GameStatus.PLAYING ||
+      engine.survivalState ||
+      !engine.activeMapRules ||
+      !(p.speed > 0)
+    ) {
+      return false;
+    }
+
+    const sector = SECTORS[engine.currentSectorIndex];
+    const canWinByEnemyKill = (() => {
+      if (engine.vanguardRemainingToSpawn > 0) return false;
+      const aliveEnemies = Array.isArray(engine.enemies)
+        ? engine.enemies.filter((e) => e && e.hp > DURABILITY.ZERO_HP)
+        : [];
+      if (aliveEnemies.length !== 1) return false;
+      const lastEnemy = aliveEnemies[0];
+      const hasPendingBossStage =
+        lastEnemy.isBoss &&
+        Array.isArray(sector?.bossSequence) &&
+        engine.bossStageIndex + 1 < sector.bossSequence.length;
+      if (hasPendingBossStage) return false;
+      const allSequenceStagesDone =
+        !Array.isArray(sector?.bossSequence) ||
+        sector.bossSequence.length === 0 ||
+        (engine.bossSequenceStarted && engine.bossStageIndex + 1 >= sector.bossSequence.length);
+      const victoryRes = checkMapVictory(engine.activeMapRules, {
+        enemyBaseDestroyed: !engine.enemyBaseAlive,
+        vanguardRemainingToSpawn: 0,
+        activeEnemiesCount: 0,
+        bossDefeated: allSequenceStagesDone && engine.bossSpawned,
+      });
+      return Boolean(victoryRes.isVictory);
+    })();
+
+    const canWinByBaseDestroy = (() => {
+      if (!engine.enemyBaseAlive) return false;
+      if (engine.activeMapRules.spawnSectorBossOnClear && !engine.bossSpawned) return false;
+      const aliveEnemies = Array.isArray(engine.enemies)
+        ? engine.enemies.filter((e) => e && e.hp > DURABILITY.ZERO_HP)
+        : [];
+      const victoryRes = checkMapVictory(engine.activeMapRules, {
+        enemyBaseDestroyed: true,
+        vanguardRemainingToSpawn: engine.vanguardRemainingToSpawn,
+        activeEnemiesCount: aliveEnemies.length,
+        bossDefeated: engine.bossSpawned && !aliveEnemies.some((u) => u.isBoss),
+      });
+      return Boolean(victoryRes.isVictory);
+    })();
+
+    if (!canWinByEnemyKill && !canWinByBaseDestroy) return false;
+
+    const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
+    const stepDist = 0.25;
+    const maxDist = p.speed * (p.life || 2.4);
+    const dirX = p.vx / p.speed;
+    const dirZ = p.vz / p.speed;
+    const ebCenter = canWinByBaseDestroy ? engine.getEnemyBaseCenter?.() : null;
+    const ebCellCoords = canWinByBaseDestroy ? engine.enemyBaseCell?.() : null;
+
+    for (let dist = 0; dist <= maxDist; dist += stepDist) {
+      const sx = p.x + dirX * dist;
+      const sz = p.z + dirZ * dist;
+      if (sx < -halfArena || sx > halfArena || sz < -halfArena || sz > halfArena) {
+        return false;
+      }
+
+      const { row, col } = engine.worldToGrid ? engine.worldToGrid(sx, sz) : { row: -1, col: -1 };
+      const cell = engine.grid?.[row]?.[col];
+
+      if (engine.enemyBaseAlive) {
+        const inCell = cell && cell.type === TileType.ENEMY_BASE;
+        const inRadius = ebCenter && Math.hypot(ebCenter.x - sx, ebCenter.z - sz) <= 1.0;
+        if (inCell || inRadius) {
+          if (!canWinByBaseDestroy) return false;
+          const targetCell =
+            (inCell ? cell : null) || engine.grid?.[ebCellCoords?.row]?.[ebCellCoords?.col];
+          if (!targetCell || targetCell.type !== TileType.ENEMY_BASE) return false;
+          const citadelDmg = p.bulletPower === BULLET_POWER.HEAVY ? 8 : 4;
+          return (targetCell.hp ?? engine.enemyBaseHp ?? 1) - citadelDmg <= 0;
+        }
+      }
+
+      if (cell?.defenseTurret?.alive) return false;
+      if (
+        cell &&
+        (cell.type === TileType.BOXES ||
+          cell.type === TileType.BARREL ||
+          cell.type === TileType.WATER_TOWER ||
+          (cell.type === TileType.BRICK && !p.pierceBricks) ||
+          cell.type === TileType.CONCRETE ||
+          cell.type === TileType.HOUSE_1 ||
+          cell.type === TileType.HOUSE_2 ||
+          cell.type === TileType.LANDMARK ||
+          cell.type === TileType.BASE)
+      ) {
+        return false;
+      }
+
+      if (Array.isArray(engine.mines)) {
+        for (const mine of engine.mines) {
+          if (Math.hypot(mine.x - sx, mine.z - sz) <= 0.65) return false;
+        }
+      }
+
+      if (Array.isArray(engine.defenseTurrets)) {
+        for (const turret of engine.defenseTurrets) {
+          if (turret.alive && Math.hypot(turret.x - sx, turret.z - sz) <= turret.radius) {
+            return false;
+          }
+        }
+      }
+
+      if (Array.isArray(engine.enemies)) {
+        for (const enemy of engine.enemies) {
+          if (!enemy || enemy.hp <= DURABILITY.ZERO_HP) continue;
+          const hitR =
+            enemy.hitRadius ??
+            (enemy.isBoss ? TANK_HIT_RADIUS.DEFAULT_BOSS : TANK_HIT_RADIUS.DEFAULT);
+          if (Math.hypot(enemy.x - sx, enemy.z - sz) <= hitR) {
+            if (!canWinByEnemyKill) return false;
+            if (enemy.isBoss && (enemy.phaseShieldTimer || 0) > 0) return false;
+            if (engine.bossCombat?.nextPhaseGate?.(enemy)) return false;
+
+            const targetProxy = {
+              ...enemy,
+              hullYaw: enemy.hullAngle,
+              turretYaw: enemy.turretAngle,
+            };
+            const cannonTier = engine.effectiveUpgrades?.cannon || 1;
+            const armorRes = resolveArmorHit({
+              projectile: {
+                vx: p.vx,
+                vz: p.vz,
+                penetration: 140 + cannonTier * 35,
+                baseDamage: p.damage * 3.2,
+                moduleDamage: 24 + cannonTier * 8,
+                ricochetAngleDeg: 80,
+              },
+              target: targetProxy,
+              hitPoint: { x: sx, y: 0.72, z: sz },
+              hitZone: 'hull',
+            });
+            const outcome = String(armorRes?.outcome || 'penetration').toLowerCase();
+            const aspectStr = String(armorRes?.aspect || armorRes?.zone || 'front');
+            const angleDeg = Number(armorRes?.impactAngleDeg ?? 0);
+            if (
+              enemy.isBoss &&
+              (outcome === 'panel_stopped' ||
+                outcome === 'stopped_by_panel' ||
+                (outcome === 'ricochet' && angleDeg >= 78))
+            ) {
+              return false;
+            }
+            const isTitan = enemy.enemyClass === EnemyClass.BOSS_TITAN;
+            const armorVal = isTitan
+              ? engine.titanAspectArmor(enemy, aspectStr)
+              : enemy.stats?.armorByAspect?.[aspectStr] ?? enemy.stats?.armor ?? 0;
+            const legacyScaleDmg = computeEffectiveDamage(p.damage, p.penetration, armorVal);
+            const aspectBonus = isTitan
+              ? 1.0
+              : aspectStr === 'rear'
+              ? 1.35
+              : aspectStr === 'left' || aspectStr === 'right'
+              ? 1.15
+              : 1.0;
+            return enemy.hp - legacyScaleDmg * aspectBonus <= DURABILITY.ZERO_HP;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   /** Unit flight direction of a projectile as [dx, dz]. */
@@ -747,7 +934,12 @@ export class ProjectilesController {
             enemy.turretYaw = enemy.turretAngle;
             const isTitan = enemy.enemyClass === EnemyClass.BOSS_TITAN;
             // Directional reinforcement follows the hull, regardless of turret rotation.
-            const hitZone = enemy.stats.directionalArmor ? 'hull' : Math.random() < 0.35 ? 'turret' : 'hull';
+            const hitZone =
+              enemy.stats.directionalArmor || p.isVictoryFpvShot
+                ? 'hull'
+                : Math.random() < 0.35
+                ? 'turret'
+                : 'hull';
             const armorRes = resolveArmorHit({
               projectile: {
                 vx: p.vx,

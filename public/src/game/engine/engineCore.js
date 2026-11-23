@@ -509,7 +509,7 @@ export class TankGameEngine {
     if (!Array.isArray(this.projectiles)) return null;
     for (let i = this.projectiles.length - 1; i >= 0; i -= 1) {
       const p = this.projectiles[i];
-      if (p?.fromPlayer && p?.isMissile) return p;
+      if (p?.fromPlayer && (p?.isMissile || p?.isVictoryFpvShot)) return p;
     }
     return null;
   }
@@ -529,9 +529,14 @@ export class TankGameEngine {
     return this.isMissileFpvActive() && this.fpvCamera ? this.fpvCamera : this.camera;
   }
 
-  /** Slow-motion time scale while riding a player missile in FPV chase cam. */
+  /** Slow-motion time scale while riding a player missile or final victory shell in FPV chase cam. */
   getTimeScale() {
-    return this.isMissileFpvActive() ? MISSILE.FPV_TIME_SCALE : 1;
+    if (!this.isMissileFpvActive()) return 1;
+    const activeProj = this.getActivePlayerMissile();
+    if (activeProj && activeProj.isVictoryFpvShot && !activeProj.isMissile) {
+      return MISSILE.FPV_VICTORY_SHELL_TIME_SCALE;
+    }
+    return MISSILE.FPV_TIME_SCALE;
   }
 
   /** Frame-rate cap in fps (0 = unlimited, follow the display refresh rate). */
