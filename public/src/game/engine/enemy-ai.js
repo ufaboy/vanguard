@@ -1181,6 +1181,13 @@ export class EnemyAiController {
           }
         }
 
+        // HOWITZER holds position while aiming an indirect-fire shot.
+        if (e.indirectAim) {
+          e.targetDirX = 0;
+          e.targetDirZ = 0;
+          e.brainHolding = true;
+        }
+
         if (e.enemyClass === EnemyClass.BOSS_TITAN && canSeePlayer) {
           const turnRate = e.titanOverload ? TITAN.HULL_TURN_RATE_OVERLOAD : TITAN.HULL_TURN_RATE;
           const bearingToPlayer = Math.atan2(toPlayerX, toPlayerZ);

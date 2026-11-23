@@ -380,7 +380,7 @@ export class EnemyCombatController {
     }
   }
 
-  /** HOWITZER: aim for `artillery.aimSec` (turret tracks the target), then lob a shell. */
+  /** HOWITZER: aim for `artillery.aimSec` while stationary (turret tracks the target), then lob a shell. */
   updateIndirectFire(e, dt, shot, aim) {
     const { engine } = this;
     e.turretAngle = engine.lerpAngle(
@@ -388,6 +388,10 @@ export class EnemyCombatController {
       Math.atan2(shot.target.x - e.x, shot.target.z - e.z),
       4.5 * dt
     );
+    if (e.entryTarget) {
+      e.indirectAim = null;
+      return;
+    }
     if (e.indirectAim && e.indirectAim.key !== shot.key) e.indirectAim = null;
     if (!e.indirectAim) {
       if (e.fireCooldown > 0 || !aim.reacted) return;

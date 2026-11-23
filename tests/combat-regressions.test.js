@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { determineHitAspect, resolveArmorHit } from '../public/src/sim/ballistics.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { EnemyAiController } from '../public/src/game/engine/enemy-ai.js';
+import { EnemyCombatController } from '../public/src/game/engine/enemy-combat.js';
 import { DEFAULT_CAMERA_AZIMUTH, InputCameraController } from '../public/src/game/engine/input-camera.js';
 import { PlayerController } from '../public/src/game/engine/player-controller.js';
 import { getRadarCameraRotationRad } from '../public/src/ui/minimap.js';
@@ -14,7 +15,7 @@ import {
   stepVictoryCinematics,
 } from '../public/src/game/engine/victory-cinematics.js';
 import { findBorderIngressCell } from '../public/src/game/campaign-navigation.js';
-import { TileType, GameStatus } from '../public/src/game/types.js';
+import { EnemyClass, TileType, GameStatus } from '../public/src/game/types.js';
 import { REPAIR_KIT, MISSILE, VICTORY_CINEMATICS } from '../public/src/game/constants.js';
 import { TANK_CONFIGS, TANK_TYPES } from '../public/src/game/vehicles/tanks.js';
 
@@ -805,4 +806,103 @@ test('FPV chase camera rides a player cannon shell only when it is predicted to 
   assert.equal(baseWinningShell.isVictoryFpvShot, true);
   assert.equal(engine.isMissileFpvActive(), true);
   assert.equal(engine.getActiveCamera(), fpvCam);
+});
+
+test('HOWITZER stops to aim when a shot is available, fires while stationary, then resumes moving', () => {
+  const aimSec = TANK_CONFIGS[TANK_TYPES.HOWITZER].artillery.aimSec;
+  let barrages = 0;
+
+  const howitzer = {
+    id: 1,
+    enemyClass: EnemyClass.HOWITZER,
+    isBoss: false,
+    hp: 16,
+    maxHp: 16,
+    x: 0,
+    z: 0,
+    hullAngle: 0,
+    turretAngle: 0,
+    targetDirX: 0,
+    targetDirZ: 1,
+    entryTarget: { x: 0, z: -20 },
+    stats: { moveSpeed: 2.5, canHover: false, sightRadius: 20 },
+    aiTimer: 1,
+    fireCooldown: 0,
+    specialCooldown: 5,
+    randomShotTimer: 5,
+    stealthRevealTimer: 0,
+    radioCooldown: 0,
+    alertTimer: 0,
+    indirectAim: null,
+    artilleryCfg: { aimSec, flightSec: 1 },
+    gunner: { shot: { hit: true }, random: () => 0.5 },
+    behaviorRng: () => 0.5,
+    rig: { root: { position: { set() {} } }, hull: { rotation: {} } },
+    actions: [{ id: 'shoot_player', luck: 1 }],
+  };
+
+  const shot = { kind: 'player', key: 'player', target: { x: 0, z: 20 } };
+  const aim = { reacted: true };
+  let combat;
+  const game = {
+    enemies: [howitzer],
+    empTimer: 0,
+    playerX: 0,
+    playerZ: 20,
+    inForest: false,
+    inSmoke: false,
+    grid: Array.from({ length: 40 }, () => Array.from({ length: 40 }, () => ({ type: TileType.EMPTY, hp: 0 }))),
+    worldToGrid: () => ({ row: 20, col: 20 }),
+    hasLineOfSight: () => true,
+    lerpAngle: (a, b) => b,
+    enemyAi: { hasAttackToken: () => true },
+    enemyCombat: {
+      triggerEnemyArtilleryBarrage() {
+        barrages++;
+      },
+    },
+    updateEnemyMovement(e) {
+      e.targetDirX = 0;
+      e.targetDirZ = 1;
+      e.brainHolding = false;
+    },
+    updateEnemyGunnery(e, dt) {
+      combat.updateIndirectFire(e, dt, shot, aim);
+    },
+  };
+  combat = new EnemyCombatController(game);
+  const ai = new EnemyAiController(game);
+  game.enemyAi = Object.assign(ai, { hasAttackToken: () => true });
+
+  // 1. While crossing border ingress (entryTarget set), HOWITZER does not start aiming or fire
+  howitzer.z = -41.5;
+  ai.updateEnemies(0.1, 0.1);
+  assert.equal(howitzer.indirectAim, null);
+  assert.equal(barrages, 0);
+
+  // 2. Inside arena, when a shot opportunity appears, HOWITZER starts aiming
+  howitzer.entryTarget = null;
+  howitzer.z = 0;
+  ai.updateEnemies(0.1, 0.2);
+  assert.ok(howitzer.indirectAim !== null);
+  assert.equal(barrages, 0);
+
+  // 3. While aiming, the tank remains stationary (even though updateEnemyMovement wants to move)
+  const posWhileAiming = { x: howitzer.x, z: howitzer.z };
+  ai.updateEnemies(aimSec * 0.5, 0.2 + aimSec * 0.5);
+  assert.equal(howitzer.x, posWhileAiming.x);
+  assert.equal(howitzer.z, posWhileAiming.z);
+  assert.ok(howitzer.indirectAim !== null);
+  assert.equal(barrages, 0);
+
+  // 4. Aim finishes -> fires while still stationary, and clears indirectAim
+  ai.updateEnemies(aimSec * 0.5 + 0.05, 0.25 + aimSec);
+  assert.equal(howitzer.x, posWhileAiming.x);
+  assert.equal(howitzer.z, posWhileAiming.z);
+  assert.equal(howitzer.indirectAim, null);
+  assert.equal(barrages, 1);
+
+  // 5. After firing (on cooldown), HOWITZER resumes moving
+  ai.updateEnemies(0.2, 0.45 + aimSec);
+  assert.ok(howitzer.z > posWhileAiming.z);
 });
