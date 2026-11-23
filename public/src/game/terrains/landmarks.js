@@ -40,11 +40,6 @@ const LANDMARK_PACKS = Object.freeze({
   rotterdam: '../../../models/landmarks/rotterdam_landmarks.glb',
 });
 
-/** Returns the GLB pack name that contains a given landmark kind. */
-export function getLandmarkPack(kind) {
-  return LANDMARK_SPECS[kind]?.pack || 'paris';
-}
-
 /** Cells `cols` of every row in a `cols` x `rows` footprint. */
 const COLUMNS = (cols, rows) => ALL(Math.max(...cols) + 1, rows).filter(([, dc]) => cols.includes(dc));
 

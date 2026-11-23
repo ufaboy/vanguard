@@ -134,7 +134,7 @@ export const TRACK_UPGRADE_COSTS = Object.freeze({
   5: 5000, // Upgrade price (Credits) from Tier 4 to Tier 5
 });
 
-export const SPEED_FORMULA = Object.freeze({
+const SPEED_FORMULA = Object.freeze({
   BASE_MULT: 1.89, // Global speed multiplier converting power-to-weight ratio to cells/sec
   MIN: 0.7, // Absolute minimum tank movement speed floor (cells/sec)
   MAX: 4.55, // Absolute maximum tank movement speed ceiling (cells/sec)

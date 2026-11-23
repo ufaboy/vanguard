@@ -8,7 +8,7 @@ import { analyticsManager } from './analyticsManager.js';
 const DEFAULT_COOLDOWN_MS = 30000;
 const DEFAULT_UNAVAILABLE_TIMEOUT_MS = 1200;
 
-export class AdManager {
+class AdManager {
   constructor({
     globalObj = typeof window !== 'undefined' ? window : globalThis,
     cooldownMs = DEFAULT_COOLDOWN_MS,

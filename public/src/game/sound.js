@@ -39,11 +39,6 @@ const PRIORITY_AUDIO_KEYS = Object.freeze([
   'engine_loop',
 ]);
 
-/** Returns the priority audio asset paths in `./audio/...` manifest form. */
-export function getPriorityAudioAssets() {
-  return PRIORITY_AUDIO_KEYS.map((key) => `./${AUDIO_ASSETS[key]}`);
-}
-
 export class SoundManager {
   constructor({ createContext = null, loadAssets = true, buffers = null } = {}) {
     this.ctx = null;
@@ -351,12 +346,6 @@ export class SoundManager {
     if (this.shouldThrottle('steel_hit', 0.035)) return;
     const key = this.buffers?.steel_hit ? 'steel_hit' : 'armor_hit';
     this.playBuffer(key, { volume: 0.35, pitchVariation: 0.08, pos });
-  }
-
-  playSteelRicochet(pos = null) {
-    if (this.shouldThrottle('ricochet', 0.045)) return;
-    const key = this.buffers?.aps_intercept ? 'aps_intercept' : this.buffers?.ricochet ? 'ricochet' : 'armor_hit';
-    this.playBuffer(key, { volume: 0.55, pitchVariation: 0.06, pos });
   }
 
   playApsIntercept(pos = null) {

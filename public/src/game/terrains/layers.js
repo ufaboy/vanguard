@@ -218,7 +218,7 @@ const movementCache = new Map();
  * road bonus; `maxSpeedCells` (STONE) caps the top speed in cells per second, the lowest cap wins.
  * `chassis`: { allTerrain, canHover, isBoss, isEnemy }. Results are cached and frozen.
  */
-export function combineCellMovement(surfaceType = TileType.EMPTY, objectType = null, chassis = {}) {
+function combineCellMovement(surfaceType = TileType.EMPTY, objectType = null, chassis = {}) {
   const flags =
     (chassis.allTerrain ? 1 : 0) | (chassis.canHover ? 2 : 0) | (chassis.isBoss ? 4 : 0) | (chassis.isEnemy ? 8 : 0);
   const key = `${surfaceType}|${objectType ?? ''}|${flags}`;

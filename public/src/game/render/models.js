@@ -109,7 +109,7 @@ const INFERNO_GLB_MODEL = Object.freeze({
   muzzleX: 6.33,
   barrelBaseZ: 0.66,
 });
-export const GLB_TANK_MODELS = Object.freeze({
+const GLB_TANK_MODELS = Object.freeze({
   [EnemyClass.STANDARD]: { url: './models/tank_standard.glb', scale: 0.26, turretY: 1.55, gunY: 1.94, muzzleX: 7.25 },
   [EnemyClass.SCOUT]: { url: './models/tank_scout.glb', scale: 0.29, turretY: 1.36, gunY: 1.68, muzzleX: 5.18 },
   [EnemyClass.HOWITZER]: { url: './models/tank_howitzer.glb', scale: 0.26, turretY: 1.55, gunY: 2.2, muzzleX: 6.91, muzzleY: 4.84 },
@@ -457,16 +457,6 @@ export class ModelFactory extends TextureGenerator {
     this.physicalWater = physicalWater;
     this.waterMat = null;
     this.iceMat = null;
-  }
-
-  /** Returns true when GLB tank parts for `enemyClass` are currently cached. */
-  hasEnemyModel(enemyClass) {
-    return this.glbTankParts.has(enemyClass);
-  }
-
-  /** Registers loaded GLB parts for `enemyClass` (used by loader and tests). */
-  registerEnemyModelParts(enemyClass, parts) {
-    this.glbTankParts.set(enemyClass, parts);
   }
 
   /** Starts loading the GLBs of the given enemy classes (no-op for loaded or loading ones). */

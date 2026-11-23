@@ -13,7 +13,7 @@ const TERRAIN_CANVAS_PX = GRID_SIZE * TERRAIN_CELL_PX;
 const FOV_HALF_ANGLE_RAD = (42 * Math.PI) / 180;
 const DEFAULT_CAMERA_AZIMUTH = Math.PI * 0.25;
 
-export function getRadarCameraRotationRad(cameraAzimuth) {
+function getRadarCameraRotationRad(cameraAzimuth) {
   const azimuth = Number.isFinite(cameraAzimuth) ? cameraAzimuth : DEFAULT_CAMERA_AZIMUTH;
   return azimuth - DEFAULT_CAMERA_AZIMUTH;
 }

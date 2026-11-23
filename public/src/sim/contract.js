@@ -40,7 +40,7 @@ export const CONTRACT_CONFIG = Object.freeze({
   STARTING_CREDITS: 500,
 });
 
-export const CONTRACT_PAYOUTS = Object.freeze({
+const CONTRACT_PAYOUTS = Object.freeze({
   PER_CARGO: 1500,
   EXTRACTION_BASE: 3000,
   THIRD_CARGO_BONUS: 2500,
@@ -93,7 +93,7 @@ export const LAST_CARGO_GATES = Object.freeze({
   }),
 });
 
-export const LAST_CARGO_CONTAINERS = Object.freeze([
+const LAST_CARGO_CONTAINERS = Object.freeze([
   Object.freeze({
     id: 'cargo-a',
     slot: 1,
@@ -195,7 +195,7 @@ export const LAST_CARGO_CONTAINERS = Object.freeze([
   }),
 ]);
 
-export const LAST_CARGO_DELIVERY_PAD = Object.freeze({
+const LAST_CARGO_DELIVERY_PAD = Object.freeze({
   rowMin: 34,
   rowMax: 36,
   colMin: 18,
@@ -208,7 +208,7 @@ export const LAST_CARGO_DELIVERY_PAD = Object.freeze({
  * Finite encounter schedule of 24 enemies across G0..G4.
  * Exact roster: 7 STANDARD, 6 SCOUT, 3 ARMOR, 2 HOVER, 2 HOWITZER, 2 STRIKER, 1 ENGINEER, 1 JAMMER = 24.
  */
-export const LAST_CARGO_GROUPS = Object.freeze({
+const LAST_CARGO_GROUPS = Object.freeze({
   G0: Object.freeze({
     id: 'G0',
     trigger: 'contract_start',
@@ -531,7 +531,7 @@ function chooseGroupGates(contractState, groupId, contextCargoId = null) {
 }
 
 /** Builds the contract-level movement assignment (route + home zone) for a spawned unit. */
-export function buildContractUnitAssignment(contractState, groupEntry, unitType, unitIndex) {
+function buildContractUnitAssignment(contractState, groupEntry, unitType, unitIndex) {
   const { id: groupId, contextCargoId, primaryGateId, secondaryGateId } = groupEntry;
   const gateId = unitIndex % 2 === 0 ? primaryGateId : secondaryGateId || primaryGateId;
   const gate = LAST_CARGO_GATES[gateId] || LAST_CARGO_GATES.center;
@@ -758,7 +758,7 @@ export function createContractState(contractDef = LAST_CARGO_CONTRACT, gridToWor
 }
 
 /** Queues a group (G0..G4) at most once in trigger order. */
-export function triggerContractGroup(contractState, groupId, contextCargoId = null) {
+function triggerContractGroup(contractState, groupId, contextCargoId = null) {
   const sched = contractState?.scheduler;
   const groupsCatalog = contractState?.groupsCatalog || LAST_CARGO_GROUPS;
   const groupDef = groupsCatalog[groupId];
@@ -793,14 +793,14 @@ export function triggerContractGroup(contractState, groupId, contextCargoId = nu
 }
 
 /** Checks whether world coordinates (x, z) are inside the Southern Delivery Pad. */
-export function isOnDeliveryPad(contractState, x, z) {
+function isOnDeliveryPad(contractState, x, z) {
   const pad = contractState?.deliveryPad;
   if (!pad) return false;
   return x >= pad.minX && x <= pad.maxX && z >= pad.minZ && z <= pad.maxZ;
 }
 
 /** Returns the available/loading container or relay within 1.5 cells of (x, z), or null. */
-export function findNearbyAvailableCargo(contractState, x, z, tileSize = 2.0) {
+function findNearbyAvailableCargo(contractState, x, z, tileSize = 2.0) {
   if (!contractState || contractState.carriedCargoId) return null;
   if (
     contractState.contractType === CONTRACT_TYPES.SABOTAGE_PROTOCOL &&

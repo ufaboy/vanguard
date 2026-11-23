@@ -72,7 +72,7 @@ export function sectorLandmarkKinds(sector) {
   return [...new Set(kinds)];
 }
 
-export function sectorUsesLandmarks(sector) {
+function sectorUsesLandmarks(sector) {
   if (!sector) return false;
   return Boolean(
     sector.baseModel ||

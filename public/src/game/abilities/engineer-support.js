@@ -13,7 +13,7 @@ import { setCellObject } from '../terrains/layers.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { rollTankSpecial } from '../../sim/behavior/actions.js';
 
-export const ENGINEER_SUPPORT = Object.freeze({
+const ENGINEER_SUPPORT = Object.freeze({
   /** Seconds between actions. */
   COOLDOWN: 3.2,
   /** World-space reach for welding allies. */

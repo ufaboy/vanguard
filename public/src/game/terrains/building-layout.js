@@ -14,9 +14,8 @@ const BUILDING_KINDS = Object.freeze({
   [TileType.HOUSE_2]: 'house2',
 });
 
-export const RESIDENTIAL_STYLE_COUNT = 8;
-export const INDUSTRIAL_STYLE_COUNT = 4;
-export const BUILDING_STYLE_COUNT = RESIDENTIAL_STYLE_COUNT + INDUSTRIAL_STYLE_COUNT;
+const RESIDENTIAL_STYLE_COUNT = 8;
+const INDUSTRIAL_STYLE_COUNT = 4;
 
 /**
  * Share of Iteration 2 (industrial / warehouse / office, styles 8..11) buildings per map theme:
@@ -28,7 +27,7 @@ export const BUILDING_STYLE_COUNT = RESIDENTIAL_STYLE_COUNT + INDUSTRIAL_STYLE_C
  * - industrial:  25% Iteration 1 /  75% Iteration 2
  * - capital:     75% Iteration 1 /  25% Iteration 2
  */
-export const THEME_ITERATION2_SHARE = Object.freeze({
+const THEME_ITERATION2_SHARE = Object.freeze({
   urban: 0,
   forest: 0.5,
   desert: 0.75,

@@ -7,7 +7,7 @@ export function componentRepairCost(tier = 1) {
   return COMPONENT_REPAIR_COST_BY_TIER[Math.max(1, Math.min(5, Math.floor(tier) || 1))];
 }
 export const COMPONENT_DAMAGE_COOLDOWN = 8;
-export const COMPONENT_DAMAGE_CHANCE = 0.25;
+const COMPONENT_DAMAGE_CHANCE = 0.25;
 
 export function normalizeComponentDamage(value) {
   return Object.fromEntries(COMPONENT_TRACKS.map(track => [track, value?.[track] === true]));

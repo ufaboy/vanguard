@@ -18,7 +18,7 @@ const money = value => formatNumber(Math.round(value));
 const number = value => Number(value.toFixed(2)).toString();
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
-export function garageStats(upgrades, missileAmmo = 0) {
+function garageStats(upgrades, missileAmmo = 0) {
   const part = key => PLAYER_UPGRADES[key][(upgrades[key] || 1) - 1];
   return computeTankStats({
     gun: part('cannon'),

@@ -32,7 +32,7 @@ const FLOODABLE_SURFACES = new Set([
 ]);
 
 /** Applies the pure HQ restoration state transition onto `state.grid` cells. */
-export function applyBaseRestoration(state, layout, { mesh = null, onDestroyCell = null } = {}) {
+function applyBaseRestoration(state, layout, { mesh = null, onDestroyCell = null } = {}) {
   if (state.baseAlive || state.status !== GameStatus.PLAYING) return false;
   const cells = layout.cells.map(({ row, col }) => state.grid[row]?.[col]);
   if (!cells.length || cells.some((cell) => !cell)) return false;
