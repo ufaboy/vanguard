@@ -5,7 +5,9 @@ import assert from 'node:assert/strict';
 import { determineHitAspect, resolveArmorHit } from '../public/src/sim/ballistics.js';
 import { TankGameEngine } from '../public/src/game/engine/engineCore.js';
 import { EnemyAiController } from '../public/src/game/engine/enemy-ai.js';
+import { DEFAULT_CAMERA_AZIMUTH, InputCameraController } from '../public/src/game/engine/input-camera.js';
 import { PlayerController } from '../public/src/game/engine/player-controller.js';
+import { getRadarCameraRotationRad } from '../public/src/ui/minimap.js';
 import {
   computeFrameInterval,
   createVictoryCinematics,
@@ -657,4 +659,57 @@ test('missile FPV switches active camera to fpvCamera only while a player missil
   assert.equal(engine.isMissileFpvActive(), false);
   assert.equal(engine.getActiveCamera(), orthoCam);
   assert.equal(engine.getTimeScale(), 1);
+});
+
+test('discrete 4-corner camera rotation steps by 90°, preserves angle across presets, and aligns radar rotation', () => {
+  const cam = new THREE.OrthographicCamera(-16, 16, 16, -16, 0.1, 300);
+  const engine = Object.assign(Object.create(TankGameEngine.prototype), {
+    status: GameStatus.PLAYING,
+    isGarageOpen: false,
+    isAdPaused: false,
+    inspectMode: false,
+    cameraPreset: 'ISOMETRIC',
+    frustumSize: 32,
+    cameraAzimuth: DEFAULT_CAMERA_AZIMUTH,
+    targetCameraAzimuth: DEFAULT_CAMERA_AZIMUTH,
+    camCurrentLook: new THREE.Vector3(0, 0, 0),
+    playerX: 0,
+    playerZ: 0,
+    aimWorld: new THREE.Vector3(0, 0, 0),
+    screenShake: 0,
+    camera: cam,
+    emitHudUpdate() {},
+    handleResize() {},
+  });
+  engine._inputCamera = new InputCameraController(engine);
+
+  assert.equal(getRadarCameraRotationRad(engine.cameraAzimuth), 0);
+
+  // Rotate right (+90° -> 135° / 0.75 * PI)
+  const step1 = engine.rotateCameraStep(1);
+  assert.ok(Math.abs(step1 - Math.PI * 0.75) < 1e-6);
+  assert.equal(engine.cameraAzimuth, DEFAULT_CAMERA_AZIMUTH, 'azimuth animates smoothly rather than snapping');
+
+  // Advance camera damping until settled
+  for (let i = 0; i < 40; i++) {
+    engine.inputCamera.updateCamera(0.05, i * 0.05);
+  }
+  assert.ok(Math.abs(engine.cameraAzimuth - Math.PI * 0.75) < 1e-3);
+  assert.ok(Math.abs(getRadarCameraRotationRad(engine.cameraAzimuth) - Math.PI * 0.5) < 1e-3);
+
+  // Cycling camera preset [C] preserves the current rotated corner
+  engine.cycleCameraPreset();
+  assert.equal(engine.cameraPreset, 'TACTICAL_HIGH');
+  assert.ok(Math.abs(engine.targetCameraAzimuth - Math.PI * 0.75) < 1e-6);
+  assert.ok(Math.abs(engine.cameraAzimuth - Math.PI * 0.75) < 1e-3);
+
+  // Three more right steps return to the default 45° corner
+  engine.rotateCameraStep(1);
+  engine.rotateCameraStep(1);
+  const step4 = engine.rotateCameraStep(1);
+  assert.ok(Math.abs(step4 - DEFAULT_CAMERA_AZIMUTH) < 1e-6);
+
+  // Left step (-90° -> -45° / -0.25 * PI)
+  const stepLeft = engine.rotateCameraStep(-1);
+  assert.ok(Math.abs(stepLeft - (-Math.PI * 0.25)) < 1e-6);
 });

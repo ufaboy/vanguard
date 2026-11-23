@@ -365,7 +365,7 @@ export class ContractDirector {
       e.setStatusBanner(t('DRIVE ONTO THE SOUTHERN DELIVERY PAD AND HOLD FOR 2.0s TO UNLOAD'), 2.4);
     } else {
       e.setStatusBanner(
-        isSabotage ? t('STOP WITHIN 1.5 CELLS OF A RADAR RELAY AND PRESS [E] TO PLANT CHARGE') : t('STOP WITHIN 1.5 CELLS OF A DATA CONTAINER AND PRESS [E] TO LOAD'),
+        isSabotage ? t('STOP WITHIN 1.5 CELLS OF A RADAR RELAY AND PRESS [F] TO PLANT CHARGE') : t('STOP WITHIN 1.5 CELLS OF A DATA CONTAINER AND PRESS [F] TO LOAD'),
         2.4
       );
     }
@@ -513,15 +513,15 @@ export class ContractDirector {
       } else if (delivered === 2) {
         e.setStatusBanner(
           isSabotage
-            ? t('RELAY {code} DEMOLISHED (+${amount} SECURED) — EXTRACTION READY [E] OR RISK 3RD RELAY (+$4,000)!', params)
-            : t('CARGO {code} DELIVERED (+${amount} SECURED) — EXTRACTION READY [E] OR RISK 3RD CARGO (+$4,000)!', params),
+            ? t('RELAY {code} DEMOLISHED (+${amount} SECURED) — EXTRACTION READY [F] OR RISK 3RD RELAY (+$4,000)!', params)
+            : t('CARGO {code} DELIVERED (+${amount} SECURED) — EXTRACTION READY [F] OR RISK 3RD CARGO (+$4,000)!', params),
           4.5
         );
       } else {
         e.setStatusBanner(
           isSabotage
-            ? t('ALL 3 RELAYS DEMOLISHED (+${amount} SECURED) — HEAD SOUTH TO EXTRACTION PAD [E]!', params)
-            : t('ALL 3 CARGOS DELIVERED (+${amount} SECURED) — HEAD SOUTH TO EXTRACTION PAD [E]!', params),
+            ? t('ALL 3 RELAYS DEMOLISHED (+${amount} SECURED) — HEAD SOUTH TO EXTRACTION PAD [F]!', params)
+            : t('ALL 3 CARGOS DELIVERED (+${amount} SECURED) — HEAD SOUTH TO EXTRACTION PAD [F]!', params),
           4.5
         );
       }

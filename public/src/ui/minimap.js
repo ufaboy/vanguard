@@ -7,9 +7,16 @@ const R_CENTER = 100;
 const R_MAP = 80;
 const R_BEZEL = 86;
 const R_OUTER = 92;
+const R_CARDINAL = 89;
 const TERRAIN_CELL_PX = 6;
 const TERRAIN_CANVAS_PX = GRID_SIZE * TERRAIN_CELL_PX;
 const FOV_HALF_ANGLE_RAD = (42 * Math.PI) / 180;
+const DEFAULT_CAMERA_AZIMUTH = Math.PI * 0.25;
+
+export function getRadarCameraRotationRad(cameraAzimuth) {
+  const azimuth = Number.isFinite(cameraAzimuth) ? cameraAzimuth : DEFAULT_CAMERA_AZIMUTH;
+  return azimuth - DEFAULT_CAMERA_AZIMUTH;
+}
 
 function buildCompassTicksSvg() {
   const parts = [];
@@ -38,9 +45,9 @@ function buildCompassTicksSvg() {
   return parts.join('');
 }
 
-function buildCardinalBadge(cx, cy, label) {
+function buildCardinalBadge(cx, cy, label, key) {
   return `
-    <g transform="translate(${cx}, ${cy})">
+    <g data-mm="${key}" transform="translate(${cx}, ${cy})">
       <polygon points="-8,-6.5 8,-6.5 9.5,-4.5 9.5,4.5 8,6.5 -8,6.5 -9.5,4.5 -9.5,-4.5" fill="#15191e" stroke="rgba(255,255,255,0.22)" stroke-width="0.9" />
       <text x="0" y="0.4" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" font-size="10.5" font-weight="800" font-family="system-ui, -apple-system, sans-serif">${label}</text>
     </g>
@@ -113,10 +120,10 @@ const MINIMAP_SKELETON = `
       ${buildCompassTicksSvg()}
 
       <!-- Cardinal Badges -->
-      ${buildCardinalBadge(R_CENTER, 11, 'N')}
-      ${buildCardinalBadge(189, R_CENTER, 'E')}
-      ${buildCardinalBadge(R_CENTER, 189, 'S')}
-      ${buildCardinalBadge(11, R_CENTER, 'W')}
+      ${buildCardinalBadge(R_CENTER, R_CENTER - R_CARDINAL, 'N', 'cardN')}
+      ${buildCardinalBadge(R_CENTER + R_CARDINAL, R_CENTER, 'E', 'cardE')}
+      ${buildCardinalBadge(R_CENTER, R_CENTER + R_CARDINAL, 'S', 'cardS')}
+      ${buildCardinalBadge(R_CENTER - R_CARDINAL, R_CENTER, 'W', 'cardW')}
     </svg>
 
     <div class="hud-radar-scale">
@@ -242,26 +249,33 @@ function drawTerrainViewport(canvas, hud) {
   const srcCenterX = playerCellX * TERRAIN_CELL_PX;
   const srcCenterY = playerCellZ * TERRAIN_CELL_PX;
   const srcHalf = RADAR_RANGE_CELLS * TERRAIN_CELL_PX;
+  const camRotRad = getRadarCameraRotationRad(hud.cameraAzimuth);
+  const w = canvas.width;
+  const h = canvas.height;
 
   ctx.fillStyle = '#182216';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, w, h);
   ctx.imageSmoothingEnabled = true;
+  ctx.save();
+  ctx.translate(w * 0.5, h * 0.5);
+  ctx.rotate(camRotRad);
   ctx.drawImage(
     off,
     srcCenterX - srcHalf,
     srcCenterY - srcHalf,
     srcHalf * 2,
     srcHalf * 2,
-    0,
-    0,
-    canvas.width,
-    canvas.height
+    -w * 0.5,
+    -h * 0.5,
+    w,
+    h
   );
+  ctx.restore();
 }
 
 /**
  * The minimap is built once; each HUD tick only moves the existing SVG nodes and updates
- * the clipped terrain viewport, so moving contacts never rebuild the DOM.
+ * the clipped terrain viewport, rotated to match the active camera angle (Camera-Up).
  */
 export function renderNorthUpSensorMinimap(hud) {
   const el = document.getElementById('sensor-minimap');
@@ -289,9 +303,15 @@ export function renderNorthUpSensorMinimap(hud) {
   const RADAR_RANGE = RADAR_RANGE_CELLS * TILE_SIZE;
   const playerX = hud.playerX || 0;
   const playerZ = hud.playerZ || 0;
+  const camRotRad = getRadarCameraRotationRad(hud.cameraAzimuth);
+  const camRotDeg = (camRotRad * 180) / Math.PI;
+  const cosCam = Math.cos(camRotRad);
+  const sinCam = Math.sin(camRotRad);
   const toRadar = (wx, wz) => {
-    const nx = ((wx - playerX) / RADAR_RANGE) * RADAR_RADIUS;
-    const ny = ((wz - playerZ) / RADAR_RANGE) * RADAR_RADIUS;
+    const rawX = ((wx - playerX) / RADAR_RANGE) * RADAR_RADIUS;
+    const rawY = ((wz - playerZ) / RADAR_RANGE) * RADAR_RADIUS;
+    const nx = rawX * cosCam - rawY * sinCam;
+    const ny = rawX * sinCam + rawY * cosCam;
     const dist = Math.hypot(nx, ny);
     if (dist > RADAR_RADIUS) {
       const scale = RADAR_RADIUS / dist;
@@ -303,6 +323,18 @@ export function renderNorthUpSensorMinimap(hud) {
 
   const hullDeg = ((hud.playerHullAngle || 0) * 180) / Math.PI;
   const turretDeg = ((hud.playerTurretAngle || 0) * 180) / Math.PI;
+
+  const updateCardinal = (node, baseAngleRad) => {
+    if (!node) return;
+    const ang = baseAngleRad + camRotRad;
+    const cx = R_CENTER + Math.cos(ang) * R_CARDINAL;
+    const cy = R_CENTER + Math.sin(ang) * R_CARDINAL;
+    setAttr(node, 'transform', `translate(${fmt(cx)}, ${fmt(cy)})`);
+  };
+  updateCardinal(mm.cardN, -Math.PI * 0.5);
+  updateCardinal(mm.cardE, 0);
+  updateCardinal(mm.cardS, Math.PI * 0.5);
+  updateCardinal(mm.cardW, Math.PI);
 
   if (mm.hq) {
     const baseCenter = hud.baseCenter || { x: 0, z: (GRID_SIZE / 2 - 1.5) * TILE_SIZE };
@@ -375,17 +407,17 @@ export function renderNorthUpSensorMinimap(hud) {
         .join('');
       setHtml(
         mm.contract,
-        `<rect x="${(padPos.x - padW / 2).toFixed(1)}" y="${(padPos.y - padH / 2).toFixed(1)}" width="${padW.toFixed(1)}" height="${padH.toFixed(1)}" fill="#10b981" fill-opacity="0.28" stroke="#34d399" stroke-width="0.8" />${cargoMarks}`
+        `<rect x="${(padPos.x - padW / 2).toFixed(1)}" y="${(padPos.y - padH / 2).toFixed(1)}" width="${padW.toFixed(1)}" height="${padH.toFixed(1)}" transform="rotate(${fmt(camRotDeg)} ${padPos.x.toFixed(1)} ${padPos.y.toFixed(1)})" fill="#10b981" fill-opacity="0.28" stroke="#34d399" stroke-width="0.8" />${cargoMarks}`
       );
     } else {
       setHtml(mm.contract, '');
     }
   }
 
-  setAttr(mm.hull, 'transform', `rotate(${fmt(180 - hullDeg)})`);
-  setAttr(mm.turret, 'transform', `rotate(${fmt(180 - turretDeg)})`);
+  setAttr(mm.hull, 'transform', `rotate(${fmt(180 - hullDeg + camRotDeg)})`);
+  setAttr(mm.turret, 'transform', `rotate(${fmt(180 - turretDeg + camRotDeg)})`);
   if (mm.fov) {
-    setAttr(mm.fov, 'transform', `rotate(${fmt(180 - turretDeg)})`);
+    setAttr(mm.fov, 'transform', `rotate(${fmt(180 - turretDeg + camRotDeg)})`);
   }
 
   if (mm.ecmOverlay) {

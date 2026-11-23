@@ -17,7 +17,7 @@ import { ProfileSaveController } from './profile-save.js';
 import { PowerupsController } from './powerups-controller.js';
 import { AirSupportController } from './air-support-controller.js';
 import { ReconDroneController } from './recon-drone-controller.js';
-import { InputCameraController } from './input-camera.js';
+import { DEFAULT_CAMERA_AZIMUTH, InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
 import { TerrainDestructionController } from './terrain-destruction.js';
@@ -78,12 +78,11 @@ export class TankGameEngine {
     this.isDisposed = false;
 
     this.cameraPreset = 'ISOMETRIC';
-    this.cameraAzimuth = Math.PI * 0.25;
+    this.cameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
+    this.targetCameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
     this.missileFpvEnabled = false;
     this.missileFpvHoldTimer = 0;
     this.hardMode = false;
-    this.cameraRotating = false;
-    this.cameraDragPrevX = 0;
     this.aiDebugMode = false;
     this.inspectMode = false;
 
@@ -834,7 +833,6 @@ export class TankGameEngine {
     this.isAdPaused = next;
     this.keys = {};
     this.isMouseDown = false;
-    this.cameraRotating = false;
     this.syncAudioPauseState();
     if (!next && this.status === GameStatus.PLAYING) {
       this.renderer?.domElement?.focus?.({ preventScroll: true });
@@ -904,6 +902,10 @@ export class TankGameEngine {
 
   cycleCameraPreset(preset) {
     return this.inputCamera.cycleCameraPreset(preset);
+  }
+
+  rotateCameraStep(steps = 1) {
+    return this.inputCamera.rotateCameraStep(steps);
   }
 
   get powerupsController() {

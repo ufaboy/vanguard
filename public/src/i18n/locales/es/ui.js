@@ -132,6 +132,8 @@ export default {
   "NW": "NO",
   "Allied Base Garage & Upgrades [U]": "Garaje y mejoras de la base aliada [U]",
   "GARAGE [U]": "GARAJE [U]",
+  "Rotate Camera Left 90° [Q]": "Girar cámara 90° a la izquierda [Q]",
+  "Rotate Camera Right 90° [E]": "Girar cámara 90° a la derecha [E]",
   "Cycle Camera Angle [C]": "Cambiar ángulo de cámara [C]",
   "Missile Chase Camera [V]": "Cámara de seguimiento de misil [V]",
   "FPV [V]": "FPV [V]",
