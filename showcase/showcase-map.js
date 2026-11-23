@@ -1,20 +1,17 @@
-import pragueMap from '../public/maps/campaign/mission-13-prague-charles-bridge.json' with { type: 'json' };
+import berlinMap from '../public/maps/campaign/mission-16-berlin-brandenburg-gate.json' with { type: 'json' };
 
 /**
- * Builds the 40x40 Showcase Map on top of the Prague: Charles Bridge campaign map,
- * extending the Petrin forest canopy along the northern boulevard (rows 7..8, cols 4..10)
- * for Scene 1's forest convoy ambush.
+ * Builds the 40x40 Showcase Map on top of Mission 16 (Berlin: Brandenburg Gate),
+ * featuring the Brandenburg Gate, Victory Column, Tiergarten forest & lake,
+ * and wide avenues for all 6 tactical showcase highlights.
  */
 export function buildShowcaseMapDefinition() {
-  const objectLayout = pragueMap.objectLayout.map((row) => row.split(''));
-
-
   return {
-    ...pragueMap,
+    ...berlinMap,
     id: 999,
     mapId: 'showcase-demo',
     code: 'SHOWCASE // 40×40',
-    name: 'Prague: Tactical Showcase',
+    name: 'Berlin: Tactical Showcase',
     subtitle: 'SHOWCASE // FULL ARSENAL DEMONSTRATION',
     objective: 'Demonstrate all tactical systems',
     gameMode: 'extermination',
@@ -24,7 +21,7 @@ export function buildShowcaseMapDefinition() {
     },
     completionReward: { credits: 0 },
     enemies: {
-      ...pragueMap.enemies,
+      ...berlinMap.enemies,
       totalCount: 0,
       maxConcurrent: 0,
       spawnDelaySec: 999,
@@ -35,8 +32,7 @@ export function buildShowcaseMapDefinition() {
       enemyClass: 'BOSS_MAMMOTH',
       name: 'MAMMOTH MK-V',
       title: 'Super-Heavy Command Dreadnought',
-      spawnCell: { row: 25, col: 27 },
+      spawnCell: { row: 26, col: 28 },
     },
-    objectLayout: objectLayout.map((row) => row.join('')),
   };
 }

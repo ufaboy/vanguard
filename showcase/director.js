@@ -3,7 +3,7 @@ import { TILE_SIZE } from '../public/src/game/levels.js';
 import { EnemyClass, GameStatus } from '../public/src/game/types.js';
 
 /**
- * Interactive highlight director for the promo showcase reel on Prague: Charles Bridge.
+ * Interactive highlight director for the promo showcase reel on Berlin: Brandenburg Gate (Map 16).
  * - The player controls VANGUARD directly (WASD, mouse aim/fire, Space/Right-Click ATGM, 1..5 abilities, C/V camera & FPV).
  * - Enemy formations follow scripted routes and return fire when they have line-of-sight.
  * - Transitions to the next highlight 3.0 seconds after the last enemy tank in the scene is destroyed.
@@ -235,32 +235,29 @@ export class ShowcaseDirector {
   buildScenes() {
     const { engine } = this;
 
-    // 1. Forest Ambush — 4-tank convoy marching in single file along the Petrin forest edge
+    // 1. Forest Convoy Ambush — 4-tank convoy marching single-file along Tiergarten forest edge (row 18)
     const forestAmbush = {
       setup: () => {
         this.configureLoadout({ cannon: 3, chassis: 3, frame: 3, engine: 3, armor: 3, missiles: 4 });
-        // Player starts concealed inside the roadside forest at (row 7, col 9) facing north toward the convoy road
-        this.placePlayer(7, 9, Math.PI, Math.PI);
+        // Player concealed in Tiergarten forest (row 16, col 8) overlooking the east-west avenue
+        this.placePlayer(16, 8, 0, 0);
         engine.cameraAzimuth = Math.PI * 0.25;
         engine.frustumSize = 25;
         engine.updateCameraProjection?.();
 
-        // 4-tank single-file convoy marching west along row 6 (right alongside the forest at row 7..8, cols 4..10)
-        // Uniform convoy speed (2.7 world units/sec) keeps all 4 tanks spaced evenly one behind another
         const convoySpeed = 2.7;
-        this.spawnActor('c1', EnemyClass.SCOUT, 6, 15, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 0.9 });
-        this.spawnActor('c2', EnemyClass.STANDARD, 6, 18, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 1.1 });
-        this.spawnActor('c3', EnemyClass.SAPPER, 6, 21, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 1.3 });
-        this.spawnActor('c4', EnemyClass.ARMOR, 6, 24, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 1.5 });
-        engine.setStatusBanner('HIGHLIGHT 01 // FOREST CONVOY AMBUSH', 2.6);
+        this.spawnActor('c1', EnemyClass.SCOUT, 18, 16, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 0.9 });
+        this.spawnActor('c2', EnemyClass.STANDARD, 18, 19, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 1.1 });
+        this.spawnActor('c3', EnemyClass.SAPPER, 18, 22, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 1.3 });
+        this.spawnActor('c4', EnemyClass.ARMOR, 18, 25, { hullAngle: -Math.PI / 2, turretAngle: -Math.PI / 2, worldSpeed: convoySpeed, fireDelay: 1.5 });
+        engine.setStatusBanner('HIGHLIGHT 01 // TIERGARTEN CONVOY AMBUSH', 2.6);
       },
       update: (_t, dt) => {
         const { c1, c2, c3, c4 } = this.actors;
-        // Single-file convoy route along the forest edge (row 6, col -> 4), then turning south-east if unstopped
-        this.followActorRoute(c1, [[6, 4], [5, 18]], dt);
-        this.followActorRoute(c2, [[6, 6], [5, 20]], dt);
-        this.followActorRoute(c3, [[6, 8], [5, 22]], dt);
-        this.followActorRoute(c4, [[6, 10], [5, 24]], dt);
+        this.followActorRoute(c1, [[18, 2], [17, 16]], dt);
+        this.followActorRoute(c2, [[18, 4], [17, 18]], dt);
+        this.followActorRoute(c3, [[18, 6], [17, 20]], dt);
+        this.followActorRoute(c4, [[18, 8], [17, 22]], dt);
 
         this.aimAndAutoFireActor(c1, 1.5, dt);
         this.aimAndAutoFireActor(c2, 1.6, dt);
@@ -269,24 +266,24 @@ export class ShowcaseDirector {
       },
     };
 
-    // 2. Urban Corner-Peek & Bridge Barricade Breach
+    // 2. Urban Corner-Peek & Brick Breach (East of Brandenburg Gate, brick wall at col 27)
     const urbanCorner = {
       setup: () => {
         this.configureLoadout({ cannon: 4, chassis: 3, frame: 3, engine: 4, armor: 3, aps: 6, missiles: 3 });
-        this.placePlayer(16, 21, Math.PI, Math.PI);
+        this.placePlayer(23, 25, Math.PI / 2, Math.PI / 2);
         engine.cameraAzimuth = Math.PI * 0.25;
         engine.frustumSize = 25;
         engine.updateCameraProjection?.();
-        this.spawnActor('std', EnemyClass.STANDARD, 13, 22, { hullAngle: 0, fireDelay: 0.8 });
-        this.spawnActor('sapper', EnemyClass.SAPPER, 12, 24, { hullAngle: -Math.PI / 2, fireDelay: 1.0 });
-        this.spawnActor('armor', EnemyClass.ARMOR, 13, 25, { hullAngle: -Math.PI / 2, fireDelay: 1.2 });
-        this.spawnActor('striker', EnemyClass.STRIKER, 12, 27, { hullAngle: -Math.PI / 2, fireDelay: 1.4 });
-        engine.setStatusBanner('HIGHLIGHT 02 // CORNER PEEK & BREACH', 2.6);
+        this.spawnActor('std', EnemyClass.STANDARD, 22, 29, { hullAngle: -Math.PI / 2, fireDelay: 0.8 });
+        this.spawnActor('sapper', EnemyClass.SAPPER, 23, 30, { hullAngle: -Math.PI / 2, fireDelay: 1.0 });
+        this.spawnActor('armor', EnemyClass.ARMOR, 22, 32, { hullAngle: -Math.PI / 2, fireDelay: 1.2 });
+        this.spawnActor('striker', EnemyClass.STRIKER, 25, 31, { hullAngle: -Math.PI / 2, fireDelay: 1.4 });
+        engine.setStatusBanner('HIGHLIGHT 02 // URBAN CORNER PEEK & BREACH', 2.6);
       },
       update: (_t, dt) => {
         const { std, sapper, armor, striker } = this.actors;
-        this.followActorRoute(armor, [[13, 23]], dt, 0.55);
-        this.followActorRoute(striker, [[12, 24]], dt, 0.6);
+        this.followActorRoute(armor, [[22, 29]], dt, 0.55);
+        this.followActorRoute(striker, [[25, 27]], dt, 0.6);
 
         this.aimAndAutoFireActor(std, 1.5, dt);
         this.aimAndAutoFireActor(sapper, 1.6, dt);
@@ -295,24 +292,24 @@ export class ShowcaseDirector {
       },
     };
 
-    // 3. All-Terrain Vltava River Assault
+    // 3. All-Terrain Lake Assault (Tiergarten Lake rows 8..12, cols 5..9)
     const riverCrossing = {
       setup: () => {
         this.configureLoadout({ cannon: 4, chassis: 4, frame: 4, engine: 4, armor: 4, missiles: 4 });
-        this.placePlayer(22, 12, Math.PI, Math.PI);
+        this.placePlayer(14, 7, Math.PI, Math.PI);
         engine.cameraAzimuth = Math.PI * 0.25;
         engine.frustumSize = 26;
         engine.updateCameraProjection?.();
-        this.spawnActor('scout', EnemyClass.SCOUT, 15, 13, { hullAngle: 0, fireDelay: 0.8 });
-        this.spawnActor('flame', EnemyClass.FLAMETHROWER, 13, 13, { hullAngle: 0, fireDelay: 0.9 });
-        this.spawnActor('armor', EnemyClass.ARMOR, 13, 16, { hullAngle: -Math.PI / 2, fireDelay: 1.1 });
-        this.spawnActor('howie', EnemyClass.HOWITZER, 12, 18, { hullAngle: -Math.PI * 0.25, fireDelay: 1.4 });
-        engine.setStatusBanner('HIGHLIGHT 03 // ALL-TERRAIN RIVER ASSAULT', 2.6);
+        this.spawnActor('scout', EnemyClass.SCOUT, 9, 9, { hullAngle: Math.PI, fireDelay: 0.8 });
+        this.spawnActor('flame', EnemyClass.FLAMETHROWER, 7, 10, { hullAngle: Math.PI, fireDelay: 0.9 });
+        this.spawnActor('armor', EnemyClass.ARMOR, 6, 12, { hullAngle: -Math.PI / 2, fireDelay: 1.1 });
+        this.spawnActor('howie', EnemyClass.HOWITZER, 6, 14, { hullAngle: -Math.PI * 0.25, fireDelay: 1.4 });
+        engine.setStatusBanner('HIGHLIGHT 03 // ALL-TERRAIN LAKE ASSAULT', 2.6);
       },
       update: (t, dt) => {
         const { scout, flame, armor, howie } = this.actors;
-        this.followActorRoute(flame, [[14, 12]], dt, 0.5);
-        this.followActorRoute(armor, [[13, 14]], dt, 0.55);
+        this.followActorRoute(flame, [[8, 9]], dt, 0.5);
+        this.followActorRoute(armor, [[6, 10]], dt, 0.55);
 
         this.aimAndAutoFireActor(scout, 1.5, dt);
         this.aimAndAutoFireActor(flame, 1.0, dt);
@@ -320,35 +317,35 @@ export class ShowcaseDirector {
 
         if (t > 1.5 && howie && howie.hp > 0) {
           this.once('howie_barrage_1', () => {
-            engine.enemyCombat.triggerEnemyArtilleryBarrage(howie, this.cellToWorld(18, 12));
+            engine.enemyCombat.triggerEnemyArtilleryBarrage(howie, this.cellToWorld(11, 7));
           });
         }
         if (t > 5.5 && howie && howie.hp > 0) {
           this.once('howie_barrage_2', () => {
-            engine.enemyCombat.triggerEnemyArtilleryBarrage(howie, this.cellToWorld(15, 12));
+            engine.enemyCombat.triggerEnemyArtilleryBarrage(howie, this.cellToWorld(9, 7));
           });
         }
       },
     };
 
-    // 4. ATGM + Missile FPV (FPV enabled by default — press Space or Right-Click to launch in FPV!)
+    // 4. ATGM + Missile FPV (Open Boulevard row 17..18 past Brandenburg Gate)
     const atgmFpv = {
       setup: () => {
         this.configureLoadout({ cannon: 5, chassis: 4, frame: 4, engine: 4, armor: 4, missiles: 8, missileFpv: true });
-        this.placePlayer(5, 11, Math.PI / 2, Math.PI / 2);
+        this.placePlayer(17, 10, Math.PI / 2, Math.PI / 2);
         engine.cameraAzimuth = Math.PI * 0.25;
         engine.frustumSize = 27;
         engine.updateCameraProjection?.();
-        this.spawnActor('target', EnemyClass.ARMOR, 5, 24, { hullAngle: -Math.PI / 2, fireDelay: 1.0 });
-        this.spawnActor('striker', EnemyClass.STRIKER, 6, 27, { hullAngle: -Math.PI / 2, fireDelay: 1.3 });
-        this.spawnActor('std', EnemyClass.STANDARD, 5, 29, { hullAngle: -Math.PI / 2, fireDelay: 1.5 });
+        this.spawnActor('target', EnemyClass.ARMOR, 17, 25, { hullAngle: -Math.PI / 2, fireDelay: 1.0 });
+        this.spawnActor('striker', EnemyClass.STRIKER, 18, 28, { hullAngle: -Math.PI / 2, fireDelay: 1.3 });
+        this.spawnActor('std', EnemyClass.STANDARD, 17, 30, { hullAngle: -Math.PI / 2, fireDelay: 1.5 });
         engine.setStatusBanner('HIGHLIGHT 04 // ATGM MISSILE FPV [RIGHT CLICK / SPACE]', 3.0);
       },
       update: (_t, dt) => {
         const { target, striker, std } = this.actors;
-        this.followActorRoute(target, [[6, 18]], dt, 0.55);
-        this.followActorRoute(striker, [[6, 21]], dt, 0.55);
-        this.followActorRoute(std, [[5, 23]], dt, 0.6);
+        this.followActorRoute(target, [[17, 19]], dt, 0.55);
+        this.followActorRoute(striker, [[18, 22]], dt, 0.55);
+        this.followActorRoute(std, [[17, 24]], dt, 0.6);
 
         this.aimAndAutoFireActor(target, 1.7, dt);
         this.aimAndAutoFireActor(striker, 2.2, dt, { homing: true });
@@ -356,19 +353,19 @@ export class ShowcaseDirector {
       },
     };
 
-    // 5. Recon Drone + Air Strike Depot Wipeout (Press 3/R for Recon Drone, 4 for Air Strike!)
+    // 5. Recon Drone + Air Strike (Fuel Barrel & Oil Depot rows 14..15, cols 31..34)
     const reconAirStrike = {
       setup: () => {
         this.configureLoadout({ cannon: 5, chassis: 4, frame: 4, engine: 4, armor: 4, missiles: 6, reconDrone: true });
-        this.placePlayer(6, 18, Math.PI * 0.45, Math.PI * 0.45);
+        this.placePlayer(17, 23, Math.PI * 0.35, Math.PI * 0.35);
         engine.cameraAzimuth = Math.PI * 0.25;
         engine.frustumSize = 28;
         engine.updateCameraProjection?.();
-        this.spawnActor('e1', EnemyClass.STANDARD, 8, 28, { hullAngle: Math.PI, fireDelay: 0.9 });
-        this.spawnActor('e2', EnemyClass.SAPPER, 9, 30, { hullAngle: -Math.PI / 2, fireDelay: 1.1 });
-        this.spawnActor('e3', EnemyClass.HOWITZER, 10, 29, { hullAngle: -Math.PI / 2, fireDelay: 1.3 });
-        this.spawnActor('e4', EnemyClass.FLAMETHROWER, 8, 30, { hullAngle: Math.PI, fireDelay: 1.0 });
-        this.spawnActor('e5', EnemyClass.STRIKER, 7, 27, { hullAngle: -Math.PI / 2, fireDelay: 1.2 });
+        this.spawnActor('e1', EnemyClass.STANDARD, 14, 30, { hullAngle: Math.PI, fireDelay: 0.9 });
+        this.spawnActor('e2', EnemyClass.SAPPER, 15, 32, { hullAngle: -Math.PI / 2, fireDelay: 1.1 });
+        this.spawnActor('e3', EnemyClass.HOWITZER, 14, 35, { hullAngle: -Math.PI / 2, fireDelay: 1.3 });
+        this.spawnActor('e4', EnemyClass.FLAMETHROWER, 16, 33, { hullAngle: Math.PI, fireDelay: 1.0 });
+        this.spawnActor('e5', EnemyClass.STRIKER, 15, 35, { hullAngle: -Math.PI / 2, fireDelay: 1.2 });
         engine.setStatusBanner('HIGHLIGHT 05 // RECON DRONE [3] & AIR STRIKE [4]', 3.0);
       },
       update: (_t, dt) => {
@@ -380,7 +377,7 @@ export class ShowcaseDirector {
       },
     };
 
-    // 6. BOSS_MAMMOTH & Escort Climax Duel
+    // 6. BOSS_MAMMOTH & Escort Climax Duel (Unter den Linden Boulevard rows 25..26)
     const bossMammoth = {
       setup: () => {
         this.configureLoadout({
@@ -393,13 +390,13 @@ export class ShowcaseDirector {
           missiles: 8,
           reconDrone: true,
         });
-        this.placePlayer(24, 11, Math.PI / 2, Math.PI / 2);
+        this.placePlayer(25, 11, Math.PI / 2, Math.PI / 2);
         engine.cameraAzimuth = Math.PI * 0.25;
         engine.frustumSize = 27;
         engine.updateCameraProjection?.();
-        this.spawnActor('escort1', EnemyClass.STANDARD, 24, 20, { hullAngle: -Math.PI / 2, fireDelay: 0.8 });
-        this.spawnActor('escort2', EnemyClass.STRIKER, 25, 22, { hullAngle: -Math.PI / 2, fireDelay: 1.0 });
-        this.spawnActor('boss', EnemyClass.BOSS_MAMMOTH, 25, 26, {
+        this.spawnActor('escort1', EnemyClass.STANDARD, 25, 21, { hullAngle: -Math.PI / 2, fireDelay: 0.8 });
+        this.spawnActor('escort2', EnemyClass.STRIKER, 26, 23, { hullAngle: -Math.PI / 2, fireDelay: 1.0 });
+        this.spawnActor('boss', EnemyClass.BOSS_MAMMOTH, 26, 28, {
           hullAngle: -Math.PI / 2,
           hp: 180,
           isBoss: true,
@@ -409,14 +406,14 @@ export class ShowcaseDirector {
       },
       update: (t, dt) => {
         const { escort1, escort2, boss } = this.actors;
-        this.followActorRoute(escort1, [[24, 16]], dt, 0.65);
-        this.followActorRoute(escort2, [[25, 18]], dt, 0.6);
+        this.followActorRoute(escort1, [[25, 16]], dt, 0.65);
+        this.followActorRoute(escort2, [[26, 18]], dt, 0.6);
 
         this.aimAndAutoFireActor(escort1, 1.5, dt);
         this.aimAndAutoFireActor(escort2, 2.0, dt, { homing: true });
 
         if (boss && boss.hp > 0) {
-          this.followActorRoute(boss, [[25, 19]], dt, 0.45);
+          this.followActorRoute(boss, [[26, 20]], dt, 0.45);
           this.aimAndAutoFireActor(boss, 1.7, dt);
 
           if (t > 3.5) {
