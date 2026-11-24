@@ -239,7 +239,8 @@ export class ProjectilesController {
         : [];
       if (aliveEnemies.length !== 1) return false;
       const lastEnemy = aliveEnemies[0];
-      if (lastEnemy.hp > (p.damage ?? 0) * 1.1) return false;
+      const maxAspectBonus = lastEnemy.enemyClass === EnemyClass.BOSS_TITAN ? 1.0 : 1.35;
+      if (lastEnemy.hp - (p.damage ?? 0) * maxAspectBonus > DURABILITY.ZERO_HP) return false;
       const hasPendingBossStage =
         lastEnemy.isBoss &&
         Array.isArray(sector?.bossSequence) &&

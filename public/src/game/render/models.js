@@ -3901,7 +3901,9 @@ export class ModelFactory extends TextureGenerator {
 
     markOwned(burnGroup, { geometries: false, materials: false });
     group.userData.batchTile = false;
+    delete group.updateMatrixWorld;
     group.add(burnGroup);
+    group.updateMatrixWorld(true);
     const rig = {
       burnGroup,
       fireBed,
