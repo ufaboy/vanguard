@@ -26,9 +26,17 @@ function hasOpticalLineOfSight(
 ) {
   const p0 = { x: observerPos.x, y: observerPos.y ?? 1.2, z: observerPos.z };
   const p1 = { x: targetPos.x, y: targetPos.y ?? 1.2, z: targetPos.z };
+  const minX = Math.min(p0.x, p1.x);
+  const maxX = Math.max(p0.x, p1.x);
+  const minZ = Math.min(p0.z, p1.z);
+  const maxZ = Math.max(p0.z, p1.z);
 
   for (const obs of obstacles) {
     if (obs.state === 'destroyed' || obs.blocksSight === false) continue;
+    const rad = Math.max(obs.width || 2, obs.depth || 2) * 0.75;
+    if (obs.x + rad < minX || obs.x - rad > maxX || obs.z + rad < minZ || obs.z - rad > maxZ) {
+      continue;
+    }
     const localP0 = worldToLocalYaw(p0, obs, obs.yaw || 0);
     const localP1 = worldToLocalYaw(p1, obs, obs.yaw || 0);
     const half = {
@@ -127,14 +135,23 @@ export function updatePlayerSensorContacts({
       hasOpticalLineOfSight(player, e, obstacles, smokeClouds);
 
     if (opticallyVisible) {
-      contactMap.set(e.id, {
-        enemyId: e.id,
-        x: e.x,
-        z: e.z,
-        active: true,
-        age: 0,
-        source: 'optical',
-      });
+      const prev = contactMap.get(e.id);
+      if (prev) {
+        prev.x = e.x;
+        prev.z = e.z;
+        prev.active = true;
+        prev.age = 0;
+        prev.source = 'optical';
+      } else {
+        contactMap.set(e.id, {
+          enemyId: e.id,
+          x: e.x,
+          z: e.z,
+          active: true,
+          age: 0,
+          source: 'optical',
+        });
+      }
     } else if (contactMap.has(e.id)) {
       const prev = contactMap.get(e.id);
       prev.active = false;
@@ -145,7 +162,7 @@ export function updatePlayerSensorContacts({
     }
   }
 
-  for (const key of Array.from(contactMap.keys())) {
+  for (const key of contactMap.keys()) {
     if (!activeIds.has(key)) {
       contactMap.delete(key);
     }

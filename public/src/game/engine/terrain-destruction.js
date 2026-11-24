@@ -435,7 +435,9 @@ export class TerrainDestructionController {
       item.life -= dt;
       if (item.life <= 0) {
         engine.mapGroup.remove(item.mesh);
-        engine.brickRubble.splice(i, 1);
+        const last = engine.brickRubble.length - 1;
+        if (i !== last) engine.brickRubble[i] = engine.brickRubble[last];
+        engine.brickRubble.pop();
       }
     }
   }

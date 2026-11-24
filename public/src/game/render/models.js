@@ -2643,9 +2643,13 @@ export class ModelFactory extends TextureGenerator {
         data.slabMesh = data.capMesh = data.crackGroup = data.rebarGroup = data.concreteMat = null;
       }
       // The block darkens with every hit; model states only change a few times.
-      if (ratio < 1) data.modelMaterial ||= markMaterialOwned(this.concreteModels.material.clone());
-      data.modelMaterial?.color.setRGB(shade / 255, (shade + 10) / 255, (shade + 23) / 255, THREE.SRGBColorSpace);
-      this.concreteModels.apply(blockGroup, state, data.breach?.variant, data.modelMaterial);
+      if (ratio < 1) {
+        blockGroup.userData.instanceColor ||= new THREE.Color();
+        blockGroup.userData.instanceColor.setRGB(shade / 255, (shade + 10) / 255, (shade + 23) / 255, THREE.SRGBColorSpace);
+      } else {
+        blockGroup.userData.instanceColor = null;
+      }
+      this.concreteModels.apply(blockGroup, state, data.breach?.variant);
       return;
     }
 
@@ -3669,7 +3673,7 @@ export class ModelFactory extends TextureGenerator {
       this.oilPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
         const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
         mask.channel = 1;
-        return new THREE.MeshStandardMaterial({
+        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
           map: oilTex,
           alphaMap: mask,
           transparent: true,
@@ -3679,7 +3683,7 @@ export class ModelFactory extends TextureGenerator {
           polygonOffset: true,
           polygonOffsetFactor: -2,
           polygonOffsetUnits: -2,
-        });
+        }));
       });
     }
 
@@ -3830,33 +3834,36 @@ export class ModelFactory extends TextureGenerator {
       });
     }
 
-    const span = TILE_SIZE / SAND_PATCH_CELL_FRACTION;
-    const geometry = new THREE.PlaneGeometry(span, span);
-    geometry.setAttribute('uv1', geometry.attributes.uv.clone());
-    const pos = geometry.attributes.position;
-    const uv = geometry.attributes.uv;
-    const patternSpan = TILE_SIZE * SAND_PATTERN_CELLS;
-    for (let i = 0; i < pos.count; i++) {
-      uv.setXY(i, (x + pos.getX(i)) / patternSpan, (z - pos.getY(i)) / patternSpan);
-    }
+    const group = this.createSeamlessSurfacePatch(x, z, this.oilPatchMats, 0.015);
+    group.userData.oilCellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
+    return group;
+  }
 
-    const cellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
-    const floor = new THREE.Mesh(geometry, this.oilPatchMats[cellHash % SAND_PATCH_VARIANTS]);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = 0.015;
-    floor.receiveShadow = true;
+  /** Lazily creates and caches shared geometries for burning oil slick rigs. */
+  ensureOilBurnGeometries() {
+    if (this.oilFireBedGeo) return;
+    const bedSpan = TILE_SIZE * 1.18;
+    this.oilFireBedGeo = new THREE.PlaneGeometry(bedSpan, bedSpan);
+    this.oilFireWaveGeo = new THREE.PlaneGeometry(bedSpan * 0.84, bedSpan * 0.84);
+    this.oilFlameTongueGeo = new THREE.PlaneGeometry(1, 1);
+    this.oilFlameTongueGeo.translate(0, 0.48, 0);
+    this.oilBoilRingGeo = new THREE.PlaneGeometry(0.75, 0.75);
+  }
 
-    // 3D Burning Inferno Rig (activated when the oil slick ignites)
+  /** Lazily attaches a 3D burning inferno rig when an oil slick tile ignites. */
+  attachOilBurnRig(group) {
+    if (group.userData.burnRig) return group.userData.burnRig;
+    this.ensureOilBurnGeometries();
+
     const burnGroup = new THREE.Group();
     burnGroup.visible = false;
 
-    const bedSpan = TILE_SIZE * 1.18;
-    const fireBed = new THREE.Mesh(new THREE.PlaneGeometry(bedSpan, bedSpan), this.oilFireBedMat);
+    const fireBed = new THREE.Mesh(this.oilFireBedGeo, this.oilFireBedMat);
     fireBed.rotation.x = -Math.PI / 2;
     fireBed.position.y = 0.024;
     burnGroup.add(fireBed);
 
-    const fireWave = new THREE.Mesh(new THREE.PlaneGeometry(bedSpan * 0.84, bedSpan * 0.84), this.oilFireBedMat);
+    const fireWave = new THREE.Mesh(this.oilFireWaveGeo, this.oilFireBedMat);
     fireWave.rotation.x = -Math.PI / 2;
     fireWave.rotation.z = 1.1;
     fireWave.position.y = 0.03;
@@ -3871,9 +3878,7 @@ export class ModelFactory extends TextureGenerator {
       { x: 0.36, z: 0.34, yaw: 2.72, w: 1.0, h: 0.82, phase: 5.7 },
     ];
     const flameTongues = tongueSpecs.map((spec) => {
-      const tGeo = new THREE.PlaneGeometry(1, 1);
-      tGeo.translate(0, 0.48, 0);
-      const mesh = new THREE.Mesh(tGeo, this.oilFlameSheetMat);
+      const mesh = new THREE.Mesh(this.oilFlameTongueGeo, this.oilFlameSheetMat);
       mesh.position.set(spec.x, 0.02, spec.z);
       mesh.rotation.y = spec.yaw;
       mesh.scale.set(spec.w, spec.h, 1);
@@ -3887,36 +3892,38 @@ export class ModelFactory extends TextureGenerator {
       { x: 0.05, z: 0.34, phase: 0.68 },
     ];
     const boilRings = boilSpecs.map((spec) => {
-      const rMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.75), this.oilBoilRingMat);
+      const rMesh = new THREE.Mesh(this.oilBoilRingGeo, this.oilBoilRingMat);
       rMesh.rotation.x = -Math.PI / 2;
       rMesh.position.set(spec.x, 0.034, spec.z);
       burnGroup.add(rMesh);
       return { mesh: rMesh, ...spec };
     });
 
-    const group = new THREE.Group();
-    group.position.set(x, 0, z);
-    group.add(floor);
+    markOwned(burnGroup, { geometries: false, materials: false });
+    group.userData.batchTile = false;
     group.add(burnGroup);
-    group.userData.burnRig = {
+    const rig = {
       burnGroup,
       fireBed,
       fireWave,
       flameTongues,
       boilRings,
-      phaseOffset: (cellHash % 100) * 0.0628,
+      phaseOffset: ((group.userData.oilCellHash ?? 0) % 100) * 0.0628,
     };
-    return markOwned(group, { materials: false });
+    group.userData.burnRig = rig;
+    return rig;
   }
 
   /** Dynamically animates the 3D burning oil slick fire-bed, boiling rings, and flame crown. */
   updateOilSlickBurn(mesh, isBurning, intensity = 1, time = 0) {
-    const rig = mesh?.userData?.burnRig;
-    if (!rig) return;
     if (!isBurning || intensity <= 0.01) {
-      rig.burnGroup.visible = false;
+      if (mesh?.userData?.burnRig) {
+        mesh.userData.burnRig.burnGroup.visible = false;
+      }
       return;
     }
+    const rig = mesh?.userData?.burnRig || (mesh ? this.attachOilBurnRig(mesh) : null);
+    if (!rig) return;
     rig.burnGroup.visible = true;
     const s = Math.max(0.25, Math.min(1.15, intensity));
     const t = time + rig.phaseOffset;

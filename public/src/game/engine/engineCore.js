@@ -1664,7 +1664,9 @@ export class TankGameEngine {
       pt.life -= dt;
       if (pt.life <= 0) {
         this.fxGroup.remove(pt.mesh);
-        this.particles.splice(i, 1);
+        const last = this.particles.length - 1;
+        if (i !== last) this.particles[i] = this.particles[last];
+        this.particles.pop();
         continue;
       }
 
