@@ -353,7 +353,8 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
         .map(([type, count]) => {
           const { name, anchor } = getEnemyDisplayInfo(type);
           const href = `${PAGE_PATHS.enemies}#${encodeURIComponent(anchor)}`;
-          return `<a class="campaign-roster-chip" href="${escapeHtml(href)}">${escapeHtml(t(name))} ×${count}</a>`;
+          const bossAttr = String(type || '').toUpperCase().startsWith('BOSS_') ? ' data-boss="true"' : '';
+          return `<a class="campaign-roster-chip" href="${escapeHtml(href)}"${bossAttr}><span class="campaign-roster-name">${escapeHtml(t(name))}</span><span class="campaign-roster-count">×${count}</span></a>`;
         })
         .join('');
     }
