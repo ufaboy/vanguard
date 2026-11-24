@@ -1222,7 +1222,7 @@ export class AirSupportController {
       !occupiedByMine;
 
     if (isEmptyCell) {
-      engine.explosions?.plantMineAt(x, z, { neutral: true, armTimer: 0.4 });
+      engine.explosions?.plantMineAt(x, z, { neutral: true, armTimer: 0.4, discovered: true });
     } else {
       const blastRadius = LAND_MINE.BLAST_RADIUS_CELLS * TILE_SIZE;
       engine.fx?.shockwave?.(x, 0.1, z, 0.35, blastRadius, 0xff5a14, 0.48);

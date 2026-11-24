@@ -118,6 +118,9 @@ export function buildHudSnapshot(engine) {
     priorityTargetId: engine.priorityTargetId,
     observedTarget,
     sensorContacts: sensorContactsList,
+    discoveredMines: (engine.mines || [])
+      .filter((m) => m && m.discovered)
+      .map((m) => ({ id: m.id, x: m.x, z: m.z })),
     lootContainers: engine.lootContainers.map((c) => ({
       id: c.id,
       x: c.x,

@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.10.0 // TACTICAL MECHANICS")}</span>
+            <strong>{t("Proximity Mine Detection &amp; Radar Markers")}</strong>
+            <p>{t("Map-placed and enemy mines now remain hidden until detected within a 3-cell radius of the player tank (through obstacles) or revealed by the Recon Drone, fading smoothly into view with a mine-detector audio ping and staying marked permanently once discovered. Player air-dropped mines remain visible immediately, and all discovered mines within radar range appear as distinct amber markers on the tactical minimap unaffected by Jammer ECM.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 4.9.4 // PERFORMANCE")}</span>
             <strong>{t("Combat Frame-Pacing, AI Pathfinding &amp; Rendering Optimizations")}</strong>
             <p>{t("Eliminated mid-combat frame spikes by removing redundant TileBatcher syncs during multi-tile explosions, pre-warming procedural rubble/crater/sand/swamp assets at sector load, staggering AI alert replanning with pooled typed-array A* pathfinding, optimizing continuous water/ice surface generation, deferring mid-combat storage writes, coalescing per-frame HUD and pointer aim updates, batching oil slick tiles with lazy fire rigs, and removing per-frame material cloning and array allocations.")}</p>
