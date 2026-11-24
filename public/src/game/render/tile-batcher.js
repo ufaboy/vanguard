@@ -165,7 +165,8 @@ export class TileBatcher {
       const visible = isEffectivelyVisible(mesh, tileRoot);
       batch.mesh.setMatrixAt(slot, visible ? mesh.matrixWorld : ZERO_MATRIX);
       const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-      batch.mesh.setColorAt(slot, mat.color || WHITE);
+      const color = mesh.userData?.instanceColor || tileRoot.userData?.instanceColor || mat.color || WHITE;
+      batch.mesh.setColorAt(slot, color);
       batch.needsUpload = true;
     }
   }

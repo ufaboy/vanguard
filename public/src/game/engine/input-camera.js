@@ -18,6 +18,22 @@ export class InputCameraController {
     this.engine = engine;
     this.activeCanvasTouches = new Map();
     this.pinchPrevDist = null;
+    this._canvasRect = null;
+    this._pointerAimDirty = false;
+  }
+
+  refreshCanvasRect() {
+    const el = this.engine.renderer?.domElement;
+    this._canvasRect = el ? el.getBoundingClientRect() : null;
+  }
+
+  flushPointerAim() {
+    if (!this._pointerAimDirty || !this.hasPointerPos) return;
+    this._pointerAimDirty = false;
+    this.updateAimFromPointer({ clientX: this.pointerClientX, clientY: this.pointerClientY });
+    if (this.engine.airSupportTargeting) {
+      this.engine.airSupportController?.updateReticlePosition?.(this.engine.aimWorld.x, this.engine.aimWorld.z);
+    }
   }
 
   rotateCameraStep(steps = 1) {
@@ -44,7 +60,10 @@ export class InputCameraController {
   updateAimFromPointer(e) {
     const { engine } = this;
     if (engine.isMissileFpvActive?.()) return;
-    const rect = engine.renderer.domElement.getBoundingClientRect();
+    const rect =
+      this._canvasRect && this._canvasRect.width && this._canvasRect.height
+        ? this._canvasRect
+        : engine.renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     engine.mouseNdc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     engine.mouseNdc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -164,13 +183,10 @@ export class InputCameraController {
         return;
       }
 
-      this.updateAimFromPointer(e);
       this.pointerClientX = e.clientX;
       this.pointerClientY = e.clientY;
       this.hasPointerPos = true;
-      if (engine.airSupportTargeting) {
-        engine.airSupportController.updateReticlePosition(engine.aimWorld.x, engine.aimWorld.z);
-      }
+      this._pointerAimDirty = true;
     };
 
     engine.handlePointerDown = (e) => {
@@ -278,6 +294,7 @@ export class InputCameraController {
       engine.updateCameraProjection();
 
       engine.renderer.setSize(width, height, false);
+      this.refreshCanvasRect();
     };
 
     window.addEventListener('keydown', engine.handleKeyDown);
@@ -297,6 +314,17 @@ export class InputCameraController {
     window.addEventListener('pointercancel', engine.handlePointerUp);
     engine.handleContextMenu = (e) => e.preventDefault();
     canvas.addEventListener('contextmenu', engine.handleContextMenu);
+    engine.handlePageHide = () => engine.saveRepo?.flushPendingSave?.();
+    engine.handleVisibilityChange = () => {
+      if (typeof document !== 'undefined' && document.hidden) {
+        engine.saveRepo?.flushPendingSave?.();
+      }
+    };
+    window.addEventListener('pagehide', engine.handlePageHide);
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', engine.handleVisibilityChange);
+    }
+    this.refreshCanvasRect();
   }
 
   cycleCameraPreset(preset) {

@@ -121,7 +121,7 @@ export class GarageOps {
     if (!e.playerSave) return;
     e.playerSave.componentDamage = { ...e.componentDamage };
     e.playerSave.componentDamageCooldown = e.componentDamageCooldown;
-    e.saveRepo?.savePlayerSave?.(e.playerSave);
+    e.saveRepo?.savePlayerSave?.(e.playerSave, { defer: e.status === GameStatus.PLAYING });
   }
 
   tryDamageComponent(damage, hit) {

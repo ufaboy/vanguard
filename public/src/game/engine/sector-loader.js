@@ -799,6 +799,7 @@ export class SectorLoaderController {
       engine.syncAudioPauseState();
     }
 
+    engine.modelFactory?.prewarmCombatAssets?.();
     engine.emitHudUpdate();
   }
 }
