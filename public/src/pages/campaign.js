@@ -1,4 +1,4 @@
-import { battlefieldUrl, PAGE_PATHS } from '../app/routes.js';
+import { battlefieldUrl, pageUrl } from '../app/routes.js';
 import { t } from '../i18n/index.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
@@ -343,7 +343,7 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
       rosterEl.innerHTML = aggregateRoster(selected.enemyRoster)
         .map(([type, count]) => {
           const { name, anchor } = getEnemyDisplayInfo(type);
-          const href = `${PAGE_PATHS.enemies}#${encodeURIComponent(anchor)}`;
+          const href = `${pageUrl('enemies')}#${encodeURIComponent(anchor)}`;
           const bossAttr = String(type || '').toUpperCase().startsWith('BOSS_') ? ' data-boss="true"' : '';
           return `<a class="campaign-roster-chip" href="${escapeHtml(href)}"${bossAttr}><span class="campaign-roster-name">${escapeHtml(t(name))}</span><span class="campaign-roster-count">×${count}</span></a>`;
         })

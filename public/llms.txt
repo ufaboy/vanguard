@@ -22,7 +22,7 @@
 ## Guides & Reference
 
 - [How to Play](https://battletank.online/how-to-play.md): Controls, HUD breakdown, combat rules, and survival tips.
-- [Walkthrough](https://battletank.online/walkthrough.md): Sector-by-sector tactical strategies and boss counterplay.
+- [Walkthrough](https://battletank.online/campaign/walkthrough.md): Sector-by-sector tactical strategies and boss counterplay.
 - [Enemy Database](https://battletank.online/enemies.md): Profiles, behaviors, and weaknesses for all enemy tank classes and bosses.
 - [Arsenal & Upgrades](https://battletank.online/arsenal.md): Complete breakdown of cannons, chassis, frames, engines, armor tiers, and optional modules.
 - [Destructible Terrain](https://battletank.online/destructible-terrain.md): Wall durability, cover, water, ice, mud, explosive objects, and HQ defense.
