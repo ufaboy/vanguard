@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.9.4 // PERFORMANCE")}</span>
+            <strong>{t("Combat Frame-Pacing, AI Pathfinding &amp; Rendering Optimizations")}</strong>
+            <p>{t("Eliminated mid-combat frame spikes by removing redundant TileBatcher syncs during multi-tile explosions, pre-warming procedural rubble/crater/sand/swamp assets at sector load, staggering AI alert replanning with pooled typed-array A* pathfinding, optimizing continuous water/ice surface generation, deferring mid-combat storage writes, coalescing per-frame HUD and pointer aim updates, batching oil slick tiles with lazy fire rigs, and removing per-frame material cloning and array allocations.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 4.9.3 // CAMPAIGN MAPS &amp; EDITOR")}</span>
             <strong>{t("Campaign Mission 03–14 Map Refinements &amp; 3D Editor Cursor")}</strong>
             <p>{t("Refined surface roads, tactical cover, and encounter placements across Campaign Missions 03 through 14 (Milan, Lake Garda, Dolomites, Füssen, Innsbruck, Hohensalzburg, Wachau, Vienna Hofburg, Moravian Karst, Prague Charles Bridge, and Bohemian Forest), and elevated the 3D editor tile cursor render order.")}</p>
