@@ -331,8 +331,10 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
   if (objEl) objEl.textContent = t(selected.objective);
 
   const briefDetails = document.querySelector('.campaign-brief-details');
+  const situationBlock = document.querySelector('[data-mission-situation]');
   const briefClassified = document.querySelector('.campaign-brief-classified');
   if (briefDetails) briefDetails.hidden = isClassified;
+  if (situationBlock) situationBlock.hidden = isClassified;
   if (briefClassified) {
     briefClassified.hidden = !isClassified;
     if (isClassified) {

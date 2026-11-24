@@ -185,23 +185,9 @@ const jsonLd = [
         <p class="campaign-brief-objective">{t("Clear the Consortium strike teams before they regroup")}</p>
       </div>
 
-      <div class="campaign-brief-details">
-        <div class="campaign-brief-block">
-          <span class="campaign-brief-section-label">{t("SITUATION & WHY")}</span>
-          <p class="campaign-brief-text">{t("Consortium strike teams have occupied the Roman Forum and the Colosseum square. A howitzer covers the central avenue, so use the temple passages and brick breaches to flank their positions. Clear every hostile unit before they regroup.")}</p>
-        </div>
-        <div class="campaign-brief-block">
-          <span class="campaign-brief-section-label">{t("BATTLEFIELD INTEL")}</span>
-          <p class="campaign-brief-layout">{t("Interlocking urban loops through the Roman Forum, a bent imperial avenue and the Colosseum square, with cross streets and three destructible breaches.")}</p>
-        </div>
-        <div class="campaign-brief-block">
-          <span class="campaign-brief-section-label">{t("HOSTILE FORCES")}</span>
-          <div class="campaign-roster-chips">
-            <a class="campaign-roster-chip" href={`${h("./enemies")}#scout`}><span class="campaign-roster-name">{t('Recon Light Tank "Viper"')}</span><span class="campaign-roster-count">×5</span></a>
-            <a class="campaign-roster-chip" href={`${h("./enemies")}#standard`}><span class="campaign-roster-name">{t('Standard Battle Tank "Lancet"')}</span><span class="campaign-roster-count">×14</span></a>
-            <a class="campaign-roster-chip" href={`${h("./enemies")}#howitzer`}><span class="campaign-roster-name">{t('Howitzer Artillery Tank "Grad"')}</span><span class="campaign-roster-count">×1</span></a>
-          </div>
-        </div>
+      <div class="campaign-brief-block" data-mission-situation>
+        <span class="campaign-brief-section-label">{t("SITUATION & WHY")}</span>
+        <p class="campaign-brief-text">{t("Consortium strike teams have occupied the Roman Forum and the Colosseum square. A howitzer covers the central avenue, so use the temple passages and brick breaches to flank their positions. Clear every hostile unit before they regroup.")}</p>
       </div>
 
       <p class="campaign-brief-classified" hidden></p>
@@ -233,6 +219,21 @@ const jsonLd = [
         <div class="campaign-recon-classified">
           <span class="classified-stamp">{t("CLASSIFIED")}</span>
           <span class="campaign-classified-sub">{t("Pass Sector {n} to unlock recon imagery", { n: 0 })}</span>
+        </div>
+      </div>
+
+      <div class="campaign-brief-details">
+        <div class="campaign-brief-block">
+          <span class="campaign-brief-section-label">{t("BATTLEFIELD INTEL")}</span>
+          <p class="campaign-brief-layout">{t("Interlocking urban loops through the Roman Forum, a bent imperial avenue and the Colosseum square, with cross streets and three destructible breaches.")}</p>
+        </div>
+        <div class="campaign-brief-block">
+          <span class="campaign-brief-section-label">{t("HOSTILE FORCES")}</span>
+          <div class="campaign-roster-chips">
+            <a class="campaign-roster-chip" href={`${h("./enemies")}#scout`}><span class="campaign-roster-name">{t('Recon Light Tank "Viper"')}</span><span class="campaign-roster-count">×5</span></a>
+            <a class="campaign-roster-chip" href={`${h("./enemies")}#standard`}><span class="campaign-roster-name">{t('Standard Battle Tank "Lancet"')}</span><span class="campaign-roster-count">×14</span></a>
+            <a class="campaign-roster-chip" href={`${h("./enemies")}#howitzer`}><span class="campaign-roster-name">{t('Howitzer Artillery Tank "Grad"')}</span><span class="campaign-roster-count">×1</span></a>
+          </div>
         </div>
       </div>
     </div>
