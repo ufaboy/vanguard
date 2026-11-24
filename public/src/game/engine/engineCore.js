@@ -243,6 +243,8 @@ export class TankGameEngine {
 
     this.nextEnemyId = 1;
     this.enemiesRemainingToSpawn = 0;
+    this._inUpdateStep = false;
+    this._hudDirty = false;
     this.spawnPoolCursor = 0;
     this.spawnTimer = 0;
     this.bossSpawned = false;
@@ -1165,6 +1167,7 @@ export class TankGameEngine {
 
     sound.setListener(this.playerX, this.playerZ, this.playerStats?.sightRadius || 28.0);
 
+    this.inputCamera.flushPointerAim();
     this.aimReticle.position.set(this.aimWorld.x, 0, this.aimWorld.z);
     this.aimReticle.rotation.y = elapsed * 2.2;
 
@@ -1198,104 +1201,111 @@ export class TankGameEngine {
     }
 
     const perf = this.perfMonitor.enabled ? this.perfMonitor : null;
+    this._inUpdateStep = true;
+    try {
+      if (this.status === GameStatus.PLAYING) {
+        let t = perf ? performance.now() : 0;
+        this.componentDamageCooldown = Math.max(0, this.componentDamageCooldown - dt);
+        this.updatePlayer(dt, elapsed);
+        this.playerController.updateBaseMaintenance(dt);
+        this.updateApsInterception(dt);
+        if (perf) perf.recordUpdatePhase('player', performance.now() - t);
 
-    if (this.status === GameStatus.PLAYING) {
-      let t = perf ? performance.now() : 0;
-      this.componentDamageCooldown = Math.max(0, this.componentDamageCooldown - dt);
-      this.updatePlayer(dt, elapsed);
-      this.playerController.updateBaseMaintenance(dt);
-      this.updateApsInterception(dt);
-      if (perf) perf.recordUpdatePhase('player', performance.now() - t);
+        t = perf ? performance.now() : 0;
+        this.updateSpawnerLogic(dt);
+        if (this.contractState) {
+          this.contractDirector.update(dt, elapsed);
+        }
+        this.updateEnemies(dt, elapsed);
+        this.defenseTurretsCtrl.update(dt, elapsed);
+        if (perf) perf.recordUpdatePhase('enemies', performance.now() - t);
 
-      t = perf ? performance.now() : 0;
-      this.updateSpawnerLogic(dt);
-      if (this.contractState) {
-        this.contractDirector.update(dt, elapsed);
-      }
-      this.updateEnemies(dt, elapsed);
-      this.defenseTurretsCtrl.update(dt, elapsed);
-      if (perf) perf.recordUpdatePhase('enemies', performance.now() - t);
+        t = perf ? performance.now() : 0;
+        this.updateProjectiles(dt);
+        this.updateMines(dt, elapsed);
+        this.updateLasers(dt);
+        if (perf) perf.recordUpdatePhase('projectiles', performance.now() - t);
 
-      t = perf ? performance.now() : 0;
-      this.updateProjectiles(dt);
-      this.updateMines(dt, elapsed);
-      this.updateLasers(dt);
-      if (perf) perf.recordUpdatePhase('projectiles', performance.now() - t);
-
-      t = perf ? performance.now() : 0;
-      this.explosions.updateHazardZones(dt, elapsed);
-      this.updatePowerUps(dt, elapsed);
-      this.powerupsController.updateAirDrops(dt, elapsed);
-      this.airSupportController.update(dt, elapsed);
-      this.reconDroneController.update(dt, elapsed);
-      this.playerController.updateSmokeAndLoot(dt);
-      this.updateBarrelExplosions(dt);
-      this.terrainDestruction.updateBurningOil(dt);
-      this.updateBrickRubble(dt);
-      this.forestFire.update(dt, elapsed);
-      if (perf) perf.recordUpdatePhase('world', performance.now() - t);
-    } else if (this.status === GameStatus.VICTORY && this.victoryCinematicsTimer > 0) {
-      const { finished, restoredFrustum } = stepVictoryCinematics(this.victoryCinematics, dt, {
-        onSpark: (x, z) => this.spawnSparks?.(x, 0.7, z, 0xff8833, 2),
-      });
-      this.victoryCinematicsTimer = this.victoryCinematics?.remaining ?? 0;
-      this.updateProjectiles(dt);
-      this.explosions.updateHazardZones(dt, elapsed);
-      this.updateBarrelExplosions(dt);
-      this.terrainDestruction.updateBurningOil(dt);
-      this.updateBrickRubble(dt);
-      this.forestFire.update(dt, elapsed);
-      if (this.playerRig && !this.playerDeathState) {
+        t = perf ? performance.now() : 0;
+        this.explosions.updateHazardZones(dt, elapsed);
+        this.updatePowerUps(dt, elapsed);
+        this.powerupsController.updateAirDrops(dt, elapsed);
+        this.airSupportController.update(dt, elapsed);
+        this.reconDroneController.update(dt, elapsed);
+        this.playerController.updateSmokeAndLoot(dt);
+        this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateBurningOil(dt);
+        this.updateBrickRubble(dt);
+        this.forestFire.update(dt, elapsed);
+        if (perf) perf.recordUpdatePhase('world', performance.now() - t);
+      } else if (this.status === GameStatus.VICTORY && this.victoryCinematicsTimer > 0) {
+        const { finished, restoredFrustum } = stepVictoryCinematics(this.victoryCinematics, dt, {
+          onSpark: (x, z) => this.spawnSparks?.(x, 0.7, z, 0xff8833, 2),
+        });
+        this.victoryCinematicsTimer = this.victoryCinematics?.remaining ?? 0;
+        this.updateProjectiles(dt);
+        this.explosions.updateHazardZones(dt, elapsed);
+        this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateBurningOil(dt);
+        this.updateBrickRubble(dt);
+        this.forestFire.update(dt, elapsed);
+        if (this.playerRig && !this.playerDeathState) {
+          const canHover = Boolean(this.playerStats?.canHover);
+          const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
+          this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
+          this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
+        }
+        if (finished) {
+          if (restoredFrustum) {
+            this.frustumSize = restoredFrustum;
+            this.updateCameraProjection?.();
+          }
+          this.victoryCinematics = null;
+          this.emitHudUpdate();
+        }
+      } else if (this.status === GameStatus.GAME_OVER && this.defeatCinematicsTimer > 0) {
+        this.defeatCinematicsTimer = Math.max(0, this.defeatCinematicsTimer - dt);
+        this.playerController.updatePlayerDeathSequence(dt);
+        this.updateProjectiles(dt);
+        this.explosions.updateHazardZones(dt, elapsed);
+        this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateBurningOil(dt);
+        this.updateBrickRubble(dt);
+        this.forestFire.update(dt, elapsed);
+        if (this.defeatCinematicsTimer <= 0) {
+          this.emitHudUpdate();
+        }
+      } else if (this.playerRig && !this.playerDeathState) {
         const canHover = Boolean(this.playerStats?.canHover);
         const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
         this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
+        if (this.inspectMode) {
+          this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;
+        }
         this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
       }
-      if (finished) {
-        if (restoredFrustum) {
-          this.frustumSize = restoredFrustum;
-          this.updateCameraProjection?.();
-        }
-        this.victoryCinematics = null;
-        this.emitHudUpdate();
-      }
-    } else if (this.status === GameStatus.GAME_OVER && this.defeatCinematicsTimer > 0) {
-      this.defeatCinematicsTimer = Math.max(0, this.defeatCinematicsTimer - dt);
-      this.playerController.updatePlayerDeathSequence(dt);
-      this.updateProjectiles(dt);
-      this.explosions.updateHazardZones(dt, elapsed);
-      this.updateBarrelExplosions(dt);
-      this.terrainDestruction.updateBurningOil(dt);
-      this.updateBrickRubble(dt);
-      this.forestFire.update(dt, elapsed);
-      if (this.defeatCinematicsTimer <= 0) {
-        this.emitHudUpdate();
-      }
-    } else if (this.playerRig && !this.playerDeathState) {
-      const canHover = Boolean(this.playerStats?.canHover);
-      const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
-      this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
-      if (this.inspectMode) {
-        this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;
-      }
-      this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
-    }
 
-    const fxStart = perf ? performance.now() : 0;
-    this.updateParticles(dt);
-    this.inputCamera.updateCamera(dt, elapsed);
-    this.fx.update(dt, this.getActiveCamera(), this.renderer);
-    if (perf) perf.recordUpdatePhase('fx', performance.now() - fxStart);
+      const fxStart = perf ? performance.now() : 0;
+      this.updateParticles(dt);
+      this.inputCamera.updateCamera(dt, elapsed);
+      this.fx.update(dt, this.getActiveCamera(), this.renderer);
+      if (perf) perf.recordUpdatePhase('fx', performance.now() - fxStart);
+    } finally {
+      this._inUpdateStep = false;
+    }
 
     if (!(this.status === GameStatus.PAUSED && this.airSupportTargeting)) {
       this.hudSyncAccumulator += dt;
       const hudInterval = this.status === GameStatus.PLAYING ? (this.quality === 'low' ? 0.2 : 0.12) : 0.5;
-      if (this.hudSyncAccumulator >= hudInterval) {
+      if (this._hudDirty || this.hudSyncAccumulator >= hudInterval) {
         this.hudSyncAccumulator = 0;
+        this._hudDirty = false;
         const hudStart = perf ? performance.now() : 0;
         this.emitHudUpdate();
         if (perf) perf.recordUpdatePhase('hud', performance.now() - hudStart);
       }
+    } else if (this._hudDirty) {
+      this.emitHudUpdate();
     }
   }
 
@@ -1687,6 +1697,11 @@ export class TankGameEngine {
   }
 
   emitHudUpdate() {
+    if (this._inUpdateStep && this.status === GameStatus.PLAYING) {
+      this._hudDirty = true;
+      return;
+    }
+    this._hudDirty = false;
     this.onHudUpdate?.(buildHudSnapshot(this), { ...this.upgrades });
   }
 
@@ -1694,6 +1709,7 @@ export class TankGameEngine {
 
   dispose() {
     this.isDisposed = true;
+    this.saveRepo?.flushPendingSave?.();
     this.perfMonitor?.dispose();
     this.garageStage?.dispose();
     this.modelFactory.brickModels.dispose();
@@ -1721,6 +1737,12 @@ export class TankGameEngine {
     this._garageWindowRect = null;
     window.removeEventListener('pointerup', this.handlePointerUp);
     window.removeEventListener('pointercancel', this.handlePointerUp);
+    if (this.handlePageHide) {
+      window.removeEventListener('pagehide', this.handlePageHide);
+    }
+    if (this.handleVisibilityChange && typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    }
 
     const canvas = this.renderer.domElement;
     canvas.removeEventListener('pointermove', this.handlePointerMove);

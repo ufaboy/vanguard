@@ -979,7 +979,6 @@ export class EnemyCombatController {
             engine.setStatusBanner(msg, 3.2);
           }
           engine.powerupsController?.checkEnemyBaseClearAirDrop?.();
-          engine.saveProgress();
         }
       }
     } else if (!engine.inSmoke && !engine.isSegmentInSmoke(enemy.x, enemy.z, engine.playerX, engine.playerZ)) {

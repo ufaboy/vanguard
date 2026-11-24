@@ -102,27 +102,11 @@ export class EnemyAiController {
   hasEnemyBaseLineOfSight(x0, z0) {
     const engine = this.engine;
     if (!engine.enemyBaseAlive) return false;
-    let foundCell = false;
-    if (engine.grid && engine.grid.length > 0) {
-      for (let r = 0; r < engine.grid.length; r++) {
-        const rowCells = engine.grid[r];
-        if (!rowCells) continue;
-        for (let c = 0; c < rowCells.length; c++) {
-          const cell = rowCells[c];
-          if (cell?.type === TileType.ENEMY_BASE && cell.hp > 0) {
-            foundCell = true;
-            const pos = engine.gridToWorld(r, c);
-            if (engine.isPointRevealedByReconDrone?.(pos.x, pos.z)) return true;
-            if (this.hasLineOfSight(x0, z0, pos.x, pos.z, TileType.ENEMY_BASE)) return true;
-          }
-        }
-      }
-    }
-    if (foundCell) return false;
-    const center = this.getEnemyBaseCenter();
-    if (!center) return false;
-    if (engine.isPointRevealedByReconDrone?.(center.x, center.z)) return true;
-    return this.hasLineOfSight(x0, z0, center.x, center.z, TileType.ENEMY_BASE);
+    const baseCell = this.enemyBaseCell();
+    if (!baseCell) return false;
+    const pos = engine.gridToWorld(baseCell.row, baseCell.col);
+    if (engine.isPointRevealedByReconDrone?.(pos.x, pos.z)) return true;
+    return this.hasLineOfSight(x0, z0, pos.x, pos.z, TileType.ENEMY_BASE);
   }
 
   isPointRevealedByPlayerBase(x, z) {

@@ -385,6 +385,36 @@ export class SaveRepository {
   ) {
     this.storageKey = storageKey;
     this.storage = storage;
+    this._pendingSave = null;
+    this._flushTimer = null;
+    this._flushIdleId = null;
+  }
+
+  _cancelScheduledFlush() {
+    if (this._flushTimer !== null) {
+      clearTimeout(this._flushTimer);
+      this._flushTimer = null;
+    }
+    if (this._flushIdleId !== null && typeof cancelIdleCallback === 'function') {
+      cancelIdleCallback(this._flushIdleId);
+      this._flushIdleId = null;
+    }
+  }
+
+  _writeNow(playerSave) {
+    try {
+      this.storage?.setItem(this.storageKey, JSON.stringify(playerSave));
+    } catch {
+      // ignore storage errors
+    }
+  }
+
+  flushPendingSave() {
+    this._cancelScheduledFlush();
+    if (!this._pendingSave) return;
+    const pending = this._pendingSave;
+    this._pendingSave = null;
+    this._writeNow(pending);
   }
 
   loadPlayerSave() {
@@ -430,11 +460,25 @@ export class SaveRepository {
     return initial;
   }
 
-  savePlayerSave(playerSave) {
-    try {
-      this.storage?.setItem(this.storageKey, JSON.stringify(playerSave));
-    } catch {
-      // ignore storage errors
+  savePlayerSave(playerSave, { defer = false } = {}) {
+    if (!defer || typeof window === 'undefined') {
+      this._cancelScheduledFlush();
+      this._pendingSave = null;
+      this._writeNow(playerSave);
+      return;
+    }
+    this._pendingSave = playerSave;
+    if (this._flushTimer !== null || this._flushIdleId !== null) return;
+    if (typeof requestIdleCallback === 'function') {
+      this._flushIdleId = requestIdleCallback(() => {
+        this._flushIdleId = null;
+        this.flushPendingSave();
+      }, { timeout: 1000 });
+    } else {
+      this._flushTimer = setTimeout(() => {
+        this._flushTimer = null;
+        this.flushPendingSave();
+      }, 600);
     }
   }
 

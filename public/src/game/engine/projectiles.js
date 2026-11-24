@@ -239,6 +239,7 @@ export class ProjectilesController {
         : [];
       if (aliveEnemies.length !== 1) return false;
       const lastEnemy = aliveEnemies[0];
+      if (lastEnemy.hp > (p.damage ?? 0) * 1.1) return false;
       const hasPendingBossStage =
         lastEnemy.isBoss &&
         Array.isArray(sector?.bossSequence) &&
@@ -259,6 +260,7 @@ export class ProjectilesController {
 
     const canWinByBaseDestroy = (() => {
       if (!engine.enemyBaseAlive) return false;
+      if ((engine.enemyBaseHp ?? 1) > (p.damage ?? 0)) return false;
       if (engine.activeMapRules.spawnSectorBossOnClear && !engine.bossSpawned) return false;
       const aliveEnemies = Array.isArray(engine.enemies)
         ? engine.enemies.filter((e) => e && e.hp > DURABILITY.ZERO_HP)

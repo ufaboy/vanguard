@@ -187,7 +187,7 @@ export class PlayerController {
     const engine = this.engine;
     if (!engine.playerSave) return;
     engine.playerSave.repairKitCharges = engine.repairKitState?.charges ?? 0;
-    engine.saveRepo?.savePlayerSave?.(engine.playerSave);
+    engine.saveRepo?.savePlayerSave?.(engine.playerSave, { defer: engine.status === GameStatus.PLAYING });
   }
 
   /** Activates installed player tactical module in slot 1, 2, or 3 (Section 7.2 & 11.4). */
@@ -414,7 +414,7 @@ export class PlayerController {
     engine.missileAmmo--;
     engine.medalTracker?.recordPlayerMissileFired();
     engine.playerSave.missileAmmo = engine.missileAmmo;
-    engine.saveRepo.savePlayerSave(engine.playerSave);
+    engine.saveRepo.savePlayerSave(engine.playerSave, { defer: true });
     engine.missileCooldown = MISSILE.COOLDOWN;
     engine.recomputePlayerStats(true);
     sound.playMissileLaunch();
