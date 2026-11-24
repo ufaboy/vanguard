@@ -473,30 +473,6 @@
       "enabled": false
     }
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "SAPPER",
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "SAPPER",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD"
-  ],
   "surfaceLayout": [
     "VVVVVVVVVVVVVVVVVVVVVRRVVVVVVVVVVVVRVVVV",
     "VVVVVVVVVVVVVVVVVVVVVRRVVVVVVVVVVVVRVVVV",

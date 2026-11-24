@@ -545,36 +545,12 @@
           "HOWITZER",
           "STANDARD",
           "HOVER",
-          "ARMOR",
+          "HOWITZER",
           "STANDARD"
         ]
       }
     ]
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "HOVER",
-    "STANDARD",
-    "SAPPER",
-    "STANDARD",
-    "STANDARD",
-    "ENGINEER",
-    "HOWITZER",
-    "HOVER",
-    "STANDARD",
-    "SAPPER",
-    "ARMOR",
-    "STANDARD",
-    "ARMOR",
-    "ENGINEER",
-    "HOWITZER",
-    "STANDARD",
-    "HOVER",
-    "ARMOR",
-    "STANDARD"
-  ],
   "surfaceLayout": [
     "VVVSWWSVRRV..................RR.........",
     "VVVSWWSVRRV..VV..............RRVVVVVVVVV",

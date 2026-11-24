@@ -221,7 +221,19 @@ export function normalizeMapDefinition(rawMap, index = 0) {
   const bossCfg = rawMap.boss || enemiesCfg.boss || {};
   const envCfg = rawMap.environment || {};
 
-  const rawPool = Array.isArray(rawMap.enemyPool)
+  const encounters = (enemiesCfg.encounters || []).map((encounter) => ({
+    ...encounter,
+    enemies: (encounter.enemies || []).map(
+      (type) =>
+        EnemyClass[type] ||
+        EnemyClass[String(type).toUpperCase()] ||
+        String(type).toLowerCase()
+    ),
+  }));
+
+  const rawPool = encounters.length
+    ? encounters.flatMap((encounter) => encounter.enemies)
+    : Array.isArray(rawMap.enemyPool)
     ? rawMap.enemyPool
     : Array.isArray(enemiesCfg.enemyPool)
     ? enemiesCfg.enemyPool
@@ -358,10 +370,7 @@ export function normalizeMapDefinition(rawMap, index = 0) {
       credits: Number(rawMap.completionReward?.credits ?? 400),
     },
     powerups,
-    encounters: (enemiesCfg.encounters || []).map(encounter => ({
-      ...encounter,
-      enemies: encounter.enemies.map(type => EnemyClass[type] || type),
-    })),
+    encounters,
     entrances: enemiesCfg.entrances || [],
     nextWave: normalizeNextWave(enemiesCfg.nextWave, rawMap.mapId),
     bossName: bossCfg.name || rawMap.bossName || 'MAMMOTH MK-V',

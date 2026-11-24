@@ -459,11 +459,11 @@
           }
         ],
         "enemies": [
-          "ARMOR",
+          "STANDARD",
           "STANDARD",
           "SAPPER",
           "STANDARD",
-          "ARMOR",
+          "HOWITZER",
           "HOVER",
           "STANDARD",
           "ARMOR"
@@ -471,32 +471,6 @@
       }
     ]
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "HOVER",
-    "SAPPER",
-    "STANDARD",
-    "ARMOR",
-    "STANDARD",
-    "SAPPER",
-    "HOVER",
-    "STANDARD",
-    "HOWITZER",
-    "ARMOR",
-    "STANDARD",
-    "SAPPER",
-    "STANDARD",
-    "ARMOR",
-    "HOVER",
-    "STANDARD",
-    "ARMOR"
-  ],
   "surfaceLayout": [
     "^^^^...R...........RR...........R...^^^^",
     "^^VVVV.R...........RR...........R.VVVV^^",

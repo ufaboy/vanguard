@@ -489,32 +489,6 @@
       }
     ]
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "STANDARD",
-    "SCOUT",
-    "HOVER",
-    "STANDARD",
-    "SCOUT",
-    "HOWITZER",
-    "STANDARD",
-    "ARMOR",
-    "SCOUT",
-    "STANDARD",
-    "STANDARD",
-    "HOVER",
-    "SCOUT",
-    "ARMOR",
-    "STANDARD",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "ARMOR",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD"
-  ],
   "surfaceLayout": [
     "WWWWWWSVVVRRVVVVVVVVRRVVV..........RR...",
     "WWWWWWSSVVRRVVVVVVVVRRVVV..........RR...",
