@@ -888,10 +888,14 @@ export class EnemyCombatController {
       const bounty =
         ENEMY_KILL_CREDITS[enemy.enemyClass] ||
         (enemy.isBoss ? 750 : 75);
-      engine.playerSave.credits = (engine.playerSave.credits || 0) + bounty;
-      engine.creditsEarnedThisMission = (engine.creditsEarnedThisMission || 0) + bounty;
-      engine.syncCampaignCredits();
-      engine.saveRepo.savePlayerSave(engine.playerSave);
+      if (engine.addBattleCredits) {
+        engine.addBattleCredits(bounty);
+      } else {
+        engine.playerSave.credits = (engine.playerSave.credits || 0) + bounty;
+        engine.creditsEarnedThisMission = (engine.creditsEarnedThisMission || 0) + bounty;
+        engine.syncCampaignCredits();
+        engine.saveRepo.savePlayerSave(engine.playerSave);
+      }
       engine.setStatusBanner(t('+ ${bounty} CREDITS ({unitName})', { bounty, unitName }), 1.8);
       if (enemy.isBoss) {
         analyticsManager.trackEvent('boss_defeated', {

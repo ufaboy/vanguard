@@ -169,7 +169,7 @@ export function setupDelegatedEvents(
         break;
       case 'return-survival':
         // Settle first (saves the survival record and reports mission_abort), then leave.
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.survival;
           break;
@@ -182,7 +182,7 @@ export function setupDelegatedEvents(
         renderUI(false);
         break;
       case 'return-contracts':
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.contracts;
           break;
@@ -199,7 +199,7 @@ export function setupDelegatedEvents(
         renderUI(false);
         break;
       case 'return-campaign':
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.campaign;
           break;
@@ -208,7 +208,7 @@ export function setupDelegatedEvents(
         renderUI(true);
         break;
       case 'main-menu':
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.index;
           break;
@@ -370,7 +370,7 @@ export function setupDelegatedEvents(
         break;
       }
       case 'abort-mission':
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
           location.href = PAGE_PATHS.index;
           break;

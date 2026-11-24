@@ -87,7 +87,7 @@ export function buildHudSnapshot(engine) {
     defeatCinematicsActive: (engine.defeatCinematicsTimer || 0) > 0,
     victoryCinematicsActive: (engine.victoryCinematicsTimer || 0) > 0,
     sectorId: engine.currentSectorIndex,
-    credits: engine.playerSave?.credits ?? 0,
+    credits: engine.getAvailableCredits ? engine.getAvailableCredits() : (engine.playerSave?.credits ?? 0),
     creditsEarnedThisMission: engine.creditsEarnedThisMission || 0,
     isGarageOpen: engine.isGarageOpen,
     isGaragePaused: engine.isGaragePaused,

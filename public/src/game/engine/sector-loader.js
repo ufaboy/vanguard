@@ -608,6 +608,8 @@ export class SectorLoaderController {
     engine.lootContainers = [];
     engine.lastSettlementSummary = null;
     engine.creditsEarnedThisMission = 0;
+    engine.syncTemporaryCredits();
+    engine.preBattleUpgrades = { ...engine.upgrades };
 
     const authoredMission = {
       id: sector.mapId,
@@ -654,6 +656,7 @@ export class SectorLoaderController {
     engine.reconDroneCooldown = 0;
     engine.reconDroneActiveTimer = 0;
     engine.reconDroneOwned = isIsolatedSector ? false : Boolean(engine.playerSave?.reconDroneOwned);
+    engine.preBattleReconDroneOwned = engine.reconDroneOwned;
     engine.repairKitCount = engine.getPlayerMaxRepairKitCharges();
 
     engine.playerRig.root.position.set(engine.playerX, 0, engine.playerZ);

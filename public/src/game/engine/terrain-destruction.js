@@ -228,6 +228,7 @@ export class TerrainDestructionController {
       sound.stopEngineLoop();
       engine.wasDefeated = true;
       if (engine.survivalState) {
+        engine.rollbackBattlePurchases?.();
         const campaignSave = engine.campaignSaveRepo?.loadPlayerSave();
         if (campaignSave) {
           engine.survivalState.recordSummary = recordSurvivalRun(
@@ -238,6 +239,7 @@ export class TerrainDestructionController {
           engine.campaignSaveRepo.savePlayerSave(campaignSave);
         }
       } else {
+        engine.rollbackBattlePurchases?.();
         engine.restoreAllComponents();
         if (engine.activeMissionRun && !engine.activeMissionRun.rewardsCommitted) {
           engine.lastSettlementSummary = settleMission({

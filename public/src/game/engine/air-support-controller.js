@@ -139,11 +139,19 @@ export class AirSupportController {
   }
 
   canAfford(cost) {
-    return (this.engine.playerSave?.credits ?? 0) >= cost;
+    const available = this.engine.getAvailableCredits
+      ? this.engine.getAvailableCredits()
+      : (this.engine.playerSave?.credits ?? 0);
+    return available >= cost;
   }
 
   spendCredits(cost) {
     const { engine } = this;
+    if (engine.spendBattleCredits) {
+      const ok = engine.spendBattleCredits(cost);
+      if (ok) engine.emitHudUpdate?.();
+      return ok;
+    }
     if (!engine.playerSave || (engine.playerSave.credits ?? 0) < cost) return false;
     engine.playerSave.credits -= cost;
     engine.saveRepo?.savePlayerSave?.(engine.playerSave);

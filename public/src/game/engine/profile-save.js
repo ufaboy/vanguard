@@ -141,6 +141,7 @@ export class ProfileSaveController {
         : getMaxCannonAmmo(engine.upgrades?.frame || 1);
     }
     engine.recomputePlayerStats?.(false);
+    engine.syncTemporaryCredits?.();
   }
 
   applyUpgrades(newUpgrades) {
@@ -161,6 +162,11 @@ export class ProfileSaveController {
     const delta = Math.max(0, Math.floor(Number(amount) || 0));
     if (!delta || !engine.playerSave) return 0;
     engine.playerSave.credits = (engine.playerSave.credits || 0) + delta;
+    if (engine.isBattleActive?.()) {
+      engine.temporaryCredits = Math.max(0, Math.floor(engine.temporaryCredits ?? 0)) + delta;
+    } else {
+      engine.syncTemporaryCredits?.();
+    }
     engine.saveRepo?.savePlayerSave?.(engine.playerSave);
     engine.emitHudUpdate();
     return delta;

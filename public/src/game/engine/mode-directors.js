@@ -36,10 +36,14 @@ export class SurvivalDirector {
     if (!e.survivalState) return;
     if (waveNumber > 1 && !e.survivalState.currentWaveCleared) {
       const prevReward = e.survivalState.waveSpec?.waveRewardCredits || 300;
-      if (e.playerSave) {
-        e.playerSave.credits = (e.playerSave.credits || 0) + prevReward;
+      if (e.addBattleCredits) {
+        e.addBattleCredits(prevReward);
+      } else {
+        if (e.playerSave) {
+          e.playerSave.credits = (e.playerSave.credits || 0) + prevReward;
+        }
+        e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + prevReward;
       }
-      e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + prevReward;
       e.survivalState.lastWaveReward = prevReward;
       e.survivalState.wavesCleared = Math.max(
         e.survivalState.wavesCleared || 0,
@@ -161,10 +165,14 @@ export class SurvivalDirector {
       e.survivalState.wave
     );
     const reward = spec?.waveRewardCredits || 300;
-    if (e.playerSave) {
-      e.playerSave.credits = (e.playerSave.credits || 0) + reward;
+    if (e.addBattleCredits) {
+      e.addBattleCredits(reward);
+    } else {
+      if (e.playerSave) {
+        e.playerSave.credits = (e.playerSave.credits || 0) + reward;
+      }
+      e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + reward;
     }
-    e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + reward;
     e.survivalState.lastWaveReward = reward;
 
     if (spec?.isBossWave && e.baseAlive) {
@@ -197,10 +205,14 @@ export class SurvivalDirector {
       return false;
     }
     const bonus = SURVIVAL_CONFIG.EARLY_CALL_BONUS;
-    if (e.playerSave) {
-      e.playerSave.credits = (e.playerSave.credits || 0) + bonus;
+    if (e.addBattleCredits) {
+      e.addBattleCredits(bonus);
+    } else {
+      if (e.playerSave) {
+        e.playerSave.credits = (e.playerSave.credits || 0) + bonus;
+      }
+      e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + bonus;
     }
-    e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + bonus;
     e.survivalState.earlyWaveCalls = (e.survivalState.earlyWaveCalls || 0) + 1;
     sound.playPowerUp();
     this.startWave(e.survivalState.wave + 1, true);
@@ -497,6 +509,7 @@ export class ContractDirector {
       );
       if (payout.paid) {
         events.deliveredCargo.rewardPaid = true;
+        e.temporaryCredits = Math.max(0, Math.floor(e.temporaryCredits ?? 0)) + payout.amount;
         e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + payout.amount;
         e.saveRepo.savePlayerSave(e.playerSave);
         e.syncCampaignCredits();

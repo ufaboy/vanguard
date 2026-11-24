@@ -1165,6 +1165,7 @@ export class PlayerController {
       engine.fx?.tankDestroyed?.(engine.playerX, engine.playerZ, { boss: false, player: true });
       engine.terrainDestruction?.igniteOilAt?.(engine.playerX, engine.playerZ, 1.8);
       if (engine.survivalState) {
+        engine.rollbackBattlePurchases?.();
         const campaignSave = engine.campaignSaveRepo?.loadPlayerSave();
         if (campaignSave) {
           engine.survivalState.recordSummary = recordSurvivalRun(
@@ -1175,6 +1176,7 @@ export class PlayerController {
           engine.campaignSaveRepo.savePlayerSave(campaignSave);
         }
       } else {
+        engine.rollbackBattlePurchases?.();
         engine.restoreAllComponents();
         if (engine.activeMissionRun && !engine.activeMissionRun.rewardsCommitted) {
           engine.lastSettlementSummary = settleMission({
