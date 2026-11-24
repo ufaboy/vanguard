@@ -44,42 +44,93 @@
       {
         "name": "Depot South Gate",
         "cells": [
-          { "row": 7, "col": 19 },
-          { "row": 7, "col": 20 },
-          { "row": 7, "col": 21 }
+          {
+            "row": 7,
+            "col": 19
+          },
+          {
+            "row": 7,
+            "col": 20
+          },
+          {
+            "row": 7,
+            "col": 21
+          }
         ],
-        "start": { "row": 9, "col": 20 },
-        "end": { "row": 6, "col": 20 },
+        "start": {
+          "row": 9,
+          "col": 20
+        },
+        "end": {
+          "row": 6,
+          "col": 20
+        },
         "purpose": "Breach the main southern brick gate of the fortified rail depot for a direct shot at the command core."
       },
       {
         "name": "West Depot Postern",
         "cells": [
-          { "row": 5, "col": 17 },
-          { "row": 6, "col": 17 }
+          {
+            "row": 5,
+            "col": 17
+          },
+          {
+            "row": 6,
+            "col": 17
+          }
         ],
-        "start": { "row": 5, "col": 15 },
-        "end": { "row": 5, "col": 18 },
+        "start": {
+          "row": 5,
+          "col": 15
+        },
+        "end": {
+          "row": 5,
+          "col": 18
+        },
         "purpose": "Cut from the western tunnel rail track straight into the depot courtyard."
       },
       {
         "name": "East Siding Barricade",
         "cells": [
-          { "row": 15, "col": 29 },
-          { "row": 15, "col": 30 }
+          {
+            "row": 15,
+            "col": 29
+          },
+          {
+            "row": 15,
+            "col": 30
+          }
         ],
-        "start": { "row": 17, "col": 29 },
-        "end": { "row": 13, "col": 29 },
+        "start": {
+          "row": 17,
+          "col": 29
+        },
+        "end": {
+          "row": 13,
+          "col": 29
+        },
         "purpose": "Blast through the brick freight-siding wall to flank the rail yard from the eastern pass road."
       },
       {
         "name": "South Bank Toll Wall",
         "cells": [
-          { "row": 28, "col": 12 },
-          { "row": 28, "col": 13 }
+          {
+            "row": 28,
+            "col": 12
+          },
+          {
+            "row": 28,
+            "col": 13
+          }
         ],
-        "start": { "row": 30, "col": 12 },
-        "end": { "row": 26, "col": 12 },
+        "start": {
+          "row": 30,
+          "col": 12
+        },
+        "end": {
+          "row": 26,
+          "col": 12
+        },
         "purpose": "Open a quick cut between the western Innsbruck town road and the central Inn bridgehead."
       }
     ],
@@ -105,58 +156,145 @@
     "zones": [
       {
         "id": "alpine-snow-pack",
-        "bounds": [0, 0, 39, 39],
+        "bounds": [
+          0,
+          0,
+          39,
+          39
+        ],
         "surface": "snow",
         "density": 0.18,
-        "details": ["patches", "cracks"]
+        "details": [
+          "patches",
+          "cracks"
+        ]
       },
       {
         "id": "depot-concrete-apron",
-        "bounds": [2, 16, 8, 24],
+        "bounds": [
+          2,
+          16,
+          8,
+          24
+        ],
         "surface": "concrete",
         "density": 0.35,
-        "details": ["cracks", "rubble"]
+        "details": [
+          "cracks",
+          "rubble"
+        ]
       },
       {
         "id": "rail-yard-gravel",
-        "bounds": [8, 12, 19, 28],
+        "bounds": [
+          8,
+          12,
+          19,
+          28
+        ],
         "surface": "gravel",
         "density": 0.32,
-        "details": ["tracks", "rubble"]
+        "details": [
+          "tracks",
+          "rubble"
+        ]
       },
       {
         "id": "east-siding-asphalt",
-        "bounds": [14, 32, 19, 37],
+        "bounds": [
+          14,
+          32,
+          19,
+          37
+        ],
         "surface": "asphalt",
         "density": 0.28,
-        "details": ["oil", "tracks"]
+        "details": [
+          "oil",
+          "tracks"
+        ]
       },
       {
         "id": "innsbruck-station-pavers",
-        "bounds": [29, 16, 34, 24],
+        "bounds": [
+          29,
+          16,
+          34,
+          24
+        ],
         "surface": "pavers",
         "density": 0.3,
-        "details": ["cracks", "patches"]
+        "details": [
+          "cracks",
+          "patches"
+        ]
       }
     ],
     "paths": [
       {
         "id": "west-tunnel-track",
-        "points": [[0, 14], [10, 14], [16, 16], [20, 19]],
+        "points": [
+          [
+            0,
+            14
+          ],
+          [
+            10,
+            14
+          ],
+          [
+            16,
+            16
+          ],
+          [
+            20,
+            19
+          ]
+        ],
         "width": 2,
         "surface": "gravel",
         "marking": "edges"
       },
       {
         "id": "east-tunnel-track",
-        "points": [[0, 25], [10, 25], [16, 24], [20, 20]],
+        "points": [
+          [
+            0,
+            25
+          ],
+          [
+            10,
+            25
+          ],
+          [
+            16,
+            24
+          ],
+          [
+            20,
+            20
+          ]
+        ],
         "width": 2,
         "surface": "gravel",
         "marking": "edges"
       },
       {
         "id": "yard-siding-spur",
-        "points": [[10, 25], [14, 25], [18, 28]],
+        "points": [
+          [
+            10,
+            25
+          ],
+          [
+            14,
+            25
+          ],
+          [
+            18,
+            28
+          ]
+        ],
         "width": 1.6,
         "surface": "gravel",
         "marking": "edges"
@@ -213,7 +351,12 @@
     "exclusions": [
       {
         "id": "depot-gate-clear",
-        "bounds": [8, 18, 10, 22]
+        "bounds": [
+          8,
+          18,
+          10,
+          22
+        ]
       }
     ]
   },
@@ -223,12 +366,36 @@
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
     "entrances": [
-      { "id": "west-portal-cut", "row": 1, "col": 5 },
-      { "id": "main-tunnel-west", "row": 1, "col": 14 },
-      { "id": "main-tunnel-east", "row": 1, "col": 25 },
-      { "id": "east-mountain-pass", "row": 1, "col": 34 },
-      { "id": "west-yard-siding", "row": 7, "col": 5 },
-      { "id": "east-tunnel-spur", "row": 7, "col": 34 }
+      {
+        "id": "west-portal-cut",
+        "row": 1,
+        "col": 5
+      },
+      {
+        "id": "main-tunnel-west",
+        "row": 1,
+        "col": 14
+      },
+      {
+        "id": "main-tunnel-east",
+        "row": 1,
+        "col": 25
+      },
+      {
+        "id": "east-mountain-pass",
+        "row": 1,
+        "col": 34
+      },
+      {
+        "id": "west-yard-siding",
+        "row": 7,
+        "col": 5
+      },
+      {
+        "id": "east-tunnel-spur",
+        "row": 7,
+        "col": 34
+      }
     ],
     "encounters": [
       {
@@ -242,16 +409,40 @@
           "east-mountain-pass"
         ],
         "initialCells": [
-          { "row": 4, "col": 5 },
-          { "row": 4, "col": 14 },
-          { "row": 4, "col": 25 },
-          { "row": 4, "col": 34 }
+          {
+            "row": 4,
+            "col": 5
+          },
+          {
+            "row": 4,
+            "col": 14
+          },
+          {
+            "row": 4,
+            "col": 25
+          },
+          {
+            "row": 4,
+            "col": 34
+          }
         ],
         "patrolRoute": [
-          { "row": 13, "col": 14 },
-          { "row": 19, "col": 19 },
-          { "row": 24, "col": 19 },
-          { "row": 30, "col": 19 }
+          {
+            "row": 13,
+            "col": 14
+          },
+          {
+            "row": 19,
+            "col": 19
+          },
+          {
+            "row": 24,
+            "col": 19
+          },
+          {
+            "row": 30,
+            "col": 19
+          }
         ],
         "enemies": [
           "SCOUT",
@@ -275,11 +466,26 @@
           "east-tunnel-spur"
         ],
         "patrolRoute": [
-          { "row": 14, "col": 7 },
-          { "row": 23, "col": 5 },
-          { "row": 31, "col": 13 },
-          { "row": 31, "col": 25 },
-          { "row": 23, "col": 33 }
+          {
+            "row": 14,
+            "col": 7
+          },
+          {
+            "row": 23,
+            "col": 5
+          },
+          {
+            "row": 31,
+            "col": 13
+          },
+          {
+            "row": 31,
+            "col": 25
+          },
+          {
+            "row": 23,
+            "col": 33
+          }
         ],
         "enemies": [
           "SCOUT",
@@ -303,11 +509,26 @@
           "west-yard-siding"
         ],
         "patrolRoute": [
-          { "row": 9, "col": 20 },
-          { "row": 18, "col": 25 },
-          { "row": 23, "col": 33 },
-          { "row": 31, "col": 26 },
-          { "row": 32, "col": 19 }
+          {
+            "row": 9,
+            "col": 20
+          },
+          {
+            "row": 18,
+            "col": 25
+          },
+          {
+            "row": 23,
+            "col": 33
+          },
+          {
+            "row": 31,
+            "col": 26
+          },
+          {
+            "row": 32,
+            "col": 19
+          }
         ],
         "enemies": [
           "STANDARD",
@@ -325,32 +546,6 @@
       "enabled": false
     }
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "SAPPER",
-    "STANDARD",
-    "HOVER",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "HOVER",
-    "STEALTH",
-    "ARMOR",
-    "HOWITZER",
-    "STANDARD",
-    "FLAMETHROWER",
-    "STANDARD",
-    "ARMOR",
-    "SAPPER",
-    "HOWITZER",
-    "HOVER",
-    "STEALTH",
-    "ARMOR",
-    "STANDARD"
-  ],
   "surfaceLayout": [
     "VVVVRRR^^^^^.....^^^^^^.....^^^^^RRRVVVV",
     "VVVVRRR^^^^^.....^^^^^^.....^^^^^RRRVVVV",

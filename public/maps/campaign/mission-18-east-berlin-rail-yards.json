@@ -44,41 +44,89 @@
       {
         "name": "Berlin Wall West Gate",
         "cells": [
-          { "row": 15, "col": 6 },
-          { "row": 15, "col": 7 }
+          {
+            "row": 15,
+            "col": 6
+          },
+          {
+            "row": 15,
+            "col": 7
+          }
         ],
-        "start": { "row": 17, "col": 6 },
-        "end": { "row": 13, "col": 6 },
+        "start": {
+          "row": 17,
+          "col": 6
+        },
+        "end": {
+          "row": 13,
+          "col": 6
+        },
         "purpose": "Blast through the brick-patched Wall section to link the western factory yard directly to the northern border strip."
       },
       {
         "name": "Central Rail Checkpoint",
         "cells": [
-          { "row": 15, "col": 19 },
-          { "row": 15, "col": 20 }
+          {
+            "row": 15,
+            "col": 19
+          },
+          {
+            "row": 15,
+            "col": 20
+          }
         ],
-        "start": { "row": 17, "col": 19 },
-        "end": { "row": 13, "col": 19 },
+        "start": {
+          "row": 17,
+          "col": 19
+        },
+        "end": {
+          "row": 13,
+          "col": 19
+        },
         "purpose": "Breach the brick checkpoint barricade on the main rail spine for a direct push toward the Consortium blueprint vault."
       },
       {
         "name": "East Siding Partition",
         "cells": [
-          { "row": 18, "col": 29 },
-          { "row": 19, "col": 29 }
+          {
+            "row": 18,
+            "col": 29
+          },
+          {
+            "row": 19,
+            "col": 29
+          }
         ],
-        "start": { "row": 18, "col": 27 },
-        "end": { "row": 18, "col": 31 },
+        "start": {
+          "row": 18,
+          "col": 27
+        },
+        "end": {
+          "row": 18,
+          "col": 31
+        },
         "purpose": "Cut between the central freight yard and the eastern warehouse avenue."
       },
       {
         "name": "South Freight Yard Wall",
         "cells": [
-          { "row": 27, "col": 14 },
-          { "row": 27, "col": 15 }
+          {
+            "row": 27,
+            "col": 14
+          },
+          {
+            "row": 27,
+            "col": 15
+          }
         ],
-        "start": { "row": 29, "col": 14 },
-        "end": { "row": 25, "col": 14 },
+        "start": {
+          "row": 29,
+          "col": 14
+        },
+        "end": {
+          "row": 25,
+          "col": 14
+        },
         "purpose": "Open a southern shortcut from the western marshaling lane into the central rail yard."
       }
     ],
@@ -105,65 +153,161 @@
     "zones": [
       {
         "id": "central-rail-yard",
-        "bounds": [8, 13, 30, 27],
+        "bounds": [
+          8,
+          13,
+          30,
+          27
+        ],
         "surface": "gravel",
         "density": 0.25,
-        "details": ["tracks", "oil", "rubble"]
+        "details": [
+          "tracks",
+          "oil",
+          "rubble"
+        ]
       },
       {
         "id": "vault-compound",
-        "bounds": [1, 17, 7, 23],
+        "bounds": [
+          1,
+          17,
+          7,
+          23
+        ],
         "surface": "concrete",
         "density": 0.28,
-        "details": ["cracks", "oil", "patches"]
+        "details": [
+          "cracks",
+          "oil",
+          "patches"
+        ]
       },
       {
         "id": "wall-border-strip",
-        "bounds": [13, 1, 17, 38],
+        "bounds": [
+          13,
+          1,
+          17,
+          38
+        ],
         "surface": "dirt",
         "density": 0.22,
-        "details": ["cracks", "weeds", "rubble"]
+        "details": [
+          "cracks",
+          "weeds",
+          "rubble"
+        ]
       },
       {
         "id": "west-factory-apron",
-        "bounds": [2, 1, 30, 11],
+        "bounds": [
+          2,
+          1,
+          30,
+          11
+        ],
         "surface": "asphalt",
         "density": 0.22,
-        "details": ["cracks", "oil", "tracks"]
+        "details": [
+          "cracks",
+          "oil",
+          "tracks"
+        ]
       },
       {
         "id": "east-warehouse-apron",
-        "bounds": [2, 29, 30, 38],
+        "bounds": [
+          2,
+          29,
+          30,
+          38
+        ],
         "surface": "asphalt",
         "density": 0.24,
-        "details": ["cracks", "oil", "rubble"]
+        "details": [
+          "cracks",
+          "oil",
+          "rubble"
+        ]
       },
       {
         "id": "south-marshaling-plaza",
-        "bounds": [34, 8, 39, 31],
+        "bounds": [
+          34,
+          8,
+          39,
+          31
+        ],
         "surface": "pavers",
         "density": 0.2,
-        "details": ["cracks", "tracks"]
+        "details": [
+          "cracks",
+          "tracks"
+        ]
       }
     ],
     "paths": [
       {
         "id": "west-main-track",
-        "points": [[0, 16], [14, 16], [14, 17], [31, 17]],
+        "points": [
+          [
+            0,
+            16
+          ],
+          [
+            14,
+            16
+          ],
+          [
+            14,
+            17
+          ],
+          [
+            31,
+            17
+          ]
+        ],
         "width": 2,
         "surface": "gravel",
         "marking": "edges"
       },
       {
         "id": "east-main-track",
-        "points": [[0, 25], [14, 25], [22, 24], [31, 24]],
+        "points": [
+          [
+            0,
+            25
+          ],
+          [
+            14,
+            25
+          ],
+          [
+            22,
+            24
+          ],
+          [
+            31,
+            24
+          ]
+        ],
         "width": 2,
         "surface": "gravel",
         "marking": "edges"
       },
       {
         "id": "hq-service-apron",
-        "points": [[35, 15], [35, 24]],
+        "points": [
+          [
+            35,
+            15
+          ],
+          [
+            35,
+            24
+          ]
+        ],
         "width": 2,
         "surface": "asphalt",
         "marking": "none"
@@ -255,7 +399,12 @@
     "exclusions": [
       {
         "id": "hq-clear-approach",
-        "bounds": [37, 17, 39, 22]
+        "bounds": [
+          37,
+          17,
+          39,
+          22
+        ]
       }
     ]
   },
@@ -265,29 +414,78 @@
     "maxConcurrent": 8,
     "spawnIntervalSec": 4,
     "entrances": [
-      { "id": "north-west-factory", "row": 1, "col": 4 },
-      { "id": "north-west-rail", "row": 1, "col": 13 },
-      { "id": "north-east-rail", "row": 1, "col": 26 },
-      { "id": "north-east-depot", "row": 1, "col": 35 },
-      { "id": "upper-west-wall", "row": 7, "col": 4 },
-      { "id": "upper-east-siding", "row": 7, "col": 35 }
+      {
+        "id": "north-west-factory",
+        "row": 1,
+        "col": 4
+      },
+      {
+        "id": "north-west-rail",
+        "row": 1,
+        "col": 13
+      },
+      {
+        "id": "north-east-rail",
+        "row": 1,
+        "col": 26
+      },
+      {
+        "id": "north-east-depot",
+        "row": 1,
+        "col": 35
+      },
+      {
+        "id": "upper-west-wall",
+        "row": 7,
+        "col": 4
+      },
+      {
+        "id": "upper-east-siding",
+        "row": 7,
+        "col": 35
+      }
     ],
     "encounters": [
       {
         "id": "wall-line-probe",
         "label": "WALL LINE RECONNAISSANCE",
         "recoverySec": 0,
-        "entrances": ["north-west-factory", "north-west-rail", "north-east-rail"],
+        "entrances": [
+          "north-west-factory",
+          "north-west-rail",
+          "north-east-rail"
+        ],
         "initialCells": [
-          { "row": 3, "col": 4 },
-          { "row": 4, "col": 13 },
-          { "row": 4, "col": 26 },
-          { "row": 3, "col": 34 }
+          {
+            "row": 3,
+            "col": 4
+          },
+          {
+            "row": 4,
+            "col": 13
+          },
+          {
+            "row": 4,
+            "col": 26
+          },
+          {
+            "row": 3,
+            "col": 34
+          }
         ],
         "patrolRoute": [
-          { "row": 12, "col": 4 },
-          { "row": 20, "col": 4 },
-          { "row": 29, "col": 10 }
+          {
+            "row": 12,
+            "col": 4
+          },
+          {
+            "row": 20,
+            "col": 4
+          },
+          {
+            "row": 29,
+            "col": 10
+          }
         ],
         "enemies": [
           "SCOUT",
@@ -303,11 +501,24 @@
         "id": "rail-yard-counterpush",
         "label": "FREIGHT YARD COUNTER-ASSAULT",
         "recoverySec": 8,
-        "entrances": ["north-east-rail", "north-east-depot", "upper-east-siding"],
+        "entrances": [
+          "north-east-rail",
+          "north-east-depot",
+          "upper-east-siding"
+        ],
         "patrolRoute": [
-          { "row": 12, "col": 34 },
-          { "row": 24, "col": 34 },
-          { "row": 32, "col": 25 }
+          {
+            "row": 12,
+            "col": 34
+          },
+          {
+            "row": 24,
+            "col": 34
+          },
+          {
+            "row": 32,
+            "col": 25
+          }
         ],
         "enemies": [
           "STANDARD",
@@ -324,11 +535,25 @@
         "id": "blueprint-vault-garrison",
         "label": "BLUEPRINT VAULT GARRISON",
         "recoverySec": 9,
-        "entrances": ["north-west-rail", "north-east-rail", "upper-west-wall", "upper-east-siding"],
+        "entrances": [
+          "north-west-rail",
+          "north-east-rail",
+          "upper-west-wall",
+          "upper-east-siding"
+        ],
         "patrolRoute": [
-          { "row": 10, "col": 19 },
-          { "row": 21, "col": 18 },
-          { "row": 30, "col": 19 }
+          {
+            "row": 10,
+            "col": 19
+          },
+          {
+            "row": 21,
+            "col": 18
+          },
+          {
+            "row": 30,
+            "col": 19
+          }
         ],
         "enemies": [
           "ARMOR",
@@ -344,32 +569,6 @@
       }
     ]
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "SAPPER",
-    "STANDARD",
-    "ENGINEER",
-    "STANDARD",
-    "STANDARD",
-    "ARMOR",
-    "HOWITZER",
-    "FLAMETHROWER",
-    "SAPPER",
-    "STANDARD",
-    "JAMMER",
-    "STRIKER",
-    "ARMOR",
-    "ENGINEER",
-    "HOWITZER",
-    "STEALTH",
-    "STANDARD",
-    "STRIKER",
-    "ARMOR",
-    "JAMMER",
-    "STANDARD"
-  ],
   "surfaceLayout": [
     "...RR...........................VVRR....",
     "...RR........V..................VVRR....",

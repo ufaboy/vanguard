@@ -604,30 +604,6 @@
       }
     ]
   },
-  "enemyPool": [
-    "SCOUT",
-    "SCOUT",
-    "SCOUT",
-    "SCOUT",
-    "SAPPER",
-    "STANDARD",
-    "STANDARD",
-    "STANDARD",
-    "FLAMETHROWER",
-    "STEALTH",
-    "STANDARD",
-    "STANDARD",
-    "STANDARD",
-    "JAMMER",
-    "SCOUT",
-    "STANDARD",
-    "STANDARD",
-    "STANDARD",
-    "KAMIKAZE",
-    "SCOUT",
-    "STANDARD",
-    "STANDARD"
-  ],
   "surfaceLayout": [
     "VVVVRRVVVVVVVRRVVVVVVVVVVVVVVVRRVVVVVVVV",
     "VVVVRRVVVVVVVRRVVVWWWWVVVVVVVVRRVVVVVVVV",

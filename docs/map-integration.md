@@ -18,7 +18,7 @@ This is a navigation guide to the current repository, not a promise that every A
 | Completion saves and loot settlement | `public/src/sim/garage.js`, engine victory/abort methods |
 | Existing behavioral tests | `tests/` |
 
-Initial cells in authored encounter maps consume the first group's roster; do not add their counts again. `enemyPool` must agree with the ordered flattened encounter roster when the current loader uses both. Fixed spawns have different legacy semantics; inspect their accounting rather than assuming they consume a queue.
+Initial cells in authored encounter maps consume the first group's roster; do not add their counts again. Authored encounter maps define their roster only in `enemies.encounters` (no separate `enemyPool`, which is derived at load time); `enemyPool` is only for non-encounter modes (survival / cargo contracts). Fixed spawns have different legacy semantics; inspect their accounting rather than assuming they consume a queue.
 
 The catalog's whole-mission budget includes bosses and escorts. Do not copy the default sector boss into ordinary missions. Conversely, do not route a planned boss map through a no-boss encounter-completion branch: implement and test the specific boss phase and reserved escorts when that mission is requested. Stronghold success may occur before all reserved enemies deploy.
 

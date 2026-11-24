@@ -507,32 +507,6 @@
       }
     ]
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "HOVER",
-    "SCOUT",
-    "STANDARD",
-    "STEALTH",
-    "HOVER",
-    "STANDARD",
-    "STANDARD",
-    "FLAMETHROWER",
-    "SAPPER",
-    "HOVER",
-    "HOWITZER",
-    "STEALTH",
-    "STANDARD",
-    "ARMOR",
-    "ARMOR",
-    "STANDARD",
-    "HOWITZER",
-    "ENGINEER",
-    "STRIKER",
-    "ARMOR",
-    "FLAMETHROWER",
-    "STANDARD"
-  ],
   "surfaceLayout": [
     "VVVVVRRVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVVV",
     "VVVVVRRVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVVV",

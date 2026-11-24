@@ -424,33 +424,6 @@
       "enabled": false
     }
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "STEALTH",
-    "SCOUT",
-    "STANDARD",
-    "FLAMETHROWER",
-    "STANDARD",
-    "STANDARD",
-    "SAPPER",
-    "FLAMETHROWER",
-    "STEALTH",
-    "HOWITZER",
-    "STANDARD",
-    "ARMOR",
-    "JAMMER",
-    "SAPPER",
-    "ARMOR",
-    "STRIKER",
-    "STEALTH",
-    "FLAMETHROWER",
-    "HOWITZER",
-    "ENGINEER",
-    "STANDARD",
-    "ARMOR",
-    "STRIKER"
-  ],
   "surfaceLayout": [
     "VVVVV..R...VVVVVV..R...VVVVVVV..R...VVVV",
     "VVVVV..R...VVVVVV..R...VVVVVVV..R...VVVV",

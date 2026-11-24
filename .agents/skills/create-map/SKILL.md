@@ -52,7 +52,7 @@ Write `surfaceLayout` and `objectLayout` directly (40 strings of 40 characters e
 6. Context objects (barrels, oil, crates, water tower) and the **war layer** (defence lines, hedgehogs, craters, rubble, damaged blocks).
 7. Player base, player spawn, enemy entrances, enemy base (stronghold mode), BOX caches.
 8. `decoration` (zones, paths, labels, markings) with a unique `seed`; `landmarks3d` only when an existing kind fits.
-9. `enemies` + `enemyPool`, `design`, `environment`, `rules`, `completionReward`.
+9. `enemies`, `design`, `environment`, `rules`, `completionReward`.
 
 Fill in `design` with `enemySide: "north"`, `tacticalIdentity`, `breaches`, and a `reference` object: `{ "place": "...", "kind": "real" | "generic", "kept": [...], "simplified": [...] }`.
 
@@ -85,7 +85,7 @@ Gameplay wins over realism, but resolve conflicts by moving, compressing or addi
 
 ### 7. Draft enemy roster
 
-- Total budget **20–32 tanks**; `initialSpawnCount: 4`, `maxConcurrent: 8`; `enemyPool` equals the flattened `encounters[].enemies` in order.
+- Total budget **20–32 tanks**; `initialSpawnCount: 4`, `maxConcurrent: 8`; define the roster only in `enemies.encounters[].enemies` (do not add a separate `enemyPool`).
 - At most **3 encounters** (probe → pressure → finale), each with its own entrances and a `patrolRoute` that follows the routes you designed.
 - Types follow the terrain: `HOVER` only with water; `STEALTH` / `FLAMETHROWER` with forest and cover; `HOWITZER` / `STRIKER` with long sightlines; `SAPPER` with chokepoints; `ENGINEER` with lots of brick. `STANDARD` / `ARMOR` / `SCOUT` fill the rest.
 - **No sector bosses** unless the user asks.
@@ -99,7 +99,7 @@ node .agents/skills/create-map/scripts/audit-map.mjs <map-json-path>
 node .agents/skills/create-map/scripts/tactics-check.mjs <map-json-path>
 ```
 
-All three must report no errors / issues. `tactics-check` measures the tactical minimum: object-free squares (`open_area`), the best single overwatch cell in the player half (`overwatch`, using player sight and shot-blocking tiles), and ambush cover near routes per sector (`ambush`). It is a heuristic: if you keep a flagged feature on purpose, say why in the delivery report. Also check by reading the grid: entrance gaps on row 0, no full-width water line, breaches listed in `design` really exist, `enemyPool` matches the encounters. Scripts are evidence, not proof of realism or fun.
+All three must report no errors / issues. `tactics-check` measures the tactical minimum: object-free squares (`open_area`), the best single overwatch cell in the player half (`overwatch`, using player sight and shot-blocking tiles), and ambush cover near routes per sector (`ambush`). It is a heuristic: if you keep a flagged feature on purpose, say why in the delivery report. Also check by reading the grid: entrance gaps on row 0, no full-width water line, breaches listed in `design` really exist. Scripts are evidence, not proof of realism or fun.
 
 ### 9. Verify visually in the editor (required)
 

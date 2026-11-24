@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { SurvivalDirector, ContractDirector } from './mode-directors.js';
 import { AiDebugOverlay } from './ai-debug-overlay.js';
 import { GarageOps } from './garage-ops.js';
+import { PerfMonitor } from './perfMonitor.js';
 import { BossCombat } from './boss-combat.js';
 import { DefenseTurretsController } from './defense-turrets.js';
 import { buildHudSnapshot } from './hud-snapshot.js';
@@ -77,6 +78,7 @@ export class TankGameEngine {
     this.onHudUpdate = onHudUpdate;
     this.frameId = 0;
     this.isDisposed = false;
+    this.perfMonitor = new PerfMonitor(options);
 
     this.cameraPreset = 'ISOMETRIC';
     this.cameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
@@ -1090,9 +1092,18 @@ export class TankGameEngine {
       const dt = Math.min(rawDelta, 0.05);
 
       if (!this.sceneOccluded) {
+        const perf = this.perfMonitor.enabled ? this.perfMonitor : null;
+        if (perf) perf.startFrame(rawDelta);
+
         const simDt = dt * this.getTimeScale();
+        let t0 = perf ? performance.now() : 0;
         this.update(simDt);
+        if (perf) perf.recordPhase('update', performance.now() - t0);
+
+        t0 = perf ? performance.now() : 0;
         this.modelFactory?.updateAnimatedTextures(simDt);
+        if (perf) perf.recordPhase('textures', performance.now() - t0);
+
         if (this.isGarageOpen) {
           if (!this._garageWindowEl?.isConnected) {
             this._garageWindowEl = document.querySelector('.garage-stage-window');
@@ -1109,15 +1120,30 @@ export class TankGameEngine {
           if (!this._garageWindowRect && this._garageWindowEl) {
             this._garageWindowRect = this._garageWindowEl.getBoundingClientRect();
           }
+          t0 = perf ? performance.now() : 0;
           this.garageStage.render(this.renderer, this._garageWindowRect);
+          if (perf) perf.recordPhase('render', performance.now() - t0);
         } else {
+          t0 = perf ? performance.now() : 0;
           this.tileBatcher.sync();
+          if (perf) perf.recordPhase('tileBatcher', performance.now() - t0);
+
+          t0 = perf ? performance.now() : 0;
           this.renderer.render(this.scene, this.getActiveCamera());
+          if (perf) perf.recordPhase('render', performance.now() - t0);
+
           // Skip long gaps (hidden tab, debugger) so they don't drag the average down.
           if (this.status === GameStatus.PLAYING && rawDelta > 0 && rawDelta < 1) {
             this.fpsSampleFrames += 1;
             this.fpsSampleSec += rawDelta;
           }
+        }
+
+        if (perf) {
+          perf.endFrame(this.renderer, {
+            enemies: this.enemies?.length ?? 0,
+            projectiles: this.projectiles?.length ?? 0,
+          });
         }
       }
 
@@ -1171,20 +1197,32 @@ export class TankGameEngine {
       return;
     }
 
+    const perf = this.perfMonitor.enabled ? this.perfMonitor : null;
+
     if (this.status === GameStatus.PLAYING) {
+      let t = perf ? performance.now() : 0;
       this.componentDamageCooldown = Math.max(0, this.componentDamageCooldown - dt);
       this.updatePlayer(dt, elapsed);
       this.playerController.updateBaseMaintenance(dt);
       this.updateApsInterception(dt);
+      if (perf) perf.recordUpdatePhase('player', performance.now() - t);
+
+      t = perf ? performance.now() : 0;
       this.updateSpawnerLogic(dt);
       if (this.contractState) {
         this.contractDirector.update(dt, elapsed);
       }
       this.updateEnemies(dt, elapsed);
       this.defenseTurretsCtrl.update(dt, elapsed);
+      if (perf) perf.recordUpdatePhase('enemies', performance.now() - t);
+
+      t = perf ? performance.now() : 0;
       this.updateProjectiles(dt);
       this.updateMines(dt, elapsed);
       this.updateLasers(dt);
+      if (perf) perf.recordUpdatePhase('projectiles', performance.now() - t);
+
+      t = perf ? performance.now() : 0;
       this.explosions.updateHazardZones(dt, elapsed);
       this.updatePowerUps(dt, elapsed);
       this.powerupsController.updateAirDrops(dt, elapsed);
@@ -1195,6 +1233,7 @@ export class TankGameEngine {
       this.terrainDestruction.updateBurningOil(dt);
       this.updateBrickRubble(dt);
       this.forestFire.update(dt, elapsed);
+      if (perf) perf.recordUpdatePhase('world', performance.now() - t);
     } else if (this.status === GameStatus.VICTORY && this.victoryCinematicsTimer > 0) {
       const { finished, restoredFrustum } = stepVictoryCinematics(this.victoryCinematics, dt, {
         onSpark: (x, z) => this.spawnSparks?.(x, 0.7, z, 0xff8833, 2),
@@ -1242,16 +1281,20 @@ export class TankGameEngine {
       this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
     }
 
+    const fxStart = perf ? performance.now() : 0;
     this.updateParticles(dt);
     this.inputCamera.updateCamera(dt, elapsed);
     this.fx.update(dt, this.getActiveCamera(), this.renderer);
+    if (perf) perf.recordUpdatePhase('fx', performance.now() - fxStart);
 
     if (!(this.status === GameStatus.PAUSED && this.airSupportTargeting)) {
       this.hudSyncAccumulator += dt;
       const hudInterval = this.status === GameStatus.PLAYING ? (this.quality === 'low' ? 0.2 : 0.12) : 0.5;
       if (this.hudSyncAccumulator >= hudInterval) {
         this.hudSyncAccumulator = 0;
+        const hudStart = perf ? performance.now() : 0;
         this.emitHudUpdate();
+        if (perf) perf.recordUpdatePhase('hud', performance.now() - hudStart);
       }
     }
   }
@@ -1651,6 +1694,7 @@ export class TankGameEngine {
 
   dispose() {
     this.isDisposed = true;
+    this.perfMonitor?.dispose();
     this.garageStage?.dispose();
     this.modelFactory.brickModels.dispose();
     this.modelFactory.concreteModels?.dispose?.();
