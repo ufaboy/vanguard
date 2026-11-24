@@ -1609,6 +1609,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   .campaign-workspace {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    align-items: start;
   }
   .campaign-region-map-panel,
   .campaign-recon-panel {
@@ -2076,6 +2077,7 @@ html.campaign-hydrating .campaign-recon-square {
   user-select: none;
 }
 
+html.campaign-hydrating .campaign-roster-chip *,
 html.campaign-hydrating .campaign-brief-actions *,
 html.campaign-hydrating .campaign-recon-square > * {
   opacity: 0 !important;
