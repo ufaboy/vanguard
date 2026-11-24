@@ -96,6 +96,7 @@ export class Viewport3D {
     });
     this.cursorMesh = new THREE.Mesh(cursorGeo, cursorMat);
     this.cursorMesh.position.y = 0.05;
+    this.cursorMesh.renderOrder = 10;
     this.cursorMesh.visible = false;
     this.scene.add(this.cursorMesh);
 
