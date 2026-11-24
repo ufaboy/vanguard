@@ -23,7 +23,7 @@ const DICTIONARIES = { es, 'pt-br': ptBr, de, fr };
  * Translated twins live under `/<locale>/` and carry hreflang alternates and a language menu.
  */
 export const LOCALIZED_SLUGS = Object.freeze([
-  '', 'enemies', 'campaign', 'survival', 'contracts', 'how-to-play', 'walkthrough', 'arsenal',
+  '', 'enemies', 'campaign', 'campaign/walkthrough', 'survival', 'contracts', 'how-to-play', 'arsenal',
   'destructible-terrain', 'games-like-battle-city', 'webgl-tank-game', 'about', 'privacy-policy', 'terms', 'contact',
 ]);
 const TWINS = new Set(LOCALIZED_SLUGS);
@@ -63,18 +63,39 @@ export function useTranslations(locale) {
   };
 }
 
+/** Relative path from directory `fromDir` to `toPath` (both relative to site root, no leading slash). */
+function relPath(fromDir, toPath) {
+  const fromParts = fromDir ? fromDir.split('/').filter(Boolean) : [];
+  const toParts = toPath ? toPath.split('/') : [''];
+  let common = 0;
+  while (common < fromParts.length && common < toParts.length - 1 && fromParts[common] === toParts[common]) {
+    common++;
+  }
+  const up = fromParts.length - common;
+  const down = toParts.slice(common).join('/');
+  return `${up === 0 ? './' : '../'.repeat(up)}${down}`;
+}
+
+function pageDir(slug, locale) {
+  const localePart = locale === DEFAULT_LOCALE ? '' : locale;
+  const slugDir = slug && slug.includes('/') ? slug.slice(0, slug.lastIndexOf('/')) : '';
+  return [localePart, slugDir].filter(Boolean).join('/');
+}
+
 /**
- * Rewrites a relative link written for an English page (`./slug`, `./images/x.webp`) for `locale`,
- * exactly like the former generator: translated pages keep twins in `./` and reach everything else
- * through `../`.
+ * Rewrites a relative link written for an English root page (`./slug`, `./images/x.webp`) for
+ * `(locale, fromSlug)`: translated pages keep twins in `./` and reach everything else from root.
  */
-export function localHref(href, locale) {
+export function localHref(href, locale, fromSlug = '') {
   // Links may be written as HTML (`&amp;`); Astro escapes attribute values itself.
   const value = decode(href);
-  if (locale === DEFAULT_LOCALE || !value.startsWith('./')) return value;
+  if (!value.startsWith('./')) return value;
+  if (locale === DEFAULT_LOCALE && !fromSlug.includes('/')) return value;
   const target = value.slice(2);
-  const [pathPart] = target.split(/[?#]/);
-  return TWINS.has(pathPart.replace(/\.html$/, '')) ? value : `../${target}`;
+  const [pathPart, suffix = ''] = target.split(/([?#].*)/);
+  const cleanSlug = pathPart.replace(/\.html$/, '');
+  const toPath = TWINS.has(cleanSlug) && locale !== DEFAULT_LOCALE ? `${locale}/${pathPart}` : pathPart;
+  return `${relPath(pageDir(fromSlug, locale), toPath)}${suffix}`;
 }
 
 /** Absolute URL of a page (`slug` without extension, `''` for home). */
@@ -84,22 +105,22 @@ export function pageUrl(slug, locale) {
 }
 
 /**
- * Relative link from a page in `locale` to page `slug`, matching today's output:
+ * Relative link from a page `(fromSlug, locale)` to page `slug`, matching today's output:
  * English pages use `./slug`; translated pages stay in `./` for twins and go `../` otherwise.
  */
-export function pageHref(slug, locale) {
-  const prefix = locale === DEFAULT_LOCALE || TWINS.has(slug) ? './' : '../';
-  return `${prefix}${slug}`;
+export function pageHref(slug, locale, fromSlug = '') {
+  const target = slug || '';
+  const toPath = locale !== DEFAULT_LOCALE && TWINS.has(slug) ? `${locale}/${target}` : target;
+  return relPath(pageDir(fromSlug, locale), toPath);
 }
 
-/** Relative path from a page in `locale` to a file in `public/` (images, CSS, scripts). */
-export const assetHref = (file, locale) => `${locale === DEFAULT_LOCALE ? './' : '../'}${file}`;
+/** Relative path from a page `(fromSlug, locale)` to a file in `public/` (images, CSS, scripts). */
+export const assetHref = (file, locale, fromSlug = '') => relPath(pageDir(fromSlug, locale), file);
 
 /** Link from the current page (`locale`) to its twin in `target` for the language menu. */
 export function twinHref(slug, locale, target) {
-  if (locale === DEFAULT_LOCALE) return target === DEFAULT_LOCALE ? `./${slug}` : `./${target}/${slug}`;
-  if (target === locale) return `./${slug}`;
-  return target === DEFAULT_LOCALE ? `../${slug}` : `../${target}/${slug}`;
+  const toPath = target === DEFAULT_LOCALE ? slug : `${target}/${slug}`;
+  return relPath(pageDir(slug, locale), toPath);
 }
 
 const JSONLD_TEXT_KEYS = new Set(['name', 'description', 'text', 'featureList', 'genre', 'applicationSubCategory', 'browserRequirements']);

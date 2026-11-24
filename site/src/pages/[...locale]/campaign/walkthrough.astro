@@ -1,0 +1,426 @@
+---
+// Static page: English source text; translations come from i18n/pages/<locale>.mjs.
+import PageLayout from '../../../layouts/PageLayout.astro';
+import { localHref, localeStaticPaths, useTranslations } from '../../../i18n/index.js';
+
+export const getStaticPaths = () => localeStaticPaths("campaign/walkthrough");
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const h = (href) => localHref(href, locale, 'campaign/walkthrough');
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://battletank.online/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Campaign",
+        "item": "https://battletank.online/campaign"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Campaign Walkthrough",
+        "item": "https://battletank.online/campaign/walkthrough"
+      }
+    ]
+  }
+];
+---
+<PageLayout
+  locale={locale}
+  slug="campaign/walkthrough"
+  title={"Campaign Walkthrough: The Iron Road (38 Missions) — BATTLE TANK"}
+  description={"Complete 38-mission Campaign Walkthrough for BATTLE TANK: The Iron Road from Rome to Barcelona across 7 European regions, Sector Boss counters, and tactical briefings."}
+  ogDescription={"38-mission Iron Road walkthrough from Rome to Barcelona across 7 European regions, Sector Boss tactics, and browser 3D tank strategy."}
+  twitterDescription={"How to clear all 38 Iron Road missions from Rome to Barcelona and defeat Mammoth, Cerberus-T, Hydra, and Titan in BATTLE TANK."}
+  image={"https://battletank.online/images/campaign/mission-01.webp"}
+  jsonLd={jsonLd}
+  bodyPage="walkthrough"
+  script="src/pages/how-to-play.js"
+>
+  <h1 class="menu-page-title" tabindex="-1">{t("Campaign Walkthrough: The Iron Road")}</h1>
+  <p class="menu-lead">
+    {t("Complete 38-mission story and tactical walkthrough for")} <strong>{t("The Iron Road")}</strong> {t("campaign in BATTLE TANK. Pursue the Iron Consortium from Rome to Barcelona across 7 European regions, plan your VANGUARD upgrades, and counter every Sector Boss.")}
+  </p>
+
+  <nav class="menu-card" aria-label={t("Region jump links")} style="cursor:default;margin-top:20px;">
+    <span class="menu-kicker">{t("QUICK REGION NAVIGATION")}</span>
+    <div class="menu-actions" style="margin-top:10px;gap:8px;flex-wrap:wrap;">
+      <a class="menu-secondary" href="#region-italy">{t("1. Italy (01–05)")}</a>
+      <a class="menu-secondary" href="#region-alps">{t("2. Alps (06–10)")}</a>
+      <a class="menu-secondary" href="#region-bohemia">{t("3. Bohemia & Saxony (11–15)")}</a>
+      <a class="menu-secondary" href="#region-germany">{t("4. Germany (16–21)")}</a>
+      <a class="menu-secondary" href="#region-low-countries">{t("5. Low Countries (22–26)")}</a>
+      <a class="menu-secondary" href="#region-france">{t("6. France (27–32)")}</a>
+      <a class="menu-secondary" href="#region-pyrenees">{t("7. Pyrenees & Catalonia (33–38)")}</a>
+    </div>
+  </nav>
+
+  <h2 style="margin-top:36px;font-size:24px;font-weight:800;">{t("Story Premise: The Rome Heist & Protocol Iron Road")}</h2>
+  <div class="menu-card" style="cursor:default;margin-top:14px;">
+    <p>{t("Three days before the closed European demonstration of Project Prometheus, a heavily guarded convoy carrying four next-generation tank prototypes is ambushed in central Rome. Their true value lies in quantum-ballistic fire-control cores and hybrid powerplants capable of uniting heavy weapons into a single platform. At dawn near the Colosseum and Roman Forum, strike teams of the Iron Consortium jam communications, overrun the escort, and seize the prototypes.")}</p>
+    <p style="margin-top:10px;">{t("Behind the operation stands Director Viktor Kranz, a former military engineer who turned the Consortium into a shadow industrial syndicate buying up steelworks, alpine tunnels, military archives, and port terminals across Europe. Because VANGUARD blockades Italy's ports and airspace within hours—and because the stolen cores carry multi-stage hardware locks—Kranz activates Protocol Iron Road: a continental mobile assembly line that decrypts the cores stage by stage, builds Sector Bosses on the march, and aims to synthesize the ultimate dreadnought Titan for extraction from Barcelona Port.")}</p>
+  </div>
+
+  <h2 style="margin-top:32px;font-size:22px;font-weight:800;">{t("Key Operatives & The Four Acts")}</h2>
+  <div class="menu-grid" style="margin-top:14px;">
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("PROTAGONIST // VANGUARD SPEARHEAD")}</span>
+      <strong>{t("Vanguard-1 (Strike Commander)")}</strong>
+      <p>{t("Commander of VANGUARD's forward armor group. Your breakthroughs force Kranz to reroute his convoys and deploy unfinished Sector Bosses ahead of schedule.")}</p>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("COMMAND // HQ-ZERO")}</span>
+      <strong>{t("Colonel Marcus Vance")}</strong>
+      <p>{t("Operational commander of Task Force VANGUARD. Delivers crisp tactical briefings covering terrain, enemy threats, and mission victory conditions.")}</p>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("SIGINT // ORACLE")}</span>
+      <strong>{t("Elena Rostova")}</strong>
+      <p>{t("Lead electronic intelligence analyst. Tracks the stolen Prometheus cores, decrypts captured archives, and warns of incoming Sector Bosses.")}</p>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("ANTAGONIST // THE ARCHITECT")}</span>
+      <strong>{t("Director Viktor Kranz")}</strong>
+      <p>{t("Head of the Iron Consortium. Intercepted orders trace his descent from cold confidence in Rome to desperate fury in Nice and Barcelona.")}</p>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("ACT I & ACT II // MISSIONS 01–21")}</span>
+      <strong>{t("Breakthrough & Iron Forge")}</strong>
+      <p>{t("Act I (01–10) pushes through Italy and the Alps until Kranz fakes a western turn in Vienna and heads north. Act II (11–21) uncovers the core decryption in Moravia and Konopiště, faces Mammoth on the Elbe in Dresden, storms Berlin, holds Remagen, and destroys Cerberus-T in the Ruhr.")}</p>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("ACT III & ACT IV // MISSIONS 22–38")}</span>
+      <strong>{t("Northern Gates & Final Anvil")}</strong>
+      <p>{t("Act III (22–32) seals North Sea ports by sinking Hydra at the Scheldt Delta, then chases Kranz through Paris, Versailles, Lyon, Mont Blanc, and a Mammoth rematch in Nice. Act IV (33–38) crosses Andorra, Bardenas Reales, and Montserrat into Barcelona for the final port showdown.")}</p>
+    </article>
+  </div>
+
+  <!-- REGION 1: ITALY -->
+  <h2 id="region-italy" style="margin-top:42px;font-size:24px;font-weight:800;">{t("Region 1: Italy (Missions 01–05)")}</h2>
+  <div class="menu-card" style="cursor:default;margin-top:14px;">
+    <img src={h("./images/campaign/mission-01.webp")} alt={t("Italy urban and alpine pursuit sector")} loading="lazy" width="640" height="360" style="width:100%;max-height:240px;object-fit:cover;border-radius:4px;margin-bottom:14px;display:block;">
+    <span class="menu-kicker">{t("ACT I // MISSIONS 01–05 // NO SECTOR BOSS")}</span>
+    <strong>{t("From Rome's Ruins to the Dolomites Pass")}</strong>
+    <p>{t("A fast-paced opening across urban ruins, mountain gorges, industrial canals, and lakefront highways. Invest early credits in Cannon Mk2 and Armor A2 while learning base defense, sabotage breaches, and steep mountain assaults.")}</p>
+  </div>
+  <div class="menu-grid" style="margin-top:14px;">
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 01 // EXTERMINATION // URBAN")}</span>
+      <strong>{t("01. Rome: Forum & Colosseum")}</strong>
+      <p>{t("Consortium strike teams hold the ruins around the Colosseum, Arch of Constantine, and Via dei Fori Imperiali to cover the stolen convoy's escape north. Use stone colonnades to break crossfire lanes, eliminate all enemy units, and restore satellite tracking.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-01")}>{t("Play Mission 01 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 02 // BASE DEFENSE // ALPINE")}</span>
+      <strong>{t("02. Apennine Gorge")}</strong>
+      <p>{t("VANGUARD's forward workshop sits exposed at the only heavy crossing over the Apennines as Kranz's rearguard wheels back to crush it. Defend the field HQ across the stone bridge and downstream ford, using retaining-wall breaches to rotate between flanks.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-02")}>{t("Play Mission 02 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 03 // STRONGHOLD ASSAULT // INDUSTRIAL")}</span>
+      <strong>{t("03. Milan Industrial")}</strong>
+      <p>{t("Phantom convoy beacons are flooding Northern Italy from Milan's factory belt beside the Naviglio canal. Punch through the sawtooth-roof workshops and rail sidings to destroy the central relay hub and expose the real route toward Lake Garda.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-03")}>{t("Play Mission 03 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 04 // EXTERMINATION // COAST")}</span>
+      <strong>{t("04. Lake Garda & Verona")}</strong>
+      <p>{t("Lake Garda seals one flank while cypress bends and Verona's ancient walls hide ambushers guarding the Adige valley climb. Wipe out every Consortium escort unit along the narrow lakeside highway before their heavy transporters reach the mountains.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-04")}>{t("Play Mission 04 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 05 // STRONGHOLD ASSAULT // ALPINE")}</span>
+      <strong>{t("05. Dolomites Pass")}</strong>
+      <p>{t("Demolitions have sealed every side trail, leaving a single icy switchback beneath a concrete Consortium fortress. Watch your traction on snow and ice, fight up the hairpin turns, and shatter the pass fortress HQ to cross into the Alps.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-05")}>{t("Play Mission 05 →")}</a>
+    </article>
+  </div>
+
+  <!-- REGION 2: ALPS -->
+  <h2 id="region-alps" style="margin-top:42px;font-size:24px;font-weight:800;">{t("Region 2: Alps (Missions 06–10)")}</h2>
+  <div class="menu-card" style="cursor:default;margin-top:14px;">
+    <img src={h("./images/campaign/mission-06.webp")} alt={t("Alps castles, rail tunnels, and Danube corridor")} loading="lazy" width="640" height="360" style="width:100%;max-height:240px;object-fit:cover;border-radius:4px;margin-bottom:14px;display:block;">
+    <span class="menu-kicker">{t("ACT I FINALE // MISSIONS 06–10 // NO SECTOR BOSS")}</span>
+    <strong>{t("Bavarian Castles, Rail Tunnels & Vienna")}</strong>
+    <p>{t("Kranz uses Alpine castles as fire-control centers and trans-Alpine rail tunnels to move decrypted components. Upgrade to Cannon Mk3 and Engine E2–E3 to handle forested ridges, tight urban bridges, and Vienna's wide Ringstrasse.")}</p>
+  </div>
+  <div class="menu-grid" style="margin-top:14px;">
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 06 // STRONGHOLD ASSAULT // FOREST")}</span>
+      <strong>{t("06. Füssen & Neuschwanstein")}</strong>
+      <p>{t("The Consortium has turned Neuschwanstein into a regional command core overlooking Lake Alpsee and the Pöllat gorge bridge. Push through the pine forest, cross the narrow gorge, and destroy the castle HQ to recover Innsbruck rail schedules.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-06")}>{t("Play Mission 06 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 07 // STRONGHOLD ASSAULT // ALPINE")}</span>
+      <strong>{t("07. Innsbruck Rail Tunnel")}</strong>
+      <p>{t("Stolen guidance and crypto modules are being loaded onto sealed trains at the Brenner tunnel portals by the River Inn. Fight through snowy rail sidings and capture the tunnel-mouth loading terminal before the cargo disappears underground.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-07")}>{t("Play Mission 07 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 08 // BASE DEFENSE // URBAN")}</span>
+      <strong>{t("08. Hohensalzburg Fortress")}</strong>
+      <p>{t("VANGUARD holds Salzburg's Old Town along the Salzach River while the Consortium garrison charges down from Hohensalzburg Fortress to cut the bridges. Lock down the narrow river crossings and hold the HQ against every wave.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-08")}>{t("Play Mission 08 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 09 // EXTERMINATION // FOREST")}</span>
+      <strong>{t("09. Wachau: Danube Valley")}</strong>
+      <p>{t("Mobile Consortium patrols lurk among forested ridges and terraced vineyards beneath the cliffside abbey along the Danube. Clear every patrol tank from the river corridor so VANGUARD can strike Vienna before Kranz shifts direction.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-09")}>{t("Play Mission 09 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 10 // EXTERMINATION // CAPITAL")}</span>
+      <strong>{t("10. Vienna: Hofburg")}</strong>
+      <p>{t("Kranz's guard blocks the Ringstrasse and Heldenplatz outside the Hofburg while the main convoy unexpectedly turns north toward Bohemia instead of west. Break the Vienna blockade across long boulevard sightlines to keep on the northern trail.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-10")}>{t("Play Mission 10 →")}</a>
+    </article>
+  </div>
+
+  <!-- REGION 3: BOHEMIA & SAXONY -->
+  <h2 id="region-bohemia" style="margin-top:42px;font-size:24px;font-weight:800;">{t("Region 3: Bohemia & Saxony (Missions 11–15)")}</h2>
+  <div class="menu-card" style="cursor:default;margin-top:14px;">
+    <img src={h("./images/campaign/mission-15.webp")} alt={t("Bohemia and Saxony karst, castles, and Elbe sector")} loading="lazy" width="640" height="360" style="width:100%;max-height:240px;object-fit:cover;border-radius:4px;margin-bottom:14px;display:block;">
+    <span class="menu-kicker">{t("ACT II // MISSIONS 11–15 // BOSS: MAMMOTH")}</span>
+    <strong>{t("The Northern Decryption Trail & First Boss Battle")}</strong>
+    <p>{t("In Moravia and Konopiště, Kranz unlocks the first Prometheus core. Before Mission 15, equip 4-Corner APS and Cannon Mk3+ to survive Mammoth's dual siege guns, homing ATGM salvos, and 50% HP phase shield.")}</p>
+  </div>
+  <div class="menu-grid" style="margin-top:14px;">
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 11 // EXTERMINATION // FOREST")}</span>
+      <strong>{t("11. Moravian Karst")}</strong>
+      <p>{t("Impassable sinkholes and the 138-meter Macocha Abyss split the forested limestone plateau into narrow ravine lanes. Flush Consortium decryption teams out of their cave-mouth bunkers to uncover their Bohemian archive.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-11")}>{t("Play Mission 11 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 12 // STRONGHOLD ASSAULT // FOREST")}</span>
+      <strong>{t("12. Konopiště Castle")}</strong>
+      <p>{t("Ponds, deer-park woods, and narrow castle gates channel your assault into kill zones at Konopiště. Breach the perimeter and destroy the archive HQ to seize Project Titan schematics and learn the Sector Boss codenames.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-12")}>{t("Play Mission 12 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 13 // EXTERMINATION // URBAN")}</span>
+      <strong>{t("13. Prague: Charles Bridge")}</strong>
+      <p>{t("Consortium rearguards barricade Charles Bridge and the Vltava embankments to buy 24 hours for their Elbe defenses. Avoid head-on bottlenecks on the stone spans, clear the riverfront quarters, and open the road to Saxony.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-13")}>{t("Play Mission 13 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 14 // BASE DEFENSE // FOREST")}</span>
+      <strong>{t("14. Bohemian Forest")}</strong>
+      <p>{t("In dense post-rain fog among Šumava spruces and peat bogs, Consortium jäger armor ambushes VANGUARD's forward camp from three logging roads at once. Hold an all-around perimeter and repel every wave to reach the Elbe.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-14")}>{t("Play Mission 14 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 15 // EXTERMINATION + BOSS // URBAN")}</span>
+      <strong>{t("15. Dresden & the Elbe")}</strong>
+      <p>{t("Cross the Augustus Bridge past the Frauenkirche and Zwinger onto the open Elbe meadows where")} <strong>{t("MAMMOTH")}</strong> {t("awaits. Powered by the first Prometheus core, this dual-cannon dreadnought deploys APS, homing ATGMs, and a 50% HP phase shield with armored escorts.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-15")}>{t("Play Mission 15 →")}</a>
+    </article>
+  </div>
+
+  <!-- REGION 4: GERMANY -->
+  <h2 id="region-germany" style="margin-top:42px;font-size:24px;font-weight:800;">{t("Region 4: Germany (Missions 16–21)")}</h2>
+  <div class="menu-card" style="cursor:default;margin-top:14px;">
+    <img src={h("./images/campaign/mission-17.webp")} alt={t("Germany Berlin, Rhine, and Ruhr industrial sector")} loading="lazy" width="640" height="360" style="width:100%;max-height:240px;object-fit:cover;border-radius:4px;margin-bottom:14px;display:block;">
+    <span class="menu-kicker">{t("ACT II FINALE // MISSIONS 16–21 // BOSS: CERBERUS-T")}</span>
+    <strong>{t("Berlin's Fall, the Rhine & the Ruhr Forge")}</strong>
+    <p>{t("Shatter the Consortium's German directorate in Berlin, hold the historic Remagen Rhine crossing, and face thermobaric leviathan Cerberus-T in the Ruhr. Upgrade to Cannon Mk4 and CH4 All-Terrain Tracks before Mission 21 so scorched terrain and concrete corridors don't trap you.")}</p>
+  </div>
+  <div class="menu-grid" style="margin-top:14px;">
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 16 // EXTERMINATION // CAPITAL")}</span>
+      <strong>{t("16. Berlin: Brandenburg Gate")}</strong>
+      <p>{t("Guards block Berlin's central axis to buy time for server wipes across the Spree. Use side streets to flank long avenue sightlines and smash the Brandenburg Gate screen.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-16")}>{t("Play Mission 16 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 17 // STRONGHOLD ASSAULT // CAPITAL")}</span>
+      <strong>{t("17. Berlin: Reichstag & Spree")}</strong>
+      <p>{t("Cross the bridges of the Spreebogen bend near the Victory Column and storm the open lawn before the Reichstag. Destroy the German directorate HQ to pinpoint Kranz's secret East Berlin blueprint vault.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-17")}>{t("Play Mission 17 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 18 // STRONGHOLD ASSAULT // INDUSTRIAL")}</span>
+      <strong>{t("18. East Berlin Rail Yards")}</strong>
+      <p>{t("Among rusted sidings, warehouses, and remnants of the Berlin Wall, Kranz hides backup Prometheus blueprints and Ruhr relay links. Breach the depot and destroy the fortified vault to blind Consortium logistics.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-18")}>{t("Play Mission 18 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 19 // EXTERMINATION // FOREST")}</span>
+      <strong>{t("19. Harz Mountains")}</strong>
+      <p>{t("Consortium spotters and scouts use granite outcrops, dense spruce woods, and the narrow-gauge railway on Mount Brocken to track VANGUARD's march west. Sweep the slopes clean before approaching the Rhine.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-19")}>{t("Play Mission 19 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 20 // BASE DEFENSE // URBAN")}</span>
+      <strong>{t("20. Remagen Bridgehead")}</strong>
+      <p>{t("VANGUARD seizes the Rhine crossing at Remagen, wedged between the river and steep gorge cliffs. Repel furious western reserve counterattacks along converging streets to keep the road into the Ruhr wide open.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-20")}>{t("Play Mission 20 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 21 // EXTERMINATION + BOSS // INDUSTRIAL")}</span>
+      <strong>{t("21. Ruhr: Coal & Steel")}</strong>
+      <p>{t("Amid blast furnaces, slag heaps, and Zollverein-style headframes,")} <strong>{t("CERBERUS-T")}</strong> {t("(Inferno) defends the steelworks. Its 2.5-cell fuel-air shells burn walls, forests, and ice into scorched sand—keep moving, dodge telegraphed overdrive rams, and watch for mines.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-21")}>{t("Play Mission 21 →")}</a>
+    </article>
+  </div>
+
+  <!-- REGION 5: LOW COUNTRIES -->
+  <h2 id="region-low-countries" style="margin-top:42px;font-size:24px;font-weight:800;">{t("Region 5: Low Countries (Missions 22–26)")}</h2>
+  <div class="menu-card" style="cursor:default;margin-top:14px;">
+    <img src={h("./images/campaign/mission-26.webp")} alt={t("Low Countries canals, ports, and Scheldt Delta Dams")} loading="lazy" width="640" height="360" style="width:100%;max-height:240px;object-fit:cover;border-radius:4px;margin-bottom:14px;display:block;">
+    <span class="menu-kicker">{t("ACT III // MISSIONS 22–26 // BOSS: HYDRA")}</span>
+    <strong>{t("Closing the North Sea Ports")}</strong>
+    <p>{t("Deprived of German factories, Kranz races to ship the remaining prototypes out through North Sea harbors. CH4 All-Terrain Tracks or CH5 Hover Chassis are invaluable here—especially for flanking Hydra across open water at the Scheldt Delta.")}</p>
+  </div>
+  <div class="menu-grid" style="margin-top:14px;">
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 22 // EXTERMINATION // URBAN")}</span>
+      <strong>{t("22. Amsterdam Canals")}</strong>
+      <p>{t("Retreating Consortium units split into mobile packs across Amsterdam's concentric canal rings and narrow bridges beneath the Westerkerk tower. Trap them on the brick quays before they cover the Rotterdam loading.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-22")}>{t("Play Mission 22 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 23 // STRONGHOLD ASSAULT // INDUSTRIAL")}</span>
+      <strong>{t("23. Rotterdam Europoort")}</strong>
+      <p>{t("Deep inside Europe's container jungle near the Erasmus Bridge, prototype crates await barge loading. Fight between towering container stacks, gantry cranes, and fuel tanks to destroy the loading command post.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-23")}>{t("Play Mission 23 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 24 // STRONGHOLD ASSAULT // CAPITAL")}</span>
+      <strong>{t("24. Brussels: Cinquantenaire")}</strong>
+      <p>{t("Kranz's European headquarters sits defiantly beneath the Cinquantenaire triumphal arch. Use the park's side colonnades to bypass open parterre crossfire and smash the command node to uncover the Antwerp landing plan.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-24")}>{t("Play Mission 24 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 25 // BASE DEFENSE // INDUSTRIAL")}</span>
+      <strong>{t("25. Antwerp Docks")}</strong>
+      <p>{t("Consortium landing barges strike VANGUARD's forward dock workshop behind the giant Scheldt ship locks. Channel enemy waves across lock bridges and warehouse lanes to throw the amphibious assault back into the river.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-25")}>{t("Play Mission 25 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 26 // EXTERMINATION + BOSS // COAST")}</span>
+      <strong>{t("26. Scheldt Delta Dams")}</strong>
+      <p>{t("At the storm-surge barrier, amphibious rocket cruiser")} <strong>{t("HYDRA")}</strong> {t("skims open water beyond standard tracks, firing telegraphed 3-rocket triangle salvos and close-range ATGMs. Use dam piers for cover—or cross water with CH4/CH5—to seal the North Sea forever.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-26")}>{t("Play Mission 26 →")}</a>
+    </article>
+  </div>
+
+  <!-- REGION 6: FRANCE -->
+  <h2 id="region-france" style="margin-top:42px;font-size:24px;font-weight:800;">{t("Region 6: France (Missions 27–32)")}</h2>
+  <div class="menu-card" style="cursor:default;margin-top:14px;">
+    <img src={h("./images/campaign/mission-27.webp")} alt={t("France Paris, Mont Blanc, Provence, and Nice sector")} loading="lazy" width="640" height="360" style="width:100%;max-height:240px;object-fit:cover;border-radius:4px;margin-bottom:14px;display:block;">
+    <span class="menu-kicker">{t("ACT III FINALE // MISSIONS 27–32 // BOSS: MAMMOTH MK-V REMATCH")}</span>
+    <strong>{t("The Southern Chase & Riviera Showdown")}</strong>
+    <p>{t("Cut off from northern oceans, Kranz bolts south toward a waiting freighter in Barcelona. Expect extreme biome variety—capital boulevards, chemical plants, Mont Blanc crevasses, Provence sniper ridges, and an upgraded Mammoth rematch in Nice.")}</p>
+  </div>
+  <div class="menu-grid" style="margin-top:14px;">
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 27 // EXTERMINATION // CAPITAL")}</span>
+      <strong>{t("27. Paris: Champs-Élysées")}</strong>
+      <p>{t("A Consortium armored column races down the Champs-Élysées between the Arc de Triomphe and Place de la Concorde. Avoid slugging it out down the open avenue—use side streets and gardens to shatter the column from the flanks.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-27")}>{t("Play Mission 27 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 28 // BASE DEFENSE // CAPITAL")}</span>
+      <strong>{t("28. Versailles")}</strong>
+      <p>{t("Kranz's northern reserves counterattack VANGUARD's forward HQ in the Versailles palace gardens. Anchor your defense around the Latona and Apollo fountain basins to break their last northern reserve.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-28")}>{t("Play Mission 28 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 29 // STRONGHOLD ASSAULT // INDUSTRIAL")}</span>
+      <strong>{t("29. Lyon Industrial")}</strong>
+      <p>{t("In Lyon's Rhône Chemical Valley, power spikes reveal an emergency refit line rebuilding a heavy boss. Cut through petrochemical tanks and pipe corridors to wreck the main assembly hall before more giants roll out.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-29")}>{t("Play Mission 29 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 30 // STRONGHOLD ASSAULT // ALPINE")}</span>
+      <strong>{t("30. Mont Blanc")}</strong>
+      <p>{t("A broadband jammer on a high Mont Blanc glacier col blinds coalition satellites across southern France. Navigate icy bridges between impassable crevasses in fog and destroy the radar fortress to restore eyes in the sky.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-30")}>{t("Play Mission 30 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 31 // EXTERMINATION // DESERT")}</span>
+      <strong>{t("31. Provence Lavender")}</strong>
+      <p>{t("Sun-baked stone ridges, lavender rows, and a hilltop village conceal anti-tank snipers and fast scouts. Stay low in the dry riverbed to close the distance and clear every ridge above the Riviera.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-31")}>{t("Play Mission 31 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 32 // EXTERMINATION + BOSS // COAST")}</span>
+      <strong>{t("32. Nice: Côte d'Azur")}</strong>
+      <p>{t("The refitted giant from Lyon emerges on the Promenade des Anglais: a heavier, faster")} <strong>{t("MAMMOTH MK-V")}</strong> {t("rematch. Use the tight ochre alleys of Old Nice and Port Lympia for cover to bring down the beast and open the Pyrenees.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-32")}>{t("Play Mission 32 →")}</a>
+    </article>
+  </div>
+
+  <!-- REGION 7: PYRENEES & CATALONIA -->
+  <h2 id="region-pyrenees" style="margin-top:42px;font-size:24px;font-weight:800;">{t("Region 7: Pyrenees & Catalonia (Missions 33–38)")}</h2>
+  <div class="menu-card" style="cursor:default;margin-top:14px;">
+    <img src={h("./images/campaign/mission-38.webp")} alt={t("Pyrenees and Barcelona finale sector")} loading="lazy" width="640" height="360" style="width:100%;max-height:240px;object-fit:cover;border-radius:4px;margin-bottom:14px;display:block;">
+    <span class="menu-kicker">{t("ACT IV FINALE // MISSIONS 33–38 // BOSS: ALL-BOSS ESCALATION → TITAN")}</span>
+    <strong>{t("The Final Anvil: From Andorra to Barcelona Port")}</strong>
+    <p>{t("Max out your VANGUARD rig—Cannon Mk5 twin barrels, CH5 or CH4 chassis, Armor A5, and 4-Corner APS—for the Barcelona finale. Titan's directional Aegis armor blocks frontal hits, so flank its hull and survive its 30% HP overload.")}</p>
+  </div>
+  <div class="menu-grid" style="margin-top:14px;">
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 33 // BASE DEFENSE // ALPINE")}</span>
+      <strong>{t("33. Andorra: Pas de la Casa")}</strong>
+      <p>{t("At one of Europe's highest border passes, Consortium snowbound assault columns attack from surrounding ski slopes into the town streets. Hold Pas de la Casa to secure VANGUARD's descent into Spain.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-33")}>{t("Play Mission 33 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 34 // EXTERMINATION // DESERT")}</span>
+      <strong>{t("34. Bardenas Reales Range")}</strong>
+      <p>{t("Kranz's elite guard column is zeroing its guns on the semi-desert military firing range of Navarre. Use clay mesas, dry gullies, and concrete range bunkers to ambush and wipe them out on the march.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-34")}>{t("Play Mission 34 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 35 // STRONGHOLD ASSAULT // ALPINE")}</span>
+      <strong>{t("35. Montserrat")}</strong>
+      <p>{t("Consortium spotters on Montserrat's serrated stone spires oversee every approach to Barcelona. Fight terrace by terrace up the funicular ridge under plunging fire and capture the observation post.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-35")}>{t("Play Mission 35 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 36 // EXTERMINATION // URBAN")}</span>
+      <strong>{t("36. Barcelona: Gothic Quarter & Sagrada Família")}</strong>
+      <p>{t("Breach Barcelona's center across two contrasting eras: point-blank alleys in the Gothic Quarter near the Cathedral, followed by octagonal Eixample intersections beneath the spires of Sagrada Família.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-36")}>{t("Play Mission 36 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 37 // STRONGHOLD ASSAULT // COAST")}</span>
+      <strong>{t("37. Barcelona: Montjuic")}</strong>
+      <p>{t("Long-range coastal batteries and guidance relays on Montjuïc Hill cover every entrance to the harbor below. Storm the Olympic Ring approaches and Montjuïc Castle to silence the artillery umbrella.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-37")}>{t("Play Mission 37 →")}</a>
+    </article>
+    <article class="menu-card" style="cursor:default">
+      <span class="menu-kicker">{t("MISSION 38 // ALL-BOSS ESCALATION → TITAN // INDUSTRIAL")}</span>
+      <strong>{t("38. Barcelona: Port")}</strong>
+      <p>{t("At the ghost freighter's berth between Port Vell and the container terminal, Kranz throws every surviving Sector Boss into an escalating gauntlet before deploying")} <strong>{t("TITAN")}</strong>{t("—a four-barrel super-heavy dreadnought with directional Aegis armor. Flank its hull, shatter its escorts, and stop the freighter from sailing.")}</p>
+      <a class="menu-secondary" href={h("./campaign?mission=campaign-38")}>{t("Play Mission 38 →")}</a>
+    </article>
+  </div>
+
+  <div class="menu-actions" style="margin-top:28px;">
+    <a class="menu-primary" href={h("./campaign")}>{t("Launch Campaign →")}</a>
+    <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal & Upgrades")}</a>
+    <a class="menu-secondary" href={h("./enemies")}>{t("Enemy & Boss Guide")}</a>
+    <a class="menu-secondary" href={h("./how-to-play")}>{t("How to Play")}</a>
+  </div>
+
+  <Fragment slot="noscript">
+    <main style="max-width:720px;margin:48px auto;padding:24px;font-family:system-ui,sans-serif;color:#f8fafc;">
+      <h1>{t("Campaign Walkthrough: The Iron Road (38 Missions) — BATTLE TANK")}</h1>
+      <p>{t("Complete 38-mission Iron Road walkthrough from Rome to Barcelona across 7 European regions in BATTLE TANK.")}</p>
+    </main>
+  </Fragment>
+</PageLayout>
