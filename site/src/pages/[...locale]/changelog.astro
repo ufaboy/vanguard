@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.9.2 // HOTFIX")}</span>
+            <strong>{t("Fix Import Map Ordering on Battlefield Reload")}</strong>
+            <p>{t("Moved the Three.js import map in battlefield.html ahead of render-blocking stylesheets and scripts so modulepreload links never resolve \"three\" before the import map is registered on page reload.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 4.9.1 // ENGINE &amp; MAP CLEANUP")}</span>
             <strong>{t("Frame Spike PerfMonitor &amp; Encounter Roster Derivation")}</strong>
             <p>{t("Added an opt-in ?perf frame-spike profiler (with __perfReport() console summary) to TankGameEngine, and updated map normalization to derive enemyPool and enemyCount directly from enemies.encounters across all 38 campaign missions and 5 contract maps.")}</p>

@@ -8,6 +8,14 @@
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#0B1120" />
     <meta name="google-adsense-account" content="ca-pub-3217305527287787" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/build/three.module.js",
+          "three/addons/": "./vendor/three/examples/jsm/"
+        }
+      }
+    </script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -45,14 +53,6 @@
     <link rel="apple-touch-icon" sizes="180x180" href="./images/apple-touch-icon.png" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="stylesheet" href="./src/index.css" />
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "./vendor/three/build/three.module.js",
-          "three/addons/": "./vendor/three/examples/jsm/"
-        }
-      }
-    </script>
     <link rel="modulepreload" href="./vendor/three/build/three.module.js" />
     <link rel="modulepreload" href="./vendor/three/examples/jsm/loaders/GLTFLoader.js" />
     <link rel="modulepreload" href="./vendor/three/examples/jsm/loaders/DRACOLoader.js" />

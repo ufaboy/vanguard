@@ -2211,8 +2211,8 @@ export class ModelFactory extends TextureGenerator {
         const yFactor = vy < 0 ? factor * 0.55 : factor;
         pos.setXYZ(i, vx * factor * sx, vy * yFactor * sy, vz * factor * sz);
       }
-      const faceted = base.toNonIndexed();
-      base.dispose();
+      const faceted = base.index ? base.toNonIndexed() : base;
+      if (faceted !== base) base.dispose();
       faceted.computeVertexNormals();
       faceted.userData.batchGeometryKey = key;
       return faceted;
@@ -2239,8 +2239,8 @@ export class ModelFactory extends TextureGenerator {
         }
         pos.setXYZ(i, vx + off[0], vy + off[1], vz + off[2]);
       }
-      const faceted = base.toNonIndexed();
-      base.dispose();
+      const faceted = base.index ? base.toNonIndexed() : base;
+      if (faceted !== base) base.dispose();
       faceted.computeVertexNormals();
       faceted.userData.batchGeometryKey = key;
       return faceted;
