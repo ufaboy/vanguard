@@ -43,6 +43,26 @@ const jsonLd = [
   contentClass="menu-content campaign-content"
   script="src/pages/campaign.js"
 >
+  <script is:inline>
+    (function () {
+      try {
+        var qs = new URLSearchParams(location.search).get('mission');
+        if (qs && qs !== 'campaign-01') {
+          document.documentElement.classList.add('campaign-hydrating');
+          setTimeout(function () { document.documentElement.classList.remove('campaign-hydrating'); }, 2000);
+          return;
+        }
+        var raw = localStorage.getItem('battle_tank_player_save_v1');
+        if (!raw) return;
+        var save = JSON.parse(raw);
+        var done = save && save.completedMissions;
+        if (done && typeof done === 'object' && Object.keys(done).length > 0 && !qs) {
+          document.documentElement.classList.add('campaign-hydrating');
+          setTimeout(function () { document.documentElement.classList.remove('campaign-hydrating'); }, 2000);
+        }
+      } catch {}
+    })();
+  </script>
   <h1 class="campaign-page-title" tabindex="-1">{t("Campaign: Road to the Capital")}</h1>
 
   <div class="campaign-goal-banner" role="region" aria-label={t("OPERATION GOAL")}>
@@ -161,9 +181,9 @@ const jsonLd = [
         <div class="campaign-brief-block">
           <span class="campaign-brief-section-label">{t("HOSTILE FORCES")}</span>
           <div class="campaign-roster-chips">
-            <span class="campaign-roster-chip">SCOUT ×5</span>
-            <span class="campaign-roster-chip">STANDARD ×14</span>
-            <span class="campaign-roster-chip">HOWITZER ×1</span>
+            <a class="campaign-roster-chip" href={`${h("./enemies")}#scout`}>{t('Recon Light Tank "Viper"')} ×5</a>
+            <a class="campaign-roster-chip" href={`${h("./enemies")}#standard`}>{t('Standard Battle Tank "Lancet"')} ×14</a>
+            <a class="campaign-roster-chip" href={`${h("./enemies")}#howitzer`}>{t('Howitzer Artillery Tank "Grad"')} ×1</a>
           </div>
         </div>
       </div>

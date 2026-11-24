@@ -1,9 +1,10 @@
-import { battlefieldUrl } from '../app/routes.js';
+import { battlefieldUrl, PAGE_PATHS } from '../app/routes.js';
 import { t } from '../i18n/index.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
 import { loadPlayerSave } from '../app/state.js';
 import { CAMPAIGN_CHAPTERS, CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from '../game/campaign.js';
+import { getEnemyDisplayInfo } from '../game/vehicles/tanks.js';
 import {
   getCampaignMissionAssets,
   getCoreAssets,
@@ -349,7 +350,11 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
     const rosterEl = document.querySelector('.campaign-roster-chips');
     if (rosterEl) {
       rosterEl.innerHTML = aggregateRoster(selected.enemyRoster)
-        .map(([type, count]) => `<span class="campaign-roster-chip">${escapeHtml(type)} ×${count}</span>`)
+        .map(([type, count]) => {
+          const { name, anchor } = getEnemyDisplayInfo(type);
+          const href = `${PAGE_PATHS.enemies}#${encodeURIComponent(anchor)}`;
+          return `<a class="campaign-roster-chip" href="${escapeHtml(href)}">${escapeHtml(t(name))} ×${count}</a>`;
+        })
         .join('');
     }
   }
@@ -396,6 +401,7 @@ if (root) {
   };
 
   selectedMissionId = syncCampaignPage(completedMissions, selectedMissionId, expandedRegions);
+  document.documentElement.classList.remove('campaign-hydrating');
   syncMissionUrl(selectedMissionId);
   preloadBattlefieldAssets(getCoreAssets({ includeTerrain: true }));
   preloadMissionAssets(selectedMissionId);

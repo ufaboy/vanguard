@@ -1952,6 +1952,10 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   gap: 14px;
 }
 
+.campaign-brief-details[hidden] {
+  display: none;
+}
+
 .campaign-brief-text {
   margin: 0;
   font-size: 16.5px;
@@ -1978,6 +1982,8 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 }
 
 .campaign-roster-chip {
+  display: inline-flex;
+  align-items: center;
   padding: 6px 12px;
   background: #131b26;
   border: 1px solid #2b3849;
@@ -1986,6 +1992,50 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   font-family: var(--font-mono, monospace);
   font-size: 13.5px;
   font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+a.campaign-roster-chip:hover,
+a.campaign-roster-chip:focus-visible {
+  background: #1a2636;
+  border-color: #f59e0b;
+  color: #fde68a;
+  outline: none;
+}
+
+@keyframes campaign-skeleton-pulse {
+  0%, 100% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+}
+
+html.campaign-hydrating .campaign-goal-progress,
+html.campaign-hydrating .campaign-nav-current,
+html.campaign-hydrating .campaign-brief-sector,
+html.campaign-hydrating .campaign-brief-title,
+html.campaign-hydrating .campaign-brief-objective,
+html.campaign-hydrating .campaign-brief-text,
+html.campaign-hydrating .campaign-brief-layout,
+html.campaign-hydrating .campaign-roster-chip,
+html.campaign-hydrating .campaign-brief-actions,
+html.campaign-hydrating .campaign-recon-square {
+  color: transparent !important;
+  border-color: transparent !important;
+  background: linear-gradient(90deg, #121a26 25%, #1b2738 50%, #121a26 75%);
+  background-size: 200% 100%;
+  animation: campaign-skeleton-pulse 1.2s ease-in-out infinite;
+  border-radius: 5px;
+  pointer-events: none;
+  user-select: none;
+}
+
+html.campaign-hydrating .campaign-brief-actions *,
+html.campaign-hydrating .campaign-recon-square > * {
+  opacity: 0 !important;
 }
 
 .campaign-brief-classified {
