@@ -209,12 +209,6 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
     track.innerHTML = renderNavTrack(completedMissions, currentChapterIdx, expandedRegions, selectedId);
   }
 
-  const progressEl = document.querySelector('[data-campaign-progress]');
-  if (progressEl) {
-    const doneCount = CAMPAIGN_MISSIONS.filter((m) => Boolean(completedMissions[m.id])).length;
-    progressEl.textContent = `${doneCount} / ${CAMPAIGN_MISSIONS.length}`;
-  }
-
   const selIdx = visible.findIndex((m) => m.id === selectedId);
   const prevBtn = document.querySelector('[data-action="prev-campaign-mission"]');
   const nextBtn = document.querySelector('[data-action="next-campaign-mission"]');
@@ -318,11 +312,6 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
         }
       }
     }
-  }
-
-  const sectorEl = document.querySelector('.campaign-brief-sector');
-  if (sectorEl) {
-    sectorEl.textContent = `${t('SECTOR {n} // 38', { n: String(selected.number).padStart(2, '0') })} · ${t(chapter.name).toUpperCase()}`;
   }
 
   const titleEl = document.querySelector('.campaign-brief-title');

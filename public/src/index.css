@@ -1011,20 +1011,6 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   color: #e2e8f0;
 }
 
-.campaign-goal-progress {
-  flex-shrink: 0;
-  padding: 6px 14px;
-  background: #111827;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  color: #bef264;
-  font-family: var(--font-mono, monospace);
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-}
-
 .campaign-brief-block {
   display: flex;
   flex-direction: column;
@@ -1925,22 +1911,6 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
 }
 
-.campaign-brief-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.campaign-brief-sector {
-  font-family: var(--font-mono, monospace);
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: var(--region-accent, #fbbf24);
-}
-
-
 .campaign-brief-title {
   margin: 0;
   font-size: 34px;
@@ -2057,9 +2027,7 @@ a.campaign-roster-chip:focus-visible .campaign-roster-count {
   }
 }
 
-html.campaign-hydrating .campaign-goal-progress,
 html.campaign-hydrating .campaign-nav-current,
-html.campaign-hydrating .campaign-brief-sector,
 html.campaign-hydrating .campaign-brief-title,
 html.campaign-hydrating .campaign-brief-objective,
 html.campaign-hydrating .campaign-brief-text,
