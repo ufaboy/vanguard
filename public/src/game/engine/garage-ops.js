@@ -1,4 +1,4 @@
-/** Garage transactions, component damage/repair, and mission abort settlement. */
+/** Garage transactions and component damage/repair. */
 
 import {
   APS,
@@ -13,7 +13,6 @@ import { DRONE_CONFIGS } from '../vehicles/drones.js';
 import { GameStatus, TileType } from '../types.js';
 import { GarageStage } from '../render/garage-stage.js';
 import { sound } from '../sound.js';
-import { analyticsManager } from '../../app/analyticsManager.js';
 import {
   COMPONENT_TRACKS,
   COMPONENT_DAMAGE_COOLDOWN,
@@ -23,9 +22,7 @@ import {
 import {
   mountPartInGarage,
   resolveAssembledTank,
-  settleMission,
 } from '../../sim/garage.js';
-import { recordSurvivalRun } from '../../sim/survival.js';
 import { N_, t } from '../../i18n/index.js';
 
 const TRACK_LABELS = Object.freeze({
@@ -364,59 +361,5 @@ export class GarageOps {
       e.saveRepo.savePlayerSave(e.playerSave);
       e.emitHudUpdate();
     }
-  }
-
-  abortMission() {
-    const e = this.engine;
-    // Players usually quit from the pause menu, so a paused mission counts as an abort too.
-    if (e.status === GameStatus.PLAYING || e.status === GameStatus.PAUSED) {
-      analyticsManager.trackEvent('mission_abort', {
-        mode: e.survivalState ? 'survival' : (e.activeMissionRun?.mode || 'campaign'),
-        sector_id: e.currentSectorIndex,
-        fps_avg: e.getAverageFps(),
-        fps_cap: e.fpsCap,
-      });
-    }
-    if (e.survivalState) {
-      e.rollbackBattlePurchases?.();
-      const campaignSave = e.campaignSaveRepo?.loadPlayerSave();
-      if (campaignSave && !e.survivalState.recordSummary) {
-        e.survivalState.recordSummary = recordSurvivalRun(
-          campaignSave,
-          e.survivalState,
-          e.kills
-        );
-        e.campaignSaveRepo.savePlayerSave(campaignSave);
-      }
-      e.survivalState = null;
-      e.setProfileMode('campaign');
-      e.status = GameStatus.MENU;
-      sound.stopEngineLoop();
-      e.syncAudioPauseState();
-      e.emitHudUpdate();
-      return;
-    }
-    e.rollbackBattlePurchases?.();
-    if (e.activeMissionRun && !e.activeMissionRun.rewardsCommitted) {
-      const summary = settleMission({
-        playerSave: e.playerSave,
-        missionRun: e.activeMissionRun,
-        outcome: 'defeat',
-      });
-      e.lastSettlementSummary = summary;
-      e.playerSave.apsAmmo = [...e.apsAmmo];
-      e.playerSave.repairKitCharges = e.repairKitState?.charges ?? 0;
-      e.saveRepo.savePlayerSave(e.playerSave);
-      e.saveRepo.recordMissionRun(e.activeMissionRun);
-      e.syncCampaignCredits();
-      e.saveProgress();
-    }
-    if (e.profileMode !== 'campaign') {
-      e.setProfileMode('campaign');
-    }
-    e.status = GameStatus.MENU;
-    sound.stopEngineLoop();
-    e.syncAudioPauseState();
-    e.emitHudUpdate();
   }
 }

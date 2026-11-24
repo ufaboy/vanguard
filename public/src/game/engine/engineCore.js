@@ -58,6 +58,7 @@ import { analyticsManager } from '../../app/analyticsManager.js';
 import { ARMOR_PANEL_CATALOG, TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
 import { getSafeStorage, resolveAssembledTank, SaveRepository, settleMission } from '../../sim/garage.js';
+import { recordSurvivalRun } from '../../sim/survival.js';
 import { t } from '../../i18n/index.js';
 
 /** Graphics quality presets. Pixel ratio, shadows, IBL and particle budget apply immediately. */
@@ -793,7 +794,58 @@ export class TankGameEngine {
 
   toggleFavoritePart(instanceId) { this.garageOps.toggleFavoritePart(instanceId); }
 
-  abortMission() { this.garageOps.abortMission(); }
+  abortMission() {
+    // Players usually quit from the pause menu, so a paused mission counts as an abort too.
+    if (this.status === GameStatus.PLAYING || this.status === GameStatus.PAUSED) {
+      analyticsManager.trackEvent('mission_abort', {
+        mode: this.survivalState ? 'survival' : (this.activeMissionRun?.mode || 'campaign'),
+        sector_id: this.currentSectorIndex,
+        fps_avg: this.getAverageFps(),
+        fps_cap: this.fpsCap,
+      });
+    }
+    if (this.survivalState) {
+      this.rollbackBattlePurchases();
+      const campaignSave = this.campaignSaveRepo?.loadPlayerSave();
+      if (campaignSave && !this.survivalState.recordSummary) {
+        this.survivalState.recordSummary = recordSurvivalRun(
+          campaignSave,
+          this.survivalState,
+          this.kills
+        );
+        this.campaignSaveRepo.savePlayerSave(campaignSave);
+      }
+      this.survivalState = null;
+      this.setProfileMode('campaign');
+      this.status = GameStatus.MENU;
+      sound.stopEngineLoop();
+      this.syncAudioPauseState();
+      this.emitHudUpdate();
+      return;
+    }
+    this.rollbackBattlePurchases();
+    if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
+      const summary = settleMission({
+        playerSave: this.playerSave,
+        missionRun: this.activeMissionRun,
+        outcome: 'defeat',
+      });
+      this.lastSettlementSummary = summary;
+      this.playerSave.apsAmmo = [...this.apsAmmo];
+      this.playerSave.repairKitCharges = this.repairKitState?.charges ?? 0;
+      this.saveRepo.savePlayerSave(this.playerSave);
+      this.saveRepo.recordMissionRun(this.activeMissionRun);
+      this.syncCampaignCredits();
+      this.saveProgress();
+    }
+    if (this.profileMode !== 'campaign') {
+      this.setProfileMode('campaign');
+    }
+    this.status = GameStatus.MENU;
+    sound.stopEngineLoop();
+    this.syncAudioPauseState();
+    this.emitHudUpdate();
+  }
 
   get inputCamera() {
     return (this._inputCamera ||= new InputCameraController(this));

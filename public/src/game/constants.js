@@ -174,7 +174,7 @@ function aspectArmorOf(item, uniformKey) {
  *   Armour: always per side (front / left / right / rear) = base + armour component (+ module bonuses).
  *   Damage, penetration and reload: the cannon alone.
  *   Sight and radio: the base (+ module sightBonus / radioBonus).
- * @param {object} loadout gun|cannon, chassis, frame|vehicleFrame, engine, armor, optionalEquipment
+ * @param {object} loadout gun|cannon, chassis, frame, engine, armor, optionalEquipment
  * @param {object} [base] tank type base from tanks.js (tankBase); DEFAULT_TANK_BASE when omitted
  */
 export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
@@ -187,7 +187,7 @@ export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
     (typeof chassisKey === 'object' ? chassisKey : CHASSIS[chassisKey]) ||
     CHASSIS.CH1;
 
-  const frameKey = loadout.frame || loadout.vehicleFrame || 'F1';
+  const frameKey = loadout.frame || 'F1';
   const frame =
     (typeof frameKey === 'object' ? frameKey : FRAMES[frameKey]) || FRAMES.F1;
 

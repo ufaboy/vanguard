@@ -35,9 +35,6 @@ export class ProfileSaveController {
   loadSavedProgress() {
     const { engine } = this;
     try {
-      if (engine.profileMode === 'campaign') {
-        getSafeStorage('local')?.removeItem('battle_tank_highscore');
-      }
       const { storage, key } = this.getUpgradesStorage();
       const savedUpgrades = storage?.getItem(key);
       if (savedUpgrades) {
@@ -46,11 +43,11 @@ export class ProfileSaveController {
           cannon: Math.min(UPGRADE_MAX_LEVEL.cannon, Math.max(1, parsed.cannon || 1)),
           chassis: Math.min(
             UPGRADE_MAX_LEVEL.chassis,
-            Math.max(1, parsed.chassis || parsed.vehicleFrame || 1)
+            Math.max(1, parsed.chassis || 1)
           ),
           frame: Math.min(
             UPGRADE_MAX_LEVEL.frame,
-            Math.max(1, parsed.frame || parsed.vehicleFrame || 1)
+            Math.max(1, parsed.frame || 1)
           ),
           engine: Math.min(UPGRADE_MAX_LEVEL.engine, Math.max(1, parsed.engine || 1)),
           armor: Math.min(UPGRADE_MAX_LEVEL.armor, Math.max(1, parsed.armor || 1)),
@@ -66,7 +63,11 @@ export class ProfileSaveController {
     const { engine } = this;
     try {
       const { storage, key } = this.getUpgradesStorage();
-      storage?.setItem(key, JSON.stringify(engine.upgrades));
+      const upgradesToSave =
+        engine.isBattleActive?.() && engine.preBattleUpgrades
+          ? engine.preBattleUpgrades
+          : engine.upgrades;
+      storage?.setItem(key, JSON.stringify(upgradesToSave));
     } catch {
     }
   }

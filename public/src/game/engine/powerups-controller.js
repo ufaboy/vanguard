@@ -419,7 +419,7 @@ export class PowerupsController {
       parts.push(`RM-1 ${engine.repairKitState.charges}/${maxRepairKits}`);
     }
 
-    if (engine.playerSave) {
+    if (engine.playerSave && !engine.isBattleActive?.()) {
       engine.playerSave.missileAmmo = engine.missileAmmo;
       engine.saveRepo?.savePlayerSave?.(engine.playerSave);
     }
@@ -528,8 +528,10 @@ export class PowerupsController {
           maxMissiles,
           engine.missileAmmo + MISSILE.PICKUP_AMMO
         );
-        engine.playerSave.missileAmmo = engine.missileAmmo;
-        engine.saveRepo?.savePlayerSave?.(engine.playerSave);
+        if (engine.playerSave && !engine.isBattleActive?.()) {
+          engine.playerSave.missileAmmo = engine.missileAmmo;
+          engine.saveRepo?.savePlayerSave?.(engine.playerSave);
+        }
         engine.recomputePlayerStats?.(true);
         engine.setStatusBanner?.(
           t('HOMING ATGM MISSILE ACQUIRED ({missileAmmo}/{maxMissiles}) [SPACE / RMB]', { missileAmmo: engine.missileAmmo, maxMissiles }),

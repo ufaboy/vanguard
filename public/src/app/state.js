@@ -32,8 +32,8 @@ export function loadUpgrades() {
     if (parsed && typeof parsed.cannon === 'number') {
       return {
         cannon: clampTier(parsed.cannon, 1),
-        chassis: clampTier(parsed.chassis ?? parsed.vehicleFrame, 1),
-        frame: clampTier(parsed.frame ?? parsed.vehicleFrame, 1),
+        chassis: clampTier(parsed.chassis, 1),
+        frame: clampTier(parsed.frame, 1),
         engine: clampTier(parsed.engine, 1),
         armor: clampTier(parsed.armor, 1),
       };
@@ -115,7 +115,6 @@ const PROGRESS_STORAGE_KEYS = Object.freeze([
   'battle_tank_upgrades_v3',
   'battle_tank_survival_upgrades_v1',
   'battle_tank_contract_upgrades_v1',
-  'battle_tank_highscore',
 ]);
 
 /** Clears all campaign, survival, contract, upgrade, and medal progress while preserving user preferences. */

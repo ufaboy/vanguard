@@ -314,7 +314,7 @@
   },
   "landmarks3d": [],
   "enemies": {
-    "vanguardCount": 25,
+    "enemyCount": 25,
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.6,
