@@ -380,6 +380,8 @@ export const LAND_MINE = Object.freeze({
   PENETRATION: 25, // Under-hull shaped-charge armor penetration (%)
   BLAST_RADIUS_CELLS: 2.25, // Blast radius in grid cells (4.5m world units)
   TRIGGER_RADIUS: 1.65, // Proximity detonation radius in world units (~0.82 cells)
+  DETECT_RADIUS_CELLS: 3, // Proximity radius in grid cells to detect hidden mines
+  REVEAL_FADE_SEC: 0.25, // Smooth 3D fade-in duration when a mine is discovered
   ARM_SEC: 0.8, // Arming delay after deployment in seconds
   LIFE_SEC: 45.0, // Active mine lifetime on the battlefield in seconds
 });

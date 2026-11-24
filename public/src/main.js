@@ -149,6 +149,7 @@ const state = {
     enemiesRemaining: 10,
     totalEnemiesInSector: 10,
     minesActive: 0,
+    discoveredMines: [],
     bossActive: false,
     bossName: '',
     bossTitle: '',

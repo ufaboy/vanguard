@@ -95,6 +95,7 @@ const MINIMAP_SKELETON = `
         <g data-mm="contract"></g>
         <rect data-mm="hq" x="97" y="97" width="6" height="6" rx="0.8" fill="#22c55e" stroke="#052e16" stroke-width="0.7" />
         <g data-mm="loot"></g>
+        <g data-mm="mines"></g>
         <g data-mm="contacts"></g>
 
         <!-- Player Tank Silhouette (centered) -->
@@ -344,6 +345,22 @@ export function renderNorthUpSensorMinimap(hud) {
     const hqOpacity = hud.baseAlive === false ? 0.25 : hqPos.clamped ? 0.7 : 0.95;
     setAttr(mm.hq, 'opacity', hqOpacity.toFixed(2));
   }
+
+  const mines = (hud.discoveredMines || []).filter(
+    (m) => Math.hypot(m.x - playerX, m.z - playerZ) <= RADAR_RANGE
+  );
+  const mineNodes = syncPool(mm.mines, 'g', mines.length);
+  mines.forEach((m, i) => {
+    const node = mineNodes[i];
+    if (!node.__built) {
+      node.__built = true;
+      node.innerHTML =
+        '<circle cx="0" cy="0" r="3.1" fill="#f59e0b" stroke="#1c1917" stroke-width="0.75" />' +
+        '<path d="M-1.5,-1.5 L1.5,1.5 M1.5,-1.5 L-1.5,1.5" stroke="#1c1917" stroke-width="0.9" stroke-linecap="round" />';
+    }
+    const pos = toRadar(m.x, m.z);
+    setAttr(node, 'transform', `translate(${fmt(pos.x)}, ${fmt(pos.y)})`);
+  });
 
   const contacts = hud.sensorContacts || [];
   const contactNodes = syncPool(mm.contacts, 'g', contacts.length);

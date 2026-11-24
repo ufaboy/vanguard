@@ -31,6 +31,39 @@ function computeThermobaricDamage(damage, dist, radius) {
   return base * 0.75 * (1 - t) + minDmg * t;
 }
 
+function collectMineMaterials(mesh) {
+  const materials = [];
+  if (typeof mesh?.traverse === 'function') {
+    mesh.traverse((child) => {
+      if (!child?.material) return;
+      const mats = Array.isArray(child.material) ? child.material : [child.material];
+      for (const mat of mats) {
+        if (!mat) continue;
+        materials.push({
+          mat,
+          baseOpacity: mat.opacity ?? 1,
+          baseTransparent: Boolean(mat.transparent),
+        });
+      }
+    });
+  }
+  return materials;
+}
+
+function applyMineRevealAlpha(mine, alpha) {
+  if (!mine?._materials?.length) return;
+  const clamped = Math.max(0, Math.min(1, alpha));
+  for (const entry of mine._materials) {
+    const { mat, baseOpacity, baseTransparent } = entry;
+    const nextTransparent = clamped < 1 || baseTransparent;
+    if (mat.transparent !== nextTransparent) {
+      mat.transparent = nextTransparent;
+      mat.needsUpdate = true;
+    }
+    mat.opacity = baseOpacity * clamped;
+  }
+}
+
 /** Manages land mines, artillery hazard zones, and area-of-effect explosions. */
 export class ExplosionsController {
   constructor(engine) {
@@ -41,10 +74,10 @@ export class ExplosionsController {
     const { engine } = this;
     const mesh = engine.modelFactory.createLandMineMesh();
     mesh.position.set(x, 0, z);
-    engine.entityGroup.add(mesh);
-    if (!opts.silent) sound.playMinePlant();
-
-    engine.mines.push({
+    const discovered = Boolean(opts.discovered);
+    const revealAlpha = discovered ? 1 : 0;
+    mesh.visible = discovered;
+    const mine = {
       id: engine.nextEnemyId++,
       x,
       z,
@@ -53,19 +86,48 @@ export class ExplosionsController {
       damage: opts.damage ?? LAND_MINE.DAMAGE,
       neutral: Boolean(opts.neutral),
       mapMine: Boolean(opts.mapMine),
+      discovered,
+      revealAlpha,
+      _materials: collectMineMaterials(mesh),
       mesh,
-    });
+    };
+    if (!discovered) {
+      applyMineRevealAlpha(mine, 0);
+    }
+    engine.entityGroup.add(mesh);
+    if (!opts.silent) sound.playMinePlant();
+
+    engine.mines.push(mine);
   }
 
   updateMines(dt, elapsed) {
     const { engine } = this;
+    const detectRadius = LAND_MINE.DETECT_RADIUS_CELLS * TILE_SIZE;
+    const fadeSec = Math.max(0.01, LAND_MINE.REVEAL_FADE_SEC || 0.25);
+
     for (let i = engine.mines.length - 1; i >= 0; i--) {
       const m = engine.mines[i];
       if (!m) continue;
       if (m.armTimer > 0) m.armTimer -= dt;
       if (Number.isFinite(m.life)) m.life -= dt;
 
-      m.mesh.rotation.y = elapsed * 1.5;
+      if (!m.discovered) {
+        const playerNear = Math.hypot(engine.playerX - m.x, engine.playerZ - m.z) <= detectRadius;
+        const reconRevealed = Boolean(engine.isPointRevealedByReconDrone?.(m.x, m.z));
+        if (playerNear || reconRevealed) {
+          m.discovered = true;
+          if (m.mesh) m.mesh.visible = true;
+          sound.playMineDetect();
+        }
+      }
+
+      if (m.discovered) {
+        if (m.mesh) m.mesh.rotation.y = elapsed * 1.5;
+        if (m.revealAlpha < 1) {
+          m.revealAlpha = Math.min(1, m.revealAlpha + dt / fadeSec);
+          applyMineRevealAlpha(m, m.revealAlpha);
+        }
+      }
 
       if (m.life <= 0) {
         engine.entityGroup.remove(m.mesh);

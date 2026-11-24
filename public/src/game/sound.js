@@ -512,6 +512,31 @@ export class SoundManager {
     this.playBuffer('mine', { volume: 0.58, pitchVariation: 0.03, pos });
   }
 
+  playMineDetect() {
+    if (this.shouldThrottle('mine_detect', 0.25)) return;
+    const ctx = this.ensureContext();
+    if (!ctx || typeof ctx.createOscillator !== 'function') return;
+    try {
+      const t = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1550, t);
+      osc.frequency.exponentialRampToValueAtTime(1950, t + 0.11);
+
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.linearRampToValueAtTime(0.14, t + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+
+      osc.connect(gain);
+      gain.connect(this.compressor || ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.13);
+    } catch {
+      // Ignore Web Audio errors in headless/test environments.
+    }
+  }
+
   playBossAlarm(pos = null) {
     if (this.shouldThrottle('boss_alarm', 0.35)) return;
     this.playBuffer('boss_alarm', { volume: 0.85, pitchVariation: 0.02, pos });
