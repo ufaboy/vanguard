@@ -334,8 +334,8 @@ export function normalizeMapDefinition(rawMap, index = 0) {
       row: BASE_CELL.row,
       col: BASE_CELL.col - 3,
     },
-    vanguardCount: Number(
-      enemiesCfg.vanguardCount ?? rawMap.vanguardCount ?? enemyPool.length
+    enemyCount: Number(
+      enemiesCfg.enemyCount ?? rawMap.enemyCount ?? enemyPool.length
     ),
     initialSpawnCount: Number(
       enemiesCfg.initialSpawnCount ?? rawMap.initialSpawnCount ?? 4

@@ -888,10 +888,14 @@ export class EnemyCombatController {
       const bounty =
         ENEMY_KILL_CREDITS[enemy.enemyClass] ||
         (enemy.isBoss ? 750 : 75);
-      engine.playerSave.credits = (engine.playerSave.credits || 0) + bounty;
-      engine.creditsEarnedThisMission = (engine.creditsEarnedThisMission || 0) + bounty;
-      engine.syncCampaignCredits();
-      engine.saveRepo.savePlayerSave(engine.playerSave);
+      if (engine.addBattleCredits) {
+        engine.addBattleCredits(bounty);
+      } else {
+        engine.playerSave.credits = (engine.playerSave.credits || 0) + bounty;
+        engine.creditsEarnedThisMission = (engine.creditsEarnedThisMission || 0) + bounty;
+        engine.syncCampaignCredits();
+        engine.saveRepo.savePlayerSave(engine.playerSave);
+      }
       engine.setStatusBanner(t('+ ${bounty} CREDITS ({unitName})', { bounty, unitName }), 1.8);
       if (enemy.isBoss) {
         analyticsManager.trackEvent('boss_defeated', {
@@ -919,7 +923,7 @@ export class EnemyCombatController {
         }
         const spec = engine.survivalState.waveSpec;
         if (
-          engine.vanguardRemainingToSpawn === 0 &&
+          engine.enemiesRemainingToSpawn === 0 &&
           (!spec?.isBossWave || engine.bossSpawned) &&
           engine.enemies.length === 0
         ) {
@@ -937,7 +941,7 @@ export class EnemyCombatController {
           Array.isArray(sector?.bossSequence) &&
           engine.bossStageIndex + 1 < sector.bossSequence.length &&
           !engine.enemies.some((u) => u.isBoss);
-        if (hasPendingBossStage && engine.vanguardRemainingToSpawn === 0 && engine.enemies.length === 0) {
+        if (hasPendingBossStage && engine.enemiesRemainingToSpawn === 0 && engine.enemies.length === 0) {
           detonateEnemy();
           engine.enemySpawner.spawnBossStage(engine.bossStageIndex + 1);
           engine.saveProgress();
@@ -949,7 +953,7 @@ export class EnemyCombatController {
           (engine.bossSequenceStarted && engine.bossStageIndex + 1 >= sector.bossSequence.length);
         const victoryRes = checkMapVictory(engine.activeMapRules, {
           enemyBaseDestroyed: !engine.enemyBaseAlive,
-          vanguardRemainingToSpawn: engine.vanguardRemainingToSpawn,
+          enemiesRemainingToSpawn: engine.enemiesRemainingToSpawn,
           activeEnemiesCount: engine.enemies.length,
           bossDefeated:
             allSequenceStagesDone &&

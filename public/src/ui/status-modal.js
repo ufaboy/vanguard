@@ -465,13 +465,13 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
         ${defeatReason} // ${t('DEFEAT')}
       </div>
       <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-white mb-2">
-        ${isContract ? t('CONTRACT FAILED — DELIVERED CARGO PRESERVED') : t('MISSION FAILED — COLLECTED LOOT PRESERVED')}
+        ${isContract ? t('CONTRACT FAILED — DELIVERED CARGO PRESERVED') : t('MISSION FAILED — PRE-BATTLE BALANCE RESTORED')}
       </h2>
       <p class="text-xs font-mono text-slate-400 mb-4">
         ${
           isContract
-            ? t('Delivered cargo (+${amount}) &amp; bounties preserved.', { amount: s?.cargoCreditsSecured ?? 0 })
-            : t('Loadout intact · +${amount} preserved · {lost} uncollected drops lost.', { amount: s?.creditsGained ?? 0, lost: s?.lostCount ?? 0 })
+            ? t('Delivered cargo (+${amount}) preserved · Pre-battle balance &amp; loadout restored.', { amount: s?.cargoCreditsSecured ?? 0 })
+            : t('Loadout &amp; pre-battle credits restored · In-battle earnings and purchases reverted.')
         }
       </p>
 

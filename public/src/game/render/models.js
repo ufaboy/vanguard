@@ -1586,9 +1586,9 @@ export class ModelFactory extends TextureGenerator {
     void wheelDelta;
 
     const cannonIdx = Math.max(0, Math.min(4, (upgrades?.cannon || 1) - 1));
-    const rawChassisLvl = upgrades?.chassis || upgrades?.vehicleFrame || 1;
+    const rawChassisLvl = upgrades?.chassis || 1;
     const chassisIdx = Math.max(0, Math.min(4, rawChassisLvl - 1));
-    const rawFrameLvl = upgrades?.frame || upgrades?.vehicleFrame || 1;
+    const rawFrameLvl = upgrades?.frame || 1;
     const frameIdx = Math.max(0, Math.min(4, rawFrameLvl - 1));
     const engineIdx = Math.max(0, Math.min(4, (upgrades?.engine || 1) - 1));
     const armorIdx = Math.max(0, Math.min(4, (upgrades?.armor || 1) - 1));

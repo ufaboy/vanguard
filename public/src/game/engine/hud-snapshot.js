@@ -87,7 +87,7 @@ export function buildHudSnapshot(engine) {
     defeatCinematicsActive: (engine.defeatCinematicsTimer || 0) > 0,
     victoryCinematicsActive: (engine.victoryCinematicsTimer || 0) > 0,
     sectorId: engine.currentSectorIndex,
-    credits: engine.playerSave?.credits ?? 0,
+    credits: engine.getAvailableCredits ? engine.getAvailableCredits() : (engine.playerSave?.credits ?? 0),
     creditsEarnedThisMission: engine.creditsEarnedThisMission || 0,
     isGarageOpen: engine.isGarageOpen,
     isGaragePaused: engine.isGaragePaused,
@@ -129,7 +129,7 @@ export function buildHudSnapshot(engine) {
     survival: buildSurvivalHudSnapshot(
       engine.survivalState,
       engine.enemies.length,
-      engine.vanguardRemainingToSpawn
+      engine.enemiesRemainingToSpawn
     ),
     playerSave: engine.playerSave,
     assembledTank: engine.assembledTank,
@@ -173,10 +173,10 @@ export function buildHudSnapshot(engine) {
     enemyBaseName: engine.enemyBaseName || N_('Enemy Fortified Citadel'),
     enemiesRemaining: engine.survivalState
       ? engine.enemies.length +
-        engine.vanguardRemainingToSpawn +
+        engine.enemiesRemainingToSpawn +
         (engine.survivalState.waveSpec?.isBossWave && !engine.bossSpawned ? 1 : 0)
       : engine.enemies.length +
-        engine.vanguardRemainingToSpawn +
+        engine.enemiesRemainingToSpawn +
         (sector.rules.spawnSectorBossOnClear
           ? sector.bossSequence?.length
             ? engine.bossSequenceStarted
@@ -188,7 +188,7 @@ export function buildHudSnapshot(engine) {
           : 0),
     totalEnemiesInSector: engine.survivalState
       ? engine.survivalState.waveSpec?.totalHostiles || 1
-      : sector.vanguardCount +
+      : sector.enemyCount +
         (sector.rules.spawnSectorBossOnClear
           ? sector.bossSequence?.length
             ? sector.bossSequence.reduce((s, st) => s + st.length, 0)

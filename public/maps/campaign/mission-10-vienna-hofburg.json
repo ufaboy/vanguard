@@ -271,7 +271,7 @@
     }
   ],
   "enemies": {
-    "vanguardCount": 24,
+    "enemyCount": 24,
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 4,

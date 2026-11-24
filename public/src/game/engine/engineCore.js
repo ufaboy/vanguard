@@ -58,6 +58,7 @@ import { analyticsManager } from '../../app/analyticsManager.js';
 import { ARMOR_PANEL_CATALOG, TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
 import { getSafeStorage, resolveAssembledTank, SaveRepository, settleMission } from '../../sim/garage.js';
+import { recordSurvivalRun } from '../../sim/survival.js';
 import { t } from '../../i18n/index.js';
 
 /** Graphics quality presets. Pixel ratio, shadows, IBL and particle budget apply immediately. */
@@ -196,6 +197,9 @@ export class TankGameEngine {
     this.isGaragePaused = false;
     this.isAdPaused = false;
     this.creditsEarnedThisMission = 0;
+    this.temporaryCredits = 0;
+    this.preBattleUpgrades = null;
+    this.preBattleReconDroneOwned = false;
     this.baseAlive = true;
     this.baseHp = 1;
     this.baseMaxHp = 1;
@@ -236,7 +240,7 @@ export class TankGameEngine {
     this.boxPowerUpPool = new BoxPowerUpPool();
 
     this.nextEnemyId = 1;
-    this.vanguardRemainingToSpawn = 0;
+    this.enemiesRemainingToSpawn = 0;
     this.spawnPoolCursor = 0;
     this.spawnTimer = 0;
     this.bossSpawned = false;
@@ -722,8 +726,8 @@ export class TankGameEngine {
     return this.enemySpawner.resolveBorderSpawn(targetCell, opts);
   }
 
-  spawnVanguardEnemy() {
-    return this.enemySpawner.spawnVanguardEnemy();
+  spawnEnemy() {
+    return this.enemySpawner.spawnEnemy();
   }
 
   callNextSurvivalWave() { return this.survivalDirector.callNextWave(); }
@@ -790,7 +794,58 @@ export class TankGameEngine {
 
   toggleFavoritePart(instanceId) { this.garageOps.toggleFavoritePart(instanceId); }
 
-  abortMissionToGarage() { this.garageOps.abortMissionToGarage(); }
+  abortMission() {
+    // Players usually quit from the pause menu, so a paused mission counts as an abort too.
+    if (this.status === GameStatus.PLAYING || this.status === GameStatus.PAUSED) {
+      analyticsManager.trackEvent('mission_abort', {
+        mode: this.survivalState ? 'survival' : (this.activeMissionRun?.mode || 'campaign'),
+        sector_id: this.currentSectorIndex,
+        fps_avg: this.getAverageFps(),
+        fps_cap: this.fpsCap,
+      });
+    }
+    if (this.survivalState) {
+      this.rollbackBattlePurchases();
+      const campaignSave = this.campaignSaveRepo?.loadPlayerSave();
+      if (campaignSave && !this.survivalState.recordSummary) {
+        this.survivalState.recordSummary = recordSurvivalRun(
+          campaignSave,
+          this.survivalState,
+          this.kills
+        );
+        this.campaignSaveRepo.savePlayerSave(campaignSave);
+      }
+      this.survivalState = null;
+      this.setProfileMode('campaign');
+      this.status = GameStatus.MENU;
+      sound.stopEngineLoop();
+      this.syncAudioPauseState();
+      this.emitHudUpdate();
+      return;
+    }
+    this.rollbackBattlePurchases();
+    if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
+      const summary = settleMission({
+        playerSave: this.playerSave,
+        missionRun: this.activeMissionRun,
+        outcome: 'defeat',
+      });
+      this.lastSettlementSummary = summary;
+      this.playerSave.apsAmmo = [...this.apsAmmo];
+      this.playerSave.repairKitCharges = this.repairKitState?.charges ?? 0;
+      this.saveRepo.savePlayerSave(this.playerSave);
+      this.saveRepo.recordMissionRun(this.activeMissionRun);
+      this.syncCampaignCredits();
+      this.saveProgress();
+    }
+    if (this.profileMode !== 'campaign') {
+      this.setProfileMode('campaign');
+    }
+    this.status = GameStatus.MENU;
+    sound.stopEngineLoop();
+    this.syncAudioPauseState();
+    this.emitHudUpdate();
+  }
 
   get inputCamera() {
     return (this._inputCamera ||= new InputCameraController(this));
@@ -848,6 +903,69 @@ export class TankGameEngine {
   /** Grants bonus credits (e.g. from voluntary rewarded ads) and persists to save. */
   grantCredits(amount) {
     return this.profileSave.grantCredits(amount);
+  }
+
+  /** Returns true while a mission/battle is active (not in main menu or already settled). */
+  isBattleActive() {
+    return (
+      this.status !== GameStatus.MENU &&
+      this.status !== GameStatus.VICTORY &&
+      this.status !== GameStatus.GAME_OVER
+    );
+  }
+
+  /** Syncs temporaryCredits from the persistent playerSave.credits balance. */
+  syncTemporaryCredits() {
+    this.temporaryCredits = Math.max(0, Math.floor(this.playerSave?.credits ?? 0));
+    return this.temporaryCredits;
+  }
+
+  /** Returns spendable credits (temporaryCredits during battle, persistent credits in menu). */
+  getAvailableCredits() {
+    if (this.isBattleActive()) {
+      return Math.max(0, Math.floor(this.temporaryCredits ?? 0));
+    }
+    return Math.max(0, Math.floor(this.playerSave?.credits ?? 0));
+  }
+
+  /** Adds earned battle credits to temporaryCredits without touching persistent credits until victory. */
+  addBattleCredits(amount) {
+    const delta = Math.max(0, Math.floor(Number(amount) || 0));
+    if (!delta) return 0;
+    this.temporaryCredits = Math.max(0, Math.floor(this.temporaryCredits ?? 0)) + delta;
+    this.creditsEarnedThisMission = (this.creditsEarnedThisMission || 0) + delta;
+    return delta;
+  }
+
+  /** Deducts an in-battle credit expense from temporaryCredits without touching persistent credits. */
+  spendBattleCredits(cost) {
+    const amount = Math.max(0, Math.floor(Number(cost) || 0));
+    if (this.getAvailableCredits() < amount) return false;
+    this.temporaryCredits = Math.max(0, Math.floor(this.temporaryCredits ?? 0) - amount);
+    return true;
+  }
+
+  /** Copies temporaryCredits into persistent playerSave.credits on victory. */
+  commitBattleCredits() {
+    if (this.playerSave) {
+      this.playerSave.credits = Math.max(0, Math.floor(this.temporaryCredits ?? 0));
+    }
+    this.preBattleUpgrades = null;
+    this.preBattleReconDroneOwned = Boolean(this.reconDroneOwned);
+  }
+
+  /** Restores temporaryCredits from persistent playerSave.credits and reverts mid-battle permanent purchases. */
+  rollbackBattlePurchases() {
+    this.syncTemporaryCredits();
+    if (this.preBattleUpgrades) {
+      this.upgrades = { ...this.preBattleUpgrades };
+      this.preBattleUpgrades = null;
+    }
+    this.reconDroneOwned = Boolean(this.preBattleReconDroneOwned);
+    if (this.playerSave) {
+      this.playerSave.reconDroneOwned = Boolean(this.preBattleReconDroneOwned);
+    }
+    this.recomputePlayerStats?.(true);
   }
 
   togglePause() {
@@ -1390,11 +1508,14 @@ export class TankGameEngine {
     this.victoryCinematicsTimer = this.victoryCinematics.remaining;
     sound.stopEngineLoop();
     if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
+      this.commitBattleCredits();
+      this.playerSave.reconDroneOwned = Boolean(this.reconDroneOwned);
       this.lastSettlementSummary = settleMission({
         playerSave: this.playerSave,
         missionRun: this.activeMissionRun,
         outcome: 'victory',
       });
+      this.syncTemporaryCredits();
       this.playerSave.completedMissions ||= {};
       this.playerSave.completedMissions[this.activeMissionRun.missionId] = { completedAt: Date.now() };
       this.cannonAmmo = this.getPlayerMaxCannonAmmo();

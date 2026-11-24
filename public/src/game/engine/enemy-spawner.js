@@ -223,7 +223,7 @@ export class EnemySpawnerController {
     };
   }
 
-  spawnVanguardEnemy() {
+  spawnEnemy() {
     const { engine } = this;
     const sector = SECTORS[engine.currentSectorIndex];
     const maxConcurrent =
@@ -231,7 +231,7 @@ export class EnemySpawnerController {
       sector?.maxConcurrentEnemies ??
       8;
     if (
-      engine.vanguardRemainingToSpawn <= 0 ||
+      engine.enemiesRemainingToSpawn <= 0 ||
       engine.enemies.length >= maxConcurrent
     ) {
       return false;
@@ -254,9 +254,9 @@ export class EnemySpawnerController {
     engine.spawnPoolCursor++;
 
     engine.createEnemyAt(enemyClass, spawn.spawnPos.x, spawn.spawnPos.z, false, spawn.entryTarget);
-    engine.vanguardRemainingToSpawn = engine.enemySpawnQueue
+    engine.enemiesRemainingToSpawn = engine.enemySpawnQueue
       ? engine.enemySpawnQueue.length
-      : Math.max(0, engine.vanguardRemainingToSpawn - 1);
+      : Math.max(0, engine.enemiesRemainingToSpawn - 1);
     return true;
   }
 
@@ -712,11 +712,11 @@ export class EnemySpawnerController {
       const maxConcurrent = spec?.maxConcurrentEnemies ?? 6;
       const spawnInterval = spec?.spawnIntervalSec ?? 2.0;
 
-      if (engine.vanguardRemainingToSpawn > 0) {
+      if (engine.enemiesRemainingToSpawn > 0) {
         if (engine.enemies.length < maxConcurrent) {
           engine.spawnTimer -= dt;
           if (engine.spawnTimer <= 0) {
-            const spawned = engine.spawnVanguardEnemy();
+            const spawned = engine.spawnEnemy();
             engine.spawnTimer = spawned ? spawnInterval : 0.6;
           }
         }
@@ -725,7 +725,7 @@ export class EnemySpawnerController {
       if (
         spec?.isBossWave &&
         !engine.bossSpawned &&
-        engine.vanguardRemainingToSpawn <= 2 &&
+        engine.enemiesRemainingToSpawn <= 2 &&
         engine.enemies.length < maxConcurrent
       ) {
         engine.spawnSectorBoss(spec.bossClass, spec.bossName);
@@ -733,7 +733,7 @@ export class EnemySpawnerController {
 
       if (
         !engine.survivalState.currentWaveCleared &&
-        engine.vanguardRemainingToSpawn === 0 &&
+        engine.enemiesRemainingToSpawn === 0 &&
         (!spec?.isBossWave || engine.bossSpawned) &&
         engine.enemies.length === 0
       ) {
@@ -752,9 +752,9 @@ export class EnemySpawnerController {
         (type, group) => engine.enemySpawner.spawnEncounterEnemy(type, group),
         (label) => engine.setStatusBanner(t(label), 4)
       );
-      engine.vanguardRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
+      engine.enemiesRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
       this.stepBossSequenceSpawning(sector);
-      if (engine.vanguardRemainingToSpawn === 0 && engine.enemies.length === 0) {
+      if (engine.enemiesRemainingToSpawn === 0 && engine.enemies.length === 0) {
         if (engine.activeMapRules?.spawnSectorBossOnClear !== false && !engine.bossSpawned) {
           engine.spawnSectorBoss();
         } else if (engine.activeMapRules.victoryOnAllEnemiesDestroyed) {
@@ -774,11 +774,11 @@ export class EnemySpawnerController {
 
     this.stepBossSequenceSpawning(sector);
 
-    if (engine.vanguardRemainingToSpawn > 0) {
+    if (engine.enemiesRemainingToSpawn > 0) {
       if (engine.enemies.length < maxConcurrent) {
         engine.spawnTimer -= dt;
         if (engine.spawnTimer <= 0) {
-          const spawned = this.spawnVanguardEnemy();
+          const spawned = this.spawnEnemy();
           engine.spawnTimer = spawned ? spawnInterval : 0.6;
         }
       }
@@ -788,7 +788,7 @@ export class EnemySpawnerController {
       } else {
         const victoryRes = checkMapVictory(engine.activeMapRules, {
           enemyBaseDestroyed: !engine.enemyBaseAlive,
-          vanguardRemainingToSpawn: 0,
+          enemiesRemainingToSpawn: 0,
           activeEnemiesCount: 0,
           bossDefeated: true,
         });
@@ -813,14 +813,14 @@ export class EnemySpawnerController {
     if (nextStage >= sector.bossSequence.length || engine.enemies.some((u) => u.isBoss)) {
       return;
     }
-    const totalPool = Math.max(1, engine.initialVanguardCount || engine.vanguardRemainingToSpawn || 1);
+    const totalPool = Math.max(1, engine.initialEnemyCount || engine.enemiesRemainingToSpawn || 1);
     const activeNonBoss = engine.enemies.filter((u) => !u.isBoss).length;
-    const remaining = engine.vanguardRemainingToSpawn + activeNonBoss;
+    const remaining = engine.enemiesRemainingToSpawn + activeNonBoss;
     const progress = 1 - remaining / totalPool;
     const threshold = (nextStage + 1) / (sector.bossSequence.length + 1);
     if (
       progress >= threshold ||
-      (engine.vanguardRemainingToSpawn === 0 && engine.enemies.length === 0)
+      (engine.enemiesRemainingToSpawn === 0 && engine.enemies.length === 0)
     ) {
       this.spawnBossStage(nextStage);
     }

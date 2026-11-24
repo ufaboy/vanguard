@@ -36,10 +36,14 @@ export class SurvivalDirector {
     if (!e.survivalState) return;
     if (waveNumber > 1 && !e.survivalState.currentWaveCleared) {
       const prevReward = e.survivalState.waveSpec?.waveRewardCredits || 300;
-      if (e.playerSave) {
-        e.playerSave.credits = (e.playerSave.credits || 0) + prevReward;
+      if (e.addBattleCredits) {
+        e.addBattleCredits(prevReward);
+      } else {
+        if (e.playerSave) {
+          e.playerSave.credits = (e.playerSave.credits || 0) + prevReward;
+        }
+        e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + prevReward;
       }
-      e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + prevReward;
       e.survivalState.lastWaveReward = prevReward;
       e.survivalState.wavesCleared = Math.max(
         e.survivalState.wavesCleared || 0,
@@ -68,7 +72,7 @@ export class SurvivalDirector {
       spec.wave === 1
         ? [...spec.roster]
         : [...(e.enemySpawnQueue || []), ...spec.roster];
-    e.vanguardRemainingToSpawn = e.enemySpawnQueue.length;
+    e.enemiesRemainingToSpawn = e.enemySpawnQueue.length;
     e.bossSpawned = false;
     e.bossSequenceStarted = false;
     e.spawnTimer = 0.7;
@@ -81,9 +85,9 @@ export class SurvivalDirector {
       );
     }
 
-    const openingBatch = Math.min(3, spec.maxConcurrentEnemies, e.vanguardRemainingToSpawn);
+    const openingBatch = Math.min(3, spec.maxConcurrentEnemies, e.enemiesRemainingToSpawn);
     for (let i = 0; i < openingBatch; i++) {
-      e.spawnVanguardEnemy();
+      e.spawnEnemy();
     }
 
     if (isEarlyCall) {
@@ -161,10 +165,14 @@ export class SurvivalDirector {
       e.survivalState.wave
     );
     const reward = spec?.waveRewardCredits || 300;
-    if (e.playerSave) {
-      e.playerSave.credits = (e.playerSave.credits || 0) + reward;
+    if (e.addBattleCredits) {
+      e.addBattleCredits(reward);
+    } else {
+      if (e.playerSave) {
+        e.playerSave.credits = (e.playerSave.credits || 0) + reward;
+      }
+      e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + reward;
     }
-    e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + reward;
     e.survivalState.lastWaveReward = reward;
 
     if (spec?.isBossWave && e.baseAlive) {
@@ -192,15 +200,19 @@ export class SurvivalDirector {
     if (
       !e.survivalState ||
       e.status !== GameStatus.PLAYING ||
-      (e.survivalState.phase !== 'intermission' && e.vanguardRemainingToSpawn > 0)
+      (e.survivalState.phase !== 'intermission' && e.enemiesRemainingToSpawn > 0)
     ) {
       return false;
     }
     const bonus = SURVIVAL_CONFIG.EARLY_CALL_BONUS;
-    if (e.playerSave) {
-      e.playerSave.credits = (e.playerSave.credits || 0) + bonus;
+    if (e.addBattleCredits) {
+      e.addBattleCredits(bonus);
+    } else {
+      if (e.playerSave) {
+        e.playerSave.credits = (e.playerSave.credits || 0) + bonus;
+      }
+      e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + bonus;
     }
-    e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + bonus;
     e.survivalState.earlyWaveCalls = (e.survivalState.earlyWaveCalls || 0) + 1;
     sound.playPowerUp();
     this.startWave(e.survivalState.wave + 1, true);
@@ -236,7 +248,7 @@ export class SurvivalDirector {
     e.survivalState.overtime = true;
     e.survivalState.victoryAchieved = true;
     e.status = GameStatus.PLAYING;
-    if (e.survivalState.wave < 8 && e.enemies.length === 0 && e.vanguardRemainingToSpawn === 0) {
+    if (e.survivalState.wave < 8 && e.enemies.length === 0 && e.enemiesRemainingToSpawn === 0) {
       this.startWave(8, false);
     } else {
       e.setStatusBanner(
@@ -497,6 +509,7 @@ export class ContractDirector {
       );
       if (payout.paid) {
         events.deliveredCargo.rewardPaid = true;
+        e.temporaryCredits = Math.max(0, Math.floor(e.temporaryCredits ?? 0)) + payout.amount;
         e.creditsEarnedThisMission = (e.creditsEarnedThisMission || 0) + payout.amount;
         e.saveRepo.savePlayerSave(e.playerSave);
         e.syncCampaignCredits();
@@ -558,7 +571,7 @@ export class ContractDirector {
         e.setStatusBanner(t('{label} · {gateLabel} IN 6s', { label: t(group.label), gateLabel }), 3.6);
       }
     );
-    e.vanguardRemainingToSpawn =
+    e.enemiesRemainingToSpawn =
       e.contractState.scheduler.totalBudget - e.contractState.scheduler.totalSpawned;
 
     // Update 3D visuals for containers / relays, carried indicator, and delivery pad

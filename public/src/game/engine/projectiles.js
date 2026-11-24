@@ -233,7 +233,7 @@ export class ProjectilesController {
 
     const sector = SECTORS[engine.currentSectorIndex];
     const canWinByEnemyKill = (() => {
-      if (engine.vanguardRemainingToSpawn > 0) return false;
+      if (engine.enemiesRemainingToSpawn > 0) return false;
       const aliveEnemies = Array.isArray(engine.enemies)
         ? engine.enemies.filter((e) => e && e.hp > DURABILITY.ZERO_HP)
         : [];
@@ -250,7 +250,7 @@ export class ProjectilesController {
         (engine.bossSequenceStarted && engine.bossStageIndex + 1 >= sector.bossSequence.length);
       const victoryRes = checkMapVictory(engine.activeMapRules, {
         enemyBaseDestroyed: !engine.enemyBaseAlive,
-        vanguardRemainingToSpawn: 0,
+        enemiesRemainingToSpawn: 0,
         activeEnemiesCount: 0,
         bossDefeated: allSequenceStagesDone && engine.bossSpawned,
       });
@@ -265,7 +265,7 @@ export class ProjectilesController {
         : [];
       const victoryRes = checkMapVictory(engine.activeMapRules, {
         enemyBaseDestroyed: true,
-        vanguardRemainingToSpawn: engine.vanguardRemainingToSpawn,
+        enemiesRemainingToSpawn: engine.enemiesRemainingToSpawn,
         activeEnemiesCount: aliveEnemies.length,
         bossDefeated: engine.bossSpawned && !aliveEnemies.some((u) => u.isBoss),
       });

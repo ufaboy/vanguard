@@ -161,7 +161,7 @@
     "SCOUT"
   ],
   "enemies": {
-    "vanguardCount": 24,
+    "enemyCount": 24,
     "initialSpawnCount": 3,
     "maxConcurrent": 6,
     "maxAttackers": 3,
