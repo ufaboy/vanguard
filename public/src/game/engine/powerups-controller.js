@@ -265,7 +265,7 @@ export class PowerupsController {
     const hasEnemyBase = Boolean(engine._enemyBaseCell || engine.activeMapRules?.hasEnemyFortifiedBase);
     if (!hasEnemyBase) return null;
     if ((engine.enemies?.length || 0) > 0) return null;
-    if ((engine.vanguardRemainingToSpawn || 0) > 0) return null;
+    if ((engine.enemiesRemainingToSpawn || 0) > 0) return null;
     if (engine.activeMapRules?.spawnSectorBossOnClear && !engine.bossSpawned) return null;
 
     engine.enemyBaseClearAirDropTriggered = true;
@@ -287,10 +287,10 @@ export class PowerupsController {
     engine.airDrops ||= [];
     engine.airDropElapsed = (engine.airDropElapsed || 0) + dt;
     if (queue) {
-      const totalPool = Math.max(1, engine.initialVanguardCount || engine.vanguardRemainingToSpawn || 1);
+      const totalPool = Math.max(1, engine.initialEnemyCount || engine.enemiesRemainingToSpawn || 1);
       const activeNonBoss = (engine.enemies || []).filter((u) => !u.isBoss).length;
-      const remaining = (engine.vanguardRemainingToSpawn || 0) + activeNonBoss;
-      const progress = engine.initialVanguardCount > 0 ? 1 - remaining / totalPool : 0;
+      const remaining = (engine.enemiesRemainingToSpawn || 0) + activeNonBoss;
+      const progress = engine.initialEnemyCount > 0 ? 1 - remaining / totalPool : 0;
 
       for (const entry of queue) {
         if (entry.triggered) continue;

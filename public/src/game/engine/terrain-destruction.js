@@ -155,7 +155,7 @@ export class TerrainDestructionController {
 
       const victoryRes = checkMapVictory(engine.activeMapRules, {
         enemyBaseDestroyed: true,
-        vanguardRemainingToSpawn: engine.vanguardRemainingToSpawn,
+        enemiesRemainingToSpawn: engine.enemiesRemainingToSpawn,
         activeEnemiesCount: engine.enemies.length,
         bossDefeated: engine.bossSpawned && !engine.enemies.some((u) => u.isBoss),
       });

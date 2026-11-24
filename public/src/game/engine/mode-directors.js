@@ -72,7 +72,7 @@ export class SurvivalDirector {
       spec.wave === 1
         ? [...spec.roster]
         : [...(e.enemySpawnQueue || []), ...spec.roster];
-    e.vanguardRemainingToSpawn = e.enemySpawnQueue.length;
+    e.enemiesRemainingToSpawn = e.enemySpawnQueue.length;
     e.bossSpawned = false;
     e.bossSequenceStarted = false;
     e.spawnTimer = 0.7;
@@ -85,9 +85,9 @@ export class SurvivalDirector {
       );
     }
 
-    const openingBatch = Math.min(3, spec.maxConcurrentEnemies, e.vanguardRemainingToSpawn);
+    const openingBatch = Math.min(3, spec.maxConcurrentEnemies, e.enemiesRemainingToSpawn);
     for (let i = 0; i < openingBatch; i++) {
-      e.spawnVanguardEnemy();
+      e.spawnEnemy();
     }
 
     if (isEarlyCall) {
@@ -200,7 +200,7 @@ export class SurvivalDirector {
     if (
       !e.survivalState ||
       e.status !== GameStatus.PLAYING ||
-      (e.survivalState.phase !== 'intermission' && e.vanguardRemainingToSpawn > 0)
+      (e.survivalState.phase !== 'intermission' && e.enemiesRemainingToSpawn > 0)
     ) {
       return false;
     }
@@ -248,7 +248,7 @@ export class SurvivalDirector {
     e.survivalState.overtime = true;
     e.survivalState.victoryAchieved = true;
     e.status = GameStatus.PLAYING;
-    if (e.survivalState.wave < 8 && e.enemies.length === 0 && e.vanguardRemainingToSpawn === 0) {
+    if (e.survivalState.wave < 8 && e.enemies.length === 0 && e.enemiesRemainingToSpawn === 0) {
       this.startWave(8, false);
     } else {
       e.setStatusBanner(
@@ -571,7 +571,7 @@ export class ContractDirector {
         e.setStatusBanner(t('{label} · {gateLabel} IN 6s', { label: t(group.label), gateLabel }), 3.6);
       }
     );
-    e.vanguardRemainingToSpawn =
+    e.enemiesRemainingToSpawn =
       e.contractState.scheduler.totalBudget - e.contractState.scheduler.totalSpawned;
 
     // Update 3D visuals for containers / relays, carried indicator, and delivery pad

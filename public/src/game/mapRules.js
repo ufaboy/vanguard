@@ -300,7 +300,7 @@ export function checkMapVictory(rules, state) {
 
   if (activeRules.victoryOnAllEnemiesDestroyed) {
     const allVanguardGone =
-      (state.vanguardRemainingToSpawn || 0) <= 0 &&
+      (state.enemiesRemainingToSpawn || 0) <= 0 &&
       (state.activeEnemiesCount || 0) === 0;
     if (allVanguardGone && bossDone) {
       return {

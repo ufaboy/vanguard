@@ -239,7 +239,7 @@ export class TankGameEngine {
     this.boxPowerUpPool = new BoxPowerUpPool();
 
     this.nextEnemyId = 1;
-    this.vanguardRemainingToSpawn = 0;
+    this.enemiesRemainingToSpawn = 0;
     this.spawnPoolCursor = 0;
     this.spawnTimer = 0;
     this.bossSpawned = false;
@@ -725,8 +725,8 @@ export class TankGameEngine {
     return this.enemySpawner.resolveBorderSpawn(targetCell, opts);
   }
 
-  spawnVanguardEnemy() {
-    return this.enemySpawner.spawnVanguardEnemy();
+  spawnEnemy() {
+    return this.enemySpawner.spawnEnemy();
   }
 
   callNextSurvivalWave() { return this.survivalDirector.callNextWave(); }

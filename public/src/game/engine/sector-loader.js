@@ -677,8 +677,8 @@ export class SectorLoaderController {
     engine.enemySpawnQueue = Array.isArray(sector.enemyPool)
       ? [...sector.enemyPool]
       : [];
-    engine.vanguardRemainingToSpawn = engine.enemySpawnQueue.length;
-    engine.initialVanguardCount = engine.vanguardRemainingToSpawn;
+    engine.enemiesRemainingToSpawn = engine.enemySpawnQueue.length;
+    engine.initialEnemyCount = engine.enemiesRemainingToSpawn;
     engine.airDrops = [];
     engine.airDropQueue = Array.isArray(sector.airDrop)
       ? sector.airDrop.map((entry) => ({ ...entry, triggered: false }))
@@ -741,7 +741,7 @@ export class SectorLoaderController {
         (unitType, assignment, groupEntry) =>
           engine.contractDirector.spawnEnemy(unitType, assignment, groupEntry)
       );
-      engine.vanguardRemainingToSpawn =
+      engine.enemiesRemainingToSpawn =
         engine.contractState.scheduler.totalBudget - engine.contractState.scheduler.totalSpawned;
       engine.enemySpawnQueue = [];
     } else if (sector.encounters?.length) {
@@ -756,8 +756,8 @@ export class SectorLoaderController {
         engine.enemies.at(-1).campaignPatrolRoute = opening.patrolRoute;
       }
       engine.encounterState = createEncounterState(sector.encounters, count, sector.nextWave);
-      engine.vanguardRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
-      engine.initialVanguardCount = engine.vanguardRemainingToSpawn + count;
+      engine.enemiesRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
+      engine.initialEnemyCount = engine.enemiesRemainingToSpawn + count;
       engine.enemySpawnQueue = [];
     } else {
       if (Array.isArray(sector.fixedSpawns)) {
@@ -778,11 +778,11 @@ export class SectorLoaderController {
       const initialCount = Math.min(
         sector.initialSpawnCount ?? 4,
         maxConcurrent,
-        engine.vanguardRemainingToSpawn
+        engine.enemiesRemainingToSpawn
       );
       for (let i = 0; i < initialCount; i++) {
         if (engine.enemies.length >= maxConcurrent) break;
-        engine.spawnVanguardEnemy();
+        engine.spawnEnemy();
       }
     }
 
