@@ -8,7 +8,7 @@ export const PAGE_PATHS = Object.freeze({
   survival: './survival.html',
   contracts: './contracts.html',
   howToPlay: './how-to-play.html',
-  walkthrough: './walkthrough.html',
+  walkthrough: './campaign/walkthrough.html',
   enemies: './enemies.html',
   arsenal: './arsenal.html',
   destructibleTerrain: './destructible-terrain.html',

@@ -37,20 +37,39 @@ const jsonLd = [
   description={"Play a 38-mission 3D tank campaign in your browser, no download. Advance sector by sector through seven regions, inspect recon maps, and defeat four Sector Bosses."}
   ogDescription={"38 tactical 3D tank missions across seven regions on the Road to the Capital. Free in your browser."}
   twitterDescription={"38 tactical 3D tank missions across seven regions in a free Battle City-style browser game."}
-  image={"https://battletank.online/images/campaign-map-clean.webp"}
+  image={"https://battletank.online/images/campaign/mission-01.webp"}
   jsonLd={jsonLd}
   bodyPage="campaign"
   contentClass="menu-content campaign-content"
   script="src/pages/campaign.js"
 >
+  <script is:inline>
+    (function () {
+      try {
+        var qs = new URLSearchParams(location.search).get('mission');
+        if (qs && qs !== 'campaign-01') {
+          document.documentElement.classList.add('campaign-hydrating');
+          setTimeout(function () { document.documentElement.classList.remove('campaign-hydrating'); }, 2000);
+          return;
+        }
+        var raw = localStorage.getItem('battle_tank_player_save_v1');
+        if (!raw) return;
+        var save = JSON.parse(raw);
+        var done = save && save.completedMissions;
+        if (done && typeof done === 'object' && Object.keys(done).length > 0 && !qs) {
+          document.documentElement.classList.add('campaign-hydrating');
+          setTimeout(function () { document.documentElement.classList.remove('campaign-hydrating'); }, 2000);
+        }
+      } catch {}
+    })();
+  </script>
   <h1 class="campaign-page-title" tabindex="-1">{t("Campaign: Road to the Capital")}</h1>
 
   <div class="campaign-goal-banner" role="region" aria-label={t("OPERATION GOAL")}>
     <div class="campaign-goal-main">
       <span class="campaign-goal-badge">{t("OPERATION GOAL")}</span>
-      <p class="campaign-goal-text">{t("The Iron Consortium has seized experimental tank prototypes in Rome and is rushing them across Europe toward the port of Barcelona. Intercept the convoy, break every fortified depot along the Iron Road, and stop the freighter before it sails.")}</p>
+      <p class="campaign-goal-text">{t("Director Viktor Kranz and the Iron Consortium have seized four Project Prometheus prototypes in Rome, turning Europe into a mobile assembly line for Sector Bosses along the Iron Road. Pursue the convoy from the Colosseum to Barcelona, break every stronghold, and stop the freighter before Titan sails.")}</p>
     </div>
-    <div class="campaign-goal-progress" data-campaign-progress>0 / 38</div>
   </div>
 
   <nav class="campaign-nav" aria-label={t("Mission navigation")}>
@@ -136,40 +155,6 @@ const jsonLd = [
   <section class="campaign-workspace" style="--region-accent:#d6e7a0;" aria-label={t("Mission briefing")}>
     <div class="campaign-region-map-panel" aria-label={t("Campaign regions")}>
       <CampaignRegionMaps />
-    </div>
-
-    <div class="campaign-briefing-panel">
-      <div class="campaign-brief-head">
-        <span class="campaign-brief-sector">{t("SECTOR 01 // 38 · ITALY")}</span>
-      </div>
-
-      <h2 class="campaign-brief-title">{t("Rome: Forum & Colosseum")}</h2>
-      <div class="campaign-brief-block">
-        <span class="campaign-brief-section-label">{t("MISSION OBJECTIVE")}</span>
-        <p class="campaign-brief-objective">{t("Clear the Consortium strike teams before they regroup")}</p>
-      </div>
-
-      <div class="campaign-brief-details">
-        <div class="campaign-brief-block">
-          <span class="campaign-brief-section-label">{t("SITUATION & WHY")}</span>
-          <p class="campaign-brief-text">{t("Consortium strike teams have occupied the Roman Forum and the Colosseum square. A howitzer covers the central avenue, so use the temple passages and brick breaches to flank their positions. Clear every hostile unit before they regroup.")}</p>
-        </div>
-        <div class="campaign-brief-block">
-          <span class="campaign-brief-section-label">{t("BATTLEFIELD INTEL")}</span>
-          <p class="campaign-brief-layout">{t("Interlocking urban loops through the Roman Forum, a bent imperial avenue and the Colosseum square, with cross streets and three destructible breaches.")}</p>
-        </div>
-        <div class="campaign-brief-block">
-          <span class="campaign-brief-section-label">{t("HOSTILE FORCES")}</span>
-          <div class="campaign-roster-chips">
-            <span class="campaign-roster-chip">SCOUT ×5</span>
-            <span class="campaign-roster-chip">STANDARD ×14</span>
-            <span class="campaign-roster-chip">HOWITZER ×1</span>
-          </div>
-        </div>
-      </div>
-
-      <p class="campaign-brief-classified" hidden></p>
-
       <div class="campaign-brief-actions">
         <button
           type="button"
@@ -188,9 +173,22 @@ const jsonLd = [
       </div>
     </div>
 
+    <div class="campaign-briefing-panel">
+      <h2 class="campaign-brief-title">{t("Rome: Forum & Colosseum")}</h2>
+      <div class="campaign-brief-block">
+        <p class="campaign-brief-objective">{t("Clear the Consortium strike teams before they regroup")}</p>
+      </div>
+
+      <div class="campaign-brief-block" data-mission-situation>
+        <p class="campaign-brief-text">{t("We have a live heist in the cradle of Rome, VANGUARD. Viktor Kaelen's strike teams caught us flat-footed, but those stolen Aegis-IX hulls are unarmed and uncalibrated—sluggish, blind, and heavy. The Consortium rearguard has turned the Colosseum and the Roman Forum into a makeshift fortress to cover the convoy's escape to the highway grid. Push through the ancient ruins, flush their armor out from behind the marble arches, and leave nothing intact that flies their banner. We don't let them reach the mountains.")}</p>
+      </div>
+
+      <p class="campaign-brief-classified" hidden></p>
+    </div>
+
     <div class="campaign-recon-panel">
       <div class="campaign-recon-square is-missing-img">
-        <img class="campaign-recon-img" width="600" height="600" src="./images/campaign/mission-01.webp" alt={t("Rome: Forum & Colosseum — Reconnaissance map")} />
+        <img class="campaign-recon-img" width="600" height="600" src={h("./images/campaign/mission-01.webp")} alt={t("Rome: Forum & Colosseum — Reconnaissance map")} />
         <div class="campaign-recon-hud" aria-hidden="true">
           <span class="recon-hud-corner is-tl"></span>
           <span class="recon-hud-corner is-tr"></span>
@@ -214,6 +212,19 @@ const jsonLd = [
         <div class="campaign-recon-classified">
           <span class="classified-stamp">{t("CLASSIFIED")}</span>
           <span class="campaign-classified-sub">{t("Pass Sector {n} to unlock recon imagery", { n: 0 })}</span>
+        </div>
+      </div>
+
+      <div class="campaign-brief-details">
+        <div class="campaign-brief-block">
+          <p class="campaign-brief-layout">{t("Thermal feeds over the Palatine Hill are completely washed out by oily diesel smoke. Under the Arch of Constantine, the Consortium didn't bother with finesse—they shredded our transfer column with heavy autocannons and hoisted four raw Aegis-IX hulls off their flatbeds before the escorts could even clear their barrels. Their haulers are already rumbling north down the Via dei Fori Imperiali, trading ancient travertine for time. With the Tyrrhenian ports sealed tight, they have no sea escape—they're digging in among the broken colonnades of the Forum to buy every second they can.")}</p>
+        </div>
+        <div class="campaign-brief-block">
+          <div class="campaign-roster-chips">
+            <a class="campaign-roster-chip" href={`${h("./enemies")}#scout`}><span class="campaign-roster-name">{t('Recon Light Tank "Viper"')}</span><span class="campaign-roster-count">×5</span></a>
+            <a class="campaign-roster-chip" href={`${h("./enemies")}#standard`}><span class="campaign-roster-name">{t('Standard Battle Tank "Lancet"')}</span><span class="campaign-roster-count">×14</span></a>
+            <a class="campaign-roster-chip" href={`${h("./enemies")}#howitzer`}><span class="campaign-roster-name">{t('Howitzer Artillery Tank "Grad"')}</span><span class="campaign-roster-count">×1</span></a>
+          </div>
         </div>
       </div>
     </div>
@@ -268,7 +279,7 @@ const jsonLd = [
 
       <div class="menu-actions">
         <a class="menu-primary" href={h("./how-to-play")}>{t("How to Play →")}</a>
-        <a class="menu-secondary" href={h("./walkthrough")}>{t("Campaign Walkthrough")}</a>
+        <a class="menu-secondary" href={h("./campaign/walkthrough")}>{t("Campaign Walkthrough")}</a>
         <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
         <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal &amp; Upgrades")}</a>
       </div>

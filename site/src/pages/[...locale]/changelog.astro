@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.9.0 // THE IRON ROAD")}</span>
+            <strong>{t("Iron Road Campaign Story, Briefing UI &amp; /campaign/walkthrough")}</strong>
+            <p>{t("Integrated The Iron Road narrative and recon texts across all 38 missions and 5 locales, refined the Campaign briefing layout and HOSTILE FORCES roster, moved the walkthrough guide to /campaign/walkthrough with full 7-region and 38-mission coverage, and replaced legacy region thumbnails with mission renders.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 4.8.0 // BATTLE ECONOMY")}</span>
             <strong>{t("Deferred Battle Credits &amp; Loss Protection")}</strong>
             <p>{t("Battle earnings and expenses (air support, repair drones, recon drone, and in-battle garage purchases) now use temporary battle credits and are committed to your persistent balance only on victory. Defeat, aborting a mission, or reloading restores your pre-battle balance intact.")}</p>
@@ -307,7 +313,7 @@ const jsonLd = [
           <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 1.30.0 // FULL SPANISH SITE")}</span>
             <strong>{t("All Game Modes, Guides &amp; Info Pages in Spanish")}</strong>
-            <p>{t("Added Spanish versions under")} <code>{t("/es/")}</code> {t("for 13 more pages:")} <a href={h("./es/campaign")}>{t("Campaign")}</a>, <a href={h("./es/survival")}>{t("Survival")}</a>, <a href={h("./es/contracts")}>{t("Contracts")}</a>, <a href={h("./es/how-to-play")}>{t("How to Play")}</a>, <a href={h("./es/walkthrough")}>{t("Walkthrough")}</a>, <a href={h("./es/arsenal")}>{t("Arsenal")}</a>, <a href={h("./es/destructible-terrain")}>{t("Destructible Terrain")}</a>, <a href={h("./es/games-like-battle-city")}>{t("Games Like Battle City")}</a>, <a href={h("./es/webgl-tank-game")}>{t("Under the Hood")}</a>, <a href={h("./es/about")}>{t("About")}</a>, <a href={h("./es/privacy-policy")}>{t("Privacy Policy")}</a>, <a href={h("./es/terms")}>{t("Terms")}</a> {t("and")} <a href={h("./es/contact")}>{t("Contact")}</a>{t(", complete with")} <code>{t("hreflang")}</code> {t("links and sitemap entries.")}</p>
+            <p>{t("Added Spanish versions under")} <code>{t("/es/")}</code> {t("for 13 more pages:")} <a href={h("./es/campaign")}>{t("Campaign")}</a>, <a href={h("./es/survival")}>{t("Survival")}</a>, <a href={h("./es/contracts")}>{t("Contracts")}</a>, <a href={h("./es/how-to-play")}>{t("How to Play")}</a>, <a href={h("./es/campaign/walkthrough")}>{t("Walkthrough")}</a>, <a href={h("./es/arsenal")}>{t("Arsenal")}</a>, <a href={h("./es/destructible-terrain")}>{t("Destructible Terrain")}</a>, <a href={h("./es/games-like-battle-city")}>{t("Games Like Battle City")}</a>, <a href={h("./es/webgl-tank-game")}>{t("Under the Hood")}</a>, <a href={h("./es/about")}>{t("About")}</a>, <a href={h("./es/privacy-policy")}>{t("Privacy Policy")}</a>, <a href={h("./es/terms")}>{t("Terms")}</a> {t("and")} <a href={h("./es/contact")}>{t("Contact")}</a>{t(", complete with")} <code>{t("hreflang")}</code> {t("links and sitemap entries.")}</p>
           </article>
 
           <article class="menu-card" style="cursor:default">
@@ -679,7 +685,7 @@ const jsonLd = [
 
         <div class="menu-actions" style="margin-top:28px;">
           <a class="menu-primary" href={h("./campaign")}>{t("Launch Campaign →")}</a>
-          <a class="menu-secondary" href={h("./walkthrough")}>{t("Campaign Walkthrough")}</a>
+          <a class="menu-secondary" href={h("./campaign/walkthrough")}>{t("Campaign Walkthrough")}</a>
           <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
           <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal")}</a>
         </div>

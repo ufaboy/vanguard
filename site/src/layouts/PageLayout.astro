@@ -40,8 +40,8 @@ const url = pageUrl(slug, locale);
 const alternates = isLocalized(slug);
 const importMap = {
   imports: {
-    three: assetHref('vendor/three/build/three.module.js', locale),
-    'three/addons/': assetHref('vendor/three/examples/jsm/', locale),
+    three: assetHref('vendor/three/build/three.module.js', locale, slug),
+    'three/addons/': assetHref('vendor/three/examples/jsm/', locale, slug),
   },
 };
 const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, locale), null, 2));
@@ -58,12 +58,12 @@ const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, loca
     <link rel="canonical" href={url} />
     {alternates && LOCALES.map((lang) => <link rel="alternate" hreflang={HTML_LANG[lang] ?? lang} href={pageUrl(slug, lang)} />)}
     {alternates && <link rel="alternate" hreflang="x-default" href={pageUrl(slug, DEFAULT_LOCALE)} />}
-    <link rel="icon" href={assetHref('favicon.ico', locale)} sizes="48x48" />
-    <link rel="icon" type="image/svg+xml" href={assetHref('images/icon.svg', locale)} />
-    <link rel="icon" type="image/png" sizes="96x96" href={assetHref('images/icon-96.png', locale)} />
-    <link rel="icon" type="image/png" sizes="48x48" href={assetHref('images/icon-48.png', locale)} />
-    <link rel="apple-touch-icon" sizes="180x180" href={assetHref('images/apple-touch-icon.png', locale)} />
-    <link rel="manifest" href={assetHref('manifest.webmanifest', locale)} />
+    <link rel="icon" href={assetHref('favicon.ico', locale, slug)} sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href={assetHref('images/icon.svg', locale, slug)} />
+    <link rel="icon" type="image/png" sizes="96x96" href={assetHref('images/icon-96.png', locale, slug)} />
+    <link rel="icon" type="image/png" sizes="48x48" href={assetHref('images/icon-48.png', locale, slug)} />
+    <link rel="apple-touch-icon" sizes="180x180" href={assetHref('images/apple-touch-icon.png', locale, slug)} />
+    <link rel="manifest" href={assetHref('manifest.webmanifest', locale, slug)} />
     <meta property="og:site_name" content="BATTLE TANK" />
     <meta property="og:title" content={t(ogTitle)} />
     <meta property="og:description" content={t(ogDescription)} />
@@ -80,7 +80,7 @@ const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, loca
     <meta name="twitter:description" content={t(twitterDescription)} />
     <meta name="twitter:image" content={image} />
     {ldBlocks.map((json) => <script is:inline type="application/ld+json" set:html={json} />)}
-    <link rel="stylesheet" href={assetHref('src/index.css', locale)} />
+    <link rel="stylesheet" href={assetHref('src/index.css', locale, slug)} />
     <script is:inline type="importmap" set:html={JSON.stringify(importMap, null, 2)} />
   </head>
   <body data-page={bodyPage} class="text-slate-100 scrollable-page">
@@ -94,6 +94,6 @@ const ldBlocks = jsonLd.map((block) => JSON.stringify(localizeJsonLd(block, loca
       </main>
     <Fragment set:html="<!-- prerender:end -->" /></div>
     <noscript><slot name="noscript" /></noscript>
-    <script is:inline type="module" src={assetHref(script, locale)}></script>
+    <script is:inline type="module" src={assetHref(script, locale, slug)}></script>
   </body>
 </html>

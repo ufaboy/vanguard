@@ -58,7 +58,7 @@ function lastCommitDate(relPaths) {
 function sitemapUrlToFiles(loc) {
   const parts = new URL(loc).pathname.split('/').filter(Boolean);
   const locale = parts[0] && fs.existsSync(path.join('i18n', 'pages', `${parts[0]}.mjs`)) ? parts.shift() : null;
-  const slug = parts[0] || 'index';
+  const slug = parts.join('/') || 'index';
   const page = `site/src/pages/[...locale]/${slug}.astro`;
   if (!fs.existsSync(page)) return [`public/${slug}.html`];
   return locale ? [page, `i18n/pages/${locale}`, `i18n/pages/${locale}.mjs`] : [page];
