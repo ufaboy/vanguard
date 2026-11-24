@@ -3199,34 +3199,38 @@ export class ModelFactory extends TextureGenerator {
     return this.createSeamlessSurfacePatch(x, z, this.stonePatchMats, 0.011);
   }
 
+  /** Pre-builds shared sand patch textures and materials. */
+  ensureSandPatchMats() {
+    if (this.sandPatchMats) return;
+    // sRGB colour space like every other colour map; without it the sand washes out to white.
+    const sandTex = this.configureColorTexture(new THREE.CanvasTexture(createSandCanvas(256, SAND_PATTERN_CELLS, 42)));
+    sandTex.wrapS = THREE.RepeatWrapping;
+    sandTex.wrapT = THREE.RepeatWrapping;
+    this.sandPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
+      const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
+      mask.channel = 1;
+      return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
+        map: sandTex,
+        alphaMap: mask,
+        transparent: true,
+        depthWrite: false,
+        // Same response as the ground plane, so a patch matches sand painted into the map ground.
+        roughness: 0.85,
+        metalness: 0.1,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1,
+      }));
+    });
+  }
+
   /**
    * Runtime sand patch for one cell (burned forest, destroyed turret) centred at world (x, z).
    * The rim is ragged and feathered through an alpha mask (uv1), while the sand pattern is
    * world-aligned (uv) so neighbouring patches merge into one continuous sand field.
    */
   createSandBlock(x = 0, z = 0) {
-    if (!this.sandPatchMats) {
-      // sRGB colour space like every other colour map; without it the sand washes out to white.
-      const sandTex = this.configureColorTexture(new THREE.CanvasTexture(createSandCanvas(256, SAND_PATTERN_CELLS, 42)));
-      sandTex.wrapS = THREE.RepeatWrapping;
-      sandTex.wrapT = THREE.RepeatWrapping;
-      this.sandPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
-        const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
-        mask.channel = 1;
-        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
-          map: sandTex,
-          alphaMap: mask,
-          transparent: true,
-          depthWrite: false,
-          // Same response as the ground plane, so a patch matches sand painted into the map ground.
-          roughness: 0.85,
-          metalness: 0.1,
-          polygonOffset: true,
-          polygonOffsetFactor: -1,
-          polygonOffsetUnits: -1,
-        }));
-      });
-    }
+    this.ensureSandPatchMats();
     return this.createSeamlessSurfacePatch(x, z, this.sandPatchMats, 0.012);
   }
 
@@ -3542,67 +3546,71 @@ export class ModelFactory extends TextureGenerator {
     return markOwned(group, { geometries: false, materials: false });
   }
 
+  /** Pre-builds shared swamp patch textures and materials. */
+  ensureSwampPatchMats() {
+    if (this.swampPatchMats) return;
+    const c = document.createElement('canvas');
+    c.width = 256;
+    c.height = 256;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#33291d';
+    ctx.fillRect(0, 0, 256, 256);
+
+    // Organic wet mud mottling + standing water pools + ripple highlights
+    let seed = 1337;
+    const rand = () => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return seed / 4294967296;
+    };
+    for (let i = 0; i < 65; i++) {
+      const px = rand() * 256;
+      const py = rand() * 256;
+      const r = 14 + rand() * 28;
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(35, 27, 18, 0.45)' : 'rgba(62, 50, 34, 0.35)';
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    for (let i = 0; i < 18; i++) {
+      const px = rand() * 256;
+      const py = rand() * 256;
+      const rx = 18 + rand() * 34;
+      const ry = 12 + rand() * 24;
+      ctx.fillStyle = 'rgba(26, 62, 74, 0.72)';
+      ctx.beginPath();
+      ctx.ellipse(px, py, rx, ry, rand() * Math.PI, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(105, 165, 182, 0.28)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.ellipse(px - 2, py - 2, rx * 0.72, ry * 0.65, 0, 0.2, Math.PI * 1.1);
+      ctx.stroke();
+    }
+
+    const swampTex = this.configureColorTexture(new THREE.CanvasTexture(c));
+    swampTex.wrapS = THREE.RepeatWrapping;
+    swampTex.wrapT = THREE.RepeatWrapping;
+
+    this.swampPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
+      const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
+      mask.channel = 1;
+      return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
+        map: swampTex,
+        alphaMap: mask,
+        transparent: true,
+        depthWrite: false,
+        roughness: 0.28,
+        metalness: 0.25,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1,
+      }));
+    });
+  }
+
   /** Seamless wet mud & flooded puddle patch at world (x, z). */
   createSwampBlock(x = 0, z = 0) {
-    if (!this.swampPatchMats) {
-      const c = document.createElement('canvas');
-      c.width = 256;
-      c.height = 256;
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = '#33291d';
-      ctx.fillRect(0, 0, 256, 256);
-
-      // Organic wet mud mottling + standing water pools + ripple highlights
-      let seed = 1337;
-      const rand = () => {
-        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
-        return seed / 4294967296;
-      };
-      for (let i = 0; i < 65; i++) {
-        const px = rand() * 256;
-        const py = rand() * 256;
-        const r = 14 + rand() * 28;
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(35, 27, 18, 0.45)' : 'rgba(62, 50, 34, 0.35)';
-        ctx.beginPath();
-        ctx.arc(px, py, r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      for (let i = 0; i < 18; i++) {
-        const px = rand() * 256;
-        const py = rand() * 256;
-        const rx = 18 + rand() * 34;
-        const ry = 12 + rand() * 24;
-        ctx.fillStyle = 'rgba(26, 62, 74, 0.72)';
-        ctx.beginPath();
-        ctx.ellipse(px, py, rx, ry, rand() * Math.PI, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(105, 165, 182, 0.28)';
-        ctx.lineWidth = 1.6;
-        ctx.beginPath();
-        ctx.ellipse(px - 2, py - 2, rx * 0.72, ry * 0.65, 0, 0.2, Math.PI * 1.1);
-        ctx.stroke();
-      }
-
-      const swampTex = this.configureColorTexture(new THREE.CanvasTexture(c));
-      swampTex.wrapS = THREE.RepeatWrapping;
-      swampTex.wrapT = THREE.RepeatWrapping;
-
-      this.swampPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
-        const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
-        mask.channel = 1;
-        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
-          map: swampTex,
-          alphaMap: mask,
-          transparent: true,
-          depthWrite: false,
-          roughness: 0.28,
-          metalness: 0.25,
-          polygonOffset: true,
-          polygonOffsetFactor: -1,
-          polygonOffsetUnits: -1,
-        }));
-      });
-    }
+    this.ensureSwampPatchMats();
     return this.createSeamlessSurfacePatch(x, z, this.swampPatchMats, 0.013);
   }
 
@@ -3941,8 +3949,9 @@ export class ModelFactory extends TextureGenerator {
     }
   }
 
-  /** Naturalistic blast crater with scorch rays, radial cracks, and jagged dirt rim. */
-  createCraterBlock(x = 0, z = 0) {
+  /** Pre-builds shared crater decal textures, materials, and sculpted rim geometry. */
+  ensureCraterAssets() {
+    if (this.craterMats && this.craterRimGeo) return;
     if (!this.craterMats) {
       const c = document.createElement('canvas');
       c.width = 256;
@@ -4102,6 +4111,20 @@ export class ModelFactory extends TextureGenerator {
       rimGeo.userData.batchGeometryKey = 'crater-rim';
       this.craterRimGeo = rimGeo;
     }
+  }
+
+  /** Pre-warms lazy procedural combat/destruction assets during sector load. */
+  prewarmCombatAssets() {
+    if (typeof document === 'undefined') return;
+    this.ensureRubbleAssets();
+    this.ensureSandPatchMats();
+    this.ensureSwampPatchMats();
+    this.ensureCraterAssets();
+  }
+
+  /** Naturalistic blast crater with scorch rays, radial cracks, and jagged dirt rim. */
+  createCraterBlock(x = 0, z = 0) {
+    this.ensureCraterAssets();
 
     const { decal, earth, rubble, rubbleDark } = this.craterMats;
     const group = new THREE.Group();

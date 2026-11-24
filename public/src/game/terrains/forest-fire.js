@@ -76,9 +76,6 @@ export class ForestFireController {
     if (cell.mesh) {
       cell.mesh.userData.batchTile = false;
     }
-    if (e.tileBatcher) {
-      e.tileBatcher.sync();
-    }
 
     e.burningForests.push({
       cell,

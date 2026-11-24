@@ -170,6 +170,7 @@ export class EnemyAiController {
       spotter.radioAlertRadius ?? ENEMY_VISIBILITY.RADIO_ALERT_RADIUS;
     spotter.radioCooldown = ENEMY_VISIBILITY.RADIO_BROADCAST_COOLDOWN_SEC;
 
+    let staggerIdx = 0;
     for (const ally of engine.enemies) {
       if (ally === spotter) continue;
       const distToAlly = Math.hypot(ally.x - spotter.x, ally.z - spotter.z);
@@ -184,7 +185,7 @@ export class EnemyAiController {
             z: targetZ + Math.sin(scatterAngle) * scatterDist,
           };
           ally.alertTimer = ENEMY_VISIBILITY.ALERT_PURSUIT_DURATION_SEC;
-          ally.aiTimer = 0;
+          ally.aiTimer = staggerIdx++ * 0.035;
           if (ally.ai) {
             ally.ai.state = 'alert_move';
             ally.ai.lastKnownTargetPos = { x: targetX, z: targetZ };
@@ -502,7 +503,7 @@ export class EnemyAiController {
       e.targetDirZ = 0;
       return;
     }
-    if (e.aiTimer <= 0 || plan.pathIdx >= plan.path.length) {
+    if (e.aiTimer <= 0 || !plan.path || (plan.path.length > 0 && plan.pathIdx >= plan.path.length)) {
       e.aiTimer = 1.0;
       const from = { row: Math.floor(fz), col: Math.floor(fx) };
       const occupiedCells = this.getOccupiedCellsExcluding(e);

@@ -68,7 +68,6 @@ export class TerrainDestructionController {
     cell.maxHp = 0;
     const pos = engine.gridToWorld(cell.row, cell.col);
     engine.fx?.masonryHit?.(pos.x, 0.25, pos.z, { concrete: true, heavy: false });
-    engine.tileBatcher?.sync();
     return true;
   }
 
@@ -126,10 +125,11 @@ export class TerrainDestructionController {
     sound.playSteelHit({ x: hitX, z: hitZ });
     engine.fx.armorHit(hitX, 0.95, hitZ, { scale: dmg >= 8 ? 1.2 : 0.9 });
 
+    let staggerIdx = 0;
     for (const ally of engine.enemies) {
       ally.alertTarget = { x: engine.playerX, z: engine.playerZ };
       ally.alertTimer = ENEMY_VISIBILITY.ALERT_PURSUIT_DURATION_SEC;
-      ally.aiTimer = 0;
+      ally.aiTimer = staggerIdx++ * 0.035;
     }
 
     if (cell.hp <= 0) {
@@ -426,10 +426,6 @@ export class TerrainDestructionController {
       z,
       wasBoxes ? 'boxes' : wasConcrete ? 'concrete' : wasForest ? 'forest' : 'brick'
     );
-
-    if (engine.tileBatcher) {
-      engine.tileBatcher.sync();
-    }
   }
 
   updateBrickRubble(dt) {
@@ -545,10 +541,6 @@ export class TerrainDestructionController {
       chainBarrels.forEach((b, idx) => {
         engine.pendingBarrelExplosions.push({ cell: b, fromPlayer, remaining: 0.075 * (idx + 1) });
       });
-    }
-
-    if (engine.tileBatcher) {
-      engine.tileBatcher.sync();
     }
   }
 
