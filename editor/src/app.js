@@ -181,6 +181,20 @@ class MapEditorApp {
         list.splice(idx, 1);
         return true;
       }
+      if (this.activeTab === 'landmarks') {
+        const list = this.state.landmarks3d;
+        const idx = list.findIndex((l) => l.row === r && l.col === c);
+        if (idx < 0) return false;
+        list.splice(idx, 1);
+        return true;
+      }
+      if (this.activeTab === 'markers') {
+        const list = this.state.powerups;
+        const idx = list.findIndex((p) => p.row === r && p.col === c);
+        if (idx < 0) return false;
+        list.splice(idx, 1);
+        return true;
+      }
       const hadObj = this.state.objectGrid[r][c] !== null;
       const hadSurf = this.state.surfaceGrid[r][c] !== TileType.EMPTY;
       if (hadObj) {
@@ -257,6 +271,12 @@ class MapEditorApp {
     if (changed) {
       if (this.activeTab === 'decorations') {
         this.viewport.rebuildDecorations();
+        this._syncLists();
+      } else if (this.activeTab === 'landmarks') {
+        this.viewport.rebuildLandmarks();
+        this._syncLists();
+      } else if (this.activeTab === 'markers') {
+        this.viewport.rebuildMarkers();
         this._syncLists();
       } else {
         this.viewport.syncBuildings();
@@ -621,7 +641,7 @@ class MapEditorApp {
       this._startMoveAt(cell);
       return;
     }
-    if (this.activeTab === 'markers' || this.activeTab === 'landmarks') {
+    if ((this.activeTab === 'markers' || this.activeTab === 'landmarks') && this.activeTool !== 'eraser') {
       this._placeMarkerOrLandmark(cell);
       return;
     }
@@ -667,11 +687,13 @@ class MapEditorApp {
       }
       return;
     }
-    if (this.activeTool === 'brush' || this.activeTool === 'eraser') {
-      if (this.activeTab === 'surfaces' || this.activeTab === 'objects' || this.activeTab === 'decorations') {
-        if (this._applyBrushAt(cell, this.activeTool)) {
-          this.strokeChanged = true;
-        }
+    if (
+      this.activeTool === 'eraser' ||
+      (this.activeTool === 'brush' &&
+        (this.activeTab === 'surfaces' || this.activeTab === 'objects' || this.activeTab === 'decorations'))
+    ) {
+      if (this._applyBrushAt(cell, this.activeTool)) {
+        this.strokeChanged = true;
       }
     }
   }
