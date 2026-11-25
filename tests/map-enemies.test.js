@@ -12,7 +12,7 @@ function createMinimalMap(overrides = {}) {
     name: 'Test Map',
     baseCell: { row: 39, col: 19 },
     playerSpawnCell: { row: 36, col: 19 },
-    terrain: [],
+    terrain: {},
     ...overrides,
   };
 }

@@ -8,72 +8,28 @@
   "gameMode": "survival",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 36,
-    "col": 17
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "gameMode": "survival",
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false,
-    "victoryOnAllEnemiesDestroyed": false
-  },
-  "completionReward": {
-    "credits": 0
-  },
-  "environment": {
-    "theme": "industrial",
-    "tint": "#f97316",
-    "fogColor": "#0f1420",
-    "groundColor": "#333b46"
-  },
+  "playerSpawnCell": {"row":36,"col":17},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"gameMode":"survival","spawnSectorBossOnClear":false,"defeatOnBaseLoss":false,"victoryOnAllEnemiesDestroyed":false},
+  "completionReward": {"credits":0},
+  "environment": {"theme":"industrial","tint":"#f97316","fogColor":"#0f1420","groundColor":"#333b46"},
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 6,
     "spawnIntervalSec": 2.2,
     "maxAttackers": 3,
-    "enemyPool": [
-      "SCOUT",
-      "STANDARD",
-      "SCOUT",
-      "STANDARD",
-      "SAPPER",
-      "SCOUT"
-    ],
+    "enemyPool": ["SCOUT","STANDARD","SCOUT","STANDARD","SAPPER","SCOUT"],
     "boss": {
       "name": "MAMMOTH MK-V",
       "title": "Super-Heavy Command Dreadnought",
       "enemyClass": "BOSS_MAMMOTH",
-      "spawnCell": {
-        "row": 3,
-        "col": 19
-      }
+      "spawnCell": {"row":3,"col":19}
     },
     "entrances": [
-      {
-        "id": "west",
-        "row": 2,
-        "col": 7
-      },
-      {
-        "id": "center-west",
-        "row": 2,
-        "col": 15
-      },
-      {
-        "id": "center-east",
-        "row": 2,
-        "col": 24
-      },
-      {
-        "id": "east",
-        "row": 2,
-        "col": 32
-      }
+      {"id":"west","row":2,"col":7},
+      {"id":"center-west","row":2,"col":15},
+      {"id":"center-east","row":2,"col":24},
+      {"id":"east","row":2,"col":32}
     ]
   },
   "decoration": {
@@ -81,331 +37,45 @@
     "seed": 50201,
     "theme": "industrial",
     "zones": [
-      {
-        "id": "north-staging-apron",
-        "bounds": [
-          1,
-          4,
-          8,
-          35
-        ],
-        "surface": "concrete",
-        "density": 0.35,
-        "details": [
-          "tracks",
-          "oil",
-          "cracks"
-        ]
-      },
+      {"id":"north-staging-apron","bounds":[1,4,8,35],"surface":"concrete","density":0.35,"details":["tracks","oil","cracks"]},
       {
         "id": "central-crucible-yard",
-        "bounds": [
-          12,
-          10,
-          28,
-          29
-        ],
+        "bounds": [12,10,28,29],
         "surface": "gravel",
         "density": 0.3,
-        "details": [
-          "rubble",
-          "tracks",
-          "patches"
-        ]
+        "details": ["rubble","tracks","patches"]
       },
-      {
-        "id": "south-bastion-apron",
-        "bounds": [
-          32,
-          12,
-          38,
-          27
-        ],
-        "surface": "pavers",
-        "density": 0.25,
-        "details": [
-          "patches",
-          "cracks"
-        ]
-      },
-      {
-        "id": "edge-west-north",
-        "bounds": [
-          0,
-          0,
-          19,
-          3
-        ],
-        "surface": "concrete",
-        "density": 0.45,
-        "details": [
-          "oil",
-          "tracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "edge-west-south",
-        "bounds": [
-          20,
-          0,
-          39,
-          3
-        ],
-        "surface": "gravel",
-        "density": 0.45,
-        "details": [
-          "tracks",
-          "rubble",
-          "cracks"
-        ]
-      },
-      {
-        "id": "edge-east-north",
-        "bounds": [
-          0,
-          36,
-          19,
-          39
-        ],
-        "surface": "gravel",
-        "density": 0.45,
-        "details": [
-          "oil",
-          "tracks",
-          "rubble"
-        ]
-      },
+      {"id":"south-bastion-apron","bounds":[32,12,38,27],"surface":"pavers","density":0.25,"details":["patches","cracks"]},
+      {"id":"edge-west-north","bounds":[0,0,19,3],"surface":"concrete","density":0.45,"details":["oil","tracks","rubble"]},
+      {"id":"edge-west-south","bounds":[20,0,39,3],"surface":"gravel","density":0.45,"details":["tracks","rubble","cracks"]},
+      {"id":"edge-east-north","bounds":[0,36,19,39],"surface":"gravel","density":0.45,"details":["oil","tracks","rubble"]},
       {
         "id": "edge-east-south",
-        "bounds": [
-          20,
-          36,
-          39,
-          39
-        ],
+        "bounds": [20,36,39,39],
         "surface": "concrete",
         "density": 0.45,
-        "details": [
-          "tracks",
-          "rubble",
-          "cracks"
-        ]
+        "details": ["tracks","rubble","cracks"]
       }
     ],
-    "paths": [
-      {
-        "id": "iron-crucible-rail-spur",
-        "points": [
-          [
-            1,
-            3
-          ],
-          [
-            38,
-            3
-          ]
-        ],
-        "width": 1.4,
-        "surface": "gravel",
-        "marking": "railway"
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "clear-repair-bay",
-        "bounds": [
-          35,
-          17,
-          38,
-          22
-        ]
-      }
-    ]
+    "paths": [{"id":"iron-crucible-rail-spur","points":[[1,3],[38,3]],"width":1.4,"surface":"gravel","marking":"railway"}],
+    "exclusions": [{"id":"clear-repair-bay","bounds":[35,17,38,22]}]
   },
-  "terrain": [
-    {"t":"oil","r":1,"c":30},
-    {"t":"oil","r":5,"c":16,"h":2},
-    {"t":"oil","r":5,"c":23,"h":2},
-    {"t":"road","r":6,"c":8,"h":4},
-    {"t":"oil","r":8,"c":14,"h":2},
-    {"t":"road","r":8,"c":19,"h":3},
-    {"t":"oil","r":8,"c":25,"w":2},
-    {"t":"oil","r":9,"c":25},
-    {"t":"water","r":10,"c":4,"h":3,"w":4},
-    {"t":"road","r":10,"c":9,"h":8},
-    {"t":"water","r":10,"c":32,"h":3,"w":4},
-    {"t":"oil","r":11,"c":18},
-    {"t":"swamp","r":11,"c":22},
-    {"t":"road","r":13,"c":19,"h":7},
-    {"t":"swamp","r":14,"c":30},
-    {"t":"oil","r":16,"c":16,"h":2},
-    {"t":"oil","r":16,"c":23,"h":2},
-    {"t":"water","r":20,"c":4,"h":5,"w":4},
-    {"t":"water","r":20,"c":32,"h":5,"w":4},
-    {"t":"road","r":21,"c":11,"h":3},
-    {"t":"road","r":23,"c":19,"h":10},
-    {"t":"road","r":28,"c":1,"h":3},
-    {"t":"oil","r":28,"c":16,"h":2},
-    {"t":"oil","r":28,"c":23,"h":2},
-    {"t":"road","r":31,"c":14,"h":3},
-    {"t":"oil","r":34,"c":12,"h":2},
-    {"t":"oil","r":34,"c":27,"h":2},
-    {"t":"oil","r":38,"c":12},
-    {"t":"water_tower","r":1,"c":15},
-    {"t":"crater","r":1,"c":16},
-    {"t":"crater","r":1,"c":22},
-    {"t":"concrete","r":2,"c":38},
-    {"t":"concrete","r":3,"c":0},
-    {"t":"brick","r":4,"c":0,"w":2},
-    {"t":"concrete","r":4,"c":12,"h":2,"w":2},
-    {"t":"brick","r":4,"c":18,"w":4},
-    {"t":"concrete","r":5,"c":1},
-    {"t":"barrel","r":5,"c":16},
-    {"t":"barrel","r":5,"c":23},
-    {"t":"concrete","r":5,"c":38,"w":2},
-    {"t":"forest","r":6,"c":4,"h":2,"w":2},
-    {"t":"boxes","r":6,"c":11},
-    {"t":"boxes","r":6,"c":26},
-    {"t":"forest","r":6,"c":34,"h":2,"w":2},
-    {"t":"concrete","r":6,"c":38,"h":2},
-    {"t":"concrete","r":7,"c":16,"w":8},
-    {"t":"water_tower","r":8,"c":6},
-    {"t":"barrel","r":8,"c":14},
-    {"t":"boxes","r":8,"c":22},
-    {"t":"barrel","r":8,"c":25},
-    {"t":"concrete","r":9,"c":0,"w":2},
-    {"t":"boxes","r":9,"c":15},
-    {"t":"brick","r":10,"c":38,"w":2},
-    {"t":"forest","r":11,"c":1,"h":2},
-    {"t":"forest","r":11,"c":19,"h":2,"w":2},
-    {"t":"forest","r":11,"c":30,"h":2,"w":2},
-    {"t":"concrete","r":11,"c":38,"w":2},
-    {"t":"concrete","r":12,"c":0},
-    {"t":"boxes","r":12,"c":25},
-    {"t":"forest","r":12,"c":29},
-    {"t":"brick","r":13,"c":38,"h":2},
-    {"t":"forest","r":14,"c":6,"h":2,"w":2},
-    {"t":"crater","r":14,"c":10},
-    {"t":"boxes","r":14,"c":11},
-    {"t":"brick","r":14,"c":18,"h":2},
-    {"t":"crater","r":14,"c":22},
-    {"t":"forest","r":14,"c":32,"h":2,"w":2},
-    {"t":"brick","r":15,"c":1,"h":2},
-    {"t":"boxes","r":15,"c":22},
-    {"t":"brick","r":16,"c":0},
-    {"t":"barrel","r":16,"c":16},
-    {"t":"barrel","r":16,"c":23},
-    {"t":"brick","r":16,"c":29,"h":2},
-    {"t":"forest","r":16,"c":39},
-    {"t":"concrete","r":17,"c":0,"h":2},
-    {"t":"hedgehog","r":18,"c":1},
-    {"t":"hedgehog","r":19,"c":39},
-    {"t":"forest","r":20,"c":1},
-    {"t":"hedgehog","r":21,"c":0},
-    {"t":"hedgehog","r":21,"c":39,"h":2},
-    {"t":"concrete","r":22,"c":0,"h":2},
-    {"t":"hedgehog","r":22,"c":38},
-    {"t":"boxes","r":23,"c":16},
-    {"t":"brick","r":23,"c":38,"w":2},
-    {"t":"forest","r":24,"c":12,"h":2,"w":2},
-    {"t":"forest","r":24,"c":26,"h":2,"w":2},
-    {"t":"brick","r":25,"c":18,"h":2},
-    {"t":"concrete","r":26,"c":0,"w":2},
-    {"t":"crater","r":26,"c":10},
-    {"t":"brick","r":26,"c":38,"w":2},
-    {"t":"hedgehog","r":27,"c":0},
-    {"t":"forest","r":27,"c":38},
-    {"t":"barrel","r":28,"c":16},
-    {"t":"barrel","r":28,"c":23},
-    {"t":"brick","r":28,"c":38,"w":2},
-    {"t":"brick","r":29,"c":0},
-    {"t":"brick","r":29,"c":38},
-    {"t":"forest","r":30,"c":4,"h":2,"w":2},
-    {"t":"brick","r":30,"c":13,"h":2},
-    {"t":"forest","r":30,"c":34,"h":2,"w":2},
-    {"t":"hedgehog","r":31,"c":0,"h":3},
-    {"t":"hedgehog","r":32,"c":38,"h":2,"w":2},
-    {"t":"hedgehog","r":33,"c":1,"h":2},
-    {"t":"concrete","r":34,"c":0,"h":2},
-    {"t":"barrel","r":34,"c":12},
-    {"t":"barrel","r":34,"c":27},
-    {"t":"hedgehog","r":34,"c":38},
-    {"t":"brick","r":35,"c":1},
-    {"t":"brick","r":36,"c":12,"h":2,"w":4},
-    {"t":"brick","r":36,"c":24,"h":2,"w":4},
-    {"t":"concrete","r":36,"c":39,"h":2},
-    {"t":"concrete","r":37,"c":17,"w":6},
-    {"t":"crater","r":38,"c":4},
-    {"t":"water_tower","r":38,"c":9},
-    {"t":"crater","r":38,"c":10},
-    {"t":"crater","r":38,"c":28},
-    {"t":"crater","r":38,"c":34},
-    {"t":"house1","r":1,"c":4,"h":2,"w":2,"style":10},
-    {"t":"house2","r":1,"c":10,"h":2,"w":2,"style":8},
-    {"t":"house1","r":1,"c":18,"h":2,"w":2,"style":10},
-    {"t":"house2","r":1,"c":21,"h":2,"style":2},
-    {"t":"house1","r":1,"c":28,"h":2,"w":2,"style":9},
-    {"t":"house2","r":1,"c":34,"h":2,"w":2,"style":11},
-    {"t":"house1","r":4,"c":6,"h":2,"w":2,"style":10},
-    {"t":"house2","r":4,"c":9,"h":2,"style":4},
-    {"t":"house1","r":4,"c":26,"h":2,"w":2,"style":11},
-    {"t":"house2","r":4,"c":30,"h":2,"w":2,"style":11},
-    {"t":"house1","r":4,"c":33,"h":2,"style":8},
-    {"t":"house2","r":7,"c":9,"h":2,"w":3,"style":2},
-    {"t":"house1","r":7,"c":28,"h":2,"w":2,"style":9},
-    {"t":"house2","r":7,"c":31,"h":2,"style":8},
-    {"t":"house1","r":10,"c":12,"h":2,"w":2,"style":8},
-    {"t":"house2","r":10,"c":15,"h":2,"style":6},
-    {"t":"house1","r":10,"c":24,"h":2,"w":2,"style":9},
-    {"t":"house2","r":10,"c":27,"h":2,"style":8},
-    {"t":"house1","r":13,"c":12,"h":2,"w":2,"style":8},
-    {"t":"house2","r":13,"c":26,"h":2,"w":2,"style":3},
-    {"t":"house1","r":14,"c":20,"h":2,"w":2,"style":8},
-    {"t":"house2","r":16,"c":10,"h":2,"w":2,"style":8},
-    {"t":"house1","r":16,"c":13,"h":2,"style":9},
-    {"t":"house2","r":16,"c":26,"h":2,"w":2,"style":1},
-    {"t":"house1","r":17,"c":38,"h":2,"w":2,"style":10},
-    {"t":"house2","r":19,"c":10,"w":2,"style":8},
-    {"t":"house1","r":19,"c":13,"style":9},
-    {"t":"house2","r":19,"c":26,"w":2,"style":7},
-    {"t":"house1","r":19,"c":29,"style":10},
-    {"t":"house2","r":20,"c":16,"h":3,"w":3,"style":8},
-    {"t":"house1","r":20,"c":20,"h":3,"w":2,"style":10},
-    {"t":"house2","r":20,"c":23,"h":3,"style":0},
-    {"t":"house1","r":25,"c":20,"h":2,"w":2,"style":10},
-    {"t":"house2","r":26,"c":6,"h":2,"w":2,"style":11},
-    {"t":"house1","r":26,"c":9,"h":2,"style":8},
-    {"t":"house2","r":26,"c":30,"h":2,"w":2,"style":6},
-    {"t":"house1","r":26,"c":33,"h":2,"style":9},
-    {"t":"house2","r":27,"c":12,"h":2,"w":2,"style":11},
-    {"t":"house1","r":27,"c":26,"h":2,"w":2,"style":11},
-    {"t":"house2","r":30,"c":10,"h":2,"w":2,"style":7},
-    {"t":"house1","r":30,"c":26,"h":2,"w":2,"style":9},
-    {"t":"house2","r":30,"c":29,"h":2,"style":8},
-    {"t":"house1","r":32,"c":16,"h":2,"w":2,"style":11},
-    {"t":"house2","r":32,"c":22,"h":2,"w":2,"style":2},
-    {"t":"house1","r":33,"c":6,"h":2,"w":2,"style":9},
-    {"t":"house2","r":33,"c":9,"h":2,"style":8},
-    {"t":"house1","r":33,"c":30,"h":2,"w":2,"style":11},
-    {"t":"house2","r":33,"c":33,"h":2,"style":1},
-    {"t":"powerup","kind":"REPAIR","r":29,"c":13},
-    {"t":"powerup","kind":"APS","r":29,"c":26},
-    {"t":"powerup","kind":"MISSILE","r":22,"c":8},
-    {"t":"powerup","kind":"EMP","r":22,"c":31},
-    {"t":"powerup","kind":"REPAIR","r":11,"c":19},
-    {"t":"powerup","kind":"APS","r":34,"c":19},
-    {"t":"decal","kind":"loading","r":15,"c":19,"size":4},
-    {"t":"decal","kind":"loading","r":36,"c":19,"size":4},
-    {"t":"decal","kind":"label","r":13,"c":19,"size":2,"text":"IRON CRUCIBLE // KILL ZONE"},
-    {"t":"decal","kind":"label","r":35,"c":19,"size":2,"text":"ALLIED REPAIR & GARAGE BAY"},
-    {"t":"decal","kind":"loading","r":10,"c":1,"size":1.8},
-    {"t":"decal","kind":"manhole","r":25,"c":1},
-    {"t":"decal","kind":"crosswalk","r":12,"c":38,"size":2},
-    {"t":"decal","kind":"loading","r":27,"c":37,"size":1.8},
-    {"t":"decal","kind":"hazard_zone","r":8,"c":6,"size":1.3},
-    {"t":"decal","kind":"helipad","r":35,"c":17,"size":1.8},
-    {"t":"decal","kind":"chevron","r":23,"c":18,"size":1.2},
-    {"t":"decal","kind":"drain_grate","r":19,"c":1}
-  ]
+  "terrain": {
+    "oil": [[1,30],[5,16,2,1],[5,23,2,1],[8,14,2,1],[8,25,1,2],[9,25],[11,18],[16,16,2,1],[16,23,2,1],[28,16,2,1],[28,23,2,1],[34,12,2,1],[34,27,2,1],[38,12]],
+    "road": [[6,8,4,1],[8,19,3,1],[10,9,8,1],[13,19,7,1],[21,11,3,1],[23,19,10,1],[28,1,3,1],[31,14,3,1]],
+    "water": [[10,4,3,4],[10,32,3,4],[20,4,5,4],[20,32,5,4]],
+    "swamp": [[11,22],[14,30]],
+    "water_tower": [[1,15],[8,6],[38,9]],
+    "crater": [[1,16],[1,22],[14,10],[14,22],[26,10],[38,4],[38,10],[38,28],[38,34]],
+    "concrete": [[2,38],[3,0],[4,12,2,2],[5,1],[5,38,1,2],[6,38,2,1],[7,16,1,8],[9,0,1,2],[11,38,1,2],[12,0],[17,0,2,1],[22,0,2,1],[26,0,1,2],[34,0,2,1],[36,39,2,1],[37,17,1,6]],
+    "brick": [[4,0,1,2],[4,18,1,4],[10,38,1,2],[13,38,2,1],[14,18,2,1],[15,1,2,1],[16,0],[16,29,2,1],[23,38,1,2],[25,18,2,1],[26,38,1,2],[28,38,1,2],[29,0],[29,38],[30,13,2,1],[35,1],[36,12,2,4],[36,24,2,4]],
+    "barrel": [[5,16],[5,23],[8,14],[8,25],[16,16],[16,23],[28,16],[28,23],[34,12],[34,27]],
+    "forest": [[6,4,2,2],[6,34,2,2],[11,1,2,1],[11,19,2,2],[11,30,2,2],[12,29],[14,6,2,2],[14,32,2,2],[16,39],[20,1],[24,12,2,2],[24,26,2,2],[27,38],[30,4,2,2],[30,34,2,2]],
+    "boxes": [[6,11],[6,26],[8,22],[9,15],[12,25],[14,11],[15,22],[23,16]],
+    "hedgehog": [[18,1],[19,39],[21,0],[21,39,2,1],[22,38],[27,0],[31,0,3,1],[32,38,2,2],[33,1,2,1],[34,38]],
+    "house1": [[1,4,2,2,10],[1,18,2,2,10],[1,28,2,2,9],[4,6,2,2,10],[4,26,2,2,11],[4,33,2,1,8],[7,28,2,2,9],[10,12,2,2,8],[10,24,2,2,9],[13,12,2,2,8],[14,20,2,2,8],[16,13,2,1,9],[17,38,2,2,10],[19,13,1,1,9],[19,29,1,1,10],[20,20,3,2,10],[25,20,2,2,10],[26,9,2,1,8],[26,33,2,1,9],[27,26,2,2,11],[30,26,2,2,9],[32,16,2,2,11],[33,6,2,2,9],[33,30,2,2,11]],
+    "house2": [[1,10,2,2,8],[1,21,2,1,2],[1,34,2,2,11],[4,9,2,1,4],[4,30,2,2,11],[7,9,2,3,2],[7,31,2,1,8],[10,15,2,1,6],[10,27,2,1,8],[13,26,2,2,3],[16,10,2,2,8],[16,26,2,2,1],[19,10,1,2,8],[19,26,1,2,7],[20,16,3,3,8],[20,23,3,1,0],[26,6,2,2,11],[26,30,2,2,6],[27,12,2,2,11],[30,10,2,2,7],[30,29,2,1,8],[32,22,2,2,2],[33,9,2,1,8],[33,33,2,1,1]],
+    "powerup": [["REPAIR",29,13],["APS",29,26],["MISSILE",22,8],["EMP",22,31],["REPAIR",11,19],["APS",34,19]],
+    "decal": [["loading",15,19,4],["loading",36,19,4],["label",13,19,2,"IRON CRUCIBLE // KILL ZONE"],["label",35,19,2,"ALLIED REPAIR & GARAGE BAY"],["loading",10,1,1.8],["manhole",25,1],["crosswalk",12,38,2],["loading",27,37,1.8],["hazard_zone",8,6,1.3],["helipad",35,17,1.8],["chevron",23,18,1.2],["drain_grate",19,1]]
+  }
 }

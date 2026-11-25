@@ -1,6 +1,6 @@
 /**
- * Packs 2D editor grids and entity lists into the compact `terrain` array format
- * and formats map JSON with 1-line-per-entry `terrain` elements.
+ * Packs 2D editor grids and entity lists into a grouped compact `terrain` object
+ * of tuples and formats map JSON cleanly with single-line tuples/short structures.
  */
 
 import { TileType } from '../../public/src/game/terrains/surfaces.js';
@@ -52,8 +52,14 @@ function packRects(rows, cols, getKey) {
   return rects;
 }
 
+function pushGroup(terrain, key, tuple) {
+  if (!terrain[key]) terrain[key] = [];
+  terrain[key].push(tuple);
+}
+
 /**
- * Packs grids and cell entities into a unified `terrain` array.
+ * Packs grids and cell entities into a grouped `terrain` object:
+ * `{ water: [[r,c,h,w], ...], bridge: [[r,c,h,w,dir]], house2: [[r,c,h,w,style]], ... }`.
  */
 export function packTerrain({
   surfaceGrid,
@@ -68,17 +74,18 @@ export function packTerrain({
 }) {
   const rows = surfaceGrid?.length || objectGrid?.length || 0;
   const cols = surfaceGrid?.[0]?.length || objectGrid?.[0]?.length || 0;
-  const terrain = [];
+  const terrain = {};
 
   // 1. Surfaces
   for (const rect of packRects(rows, cols, (r, c) => {
     const t = surfaceGrid[r][c];
     return t === TileType.EMPTY ? null : TILE_TO_SURFACE_NAME.get(t) ?? null;
   })) {
-    const entry = { t: rect.key, r: rect.r, c: rect.c };
-    if (rect.h > 1) entry.h = rect.h;
-    if (rect.w > 1) entry.w = rect.w;
-    terrain.push(entry);
+    pushGroup(
+      terrain,
+      rect.key,
+      rect.h === 1 && rect.w === 1 ? [rect.r, rect.c] : [rect.r, rect.c, rect.h, rect.w]
+    );
   }
 
   // 2. Standard objects (excluding BASE, LANDMARK, BRIDGE, HOUSE_1, HOUSE_2)
@@ -96,19 +103,22 @@ export function packTerrain({
     }
     return TILE_TO_OBJECT_NAME.get(t) ?? null;
   })) {
-    const entry = { t: rect.key, r: rect.r, c: rect.c };
-    if (rect.h > 1) entry.h = rect.h;
-    if (rect.w > 1) entry.w = rect.w;
-    terrain.push(entry);
+    pushGroup(
+      terrain,
+      rect.key,
+      rect.h === 1 && rect.w === 1 ? [rect.r, rect.c] : [rect.r, rect.c, rect.h, rect.w]
+    );
   }
 
-  // 3. Bridges (with orientation)
+  // 3. Bridges
   for (const b of bridges) {
-    const entry = { t: 'bridge', r: b.row, c: b.col };
-    if (b.rows > 1) entry.h = b.rows;
-    if (b.cols > 1) entry.w = b.cols;
-    entry.dir = b.orientation === 'ew' ? 'ew' : 'ns';
-    terrain.push(entry);
+    pushGroup(terrain, 'bridge', [
+      b.row,
+      b.col,
+      b.rows,
+      b.cols,
+      b.orientation === 'ew' ? 'ew' : 'ns',
+    ]);
   }
 
   // 4. Houses (grouped by tile + baked style)
@@ -120,53 +130,79 @@ export function packTerrain({
   })) {
     const [tileStr, styleStr] = rect.key.split(':');
     const name = Number(tileStr) === TileType.HOUSE_2 ? 'house2' : 'house1';
-    const entry = { t: name, r: rect.r, c: rect.c };
-    if (rect.h > 1) entry.h = rect.h;
-    if (rect.w > 1) entry.w = rect.w;
-    entry.style = Number(styleStr);
-    terrain.push(entry);
+    pushGroup(terrain, name, [rect.r, rect.c, rect.h, rect.w, Number(styleStr)]);
   }
 
   // 5. Point entities
   for (const lm of landmarks3d) {
-    terrain.push({ t: 'landmark', kind: lm.kind, r: lm.row, c: lm.col });
+    pushGroup(terrain, 'landmark', [lm.kind, lm.row, lm.col]);
   }
   for (const pw of powerups) {
-    terrain.push({ t: 'powerup', kind: pw.type, r: pw.row, c: pw.col });
+    pushGroup(terrain, 'powerup', [pw.type, pw.row, pw.col]);
   }
   for (const m of mines) {
-    terrain.push({ t: 'mine', r: m.row, c: m.col });
+    pushGroup(terrain, 'mine', [m.row, m.col]);
   }
   for (const ms of mineSigns) {
-    const entry = { t: 'mine_sign', r: ms.row, c: ms.col };
-    if (ms.rotation) entry.rot = ms.rotation;
-    terrain.push(entry);
+    pushGroup(
+      terrain,
+      'mine_sign',
+      ms.rotation ? [ms.row, ms.col, ms.rotation] : [ms.row, ms.col]
+    );
   }
   for (const d of decals) {
-    const entry = { t: 'decal', kind: d.kind, r: d.row, c: d.col };
-    if (d.size && d.size !== 1) entry.size = d.size;
-    if (d.text != null) entry.text = d.text;
-    terrain.push(entry);
+    if (d.text != null) {
+      pushGroup(terrain, 'decal', [d.kind, d.row, d.col, d.size || 1, d.text]);
+    } else if (d.size && d.size !== 1) {
+      pushGroup(terrain, 'decal', [d.kind, d.row, d.col, d.size]);
+    } else {
+      pushGroup(terrain, 'decal', [d.kind, d.row, d.col]);
+    }
   }
 
   return terrain;
 }
 
+function formatCompactValue(val, indent = 0, forceSingleLineArray = false) {
+  if (val === null || typeof val !== 'object') {
+    return JSON.stringify(val);
+  }
+  const pad = ' '.repeat(indent);
+  const childPad = ' '.repeat(indent + 2);
+
+  if (Array.isArray(val)) {
+    if (val.length === 0) return '[]';
+    const inline = JSON.stringify(val);
+    if (forceSingleLineArray || inline.length <= 120) {
+      return inline;
+    }
+    const items = val.map((item) => `${childPad}${formatCompactValue(item, indent + 2)}`);
+    return `[\n${items.join(',\n')}\n${pad}]`;
+  }
+
+  const entries = Object.entries(val).filter(([, v]) => v !== undefined);
+  if (entries.length === 0) return '{}';
+  const inline = JSON.stringify(val);
+  if (inline.length <= 120 && indent > 0) {
+    return inline;
+  }
+  const lines = entries.map(([k, v]) => {
+    const isTerrainRoot = indent === 0 && k === 'terrain' && v && typeof v === 'object' && !Array.isArray(v);
+    if (isTerrainRoot) {
+      const tEntries = Object.entries(v).filter(([, tv]) => Array.isArray(tv) && tv.length > 0);
+      if (tEntries.length === 0) return `${childPad}${JSON.stringify(k)}: {}`;
+      const tLines = tEntries.map(([tk, tv]) => `    ${JSON.stringify(tk)}: ${JSON.stringify(tv)}`);
+      return `${childPad}${JSON.stringify(k)}: {\n${tLines.join(',\n')}\n${childPad}}`;
+    }
+    return `${childPad}${JSON.stringify(k)}: ${formatCompactValue(v, indent + 2)}`;
+  });
+  return `{\n${lines.join(',\n')}\n${pad}}`;
+}
+
 /**
- * Formats a map object with 2-space indentation and 1-line-per-element `terrain` array.
+ * Formats a map object with 2-space indentation, single-line `terrain` type groups,
+ * and compact single-line formatting for short objects/arrays (<= 120 chars).
  */
 export function formatMapJson(mapObj) {
-  const placeholder = '__TERRAIN_PLACEHOLDER__';
-  const clone = { ...mapObj };
-  const terrain = Array.isArray(mapObj.terrain) ? mapObj.terrain : [];
-  if ('terrain' in clone) {
-    clone.terrain = placeholder;
-  }
-  let text = JSON.stringify(clone, null, 2);
-  if ('terrain' in clone) {
-    const lines = terrain.map((item) => `    ${JSON.stringify(item)}`);
-    const replacement = lines.length ? `[\n${lines.join(',\n')}\n  ]` : '[]';
-    text = text.replace(`"${placeholder}"`, replacement);
-  }
-  return text + '\n';
+  return formatCompactValue(mapObj, 0) + '\n';
 }

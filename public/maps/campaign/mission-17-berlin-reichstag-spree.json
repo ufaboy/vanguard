@@ -8,126 +8,42 @@
   "gameMode": "stronghold_assault",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 20
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "enemyBase": {
-    "cell": {
-      "row": 4,
-      "col": 20
-    },
-    "name": "Consortium Reichstag Command",
-    "maxHp": 48,
-    "fortifyPerimeter": true
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 820
-  },
-  "environment": {
-    "theme": "capital",
-    "tint": "#eadbc0",
-    "fogColor": "#1d2825",
-    "groundColor": "#676b5e"
-  },
+  "playerSpawnCell": {"row":35,"col":20},
+  "baseCell": {"row":39,"col":19},
+  "enemyBase": {"cell":{"row":4,"col":20},"name":"Consortium Reichstag Command","maxHp":48,"fortifyPerimeter":true},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":820},
+  "environment": {"theme":"capital","tint":"#eadbc0","fogColor":"#1d2825","groundColor":"#676b5e"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Assault the fortified Consortium command post inside the Reichstag across the Spree river bend. Three bridges and two shallow sand fords cross the Spree toward the Platz der Republik lawn, the Victory Column in the Tiergarten woods, and the Friedrichstrasse ministry courtyards.",
     "breaches": [
       {
         "name": "Reichstag South Gate",
-        "cells": [
-          {
-            "row": 8,
-            "col": 19
-          },
-          {
-            "row": 8,
-            "col": 20
-          }
-        ],
-        "start": {
-          "row": 10,
-          "col": 19
-        },
-        "end": {
-          "row": 6,
-          "col": 19
-        },
+        "cells": [{"row":8,"col":19},{"row":8,"col":20}],
+        "start": {"row":10,"col":19},
+        "end": {"row":6,"col":19},
         "purpose": "Blast the brick barricade in the southern Reichstag curtain wall to push directly into the command courtyard."
       },
       {
         "name": "Reichstag West Postern",
-        "cells": [
-          {
-            "row": 5,
-            "col": 14
-          },
-          {
-            "row": 6,
-            "col": 14
-          }
-        ],
-        "start": {
-          "row": 5,
-          "col": 12
-        },
-        "end": {
-          "row": 5,
-          "col": 17
-        },
+        "cells": [{"row":5,"col":14},{"row":6,"col":14}],
+        "start": {"row":5,"col":12},
+        "end": {"row":5,"col":17},
         "purpose": "Breach the western Chancellery wall to flank the Reichstag courtyard from the Moltke Bridge approach."
       },
       {
         "name": "Reichstag East Postern",
-        "cells": [
-          {
-            "row": 5,
-            "col": 26
-          },
-          {
-            "row": 6,
-            "col": 26
-          }
-        ],
-        "start": {
-          "row": 5,
-          "col": 28
-        },
-        "end": {
-          "row": 5,
-          "col": 23
-        },
+        "cells": [{"row":5,"col":26},{"row":6,"col":26}],
+        "start": {"row":5,"col":28},
+        "end": {"row":5,"col":23},
         "purpose": "Breach the eastern Paul-Loebe wall to strike the command post from the Marschall Bridge sector."
       },
       {
         "name": "Ministry Courtyard Wall",
-        "cells": [
-          {
-            "row": 25,
-            "col": 30
-          },
-          {
-            "row": 26,
-            "col": 30
-          }
-        ],
-        "start": {
-          "row": 25,
-          "col": 28
-        },
-        "end": {
-          "row": 25,
-          "col": 31
-        },
+        "cells": [{"row":25,"col":30},{"row":26,"col":30}],
+        "start": {"row":25,"col":28},
+        "end": {"row":25,"col":31},
         "purpose": "Open the brick courtyard wall between the Platz der Republik and Friedrichstrasse to bypass the main avenue."
       }
     ],
@@ -153,560 +69,82 @@
     "seed": 171945,
     "theme": "capital",
     "zones": [
-      {
-        "id": "regierungsviertel",
-        "bounds": [
-          0,
-          0,
-          12,
-          39
-        ],
-        "surface": "pavers",
-        "density": 0.2,
-        "details": [
-          "cracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "reichstag-courtyard",
-        "bounds": [
-          3,
-          15,
-          7,
-          25
-        ],
-        "surface": "concrete",
-        "density": 0.25,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      },
-      {
-        "id": "platz-der-republik",
-        "bounds": [
-          18,
-          12,
-          27,
-          28
-        ],
-        "surface": "dirt",
-        "density": 0.22,
-        "details": [
-          "leaves",
-          "cracks"
-        ]
-      },
-      {
-        "id": "grosser-stern",
-        "bounds": [
-          22,
-          6,
-          27,
-          11
-        ],
-        "surface": "pavers",
-        "density": 0.14,
-        "details": [
-          "leaves",
-          "cracks"
-        ]
-      },
+      {"id":"regierungsviertel","bounds":[0,0,12,39],"surface":"pavers","density":0.2,"details":["cracks","rubble"]},
+      {"id":"reichstag-courtyard","bounds":[3,15,7,25],"surface":"concrete","density":0.25,"details":["cracks","tracks"]},
+      {"id":"platz-der-republik","bounds":[18,12,27,28],"surface":"dirt","density":0.22,"details":["leaves","cracks"]},
+      {"id":"grosser-stern","bounds":[22,6,27,11],"surface":"pavers","density":0.14,"details":["leaves","cracks"]},
       {
         "id": "friedrichstrasse-quarter",
-        "bounds": [
-          19,
-          29,
-          34,
-          39
-        ],
+        "bounds": [19,29,34,39],
         "surface": "pavers",
         "density": 0.22,
-        "details": [
-          "cracks",
-          "patches"
-        ]
+        "details": ["cracks","patches"]
       },
-      {
-        "id": "hq-plaza",
-        "bounds": [
-          36,
-          15,
-          39,
-          24
-        ],
-        "surface": "concrete",
-        "density": 0.15,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      }
+      {"id":"hq-plaza","bounds":[36,15,39,24],"surface":"concrete","density":0.15,"details":["cracks","tracks"]}
     ],
     "paths": [
-      {
-        "id": "spree-promenade-west",
-        "points": [
-          [
-            18,
-            2
-          ],
-          [
-            18,
-            11
-          ]
-        ],
-        "width": 1,
-        "surface": "gravel",
-        "marking": "none"
-      },
-      {
-        "id": "republic-lawn-walk",
-        "points": [
-          [
-            23,
-            14
-          ],
-          [
-            23,
-            18
-          ]
-        ],
-        "width": 1,
-        "surface": "pavers",
-        "marking": "none"
-      }
+      {"id":"spree-promenade-west","points":[[18,2],[18,11]],"width":1,"surface":"gravel","marking":"none"},
+      {"id":"republic-lawn-walk","points":[[23,14],[23,18]],"width":1,"surface":"pavers","marking":"none"}
     ],
-    "exclusions": [
-      {
-        "id": "hq-clear-lane",
-        "bounds": [
-          36,
-          17,
-          39,
-          22
-        ]
-      }
-    ]
+    "exclusions": [{"id":"hq-clear-lane","bounds":[36,17,39,22]}]
   },
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
     "entrances": [
-      {
-        "id": "west-chancellery",
-        "row": 1,
-        "col": 5
-      },
-      {
-        "id": "reichstag-north",
-        "row": 1,
-        "col": 20
-      },
-      {
-        "id": "east-spreebogen",
-        "row": 1,
-        "col": 34
-      }
+      {"id":"west-chancellery","row":1,"col":5},
+      {"id":"reichstag-north","row":1,"col":20},
+      {"id":"east-spreebogen","row":1,"col":34}
     ],
     "encounters": [
       {
         "id": "spree-recon",
         "label": "SPREE CROSSINGS: Consortium recon units and amphibious hovercraft are probing the river bridges.",
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "HOVER",
-          "SCOUT",
-          "STANDARD",
-          "STEALTH",
-          "HOVER",
-          "STANDARD"
-        ],
-        "initialCells": [
-          {
-            "row": 1,
-            "col": 5
-          },
-          {
-            "row": 1,
-            "col": 20
-          },
-          {
-            "row": 1,
-            "col": 34
-          },
-          {
-            "row": 9,
-            "col": 6
-          }
-        ],
-        "entrances": [
-          "west-chancellery",
-          "reichstag-north",
-          "east-spreebogen"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 20
-          },
-          {
-            "row": 15,
-            "col": 19
-          },
-          {
-            "row": 21,
-            "col": 20
-          },
-          {
-            "row": 28,
-            "col": 20
-          },
-          {
-            "row": 35,
-            "col": 20
-          }
-        ],
+        "enemies": ["SCOUT","STANDARD","HOVER","SCOUT","STANDARD","STEALTH","HOVER","STANDARD"],
+        "initialCells": [{"row":1,"col":5},{"row":1,"col":20},{"row":1,"col":34},{"row":9,"col":6}],
+        "entrances": ["west-chancellery","reichstag-north","east-spreebogen"],
+        "patrolRoute": [{"row":10,"col":20},{"row":15,"col":19},{"row":21,"col":20},{"row":28,"col":20},{"row":35,"col":20}],
         "recoverySec": 0
       },
       {
         "id": "tiergarten-flank",
         "label": "FLANK ASSAULT: Flame tanks, sappers and howitzers are pushing through the Tiergarten and Friedrichstrasse.",
-        "enemies": [
-          "STANDARD",
-          "FLAMETHROWER",
-          "SAPPER",
-          "HOVER",
-          "HOWITZER",
-          "STEALTH",
-          "STANDARD",
-          "ARMOR"
-        ],
-        "entrances": [
-          "west-chancellery",
-          "east-spreebogen"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 6
-          },
-          {
-            "row": 21,
-            "col": 6
-          },
-          {
-            "row": 28,
-            "col": 12
-          },
-          {
-            "row": 28,
-            "col": 33
-          },
-          {
-            "row": 35,
-            "col": 26
-          }
-        ],
+        "enemies": ["STANDARD","FLAMETHROWER","SAPPER","HOVER","HOWITZER","STEALTH","STANDARD","ARMOR"],
+        "entrances": ["west-chancellery","east-spreebogen"],
+        "patrolRoute": [{"row":10,"col":6},{"row":21,"col":6},{"row":28,"col":12},{"row":28,"col":33},{"row":35,"col":26}],
         "recoverySec": 8
       },
       {
         "id": "reichstag-garrison",
         "label": "REICHSTAG GARRISON: Heavy armour and missile strikers are defending the Consortium command post. Breach the walls!",
-        "enemies": [
-          "ARMOR",
-          "STANDARD",
-          "HOWITZER",
-          "ENGINEER",
-          "STRIKER",
-          "ARMOR",
-          "FLAMETHROWER",
-          "STANDARD"
-        ],
-        "entrances": [
-          "reichstag-north",
-          "west-chancellery",
-          "east-spreebogen"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 34
-          },
-          {
-            "row": 21,
-            "col": 34
-          },
-          {
-            "row": 28,
-            "col": 34
-          },
-          {
-            "row": 35,
-            "col": 20
-          }
-        ],
+        "enemies": ["ARMOR","STANDARD","HOWITZER","ENGINEER","STRIKER","ARMOR","FLAMETHROWER","STANDARD"],
+        "entrances": ["reichstag-north","west-chancellery","east-spreebogen"],
+        "patrolRoute": [{"row":10,"col":34},{"row":21,"col":34},{"row":28,"col":34},{"row":35,"col":20}],
         "recoverySec": 8
       }
     ]
   },
-  "terrain": [
-    {"t":"grass","r":0,"c":0,"h":10,"w":5},
-    {"t":"road","r":0,"c":5,"h":15,"w":2},
-    {"t":"grass","r":0,"c":7,"h":2,"w":12},
-    {"t":"road","r":0,"c":19,"h":3,"w":2},
-    {"t":"grass","r":0,"c":21,"h":2,"w":12},
-    {"t":"road","r":0,"c":33,"h":15,"w":2},
-    {"t":"grass","r":0,"c":35,"h":10,"w":5},
-    {"t":"grass","r":2,"c":7,"h":8,"w":8},
-    {"t":"grass","r":2,"c":25,"h":8,"w":8},
-    {"t":"road","r":8,"c":19,"h":5,"w":2},
-    {"t":"grass","r":9,"c":15,"w":4},
-    {"t":"grass","r":9,"c":21,"w":4},
-    {"t":"road","r":10,"c":0,"h":2,"w":5},
-    {"t":"road","r":10,"c":7,"h":2,"w":12},
-    {"t":"road","r":10,"c":21,"h":2,"w":12},
-    {"t":"road","r":10,"c":35,"h":2,"w":5},
-    {"t":"grass","r":12,"c":0,"h":2,"w":5},
-    {"t":"grass","r":12,"c":7,"w":12},
-    {"t":"grass","r":12,"c":21,"w":12},
-    {"t":"grass","r":12,"c":35,"h":2,"w":5},
-    {"t":"grass","r":13,"c":7,"w":4},
-    {"t":"sand","r":13,"c":11,"w":2},
-    {"t":"water","r":13,"c":13,"h":3,"w":12},
-    {"t":"stone","r":13,"c":25,"h":3},
-    {"t":"sand","r":13,"c":26},
-    {"t":"grass","r":13,"c":27,"w":6},
-    {"t":"stone","r":14,"c":0,"w":2},
-    {"t":"sand","r":14,"c":2,"w":3},
-    {"t":"sand","r":14,"c":7,"w":4},
-    {"t":"stone","r":14,"c":11,"h":3,"w":2},
-    {"t":"stone","r":14,"c":26,"h":3},
-    {"t":"sand","r":14,"c":27,"w":6},
-    {"t":"sand","r":14,"c":35,"w":4},
-    {"t":"stone","r":14,"c":39},
-    {"t":"water","r":15,"c":0,"h":3,"w":11},
-    {"t":"water","r":15,"c":27,"h":3,"w":13},
-    {"t":"sand","r":16,"c":13,"w":6},
-    {"t":"stone","r":16,"c":19,"w":2},
-    {"t":"sand","r":16,"c":21,"w":5},
-    {"t":"stone","r":17,"c":11},
-    {"t":"sand","r":17,"c":12,"h":2},
-    {"t":"grass","r":17,"c":13,"h":4,"w":6},
-    {"t":"road","r":17,"c":19,"h":20,"w":2},
-    {"t":"grass","r":17,"c":21,"h":4,"w":4},
-    {"t":"sand","r":17,"c":25,"w":2},
-    {"t":"stone","r":18,"c":0,"w":3},
-    {"t":"sand","r":18,"c":3,"w":2},
-    {"t":"road","r":18,"c":5,"h":19,"w":2},
-    {"t":"sand","r":18,"c":7,"w":5},
-    {"t":"grass","r":18,"c":25,"h":3,"w":2},
-    {"t":"sand","r":18,"c":27,"w":6},
-    {"t":"road","r":18,"c":33,"h":4,"w":2},
-    {"t":"sand","r":18,"c":35,"w":3},
-    {"t":"stone","r":18,"c":38,"w":2},
-    {"t":"grass","r":19,"c":0,"h":2,"w":5},
-    {"t":"grass","r":19,"c":7,"h":2,"w":6},
-    {"t":"grass","r":19,"c":27,"h":2,"w":6},
-    {"t":"grass","r":19,"c":35,"h":2,"w":5},
-    {"t":"road","r":21,"c":0,"w":5},
-    {"t":"road","r":21,"c":7,"w":12},
-    {"t":"road","r":21,"c":21,"w":12},
-    {"t":"road","r":21,"c":35,"w":5},
-    {"t":"grass","r":22,"c":0,"h":6,"w":5},
-    {"t":"road","r":22,"c":7,"h":2,"w":4},
-    {"t":"grass","r":22,"c":11,"h":6,"w":8},
-    {"t":"grass","r":22,"c":21,"h":6,"w":6},
-    {"t":"grass","r":24,"c":7,"h":2},
-    {"t":"road","r":24,"c":10,"h":5},
-    {"t":"road","r":26,"c":7,"h":3,"w":3},
-    {"t":"road","r":28,"c":0,"w":5},
-    {"t":"road","r":28,"c":11,"w":8},
-    {"t":"road","r":28,"c":21,"w":19},
-    {"t":"grass","r":29,"c":0,"h":6,"w":5},
-    {"t":"grass","r":29,"c":7,"h":6,"w":8},
-    {"t":"grass","r":29,"c":25,"h":6,"w":2},
-    {"t":"road","r":29,"c":33,"h":8,"w":2},
-    {"t":"road","r":32,"c":15,"w":4},
-    {"t":"road","r":32,"c":21,"w":4},
-    {"t":"road","r":35,"c":0,"h":2,"w":5},
-    {"t":"road","r":35,"c":7,"h":2,"w":12},
-    {"t":"road","r":35,"c":21,"h":2,"w":12},
-    {"t":"road","r":35,"c":35,"h":2,"w":5},
-    {"t":"grass","r":37,"c":6,"h":3,"w":2},
-    {"t":"grass","r":37,"c":14,"h":3,"w":2},
-    {"t":"grass","r":37,"c":24,"h":3,"w":2},
-    {"t":"grass","r":37,"c":32,"h":3,"w":2},
-    {"t":"grass","r":39,"c":8,"w":6},
-    {"t":"grass","r":39,"c":26,"w":6},
-    {"t":"forest","r":0,"c":0,"w":2},
-    {"t":"forest","r":0,"c":11,"w":5},
-    {"t":"forest","r":0,"c":24,"w":5},
-    {"t":"forest","r":0,"c":38,"w":2},
-    {"t":"forest","r":1,"c":0},
-    {"t":"boxes","r":1,"c":3},
-    {"t":"forest","r":1,"c":11},
-    {"t":"forest","r":1,"c":14,"w":2},
-    {"t":"forest","r":1,"c":24,"w":2},
-    {"t":"forest","r":1,"c":28},
-    {"t":"boxes","r":1,"c":36},
-    {"t":"forest","r":1,"c":39},
-    {"t":"concrete","r":2,"c":14,"w":4},
-    {"t":"concrete","r":2,"c":23,"w":4},
-    {"t":"concrete","r":3,"c":14,"h":2},
-    {"t":"concrete","r":3,"c":19,"w":3},
-    {"t":"concrete","r":3,"c":26,"h":2},
-    {"t":"forest","r":4,"c":0,"w":3},
-    {"t":"forest","r":4,"c":7,"w":3},
-    {"t":"enemy_base","r":4,"c":20},
-    {"t":"forest","r":4,"c":30,"w":3},
-    {"t":"forest","r":4,"c":37,"w":3},
-    {"t":"forest","r":5,"c":0,"h":5},
-    {"t":"brick","r":5,"c":14,"h":2},
-    {"t":"brick","r":5,"c":26,"h":2},
-    {"t":"forest","r":5,"c":39,"h":5},
-    {"t":"concrete","r":7,"c":14,"h":2},
-    {"t":"concrete","r":7,"c":26,"h":2},
-    {"t":"concrete","r":8,"c":15,"w":4},
-    {"t":"brick","r":8,"c":19,"w":2},
-    {"t":"concrete","r":8,"c":21,"w":5},
-    {"t":"forest","r":9,"c":1},
-    {"t":"hedgehog","r":9,"c":3},
-    {"t":"hedgehog","r":9,"c":8},
-    {"t":"forest","r":9,"c":11,"w":2},
-    {"t":"forest","r":9,"c":26,"w":2},
-    {"t":"hedgehog","r":9,"c":30},
-    {"t":"hedgehog","r":9,"c":35},
-    {"t":"forest","r":9,"c":38},
-    {"t":"forest","r":12,"c":0,"w":3},
-    {"t":"forest","r":12,"c":7,"w":4},
-    {"t":"hedgehog","r":12,"c":15},
-    {"t":"hedgehog","r":12,"c":24},
-    {"t":"boxes","r":12,"c":27},
-    {"t":"forest","r":12,"c":29,"w":4},
-    {"t":"barrel","r":12,"c":35},
-    {"t":"forest","r":12,"c":38,"w":2},
-    {"t":"rubble","r":14,"c":0},
-    {"t":"rubble","r":15,"c":11},
-    {"t":"rubble","r":15,"c":25},
-    {"t":"rubble","r":16,"c":19},
-    {"t":"boxes","r":17,"c":14},
-    {"t":"rubble","r":18,"c":0,"w":2},
-    {"t":"rubble","r":18,"c":39},
-    {"t":"forest","r":19,"c":0,"w":3},
-    {"t":"forest","r":19,"c":7,"w":5},
-    {"t":"forest","r":19,"c":14,"w":3},
-    {"t":"forest","r":19,"c":23,"w":3},
-    {"t":"forest","r":19,"c":28,"w":5},
-    {"t":"forest","r":19,"c":37,"w":3},
-    {"t":"forest","r":20,"c":0,"w":2},
-    {"t":"forest","r":20,"c":7,"w":2},
-    {"t":"forest","r":20,"c":10,"w":2},
-    {"t":"crater","r":20,"c":16},
-    {"t":"crater","r":20,"c":23},
-    {"t":"forest","r":20,"c":28,"w":2},
-    {"t":"forest","r":20,"c":31,"w":2},
-    {"t":"forest","r":20,"c":38,"w":2},
-    {"t":"forest","r":22,"c":0,"h":2,"w":3},
-    {"t":"forest","r":22,"c":12,"w":5},
-    {"t":"forest","r":22,"c":23,"w":5},
-    {"t":"forest","r":23,"c":12,"w":2},
-    {"t":"forest","r":23,"c":15,"w":2},
-    {"t":"crater","r":23,"c":19},
-    {"t":"forest","r":23,"c":23,"w":2},
-    {"t":"forest","r":23,"c":26,"w":2},
-    {"t":"forest","r":24,"c":0,"h":4,"w":2},
-    {"t":"forest","r":24,"c":13,"h":4},
-    {"t":"forest","r":24,"c":18},
-    {"t":"concrete","r":24,"c":19,"h":2,"w":2},
-    {"t":"forest","r":24,"c":21},
-    {"t":"forest","r":24,"c":26,"h":4},
-    {"t":"brick","r":24,"c":30,"h":3},
-    {"t":"boxes","r":25,"c":32},
-    {"t":"forest","r":26,"c":2,"h":2},
-    {"t":"forest","r":26,"c":12,"h":2},
-    {"t":"crater","r":26,"c":15},
-    {"t":"hedgehog","r":26,"c":19,"w":2},
-    {"t":"crater","r":26,"c":24},
-    {"t":"forest","r":26,"c":27,"h":2},
-    {"t":"barrel","r":27,"c":3},
-    {"t":"forest","r":27,"c":14,"w":2},
-    {"t":"concrete","r":27,"c":19,"w":2},
-    {"t":"forest","r":27,"c":24,"w":2},
-    {"t":"forest","r":29,"c":0,"h":6,"w":2},
-    {"t":"forest","r":29,"c":7,"w":5},
-    {"t":"crater","r":29,"c":20},
-    {"t":"forest","r":30,"c":7,"h":5,"w":2},
-    {"t":"forest","r":30,"c":10,"h":5,"w":2},
-    {"t":"boxes","r":30,"c":30},
-    {"t":"forest","r":32,"c":9},
-    {"t":"water_tower","r":32,"c":14},
-    {"t":"water_tower","r":32,"c":25},
-    {"t":"boxes","r":33,"c":3},
-    {"t":"boxes","r":36,"c":17},
-    {"t":"forest","r":37,"c":6,"h":3,"w":2},
-    {"t":"forest","r":37,"c":14,"h":3,"w":2},
-    {"t":"concrete","r":37,"c":18,"w":4},
-    {"t":"forest","r":37,"c":24,"h":3,"w":2},
-    {"t":"forest","r":37,"c":32,"h":2,"w":2},
-    {"t":"forest","r":39,"c":8,"w":6},
-    {"t":"forest","r":39,"c":26,"w":6},
-    {"t":"bridge","r":13,"c":19,"h":3,"w":2,"dir":"ns"},
-    {"t":"bridge","r":15,"c":5,"h":3,"w":2,"dir":"ns"},
-    {"t":"bridge","r":15,"c":33,"h":3,"w":2,"dir":"ns"},
-    {"t":"house1","r":2,"c":0,"h":2,"w":3,"style":5},
-    {"t":"house1","r":2,"c":7,"h":2,"w":3,"style":1},
-    {"t":"house1","r":2,"c":30,"h":2,"w":3,"style":5},
-    {"t":"house1","r":2,"c":37,"h":2,"w":3,"style":10},
-    {"t":"house2","r":3,"c":15,"h":2,"w":2,"style":5},
-    {"t":"house2","r":3,"c":24,"h":2,"w":2,"style":3},
-    {"t":"house2","r":6,"c":3,"h":2,"w":2,"style":0},
-    {"t":"house2","r":6,"c":9,"h":2,"w":2,"style":10},
-    {"t":"house2","r":6,"c":29,"h":2,"w":2,"style":3},
-    {"t":"house2","r":6,"c":35,"h":2,"w":2,"style":2},
-    {"t":"house2","r":7,"c":15,"w":2,"style":6},
-    {"t":"house2","r":7,"c":24,"w":2,"style":9},
-    {"t":"house1","r":20,"c":2,"w":2,"style":6},
-    {"t":"house1","r":20,"c":35,"w":3,"style":4},
-    {"t":"house2","r":22,"c":30,"h":2,"w":4,"style":5},
-    {"t":"house1","r":22,"c":36,"h":3,"w":4,"style":8},
-    {"t":"house2","r":25,"c":36,"w":4,"style":1},
-    {"t":"house2","r":26,"c":36,"h":2,"style":1},
-    {"t":"house2","r":26,"c":39,"h":2,"style":1},
-    {"t":"house2","r":27,"c":30,"w":4,"style":2},
-    {"t":"house2","r":27,"c":37,"w":2,"style":1},
-    {"t":"house1","r":29,"c":28,"w":4,"style":4},
-    {"t":"house2","r":29,"c":36,"h":2,"w":4,"style":9},
-    {"t":"house1","r":30,"c":3,"h":2,"w":2,"style":7},
-    {"t":"house1","r":30,"c":15,"h":2,"w":2,"style":4},
-    {"t":"house1","r":30,"c":23,"h":2,"w":2,"style":5},
-    {"t":"house1","r":30,"c":28,"h":2,"style":4},
-    {"t":"house1","r":30,"c":31,"h":2,"style":4},
-    {"t":"house1","r":31,"c":29,"w":2,"style":4},
-    {"t":"house2","r":31,"c":36,"w":2,"style":9},
-    {"t":"house2","r":31,"c":39,"style":9},
-    {"t":"house2","r":33,"c":15,"h":2,"w":2,"style":9},
-    {"t":"house2","r":33,"c":23,"h":2,"w":2,"style":6},
-    {"t":"house1","r":33,"c":36,"h":2,"w":4,"style":5},
-    {"t":"house2","r":37,"c":0,"w":6,"style":1},
-    {"t":"house1","r":37,"c":8,"h":2,"w":6,"style":8},
-    {"t":"house1","r":37,"c":26,"h":2,"w":6,"style":1},
-    {"t":"house2","r":37,"c":34,"w":6,"style":5},
-    {"t":"house2","r":38,"c":0,"h":2,"style":1},
-    {"t":"house2","r":38,"c":5,"h":2,"style":1},
-    {"t":"house2","r":38,"c":34,"h":2,"style":5},
-    {"t":"house2","r":38,"c":39,"h":2,"style":5},
-    {"t":"house2","r":39,"c":1,"w":4,"style":1},
-    {"t":"house2","r":39,"c":35,"w":4,"style":5},
-    {"t":"landmark","kind":"VICTORY_COLUMN","r":24,"c":8},
-    {"t":"landmark","kind":"REICHSTAG_DOME","r":32,"c":28},
-    {"t":"decal","kind":"label","r":9,"c":20,"size":1.6,"text":"REICHSTAG"},
-    {"t":"decal","kind":"label","r":16,"c":20,"size":1.5,"text":"SPREE RIVER"},
-    {"t":"decal","kind":"label","r":23,"c":20,"size":1.6,"text":"PLATZ DER REPUBLIK"},
-    {"t":"decal","kind":"label","r":27,"c":8,"size":1.4,"text":"VICTORY COLUMN"},
-    {"t":"decal","kind":"label","r":29,"c":34,"size":1.5,"text":"FRIEDRICHSTRASSE"}
-  ]
+  "terrain": {
+    "grass": [[0,0,10,5],[0,7,2,12],[0,21,2,12],[0,35,10,5],[2,7,8,8],[2,25,8,8],[9,15,1,4],[9,21,1,4],[12,0,2,5],[12,7,1,12],[12,21,1,12],[12,35,2,5],[13,7,1,4],[13,27,1,6],[17,13,4,6],[17,21,4,4],[18,25,3,2],[19,0,2,5],[19,7,2,6],[19,27,2,6],[19,35,2,5],[22,0,6,5],[22,11,6,8],[22,21,6,6],[24,7,2,1],[29,0,6,5],[29,7,6,8],[29,25,6,2],[37,6,3,2],[37,14,3,2],[37,24,3,2],[37,32,3,2],[39,8,1,6],[39,26,1,6]],
+    "road": [[0,5,15,2],[0,19,3,2],[0,33,15,2],[8,19,5,2],[10,0,2,5],[10,7,2,12],[10,21,2,12],[10,35,2,5],[17,19,20,2],[18,5,19,2],[18,33,4,2],[21,0,1,5],[21,7,1,12],[21,21,1,12],[21,35,1,5],[22,7,2,4],[24,10,5,1],[26,7,3,3],[28,0,1,5],[28,11,1,8],[28,21,1,19],[29,33,8,2],[32,15,1,4],[32,21,1,4],[35,0,2,5],[35,7,2,12],[35,21,2,12],[35,35,2,5]],
+    "sand": [[13,11,1,2],[13,26],[14,2,1,3],[14,7,1,4],[14,27,1,6],[14,35,1,4],[16,13,1,6],[16,21,1,5],[17,12,2,1],[17,25,1,2],[18,3,1,2],[18,7,1,5],[18,27,1,6],[18,35,1,3]],
+    "water": [[13,13,3,12],[15,0,3,11],[15,27,3,13]],
+    "stone": [[13,25,3,1],[14,0,1,2],[14,11,3,2],[14,26,3,1],[14,39],[16,19,1,2],[17,11],[18,0,1,3],[18,38,1,2]],
+    "forest": [[0,0,1,2],[0,11,1,5],[0,24,1,5],[0,38,1,2],[1,0],[1,11],[1,14,1,2],[1,24,1,2],[1,28],[1,39],[4,0,1,3],[4,7,1,3],[4,30,1,3],[4,37,1,3],[5,0,5,1],[5,39,5,1],[9,1],[9,11,1,2],[9,26,1,2],[9,38],[12,0,1,3],[12,7,1,4],[12,29,1,4],[12,38,1,2],[19,0,1,3],[19,7,1,5],[19,14,1,3],[19,23,1,3],[19,28,1,5],[19,37,1,3],[20,0,1,2],[20,7,1,2],[20,10,1,2],[20,28,1,2],[20,31,1,2],[20,38,1,2],[22,0,2,3],[22,12,1,5],[22,23,1,5],[23,12,1,2],[23,15,1,2],[23,23,1,2],[23,26,1,2],[24,0,4,2],[24,13,4,1],[24,18],[24,21],[24,26,4,1],[26,2,2,1],[26,12,2,1],[26,27,2,1],[27,14,1,2],[27,24,1,2],[29,0,6,2],[29,7,1,5],[30,7,5,2],[30,10,5,2],[32,9],[37,6,3,2],[37,14,3,2],[37,24,3,2],[37,32,2,2],[39,8,1,6],[39,26,1,6]],
+    "boxes": [[1,3],[1,36],[12,27],[17,14],[25,32],[30,30],[33,3],[36,17]],
+    "concrete": [[2,14,1,4],[2,23,1,4],[3,14,2,1],[3,19,1,3],[3,26,2,1],[7,14,2,1],[7,26,2,1],[8,15,1,4],[8,21,1,5],[24,19,2,2],[27,19,1,2],[37,18,1,4]],
+    "enemy_base": [[4,20]],
+    "brick": [[5,14,2,1],[5,26,2,1],[8,19,1,2],[24,30,3,1]],
+    "hedgehog": [[9,3],[9,8],[9,30],[9,35],[12,15],[12,24],[26,19,1,2]],
+    "barrel": [[12,35],[27,3]],
+    "rubble": [[14,0],[15,11],[15,25],[16,19],[18,0,1,2],[18,39]],
+    "crater": [[20,16],[20,23],[23,19],[26,15],[26,24],[29,20]],
+    "water_tower": [[32,14],[32,25]],
+    "bridge": [[13,19,3,2,"ns"],[15,5,3,2,"ns"],[15,33,3,2,"ns"]],
+    "house1": [[2,0,2,3,5],[2,7,2,3,1],[2,30,2,3,5],[2,37,2,3,10],[20,2,1,2,6],[20,35,1,3,4],[22,36,3,4,8],[29,28,1,4,4],[30,3,2,2,7],[30,15,2,2,4],[30,23,2,2,5],[30,28,2,1,4],[30,31,2,1,4],[31,29,1,2,4],[33,36,2,4,5],[37,8,2,6,8],[37,26,2,6,1]],
+    "house2": [[3,15,2,2,5],[3,24,2,2,3],[6,3,2,2,0],[6,9,2,2,10],[6,29,2,2,3],[6,35,2,2,2],[7,15,1,2,6],[7,24,1,2,9],[22,30,2,4,5],[25,36,1,4,1],[26,36,2,1,1],[26,39,2,1,1],[27,30,1,4,2],[27,37,1,2,1],[29,36,2,4,9],[31,36,1,2,9],[31,39,1,1,9],[33,15,2,2,9],[33,23,2,2,6],[37,0,1,6,1],[37,34,1,6,5],[38,0,2,1,1],[38,5,2,1,1],[38,34,2,1,5],[38,39,2,1,5],[39,1,1,4,1],[39,35,1,4,5]],
+    "landmark": [["VICTORY_COLUMN",24,8],["REICHSTAG_DOME",32,28]],
+    "decal": [["label",9,20,1.6,"REICHSTAG"],["label",16,20,1.5,"SPREE RIVER"],["label",23,20,1.6,"PLATZ DER REPUBLIK"],["label",27,8,1.4,"VICTORY COLUMN"],["label",29,34,1.5,"FRIEDRICHSTRASSE"]]
+  }
 }

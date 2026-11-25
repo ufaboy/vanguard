@@ -134,7 +134,7 @@ function runLayerCompatPass(objectGrid, surfaceGrid) {
 async function processMapFile(filePath, passes, checkOnly) {
   const raw = await fs.readFile(filePath, 'utf8');
   const map = JSON.parse(raw);
-  if (!Array.isArray(map.terrain)) {
+  if (!map.terrain || typeof map.terrain !== 'object' || Array.isArray(map.terrain)) {
     return null;
   }
 

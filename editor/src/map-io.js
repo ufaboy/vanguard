@@ -68,7 +68,7 @@ export function createBlankMap() {
       groundColor: '#687478',
     },
     defaultSurface: 'asphalt',
-    terrain: [],
+    terrain: {},
   };
 }
 

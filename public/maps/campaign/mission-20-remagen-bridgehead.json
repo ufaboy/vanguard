@@ -8,27 +8,11 @@
   "gameMode": "base_defense",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 22
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 20
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": true
-  },
-  "completionReward": {
-    "credits": 450
-  },
-  "environment": {
-    "theme": "urban",
-    "tint": "#c9b99a",
-    "fogColor": "#262a30",
-    "groundColor": "#6a6e68"
-  },
+  "playerSpawnCell": {"row":35,"col":22},
+  "baseCell": {"row":39,"col":20},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":true},
+  "completionReward": {"credits":450},
+  "environment": {"theme":"urban","tint":"#c9b99a","fogColor":"#262a30","groundColor":"#6a6e68"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Hold the Remagen bank of the Rhine against counterattacks over three crossings that no single position can watch: the Ludendorff railway bridge, a western treadway through the floodplain wood, and an eastern treadway below the Erpeler Ley. Promenade villas, orchards and town gardens break the sightlines and hide ambush positions, so the defence has to rotate.",
@@ -51,104 +35,39 @@
     "breaches": [
       {
         "name": "East treadway roadblock",
-        "cells": [
-          {
-            "row": 13,
-            "col": 35
-          }
-        ],
-        "start": {
-          "row": 12,
-          "col": 35
-        },
-        "end": {
-          "row": 20,
-          "col": 35
-        },
+        "cells": [{"row":13,"col":35}],
+        "start": {"row":12,"col":35},
+        "end": {"row":20,"col":35},
         "purpose": "A brick roadblock seals the north ramp of the east treadway; blasting it opens a flank crossing under the Erpeler Ley."
       },
       {
         "name": "Church garden wall",
         "cells": [
-          {
-            "row": 30,
-            "col": 20
-          },
-          {
-            "row": 31,
-            "col": 20
-          },
-          {
-            "row": 32,
-            "col": 20
-          },
-          {
-            "row": 33,
-            "col": 20
-          },
-          {
-            "row": 34,
-            "col": 20
-          },
-          {
-            "row": 35,
-            "col": 20
-          }
+          {"row":30,"col":20},
+          {"row":31,"col":20},
+          {"row":32,"col":20},
+          {"row":33,"col":20},
+          {"row":34,"col":20},
+          {"row":35,"col":20}
         ],
-        "start": {
-          "row": 32,
-          "col": 14
-        },
-        "end": {
-          "row": 32,
-          "col": 22
-        },
+        "start": {"row":32,"col":14},
+        "end": {"row":32,"col":22},
         "purpose": "Breaking the garden wall links the main street directly to the HQ yard instead of looping via the lane."
       },
       {
         "name": "Vineyard terraces",
         "cells": [
-          {
-            "row": 2,
-            "col": 22
-          },
-          {
-            "row": 2,
-            "col": 23
-          },
-          {
-            "row": 2,
-            "col": 24
-          },
-          {
-            "row": 2,
-            "col": 25
-          },
-          {
-            "row": 4,
-            "col": 23
-          },
-          {
-            "row": 4,
-            "col": 24
-          },
-          {
-            "row": 4,
-            "col": 25
-          },
-          {
-            "row": 4,
-            "col": 26
-          }
+          {"row":2,"col":22},
+          {"row":2,"col":23},
+          {"row":2,"col":24},
+          {"row":2,"col":25},
+          {"row":4,"col":23},
+          {"row":4,"col":24},
+          {"row":4,"col":25},
+          {"row":4,"col":26}
         ],
-        "start": {
-          "row": 1,
-          "col": 24
-        },
-        "end": {
-          "row": 7,
-          "col": 24
-        },
+        "start": {"row":1,"col":24},
+        "end": {"row":7,"col":24},
         "purpose": "Dry-stone terrace walls shield the vineyard slope; breaking them opens a direct line from the slope to the rail cut."
       }
     ]
@@ -158,170 +77,18 @@
     "seed": 19450307,
     "theme": "urban",
     "zones": [
-      {
-        "id": "erpel-village",
-        "bounds": [
-          0,
-          0,
-          9,
-          20
-        ],
-        "surface": "pavers",
-        "density": 0.2,
-        "details": [
-          "cracks",
-          "leaves"
-        ]
-      },
-      {
-        "id": "erpel-vineyards",
-        "bounds": [
-          0,
-          21,
-          7,
-          28
-        ],
-        "surface": "dirt",
-        "density": 0.3,
-        "details": [
-          "weeds",
-          "leaves"
-        ]
-      },
-      {
-        "id": "ley-forest",
-        "bounds": [
-          0,
-          29,
-          9,
-          39
-        ],
-        "surface": "dirt",
-        "density": 0.3,
-        "details": [
-          "leaves",
-          "rubble"
-        ]
-      },
-      {
-        "id": "north-bridgehead",
-        "bounds": [
-          11,
-          8,
-          13,
-          34
-        ],
-        "surface": "dirt",
-        "density": 0.3,
-        "details": [
-          "tracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "floodplain",
-        "bounds": [
-          19,
-          0,
-          20,
-          19
-        ],
-        "surface": "dirt",
-        "density": 0.3,
-        "details": [
-          "leaves",
-          "weeds"
-        ]
-      },
-      {
-        "id": "remagen-town",
-        "bounds": [
-          23,
-          0,
-          39,
-          29
-        ],
-        "surface": "pavers",
-        "density": 0.25,
-        "details": [
-          "cracks",
-          "patches",
-          "rubble"
-        ]
-      },
-      {
-        "id": "station-depot",
-        "bounds": [
-          26,
-          24,
-          29,
-          35
-        ],
-        "surface": "concrete",
-        "density": 0.3,
-        "details": [
-          "oil",
-          "tracks"
-        ]
-      }
+      {"id":"erpel-village","bounds":[0,0,9,20],"surface":"pavers","density":0.2,"details":["cracks","leaves"]},
+      {"id":"erpel-vineyards","bounds":[0,21,7,28],"surface":"dirt","density":0.3,"details":["weeds","leaves"]},
+      {"id":"ley-forest","bounds":[0,29,9,39],"surface":"dirt","density":0.3,"details":["leaves","rubble"]},
+      {"id":"north-bridgehead","bounds":[11,8,13,34],"surface":"dirt","density":0.3,"details":["tracks","rubble"]},
+      {"id":"floodplain","bounds":[19,0,20,19],"surface":"dirt","density":0.3,"details":["leaves","weeds"]},
+      {"id":"remagen-town","bounds":[23,0,39,29],"surface":"pavers","density":0.25,"details":["cracks","patches","rubble"]},
+      {"id":"station-depot","bounds":[26,24,29,35],"surface":"concrete","density":0.3,"details":["oil","tracks"]}
     ],
     "paths": [
-      {
-        "id": "rail-ley-cut",
-        "points": [
-          [
-            13,
-            22.5
-          ],
-          [
-            8.5,
-            22.5
-          ],
-          [
-            8.5,
-            33.5
-          ],
-          [
-            0,
-            33.5
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "edges"
-      },
-      {
-        "id": "rail-bridge-south",
-        "points": [
-          [
-            19,
-            22.5
-          ],
-          [
-            24.5,
-            22.5
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "edges"
-      },
-      {
-        "id": "rail-left-bank",
-        "points": [
-          [
-            24.5,
-            0
-          ],
-          [
-            24.5,
-            39
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "edges"
-      }
+      {"id":"rail-ley-cut","points":[[13,22.5],[8.5,22.5],[8.5,33.5],[0,33.5]],"width":2,"surface":"gravel","marking":"edges"},
+      {"id":"rail-bridge-south","points":[[19,22.5],[24.5,22.5]],"width":2,"surface":"gravel","marking":"edges"},
+      {"id":"rail-left-bank","points":[[24.5,0],[24.5,39]],"width":2,"surface":"gravel","marking":"edges"}
     ]
   },
   "enemies": {
@@ -329,383 +96,57 @@
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.6,
     "entrances": [
-      {
-        "id": "erpel-west-lane",
-        "row": 0,
-        "col": 3
-      },
-      {
-        "id": "erpel-main-road",
-        "row": 0,
-        "col": 12
-      },
-      {
-        "id": "ley-rail-cut",
-        "row": 0,
-        "col": 33
-      }
+      {"id":"erpel-west-lane","row":0,"col":3},
+      {"id":"erpel-main-road","row":0,"col":12},
+      {"id":"ley-rail-cut","row":0,"col":33}
     ],
     "encounters": [
       {
         "id": "bridgehead-probe",
         "label": "BRIDGEHEAD PROBE: Scouts test the crossings from Erpel and the rail cut.",
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD",
-          "SCOUT"
-        ],
-        "initialCells": [
-          {
-            "row": 2,
-            "col": 12
-          },
-          {
-            "row": 3,
-            "col": 3
-          },
-          {
-            "row": 6,
-            "col": 33
-          },
-          {
-            "row": 9,
-            "col": 26
-          }
-        ],
-        "entrances": [
-          "erpel-west-lane",
-          "erpel-main-road"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 22
-          },
-          {
-            "row": 21,
-            "col": 23
-          },
-          {
-            "row": 33,
-            "col": 22
-          }
-        ],
+        "enemies": ["SCOUT","STANDARD","SCOUT","STANDARD","STANDARD","SCOUT"],
+        "initialCells": [{"row":2,"col":12},{"row":3,"col":3},{"row":6,"col":33},{"row":9,"col":26}],
+        "entrances": ["erpel-west-lane","erpel-main-road"],
+        "patrolRoute": [{"row":12,"col":22},{"row":21,"col":23},{"row":33,"col":22}],
         "recoverySec": 0
       },
       {
         "id": "river-pressure",
         "label": "RIVER PRESSURE: Hovercraft cross the Rhine while artillery fires from the Erpeler Ley.",
-        "enemies": [
-          "HOVER",
-          "STANDARD",
-          "HOWITZER",
-          "SAPPER",
-          "HOVER",
-          "STRIKER",
-          "STANDARD",
-          "HOVER",
-          "HOWITZER",
-          "STANDARD"
-        ],
-        "entrances": [
-          "erpel-main-road",
-          "ley-rail-cut"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 30
-          },
-          {
-            "row": 20,
-            "col": 35
-          },
-          {
-            "row": 28,
-            "col": 26
-          },
-          {
-            "row": 35,
-            "col": 24
-          }
-        ],
+        "enemies": ["HOVER","STANDARD","HOWITZER","SAPPER","HOVER","STRIKER","STANDARD","HOVER","HOWITZER","STANDARD"],
+        "entrances": ["erpel-main-road","ley-rail-cut"],
+        "patrolRoute": [{"row":10,"col":30},{"row":20,"col":35},{"row":28,"col":26},{"row":35,"col":24}],
         "recoverySec": 8
       },
       {
         "id": "bridge-counterattack",
         "label": "COUNTERATTACK: Heavy armor storms the Ludendorff Bridge and the treadway crossings.",
-        "enemies": [
-          "ARMOR",
-          "STANDARD",
-          "ENGINEER",
-          "ARMOR",
-          "HOVER",
-          "STANDARD",
-          "SAPPER",
-          "ARMOR",
-          "STRIKER",
-          "STANDARD"
-        ],
-        "entrances": [
-          "erpel-west-lane",
-          "erpel-main-road",
-          "ley-rail-cut"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 7
-          },
-          {
-            "row": 21,
-            "col": 7
-          },
-          {
-            "row": 28,
-            "col": 13
-          },
-          {
-            "row": 36,
-            "col": 18
-          }
-        ],
+        "enemies": ["ARMOR","STANDARD","ENGINEER","ARMOR","HOVER","STANDARD","SAPPER","ARMOR","STRIKER","STANDARD"],
+        "entrances": ["erpel-west-lane","erpel-main-road","ley-rail-cut"],
+        "patrolRoute": [{"row":10,"col":7},{"row":21,"col":7},{"row":28,"col":13},{"row":36,"col":18}],
         "recoverySec": 9
       }
     ]
   },
-  "terrain": [
-    {"t":"grass","r":0,"c":0,"h":4,"w":3},
-    {"t":"road","r":0,"c":3,"h":5},
-    {"t":"road","r":0,"c":12,"h":11,"w":2},
-    {"t":"grass","r":0,"c":21,"h":8,"w":12},
-    {"t":"grass","r":0,"c":35,"h":10,"w":5},
-    {"t":"road","r":2,"c":6,"w":3},
-    {"t":"road","r":2,"c":15,"w":3},
-    {"t":"road","r":3,"c":8,"h":2},
-    {"t":"road","r":3,"c":17,"h":2},
-    {"t":"road","r":4,"c":0,"w":3},
-    {"t":"road","r":4,"c":4,"w":4},
-    {"t":"road","r":4,"c":9,"w":3},
-    {"t":"road","r":4,"c":14,"w":3},
-    {"t":"road","r":4,"c":18,"w":3},
-    {"t":"road","r":5,"c":0,"h":6},
-    {"t":"road","r":5,"c":10,"h":3},
-    {"t":"road","r":7,"c":5,"w":5},
-    {"t":"road","r":8,"c":5,"h":3},
-    {"t":"road","r":10,"c":1,"w":4},
-    {"t":"road","r":10,"c":6,"w":6},
-    {"t":"road","r":10,"c":14,"w":26},
-    {"t":"swamp","r":11,"c":0,"w":6},
-    {"t":"road","r":11,"c":7,"h":3},
-    {"t":"road","r":11,"c":35,"h":3},
-    {"t":"swamp","r":12,"c":0,"h":2,"w":4},
-    {"t":"sand","r":12,"c":8,"h":2},
-    {"t":"sand","r":12,"c":11,"h":2,"w":6},
-    {"t":"sand","r":12,"c":19,"h":2},
-    {"t":"sand","r":12,"c":26,"h":2,"w":4},
-    {"t":"sand","r":12,"c":32,"h":2,"w":3},
-    {"t":"sand","r":12,"c":36,"w":4},
-    {"t":"sand","r":13,"c":4,"w":3},
-    {"t":"sand","r":13,"c":17,"w":2},
-    {"t":"sand","r":13,"c":36,"w":2},
-    {"t":"swamp","r":13,"c":38,"w":2},
-    {"t":"water","r":14,"c":0,"h":5,"w":10},
-    {"t":"stone","r":14,"c":10,"w":4},
-    {"t":"water","r":14,"c":14,"h":4,"w":26},
-    {"t":"water","r":15,"c":10,"h":4,"w":4},
-    {"t":"water","r":18,"c":14,"w":14},
-    {"t":"swamp","r":18,"c":28,"w":5},
-    {"t":"water","r":18,"c":33,"w":7},
-    {"t":"grass","r":19,"c":0,"h":2,"w":7},
-    {"t":"road","r":19,"c":7,"h":4},
-    {"t":"grass","r":19,"c":8,"h":2,"w":12},
-    {"t":"grass","r":19,"c":26,"h":2,"w":9},
-    {"t":"road","r":19,"c":35,"h":4},
-    {"t":"grass","r":19,"c":36,"h":2,"w":4},
-    {"t":"road","r":21,"c":0,"h":2,"w":7},
-    {"t":"road","r":21,"c":8,"h":2,"w":27},
-    {"t":"road","r":21,"c":36,"h":2,"w":4},
-    {"t":"road","r":23,"c":12,"h":17,"w":2},
-    {"t":"grass","r":23,"c":32,"w":8},
-    {"t":"road","r":24,"c":5,"h":16},
-    {"t":"grass","r":26,"c":32,"w":8},
-    {"t":"oil","r":27,"c":33,"w":3},
-    {"t":"grass","r":27,"c":36,"w":4},
-    {"t":"road","r":28,"c":8,"h":2,"w":2},
-    {"t":"road","r":28,"c":14,"w":20},
-    {"t":"oil","r":28,"c":35},
-    {"t":"road","r":29,"c":0,"w":5},
-    {"t":"road","r":29,"c":6,"w":2},
-    {"t":"road","r":29,"c":10,"w":2},
-    {"t":"road","r":29,"c":25,"h":3},
-    {"t":"grass","r":29,"c":30,"h":6,"w":10},
-    {"t":"road","r":31,"c":16,"h":3,"w":2},
-    {"t":"road","r":32,"c":1,"h":2},
-    {"t":"road","r":32,"c":28,"h":5},
-    {"t":"road","r":33,"c":2,"w":3},
-    {"t":"grass","r":33,"c":6,"h":2},
-    {"t":"grass","r":33,"c":9,"h":4},
-    {"t":"road","r":33,"c":14,"w":2},
-    {"t":"grass","r":34,"c":7,"h":2},
-    {"t":"grass","r":34,"c":10,"h":3},
-    {"t":"grass","r":35,"c":8},
-    {"t":"grass","r":35,"c":30,"w":2},
-    {"t":"road","r":35,"c":32,"h":3},
-    {"t":"grass","r":35,"c":33,"h":5,"w":7},
-    {"t":"grass","r":36,"c":11},
-    {"t":"road","r":36,"c":14,"w":14},
-    {"t":"road","r":36,"c":29,"w":2},
-    {"t":"grass","r":37,"c":2,"w":3},
-    {"t":"grass","r":37,"c":24,"w":6},
-    {"t":"road","r":37,"c":30,"w":2},
-    {"t":"grass","r":38,"c":3,"w":2},
-    {"t":"grass","r":38,"c":24,"h":2,"w":4},
-    {"t":"grass","r":38,"c":29,"h":2,"w":4},
-    {"t":"grass","r":39,"c":4},
-    {"t":"road","r":39,"c":6,"w":6},
-    {"t":"grass","r":39,"c":23},
-    {"t":"grass","r":39,"c":28},
-    {"t":"forest","r":0,"c":29,"w":3},
-    {"t":"concrete","r":0,"c":32,"h":8},
-    {"t":"concrete","r":0,"c":35,"h":8},
-    {"t":"forest","r":0,"c":36,"h":2,"w":4},
-    {"t":"boxes","r":1,"c":20},
-    {"t":"concrete","r":1,"c":29,"h":5},
-    {"t":"forest","r":1,"c":30,"w":2},
-    {"t":"brick","r":2,"c":22,"w":4},
-    {"t":"concrete","r":2,"c":30},
-    {"t":"forest","r":2,"c":31,"h":6},
-    {"t":"forest","r":2,"c":36,"w":3},
-    {"t":"barrel","r":3,"c":9},
-    {"t":"forest","r":3,"c":30},
-    {"t":"forest","r":3,"c":36,"h":4,"w":2},
-    {"t":"brick","r":4,"c":23,"w":4},
-    {"t":"concrete","r":4,"c":30},
-    {"t":"forest","r":4,"c":38},
-    {"t":"forest","r":5,"c":30,"h":2},
-    {"t":"brick","r":6,"c":21,"w":4},
-    {"t":"forest","r":6,"c":29},
-    {"t":"boxes","r":8,"c":37},
-    {"t":"hedgehog","r":11,"c":10,"w":2},
-    {"t":"hedgehog","r":11,"c":13,"w":2},
-    {"t":"hedgehog","r":11,"c":26,"w":2},
-    {"t":"hedgehog","r":11,"c":29,"w":2},
-    {"t":"boxes","r":12,"c":12},
-    {"t":"barrel","r":12,"c":26},
-    {"t":"brick","r":13,"c":35},
-    {"t":"forest","r":19,"c":0,"w":6},
-    {"t":"forest","r":19,"c":8,"h":2,"w":3},
-    {"t":"forest","r":19,"c":15,"h":2},
-    {"t":"forest","r":19,"c":27,"h":2,"w":3},
-    {"t":"forest","r":19,"c":36,"h":2,"w":2},
-    {"t":"forest","r":20,"c":0,"w":3},
-    {"t":"boxes","r":20,"c":3},
-    {"t":"forest","r":20,"c":4,"w":2},
-    {"t":"crater","r":20,"c":26},
-    {"t":"boxes","r":21,"c":21},
-    {"t":"rubble","r":23,"c":3,"w":4},
-    {"t":"crater","r":23,"c":8},
-    {"t":"rubble","r":23,"c":16,"w":3},
-    {"t":"forest","r":23,"c":34,"w":3},
-    {"t":"concrete","r":26,"c":20,"w":4},
-    {"t":"forest","r":26,"c":32,"w":2},
-    {"t":"boxes","r":27,"c":32},
-    {"t":"barrel","r":27,"c":33,"w":2},
-    {"t":"forest","r":29,"c":36,"h":5,"w":2},
-    {"t":"brick","r":30,"c":20,"h":6},
-    {"t":"forest","r":30,"c":35,"h":4},
-    {"t":"forest","r":30,"c":38,"h":3},
-    {"t":"forest","r":33,"c":7,"h":2,"w":3},
-    {"t":"boxes","r":33,"c":17},
-    {"t":"forest","r":33,"c":33,"w":2},
-    {"t":"forest","r":34,"c":6},
-    {"t":"forest","r":35,"c":10,"h":2,"w":2},
-    {"t":"forest","r":35,"c":35,"h":4,"w":4},
-    {"t":"forest","r":37,"c":2,"h":2,"w":2},
-    {"t":"concrete","r":37,"c":19,"w":4},
-    {"t":"forest","r":37,"c":25,"h":3,"w":4},
-    {"t":"boxes","r":38,"c":1},
-    {"t":"bridge","r":14,"c":7,"h":5,"dir":"ns"},
-    {"t":"bridge","r":14,"c":22,"h":5,"w":2,"dir":"ns"},
-    {"t":"bridge","r":14,"c":35,"h":5,"dir":"ns"},
-    {"t":"house1","r":0,"c":6,"h":2,"w":3,"style":5},
-    {"t":"house1","r":0,"c":15,"h":2,"w":3,"style":3},
-    {"t":"house1","r":5,"c":1,"w":3,"style":1},
-    {"t":"house1","r":5,"c":6,"h":2,"w":4,"style":3},
-    {"t":"house2","r":5,"c":15,"w":4,"style":4},
-    {"t":"house1","r":6,"c":1,"h":2,"style":1},
-    {"t":"house1","r":6,"c":3,"h":2,"style":1},
-    {"t":"house2","r":6,"c":15,"h":2,"style":4},
-    {"t":"house2","r":6,"c":18,"h":2,"style":4},
-    {"t":"house1","r":7,"c":2,"style":1},
-    {"t":"house2","r":7,"c":16,"w":2,"style":4},
-    {"t":"house1","r":8,"c":6,"h":2,"w":3,"style":2},
-    {"t":"house1","r":8,"c":16,"h":2,"w":5,"style":5},
-    {"t":"house1","r":11,"c":17,"h":2,"w":2,"style":0},
-    {"t":"house1","r":12,"c":9,"h":2,"w":2,"style":0},
-    {"t":"house2","r":12,"c":20,"h":2,"w":2,"style":3},
-    {"t":"house2","r":12,"c":24,"h":2,"w":2,"style":0},
-    {"t":"house1","r":12,"c":30,"h":2,"w":2,"style":4},
-    {"t":"house1","r":19,"c":12,"h":2,"w":3,"style":4},
-    {"t":"house1","r":19,"c":16,"h":2,"w":3,"style":1},
-    {"t":"house2","r":19,"c":20,"h":2,"w":2,"style":1},
-    {"t":"house2","r":19,"c":24,"h":2,"w":2,"style":6},
-    {"t":"house1","r":19,"c":31,"h":2,"w":3,"style":7},
-    {"t":"house1","r":23,"c":27,"w":5,"style":0},
-    {"t":"house1","r":26,"c":1,"w":4,"style":4},
-    {"t":"house2","r":26,"c":7,"h":2,"w":4,"style":6},
-    {"t":"house2","r":26,"c":25,"h":2,"w":6,"style":1},
-    {"t":"house1","r":26,"c":36,"h":2,"w":3,"style":6},
-    {"t":"house1","r":27,"c":1,"h":2,"style":4},
-    {"t":"house1","r":27,"c":4,"h":2,"style":4},
-    {"t":"house1","r":28,"c":2,"w":2,"style":4},
-    {"t":"house2","r":28,"c":7,"style":6},
-    {"t":"house2","r":28,"c":10,"style":6},
-    {"t":"house1","r":28,"c":36,"style":6},
-    {"t":"house1","r":28,"c":38,"style":6},
-    {"t":"house1","r":30,"c":1,"h":2,"w":3,"style":4},
-    {"t":"house1","r":30,"c":6,"w":4,"style":6},
-    {"t":"house2","r":30,"c":15,"w":4,"style":7},
-    {"t":"house1","r":30,"c":26,"h":2,"w":4,"style":4},
-    {"t":"house1","r":31,"c":6,"h":2,"style":6},
-    {"t":"house1","r":31,"c":9,"h":2,"style":6},
-    {"t":"house2","r":31,"c":15,"h":2,"style":7},
-    {"t":"house2","r":31,"c":18,"h":2,"style":7},
-    {"t":"house1","r":32,"c":7,"w":2,"style":6},
-    {"t":"house2","r":32,"c":24,"w":4,"style":4},
-    {"t":"house2","r":33,"c":24,"h":2,"style":4},
-    {"t":"house2","r":33,"c":27,"h":2,"style":4},
-    {"t":"house2","r":34,"c":1,"w":4,"style":0},
-    {"t":"house2","r":34,"c":25,"w":2,"style":4},
-    {"t":"house1","r":34,"c":31,"w":3,"style":4},
-    {"t":"house2","r":35,"c":1,"h":2,"style":0},
-    {"t":"house2","r":35,"c":4,"h":2,"style":0},
-    {"t":"house1","r":35,"c":31,"h":2,"style":4},
-    {"t":"house1","r":35,"c":33,"h":2,"style":4},
-    {"t":"house2","r":36,"c":2,"w":2,"style":0},
-    {"t":"house1","r":37,"c":6,"h":2,"w":4,"style":5},
-    {"t":"house1","r":37,"c":14,"h":2,"w":3,"style":6},
-    {"t":"decal","kind":"label","r":3,"c":12,"size":1.8,"text":"ERPEL"},
-    {"t":"decal","kind":"label","r":9,"c":34,"size":1.8,"text":"ERPELER LEY"},
-    {"t":"decal","kind":"label","r":13,"c":30,"size":2,"text":"LUDENDORFF BRIDGE"},
-    {"t":"decal","kind":"label","r":33,"c":8,"size":1.8,"text":"REMAGEN"},
-    {"t":"decal","kind":"label","r":29,"c":27,"size":1.6,"text":"REMAGEN STATION"},
-    {"t":"decal","kind":"crosswalk","r":28,"c":12,"size":2},
-    {"t":"decal","kind":"hazard_zone","r":28,"c":33,"size":2},
-    {"t":"decal","kind":"parking","r":28,"c":9},
-    {"t":"decal","kind":"parking","r":28,"c":8},
-    {"t":"decal","kind":"helipad","r":26,"c":14},
-    {"t":"decal","kind":"helipad","r":26,"c":15},
-    {"t":"decal","kind":"helipad","r":27,"c":14},
-    {"t":"decal","kind":"helipad","r":27,"c":15},
-    {"t":"decal","kind":"parking","r":31,"c":16},
-    {"t":"decal","kind":"parking","r":31,"c":17},
-    {"t":"decal","kind":"parking","r":32,"c":16},
-    {"t":"decal","kind":"parking","r":32,"c":17},
-    {"t":"decal","kind":"parking","r":35,"c":32},
-    {"t":"decal","kind":"parking","r":36,"c":32}
-  ]
+  "terrain": {
+    "grass": [[0,0,4,3],[0,21,8,12],[0,35,10,5],[19,0,2,7],[19,8,2,12],[19,26,2,9],[19,36,2,4],[23,32,1,8],[26,32,1,8],[27,36,1,4],[29,30,6,10],[33,6,2,1],[33,9,4,1],[34,7,2,1],[34,10,3,1],[35,8],[35,30,1,2],[35,33,5,7],[36,11],[37,2,1,3],[37,24,1,6],[38,3,1,2],[38,24,2,4],[38,29,2,4],[39,4],[39,23],[39,28]],
+    "road": [[0,3,5,1],[0,12,11,2],[2,6,1,3],[2,15,1,3],[3,8,2,1],[3,17,2,1],[4,0,1,3],[4,4,1,4],[4,9,1,3],[4,14,1,3],[4,18,1,3],[5,0,6,1],[5,10,3,1],[7,5,1,5],[8,5,3,1],[10,1,1,4],[10,6,1,6],[10,14,1,26],[11,7,3,1],[11,35,3,1],[19,7,4,1],[19,35,4,1],[21,0,2,7],[21,8,2,27],[21,36,2,4],[23,12,17,2],[24,5,16,1],[28,8,2,2],[28,14,1,20],[29,0,1,5],[29,6,1,2],[29,10,1,2],[29,25,3,1],[31,16,3,2],[32,1,2,1],[32,28,5,1],[33,2,1,3],[33,14,1,2],[35,32,3,1],[36,14,1,14],[36,29,1,2],[37,30,1,2],[39,6,1,6]],
+    "swamp": [[11,0,1,6],[12,0,2,4],[13,38,1,2],[18,28,1,5]],
+    "sand": [[12,8,2,1],[12,11,2,6],[12,19,2,1],[12,26,2,4],[12,32,2,3],[12,36,1,4],[13,4,1,3],[13,17,1,2],[13,36,1,2]],
+    "water": [[14,0,5,10],[14,14,4,26],[15,10,4,4],[18,14,1,14],[18,33,1,7]],
+    "stone": [[14,10,1,4]],
+    "oil": [[27,33,1,3],[28,35]],
+    "forest": [[0,29,1,3],[0,36,2,4],[1,30,1,2],[2,31,6,1],[2,36,1,3],[3,30],[3,36,4,2],[4,38],[5,30,2,1],[6,29],[19,0,1,6],[19,8,2,3],[19,15,2,1],[19,27,2,3],[19,36,2,2],[20,0,1,3],[20,4,1,2],[23,34,1,3],[26,32,1,2],[29,36,5,2],[30,35,4,1],[30,38,3,1],[33,7,2,3],[33,33,1,2],[34,6],[35,10,2,2],[35,35,4,4],[37,2,2,2],[37,25,3,4]],
+    "concrete": [[0,32,8,1],[0,35,8,1],[1,29,5,1],[2,30],[4,30],[26,20,1,4],[37,19,1,4]],
+    "boxes": [[1,20],[8,37],[12,12],[20,3],[21,21],[27,32],[33,17],[38,1]],
+    "brick": [[2,22,1,4],[4,23,1,4],[6,21,1,4],[13,35],[30,20,6,1]],
+    "barrel": [[3,9],[12,26],[27,33,1,2]],
+    "hedgehog": [[11,10,1,2],[11,13,1,2],[11,26,1,2],[11,29,1,2]],
+    "crater": [[20,26],[23,8]],
+    "rubble": [[23,3,1,4],[23,16,1,3]],
+    "bridge": [[14,7,5,1,"ns"],[14,22,5,2,"ns"],[14,35,5,1,"ns"]],
+    "house1": [[0,6,2,3,5],[0,15,2,3,3],[5,1,1,3,1],[5,6,2,4,3],[6,1,2,1,1],[6,3,2,1,1],[7,2,1,1,1],[8,6,2,3,2],[8,16,2,5,5],[11,17,2,2,0],[12,9,2,2,0],[12,30,2,2,4],[19,12,2,3,4],[19,16,2,3,1],[19,31,2,3,7],[23,27,1,5,0],[26,1,1,4,4],[26,36,2,3,6],[27,1,2,1,4],[27,4,2,1,4],[28,2,1,2,4],[28,36,1,1,6],[28,38,1,1,6],[30,1,2,3,4],[30,6,1,4,6],[30,26,2,4,4],[31,6,2,1,6],[31,9,2,1,6],[32,7,1,2,6],[34,31,1,3,4],[35,31,2,1,4],[35,33,2,1,4],[37,6,2,4,5],[37,14,2,3,6]],
+    "house2": [[5,15,1,4,4],[6,15,2,1,4],[6,18,2,1,4],[7,16,1,2,4],[12,20,2,2,3],[12,24,2,2,0],[19,20,2,2,1],[19,24,2,2,6],[26,7,2,4,6],[26,25,2,6,1],[28,7,1,1,6],[28,10,1,1,6],[30,15,1,4,7],[31,15,2,1,7],[31,18,2,1,7],[32,24,1,4,4],[33,24,2,1,4],[33,27,2,1,4],[34,1,1,4,0],[34,25,1,2,4],[35,1,2,1,0],[35,4,2,1,0],[36,2,1,2,0]],
+    "decal": [["label",3,12,1.8,"ERPEL"],["label",9,34,1.8,"ERPELER LEY"],["label",13,30,2,"LUDENDORFF BRIDGE"],["label",33,8,1.8,"REMAGEN"],["label",29,27,1.6,"REMAGEN STATION"],["crosswalk",28,12,2],["hazard_zone",28,33,2],["parking",28,9],["parking",28,8],["helipad",26,14],["helipad",26,15],["helipad",27,14],["helipad",27,15],["parking",31,16],["parking",31,17],["parking",32,16],["parking",32,17],["parking",35,32],["parking",36,32]]
+  }
 }

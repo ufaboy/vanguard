@@ -7,130 +7,42 @@
   "gameMode": "stronghold_assault",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "enemyBase": {
-    "cell": {
-      "row": 4,
-      "col": 19
-    },
-    "name": "Montjuic Castle Battery",
-    "maxHp": 48,
-    "fortifyPerimeter": true
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 1300
-  },
-  "environment": {
-    "theme": "coast",
-    "tint": "#d2dfd6",
-    "fogColor": "#455863",
-    "groundColor": "#6e7a6d"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "enemyBase": {"cell":{"row":4,"col":19},"name":"Montjuic Castle Battery","maxHp":48,"fortifyPerimeter":true},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":1300},
+  "environment": {"theme":"coast","tint":"#d2dfd6","fogColor":"#455863","groundColor":"#6e7a6d"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Assault the fortified Montjuic Castle and coastal battery from the southern approaches across three distinct corridors: the western Olympic Ring and pine parklands, the central hill terraces and castle sally gate, and the eastern Mediterranean cliffside coastal road.",
     "breaches": [
       {
         "name": "Castle South Sally Gate",
-        "cells": [
-          {
-            "row": 7,
-            "col": 18
-          },
-          {
-            "row": 7,
-            "col": 19
-          },
-          {
-            "row": 7,
-            "col": 20
-          }
-        ],
-        "start": {
-          "row": 9,
-          "col": 19
-        },
-        "end": {
-          "row": 5,
-          "col": 19
-        },
+        "cells": [{"row":7,"col":18},{"row":7,"col":19},{"row":7,"col":20}],
+        "start": {"row":9,"col":19},
+        "end": {"row":5,"col":19},
         "purpose": "Blast through the brick sally gate in Montjuic Castle south curtain wall to storm the battery courtyard."
       },
       {
         "name": "Olympic East Retaining Wall",
-        "cells": [
-          {
-            "row": 20,
-            "col": 15
-          },
-          {
-            "row": 20,
-            "col": 16
-          }
-        ],
-        "start": {
-          "row": 20,
-          "col": 13
-        },
-        "end": {
-          "row": 20,
-          "col": 18
-        },
+        "cells": [{"row":20,"col":15},{"row":20,"col":16}],
+        "start": {"row":20,"col":13},
+        "end": {"row":20,"col":18},
         "purpose": "Breach the retaining wall east of Estadi Olimpic to link the Olympic Ring directly with the central pine slope."
       },
       {
         "name": "Miramar Terrace Barricade",
-        "cells": [
-          {
-            "row": 16,
-            "col": 26
-          },
-          {
-            "row": 17,
-            "col": 26
-          }
-        ],
-        "start": {
-          "row": 16,
-          "col": 24
-        },
-        "end": {
-          "row": 16,
-          "col": 28
-        },
+        "cells": [{"row":16,"col":26},{"row":17,"col":26}],
+        "start": {"row":16,"col":24},
+        "end": {"row":16,"col":28},
         "purpose": "Smash the brick terrace barrier between the Miramar overlook and the eastern coastal road."
       },
       {
         "name": "Botanical Slope Wall",
-        "cells": [
-          {
-            "row": 27,
-            "col": 23
-          },
-          {
-            "row": 27,
-            "col": 24
-          }
-        ],
-        "start": {
-          "row": 29,
-          "col": 23
-        },
-        "end": {
-          "row": 25,
-          "col": 23
-        },
+        "cells": [{"row":27,"col":23},{"row":27,"col":24}],
+        "start": {"row":29,"col":23},
+        "end": {"row":25,"col":23},
         "purpose": "Open a shortcut through the botanical garden wall into the mid-hill cross road."
       }
     ],
@@ -156,500 +68,94 @@
     "zones": [
       {
         "id": "castle-courtyard",
-        "bounds": [
-          1,
-          15,
-          8,
-          24
-        ],
+        "bounds": [1,15,8,24],
         "surface": "concrete",
         "density": 0.28,
-        "details": [
-          "cracks",
-          "rubble",
-          "patches"
-        ]
+        "details": ["cracks","rubble","patches"]
       },
       {
         "id": "olympic-ring-plaza",
-        "bounds": [
-          13,
-          3,
-          29,
-          16
-        ],
+        "bounds": [13,3,29,16],
         "surface": "pavers",
         "density": 0.25,
-        "details": [
-          "cracks",
-          "leaves",
-          "tracks"
-        ]
+        "details": ["cracks","leaves","tracks"]
       },
       {
         "id": "coastal-battery-ridge",
-        "bounds": [
-          2,
-          26,
-          24,
-          34
-        ],
+        "bounds": [2,26,24,34],
         "surface": "gravel",
         "density": 0.3,
-        "details": [
-          "cracks",
-          "oil",
-          "rubble"
-        ]
+        "details": ["cracks","oil","rubble"]
       },
-      {
-        "id": "southern-terrace",
-        "bounds": [
-          32,
-          12,
-          39,
-          27
-        ],
-        "surface": "asphalt",
-        "density": 0.22,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      }
+      {"id":"southern-terrace","bounds":[32,12,39,27],"surface":"asphalt","density":0.22,"details":["cracks","tracks"]}
     ],
     "paths": [
-      {
-        "id": "olympic-promenade",
-        "points": [
-          [
-            14,
-            15
-          ],
-          [
-            19,
-            15
-          ]
-        ],
-        "width": 2,
-        "surface": "pavers",
-        "marking": "none"
-      },
-      {
-        "id": "miramar-walk",
-        "points": [
-          [
-            17,
-            21
-          ],
-          [
-            17,
-            25
-          ]
-        ],
-        "width": 1.5,
-        "surface": "gravel",
-        "marking": "none"
-      }
+      {"id":"olympic-promenade","points":[[14,15],[19,15]],"width":2,"surface":"pavers","marking":"none"},
+      {"id":"miramar-walk","points":[[17,21],[17,25]],"width":1.5,"surface":"gravel","marking":"none"}
     ],
-    "exclusions": [
-      {
-        "id": "hq-apron",
-        "bounds": [
-          37,
-          17,
-          39,
-          22
-        ]
-      }
-    ]
+    "exclusions": [{"id":"hq-apron","bounds":[37,17,39,22]}]
   },
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 6,
     "entrances": [
-      {
-        "id": "north-west-park",
-        "row": 0,
-        "col": 6
-      },
-      {
-        "id": "north-castle-west",
-        "row": 0,
-        "col": 13
-      },
-      {
-        "id": "north-castle-east",
-        "row": 0,
-        "col": 25
-      },
-      {
-        "id": "north-cliff-road",
-        "row": 0,
-        "col": 31
-      },
-      {
-        "id": "west-mirador",
-        "row": 10,
-        "col": 0
-      },
-      {
-        "id": "east-battery",
-        "row": 10,
-        "col": 32
-      }
+      {"id":"north-west-park","row":0,"col":6},
+      {"id":"north-castle-west","row":0,"col":13},
+      {"id":"north-castle-east","row":0,"col":25},
+      {"id":"north-cliff-road","row":0,"col":31},
+      {"id":"west-mirador","row":10,"col":0},
+      {"id":"east-battery","row":10,"col":32}
     ],
     "encounters": [
       {
         "id": "coastal-pickets",
         "label": "COASTAL PICKETS: Forward recon and battery guards probing the hill approaches.",
         "recoverySec": 0,
-        "entrances": [
-          "north-west-park",
-          "north-castle-west",
-          "north-castle-east",
-          "north-cliff-road"
-        ],
-        "initialCells": [
-          {
-            "row": 3,
-            "col": 6
-          },
-          {
-            "row": 4,
-            "col": 13
-          },
-          {
-            "row": 4,
-            "col": 25
-          },
-          {
-            "row": 4,
-            "col": 31
-          }
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 13
-          },
-          {
-            "row": 14,
-            "col": 20
-          },
-          {
-            "row": 24,
-            "col": 20
-          },
-          {
-            "row": 30,
-            "col": 19
-          },
-          {
-            "row": 34,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "HOWITZER",
-          "STEALTH",
-          "STANDARD",
-          "ARMOR"
-        ]
+        "entrances": ["north-west-park","north-castle-west","north-castle-east","north-cliff-road"],
+        "initialCells": [{"row":3,"col":6},{"row":4,"col":13},{"row":4,"col":25},{"row":4,"col":31}],
+        "patrolRoute": [{"row":12,"col":13},{"row":14,"col":20},{"row":24,"col":20},{"row":30,"col":19},{"row":34,"col":19}],
+        "enemies": ["SCOUT","STANDARD","SCOUT","STANDARD","HOWITZER","STEALTH","STANDARD","ARMOR"]
       },
       {
         "id": "olympic-counterattack",
         "label": "OLYMPIC COUNTERATTACK: Mechanized columns sweeping the stadium ring and pine slopes.",
         "recoverySec": 8,
-        "entrances": [
-          "north-west-park",
-          "north-cliff-road",
-          "west-mirador",
-          "east-battery"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 6
-          },
-          {
-            "row": 24,
-            "col": 6
-          },
-          {
-            "row": 34,
-            "col": 7
-          },
-          {
-            "row": 35,
-            "col": 17
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "ARMOR",
-          "FLAMETHROWER",
-          "STANDARD",
-          "STRIKER",
-          "SAPPER",
-          "STEALTH",
-          "HOWITZER",
-          "ENGINEER"
-        ]
+        "entrances": ["north-west-park","north-cliff-road","west-mirador","east-battery"],
+        "patrolRoute": [{"row":12,"col":6},{"row":24,"col":6},{"row":34,"col":7},{"row":35,"col":17}],
+        "enemies": ["SCOUT","ARMOR","FLAMETHROWER","STANDARD","STRIKER","SAPPER","STEALTH","HOWITZER","ENGINEER"]
       },
       {
         "id": "castle-garrison",
         "label": "MONTJUIC GARRISON: Heavy coastal-battery reserve defending the castle ramparts.",
         "recoverySec": 9,
-        "entrances": [
-          "north-castle-west",
-          "north-castle-east",
-          "north-cliff-road",
-          "east-battery"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 31
-          },
-          {
-            "row": 22,
-            "col": 29
-          },
-          {
-            "row": 33,
-            "col": 29
-          },
-          {
-            "row": 35,
-            "col": 21
-          }
-        ],
-        "enemies": [
-          "ARMOR",
-          "STANDARD",
-          "STRIKER",
-          "JAMMER",
-          "HOWITZER",
-          "HOVER",
-          "ARMOR",
-          "STANDARD",
-          "STRIKER"
-        ]
+        "entrances": ["north-castle-west","north-castle-east","north-cliff-road","east-battery"],
+        "patrolRoute": [{"row":10,"col":31},{"row":22,"col":29},{"row":33,"col":29},{"row":35,"col":21}],
+        "enemies": ["ARMOR","STANDARD","STRIKER","JAMMER","HOWITZER","HOVER","ARMOR","STANDARD","STRIKER"]
       }
     ],
-    "boss": {
-      "enabled": false
-    }
+    "boss": {"enabled":false}
   },
-  "terrain": [
-    {"t":"grass","r":0,"c":0,"h":13,"w":6},
-    {"t":"road","r":0,"c":6,"h":35,"w":2},
-    {"t":"grass","r":0,"c":8,"h":12,"w":5},
-    {"t":"road","r":0,"c":13,"h":5,"w":2},
-    {"t":"grass","r":0,"c":15,"w":10},
-    {"t":"road","r":0,"c":25,"h":5,"w":2},
-    {"t":"grass","r":0,"c":27,"h":2,"w":4},
-    {"t":"road","r":0,"c":31,"h":12,"w":2},
-    {"t":"grass","r":0,"c":33,"h":2},
-    {"t":"stone","r":0,"c":34,"h":2,"w":2},
-    {"t":"water","r":0,"c":36,"h":40,"w":4},
-    {"t":"stone","r":2,"c":27,"h":4,"w":4},
-    {"t":"stone","r":2,"c":33,"h":3,"w":2},
-    {"t":"water","r":2,"c":35,"h":3},
-    {"t":"grass","r":5,"c":13,"h":7,"w":2},
-    {"t":"grass","r":5,"c":25,"h":7,"w":2},
-    {"t":"grass","r":5,"c":33,"h":7},
-    {"t":"stone","r":5,"c":34,"h":6,"w":2},
-    {"t":"stone","r":6,"c":27,"h":4,"w":2},
-    {"t":"oil","r":6,"c":29},
-    {"t":"stone","r":6,"c":30,"h":4},
-    {"t":"stone","r":7,"c":29,"h":3},
-    {"t":"road","r":8,"c":19,"h":6,"w":2},
-    {"t":"grass","r":9,"c":15,"h":3,"w":4},
-    {"t":"grass","r":9,"c":21,"h":3,"w":4},
-    {"t":"grass","r":10,"c":27,"w":2},
-    {"t":"road","r":10,"c":29,"h":2,"w":2},
-    {"t":"grass","r":11,"c":27},
-    {"t":"road","r":11,"c":28,"h":12},
-    {"t":"sand","r":11,"c":34,"w":2},
-    {"t":"road","r":12,"c":8,"h":2,"w":11},
-    {"t":"road","r":12,"c":21,"h":2,"w":7},
-    {"t":"road","r":12,"c":29,"h":23},
-    {"t":"stone","r":12,"c":30,"h":10,"w":2},
-    {"t":"grass","r":12,"c":32,"h":2},
-    {"t":"sand","r":12,"c":33,"h":2,"w":2},
-    {"t":"water","r":12,"c":35,"h":2},
-    {"t":"grass","r":13,"c":0,"h":27,"w":3},
-    {"t":"grass","r":14,"c":17,"h":10,"w":11},
-    {"t":"sand","r":14,"c":32,"h":3,"w":2},
-    {"t":"water","r":14,"c":34,"h":3},
-    {"t":"sand","r":14,"c":35,"h":3},
-    {"t":"grass","r":17,"c":32,"h":10},
-    {"t":"sand","r":17,"c":33,"w":2},
-    {"t":"water","r":17,"c":35},
-    {"t":"grass","r":18,"c":33,"h":7},
-    {"t":"sand","r":18,"c":34,"w":2},
-    {"t":"stone","r":19,"c":34,"h":6,"w":2},
-    {"t":"road","r":22,"c":30,"h":13},
-    {"t":"stone","r":22,"c":31,"h":3},
-    {"t":"grass","r":23,"c":28},
-    {"t":"road","r":24,"c":8,"h":2,"w":21},
-    {"t":"grass","r":25,"c":31,"h":15},
-    {"t":"sand","r":25,"c":33,"h":2,"w":2},
-    {"t":"water","r":25,"c":35,"h":2},
-    {"t":"grass","r":26,"c":17,"h":6,"w":2},
-    {"t":"road","r":26,"c":19,"h":10},
-    {"t":"grass","r":26,"c":21,"h":6,"w":8},
-    {"t":"oil","r":27,"c":13,"h":2},
-    {"t":"sand","r":27,"c":32,"h":2,"w":2},
-    {"t":"water","r":27,"c":34,"h":2},
-    {"t":"sand","r":27,"c":35,"h":2},
-    {"t":"road","r":29,"c":20,"h":7},
-    {"t":"grass","r":29,"c":32,"h":11},
-    {"t":"sand","r":29,"c":33,"h":2,"w":2},
-    {"t":"water","r":29,"c":35,"h":2},
-    {"t":"grass","r":30,"c":3,"h":10,"w":3},
-    {"t":"grass","r":30,"c":8,"h":2,"w":9},
-    {"t":"grass","r":31,"c":33,"h":5},
-    {"t":"sand","r":31,"c":34,"w":2},
-    {"t":"grass","r":32,"c":8,"h":2,"w":4},
-    {"t":"grass","r":32,"c":28},
-    {"t":"stone","r":32,"c":34,"h":4,"w":2},
-    {"t":"road","r":33,"c":22,"h":2,"w":7},
-    {"t":"road","r":34,"c":8,"h":2,"w":11},
-    {"t":"road","r":34,"c":21,"h":2},
-    {"t":"grass","r":35,"c":6,"h":5},
-    {"t":"road","r":35,"c":7},
-    {"t":"road","r":35,"c":22},
-    {"t":"grass","r":35,"c":28,"h":5,"w":3},
-    {"t":"grass","r":36,"c":7,"h":4,"w":5},
-    {"t":"stone","r":36,"c":33,"h":4,"w":2},
-    {"t":"water","r":36,"c":35,"h":4},
-    {"t":"forest","r":1,"c":33},
-    {"t":"forest","r":2,"c":1,"h":2,"w":2},
-    {"t":"forest","r":2,"c":9,"h":2},
-    {"t":"concrete","r":2,"c":16,"w":2},
-    {"t":"concrete","r":2,"c":20,"w":4},
-    {"t":"forest","r":3,"c":3,"h":3},
-    {"t":"forest","r":3,"c":10},
-    {"t":"concrete","r":3,"c":15,"h":5},
-    {"t":"concrete","r":3,"c":19},
-    {"t":"concrete","r":3,"c":24,"h":5},
-    {"t":"concrete","r":3,"c":27,"h":2,"w":2},
-    {"t":"barrel","r":3,"c":29},
-    {"t":"forest","r":4,"c":2},
-    {"t":"forest","r":4,"c":4,"h":2},
-    {"t":"concrete","r":4,"c":18},
-    {"t":"enemy_base","r":4,"c":19},
-    {"t":"concrete","r":4,"c":20},
-    {"t":"water_tower","r":4,"c":23},
-    {"t":"barrel","r":5,"c":22},
-    {"t":"boxes","r":5,"c":28},
-    {"t":"forest","r":5,"c":33,"h":2},
-    {"t":"forest","r":6,"c":1,"h":2,"w":2},
-    {"t":"boxes","r":6,"c":16},
-    {"t":"barrel","r":6,"c":29},
-    {"t":"forest","r":7,"c":3},
-    {"t":"forest","r":7,"c":9,"h":2},
-    {"t":"concrete","r":7,"c":16,"w":2},
-    {"t":"brick","r":7,"c":18,"w":3},
-    {"t":"concrete","r":7,"c":21,"w":3},
-    {"t":"brick","r":7,"c":27,"h":2,"w":2},
-    {"t":"forest","r":8,"c":10},
-    {"t":"crater","r":8,"c":29},
-    {"t":"forest","r":9,"c":2,"w":2},
-    {"t":"crater","r":9,"c":20},
-    {"t":"forest","r":9,"c":22,"w":2},
-    {"t":"forest","r":10,"c":3,"h":2,"w":2},
-    {"t":"rubble","r":10,"c":22},
-    {"t":"forest","r":10,"c":23,"h":2,"w":2},
-    {"t":"forest","r":11,"c":2},
-    {"t":"hedgehog","r":11,"c":5},
-    {"t":"hedgehog","r":11,"c":8},
-    {"t":"crater","r":11,"c":19},
-    {"t":"boxes","r":12,"c":1},
-    {"t":"crater","r":13,"c":27},
-    {"t":"water_tower","r":14,"c":16},
-    {"t":"hedgehog","r":14,"c":17},
-    {"t":"crater","r":14,"c":21},
-    {"t":"concrete","r":14,"c":26,"h":2},
-    {"t":"forest","r":15,"c":18,"h":3,"w":2},
-    {"t":"forest","r":16,"c":20,"h":3},
-    {"t":"brick","r":16,"c":26,"h":2},
-    {"t":"crater","r":18,"c":11},
-    {"t":"concrete","r":18,"c":16,"h":2},
-    {"t":"forest","r":18,"c":19},
-    {"t":"concrete","r":18,"c":26,"h":4},
-    {"t":"forest","r":18,"c":27,"h":4},
-    {"t":"boxes","r":19,"c":12},
-    {"t":"brick","r":20,"c":15,"w":2},
-    {"t":"forest","r":21,"c":2,"h":3,"w":2},
-    {"t":"concrete","r":21,"c":16,"h":2},
-    {"t":"crater","r":21,"c":28},
-    {"t":"forest","r":21,"c":32,"h":3},
-    {"t":"forest","r":22,"c":4},
-    {"t":"rubble","r":22,"c":18},
-    {"t":"boxes","r":22,"c":33},
-    {"t":"hedgehog","r":23,"c":18},
-    {"t":"hedgehog","r":23,"c":21},
-    {"t":"hedgehog","r":25,"c":31},
-    {"t":"crater","r":26,"c":31},
-    {"t":"barrel","r":27,"c":13,"h":2},
-    {"t":"boxes","r":27,"c":14},
-    {"t":"forest","r":27,"c":16,"w":2},
-    {"t":"brick","r":27,"c":23,"w":2},
-    {"t":"concrete","r":27,"c":25,"w":2},
-    {"t":"forest","r":28,"c":15,"w":2},
-    {"t":"crater","r":28,"c":17},
-    {"t":"rubble","r":29,"c":15},
-    {"t":"forest","r":29,"c":16,"w":2},
-    {"t":"rubble","r":30,"c":22},
-    {"t":"crater","r":31,"c":18},
-    {"t":"crater","r":31,"c":21},
-    {"t":"boxes","r":31,"c":28},
-    {"t":"hedgehog","r":32,"c":21},
-    {"t":"barrel","r":32,"c":28},
-    {"t":"forest","r":33,"c":5,"h":4},
-    {"t":"hedgehog","r":33,"c":15},
-    {"t":"forest","r":34,"c":4,"h":3},
-    {"t":"forest","r":35,"c":27,"h":3,"w":2},
-    {"t":"forest","r":35,"c":32,"w":2},
-    {"t":"forest","r":36,"c":3},
-    {"t":"forest","r":36,"c":29},
-    {"t":"forest","r":36,"c":32},
-    {"t":"forest","r":37,"c":11,"w":2},
-    {"t":"concrete","r":37,"c":18,"w":4},
-    {"t":"boxes","r":38,"c":1},
-    {"t":"forest","r":38,"c":11},
-    {"t":"house1","r":3,"c":22,"style":2},
-    {"t":"house1","r":5,"c":10,"h":2,"w":2,"style":5},
-    {"t":"house1","r":6,"c":22,"style":1},
-    {"t":"house1","r":12,"c":31,"h":2,"w":2,"style":10},
-    {"t":"house2","r":14,"c":23,"h":2,"w":3,"style":2},
-    {"t":"house2","r":15,"c":2,"h":4,"w":3,"style":1},
-    {"t":"house2","r":15,"c":14,"h":3,"style":6},
-    {"t":"house1","r":19,"c":22,"h":2,"w":3,"style":11},
-    {"t":"house2","r":20,"c":9,"h":3,"style":1},
-    {"t":"house2","r":20,"c":14,"h":3,"style":1},
-    {"t":"house2","r":22,"c":10,"w":4,"style":1},
-    {"t":"house1","r":26,"c":2,"h":3,"w":3,"style":6},
-    {"t":"house1","r":26,"c":9,"h":3,"w":4,"style":2},
-    {"t":"house1","r":26,"c":20,"h":3,"w":3,"style":11},
-    {"t":"house2","r":29,"c":24,"h":2,"w":3,"style":6},
-    {"t":"house1","r":30,"c":3,"h":3,"w":3,"style":2},
-    {"t":"house2","r":30,"c":10,"h":3,"w":4,"style":1},
-    {"t":"house1","r":31,"c":31,"h":3,"w":3,"style":10},
-    {"t":"house1","r":36,"c":8,"h":2,"w":2,"style":7},
-    {"t":"landmark","kind":"MONTJUIC_CASTLE","r":15,"c":9},
-    {"t":"decal","kind":"label","r":6,"c":19,"text":"MONTJUIC CASTLE"},
-    {"t":"decal","kind":"label","r":23,"c":11,"text":"OLYMPIC RING"},
-    {"t":"decal","kind":"label","r":18,"c":23,"text":"MIRAMAR"},
-    {"t":"decal","kind":"hazard_zone","r":6,"c":29,"size":2}
-  ]
+  "terrain": {
+    "grass": [[0,0,13,6],[0,8,12,5],[0,15,1,10],[0,27,2,4],[0,33,2,1],[5,13,7,2],[5,25,7,2],[5,33,7,1],[9,15,3,4],[9,21,3,4],[10,27,1,2],[11,27],[12,32,2,1],[13,0,27,3],[14,17,10,11],[17,32,10,1],[18,33,7,1],[23,28],[25,31,15,1],[26,17,6,2],[26,21,6,8],[29,32,11,1],[30,3,10,3],[30,8,2,9],[31,33,5,1],[32,8,2,4],[32,28],[35,6,5,1],[35,28,5,3],[36,7,4,5]],
+    "road": [[0,6,35,2],[0,13,5,2],[0,25,5,2],[0,31,12,2],[8,19,6,2],[10,29,2,2],[11,28,12,1],[12,8,2,11],[12,21,2,7],[12,29,23,1],[22,30,13,1],[24,8,2,21],[26,19,10,1],[29,20,7,1],[33,22,2,7],[34,8,2,11],[34,21,2,1],[35,7],[35,22]],
+    "stone": [[0,34,2,2],[2,27,4,4],[2,33,3,2],[5,34,6,2],[6,27,4,2],[6,30,4,1],[7,29,3,1],[12,30,10,2],[19,34,6,2],[22,31,3,1],[32,34,4,2],[36,33,4,2]],
+    "water": [[0,36,40,4],[2,35,3,1],[12,35,2,1],[14,34,3,1],[17,35],[25,35,2,1],[27,34,2,1],[29,35,2,1],[36,35,4,1]],
+    "oil": [[6,29],[27,13,2,1]],
+    "sand": [[11,34,1,2],[12,33,2,2],[14,32,3,2],[14,35,3,1],[17,33,1,2],[18,34,1,2],[25,33,2,2],[27,32,2,2],[27,35,2,1],[29,33,2,2],[31,34,1,2]],
+    "forest": [[1,33],[2,1,2,2],[2,9,2,1],[3,3,3,1],[3,10],[4,2],[4,4,2,1],[5,33,2,1],[6,1,2,2],[7,3],[7,9,2,1],[8,10],[9,2,1,2],[9,22,1,2],[10,3,2,2],[10,23,2,2],[11,2],[15,18,3,2],[16,20,3,1],[18,19],[18,27,4,1],[21,2,3,2],[21,32,3,1],[22,4],[27,16,1,2],[28,15,1,2],[29,16,1,2],[33,5,4,1],[34,4,3,1],[35,27,3,2],[35,32,1,2],[36,3],[36,29],[36,32],[37,11,1,2],[38,11]],
+    "concrete": [[2,16,1,2],[2,20,1,4],[3,15,5,1],[3,19],[3,24,5,1],[3,27,2,2],[4,18],[4,20],[7,16,1,2],[7,21,1,3],[14,26,2,1],[18,16,2,1],[18,26,4,1],[21,16,2,1],[27,25,1,2],[37,18,1,4]],
+    "barrel": [[3,29],[5,22],[6,29],[27,13,2,1],[32,28]],
+    "enemy_base": [[4,19]],
+    "water_tower": [[4,23],[14,16]],
+    "boxes": [[5,28],[6,16],[12,1],[19,12],[22,33],[27,14],[31,28],[38,1]],
+    "brick": [[7,18,1,3],[7,27,2,2],[16,26,2,1],[20,15,1,2],[27,23,1,2]],
+    "crater": [[8,29],[9,20],[11,19],[13,27],[14,21],[18,11],[21,28],[26,31],[28,17],[31,18],[31,21]],
+    "rubble": [[10,22],[22,18],[29,15],[30,22]],
+    "hedgehog": [[11,5],[11,8],[14,17],[23,18],[23,21],[25,31],[32,21],[33,15]],
+    "house1": [[3,22,1,1,2],[5,10,2,2,5],[6,22,1,1,1],[12,31,2,2,10],[19,22,2,3,11],[26,2,3,3,6],[26,9,3,4,2],[26,20,3,3,11],[30,3,3,3,2],[31,31,3,3,10],[36,8,2,2,7]],
+    "house2": [[14,23,2,3,2],[15,2,4,3,1],[15,14,3,1,6],[20,9,3,1,1],[20,14,3,1,1],[22,10,1,4,1],[29,24,2,3,6],[30,10,3,4,1]],
+    "landmark": [["MONTJUIC_CASTLE",15,9]],
+    "decal": [["label",6,19,1,"MONTJUIC CASTLE"],["label",23,11,1,"OLYMPIC RING"],["label",18,23,1,"MIRAMAR"],["hazard_zone",6,29,2]]
+  }
 }

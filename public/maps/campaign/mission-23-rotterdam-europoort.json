@@ -7,126 +7,42 @@
   "gameMode": "stronghold_assault",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "enemyBase": {
-    "cell": {
-      "row": 3,
-      "col": 20
-    },
-    "name": "Europoort Prototype Terminal",
-    "maxHp": 48,
-    "fortifyPerimeter": true
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 520
-  },
-  "environment": {
-    "theme": "industrial",
-    "tint": "#b8c8d4",
-    "fogColor": "#2e353d",
-    "groundColor": "#4e5358"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "enemyBase": {"cell":{"row":3,"col":20},"name":"Europoort Prototype Terminal","maxHp":48,"fortifyPerimeter":true},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":520},
+  "environment": {"theme":"industrial","tint":"#b8c8d4","fogColor":"#2e353d","groundColor":"#4e5358"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Assault the fortified Europoort container terminal from the southern marshaling apron across three distinct port corridors: the western Maashaven container quay and bridge, the central gantry-crane freight spine with breachable container stacks, and the eastern oil tank farm and barge slip.",
     "breaches": [
       {
         "name": "West Quay Container Gate",
-        "cells": [
-          {
-            "row": 13,
-            "col": 8
-          },
-          {
-            "row": 13,
-            "col": 9
-          }
-        ],
-        "start": {
-          "row": 14,
-          "col": 8
-        },
-        "end": {
-          "row": 11,
-          "col": 8
-        },
+        "cells": [{"row":13,"col":8},{"row":13,"col":9}],
+        "start": {"row":14,"col":8},
+        "end": {"row":11,"col":8},
         "purpose": "Blast the brick container barricade east of the Maashaven quay to open a fast bypass onto the port ring road."
       },
       {
         "name": "Central Gantry Yard Gate",
-        "cells": [
-          {
-            "row": 21,
-            "col": 16
-          },
-          {
-            "row": 21,
-            "col": 17
-          }
-        ],
-        "start": {
-          "row": 22,
-          "col": 16
-        },
-        "end": {
-          "row": 20,
-          "col": 16
-        },
+        "cells": [{"row":21,"col":16},{"row":21,"col":17}],
+        "start": {"row":22,"col":16},
+        "end": {"row":20,"col":16},
         "purpose": "Breach the brick container stack beside the central gantry spine to open a flanking assault lane."
       },
       {
         "name": "East Tank-Farm Partition",
-        "cells": [
-          {
-            "row": 17,
-            "col": 29
-          },
-          {
-            "row": 18,
-            "col": 29
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 27
-        },
-        "end": {
-          "row": 17,
-          "col": 31
-        },
+        "cells": [{"row":17,"col":29},{"row":18,"col":29}],
+        "start": {"row":17,"col":27},
+        "end": {"row":17,"col":31},
         "purpose": "Punch through the brick bund wall between the central container yard and the eastern oil tank farm."
       },
       {
         "name": "South Marshaling Yard Wall",
-        "cells": [
-          {
-            "row": 27,
-            "col": 13
-          },
-          {
-            "row": 27,
-            "col": 14
-          }
-        ],
-        "start": {
-          "row": 29,
-          "col": 13
-        },
-        "end": {
-          "row": 25,
-          "col": 13
-        },
+        "cells": [{"row":27,"col":13},{"row":27,"col":14}],
+        "start": {"row":29,"col":13},
+        "end": {"row":25,"col":13},
         "purpose": "Open a southern shortcut from the western container yard into the central terminal approach."
       }
     ],
@@ -154,473 +70,94 @@
     "zones": [
       {
         "id": "north-terminal-stronghold",
-        "bounds": [
-          1,
-          16,
-          8,
-          24
-        ],
+        "bounds": [1,16,8,24],
         "surface": "concrete",
         "density": 0.25,
-        "details": [
-          "cracks",
-          "oil",
-          "patches"
-        ]
+        "details": ["cracks","oil","patches"]
       },
       {
         "id": "west-container-quay",
-        "bounds": [
-          9,
-          1,
-          29,
-          11
-        ],
+        "bounds": [9,1,29,11],
         "surface": "concrete",
         "density": 0.28,
-        "details": [
-          "tracks",
-          "cracks",
-          "oil"
-        ]
+        "details": ["tracks","cracks","oil"]
       },
       {
         "id": "central-gantry-yard",
-        "bounds": [
-          12,
-          12,
-          29,
-          27
-        ],
+        "bounds": [12,12,29,27],
         "surface": "asphalt",
         "density": 0.3,
-        "details": [
-          "tracks",
-          "cracks",
-          "rubble"
-        ]
+        "details": ["tracks","cracks","rubble"]
       },
-      {
-        "id": "east-tank-farm",
-        "bounds": [
-          9,
-          28,
-          29,
-          38
-        ],
-        "surface": "gravel",
-        "density": 0.28,
-        "details": [
-          "oil",
-          "rubble",
-          "tracks"
-        ]
-      },
-      {
-        "id": "south-marshaling-apron",
-        "bounds": [
-          30,
-          6,
-          38,
-          33
-        ],
-        "surface": "asphalt",
-        "density": 0.22,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      }
+      {"id":"east-tank-farm","bounds":[9,28,29,38],"surface":"gravel","density":0.28,"details":["oil","rubble","tracks"]},
+      {"id":"south-marshaling-apron","bounds":[30,6,38,33],"surface":"asphalt","density":0.22,"details":["cracks","tracks"]}
     ],
     "paths": [
-      {
-        "id": "port-rail-west",
-        "points": [
-          [
-            2,
-            12
-          ],
-          [
-            29,
-            12
-          ]
-        ],
-        "width": 1.5,
-        "surface": "gravel",
-        "marking": "edges"
-      },
-      {
-        "id": "port-rail-east",
-        "points": [
-          [
-            2,
-            27
-          ],
-          [
-            29,
-            27
-          ]
-        ],
-        "width": 1.5,
-        "surface": "gravel",
-        "marking": "edges"
-      }
+      {"id":"port-rail-west","points":[[2,12],[29,12]],"width":1.5,"surface":"gravel","marking":"edges"},
+      {"id":"port-rail-east","points":[[2,27],[29,27]],"width":1.5,"surface":"gravel","marking":"edges"}
     ],
-    "exclusions": [
-      {
-        "id": "hq-clear-lane",
-        "bounds": [
-          37,
-          17,
-          39,
-          22
-        ]
-      }
-    ]
+    "exclusions": [{"id":"hq-clear-lane","bounds":[37,17,39,22]}]
   },
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
     "entrances": [
-      {
-        "id": "north-west-quay",
-        "row": 0,
-        "col": 4
-      },
-      {
-        "id": "north-rail-west",
-        "row": 0,
-        "col": 13
-      },
-      {
-        "id": "north-rail-east",
-        "row": 0,
-        "col": 25
-      },
-      {
-        "id": "north-east-depot",
-        "row": 0,
-        "col": 34
-      },
-      {
-        "id": "upper-west-gate",
-        "row": 8,
-        "col": 1
-      },
-      {
-        "id": "upper-east-gate",
-        "row": 8,
-        "col": 38
-      }
+      {"id":"north-west-quay","row":0,"col":4},
+      {"id":"north-rail-west","row":0,"col":13},
+      {"id":"north-rail-east","row":0,"col":25},
+      {"id":"north-east-depot","row":0,"col":34},
+      {"id":"upper-west-gate","row":8,"col":1},
+      {"id":"upper-east-gate","row":8,"col":38}
     ],
     "encounters": [
       {
         "id": "quay-perimeter-probe",
         "label": "QUAY PERIMETER PATROL ENGAGED",
         "recoverySec": 0,
-        "entrances": [
-          "north-west-quay",
-          "north-rail-west",
-          "north-rail-east",
-          "north-east-depot"
-        ],
-        "initialCells": [
-          {
-            "row": 3,
-            "col": 4
-          },
-          {
-            "row": 3,
-            "col": 13
-          },
-          {
-            "row": 3,
-            "col": 25
-          },
-          {
-            "row": 3,
-            "col": 34
-          }
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 4
-          },
-          {
-            "row": 22,
-            "col": 4
-          },
-          {
-            "row": 30,
-            "col": 11
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "HOVER",
-          "SCOUT",
-          "SAPPER",
-          "ENGINEER",
-          "STANDARD",
-          "ARMOR"
-        ]
+        "entrances": ["north-west-quay","north-rail-west","north-rail-east","north-east-depot"],
+        "initialCells": [{"row":3,"col":4},{"row":3,"col":13},{"row":3,"col":25},{"row":3,"col":34}],
+        "patrolRoute": [{"row":10,"col":4},{"row":22,"col":4},{"row":30,"col":11}],
+        "enemies": ["SCOUT","STANDARD","HOVER","SCOUT","SAPPER","ENGINEER","STANDARD","ARMOR"]
       },
       {
         "id": "oil-slip-flank-push",
         "label": "OIL TANK FARM & BARGE SLIP COUNTERATTACK",
         "recoverySec": 8,
-        "entrances": [
-          "north-rail-east",
-          "north-east-depot",
-          "upper-east-gate"
-        ],
-        "patrolRoute": [
-          {
-            "row": 11,
-            "col": 34
-          },
-          {
-            "row": 24,
-            "col": 34
-          },
-          {
-            "row": 30,
-            "col": 26
-          }
-        ],
-        "enemies": [
-          "HOVER",
-          "FLAMETHROWER",
-          "HOWITZER",
-          "STANDARD",
-          "ARMOR",
-          "SAPPER",
-          "JAMMER",
-          "STRIKER",
-          "ENGINEER"
-        ]
+        "entrances": ["north-rail-east","north-east-depot","upper-east-gate"],
+        "patrolRoute": [{"row":11,"col":34},{"row":24,"col":34},{"row":30,"col":26}],
+        "enemies": ["HOVER","FLAMETHROWER","HOWITZER","STANDARD","ARMOR","SAPPER","JAMMER","STRIKER","ENGINEER"]
       },
       {
         "id": "stronghold-prototype-guard",
         "label": "EUROPOORT PROTOTYPE GARRISON",
         "recoverySec": 9,
-        "entrances": [
-          "north-rail-west",
-          "north-rail-east",
-          "upper-west-gate",
-          "upper-east-gate"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 19
-          },
-          {
-            "row": 19,
-            "col": 19
-          },
-          {
-            "row": 30,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "ARMOR",
-          "STRIKER",
-          "HOWITZER",
-          "STEALTH",
-          "HOVER",
-          "JAMMER",
-          "ARMOR",
-          "FLAMETHROWER",
-          "STANDARD"
-        ]
+        "entrances": ["north-rail-west","north-rail-east","upper-west-gate","upper-east-gate"],
+        "patrolRoute": [{"row":10,"col":19},{"row":19,"col":19},{"row":30,"col":19}],
+        "enemies": ["ARMOR","STRIKER","HOWITZER","STEALTH","HOVER","JAMMER","ARMOR","FLAMETHROWER","STANDARD"]
       }
     ]
   },
-  "terrain": [
-    {"t":"grass","r":0,"c":0,"h":2,"w":2},
-    {"t":"road","r":0,"c":4,"h":15,"w":2},
-    {"t":"road","r":0,"c":13,"h":12,"w":2},
-    {"t":"road","r":0,"c":25,"h":12,"w":2},
-    {"t":"road","r":0,"c":34,"h":12,"w":2},
-    {"t":"grass","r":0,"c":38,"h":2,"w":2},
-    {"t":"grass","r":7,"c":0,"h":2,"w":2},
-    {"t":"grass","r":7,"c":38,"h":2,"w":2},
-    {"t":"road","r":10,"c":6,"h":2,"w":7},
-    {"t":"road","r":10,"c":15,"h":2,"w":10},
-    {"t":"road","r":10,"c":27,"h":2,"w":7},
-    {"t":"road","r":12,"c":19,"h":7,"w":2},
-    {"t":"road","r":13,"c":34,"h":6,"w":2},
-    {"t":"grass","r":14,"c":0,"h":5,"w":2},
-    {"t":"oil","r":14,"c":29,"h":2,"w":2},
-    {"t":"grass","r":14,"c":38,"h":5,"w":2},
-    {"t":"water","r":15,"c":2,"h":4,"w":6},
-    {"t":"road","r":19,"c":4,"h":18,"w":2},
-    {"t":"road","r":19,"c":19,"h":16},
-    {"t":"water","r":19,"c":32,"h":4,"w":7},
-    {"t":"road","r":20,"c":20,"h":15},
-    {"t":"road","r":23,"c":13,"w":6},
-    {"t":"road","r":23,"c":21,"w":6},
-    {"t":"road","r":23,"c":34,"h":14,"w":2},
-    {"t":"grass","r":24,"c":0,"h":2,"w":2},
-    {"t":"grass","r":24,"c":38,"h":2,"w":2},
-    {"t":"oil","r":25,"c":29,"h":2,"w":3},
-    {"t":"road","r":30,"c":6,"h":2,"w":13},
-    {"t":"road","r":30,"c":21,"h":2,"w":13},
-    {"t":"grass","r":33,"c":0,"h":2,"w":2},
-    {"t":"grass","r":33,"c":38,"h":2,"w":2},
-    {"t":"grass","r":39,"c":0,"w":2},
-    {"t":"grass","r":39,"c":38,"w":2},
-    {"t":"forest","r":0,"c":0,"w":2},
-    {"t":"forest","r":0,"c":38,"w":2},
-    {"t":"forest","r":1,"c":0},
-    {"t":"brick","r":1,"c":10},
-    {"t":"brick","r":1,"c":16},
-    {"t":"brick","r":1,"c":24},
-    {"t":"brick","r":1,"c":30},
-    {"t":"forest","r":1,"c":39},
-    {"t":"concrete","r":2,"c":17,"w":3},
-    {"t":"concrete","r":2,"c":21,"w":3},
-    {"t":"concrete","r":3,"c":17,"h":3},
-    {"t":"enemy_base","r":3,"c":20},
-    {"t":"concrete","r":3,"c":23,"h":3},
-    {"t":"concrete","r":5,"c":18},
-    {"t":"brick","r":5,"c":19,"w":3},
-    {"t":"concrete","r":5,"c":22},
-    {"t":"crater","r":6,"c":4},
-    {"t":"concrete","r":6,"c":16},
-    {"t":"concrete","r":6,"c":24},
-    {"t":"crater","r":6,"c":36},
-    {"t":"forest","r":7,"c":0,"w":2},
-    {"t":"boxes","r":7,"c":9},
-    {"t":"brick","r":7,"c":11},
-    {"t":"brick","r":7,"c":29},
-    {"t":"boxes","r":7,"c":31},
-    {"t":"forest","r":7,"c":38,"w":2},
-    {"t":"forest","r":8,"c":0},
-    {"t":"crater","r":8,"c":19},
-    {"t":"brick","r":8,"c":22,"w":2},
-    {"t":"forest","r":8,"c":39},
-    {"t":"brick","r":9,"c":15},
-    {"t":"crater","r":9,"c":22},
-    {"t":"brick","r":9,"c":29},
-    {"t":"forest","r":12,"c":2,"w":2},
-    {"t":"brick","r":12,"c":11},
-    {"t":"water_tower","r":12,"c":17},
-    {"t":"brick","r":12,"c":29},
-    {"t":"forest","r":12,"c":34,"w":2},
-    {"t":"brick","r":13,"c":8,"w":2},
-    {"t":"brick","r":13,"c":33},
-    {"t":"concrete","r":14,"c":2,"w":2},
-    {"t":"concrete","r":14,"c":6,"w":2},
-    {"t":"brick","r":14,"c":10},
-    {"t":"brick","r":14,"c":13,"w":2},
-    {"t":"brick","r":14,"c":24,"w":2},
-    {"t":"barrel","r":14,"c":30,"h":2},
-    {"t":"concrete","r":14,"c":32,"w":2},
-    {"t":"forest","r":14,"c":38,"w":2},
-    {"t":"concrete","r":15,"c":1,"h":4},
-    {"t":"brick","r":15,"c":16,"w":2},
-    {"t":"brick","r":15,"c":21,"w":2},
-    {"t":"concrete","r":15,"c":33,"h":2},
-    {"t":"forest","r":15,"c":38},
-    {"t":"brick","r":17,"c":29,"h":2},
-    {"t":"boxes","r":17,"c":38},
-    {"t":"boxes","r":18,"c":10},
-    {"t":"concrete","r":18,"c":32,"w":7},
-    {"t":"concrete","r":19,"c":2,"w":2},
-    {"t":"concrete","r":19,"c":6,"w":2},
-    {"t":"brick","r":19,"c":13,"w":2},
-    {"t":"crater","r":19,"c":18},
-    {"t":"rubble","r":19,"c":20},
-    {"t":"brick","r":19,"c":24,"w":2},
-    {"t":"concrete","r":19,"c":31,"h":5},
-    {"t":"crater","r":20,"c":4},
-    {"t":"brick","r":20,"c":13},
-    {"t":"brick","r":20,"c":18},
-    {"t":"forest","r":21,"c":2,"w":2},
-    {"t":"concrete","r":21,"c":13,"w":3},
-    {"t":"brick","r":21,"c":16,"w":2},
-    {"t":"concrete","r":22,"c":19,"w":2},
-    {"t":"boxes","r":23,"c":6},
-    {"t":"concrete","r":23,"c":32,"w":6},
-    {"t":"crater","r":24,"c":6},
-    {"t":"crater","r":24,"c":14},
-    {"t":"crater","r":24,"c":23},
-    {"t":"brick","r":25,"c":6,"h":2},
-    {"t":"brick","r":25,"c":14,"w":2},
-    {"t":"brick","r":25,"c":23,"w":2},
-    {"t":"barrel","r":25,"c":31,"h":2},
-    {"t":"crater","r":25,"c":34},
-    {"t":"forest","r":25,"c":38,"w":2},
-    {"t":"forest","r":26,"c":0,"w":2},
-    {"t":"brick","r":26,"c":10,"h":2},
-    {"t":"boxes","r":26,"c":34},
-    {"t":"forest","r":26,"c":38},
-    {"t":"forest","r":27,"c":0},
-    {"t":"brick","r":27,"c":13,"w":2},
-    {"t":"brick","r":27,"c":24,"w":2},
-    {"t":"hedgehog","r":28,"c":10},
-    {"t":"hedgehog","r":28,"c":28},
-    {"t":"boxes","r":29,"c":10},
-    {"t":"forest","r":29,"c":38,"w":2},
-    {"t":"forest","r":32,"c":2,"w":2},
-    {"t":"brick","r":32,"c":14,"w":2},
-    {"t":"brick","r":32,"c":23,"w":2},
-    {"t":"forest","r":32,"c":38,"w":2},
-    {"t":"forest","r":33,"c":0},
-    {"t":"hedgehog","r":33,"c":18},
-    {"t":"forest","r":33,"c":39},
-    {"t":"boxes","r":34,"c":6},
-    {"t":"brick","r":34,"c":12,"h":2},
-    {"t":"brick","r":34,"c":26,"h":2},
-    {"t":"boxes","r":34,"c":32},
-    {"t":"brick","r":35,"c":6},
-    {"t":"brick","r":35,"c":32},
-    {"t":"forest","r":36,"c":2,"w":2},
-    {"t":"crater","r":36,"c":19},
-    {"t":"forest","r":36,"c":38,"w":2},
-    {"t":"forest","r":37,"c":2},
-    {"t":"forest","r":37,"c":14},
-    {"t":"concrete","r":37,"c":18,"w":4},
-    {"t":"forest","r":37,"c":25},
-    {"t":"forest","r":37,"c":38},
-    {"t":"forest","r":39,"c":0,"w":2},
-    {"t":"forest","r":39,"c":38,"w":2},
-    {"t":"bridge","r":15,"c":4,"h":4,"w":2,"dir":"ns"},
-    {"t":"bridge","r":19,"c":34,"h":4,"w":2,"dir":"ns"},
-    {"t":"house2","r":2,"c":10,"h":4,"w":2,"style":10},
-    {"t":"house2","r":2,"c":29,"h":4,"w":2,"style":10},
-    {"t":"house1","r":3,"c":2,"h":2,"w":2,"style":8},
-    {"t":"house1","r":3,"c":36,"h":2,"w":2,"style":0},
-    {"t":"house1","r":8,"c":6,"h":2,"w":2,"style":8},
-    {"t":"house1","r":8,"c":32,"h":2,"w":2,"style":11},
-    {"t":"house1","r":15,"c":10,"h":2,"style":11},
-    {"t":"house2","r":15,"c":13,"h":3,"w":2,"style":5},
-    {"t":"house2","r":15,"c":24,"h":3,"w":2,"style":9},
-    {"t":"house2","r":21,"c":10,"h":4,"w":2,"style":10},
-    {"t":"house1","r":23,"c":2,"h":2,"w":2,"style":10},
-    {"t":"house2","r":24,"c":27,"h":4,"w":2,"style":3},
-    {"t":"house2","r":27,"c":16,"h":3,"w":3,"style":8},
-    {"t":"house1","r":28,"c":2,"h":2,"w":2,"style":11},
-    {"t":"house1","r":28,"c":32,"h":2,"w":2,"style":10},
-    {"t":"house1","r":32,"c":8,"h":2,"w":2,"style":2},
-    {"t":"house1","r":32,"c":30,"h":2,"w":2,"style":9},
-    {"t":"house1","r":36,"c":8,"w":2,"style":8},
-    {"t":"house1","r":36,"c":30,"w":2,"style":11},
-    {"t":"landmark","kind":"ERASMUS_BRIDGE","r":19,"c":31},
-    {"t":"decal","kind":"label","r":13,"c":19,"text":"EUROPOORT TERMINAL"},
-    {"t":"decal","kind":"label","r":13,"c":7,"text":"MAASHAVEN QUAY"},
-    {"t":"decal","kind":"label","r":13,"c":31,"text":"OIL TANK FARM"},
-    {"t":"decal","kind":"loading","r":19,"c":19,"size":2},
-    {"t":"decal","kind":"loading","r":24,"c":6,"size":1.5},
-    {"t":"decal","kind":"hazard_zone","r":15,"c":30,"size":2},
-    {"t":"decal","kind":"hazard_zone","r":26,"c":32,"size":1.5},
-    {"t":"decal","kind":"drain_grate","r":33,"c":22}
-  ],
+  "terrain": {
+    "grass": [[0,0,2,2],[0,38,2,2],[7,0,2,2],[7,38,2,2],[14,0,5,2],[14,38,5,2],[24,0,2,2],[24,38,2,2],[33,0,2,2],[33,38,2,2],[39,0,1,2],[39,38,1,2]],
+    "road": [[0,4,15,2],[0,13,12,2],[0,25,12,2],[0,34,12,2],[10,6,2,7],[10,15,2,10],[10,27,2,7],[12,19,7,2],[13,34,6,2],[19,4,18,2],[19,19,16,1],[20,20,15,1],[23,13,1,6],[23,21,1,6],[23,34,14,2],[30,6,2,13],[30,21,2,13]],
+    "oil": [[14,29,2,2],[25,29,2,3]],
+    "water": [[15,2,4,6],[19,32,4,7]],
+    "forest": [[0,0,1,2],[0,38,1,2],[1,0],[1,39],[7,0,1,2],[7,38,1,2],[8,0],[8,39],[12,2,1,2],[12,34,1,2],[14,38,1,2],[15,38],[21,2,1,2],[25,38,1,2],[26,0,1,2],[26,38],[27,0],[29,38,1,2],[32,2,1,2],[32,38,1,2],[33,0],[33,39],[36,2,1,2],[36,38,1,2],[37,2],[37,14],[37,25],[37,38],[39,0,1,2],[39,38,1,2]],
+    "brick": [[1,10],[1,16],[1,24],[1,30],[5,19,1,3],[7,11],[7,29],[8,22,1,2],[9,15],[9,29],[12,11],[12,29],[13,8,1,2],[13,33],[14,10],[14,13,1,2],[14,24,1,2],[15,16,1,2],[15,21,1,2],[17,29,2,1],[19,13,1,2],[19,24,1,2],[20,13],[20,18],[21,16,1,2],[25,6,2,1],[25,14,1,2],[25,23,1,2],[26,10,2,1],[27,13,1,2],[27,24,1,2],[32,14,1,2],[32,23,1,2],[34,12,2,1],[34,26,2,1],[35,6],[35,32]],
+    "concrete": [[2,17,1,3],[2,21,1,3],[3,17,3,1],[3,23,3,1],[5,18],[5,22],[6,16],[6,24],[14,2,1,2],[14,6,1,2],[14,32,1,2],[15,1,4,1],[15,33,2,1],[18,32,1,7],[19,2,1,2],[19,6,1,2],[19,31,5,1],[21,13,1,3],[22,19,1,2],[23,32,1,6],[37,18,1,4]],
+    "enemy_base": [[3,20]],
+    "crater": [[6,4],[6,36],[8,19],[9,22],[19,18],[20,4],[24,6],[24,14],[24,23],[25,34],[36,19]],
+    "boxes": [[7,9],[7,31],[17,38],[18,10],[23,6],[26,34],[29,10],[34,6],[34,32]],
+    "water_tower": [[12,17]],
+    "barrel": [[14,30,2,1],[25,31,2,1]],
+    "rubble": [[19,20]],
+    "hedgehog": [[28,10],[28,28],[33,18]],
+    "bridge": [[15,4,4,2,"ns"],[19,34,4,2,"ns"]],
+    "house2": [[2,10,4,2,10],[2,29,4,2,10],[15,13,3,2,5],[15,24,3,2,9],[21,10,4,2,10],[24,27,4,2,3],[27,16,3,3,8]],
+    "house1": [[3,2,2,2,8],[3,36,2,2,0],[8,6,2,2,8],[8,32,2,2,11],[15,10,2,1,11],[23,2,2,2,10],[28,2,2,2,11],[28,32,2,2,10],[32,8,2,2,2],[32,30,2,2,9],[36,8,1,2,8],[36,30,1,2,11]],
+    "landmark": [["ERASMUS_BRIDGE",19,31]],
+    "decal": [["label",13,19,1,"EUROPOORT TERMINAL"],["label",13,7,1,"MAASHAVEN QUAY"],["label",13,31,1,"OIL TANK FARM"],["loading",19,19,2],["loading",24,6,1.5],["hazard_zone",15,30,2],["hazard_zone",26,32,1.5],["drain_grate",33,22]]
+  },
   "code": ""
 }

@@ -7,130 +7,42 @@
   "gameMode": "stronghold_assault",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "enemyBase": {
-    "cell": {
-      "row": 5,
-      "col": 20
-    },
-    "name": "Consortium Rail Depot",
-    "maxHp": 48,
-    "fortifyPerimeter": true
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 500
-  },
-  "environment": {
-    "theme": "alpine",
-    "tint": "#c5dcf2",
-    "fogColor": "#435366",
-    "groundColor": "#7d8891"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "enemyBase": {"cell":{"row":5,"col":20},"name":"Consortium Rail Depot","maxHp":48,"fortifyPerimeter":true},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":500},
+  "environment": {"theme":"alpine","tint":"#c5dcf2","fogColor":"#435366","groundColor":"#7d8891"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Cross the Inn River bridges and storm the Consortium rail yard and tunnel-mouth depot through conifer-screened alpine flanks, gravel rail sidings, and brick sally-gate breaches.",
     "breaches": [
       {
         "name": "Depot South Gate",
-        "cells": [
-          {
-            "row": 7,
-            "col": 19
-          },
-          {
-            "row": 7,
-            "col": 20
-          },
-          {
-            "row": 7,
-            "col": 21
-          }
-        ],
-        "start": {
-          "row": 9,
-          "col": 20
-        },
-        "end": {
-          "row": 6,
-          "col": 20
-        },
+        "cells": [{"row":7,"col":19},{"row":7,"col":20},{"row":7,"col":21}],
+        "start": {"row":9,"col":20},
+        "end": {"row":6,"col":20},
         "purpose": "Breach the main southern brick gate of the fortified rail depot for a direct shot at the command core."
       },
       {
         "name": "West Depot Postern",
-        "cells": [
-          {
-            "row": 5,
-            "col": 17
-          },
-          {
-            "row": 6,
-            "col": 17
-          }
-        ],
-        "start": {
-          "row": 5,
-          "col": 15
-        },
-        "end": {
-          "row": 5,
-          "col": 18
-        },
+        "cells": [{"row":5,"col":17},{"row":6,"col":17}],
+        "start": {"row":5,"col":15},
+        "end": {"row":5,"col":18},
         "purpose": "Cut from the western tunnel rail track straight into the depot courtyard."
       },
       {
         "name": "East Siding Barricade",
-        "cells": [
-          {
-            "row": 15,
-            "col": 29
-          },
-          {
-            "row": 15,
-            "col": 30
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 29
-        },
-        "end": {
-          "row": 13,
-          "col": 29
-        },
+        "cells": [{"row":15,"col":29},{"row":15,"col":30}],
+        "start": {"row":17,"col":29},
+        "end": {"row":13,"col":29},
         "purpose": "Blast through the brick freight-siding wall to flank the rail yard from the eastern pass road."
       },
       {
         "name": "South Bank Toll Wall",
-        "cells": [
-          {
-            "row": 28,
-            "col": 12
-          },
-          {
-            "row": 28,
-            "col": 13
-          }
-        ],
-        "start": {
-          "row": 30,
-          "col": 12
-        },
-        "end": {
-          "row": 26,
-          "col": 12
-        },
+        "cells": [{"row":28,"col":12},{"row":28,"col":13}],
+        "start": {"row":30,"col":12},
+        "end": {"row":26,"col":12},
         "purpose": "Open a quick cut between the western Innsbruck town road and the central Inn bridgehead."
       }
     ],
@@ -154,543 +66,79 @@
     "seed": 7072026,
     "theme": "alpine",
     "zones": [
-      {
-        "id": "alpine-snow-pack",
-        "bounds": [
-          0,
-          0,
-          39,
-          39
-        ],
-        "surface": "snow",
-        "density": 0.18,
-        "details": [
-          "patches",
-          "cracks"
-        ]
-      },
-      {
-        "id": "depot-concrete-apron",
-        "bounds": [
-          2,
-          16,
-          8,
-          24
-        ],
-        "surface": "concrete",
-        "density": 0.35,
-        "details": [
-          "cracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "rail-yard-gravel",
-        "bounds": [
-          8,
-          12,
-          19,
-          28
-        ],
-        "surface": "gravel",
-        "density": 0.32,
-        "details": [
-          "tracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "east-siding-asphalt",
-        "bounds": [
-          14,
-          32,
-          19,
-          37
-        ],
-        "surface": "asphalt",
-        "density": 0.28,
-        "details": [
-          "oil",
-          "tracks"
-        ]
-      },
-      {
-        "id": "innsbruck-station-pavers",
-        "bounds": [
-          29,
-          16,
-          34,
-          24
-        ],
-        "surface": "pavers",
-        "density": 0.3,
-        "details": [
-          "cracks",
-          "patches"
-        ]
-      }
+      {"id":"alpine-snow-pack","bounds":[0,0,39,39],"surface":"snow","density":0.18,"details":["patches","cracks"]},
+      {"id":"depot-concrete-apron","bounds":[2,16,8,24],"surface":"concrete","density":0.35,"details":["cracks","rubble"]},
+      {"id":"rail-yard-gravel","bounds":[8,12,19,28],"surface":"gravel","density":0.32,"details":["tracks","rubble"]},
+      {"id":"east-siding-asphalt","bounds":[14,32,19,37],"surface":"asphalt","density":0.28,"details":["oil","tracks"]},
+      {"id":"innsbruck-station-pavers","bounds":[29,16,34,24],"surface":"pavers","density":0.3,"details":["cracks","patches"]}
     ],
     "paths": [
-      {
-        "id": "west-tunnel-track",
-        "points": [
-          [
-            0,
-            14
-          ],
-          [
-            10,
-            14
-          ],
-          [
-            16,
-            16
-          ],
-          [
-            20,
-            19
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "edges"
-      },
-      {
-        "id": "east-tunnel-track",
-        "points": [
-          [
-            0,
-            25
-          ],
-          [
-            10,
-            25
-          ],
-          [
-            16,
-            24
-          ],
-          [
-            20,
-            20
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "edges"
-      },
-      {
-        "id": "yard-siding-spur",
-        "points": [
-          [
-            10,
-            25
-          ],
-          [
-            14,
-            25
-          ],
-          [
-            18,
-            28
-          ]
-        ],
-        "width": 1.6,
-        "surface": "gravel",
-        "marking": "edges"
-      }
+      {"id":"west-tunnel-track","points":[[0,14],[10,14],[16,16],[20,19]],"width":2,"surface":"gravel","marking":"edges"},
+      {"id":"east-tunnel-track","points":[[0,25],[10,25],[16,24],[20,20]],"width":2,"surface":"gravel","marking":"edges"},
+      {"id":"yard-siding-spur","points":[[10,25],[14,25],[18,28]],"width":1.6,"surface":"gravel","marking":"edges"}
     ],
-    "exclusions": [
-      {
-        "id": "depot-gate-clear",
-        "bounds": [
-          8,
-          18,
-          10,
-          22
-        ]
-      }
-    ]
+    "exclusions": [{"id":"depot-gate-clear","bounds":[8,18,10,22]}]
   },
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
     "entrances": [
-      {
-        "id": "west-portal-cut",
-        "row": 1,
-        "col": 5
-      },
-      {
-        "id": "main-tunnel-west",
-        "row": 1,
-        "col": 14
-      },
-      {
-        "id": "main-tunnel-east",
-        "row": 1,
-        "col": 25
-      },
-      {
-        "id": "east-mountain-pass",
-        "row": 1,
-        "col": 34
-      },
-      {
-        "id": "west-yard-siding",
-        "row": 7,
-        "col": 5
-      },
-      {
-        "id": "east-tunnel-spur",
-        "row": 7,
-        "col": 34
-      }
+      {"id":"west-portal-cut","row":1,"col":5},
+      {"id":"main-tunnel-west","row":1,"col":14},
+      {"id":"main-tunnel-east","row":1,"col":25},
+      {"id":"east-mountain-pass","row":1,"col":34},
+      {"id":"west-yard-siding","row":7,"col":5},
+      {"id":"east-tunnel-spur","row":7,"col":34}
     ],
     "encounters": [
       {
         "id": "tunnel-vanguard",
         "label": "TUNNEL VANGUARD: Recon and amphibious patrols emerging from the northern rail portals.",
         "recoverySec": 0,
-        "entrances": [
-          "west-portal-cut",
-          "main-tunnel-west",
-          "main-tunnel-east",
-          "east-mountain-pass"
-        ],
-        "initialCells": [
-          {
-            "row": 4,
-            "col": 5
-          },
-          {
-            "row": 4,
-            "col": 14
-          },
-          {
-            "row": 4,
-            "col": 25
-          },
-          {
-            "row": 4,
-            "col": 34
-          }
-        ],
-        "patrolRoute": [
-          {
-            "row": 13,
-            "col": 14
-          },
-          {
-            "row": 19,
-            "col": 19
-          },
-          {
-            "row": 24,
-            "col": 19
-          },
-          {
-            "row": 30,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "SAPPER",
-          "STANDARD",
-          "HOVER",
-          "STANDARD"
-        ]
+        "entrances": ["west-portal-cut","main-tunnel-west","main-tunnel-east","east-mountain-pass"],
+        "initialCells": [{"row":4,"col":5},{"row":4,"col":14},{"row":4,"col":25},{"row":4,"col":34}],
+        "patrolRoute": [{"row":13,"col":14},{"row":19,"col":19},{"row":24,"col":19},{"row":30,"col":19}],
+        "enemies": ["SCOUT","STANDARD","SCOUT","STANDARD","SAPPER","STANDARD","HOVER","STANDARD"]
       },
       {
         "id": "inn-river-flankers",
         "label": "INN FLANKERS: Amphibious and stealth units probing the river crossings.",
         "recoverySec": 8,
-        "entrances": [
-          "west-portal-cut",
-          "west-yard-siding",
-          "east-mountain-pass",
-          "east-tunnel-spur"
-        ],
-        "patrolRoute": [
-          {
-            "row": 14,
-            "col": 7
-          },
-          {
-            "row": 23,
-            "col": 5
-          },
-          {
-            "row": 31,
-            "col": 13
-          },
-          {
-            "row": 31,
-            "col": 25
-          },
-          {
-            "row": 23,
-            "col": 33
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "HOVER",
-          "STEALTH",
-          "ARMOR",
-          "HOWITZER",
-          "STANDARD",
-          "FLAMETHROWER"
-        ]
+        "entrances": ["west-portal-cut","west-yard-siding","east-mountain-pass","east-tunnel-spur"],
+        "patrolRoute": [{"row":14,"col":7},{"row":23,"col":5},{"row":31,"col":13},{"row":31,"col":25},{"row":23,"col":33}],
+        "enemies": ["SCOUT","STANDARD","HOVER","STEALTH","ARMOR","HOWITZER","STANDARD","FLAMETHROWER"]
       },
       {
         "id": "depot-counterattack",
         "label": "DEPOT GARRISON: Heavy Consortium armor and siege guns defending the rail yard.",
         "recoverySec": 9,
-        "entrances": [
-          "main-tunnel-west",
-          "main-tunnel-east",
-          "east-tunnel-spur",
-          "west-yard-siding"
-        ],
-        "patrolRoute": [
-          {
-            "row": 9,
-            "col": 20
-          },
-          {
-            "row": 18,
-            "col": 25
-          },
-          {
-            "row": 23,
-            "col": 33
-          },
-          {
-            "row": 31,
-            "col": 26
-          },
-          {
-            "row": 32,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "STANDARD",
-          "ARMOR",
-          "SAPPER",
-          "HOWITZER",
-          "HOVER",
-          "STEALTH",
-          "ARMOR",
-          "STANDARD"
-        ]
+        "entrances": ["main-tunnel-west","main-tunnel-east","east-tunnel-spur","west-yard-siding"],
+        "patrolRoute": [{"row":9,"col":20},{"row":18,"col":25},{"row":23,"col":33},{"row":31,"col":26},{"row":32,"col":19}],
+        "enemies": ["STANDARD","ARMOR","SAPPER","HOWITZER","HOVER","STEALTH","ARMOR","STANDARD"]
       }
     ],
-    "boss": {
-      "enabled": false
-    }
+    "boss": {"enabled":false}
   },
   "code": "",
-  "terrain": [
-    {"t":"grass","r":0,"c":0,"h":19,"w":4},
-    {"t":"road","r":0,"c":4,"h":8,"w":3},
-    {"t":"stone","r":0,"c":7,"h":3,"w":5},
-    {"t":"stone","r":0,"c":17,"h":2,"w":6},
-    {"t":"stone","r":0,"c":28,"h":3,"w":5},
-    {"t":"road","r":0,"c":33,"h":22,"w":2},
-    {"t":"grass","r":0,"c":36,"h":21,"w":4},
-    {"t":"stone","r":3,"c":9,"w":3},
-    {"t":"stone","r":3,"c":28,"w":3},
-    {"t":"grass","r":7,"c":11,"h":2,"w":3},
-    {"t":"grass","r":7,"c":26,"h":3,"w":3},
-    {"t":"road","r":7,"c":30,"w":3},
-    {"t":"road","r":8,"c":5,"h":5,"w":2},
-    {"t":"grass","r":9,"c":12,"w":2},
-    {"t":"ice","r":9,"c":31,"w":2},
-    {"t":"road","r":10,"c":4,"h":3},
-    {"t":"road","r":11,"c":18,"w":5},
-    {"t":"road","r":12,"c":7,"w":6},
-    {"t":"road","r":12,"c":18,"h":7},
-    {"t":"road","r":12,"c":22,"h":2},
-    {"t":"grass","r":13,"c":4,"h":3,"w":7},
-    {"t":"road","r":13,"c":11,"h":6,"w":2},
-    {"t":"road","r":13,"c":23,"w":10},
-    {"t":"grass","r":13,"c":35,"h":9},
-    {"t":"grass","r":16,"c":4,"h":2,"w":4},
-    {"t":"grass","r":16,"c":10,"h":2},
-    {"t":"road","r":17,"c":13,"w":2},
-    {"t":"grass","r":18,"c":4,"h":3},
-    {"t":"road","r":18,"c":5,"w":6},
-    {"t":"road","r":18,"c":14,"w":4},
-    {"t":"road","r":18,"c":19,"w":14},
-    {"t":"ice","r":19,"c":0,"h":3},
-    {"t":"grass","r":19,"c":1,"w":3},
-    {"t":"road","r":19,"c":5,"h":3,"w":2},
-    {"t":"road","r":19,"c":19,"h":3,"w":2},
-    {"t":"grass","r":19,"c":31,"h":2,"w":2},
-    {"t":"ice","r":20,"c":1,"h":2},
-    {"t":"grass","r":20,"c":2,"w":2},
-    {"t":"ice","r":21,"c":2,"w":3},
-    {"t":"stone","r":21,"c":7,"w":3},
-    {"t":"stone","r":21,"c":16,"w":3},
-    {"t":"stone","r":21,"c":21,"w":12},
-    {"t":"grass","r":21,"c":36,"w":2},
-    {"t":"ice","r":21,"c":38,"w":2},
-    {"t":"water","r":22,"c":0,"h":2,"w":40},
-    {"t":"ice","r":24,"c":0,"w":4},
-    {"t":"grass","r":24,"c":4,"h":16},
-    {"t":"road","r":24,"c":5,"h":10,"w":2},
-    {"t":"stone","r":24,"c":7,"w":12},
-    {"t":"road","r":24,"c":19,"h":13,"w":2},
-    {"t":"stone","r":24,"c":21,"w":12},
-    {"t":"road","r":24,"c":33,"h":10,"w":2},
-    {"t":"grass","r":24,"c":35,"h":16},
-    {"t":"ice","r":24,"c":36,"w":4},
-    {"t":"ice","r":25,"c":0,"w":2},
-    {"t":"grass","r":25,"c":2,"h":4,"w":2},
-    {"t":"ice","r":25,"c":7,"w":4},
-    {"t":"ice","r":25,"c":29,"w":4},
-    {"t":"grass","r":25,"c":36,"h":12,"w":4},
-    {"t":"ice","r":26,"c":0},
-    {"t":"grass","r":26,"c":1,"h":2},
-    {"t":"grass","r":27,"c":0},
-    {"t":"ice","r":28,"c":0,"h":5,"w":2},
-    {"t":"road","r":28,"c":7,"w":12},
-    {"t":"road","r":28,"c":21,"w":12},
-    {"t":"ice","r":29,"c":2,"h":3},
-    {"t":"grass","r":29,"c":3,"h":11},
-    {"t":"grass","r":32,"c":2,"h":7},
-    {"t":"grass","r":33,"c":0,"h":4,"w":2},
-    {"t":"road","r":33,"c":7,"w":12},
-    {"t":"road","r":33,"c":21,"w":12},
-    {"t":"grass","r":34,"c":5,"h":6,"w":3},
-    {"t":"grass","r":34,"c":30,"h":6,"w":5},
-    {"t":"grass","r":35,"c":29,"h":4},
-    {"t":"grass","r":36,"c":26,"h":2,"w":3},
-    {"t":"ice","r":37,"c":0,"h":3},
-    {"t":"grass","r":37,"c":1},
-    {"t":"grass","r":37,"c":8,"h":3,"w":4},
-    {"t":"grass","r":37,"c":36,"w":3},
-    {"t":"ice","r":37,"c":39,"h":3},
-    {"t":"ice","r":38,"c":1,"h":2},
-    {"t":"grass","r":38,"c":12,"h":2},
-    {"t":"grass","r":38,"c":28},
-    {"t":"grass","r":38,"c":36,"h":2,"w":2},
-    {"t":"ice","r":38,"c":38,"h":2},
-    {"t":"ice","r":39,"c":2},
-    {"t":"forest","r":0,"c":1,"h":4,"w":2},
-    {"t":"concrete","r":0,"c":7,"h":3},
-    {"t":"concrete","r":0,"c":11,"h":3},
-    {"t":"concrete","r":0,"c":28,"h":3},
-    {"t":"concrete","r":0,"c":32,"h":3},
-    {"t":"forest","r":0,"c":37,"h":4,"w":2},
-    {"t":"boxes","r":3,"c":9},
-    {"t":"concrete","r":3,"c":17,"w":2},
-    {"t":"concrete","r":3,"c":22,"w":2},
-    {"t":"boxes","r":3,"c":31},
-    {"t":"crater","r":4,"c":8},
-    {"t":"concrete","r":4,"c":17},
-    {"t":"concrete","r":4,"c":23},
-    {"t":"crater","r":4,"c":32},
-    {"t":"forest","r":5,"c":2,"h":2,"w":2},
-    {"t":"brick","r":5,"c":17,"h":2},
-    {"t":"concrete","r":5,"c":19},
-    {"t":"enemy_base","r":5,"c":20},
-    {"t":"concrete","r":5,"c":21},
-    {"t":"brick","r":5,"c":23},
-    {"t":"forest","r":5,"c":37,"h":2,"w":2},
-    {"t":"concrete","r":6,"c":23,"h":2},
-    {"t":"concrete","r":7,"c":17,"w":2},
-    {"t":"brick","r":7,"c":19,"w":3},
-    {"t":"concrete","r":7,"c":22},
-    {"t":"forest","r":8,"c":3,"h":2,"w":2},
-    {"t":"forest","r":9,"c":2},
-    {"t":"barrel","r":9,"c":23},
-    {"t":"forest","r":9,"c":36,"h":2,"w":2},
-    {"t":"crater","r":10,"c":20},
-    {"t":"boxes","r":11,"c":24},
-    {"t":"concrete","r":12,"c":4,"w":2},
-    {"t":"forest","r":13,"c":2,"h":2,"w":2},
-    {"t":"concrete","r":13,"c":37,"w":2},
-    {"t":"boxes","r":14,"c":8},
-    {"t":"water_tower","r":14,"c":23},
-    {"t":"crater","r":14,"c":31},
-    {"t":"concrete","r":15,"c":13},
-    {"t":"barrel","r":15,"c":15},
-    {"t":"concrete","r":15,"c":27,"w":2},
-    {"t":"brick","r":15,"c":29,"w":2},
-    {"t":"concrete","r":15,"c":31,"w":2},
-    {"t":"forest","r":16,"c":2,"h":2,"w":2},
-    {"t":"boxes","r":16,"c":15},
-    {"t":"boxes","r":16,"c":36},
-    {"t":"forest","r":17,"c":10},
-    {"t":"barrel","r":17,"c":35},
-    {"t":"boxes","r":18,"c":3},
-    {"t":"forest","r":19,"c":2,"h":2,"w":2},
-    {"t":"forest","r":19,"c":31,"h":2,"w":2},
-    {"t":"forest","r":19,"c":35,"h":2,"w":2},
-    {"t":"concrete","r":20,"c":10,"h":2,"w":2},
-    {"t":"forest","r":25,"c":2,"h":2,"w":2},
-    {"t":"forest","r":25,"c":15,"h":3},
-    {"t":"forest","r":25,"c":26,"h":2},
-    {"t":"forest","r":25,"c":37,"h":2,"w":2},
-    {"t":"forest","r":26,"c":4},
-    {"t":"forest","r":26,"c":14,"h":2},
-    {"t":"crater","r":26,"c":20},
-    {"t":"forest","r":26,"c":25},
-    {"t":"concrete","r":28,"c":11},
-    {"t":"brick","r":28,"c":12,"w":2},
-    {"t":"concrete","r":28,"c":14,"w":2},
-    {"t":"hedgehog","r":30,"c":11},
-    {"t":"crater","r":30,"c":19},
-    {"t":"boxes","r":31,"c":36},
-    {"t":"boxes","r":32,"c":17},
-    {"t":"forest","r":33,"c":39,"h":3},
-    {"t":"forest","r":34,"c":2,"h":2,"w":2},
-    {"t":"crater","r":34,"c":14},
-    {"t":"crater","r":34,"c":26},
-    {"t":"forest","r":34,"c":38,"h":3},
-    {"t":"forest","r":35,"c":4,"h":3},
-    {"t":"hedgehog","r":35,"c":11},
-    {"t":"hedgehog","r":35,"c":25},
-    {"t":"forest","r":35,"c":37,"h":2},
-    {"t":"forest","r":36,"c":3},
-    {"t":"forest","r":36,"c":28,"h":2,"w":2},
-    {"t":"forest","r":37,"c":5},
-    {"t":"forest","r":37,"c":9,"h":2,"w":2},
-    {"t":"concrete","r":37,"c":18,"w":4},
-    {"t":"forest","r":37,"c":30},
-    {"t":"forest","r":37,"c":34,"w":2},
-    {"t":"forest","r":38,"c":11},
-    {"t":"forest","r":38,"c":35,"w":2},
-    {"t":"bridge","r":22,"c":5,"h":2,"w":2,"dir":"ns"},
-    {"t":"bridge","r":22,"c":19,"h":2,"w":2,"dir":"ns"},
-    {"t":"bridge","r":22,"c":33,"h":2,"w":2,"dir":"ns"},
-    {"t":"house1","r":6,"c":11,"h":2,"w":2,"style":0},
-    {"t":"house1","r":6,"c":28,"h":2,"w":2,"style":9},
-    {"t":"house2","r":9,"c":10,"h":3,"w":3,"style":4},
-    {"t":"house2","r":10,"c":28,"h":3,"w":3,"style":9},
-    {"t":"house1","r":12,"c":19,"h":2,"w":3,"style":4},
-    {"t":"house1","r":16,"c":8,"h":2,"w":2,"style":9},
-    {"t":"house1","r":19,"c":14,"h":3,"w":2,"style":5},
-    {"t":"house1","r":19,"c":26,"h":2,"w":2,"style":9},
-    {"t":"house1","r":26,"c":29,"h":2,"w":3,"style":2},
-    {"t":"house1","r":29,"c":7,"h":3,"w":2,"style":9},
-    {"t":"house1","r":29,"c":25,"h":2,"w":3,"style":4},
-    {"t":"house2","r":30,"c":30,"h":3,"w":3,"style":11},
-    {"t":"house2","r":34,"c":8,"h":3,"w":2,"style":6},
-    {"t":"decal","kind":"label","r":9,"c":20,"size":3,"text":"CONSORTIUM RAIL DEPOT"},
-    {"t":"decal","kind":"label","r":21,"c":12,"size":3,"text":"INN RIVER"},
-    {"t":"decal","kind":"label","r":32,"c":20,"size":3,"text":"INNSBRUCK STATION"},
-    {"t":"decal","kind":"helipad","r":36,"c":14,"size":1.8},
-    {"t":"decal","kind":"loading","r":11,"c":23,"size":2},
-    {"t":"decal","kind":"hazard_zone","r":14,"c":23,"size":1.4}
-  ]
+  "terrain": {
+    "grass": [[0,0,19,4],[0,36,21,4],[7,11,2,3],[7,26,3,3],[9,12,1,2],[13,4,3,7],[13,35,9,1],[16,4,2,4],[16,10,2,1],[18,4,3,1],[19,1,1,3],[19,31,2,2],[20,2,1,2],[21,36,1,2],[24,4,16,1],[24,35,16,1],[25,2,4,2],[25,36,12,4],[26,1,2,1],[27,0],[29,3,11,1],[32,2,7,1],[33,0,4,2],[34,5,6,3],[34,30,6,5],[35,29,4,1],[36,26,2,3],[37,1],[37,8,3,4],[37,36,1,3],[38,12,2,1],[38,28],[38,36,2,2]],
+    "road": [[0,4,8,3],[0,33,22,2],[7,30,1,3],[8,5,5,2],[10,4,3,1],[11,18,1,5],[12,7,1,6],[12,18,7,1],[12,22,2,1],[13,11,6,2],[13,23,1,10],[17,13,1,2],[18,5,1,6],[18,14,1,4],[18,19,1,14],[19,5,3,2],[19,19,3,2],[24,5,10,2],[24,19,13,2],[24,33,10,2],[28,7,1,12],[28,21,1,12],[33,7,1,12],[33,21,1,12]],
+    "stone": [[0,7,3,5],[0,17,2,6],[0,28,3,5],[3,9,1,3],[3,28,1,3],[21,7,1,3],[21,16,1,3],[21,21,1,12],[24,7,1,12],[24,21,1,12]],
+    "ice": [[9,31,1,2],[19,0,3,1],[20,1,2,1],[21,2,1,3],[21,38,1,2],[24,0,1,4],[24,36,1,4],[25,0,1,2],[25,7,1,4],[25,29,1,4],[26,0],[28,0,5,2],[29,2,3,1],[37,0,3,1],[37,39,3,1],[38,1,2,1],[38,38,2,1],[39,2]],
+    "water": [[22,0,2,40]],
+    "forest": [[0,1,4,2],[0,37,4,2],[5,2,2,2],[5,37,2,2],[8,3,2,2],[9,2],[9,36,2,2],[13,2,2,2],[16,2,2,2],[17,10],[19,2,2,2],[19,31,2,2],[19,35,2,2],[25,2,2,2],[25,15,3,1],[25,26,2,1],[25,37,2,2],[26,4],[26,14,2,1],[26,25],[33,39,3,1],[34,2,2,2],[34,38,3,1],[35,4,3,1],[35,37,2,1],[36,3],[36,28,2,2],[37,5],[37,9,2,2],[37,30],[37,34,1,2],[38,11],[38,35,1,2]],
+    "concrete": [[0,7,3,1],[0,11,3,1],[0,28,3,1],[0,32,3,1],[3,17,1,2],[3,22,1,2],[4,17],[4,23],[5,19],[5,21],[6,23,2,1],[7,17,1,2],[7,22],[12,4,1,2],[13,37,1,2],[15,13],[15,27,1,2],[15,31,1,2],[20,10,2,2],[28,11],[28,14,1,2],[37,18,1,4]],
+    "boxes": [[3,9],[3,31],[11,24],[14,8],[16,15],[16,36],[18,3],[31,36],[32,17]],
+    "crater": [[4,8],[4,32],[10,20],[14,31],[26,20],[30,19],[34,14],[34,26]],
+    "brick": [[5,17,2,1],[5,23],[7,19,1,3],[15,29,1,2],[28,12,1,2]],
+    "enemy_base": [[5,20]],
+    "barrel": [[9,23],[15,15],[17,35]],
+    "water_tower": [[14,23]],
+    "hedgehog": [[30,11],[35,11],[35,25]],
+    "bridge": [[22,5,2,2,"ns"],[22,19,2,2,"ns"],[22,33,2,2,"ns"]],
+    "house1": [[6,11,2,2,0],[6,28,2,2,9],[12,19,2,3,4],[16,8,2,2,9],[19,14,3,2,5],[19,26,2,2,9],[26,29,2,3,2],[29,7,3,2,9],[29,25,2,3,4]],
+    "house2": [[9,10,3,3,4],[10,28,3,3,9],[30,30,3,3,11],[34,8,3,2,6]],
+    "decal": [["label",9,20,3,"CONSORTIUM RAIL DEPOT"],["label",21,12,3,"INN RIVER"],["label",32,20,3,"INNSBRUCK STATION"],["helipad",36,14,1.8],["loading",11,23,2],["hazard_zone",14,23,1.4]]
+  }
 }

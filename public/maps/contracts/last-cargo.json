@@ -9,75 +9,27 @@
   "contractId": "contract-last-cargo",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 36,
-    "col": 16
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "gameMode": "contract",
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false,
-    "victoryOnAllEnemiesDestroyed": false
-  },
-  "completionReward": {
-    "credits": 3000
-  },
-  "environment": {
-    "theme": "industrial",
-    "tint": "#38bdf8",
-    "fogColor": "#0d1522",
-    "groundColor": "#3c444c"
-  },
+  "playerSpawnCell": {"row":36,"col":16},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"gameMode":"contract","spawnSectorBossOnClear":false,"defeatOnBaseLoss":false,"victoryOnAllEnemiesDestroyed":false},
+  "completionReward": {"credits":3000},
+  "environment": {"theme":"industrial","tint":"#38bdf8","fogColor":"#0d1522","groundColor":"#3c444c"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Logistics raid across a 36x36 river terminal with three connected route loops (West Rail Depot, Central Pump Island across a diagonal canal with two 3-cell bridges, and East Container Yard), finite event-triggered enemy groups (24 total, max 6 live), and an explicit southern delivery/extraction pad.",
     "breaches": [
       {
         "name": "West north lateral breach",
-        "cells": [
-          {
-            "row": 11,
-            "col": 12
-          },
-          {
-            "row": 12,
-            "col": 12
-          }
-        ],
-        "start": {
-          "row": 12,
-          "col": 10
-        },
-        "end": {
-          "row": 12,
-          "col": 14
-        },
+        "cells": [{"row":11,"col":12},{"row":12,"col":12}],
+        "start": {"row":12,"col":10},
+        "end": {"row":12,"col":14},
         "purpose": "Blast the shallow brick partition beside the rail depot to open a direct lateral escape from Cargo A into the central distribution road."
       },
       {
         "name": "West south lateral breach",
-        "cells": [
-          {
-            "row": 23,
-            "col": 12
-          },
-          {
-            "row": 24,
-            "col": 12
-          }
-        ],
-        "start": {
-          "row": 23,
-          "col": 10
-        },
-        "end": {
-          "row": 23,
-          "col": 14
-        },
+        "cells": [{"row":23,"col":12},{"row":24,"col":12}],
+        "start": {"row":23,"col":10},
+        "end": {"row":23,"col":14},
         "purpose": "Breach the lower rail-yard brick wall to cut from the western rail spine into the southern cross-connector below the pump island."
       }
     ]
@@ -114,368 +66,54 @@
     "maxConcurrent": 6,
     "maxAttackers": 3,
     "spawnIntervalSec": 4,
-    "entrances": [
-      {
-        "id": "west",
-        "row": 0,
-        "col": 7
-      },
-      {
-        "id": "center",
-        "row": 0,
-        "col": 20
-      },
-      {
-        "id": "east",
-        "row": 0,
-        "col": 32
-      }
-    ]
+    "entrances": [{"id":"west","row":0,"col":7},{"id":"center","row":0,"col":20},{"id":"east","row":0,"col":32}]
   },
   "decoration": {
     "version": 1,
     "seed": 40201,
     "theme": "industrial",
     "zones": [
-      {
-        "id": "west-rail-yard",
-        "bounds": [
-          2,
-          7,
-          28,
-          11
-        ],
-        "surface": "gravel",
-        "density": 0.35,
-        "details": [
-          "tracks",
-          "rubble",
-          "oil"
-        ]
-      },
-      {
-        "id": "west-workshop",
-        "bounds": [
-          4,
-          3,
-          28,
-          5
-        ],
-        "surface": "concrete",
-        "density": 0.3,
-        "details": [
-          "oil",
-          "patches",
-          "cracks"
-        ]
-      },
-      {
-        "id": "pump-island-deck",
-        "bounds": [
-          15,
-          17,
-          24,
-          22
-        ],
-        "surface": "pavers",
-        "density": 0.25,
-        "details": [
-          "cracks",
-          "patches"
-        ]
-      },
+      {"id":"west-rail-yard","bounds":[2,7,28,11],"surface":"gravel","density":0.35,"details":["tracks","rubble","oil"]},
+      {"id":"west-workshop","bounds":[4,3,28,5],"surface":"concrete","density":0.3,"details":["oil","patches","cracks"]},
+      {"id":"pump-island-deck","bounds":[15,17,24,22],"surface":"pavers","density":0.25,"details":["cracks","patches"]},
       {
         "id": "east-container-court",
-        "bounds": [
-          5,
-          27,
-          26,
-          35
-        ],
+        "bounds": [5,27,26,35],
         "surface": "concrete",
         "density": 0.3,
-        "details": [
-          "cracks",
-          "oil",
-          "patches"
-        ]
+        "details": ["cracks","oil","patches"]
       },
-      {
-        "id": "south-delivery-apron",
-        "bounds": [
-          33,
-          16,
-          38,
-          23
-        ],
-        "surface": "pavers",
-        "density": 0.2,
-        "details": [
-          "patches"
-        ]
-      },
-      {
-        "id": "edge-west-north",
-        "bounds": [
-          0,
-          0,
-          19,
-          3
-        ],
-        "surface": "concrete",
-        "density": 0.45,
-        "details": [
-          "oil",
-          "tracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "edge-west-south",
-        "bounds": [
-          20,
-          0,
-          39,
-          3
-        ],
-        "surface": "gravel",
-        "density": 0.45,
-        "details": [
-          "tracks",
-          "rubble",
-          "cracks"
-        ]
-      },
-      {
-        "id": "edge-east-north",
-        "bounds": [
-          0,
-          36,
-          19,
-          39
-        ],
-        "surface": "gravel",
-        "density": 0.45,
-        "details": [
-          "oil",
-          "tracks",
-          "rubble"
-        ]
-      },
+      {"id":"south-delivery-apron","bounds":[33,16,38,23],"surface":"pavers","density":0.2,"details":["patches"]},
+      {"id":"edge-west-north","bounds":[0,0,19,3],"surface":"concrete","density":0.45,"details":["oil","tracks","rubble"]},
+      {"id":"edge-west-south","bounds":[20,0,39,3],"surface":"gravel","density":0.45,"details":["tracks","rubble","cracks"]},
+      {"id":"edge-east-north","bounds":[0,36,19,39],"surface":"gravel","density":0.45,"details":["oil","tracks","rubble"]},
       {
         "id": "edge-east-south",
-        "bounds": [
-          20,
-          36,
-          39,
-          39
-        ],
+        "bounds": [20,36,39,39],
         "surface": "concrete",
         "density": 0.45,
-        "details": [
-          "tracks",
-          "rubble",
-          "cracks"
-        ]
+        "details": ["tracks","rubble","cracks"]
       }
     ],
     "paths": [
-      {
-        "id": "island-bridge-loop",
-        "points": [
-          [
-            17,
-            13
-          ],
-          [
-            17,
-            20
-          ],
-          [
-            28,
-            20
-          ],
-          [
-            34,
-            20
-          ]
-        ],
-        "width": 3,
-        "surface": "concrete",
-        "marking": "edges"
-      },
-      {
-        "id": "north-cross-link",
-        "points": [
-          [
-            11,
-            14
-          ],
-          [
-            10,
-            28
-          ]
-        ],
-        "width": 3,
-        "surface": "asphalt",
-        "marking": "none"
-      }
+      {"id":"island-bridge-loop","points":[[17,13],[17,20],[28,20],[34,20]],"width":3,"surface":"concrete","marking":"edges"},
+      {"id":"north-cross-link","points":[[11,14],[10,28]],"width":3,"surface":"asphalt","marking":"none"}
     ],
-    "exclusions": [
-      {
-        "id": "clear-delivery-pad",
-        "bounds": [
-          34,
-          18,
-          36,
-          21
-        ]
-      }
-    ]
+    "exclusions": [{"id":"clear-delivery-pad","bounds":[34,18,36,21]}]
   },
-  "terrain": [
-    {"t":"oil","r":3,"c":23},
-    {"t":"oil","r":7,"c":3},
-    {"t":"oil","r":10,"c":36},
-    {"t":"water","r":11,"c":24,"h":3,"w":3},
-    {"t":"water","r":13,"c":15,"h":2,"w":9},
-    {"t":"water","r":14,"c":24,"h":13},
-    {"t":"water","r":15,"c":15,"w":2},
-    {"t":"water","r":15,"c":23,"h":12},
-    {"t":"water","r":15,"c":25,"h":12},
-    {"t":"oil","r":17,"c":2},
-    {"t":"oil","r":17,"c":31},
-    {"t":"oil","r":21,"c":4},
-    {"t":"water","r":23,"c":15,"w":4},
-    {"t":"water","r":24,"c":15,"h":3,"w":2},
-    {"t":"oil","r":25,"c":2},
-    {"t":"water","r":25,"c":17,"h":2,"w":2},
-    {"t":"oil","r":28,"c":10},
-    {"t":"oil","r":35,"c":5},
-    {"t":"oil","r":38,"c":12},
-    {"t":"boxes","r":1,"c":1},
-    {"t":"crater","r":1,"c":4},
-    {"t":"crater","r":1,"c":10},
-    {"t":"water_tower","r":1,"c":15},
-    {"t":"crater","r":1,"c":16},
-    {"t":"crater","r":1,"c":28},
-    {"t":"boxes","r":1,"c":38},
-    {"t":"boxes","r":3,"c":21},
-    {"t":"forest","r":4,"c":0,"w":2},
-    {"t":"concrete","r":4,"c":6,"h":3},
-    {"t":"concrete","r":4,"c":39},
-    {"t":"concrete","r":6,"c":12,"h":5},
-    {"t":"concrete","r":6,"c":29,"w":3},
-    {"t":"forest","r":6,"c":39},
-    {"t":"brick","r":7,"c":0},
-    {"t":"concrete","r":7,"c":1,"h":2},
-    {"t":"brick","r":7,"c":18,"h":2,"w":2},
-    {"t":"forest","r":8,"c":0},
-    {"t":"brick","r":8,"c":6,"h":3},
-    {"t":"forest","r":8,"c":15,"h":2,"w":2},
-    {"t":"forest","r":8,"c":22,"h":2,"w":2},
-    {"t":"concrete","r":8,"c":33,"h":3},
-    {"t":"brick","r":9,"c":1},
-    {"t":"brick","r":9,"c":8,"w":2},
-    {"t":"forest","r":9,"c":14},
-    {"t":"forest","r":10,"c":0,"h":3,"w":4},
-    {"t":"brick","r":11,"c":12,"h":2},
-    {"t":"brick","r":11,"c":30,"w":2},
-    {"t":"concrete","r":12,"c":6,"h":3},
-    {"t":"concrete","r":13,"c":0,"w":2},
-    {"t":"concrete","r":13,"c":12,"h":10},
-    {"t":"concrete","r":13,"c":30,"h":3},
-    {"t":"brick","r":14,"c":0,"w":2},
-    {"t":"brick","r":14,"c":11,"h":2},
-    {"t":"concrete","r":15,"c":17},
-    {"t":"brick","r":15,"c":19,"w":2},
-    {"t":"concrete","r":15,"c":22},
-    {"t":"brick","r":15,"c":38,"h":2},
-    {"t":"brick","r":16,"c":0,"w":2},
-    {"t":"brick","r":16,"c":6,"h":7},
-    {"t":"forest","r":16,"c":39},
-    {"t":"concrete","r":17,"c":8,"h":3},
-    {"t":"boxes","r":19,"c":14},
-    {"t":"boxes","r":20,"c":34},
-    {"t":"forest","r":20,"c":36,"h":5,"w":4},
-    {"t":"brick","r":23,"c":12,"h":2},
-    {"t":"concrete","r":24,"c":6,"h":3},
-    {"t":"concrete","r":24,"c":17},
-    {"t":"brick","r":24,"c":18},
-    {"t":"concrete","r":24,"c":22},
-    {"t":"concrete","r":24,"c":30,"h":2,"w":2},
-    {"t":"concrete","r":25,"c":12,"h":2},
-    {"t":"hedgehog","r":26,"c":39,"h":2},
-    {"t":"hedgehog","r":27,"c":38},
-    {"t":"forest","r":28,"c":0,"h":3,"w":4},
-    {"t":"forest","r":28,"c":38},
-    {"t":"brick","r":29,"c":17,"w":2},
-    {"t":"forest","r":29,"c":39},
-    {"t":"concrete","r":30,"c":22,"w":2},
-    {"t":"forest","r":31,"c":1},
-    {"t":"hedgehog","r":32,"c":0,"w":2},
-    {"t":"forest","r":32,"c":11,"h":2,"w":3},
-    {"t":"boxes","r":32,"c":23},
-    {"t":"forest","r":32,"c":26,"h":2,"w":3},
-    {"t":"brick","r":32,"c":38,"h":2},
-    {"t":"brick","r":33,"c":39},
-    {"t":"concrete","r":36,"c":1},
-    {"t":"brick","r":36,"c":38,"w":2},
-    {"t":"concrete","r":37,"c":18,"w":4},
-    {"t":"concrete","r":37,"c":39},
-    {"t":"boxes","r":38,"c":1},
-    {"t":"crater","r":38,"c":4},
-    {"t":"water_tower","r":38,"c":9},
-    {"t":"crater","r":38,"c":10},
-    {"t":"crater","r":38,"c":28},
-    {"t":"crater","r":38,"c":34},
-    {"t":"boxes","r":38,"c":38},
-    {"t":"house1","r":2,"c":0,"h":2,"w":2,"style":9},
-    {"t":"house2","r":4,"c":16,"h":2,"w":2,"style":11},
-    {"t":"house1","r":4,"c":23,"h":2,"w":2,"style":8},
-    {"t":"house2","r":5,"c":0,"h":2,"w":2,"style":5},
-    {"t":"house1","r":5,"c":3,"h":2,"style":8},
-    {"t":"house2","r":7,"c":38,"h":3,"w":2,"style":9},
-    {"t":"house1","r":11,"c":36,"h":3,"w":2,"style":9},
-    {"t":"house2","r":11,"c":39,"h":3,"style":3},
-    {"t":"house1","r":17,"c":0,"h":3,"w":2,"style":8},
-    {"t":"house2","r":17,"c":3,"h":3,"style":11},
-    {"t":"house1","r":17,"c":32,"h":3,"w":2,"style":10},
-    {"t":"house2","r":21,"c":0,"h":2,"w":2,"style":7},
-    {"t":"house1","r":21,"c":3,"h":2,"style":10},
-    {"t":"house2","r":21,"c":32,"h":2,"w":2,"style":11},
-    {"t":"house1","r":24,"c":0,"h":2,"w":2,"style":10},
-    {"t":"house2","r":26,"c":0,"h":2,"w":2,"style":3},
-    {"t":"house1","r":29,"c":8,"h":2,"w":3,"style":10},
-    {"t":"house2","r":29,"c":29,"h":2,"w":3,"style":11},
-    {"t":"house1","r":35,"c":6,"h":2,"w":3,"style":8},
-    {"t":"house2","r":35,"c":31,"h":2,"w":3,"style":6},
-    {"t":"powerup","kind":"REPAIR","r":31,"c":16},
-    {"t":"powerup","kind":"APS","r":7,"c":4},
-    {"t":"powerup","kind":"REPAIR","r":15,"c":4},
-    {"t":"powerup","kind":"MISSILE","r":27,"c":5},
-    {"t":"powerup","kind":"REPAIR","r":12,"c":17},
-    {"t":"powerup","kind":"EMP","r":15,"c":26},
-    {"t":"powerup","kind":"APS","r":28,"c":16},
-    {"t":"powerup","kind":"MISSILE","r":6,"c":35},
-    {"t":"powerup","kind":"REPAIR","r":14,"c":35},
-    {"t":"powerup","kind":"APS","r":26,"c":34},
-    {"t":"decal","kind":"loading","r":14,"c":9,"size":3},
-    {"t":"decal","kind":"loading","r":22,"c":20,"size":3},
-    {"t":"decal","kind":"loading","r":9,"c":30,"size":3},
-    {"t":"decal","kind":"loading","r":35,"c":19,"size":4},
-    {"t":"decal","kind":"crosswalk","r":17,"c":15,"size":3},
-    {"t":"decal","kind":"crosswalk","r":26,"c":20,"size":3},
-    {"t":"decal","kind":"label","r":13,"c":9,"size":2,"text":"CARGO A // RAIL DEPOT"},
-    {"t":"decal","kind":"label","r":17,"c":20,"size":2,"text":"CARGO B // PUMP ISLAND"},
-    {"t":"decal","kind":"label","r":8,"c":30,"size":2,"text":"CARGO C // CONTAINER YARD"},
-    {"t":"decal","kind":"label","r":33,"c":19,"size":2,"text":"DELIVERY & EXTRACT PAD"},
-    {"t":"decal","kind":"crosswalk","r":9,"c":0,"size":2},
-    {"t":"decal","kind":"manhole","r":24,"c":2},
-    {"t":"decal","kind":"crosswalk","r":10,"c":36,"size":2},
-    {"t":"decal","kind":"loading","r":27,"c":37,"size":1.8},
-    {"t":"decal","kind":"helipad","r":35,"c":15,"size":1.8},
-    {"t":"decal","kind":"chevron","r":24,"c":19,"size":1.2},
-    {"t":"decal","kind":"drain_grate","r":16,"c":2}
-  ]
+  "terrain": {
+    "oil": [[3,23],[7,3],[10,36],[17,2],[17,31],[21,4],[25,2],[28,10],[35,5],[38,12]],
+    "water": [[11,24,3,3],[13,15,2,9],[14,24,13,1],[15,15,1,2],[15,23,12,1],[15,25,12,1],[23,15,1,4],[24,15,3,2],[25,17,2,2]],
+    "boxes": [[1,1],[1,38],[3,21],[19,14],[20,34],[32,23],[38,1],[38,38]],
+    "crater": [[1,4],[1,10],[1,16],[1,28],[38,4],[38,10],[38,28],[38,34]],
+    "water_tower": [[1,15],[38,9]],
+    "forest": [[4,0,1,2],[6,39],[8,0],[8,15,2,2],[8,22,2,2],[9,14],[10,0,3,4],[16,39],[20,36,5,4],[28,0,3,4],[28,38],[29,39],[31,1],[32,11,2,3],[32,26,2,3]],
+    "concrete": [[4,6,3,1],[4,39],[6,12,5,1],[6,29,1,3],[7,1,2,1],[8,33,3,1],[12,6,3,1],[13,0,1,2],[13,12,10,1],[13,30,3,1],[15,17],[15,22],[17,8,3,1],[24,6,3,1],[24,17],[24,22],[24,30,2,2],[25,12,2,1],[30,22,1,2],[36,1],[37,18,1,4],[37,39]],
+    "brick": [[7,0],[7,18,2,2],[8,6,3,1],[9,1],[9,8,1,2],[11,12,2,1],[11,30,1,2],[14,0,1,2],[14,11,2,1],[15,19,1,2],[15,38,2,1],[16,0,1,2],[16,6,7,1],[23,12,2,1],[24,18],[29,17,1,2],[32,38,2,1],[33,39],[36,38,1,2]],
+    "hedgehog": [[26,39,2,1],[27,38],[32,0,1,2]],
+    "house1": [[2,0,2,2,9],[4,23,2,2,8],[5,3,2,1,8],[11,36,3,2,9],[17,0,3,2,8],[17,32,3,2,10],[21,3,2,1,10],[24,0,2,2,10],[29,8,2,3,10],[35,6,2,3,8]],
+    "house2": [[4,16,2,2,11],[5,0,2,2,5],[7,38,3,2,9],[11,39,3,1,3],[17,3,3,1,11],[21,0,2,2,7],[21,32,2,2,11],[26,0,2,2,3],[29,29,2,3,11],[35,31,2,3,6]],
+    "powerup": [["REPAIR",31,16],["APS",7,4],["REPAIR",15,4],["MISSILE",27,5],["REPAIR",12,17],["EMP",15,26],["APS",28,16],["MISSILE",6,35],["REPAIR",14,35],["APS",26,34]],
+    "decal": [["loading",14,9,3],["loading",22,20,3],["loading",9,30,3],["loading",35,19,4],["crosswalk",17,15,3],["crosswalk",26,20,3],["label",13,9,2,"CARGO A // RAIL DEPOT"],["label",17,20,2,"CARGO B // PUMP ISLAND"],["label",8,30,2,"CARGO C // CONTAINER YARD"],["label",33,19,2,"DELIVERY & EXTRACT PAD"],["crosswalk",9,0,2],["manhole",24,2],["crosswalk",10,36,2],["loading",27,37,1.8],["helipad",35,15,1.8],["chevron",24,19,1.2],["drain_grate",16,2]]
+  }
 }
