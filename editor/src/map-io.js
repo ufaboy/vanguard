@@ -1,5 +1,7 @@
 /** Map JSON loading, parsing, serialization, and File System Access / download saving. */
 import { TileType } from '/public/src/game/terrains/surfaces.js';
+import { computeBridgeLayout } from './bridge-layout.js';
+import { computeBuildingLayout, serializeBuildingLayout } from './building-layout.js';
 import {
   GRID_SIZE,
   OBJECT_CHAR_TO_TILE,
@@ -171,6 +173,20 @@ export function serializeMapState(state) {
       })
       .join('')
   );
+  const bridges = computeBridgeLayout(state.objectGrid, state.surfaceGrid);
+  if (bridges.length > 0) {
+    out.bridges = bridges;
+  } else {
+    delete out.bridges;
+  }
+  const buildings = serializeBuildingLayout(
+    computeBuildingLayout(state.objectGrid, state.environment?.theme || 'urban')
+  );
+  if (buildings.length > 0) {
+    out.buildings = buildings;
+  } else {
+    delete out.buildings;
+  }
   return JSON.stringify(out, null, 2) + '\n';
 }
 

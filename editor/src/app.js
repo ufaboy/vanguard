@@ -168,7 +168,7 @@ class MapEditorApp {
     this._toastTimer = setTimeout(() => el.classList.add('hidden'), 2400);
   }
 
-  _applyCell(r, c, mode) {
+  _applyCell(r, c, mode, updateNeighbors = true) {
     const size = this.state.size;
     if (r < 0 || r >= size || c < 0 || c >= size) return false;
 
@@ -190,21 +190,24 @@ class MapEditorApp {
       } else {
         return false;
       }
-      this.viewport.updateCell(r, c);
+      this.viewport.updateCell(r, c, updateNeighbors);
+      if (!updateNeighbors) this.viewport.refreshRoadNeighbors(r, c);
       return true;
     }
 
     if (this.activeTab === 'surfaces') {
       if (this.state.surfaceGrid[r][c] === this.selectedSurface) return false;
       this.state.surfaceGrid[r][c] = this.selectedSurface;
-      this.viewport.updateCell(r, c);
+      this.viewport.updateCell(r, c, updateNeighbors);
+      if (!updateNeighbors) this.viewport.refreshRoadNeighbors(r, c);
       return true;
     }
 
     if (this.activeTab === 'objects') {
       if (this.state.objectGrid[r][c] === this.selectedObject) return false;
       this.state.objectGrid[r][c] = this.selectedObject;
-      this.viewport.updateCell(r, c);
+      this.viewport.updateCell(r, c, updateNeighbors);
+      if (!updateNeighbors) this.viewport.refreshRoadNeighbors(r, c);
       return true;
     }
 
@@ -246,14 +249,19 @@ class MapEditorApp {
     let changed = false;
     for (let dr = 0; dr < this.brushSize; dr++) {
       for (let dc = 0; dc < this.brushSize; dc++) {
-        if (this._applyCell(centerCell.row + dr, centerCell.col + dc, mode)) {
+        if (this._applyCell(centerCell.row + dr, centerCell.col + dc, mode, false)) {
           changed = true;
         }
       }
     }
-    if (changed && this.activeTab === 'decorations') {
-      this.viewport.rebuildDecorations();
-      this._syncLists();
+    if (changed) {
+      if (this.activeTab === 'decorations') {
+        this.viewport.rebuildDecorations();
+        this._syncLists();
+      } else {
+        this.viewport.syncBuildings();
+        this.viewport.rebuildBridges();
+      }
     }
     return changed;
   }
@@ -295,6 +303,29 @@ class MapEditorApp {
         }
       }
     }
+
+    if (isSurf || targetVal === TileType.BRIDGE || replaceVal === TileType.BRIDGE) {
+      const roadNeighbors = new Set();
+      for (const cellKey of visited) {
+        const [r, c] = cellKey.split(',').map(Number);
+        for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+          const nr = r + dr;
+          const nc = c + dc;
+          if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
+          const nKey = `${nr},${nc}`;
+          if (!visited.has(nKey) && this.state.surfaceGrid[nr][nc] === TileType.ROAD) {
+            roadNeighbors.add(nKey);
+          }
+        }
+      }
+      for (const nKey of roadNeighbors) {
+        const [nr, nc] = nKey.split(',').map(Number);
+        this.viewport.updateCell(nr, nc, false);
+      }
+    }
+    this.viewport.syncBuildings();
+    this.viewport.rebuildBridges();
+
     this._commitSnapshot(prev);
     this._toast(`Flood filled ${visited.size} cells`);
   }
@@ -403,15 +434,7 @@ class MapEditorApp {
       return;
     }
 
-    // 2. Decoration landmark
-    const deco = this.state.decoration?.landmarks?.find((d) => d.row === row && d.col === col);
-    if (deco) {
-      this.moveDrag = { kind: 'decoration', item: deco, fromRow: row, fromCol: col, snapshot: this._snapshot() };
-      this._toast(`Moving decoration ${deco.kind}`);
-      return;
-    }
-
-    // 3. Powerup crate
+    // 2. Powerup crate
     const pw = this.state.powerups.find((p) => p.row === row && p.col === col);
     if (pw) {
       this.moveDrag = { kind: 'powerup', item: pw, fromRow: row, fromCol: col, snapshot: this._snapshot() };
@@ -436,7 +459,7 @@ class MapEditorApp {
       return;
     }
 
-    // 5. Grid object
+    // 5. Grid object (moves only the object, without decorations or surface)
     const obj = this.state.objectGrid[row][col];
     if (obj !== null) {
       this.moveDrag = { kind: 'object', value: obj, fromRow: row, fromCol: col, snapshot: this._snapshot() };
@@ -444,11 +467,23 @@ class MapEditorApp {
       return;
     }
 
-    // 6. Non-empty surface
+    // 6. Ground layer: decorations together with surface
+    const decos = (this.state.decoration?.landmarks || []).filter((d) => d.row === row && d.col === col);
     const surf = this.state.surfaceGrid[row][col];
-    if (surf !== TileType.EMPTY) {
-      this.moveDrag = { kind: 'surface', value: surf, fromRow: row, fromCol: col, snapshot: this._snapshot() };
-      this._toast(`Moving ${SURFACE_BY_TILE.get(surf)?.name || 'surface'}`);
+    const hasSurf = surf !== TileType.EMPTY;
+    if (decos.length > 0 || hasSurf) {
+      const parts = [];
+      if (decos.length > 0) parts.push(decos.length === 1 ? decos[0].kind : `${decos.length} decorations`);
+      if (hasSurf) parts.push(SURFACE_BY_TILE.get(surf)?.name || 'surface');
+      this.moveDrag = {
+        kind: 'ground',
+        decorations: decos.map((item) => ({ item, originRow: item.row, originCol: item.col })),
+        surface: hasSurf ? surf : null,
+        fromRow: row,
+        fromCol: col,
+        snapshot: this._snapshot(),
+      };
+      this._toast(`Moving ${parts.join(' + ')}`);
       return;
     }
 
@@ -463,32 +498,45 @@ class MapEditorApp {
     const c1 = Math.min(size - 1, c0 + this.brushSize - 1);
     const inBox = (r, c) => r >= r0 && r <= r1 && c >= c0 && c <= c1;
 
-    const landmarks = this.state.landmarks3d
-      .filter((l) => inBox(l.row, l.col))
-      .map((item) => ({ item, originRow: item.row, originCol: item.col }));
-    const decorations = (this.state.decoration?.landmarks || [])
-      .filter((d) => inBox(d.row, d.col))
-      .map((item) => ({ item, originRow: item.row, originCol: item.col }));
-    const powerups = this.state.powerups
-      .filter((p) => inBox(p.row, p.col))
-      .map((item) => ({ item, originRow: item.row, originCol: item.col }));
-    const playerSpawn = inBox(this.state.playerSpawnCell.row, this.state.playerSpawnCell.col)
-      ? { originRow: this.state.playerSpawnCell.row, originCol: this.state.playerSpawnCell.col }
-      : null;
-    const baseCell =
-      inBox(this.state.baseCell.row, this.state.baseCell.col) ||
-      inBox(this.state.baseCell.row, this.state.baseCell.col + 1)
-        ? { originRow: this.state.baseCell.row, originCol: this.state.baseCell.col }
-        : null;
-
     const objects = [];
-    const surfaces = [];
     for (let r = r0; r <= r1; r++) {
       for (let c = c0; c <= c1; c++) {
         const obj = this.state.objectGrid[r][c];
         if (obj !== null) objects.push({ row: r, col: c, value: obj });
-        const surf = this.state.surfaceGrid[r][c];
-        if (surf !== TileType.EMPTY) surfaces.push({ row: r, col: c, value: surf });
+      }
+    }
+
+    let landmarks = [];
+    let decorations = [];
+    let powerups = [];
+    let playerSpawn = null;
+    let baseCell = null;
+    const surfaces = [];
+
+    if (objects.length === 0) {
+      landmarks = this.state.landmarks3d
+        .filter((l) => inBox(l.row, l.col))
+        .map((item) => ({ item, originRow: item.row, originCol: item.col }));
+      decorations = (this.state.decoration?.landmarks || [])
+        .filter((d) => inBox(d.row, d.col))
+        .map((item) => ({ item, originRow: item.row, originCol: item.col }));
+      powerups = this.state.powerups
+        .filter((p) => inBox(p.row, p.col))
+        .map((item) => ({ item, originRow: item.row, originCol: item.col }));
+      playerSpawn = inBox(this.state.playerSpawnCell.row, this.state.playerSpawnCell.col)
+        ? { originRow: this.state.playerSpawnCell.row, originCol: this.state.playerSpawnCell.col }
+        : null;
+      baseCell =
+        inBox(this.state.baseCell.row, this.state.baseCell.col) ||
+        inBox(this.state.baseCell.row, this.state.baseCell.col + 1)
+          ? { originRow: this.state.baseCell.row, originCol: this.state.baseCell.col }
+          : null;
+
+      for (let r = r0; r <= r1; r++) {
+        for (let c = c0; c <= c1; c++) {
+          const surf = this.state.surfaceGrid[r][c];
+          if (surf !== TileType.EMPTY) surfaces.push({ row: r, col: c, value: surf });
+        }
       }
     }
 
@@ -589,10 +637,14 @@ class MapEditorApp {
         this.moveDrag.item.row = cell.row;
         this.moveDrag.item.col = cell.col;
         this.viewport.rebuildLandmarks();
-      } else if (this.moveDrag.kind === 'decoration') {
-        this.moveDrag.item.row = cell.row;
-        this.moveDrag.item.col = cell.col;
-        this.viewport.rebuildDecorations();
+      } else if (this.moveDrag.kind === 'ground') {
+        if (this.moveDrag.decorations.length > 0) {
+          for (const entry of this.moveDrag.decorations) {
+            entry.item.row = cell.row;
+            entry.item.col = cell.col;
+          }
+          this.viewport.rebuildDecorations();
+        }
       } else if (this.moveDrag.kind === 'powerup') {
         this.moveDrag.item.row = cell.row;
         this.moveDrag.item.col = cell.col;
@@ -633,28 +685,38 @@ class MapEditorApp {
 
         for (const o of drag.objects) {
           this.state.objectGrid[o.row][o.col] = null;
-          this.viewport.updateCell(o.row, o.col);
+          this.viewport.updateCell(o.row, o.col, false);
+          this.viewport.refreshRoadNeighbors(o.row, o.col);
         }
         for (const o of drag.objects) {
           const nr = o.row + dRow;
           const nc = o.col + dCol;
           if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
             this.state.objectGrid[nr][nc] = o.value;
-            this.viewport.updateCell(nr, nc);
+            this.viewport.updateCell(nr, nc, false);
+            this.viewport.refreshRoadNeighbors(nr, nc);
           }
+        }
+        if (drag.objects.length > 0) {
+          this.viewport.syncBuildings();
         }
 
         for (const s of drag.surfaces) {
           this.state.surfaceGrid[s.row][s.col] = TileType.EMPTY;
-          this.viewport.updateCell(s.row, s.col);
+          this.viewport.updateCell(s.row, s.col, false);
+          this.viewport.refreshRoadNeighbors(s.row, s.col);
         }
         for (const s of drag.surfaces) {
           const nr = s.row + dRow;
           const nc = s.col + dCol;
           if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
             this.state.surfaceGrid[nr][nc] = s.value;
-            this.viewport.updateCell(nr, nc);
+            this.viewport.updateCell(nr, nc, false);
+            this.viewport.refreshRoadNeighbors(nr, nc);
           }
+        }
+        if (drag.surfaces.length > 0 && drag.objects.length === 0) {
+          this.viewport.rebuildBridges();
         }
 
         if (
@@ -671,18 +733,42 @@ class MapEditorApp {
         return;
       }
       if (!cell || (cell.row === drag.fromRow && cell.col === drag.fromCol)) {
+        if (drag.kind === 'ground' && drag.decorations.length > 0) {
+          for (const entry of drag.decorations) {
+            entry.item.row = entry.originRow;
+            entry.item.col = entry.originCol;
+          }
+          this.viewport.rebuildDecorations();
+        }
         return;
       }
       if (drag.kind === 'object') {
         this.state.objectGrid[drag.fromRow][drag.fromCol] = null;
         this.state.objectGrid[cell.row][cell.col] = drag.value;
-        this.viewport.updateCell(drag.fromRow, drag.fromCol);
-        this.viewport.updateCell(cell.row, cell.col);
-      } else if (drag.kind === 'surface') {
-        this.state.surfaceGrid[drag.fromRow][drag.fromCol] = TileType.EMPTY;
-        this.state.surfaceGrid[cell.row][cell.col] = drag.value;
-        this.viewport.updateCell(drag.fromRow, drag.fromCol);
-        this.viewport.updateCell(cell.row, cell.col);
+        this.viewport.updateCell(drag.fromRow, drag.fromCol, false);
+        this.viewport.refreshRoadNeighbors(drag.fromRow, drag.fromCol);
+        this.viewport.updateCell(cell.row, cell.col, false);
+        this.viewport.refreshRoadNeighbors(cell.row, cell.col);
+        this.viewport.syncBuildings();
+        this.viewport.rebuildBridges();
+      } else if (drag.kind === 'ground') {
+        if (drag.decorations.length > 0) {
+          for (const entry of drag.decorations) {
+            entry.item.row = cell.row;
+            entry.item.col = cell.col;
+          }
+          this.viewport.rebuildDecorations();
+          this._syncLists();
+        }
+        if (drag.surface !== null) {
+          this.state.surfaceGrid[drag.fromRow][drag.fromCol] = TileType.EMPTY;
+          this.state.surfaceGrid[cell.row][cell.col] = drag.surface;
+          this.viewport.updateCell(drag.fromRow, drag.fromCol, false);
+          this.viewport.refreshRoadNeighbors(drag.fromRow, drag.fromCol);
+          this.viewport.updateCell(cell.row, cell.col, false);
+          this.viewport.refreshRoadNeighbors(cell.row, cell.col);
+          this.viewport.rebuildBridges();
+        }
       } else {
         this._syncLists();
       }
@@ -699,13 +785,16 @@ class MapEditorApp {
       let changed = false;
       for (let r = r0; r <= r1; r++) {
         for (let c = c0; c <= c1; c++) {
-          if (this._applyCell(r, c, 'brush')) changed = true;
+          if (this._applyCell(r, c, 'brush', false)) changed = true;
         }
       }
       if (changed) {
         if (this.activeTab === 'decorations') {
           this.viewport.rebuildDecorations();
           this._syncLists();
+        } else {
+          this.viewport.syncBuildings();
+          this.viewport.rebuildBridges();
         }
         this._commitSnapshot(this.strokeSnapshot);
       }
@@ -1058,6 +1147,7 @@ class MapEditorApp {
       $(id).oninput = (e) => {
         this.state.environment[key] = e.target.value;
         this.viewport.applyEnvironment();
+        if (key === 'theme') this.viewport.syncBuildings();
         this._setDirty(true);
       };
     };

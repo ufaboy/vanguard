@@ -296,6 +296,18 @@ export function normalizeMapDefinition(rawMap, index = 0) {
         col: Number(item.col),
       }))
     : [];
+  const bridges = Array.isArray(rawMap.bridges)
+    ? rawMap.bridges.map((item) => ({
+        row: Number(item.row),
+        col: Number(item.col),
+        rows: Math.max(1, Number(item.rows) || 1),
+        cols: Math.max(1, Number(item.cols) || 1),
+        orientation: item.orientation === 'ew' ? 'ew' : 'ns',
+      }))
+    : [];
+  const buildings = Array.isArray(rawMap.buildings)
+    ? rawMap.buildings.filter((item) => typeof item === 'string')
+    : [];
   const mines = Array.isArray(rawMap.mines)
     ? rawMap.mines.map((item) => ({
         row: Number(item.row),
@@ -340,6 +352,8 @@ export function normalizeMapDefinition(rawMap, index = 0) {
     baseModel: rawMap.baseModel || null,
     baseDefense: rawMap.baseDefense || 'standard',
     landmarks3d,
+    bridges,
+    buildings,
     mines,
     mineSigns,
     playerSpawnCell: rawMap.playerSpawnCell || {
