@@ -9,131 +9,31 @@
   "contractId": "contract-blackout-protocol",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 36,
-    "col": 16
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "gameMode": "contract",
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false,
-    "victoryOnAllEnemiesDestroyed": false
-  },
-  "completionReward": {
-    "credits": 3000
-  },
-  "environment": {
-    "theme": "industrial",
-    "tint": "#a855f7",
-    "fogColor": "#0c1220",
-    "groundColor": "#353c46"
-  },
+  "playerSpawnCell": {"row":36,"col":16},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"gameMode":"contract","spawnSectorBossOnClear":false,"defeatOnBaseLoss":false,"victoryOnAllEnemiesDestroyed":false},
+  "completionReward": {"credits":3000},
+  "environment": {"theme":"industrial","tint":"#a855f7","fogColor":"#0c1220","groundColor":"#353c46"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "High-risk sabotage raid against three armored radar and ECM relay nodes (West Listening Post, Central Comms Citadel, and East Uplink Bunker) protected by Jammer/Stealth patrols, with timed 8s demolition charges [E] and a southern extraction pad.",
     "breaches": [
       {
         "name": "West listening post lateral breach",
-        "cells": [
-          {
-            "row": 9,
-            "col": 12
-          },
-          {
-            "row": 10,
-            "col": 12
-          }
-        ],
-        "start": {
-          "row": 9,
-          "col": 10
-        },
-        "end": {
-          "row": 9,
-          "col": 14
-        },
+        "cells": [{"row":9,"col":12},{"row":10,"col":12}],
+        "start": {"row":9,"col":10},
+        "end": {"row":9,"col":14},
         "purpose": "Blast the brick partition east of Relay Alpha to sprint clear of the 3-cell demolition blast radius."
       },
       {
         "name": "West south lateral breach",
-        "cells": [
-          {
-            "row": 23,
-            "col": 12
-          },
-          {
-            "row": 24,
-            "col": 12
-          }
-        ],
-        "start": {
-          "row": 23,
-          "col": 10
-        },
-        "end": {
-          "row": 23,
-          "col": 14
-        },
+        "cells": [{"row":23,"col":12},{"row":24,"col":12}],
+        "start": {"row":23,"col":10},
+        "end": {"row":23,"col":14},
         "purpose": "Open a southern escape cut from the West Listening Post into the central extraction avenue."
       }
     ]
   },
-  "powerups": [
-    {
-      "type": "REPAIR",
-      "row": 31,
-      "col": 16
-    },
-    {
-      "type": "APS",
-      "row": 6,
-      "col": 5
-    },
-    {
-      "type": "REPAIR",
-      "row": 22,
-      "col": 4
-    },
-    {
-      "type": "MISSILE",
-      "row": 9,
-      "col": 16
-    },
-    {
-      "type": "EMP",
-      "row": 16,
-      "col": 20
-    },
-    {
-      "type": "REPAIR",
-      "row": 26,
-      "col": 20
-    },
-    {
-      "type": "APS",
-      "row": 6,
-      "col": 34
-    },
-    {
-      "type": "MISSILE",
-      "row": 17,
-      "col": 33
-    },
-    {
-      "type": "REPAIR",
-      "row": 28,
-      "col": 29
-    },
-    {
-      "type": "APS",
-      "row": 12,
-      "col": 23
-    }
-  ],
   "enemyPool": [
     "STANDARD",
     "SCOUT",
@@ -166,23 +66,7 @@
     "maxConcurrent": 6,
     "maxAttackers": 3,
     "spawnIntervalSec": 4,
-    "entrances": [
-      {
-        "id": "west",
-        "row": 0,
-        "col": 7
-      },
-      {
-        "id": "center",
-        "row": 0,
-        "col": 20
-      },
-      {
-        "id": "east",
-        "row": 0,
-        "col": 32
-      }
-    ]
+    "entrances": [{"id":"west","row":0,"col":7},{"id":"center","row":0,"col":20},{"id":"east","row":0,"col":32}]
   },
   "decoration": {
     "version": 1,
@@ -191,352 +75,49 @@
     "zones": [
       {
         "id": "west-listening-array",
-        "bounds": [
-          5,
-          4,
-          26,
-          11
-        ],
+        "bounds": [5,4,26,11],
         "surface": "concrete",
         "density": 0.3,
-        "details": [
-          "cracks",
-          "patches",
-          "oil"
-        ]
+        "details": ["cracks","patches","oil"]
       },
-      {
-        "id": "central-citadel-court",
-        "bounds": [
-          11,
-          16,
-          23,
-          23
-        ],
-        "surface": "pavers",
-        "density": 0.25,
-        "details": [
-          "cracks",
-          "patches"
-        ]
-      },
+      {"id":"central-citadel-court","bounds":[11,16,23,23],"surface":"pavers","density":0.25,"details":["cracks","patches"]},
       {
         "id": "east-uplink-compound",
-        "bounds": [
-          5,
-          27,
-          26,
-          35
-        ],
+        "bounds": [5,27,26,35],
         "surface": "concrete",
         "density": 0.35,
-        "details": [
-          "tracks",
-          "rubble",
-          "oil"
-        ]
+        "details": ["tracks","rubble","oil"]
       },
-      {
-        "id": "south-extraction-apron",
-        "bounds": [
-          33,
-          16,
-          38,
-          23
-        ],
-        "surface": "pavers",
-        "density": 0.2,
-        "details": [
-          "patches"
-        ]
-      },
-      {
-        "id": "edge-west-north",
-        "bounds": [
-          0,
-          0,
-          19,
-          3
-        ],
-        "surface": "concrete",
-        "density": 0.45,
-        "details": [
-          "oil",
-          "tracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "edge-west-south",
-        "bounds": [
-          20,
-          0,
-          39,
-          3
-        ],
-        "surface": "gravel",
-        "density": 0.45,
-        "details": [
-          "tracks",
-          "rubble",
-          "cracks"
-        ]
-      },
-      {
-        "id": "edge-east-north",
-        "bounds": [
-          0,
-          36,
-          19,
-          39
-        ],
-        "surface": "gravel",
-        "density": 0.45,
-        "details": [
-          "oil",
-          "tracks",
-          "rubble"
-        ]
-      },
+      {"id":"south-extraction-apron","bounds":[33,16,38,23],"surface":"pavers","density":0.2,"details":["patches"]},
+      {"id":"edge-west-north","bounds":[0,0,19,3],"surface":"concrete","density":0.45,"details":["oil","tracks","rubble"]},
+      {"id":"edge-west-south","bounds":[20,0,39,3],"surface":"gravel","density":0.45,"details":["tracks","rubble","cracks"]},
+      {"id":"edge-east-north","bounds":[0,36,19,39],"surface":"gravel","density":0.45,"details":["oil","tracks","rubble"]},
       {
         "id": "edge-east-south",
-        "bounds": [
-          20,
-          36,
-          39,
-          39
-        ],
+        "bounds": [20,36,39,39],
         "surface": "concrete",
         "density": 0.45,
-        "details": [
-          "tracks",
-          "rubble",
-          "cracks"
-        ]
+        "details": ["tracks","rubble","cracks"]
       }
     ],
     "paths": [],
-    "landmarks": [
-      {
-        "id": "relay-a-pad",
-        "kind": "loading",
-        "row": 13,
-        "col": 8,
-        "size": 3,
-        "rotation": 0
-      },
-      {
-        "id": "relay-b-pad",
-        "kind": "loading",
-        "row": 16,
-        "col": 19,
-        "size": 3,
-        "rotation": 0
-      },
-      {
-        "id": "relay-c-pad",
-        "kind": "loading",
-        "row": 9,
-        "col": 31,
-        "size": 3,
-        "rotation": 0
-      },
-      {
-        "id": "south-extraction-bay",
-        "kind": "loading",
-        "row": 35,
-        "col": 19,
-        "size": 4,
-        "rotation": 0
-      },
-      {
-        "id": "label-relay-alpha",
-        "kind": "label",
-        "row": 12,
-        "col": 8,
-        "size": 2,
-        "text": "RELAY A // WEST ARRAY"
-      },
-      {
-        "id": "label-relay-bravo",
-        "kind": "label",
-        "row": 15,
-        "col": 19,
-        "size": 2,
-        "text": "RELAY B // ECM CITADEL"
-      },
-      {
-        "id": "label-relay-charlie",
-        "kind": "label",
-        "row": 8,
-        "col": 31,
-        "size": 2,
-        "text": "RELAY C // UPLINK BUNKER"
-      },
-      {
-        "id": "label-extract-pad",
-        "kind": "label",
-        "row": 33,
-        "col": 19,
-        "size": 2,
-        "text": "EXTRACTION PAD"
-      },
-      {
-        "id": "edge-mark-0",
-        "kind": "parking",
-        "row": 10,
-        "col": 1,
-        "size": 1.8,
-        "rotation": 0
-      },
-      {
-        "id": "edge-mark-1",
-        "kind": "parking",
-        "row": 25,
-        "col": 1,
-        "size": 1.8,
-        "rotation": 90
-      },
-      {
-        "id": "edge-mark-2",
-        "kind": "manhole",
-        "row": 12,
-        "col": 38,
-        "size": 1,
-        "rotation": 0
-      },
-      {
-        "id": "edge-mark-3",
-        "kind": "parking",
-        "row": 27,
-        "col": 37,
-        "size": 1.8,
-        "rotation": 90
-      },
-      {
-        "id": "blackout-protocol-wt-haz-11-10",
-        "kind": "hazard_zone",
-        "row": 11,
-        "col": 10,
-        "size": 1.3
-      },
-      {
-        "id": "blackout-protocol-helipad-hq",
-        "kind": "helipad",
-        "row": 35,
-        "col": 15,
-        "size": 1.8
-      },
-      {
-        "id": "blackout-protocol-chev-main",
-        "kind": "chevron",
-        "row": 22,
-        "col": 19,
-        "size": 1.2,
-        "rotation": 0
-      },
-      {
-        "id": "blackout-protocol-drain-w",
-        "kind": "drain_grate",
-        "row": 18,
-        "col": 0,
-        "size": 1
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "clear-extraction-pad",
-        "bounds": [
-          34,
-          18,
-          36,
-          21
-        ]
-      }
-    ]
+    "exclusions": [{"id":"clear-extraction-pad","bounds":[34,18,36,21]}]
   },
-  "surfaceLayout": [
-    "........................................",
-    "........................................",
-    "........................................",
-    "........................................",
-    "....................R...................",
-    "....................R...................",
-    ".R................L.R...................",
-    ".R......R...........R...................",
-    ".R......R.L...M..L..L...................",
-    ".R......R..........L....................",
-    ".R......R...............................",
-    "........R.............M.................",
-    "........R..........R.....WWW............",
-    "........R..........R.....WWW............",
-    "........R..........R..L..WWW............",
-    "........R..........R.....WWW............",
-    "......L.R...............................",
-    ".....L..R...............................",
-    "........R...............................",
-    ".....L..R...............................",
-    ".......LR..............WWWW.............",
-    "........R..............WWWW.............",
-    ".....L..R..............WWWW.............",
-    ".......L.R.............WWWW.............",
-    ".........R.............WWWW.............",
-    ".........R.............WWWW.............",
-    ".........R..............................",
-    ".........R..............................",
-    ".........R..............................",
-    "........................................",
-    "........................................",
-    "........................................",
-    "........................................",
-    "........................................",
-    ".R......................................",
-    ".R......................................",
-    ".R......................................",
-    "........................................",
-    "............L...........................",
-    "........................................"
-  ],
-  "objectLayout": [
-    "........................................",
-    ".Q..K.....K....TK...........K.........Q.",
-    "CC......................................",
-    "FF......................................",
-    "FB....PP........PP.....PP.........PP..FF",
-    "XX....PP........PP.....PP.........PP....",
-    "............C................C.........B",
-    "B.....FF....C.....AA.........C..PP.....B",
-    "......FF....C.....AA..FF...FFC..PP......",
-    "X...........B.........FF..FFF.........BB",
-    "....PP......B.................PP....FFFF",
-    "....PP....T.......CCC.........PP....FFFF",
-    "............C.....B.B..................C",
-    "......C.....C................BB.....PP.P",
-    "......C...K.C.......................PP.P",
-    "......C....BC....C...C........C.........",
-    "BB.........BC.................C.........",
-    "BC....AA....C....C...C........C.......C.",
-    "......AA....C....C...C........C.......CC",
-    ".F....AA....C....C.Q.C........C......Q..",
-    ".Q........K.C.........K.............FFFF",
-    "AA....AA....C.......................FFFF",
-    "AA....AA....C.......................FFFF",
-    "PP.P........B.................AA....FFFF",
-    "PP.P..C.....B.................AA......XX",
-    "......C.....C.................PP........",
-    "......C.....C.................PP......B.",
-    "XX....................................XX",
-    "FFFF..................................BB",
-    "FFFF....PPP......BB..........PPP......CB",
-    "FFFF....PPP...........CC.....PPP........",
-    "BB.....................................C",
-    "FF.........FFF............FFF..........C",
-    "FF.........FFF............FFF..........X",
-    "......................................FF",
-    "B.....PPP......................CCC......",
-    "......PPP............Q.........CCC.....B",
-    "..................CCCC..................",
-    ".Q..K....TK.................K.....K...Q.",
-    "...................HH..................."
-  ]
+  "terrain": {
+    "road": [[4,20,4,1],[6,1,5,1],[7,8,16,1],[12,19,4,1],[23,9,6,1],[34,1,3,1]],
+    "oil": [[6,18],[8,10],[8,17],[8,20],[9,19],[14,22],[16,6],[17,5],[19,5],[20,7],[22,5],[23,7],[38,12]],
+    "swamp": [[8,14],[11,22]],
+    "water": [[12,25,4,3],[20,23,6,4]],
+    "boxes": [[1,1],[1,38],[19,19],[19,37],[20,1],[36,21],[38,1],[38,38]],
+    "crater": [[1,4],[1,10],[1,16],[1,28],[14,10],[20,10],[20,22],[38,4],[38,10],[38,28],[38,34]],
+    "water_tower": [[1,15],[11,10],[38,9]],
+    "concrete": [[2,0,1,2],[6,12,3,1],[6,29,3,1],[11,18,1,3],[12,12,11,1],[12,39],[13,6,3,1],[15,17],[15,21],[15,30,5,1],[17,1],[17,17,3,1],[17,21,3,1],[17,38,2,1],[18,39],[24,6,3,1],[25,12,2,1],[29,38],[30,22,1,2],[31,39,2,1],[35,31,2,3],[37,18,1,4]],
+    "forest": [[3,0,1,2],[4,0],[4,38,1,2],[7,6,2,2],[8,22,2,2],[8,27,2,2],[9,26],[10,36,2,4],[19,1],[20,36,4,4],[28,0,3,4],[32,0,2,2],[32,11,2,3],[32,26,2,3],[34,38,1,2]],
+    "brick": [[4,1],[6,39,2,1],[7,0],[9,12,2,1],[9,38,1,2],[12,18],[12,20],[13,29,1,2],[15,11,2,1],[16,0,1,2],[17,0],[23,12,2,1],[26,38],[28,38,1,2],[29,17,1,2],[29,39],[31,0,1,2],[35,0],[36,39]],
+    "hedgehog": [[5,0,1,2],[9,0],[24,38,1,2],[27,0,1,2],[27,38,1,2],[33,39]],
+    "house2": [[4,6,2,2,8],[4,16,2,2,11],[4,23,2,2,11],[4,34,2,2,0],[7,32,2,2,11],[10,4,2,2,9],[10,30,2,2,7],[13,36,2,2,11],[13,39,2,1,11],[23,0,2,2,9],[23,3,2,1,9],[25,30,2,2,11],[29,8,2,3,10],[29,29,2,3,8],[35,6,2,3,1]],
+    "house1": [[7,18,2,2,9],[17,6,3,2,8],[21,0,2,2,4],[21,6,2,2,9],[23,30,2,2,1]],
+    "powerup": [["REPAIR",31,16],["APS",6,5],["REPAIR",22,4],["MISSILE",9,16],["EMP",16,20],["REPAIR",26,20],["APS",6,34],["MISSILE",17,33],["REPAIR",28,29],["APS",12,23]],
+    "decal": [["loading",13,8,3],["loading",16,19,3],["loading",9,31,3],["loading",35,19,4],["label",12,8,2,"RELAY A // WEST ARRAY"],["label",15,19,2,"RELAY B // ECM CITADEL"],["label",8,31,2,"RELAY C // UPLINK BUNKER"],["label",33,19,2,"EXTRACTION PAD"],["parking",10,1,1.8],["parking",25,1,1.8],["manhole",12,38],["parking",27,37,1.8],["hazard_zone",11,10,1.3],["helipad",35,15,1.8],["chevron",22,19,1.2],["drain_grate",18,0]]
+  }
 }

@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { TileType } from '/public/src/game/terrains/surfaces.js';
 import { ModelFactory } from '/public/src/game/render/models.js';
 import { landmarkFootprintCenter } from '/public/src/game/terrains/landmarks.js';
-import { computeBuildingLayout } from '/public/src/game/terrains/building-layout.js';
+import { computeBuildingLayout } from './building-layout.js';
+import { computeBridgeLayout } from './bridge-layout.js';
 import { BUILDING_MAX_HP } from '/public/src/game/terrains/building-models.js';
 import { GRID_SIZE, TILE_SIZE } from './catalog.js';
 
@@ -70,10 +71,18 @@ export class Viewport3D {
 
     this.surfaceGroup = new THREE.Group();
     this.objectGroup = new THREE.Group();
+    this.bridgeGroup = new THREE.Group();
     this.markerGroup = new THREE.Group();
     this.landmarkGroup = new THREE.Group();
     this.decoGroup = new THREE.Group();
-    this.scene.add(this.surfaceGroup, this.objectGroup, this.markerGroup, this.landmarkGroup, this.decoGroup);
+    this.scene.add(
+      this.surfaceGroup,
+      this.objectGroup,
+      this.bridgeGroup,
+      this.markerGroup,
+      this.landmarkGroup,
+      this.decoGroup
+    );
 
     this.surfaceCells = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
     this.objectCells = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
@@ -145,6 +154,7 @@ export class Viewport3D {
 
   setObjectsVisible(visible) {
     this.objectGroup.visible = visible;
+    this.bridgeGroup.visible = visible;
     this.landmarkGroup.visible = visible;
   }
 
@@ -191,20 +201,71 @@ export class Viewport3D {
     }
     this.rebuildMarkers();
     this.rebuildLandmarks();
+    this.rebuildBridges();
     this.rebuildDecorations();
+  }
+
+  rebuildBridges() {
+    this.bridgeGroup.clear();
+    if (!this.state || !this.modelFactory.landmarkModels) return;
+    const bridges = computeBridgeLayout(this.state.objectGrid, this.state.surfaceGrid);
+    for (const b of bridges) {
+      const spanNS = b.orientation !== 'ew';
+      const mesh = spanNS
+        ? this.modelFactory.landmarkModels.createBridge(b.rows, b.cols)
+        : this.modelFactory.landmarkModels.createBridge(b.cols, b.rows);
+      if (!spanNS) mesh.rotation.y = Math.PI / 2;
+      const origin = gridToWorld(b.row, b.col, this.state.size);
+      mesh.position.set(
+        origin.x + ((b.cols - 1) * TILE_SIZE) / 2,
+        0,
+        origin.z + ((b.rows - 1) * TILE_SIZE) / 2
+      );
+      this.bridgeGroup.add(mesh);
+    }
+  }
+
+  refreshRoadNeighbors(r, c) {
+    if (!this.state) return;
+    const size = this.state.size;
+    for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+      const nr = r + dr;
+      const nc = c + dc;
+      if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
+      if (this.state.surfaceGrid[nr][nc] === TileType.ROAD) {
+        this.updateCell(nr, nc, false);
+      }
+    }
+  }
+
+  syncBuildings() {
+    if (!this.state) return;
+    const prevLayout = this.buildingLayout;
+    const nextLayout = computeBuildingLayout(
+      this.state.objectGrid,
+      this.state.environment?.theme || 'urban'
+    );
+    this.buildingLayout = nextLayout;
+
+    for (const [key, next] of nextLayout.entries()) {
+      const prev = prevLayout.get(key);
+      if (
+        !prev ||
+        prev.kind !== next.kind ||
+        prev.part !== next.part ||
+        prev.yaw !== next.yaw ||
+        prev.style !== next.style
+      ) {
+        const [r, c] = key.split(',').map(Number);
+        this.updateCell(r, c, false);
+      }
+    }
   }
 
   updateCell(r, c, updateNeighbors = true) {
     if (!this.state) return;
     const size = this.state.size;
     if (r < 0 || r >= size || c < 0 || c >= size) return;
-
-    if (updateNeighbors) {
-      this.buildingLayout = computeBuildingLayout(
-        this.state.objectGrid,
-        this.state.environment?.theme || 'urban'
-      );
-    }
 
     // Remove previous meshes for (r, c)
     if (this.surfaceCells[r][c]) {
@@ -287,9 +348,6 @@ export class Viewport3D {
         new THREE.MeshStandardMaterial({ color: 0x71717a, roughness: 0.9 })
       );
       oMesh.position.set(x, 0.225, z);
-    } else if (object === TileType.BRIDGE && this.modelFactory.landmarkModels) {
-      oMesh = this.modelFactory.landmarkModels.createBridge(1, 1);
-      oMesh.position.set(x, 0, z);
     } else if (object === TileType.HOUSE_1 || object === TileType.HOUSE_2) {
       const b = this.buildingLayout.get(`${r},${c}`) || {
         kind: object === TileType.HOUSE_2 ? 'house2' : 'house1',
@@ -311,17 +369,9 @@ export class Viewport3D {
     }
 
     if (updateNeighbors) {
-      // Refresh adjacent roads and modular building neighbours
-      for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
-        const nr = r + dr;
-        const nc = c + dc;
-        if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
-        const nSurf = this.state.surfaceGrid[nr][nc];
-        const nObj = this.state.objectGrid[nr][nc];
-        if (nSurf === TileType.ROAD || nObj === TileType.HOUSE_1 || nObj === TileType.HOUSE_2) {
-          this.updateCell(nr, nc, false);
-        }
-      }
+      this.refreshRoadNeighbors(r, c);
+      this.syncBuildings();
+      this.rebuildBridges();
     }
   }
 

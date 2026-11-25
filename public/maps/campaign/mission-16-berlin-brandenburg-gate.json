@@ -6,28 +6,13 @@
   "subtitle": "SECTOR 02 // BERLIN: CLEAR THE TIERGARTEN APPROACHES",
   "objective": "Clear the Tiergarten approaches",
   "gameMode": "extermination",
-  "rules": {
-    "spawnSectorBossOnClear": false
-  },
+  "rules": {"spawnSectorBossOnClear":false},
   "gridSize": 40,
   "tileSize": 2,
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 20
-  },
-  "environment": {
-    "theme": "capital",
-    "tint": "#f0e2bf",
-    "fogColor": "#1d2a26",
-    "groundColor": "#6b6e60"
-  },
-  "completionReward": {
-    "credits": 260
-  },
+  "baseCell": {"row":39,"col":19},
+  "playerSpawnCell": {"row":35,"col":20},
+  "environment": {"theme":"capital","tint":"#f0e2bf","fogColor":"#1d2a26","groundColor":"#6b6e60"},
+  "completionReward": {"credits":260},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "A light second battle in a beautiful, intact Berlin: columns come out of the Tiergarten woods past the Victory Column and the Reichstag toward the Brandenburg Gate and Unter den Linden. The Gate splits the direct road into three passages, the woods and Ministergaerten give a covered west detour, and the embassy courtyards open an east shortcut.",
@@ -54,621 +39,108 @@
     "breaches": [
       {
         "name": "Gate barricade",
-        "cells": [
-          {
-            "row": 19,
-            "col": 22
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 22
-        },
-        "end": {
-          "row": 21,
-          "col": 22
-        },
+        "cells": [{"row":19,"col":22}],
+        "start": {"row":17,"col":22},
+        "end": {"row":21,"col":22},
         "purpose": "A brick barricade closes the east passage of the Brandenburg Gate; blast it to open a second lane past the central passage."
       },
       {
         "name": "French embassy courtyard",
-        "cells": [
-          {
-            "row": 22,
-            "col": 27
-          },
-          {
-            "row": 23,
-            "col": 27
-          }
-        ],
-        "start": {
-          "row": 22,
-          "col": 26
-        },
-        "end": {
-          "row": 22,
-          "col": 32
-        },
+        "cells": [{"row":22,"col":27},{"row":23,"col":27}],
+        "start": {"row":22,"col":26},
+        "end": {"row":22,"col":32},
         "purpose": "The embassy courtyard wall links Pariser Platz to Wilhelmstrasse; breaching it shortens the east flank to the HQ."
       },
       {
         "name": "Ministergarten wall",
-        "cells": [
-          {
-            "row": 21,
-            "col": 8
-          },
-          {
-            "row": 22,
-            "col": 8
-          },
-          {
-            "row": 23,
-            "col": 8
-          }
-        ],
-        "start": {
-          "row": 22,
-          "col": 6
-        },
-        "end": {
-          "row": 22,
-          "col": 9
-        },
+        "cells": [{"row":21,"col":8},{"row":22,"col":8},{"row":23,"col":8}],
+        "start": {"row":22,"col":6},
+        "end": {"row":22,"col":9},
         "purpose": "The garden wall separates the west woods from the Adlon lane; open it to cut from the covered detour into Pariser Platz."
       }
     ]
   },
-  "landmarks3d": [
-    {
-      "kind": "VICTORY_COLUMN",
-      "row": 4,
-      "col": 19
-    },
-    {
-      "kind": "BRANDENBURG_GATE",
-      "row": 19,
-      "col": 17
-    }
-  ],
   "decoration": {
     "version": 1,
     "seed": 1989,
     "theme": "urban",
     "zones": [
-      {
-        "id": "tiergarten",
-        "bounds": [
-          0,
-          0,
-          16,
-          39
-        ],
-        "surface": "dirt",
-        "density": 0.22,
-        "details": [
-          "leaves",
-          "weeds"
-        ]
-      },
-      {
-        "id": "grosser-stern",
-        "bounds": [
-          3,
-          17,
-          8,
-          22
-        ],
-        "surface": "pavers",
-        "density": 0.12,
-        "details": [
-          "leaves"
-        ]
-      },
-      {
-        "id": "platz-18-maerz",
-        "bounds": [
-          15,
-          12,
-          16,
-          28
-        ],
-        "surface": "pavers",
-        "density": 0.2,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      },
-      {
-        "id": "pariser-platz",
-        "bounds": [
-          19,
-          14,
-          24,
-          26
-        ],
-        "surface": "pavers",
-        "density": 0.18,
-        "details": [
-          "cracks",
-          "leaves"
-        ]
-      },
-      {
-        "id": "linden-blocks",
-        "bounds": [
-          27,
-          0,
-          34,
-          39
-        ],
-        "surface": "pavers",
-        "density": 0.22,
-        "details": [
-          "cracks",
-          "patches"
-        ]
-      },
-      {
-        "id": "hq-plaza",
-        "bounds": [
-          36,
-          14,
-          39,
-          25
-        ],
-        "surface": "concrete",
-        "density": 0.15,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      }
+      {"id":"tiergarten","bounds":[0,0,16,39],"surface":"dirt","density":0.22,"details":["leaves","weeds"]},
+      {"id":"grosser-stern","bounds":[3,17,8,22],"surface":"pavers","density":0.12,"details":["leaves"]},
+      {"id":"platz-18-maerz","bounds":[15,12,16,28],"surface":"pavers","density":0.2,"details":["cracks","tracks"]},
+      {"id":"pariser-platz","bounds":[19,14,24,26],"surface":"pavers","density":0.18,"details":["cracks","leaves"]},
+      {"id":"linden-blocks","bounds":[27,0,34,39],"surface":"pavers","density":0.22,"details":["cracks","patches"]},
+      {"id":"hq-plaza","bounds":[36,14,39,25],"surface":"concrete","density":0.15,"details":["cracks","tracks"]}
     ],
     "paths": [
-      {
-        "id": "lake-promenade",
-        "points": [
-          [
-            14,
-            4
-          ],
-          [
-            13,
-            9
-          ]
-        ],
-        "width": 1,
-        "surface": "gravel",
-        "marking": "none"
-      },
-      {
-        "id": "reichstag-walk",
-        "points": [
-          [
-            11,
-            26
-          ],
-          [
-            11,
-            30
-          ]
-        ],
-        "width": 1,
-        "surface": "pavers",
-        "marking": "none"
-      }
-    ],
-    "landmarks": [
-      {
-        "id": "label-tiergarten",
-        "kind": "label",
-        "row": 8,
-        "col": 13,
-        "size": 1.8,
-        "text": "TIERGARTEN"
-      },
-      {
-        "id": "label-grosser-stern",
-        "kind": "label",
-        "row": 7,
-        "col": 19,
-        "size": 1.4,
-        "text": "GROSSER STERN"
-      },
-      {
-        "id": "label-neuer-see",
-        "kind": "label",
-        "row": 2,
-        "col": 3,
-        "size": 1.4,
-        "text": "NEUER SEE"
-      },
-      {
-        "id": "label-reichstag",
-        "kind": "label",
-        "row": 15,
-        "col": 35,
-        "size": 1.6,
-        "text": "REICHSTAG"
-      },
-      {
-        "id": "label-pariser-platz",
-        "kind": "label",
-        "row": 22,
-        "col": 20,
-        "size": 1.6,
-        "text": "PARISER PLATZ"
-      },
-      {
-        "id": "label-unter-den-linden",
-        "kind": "label",
-        "row": 31,
-        "col": 20,
-        "size": 1.6,
-        "text": "UNTER DEN LINDEN"
-      },
-      {
-        "id": "crosswalk-ebert",
-        "kind": "crosswalk",
-        "row": 18,
-        "col": 20,
-        "size": 3,
-        "rotation": 0
-      },
-      {
-        "id": "crosswalk-wilhelm",
-        "kind": "crosswalk",
-        "row": 25,
-        "col": 20,
-        "size": 3,
-        "rotation": 0
-      },
-      {
-        "id": "manhole-linden",
-        "kind": "manhole",
-        "row": 33,
-        "col": 17
-      },
-      {
-        "id": "parking-wilhelm",
-        "kind": "parking",
-        "row": 26,
-        "col": 34,
-        "size": 2,
-        "rotation": 90
-      }
+      {"id":"lake-promenade","points":[[14,4],[13,9]],"width":1,"surface":"gravel","marking":"none"},
+      {"id":"reichstag-walk","points":[[11,26],[11,30]],"width":1,"surface":"pavers","marking":"none"}
     ]
   },
   "enemies": {
     "initialSpawnCount": 5,
     "maxConcurrent": 5,
     "spawnIntervalSec": 2.4,
-    "nextWave": {
-      "when": "cleared",
-      "delaySec": 3
-    },
+    "nextWave": {"when":"cleared","delaySec":3},
     "entrances": [
-      {
-        "id": "grosser-weg",
-        "row": 0,
-        "col": 8
-      },
-      {
-        "id": "charlottenburger-chaussee",
-        "row": 0,
-        "col": 20
-      },
-      {
-        "id": "spreeweg",
-        "row": 0,
-        "col": 31
-      }
+      {"id":"grosser-weg","row":0,"col":8},
+      {"id":"charlottenburger-chaussee","row":0,"col":20},
+      {"id":"spreeweg","row":0,"col":31}
     ],
     "encounters": [
       {
         "id": "tiergarten-probe",
         "label": "TIERGARTEN: Scouts slip through the park toward the Gate. Hold Pariser Platz.",
-        "enemies": [
-          "SCOUT",
-          "SCOUT",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD"
-        ],
-        "initialCells": [
-          {
-            "row": 1,
-            "col": 20
-          },
-          {
-            "row": 1,
-            "col": 8
-          },
-          {
-            "row": 3,
-            "col": 30
-          },
-          {
-            "row": 6,
-            "col": 15
-          },
-          {
-            "row": 6,
-            "col": 24
-          }
-        ],
-        "entrances": [
-          "grosser-weg",
-          "charlottenburger-chaussee",
-          "spreeweg"
-        ],
-        "patrolRoute": [
-          {
-            "row": 9,
-            "col": 20
-          },
-          {
-            "row": 16,
-            "col": 20
-          },
-          {
-            "row": 22,
-            "col": 20
-          },
-          {
-            "row": 30,
-            "col": 18
-          }
-        ],
+        "enemies": ["SCOUT","SCOUT","SCOUT","STANDARD","STANDARD"],
+        "initialCells": [{"row":1,"col":20},{"row":1,"col":8},{"row":3,"col":30},{"row":6,"col":15},{"row":6,"col":24}],
+        "entrances": ["grosser-weg","charlottenburger-chaussee","spreeweg"],
+        "patrolRoute": [{"row":9,"col":20},{"row":16,"col":20},{"row":22,"col":20},{"row":30,"col":18}],
         "recoverySec": 0
       },
       {
         "id": "reichstag-push",
         "label": "REICHSTAG: A column rolls past the Reichstag lawn. Watch the east flank.",
-        "enemies": [
-          "STANDARD",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD"
-        ],
-        "entrances": [
-          "spreeweg",
-          "charlottenburger-chaussee"
-        ],
-        "patrolRoute": [
-          {
-            "row": 7,
-            "col": 28
-          },
-          {
-            "row": 15,
-            "col": 25
-          },
-          {
-            "row": 18,
-            "col": 30
-          },
-          {
-            "row": 26,
-            "col": 33
-          },
-          {
-            "row": 35,
-            "col": 26
-          }
-        ],
+        "enemies": ["STANDARD","STANDARD","STANDARD","STANDARD","STANDARD"],
+        "entrances": ["spreeweg","charlottenburger-chaussee"],
+        "patrolRoute": [{"row":7,"col":28},{"row":15,"col":25},{"row":18,"col":30},{"row":26,"col":33},{"row":35,"col":26}],
         "recoverySec": 0
       },
       {
         "id": "avenue-striker",
         "label": "STRASSE DES 17. JUNI: A missile carrier covers the avenue. Close in through the woods.",
-        "enemies": [
-          "STRIKER",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD"
-        ],
-        "initialCells": [
-          {
-            "row": 1,
-            "col": 19
-          },
-          {
-            "row": 2,
-            "col": 8
-          },
-          {
-            "row": 1,
-            "col": 30
-          },
-          {
-            "row": 4,
-            "col": 15
-          },
-          {
-            "row": 4,
-            "col": 24
-          }
-        ],
-        "entrances": [
-          "charlottenburger-chaussee",
-          "grosser-weg",
-          "spreeweg"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 11
-          },
-          {
-            "row": 16,
-            "col": 10
-          },
-          {
-            "row": 22,
-            "col": 3
-          },
-          {
-            "row": 31,
-            "col": 8
-          },
-          {
-            "row": 35,
-            "col": 14
-          }
-        ],
+        "enemies": ["STRIKER","STANDARD","STANDARD","STANDARD","STANDARD"],
+        "initialCells": [{"row":1,"col":19},{"row":2,"col":8},{"row":1,"col":30},{"row":4,"col":15},{"row":4,"col":24}],
+        "entrances": ["charlottenburger-chaussee","grosser-weg","spreeweg"],
+        "patrolRoute": [{"row":10,"col":11},{"row":16,"col":10},{"row":22,"col":3},{"row":31,"col":8},{"row":35,"col":14}],
         "recoverySec": 0
       },
       {
         "id": "gate-breakthrough",
         "label": "BRANDENBURG GATE: A heavy tank leads the last push through the Gate.",
-        "enemies": [
-          "ARMOR",
-          "STANDARD",
-          "STANDARD",
-          "SCOUT",
-          "SCOUT"
-        ],
-        "initialCells": [
-          {
-            "row": 1,
-            "col": 20
-          },
-          {
-            "row": 2,
-            "col": 18
-          },
-          {
-            "row": 2,
-            "col": 22
-          },
-          {
-            "row": 1,
-            "col": 8
-          },
-          {
-            "row": 1,
-            "col": 30
-          }
-        ],
-        "entrances": [
-          "charlottenburger-chaussee",
-          "grosser-weg",
-          "spreeweg"
-        ],
-        "patrolRoute": [
-          {
-            "row": 9,
-            "col": 20
-          },
-          {
-            "row": 17,
-            "col": 20
-          },
-          {
-            "row": 23,
-            "col": 20
-          },
-          {
-            "row": 31,
-            "col": 20
-          },
-          {
-            "row": 36,
-            "col": 20
-          }
-        ],
+        "enemies": ["ARMOR","STANDARD","STANDARD","SCOUT","SCOUT"],
+        "initialCells": [{"row":1,"col":20},{"row":2,"col":18},{"row":2,"col":22},{"row":1,"col":8},{"row":1,"col":30}],
+        "entrances": ["charlottenburger-chaussee","grosser-weg","spreeweg"],
+        "patrolRoute": [{"row":9,"col":20},{"row":17,"col":20},{"row":23,"col":20},{"row":31,"col":20},{"row":36,"col":20}],
         "recoverySec": 0
       }
     ]
   },
-  "surfaceLayout": [
-    "VVVVVVVRRRRVVVVVVVVRRVVVVVVVVVRRVVVVVVVV",
-    "VVVVVVVRRVRRRRVVVVVRRVVVVVVVVVRRVVVVVVVV",
-    "VVVVVVVVVVVVVRRRRRRRRRRVVVVVVVRRVVVVVVVV",
-    "VVWWWWVVVVVVVVVVRRVVVVRRVRRRRRRRVVVVVVVV",
-    "VWWWWWWVVVVVVVVRRVVVVVVRRRRRRRRRVVVVVRRV",
-    "VWWWWWVVVVRRRRRRRVVVVVVRRVVVVVVVVVVVVRRV",
-    "VWWWWWWVVVRRRRRRRVVVVVVRRRRRRRRRRRRRRRRR",
-    "VVWWWWVVVVRRVVVRRVVVVVVRRRRRRRRRRRRRRRRR",
-    "VVVVVWWWWVRRVVVVRRVVVVRRRRVVVVVVVVVVVRRV",
-    "VVVVWWWWWWRRVVVVVRRRRRRVRRVVVVVVVVVVVRRV",
-    "VVVVWWWWWVRRVVWWWVVRRRVVRRVVVVVVVVVVVRRV",
-    "VVVVWWWWWWRRVVWWWVVRRRVVRRVVVVVVVVVVVRRV",
-    "VVVVVWWWWVRRVVVWVVVRRRVVRRVVVVVVVVVVVRRV",
-    "VVVVVVVVVVRRVVVVVVVRRRVVRRVVVVVVVVVVVRRV",
-    "VVVVVVVVVVRRVVVVVVVRRRVVRRVVVVVVVVVVVRRV",
-    "VVVVVVVVVVRRVVVVVVVRRRVVRRVVVVVLLVVVVRRV",
-    "VVVVVVVVVVRRVVVVVVVRRRVVRRVVVVVVVVVVVRRV",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "VVVRVVVVV...............................",
-    "VVVRVVVVV...............................",
-    "VVVRVVVVV...............................",
-    "VVVRVVVVV...............................",
-    "VVVRVVVVV...............................",
-    "VVVRVVVVV...............................",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "........R.......RRRVVRRR.......R........",
-    "........R.......RRRVVRRR.......R........",
-    "........R.......RRRVVRRR.......R........",
-    "........R.......RRRVVRRR.......R........",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "........R.......RRRVVRRR.......R........",
-    "........R.......RRRVVRRR.......R........",
-    "........R.......RRRVVRRR.......R........",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "........................................",
-    "........................................",
-    "........................................"
-  ],
-  "objectLayout": [
-    "FFFFFFF....FFFFFFFF..F..FFFFFF..FFFFFFFF",
-    "FFQ...F..F....FFFFF..F..FAAAFF..FFPPPPFF",
-    "FF....FFFAAFF...K......FFFFFFF..FFPPPPFF",
-    "FF....FFFAAFFFFF..F.....F.......F...PPFF",
-    "F......FFFFFFFF..F..............F...F.QF",
-    "F.....FFFF...........Q...FFFFFFFFK.....F",
-    "F........F..............................",
-    "FF....F..F..FFF..F....F.................",
-    "FFFFF....F.....F.....F.....FF..FFFFFF..F",
-    "FFFF........FFF...K....F.......PPPPPP..A",
-    "FFFF.....F..FF...FF.......F....PPPPPP..A",
-    "FFFF........FF...FF...CF.....F.PPPPPP..A",
-    "FFFFF....F..F...FFF.K.FC.....F.PPPPPP..A",
-    "FAAAFF...F..FAAFFFF...FC.......PPPPPP..F",
-    "FAAAFF...F..FAAFFFF...CF...F...DDFFF....",
-    "FF....FFFF..FF.X.......X...FFQ...DFF....",
-    "FF....FFFF..FF...X........XFFFFFFFFFF..F",
-    "........Q...............................",
-    "........................................",
-    "FFF.FFFF..AAA.PPP.....B.PPP.AAA..PPPP.AA",
-    "FFF.FFFF..AAA.PPP.......PPP.AAA..PPPP.AA",
-    "FFF.F..FB.PPPP...F.....F...PPPPP.PPPP.AA",
-    "FFF.F..FB.PPPP.F..C...C..F.B.....PPPP...",
-    "FFF.FFFFB.PPPP.AA.......AA.B.....A....AA",
-    "FFF.FFFF..PPPP.AA.A...A.AA.PPPPP.A.DD.AA",
-    "........................................",
-    "........................................",
-    "PPPPPPP...PPPPP....FF....PPPPP...AAAAAAA",
-    "PP.F.PP...P..PP....FF....P.FPP...AA.QAAA",
-    "PPP.PPP...P.FPP..A.FF....P..PP...AA.AAAA",
-    "......UU..PP.PP...KFF....P.PPP..........",
-    "........................................",
-    "AAAA.PP...PPPPP....FF....PPPPP...AAA.PPP",
-    "AAAAQPP...P.FPP....FF.A..P.FPP...AAA.PPP",
-    "AAAA.PP...P.PPP....FFK...P.PPP...AAA.PPP",
-    "........................................",
-    "........................................",
-    "PPPPPPFFAAAAAAFF..CCCC..FFAAAAAAFFPPPPPP",
-    "PPPPPPFFAAAAAAFF.......QFFAAAAAAFFPPPPPP",
-    "PPPPPPFFFFFFFFFF...HH...FFFFFFFF..PPPPPP"
-  ]
+  "terrain": {
+    "grass": [[0,0,3,7],[0,11,1,8],[0,21,2,9],[0,32,4,8],[1,9,8,1],[1,14,1,5],[2,7,6,2],[2,10,3,3],[2,23,1,7],[3,0,1,2],[3,6],[3,13,1,3],[3,18,6,4],[3,24],[4,0,13,1],[4,13,1,2],[4,17,4,1],[4,22,4,1],[4,32,2,5],[4,39,2,1],[5,6],[5,25,1,7],[7,1,10,1],[7,6],[7,12,3,3],[8,2,1,3],[8,15,2,1],[8,26,2,11],[8,39,9,1],[9,2,8,2],[9,16],[9,23,8,1],[10,9],[10,12,7,2],[10,17,7,2],[10,22,7,1],[10,26,4,6],[10,36,7,1],[11,33,1,2],[12,4,5,1],[12,9,5,1],[12,14,5,1],[12,16,5,1],[12,32,2,2],[13,5,4,4],[13,15,4,1],[13,34,4,2],[14,26,3,5],[14,33],[16,31,1,3],[19,0,6,3],[19,4,2,5],[21,5,4,4],[21,14,1,13],[22,14,1,2],[22,25],[23,4,2,1],[23,14,2,1],[27,18,4,4],[28,2,1,3],[32,18,3,4],[37,6,3,2],[37,14,3,2],[37,24,3,2],[39,8,1,6],[39,26,1,6]],
+    "road": [[0,7,1,4],[0,19,3,2],[0,30,5,2],[1,7,1,2],[1,10,1,4],[2,13,1,6],[2,21,1,2],[3,16,1,2],[3,22,1,2],[3,25,2,5],[4,15,4,2],[4,23,5,2],[4,37,15,2],[5,10,2,5],[6,25,2,12],[6,39,2,1],[7,10,12,2],[8,16,1,2],[8,22,2,1],[8,25,11,1],[9,17,1,5],[9,24,10,1],[10,19,9,3],[17,0,2,10],[17,12,2,7],[17,22,2,2],[17,26,2,11],[17,39,2,1],[19,3,8,1],[19,9,8,1],[19,13,2,1],[19,31,8,2],[19,37,8,1],[21,4,2,1],[22,17,18,1],[22,23,18,1],[22,26,5,1],[22,38,1,2],[25,0,2,3],[25,4,2,5],[25,10,2,7],[25,18,2,5],[25,24,2,2],[25,27,2,4],[25,33,2,4],[25,38,2,2],[27,8,10,1],[27,16,13,1],[27,22,13,1],[27,31,10,1],[28,26,4,1],[28,35,4,1],[29,3,3,1],[30,12,2,1],[31,0,1,3],[31,4,1,4],[31,9,1,3],[31,13,1,3],[31,18,1,4],[31,24,1,2],[31,27,1,4],[31,32,1,3],[31,36,1,4],[32,4,5,1],[32,36,5,1],[33,11,4,1],[33,26,4,1],[35,0,2,4],[35,5,2,3],[35,9,2,2],[35,12,2,4],[35,18,2,4],[35,24,2,2],[35,27,2,4],[35,32,2,4],[35,37,2,3],[37,32,3,2]],
+    "water": [[3,2,5,4],[4,1,3,1],[4,6],[6,6],[8,5,5,4],[9,4,3,1],[9,9],[10,14,2,3],[11,9],[12,15]],
+    "oil": [[14,31,2,2],[15,33],[24,35,1,2]],
+    "forest": [[0,0,1,7],[0,11,1,8],[0,21,2,1],[0,24,1,6],[0,32,1,8],[1,0,3,2],[1,6,3,1],[1,9],[1,14,1,5],[1,24,3,1],[1,28,2,2],[1,32,2,2],[1,38,3,2],[2,7,4,2],[2,11,3,2],[2,23],[2,25,1,3],[3,13,1,3],[3,18],[3,32,3,1],[4,0,13,1],[4,9,1,2],[4,13,1,2],[4,17],[4,36],[4,39,2,1],[5,6],[5,9,4,1],[5,25,1,7],[7,1,6,1],[7,6],[7,12,1,3],[7,17],[7,22],[8,2,1,3],[8,15],[8,21],[8,27,1,2],[8,31,1,6],[8,39],[9,2,4,2],[9,12,1,3],[9,23],[10,9],[10,12,2,2],[10,17,5,2],[10,26],[11,23],[11,29,2,1],[12,4,3,1],[12,9,5,1],[12,12,5,1],[12,16,3,1],[12,22,2,1],[13,5,2,1],[13,15,2,1],[13,26],[13,39],[14,23],[14,27,3,1],[14,33,1,3],[15,1,2,1],[15,6,2,3],[15,13,2,1],[15,26],[15,28,2,1],[15,34,2,2],[16,29,1,5],[16,36],[16,39],[19,0,6,3],[19,4,2,4],[21,7,4,1],[21,17],[21,23],[22,15],[22,25],[23,4,2,3],[27,18,4,4],[28,3],[28,27],[29,12],[32,18,3,4],[33,12],[33,27],[37,6,3,2],[37,14,3,2],[37,24,3,2],[39,8,1,6],[39,26,1,6]],
+    "boxes": [[1,2],[4,38],[5,21],[15,29],[17,8],[28,36],[33,4],[38,23]],
+    "crater": [[2,16],[5,33],[9,18],[12,20]],
+    "concrete": [[11,22],[12,23,2,1],[14,22],[22,18],[22,22],[37,18,1,4]],
+    "barrel": [[14,31,1,2],[15,33],[24,35,1,2]],
+    "hedgehog": [[15,15],[15,23],[16,17],[16,26]],
+    "brick": [[19,22],[21,8,3,1],[22,27,2,1],[22,31,1,2]],
+    "rubble": [[30,6,1,2]],
+    "house1": [[1,25,1,3,3],[2,9,2,2,4],[9,39,4,1,4],[13,1,2,3,3],[13,13,2,2,0],[19,10,2,3,11],[19,28,2,3,0],[19,38,3,2,3],[21,5,2,2,5],[23,15,2,2,7],[23,24,2,2,5],[23,38,2,2,4],[24,18,1,1,9],[24,22,1,1,4],[27,33,1,7,4],[28,33,2,2,4],[28,37,2,3,4],[29,36,1,1,4],[32,0,1,4,3],[32,33,1,3,3],[33,0,2,1,3],[33,3,2,1,3],[33,33,2,1,3],[33,35,2,1,3],[34,1,1,2,3],[34,34,1,1,3],[37,8,2,6,3],[37,26,2,6,6]],
+    "house2": [[1,34,2,4,4],[3,36,1,2,4],[9,31,1,6,8],[10,31,4,1,8],[10,36,4,1,8],[11,33,3,2,8],[13,32,1,1,8],[13,35,1,1,8],[19,14,2,3,3],[19,24,2,3,6],[19,33,1,4,10],[20,33,3,1,10],[20,36,3,1,10],[21,10,1,4,2],[21,27,1,4,11],[22,10,3,1,2],[22,13,3,1,2],[22,34,1,2,10],[24,11,1,2,2],[24,27,1,4,1],[27,0,1,7,0],[27,10,1,5,10],[27,25,1,5,6],[28,0,2,2,0],[28,5,2,2,0],[28,10,3,1,10],[28,13,3,2,10],[28,25,3,1,6],[28,28,3,2,6],[29,2,1,1,0],[29,4,1,1,0],[30,11,1,1,10],[30,27,1,1,6],[32,5,3,2,9],[32,10,1,5,1],[32,25,1,5,5],[32,37,1,3,10],[33,10,2,1,1],[33,13,2,2,1],[33,25,2,1,5],[33,28,2,2,5],[33,37,2,1,10],[33,39,2,1,10],[34,12,1,1,1],[34,27,1,1,5],[34,38,1,1,10],[37,0,1,6,5],[37,34,1,6,11],[38,0,2,1,5],[38,5,2,1,5],[38,34,2,1,11],[38,39,2,1,11],[39,1,1,4,5],[39,35,1,4,11]],
+    "landmark": [["VICTORY_COLUMN",4,19],["BRANDENBURG_GATE",19,17]],
+    "decal": [["label",8,13,1.8,"TIERGARTEN"],["label",7,19,1.4,"GROSSER STERN"],["label",2,3,1.4,"NEUER SEE"],["label",15,35,1.6,"REICHSTAG"],["label",22,20,1.6,"PARISER PLATZ"],["label",31,20,1.6,"UNTER DEN LINDEN"],["crosswalk",18,20,3],["crosswalk",25,20,3],["manhole",33,17],["parking",26,34,2]]
+  }
 }

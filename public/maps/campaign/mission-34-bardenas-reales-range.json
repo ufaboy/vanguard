@@ -8,95 +8,34 @@
   "gameMode": "extermination",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": true
-  },
-  "completionReward": {
-    "credits": 1300
-  },
-  "environment": {
-    "theme": "desert",
-    "tint": "#dec491",
-    "fogColor": "#6b6251",
-    "groundColor": "#b5a37b"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":true},
+  "completionReward": {"credits":1300},
+  "environment": {"theme":"desert","tint":"#dec491","fogColor":"#6b6251","groundColor":"#b5a37b"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Ambush a Consortium armoured column across the semi-desert Bardenas military range by using dry gullies, scrub pockets, and firing-range bunkers to flank long-range fire.",
     "breaches": [
       {
         "name": "West Mesa Partition",
-        "cells": [
-          {
-            "row": 16,
-            "col": 12
-          },
-          {
-            "row": 17,
-            "col": 12
-          }
-        ],
-        "start": {
-          "row": 16,
-          "col": 10
-        },
-        "end": {
-          "row": 16,
-          "col": 14
-        },
+        "cells": [{"row":16,"col":12},{"row":17,"col":12}],
+        "start": {"row":16,"col":10},
+        "end": {"row":16,"col":14},
         "purpose": "Blast through the western range partition wall to cut from the dry gully straight into the central target polygon."
       },
       {
         "name": "Target Range Berm",
-        "cells": [
-          {
-            "row": 24,
-            "col": 26
-          },
-          {
-            "row": 25,
-            "col": 26
-          }
-        ],
-        "start": {
-          "row": 24,
-          "col": 24
-        },
-        "end": {
-          "row": 24,
-          "col": 28
-        },
+        "cells": [{"row":24,"col":26},{"row":25,"col":26}],
+        "start": {"row":24,"col":24},
+        "end": {"row":24,"col":28},
         "purpose": "Breach the eastern firing-range berm to flank between the central range road and the eastern bunker line."
       },
       {
         "name": "South Bunker Gate",
-        "cells": [
-          {
-            "row": 29,
-            "col": 14
-          },
-          {
-            "row": 30,
-            "col": 14
-          }
-        ],
-        "start": {
-          "row": 29,
-          "col": 12
-        },
-        "end": {
-          "row": 29,
-          "col": 16
-        },
+        "cells": [{"row":29,"col":14},{"row":30,"col":14}],
+        "start": {"row":29,"col":12},
+        "end": {"row":29,"col":16},
         "purpose": "Open the southern range compound wall to link the lower gully directly to the HQ approach road."
       }
     ],
@@ -120,407 +59,77 @@
     "seed": 34072026,
     "theme": "desert",
     "zones": [
-      {
-        "id": "west-dry-gully",
-        "bounds": [
-          1,
-          2,
-          36,
-          10
-        ],
-        "surface": "sand",
-        "density": 0.3,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      },
+      {"id":"west-dry-gully","bounds":[1,2,36,10],"surface":"sand","density":0.3,"details":["cracks","tracks"]},
       {
         "id": "central-target-polygon",
-        "bounds": [
-          13,
-          14,
-          25,
-          25
-        ],
+        "bounds": [13,14,25,25],
         "surface": "dirt",
         "density": 0.35,
-        "details": [
-          "cracks",
-          "rubble",
-          "tracks"
-        ]
+        "details": ["cracks","rubble","tracks"]
       },
-      {
-        "id": "east-bunker-line",
-        "bounds": [
-          8,
-          28,
-          32,
-          38
-        ],
-        "surface": "gravel",
-        "density": 0.3,
-        "details": [
-          "cracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "south-range-apron",
-        "bounds": [
-          31,
-          12,
-          36,
-          27
-        ],
-        "surface": "dirt",
-        "density": 0.25,
-        "details": [
-          "tracks",
-          "weeds"
-        ]
-      }
+      {"id":"east-bunker-line","bounds":[8,28,32,38],"surface":"gravel","density":0.3,"details":["cracks","rubble"]},
+      {"id":"south-range-apron","bounds":[31,12,36,27],"surface":"dirt","density":0.25,"details":["tracks","weeds"]}
     ],
     "paths": [
-      {
-        "id": "west-gully-trail",
-        "points": [
-          [
-            1,
-            7
-          ],
-          [
-            12,
-            6
-          ],
-          [
-            24,
-            6
-          ],
-          [
-            33,
-            8
-          ]
-        ],
-        "width": 1,
-        "surface": "sand",
-        "marking": "none"
-      },
-      {
-        "id": "east-range-track",
-        "points": [
-          [
-            1,
-            32
-          ],
-          [
-            12,
-            33
-          ],
-          [
-            22,
-            33
-          ],
-          [
-            33,
-            32
-          ]
-        ],
-        "width": 1,
-        "surface": "gravel",
-        "marking": "none"
-      }
+      {"id":"west-gully-trail","points":[[1,7],[12,6],[24,6],[33,8]],"width":1,"surface":"sand","marking":"none"},
+      {"id":"east-range-track","points":[[1,32],[12,33],[22,33],[33,32]],"width":1,"surface":"gravel","marking":"none"}
     ],
-    "landmarks": [
-      {
-        "id": "label-gully",
-        "kind": "label",
-        "row": 9,
-        "col": 6,
-        "text": "DRY GULLY"
-      },
-      {
-        "id": "label-polygon",
-        "kind": "label",
-        "row": 17,
-        "col": 19,
-        "text": "RANGE CONTROL"
-      },
-      {
-        "id": "label-bunkers",
-        "kind": "label",
-        "row": 15,
-        "col": 33,
-        "text": "FIRING RANGE"
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "hq-approach-clear",
-        "bounds": [
-          37,
-          17,
-          39,
-          22
-        ]
-      }
-    ]
+    "exclusions": [{"id":"hq-approach-clear","bounds":[37,17,39,22]}]
   },
-  "landmarks3d": [],
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3,
     "entrances": [
-      {
-        "id": "west-gully-entry",
-        "row": 0,
-        "col": 7
-      },
-      {
-        "id": "north-range-road",
-        "row": 0,
-        "col": 20
-      },
-      {
-        "id": "east-mesa-pass",
-        "row": 0,
-        "col": 32
-      }
+      {"id":"west-gully-entry","row":0,"col":7},
+      {"id":"north-range-road","row":0,"col":20},
+      {"id":"east-mesa-pass","row":0,"col":32}
     ],
     "encounters": [
       {
         "id": "range-vanguard-probe",
         "label": "RANGE VANGUARD: Consortium scouts and stealth tanks probe the gullies ahead of the main column.",
-        "enemies": [
-          "STANDARD",
-          "STEALTH",
-          "STANDARD",
-          "ARMOR",
-          "STEALTH",
-          "STANDARD",
-          "JAMMER",
-          "STANDARD",
-          "ARMOR",
-          "HOWITZER"
-        ],
-        "initialCells": [
-          {
-            "row": 2,
-            "col": 7
-          },
-          {
-            "row": 2,
-            "col": 20
-          },
-          {
-            "row": 2,
-            "col": 32
-          },
-          {
-            "row": 5,
-            "col": 19
-          }
-        ],
-        "entrances": [
-          "west-gully-entry",
-          "north-range-road",
-          "east-mesa-pass"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 7
-          },
-          {
-            "row": 12,
-            "col": 20
-          },
-          {
-            "row": 21,
-            "col": 20
-          },
-          {
-            "row": 33,
-            "col": 19
-          }
-        ],
+        "enemies": ["STANDARD","STEALTH","STANDARD","ARMOR","STEALTH","STANDARD","JAMMER","STANDARD","ARMOR","HOWITZER"],
+        "initialCells": [{"row":2,"col":7},{"row":2,"col":20},{"row":2,"col":32},{"row":5,"col":19}],
+        "entrances": ["west-gully-entry","north-range-road","east-mesa-pass"],
+        "patrolRoute": [{"row":12,"col":7},{"row":12,"col":20},{"row":21,"col":20},{"row":33,"col":19}],
         "recoverySec": 0
       },
       {
         "id": "gully-ambush-column",
         "label": "CONVOY ESCORT: Heavy armor, jammers, and howitzers deploy across the firing-range bunkers.",
-        "enemies": [
-          "STANDARD",
-          "STEALTH",
-          "ARMOR",
-          "JAMMER",
-          "STANDARD",
-          "HOWITZER",
-          "STEALTH",
-          "STANDARD",
-          "ARMOR",
-          "STANDARD"
-        ],
-        "entrances": [
-          "north-range-road",
-          "east-mesa-pass",
-          "west-gully-entry"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 20
-          },
-          {
-            "row": 12,
-            "col": 32
-          },
-          {
-            "row": 21,
-            "col": 32
-          },
-          {
-            "row": 33,
-            "col": 30
-          },
-          {
-            "row": 33,
-            "col": 19
-          }
-        ],
+        "enemies": ["STANDARD","STEALTH","ARMOR","JAMMER","STANDARD","HOWITZER","STEALTH","STANDARD","ARMOR","STANDARD"],
+        "entrances": ["north-range-road","east-mesa-pass","west-gully-entry"],
+        "patrolRoute": [{"row":12,"col":20},{"row":12,"col":32},{"row":21,"col":32},{"row":33,"col":30},{"row":33,"col":19}],
         "recoverySec": 8
       },
       {
         "id": "consortium-heavy-convoy",
         "label": "MAIN COLUMN: Heavy armor, jammers, and artillery push through the range to break the ambush.",
-        "enemies": [
-          "ARMOR",
-          "STANDARD",
-          "JAMMER",
-          "HOWITZER",
-          "ARMOR",
-          "STEALTH",
-          "STANDARD",
-          "ARMOR",
-          "HOWITZER",
-          "STANDARD",
-          "ARMOR"
-        ],
-        "entrances": [
-          "west-gully-entry",
-          "north-range-road",
-          "east-mesa-pass"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 6
-          },
-          {
-            "row": 22,
-            "col": 6
-          },
-          {
-            "row": 33,
-            "col": 8
-          },
-          {
-            "row": 33,
-            "col": 19
-          }
-        ],
+        "enemies": ["ARMOR","STANDARD","JAMMER","HOWITZER","ARMOR","STEALTH","STANDARD","ARMOR","HOWITZER","STANDARD","ARMOR"],
+        "entrances": ["west-gully-entry","north-range-road","east-mesa-pass"],
+        "patrolRoute": [{"row":12,"col":6},{"row":22,"col":6},{"row":33,"col":8},{"row":33,"col":19}],
         "recoverySec": 8
       }
     ],
-    "boss": {
-      "enabled": false
-    }
+    "boss": {"enabled":false}
   },
-  "surfaceLayout": [
-    "^^^^^.SSS..........RR.....^^^^^.R.......",
-    "^^^^^.SSS..........RR.....^^^^^.R.......",
-    "^^^^^SSSS..........RR.....^^^^^.R.......",
-    "^^^^^SSSS..........RR.....^^^^^.R.......",
-    "^^^^SSSS...........RR.........RRR.......",
-    "^^^^.SSS...........RR...RRRRRRR.R.......",
-    ".....SSSVVV.R......RR...R..SSS..R..^^^^.",
-    "....SSSVVVV.R......RR..RRR.SSS..R..^^^^.",
-    ".....SSVVV..RRR....RR..R.R.SSS..R..^^^^.",
-    "....SSS.....R......RRRRR.RRRSS..R..^^^^.",
-    "^^^^SSS.....R......RR......R....R.......",
-    "^^^^SSS.....R......RR......R....R.......",
-    "^^^^SSSRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
-    "^^^^SSS............RR......SSS..R..RRR..",
-    "....SSS.VVV........RR......SSS..R.......",
-    "....SSSVVVV........RR......SSS..R..^^^^.",
-    "....SSSVVV.........RR......SSS..R..^^^^.",
-    "^^^^SSS............RR...........R..^^^^.",
-    "^^^^SSS............RRRR.........R.......",
-    "^^^^SSS.............RRRR........R.......",
-    "....SSS............RRRR.........R.......",
-    "....SSSVVV.........RR......SSS..R.......",
-    "....SSSVVVV........RRRRRRRRSSSRRR.......",
-    "....SSS.VVV........RR......SSS..RRRRRR..",
-    "^^^^SSSRRRRRRRRRRRRRR......SSS..R..^^^^.",
-    "^^^^SSSRRRRRRRRRRRRRR...........R..^^^^.",
-    "^^^^SSS............RRRRR........R.......",
-    "....SSS.VVV...........RR........R.......",
-    "....SSSVVVV...........RR........R.......",
-    "....SSSVVV............RR...SSS..R.......",
-    "^^^^SSS...............RR...SSS..R.......",
-    "^^^^SSS............RRRRR...SSS..R..^^^^.",
-    "^^^^SSS............RR...........R..^^^^.",
-    "....SSSRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR..",
-    "....SSS............RR...................",
-    "....SSS............RR...................",
-    "....SSS............RR...................",
-    "........................................",
-    "........................................",
-    "........................................"
-  ],
-  "objectLayout": [
-    "........................................",
-    "......................K.................",
-    ".........B.............U....B...........",
-    ".BBB.....B...........F......B...K.......",
-    ".........B........F..F..............K...",
-    "..................FXXF.........U.....U..",
-    ".............AA......AA.................",
-    ".FFF...FFFFF.AA...F..AA.................",
-    "..................F..FF....BBB..........",
-    "..FF.....FFF......Q.............K.......",
-    ".............AA...F..PPPFFF.....U.......",
-    ".QQF...FFFF..AA.FFF..PPPFFF.F..F.F..AA..",
-    "....................................AA..",
-    ".................FF.......B...FF.F......",
-    "............C.PPPFF..AA...B...KF....AQ..",
-    ".....AA.....C.PPP....AA.FF..........AD..",
-    ".....AAD....B........Q..FF........FFF...",
-    ".......D....B......................FFF..",
-    "............C.FF...T......BBB...........",
-    ".FFF......FCF.FF.PPBBB........PP........",
-    ".................PP...........PP........",
-    "....AA...FFFF........FF.......FF..U.....",
-    "..............AAAFF..............F......",
-    ".FFF......FFF.AAAFF..PPPB.C....F........",
-    ".....................PPPB.B......F..AA..",
-    "..FF.................PPPC.B.....K...AQ..",
-    "..................D.......C....F....FF..",
-    ".FFQ..........C.....FF..F.C....F....FF..",
-    "..............C..AAA.F..F..BBB.F........",
-    "....AA........B..AAA....AA........U.....",
-    "....AA........B..CC.....AA..............",
-    "..............C..CC..........AA.....AA..",
-    "...............K..F..FF......AA.....AA..",
-    ".........................U.......K......",
-    "........FFFF.CCBB......CCAA.............",
-    "...............AA.......AA..............",
-    "..............X.......X..BBB........B...",
-    "..................CCCC..................",
-    ".......................Q................",
-    "...................HH..................."
-  ],
-  "powerups": []
+  "terrain": {
+    "stone": [[0,0,4,5],[0,26,4,5],[4,0,2,4],[6,35,4,4],[10,0,1,4],[11,0,3,3],[12,3,2,1],[15,35,1,4],[16,37,1,2],[17,0,2,4],[17,38],[19,0],[24,0,1,4],[24,35,2,4],[25,0,2,2],[26,2,1,2],[30,0,3,4],[31,35,2,4]],
+    "sand": [[0,6,4,3],[2,5,13,1],[4,4],[4,6,3,2],[6,27,3,3],[7,4],[7,6,8,1],[9,4,12,1],[9,28,1,2],[13,27,4,3],[17,5,4,2],[21,6,16,1],[21,27,4,3],[22,4,7,2],[29,27,2,3],[31,4,6,2],[31,27,1,2]],
+    "road": [[0,19,18,2],[0,32,10,1],[4,30,1,2],[5,24,1,7],[6,12,7,1],[6,24,2,1],[7,23,3,1],[7,25,3,1],[8,13,1,2],[9,21,1,2],[9,26,1,2],[10,27,3,1],[11,32,23,1],[12,7,1,5],[12,13,1,6],[12,21,1,6],[12,28,1,4],[12,33,1,3],[13,35,1,3],[18,20,3,3],[19,23],[20,19,7,1],[21,20,6,1],[22,21,1,6],[22,30,1,2],[23,33,1,5],[24,7,2,12],[26,21,1,3],[27,22,5,2],[31,19,1,3],[32,19,5,2],[33,7,1,12],[33,21,1,4],[33,26,1,6],[33,33,1,5]],
+    "grass": [[6,8,2,3],[7,7,2,1],[8,8,1,2],[14,8,2,3],[15,7,2,1],[16,8,1,2],[21,7,2,3],[22,10,2,1],[23,8,1,2],[27,8,2,3],[28,7,2,1],[29,8,1,2]],
+    "crater": [[1,22],[3,32],[4,36],[9,32],[14,30],[25,32],[32,15],[33,33]],
+    "brick": [[2,9,3,1],[2,28,2,1],[3,1,1,3],[8,27,1,3],[13,26,2,1],[16,12,2,1],[18,26,1,3],[19,19,1,3],[23,24,2,1],[24,26,2,1],[28,27,1,3],[29,14,2,1],[34,15,1,2],[36,25,1,3],[36,36]],
+    "rubble": [[2,23],[5,31],[5,37],[10,32],[21,34],[29,34],[33,25]],
+    "forest": [[3,21,3,1],[4,18,2,1],[7,1,1,3],[7,7,1,5],[7,18,2,1],[8,21,1,2],[9,2,1,2],[9,9,1,3],[10,18,2,1],[10,24,2,3],[11,3],[11,7,1,4],[11,16,1,2],[11,28],[11,31],[11,33],[13,17,2,2],[13,30,1,2],[13,33],[14,31],[15,24,2,2],[16,34,1,3],[17,35,1,3],[18,14,2,2],[19,1,1,3],[19,10],[19,12],[21,9,1,4],[21,21,1,2],[21,30,1,2],[22,17,2,2],[22,33],[23,1,1,3],[23,10,1,3],[23,31],[24,33],[25,2,1,2],[26,31,3,1],[26,36,2,2],[27,1,1,2],[27,20,1,2],[27,24,2,1],[28,21],[32,18],[32,21,1,2],[34,8,1,4]],
+    "hedgehog": [[5,19,1,2],[36,14],[36,22]],
+    "boxes": [[9,18],[11,1,1,2],[14,37],[16,21],[25,37],[27,3],[38,23]],
+    "concrete": [[14,12,2,1],[18,12],[19,11],[23,26],[25,24],[26,26,2,1],[27,14,2,1],[30,17,2,2],[31,14],[34,13,1,2],[34,23,1,2],[37,18,1,4]],
+    "barrel": [[15,37],[16,7,2,1],[26,18]],
+    "water_tower": [[18,19]],
+    "house1": [[6,13,2,2,10],[6,21,2,2,11],[10,13,2,2,8],[11,36,2,2,11],[14,21,2,2,11],[14,36,2,1,6],[15,5,2,2,11],[21,4,1,2,0],[22,14,2,3,8],[24,36,1,2,10],[25,36,1,1,10],[28,17,2,3,3],[29,4,2,2,10],[29,24,2,2,11],[31,29,2,2,11],[31,36,2,2,0],[34,25,1,2,9],[35,15,1,2,11],[35,24,1,2,9]],
+    "house2": [[10,21,2,3,1],[14,14,2,3,10],[19,17,2,2,11],[19,30,2,2,9],[23,21,3,3,10]],
+    "decal": [["label",9,6,1,"DRY GULLY"],["label",17,19,1,"RANGE CONTROL"],["label",15,33,1,"FIRING RANGE"]]
+  }
 }

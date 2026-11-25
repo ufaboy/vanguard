@@ -6,17 +6,13 @@ import { normalizeMapDefinition } from '../public/src/game/levels.js';
 import { EnemyClass } from '../public/src/game/vehicles/tanks.js';
 
 function createMinimalMap(overrides = {}) {
-  const surfaceLayout = Array.from({ length: 40 }, () => '.'.repeat(40));
-  const objectLayout = Array.from({ length: 40 }, () => '.'.repeat(40));
-  objectLayout[39] = `${'.'.repeat(19)}HH${'.'.repeat(19)}`;
   return {
     id: 1,
     mapId: 'test-map',
     name: 'Test Map',
     baseCell: { row: 39, col: 19 },
     playerSpawnCell: { row: 36, col: 19 },
-    surfaceLayout,
-    objectLayout,
+    terrain: {},
     ...overrides,
   };
 }

@@ -72,6 +72,14 @@ const BARREL_SURFACES = new Set([
   TileType.OIL_SLICK,
 ]);
 
+const BRIDGE_SURFACES = new Set([
+  TileType.WATER,
+  TileType.ICE,
+  TileType.STONE,
+  TileType.SWAMP,
+  TileType.RUBBLE,
+]);
+
 export function isSurfaceType(tileType) {
   return SURFACE_TILE_SET.has(tileType);
 }
@@ -91,7 +99,7 @@ function isDecorationType(tileType) {
 /** Hard compatibility check: can `objectType` be placed on `surfaceType`? */
 export function canPlaceOnSurface(objectType, surfaceType) {
   if (objectType == null || objectType === TileType.EMPTY) return true;
-  if (objectType === TileType.BRIDGE) return surfaceType === TileType.WATER;
+  if (objectType === TileType.BRIDGE) return BRIDGE_SURFACES.has(surfaceType);
   if (isFacilityType(objectType)) return FACILITY_SURFACES.has(surfaceType);
   if (objectType === TileType.FOREST) return FOREST_SURFACES.has(surfaceType);
   if (objectType === TileType.BARREL) return BARREL_SURFACES.has(surfaceType);

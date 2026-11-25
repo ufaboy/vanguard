@@ -1,13 +1,12 @@
 /**
- * Explicit building layout: renders TileType.HOUSE_1 ('A') and TileType.HOUSE_2 ('P')
- * as 1-story and 2-story modular buildings with outward-facing corner/edge/core sections
+ * Explicit building layout: computes modular 1-story and 2-story building assignments
+ * (TileType.HOUSE_1 'A' and TileType.HOUSE_2 'P') with outward-facing corner/edge/core sections
  * and deterministic per-cluster facade/roof styles:
  * - Iteration 1 (styles 0..7): 8 residential styles per tier
  * - Iteration 2 (styles 8..11): 4 industrial / warehouse / office styles per tier
- * TileType.BRICK ('B') and TileType.CONCRETE ('C') always remain standard blocks.
  */
 
-import { TileType } from './surfaces.js';
+import { TileType } from '../../public/src/game/terrains/surfaces.js';
 
 const BUILDING_KINDS = Object.freeze({
   [TileType.HOUSE_1]: 'house1',
@@ -17,16 +16,6 @@ const BUILDING_KINDS = Object.freeze({
 const RESIDENTIAL_STYLE_COUNT = 8;
 const INDUSTRIAL_STYLE_COUNT = 4;
 
-/**
- * Share of Iteration 2 (industrial / warehouse / office, styles 8..11) buildings per map theme:
- * - urban:      100% Iteration 1 /   0% Iteration 2
- * - forest:      50% Iteration 1 /  50% Iteration 2
- * - desert:      25% Iteration 1 /  75% Iteration 2
- * - coast:       75% Iteration 1 /  25% Iteration 2
- * - alpine:      50% Iteration 1 /  50% Iteration 2
- * - industrial:  25% Iteration 1 /  75% Iteration 2
- * - capital:     75% Iteration 1 /  25% Iteration 2
- */
 const THEME_ITERATION2_SHARE = Object.freeze({
   urban: 0,
   forest: 0.5,
@@ -66,7 +55,6 @@ export function computeBuildingLayout(rawGrid, theme = 'urban') {
 
   const isSameKind = (r, c, t) => r >= 0 && r < rows && c >= 0 && c < cols && rawGrid[r][c] === t;
 
-  // Assign one cohesive style (0..7 for Iteration 1, 8..11 for Iteration 2) per connected building cluster.
   const clusterStyle = Array.from({ length: rows }, () => new Int8Array(cols).fill(-1));
   let clusterIdx = 0;
   let iter1Count = 0;
@@ -141,4 +129,20 @@ export function computeBuildingLayout(rawGrid, theme = 'urban') {
   }
 
   return layout;
+}
+
+/**
+ * Serializes a building layout Map into compact `"row,col:tier:part:yawDeg:style"` strings.
+ * @param {Map<string, { kind: 'house1'|'house2', part: 'corner'|'edge'|'core', yaw: number, style: number }>} layout
+ * @returns {string[]}
+ */
+export function serializeBuildingLayout(layout) {
+  if (!(layout instanceof Map) || layout.size === 0) return [];
+  const entries = [];
+  for (const [key, entry] of layout.entries()) {
+    const tier = entry.kind === 'house2' ? 2 : 1;
+    const yawDeg = ((Math.round((entry.yaw * 180) / Math.PI) % 360) + 360) % 360;
+    entries.push(`${key}:${tier}:${entry.part}:${yawDeg}:${entry.style}`);
+  }
+  return entries;
 }

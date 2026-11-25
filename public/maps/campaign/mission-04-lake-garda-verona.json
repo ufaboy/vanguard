@@ -7,27 +7,11 @@
   "gameMode": "extermination",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 320
-  },
-  "environment": {
-    "theme": "coast",
-    "tint": "#b8d4d0",
-    "fogColor": "#35484f",
-    "groundColor": "#6d7366"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":320},
+  "environment": {"theme":"coast","tint":"#b8d4d0","fogColor":"#35484f","groundColor":"#6d7366"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Three distinct north-south corridors — the curving Gardesana lakeshore road, the cypress-lined villa lanes, and Verona’s walled eastern avenue — converge on the southern HQ. Break through the lakeshore customs wall or the Roman Arena brick ring to flank howitzers and convoy escorts.",
@@ -49,530 +33,130 @@
     "breaches": [
       {
         "name": "Lakeshore customs wall",
-        "cells": [
-          {
-            "row": 18,
-            "col": 11
-          },
-          {
-            "row": 18,
-            "col": 12
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 11
-        },
-        "end": {
-          "row": 19,
-          "col": 11
-        },
+        "cells": [{"row":18,"col":11},{"row":18,"col":12}],
+        "start": {"row":17,"col":11},
+        "end": {"row":19,"col":11},
         "purpose": "Punch south through the brick customs barrier instead of circling the lakeside villa."
       },
       {
         "name": "Verona Arena west arcade",
-        "cells": [
-          {
-            "row": 18,
-            "col": 27
-          }
-        ],
-        "start": {
-          "row": 18,
-          "col": 26
-        },
-        "end": {
-          "row": 18,
-          "col": 28
-        },
+        "cells": [{"row":18,"col":27}],
+        "start": {"row":18,"col":26},
+        "end": {"row":18,"col":28},
         "purpose": "Breach the western brick arcade to enter the Arena floor directly from the cypress lane."
       },
       {
         "name": "Verona south bastion wall",
-        "cells": [
-          {
-            "row": 27,
-            "col": 29
-          },
-          {
-            "row": 27,
-            "col": 30
-          }
-        ],
-        "start": {
-          "row": 26,
-          "col": 29
-        },
-        "end": {
-          "row": 28,
-          "col": 29
-        },
+        "cells": [{"row":27,"col":29},{"row":27,"col":30}],
+        "start": {"row":26,"col":29},
+        "end": {"row":28,"col":29},
         "purpose": "Open a direct lane between the Arena plaza and Verona’s southern market street."
       }
     ]
   },
-  "landmarks3d": [
-    {
-      "kind": "VERONA_ARENA",
-      "row": 14,
-      "col": 28
-    }
-  ],
   "decoration": {
     "version": 1,
     "seed": 4042026,
     "theme": "coast",
     "zones": [
-      {
-        "id": "garda-shore",
-        "bounds": [
-          0,
-          6,
-          39,
-          11
-        ],
-        "surface": "sand",
-        "density": 0.25,
-        "details": [
-          "weeds",
-          "tracks"
-        ]
-      },
-      {
-        "id": "cypress-countryside",
-        "bounds": [
-          0,
-          12,
-          34,
-          24
-        ],
-        "surface": "dirt",
-        "density": 0.22,
-        "details": [
-          "leaves",
-          "weeds"
-        ]
-      },
-      {
-        "id": "verona-old-town",
-        "bounds": [
-          0,
-          25,
-          39,
-          39
-        ],
-        "surface": "pavers",
-        "density": 0.28,
-        "details": [
-          "cracks",
-          "patches"
-        ]
-      },
-      {
-        "id": "arena-floor",
-        "bounds": [
-          15,
-          28,
-          21,
-          34
-        ],
-        "surface": "sand",
-        "density": 0.3,
-        "details": [
-          "rubble",
-          "tracks"
-        ]
-      },
-      {
-        "id": "hq-apron",
-        "bounds": [
-          35,
-          18,
-          39,
-          21
-        ],
-        "surface": "concrete",
-        "density": 0.15,
-        "details": [
-          "tracks"
-        ]
-      }
+      {"id":"garda-shore","bounds":[0,6,39,11],"surface":"sand","density":0.25,"details":["weeds","tracks"]},
+      {"id":"cypress-countryside","bounds":[0,12,34,24],"surface":"dirt","density":0.22,"details":["leaves","weeds"]},
+      {"id":"verona-old-town","bounds":[0,25,39,39],"surface":"pavers","density":0.28,"details":["cracks","patches"]},
+      {"id":"arena-floor","bounds":[15,28,21,34],"surface":"sand","density":0.3,"details":["rubble","tracks"]},
+      {"id":"hq-apron","bounds":[35,18,39,21],"surface":"concrete","density":0.15,"details":["tracks"]}
     ],
     "paths": [
-      {
-        "id": "harbour-quay-track",
-        "points": [
-          [
-            16,
-            6
-          ],
-          [
-            16,
-            13
-          ]
-        ],
-        "width": 2,
-        "surface": "pavers",
-        "marking": "none"
-      },
-      {
-        "id": "arena-cross-track",
-        "points": [
-          [
-            18,
-            28
-          ],
-          [
-            18,
-            36
-          ]
-        ],
-        "width": 1,
-        "surface": "dirt",
-        "marking": "none"
-      }
+      {"id":"harbour-quay-track","points":[[16,6],[16,13]],"width":2,"surface":"pavers","marking":"none"},
+      {"id":"arena-cross-track","points":[[18,28],[18,36]],"width":1,"surface":"dirt","marking":"none"}
     ],
-    "landmarks": [
-      {
-        "id": "lbl-garda",
-        "kind": "label",
-        "row": 19,
-        "col": 7,
-        "text": "LAKE GARDA"
-      },
-      {
-        "id": "lbl-arena",
-        "kind": "label",
-        "row": 16,
-        "col": 31,
-        "text": "VERONA ARENA"
-      },
-      {
-        "id": "lbl-gardesana",
-        "kind": "label",
-        "row": 25,
-        "col": 11,
-        "text": "GARDESANA RD"
-      },
-      {
-        "id": "cross-verona-n",
-        "kind": "crosswalk",
-        "row": 12,
-        "col": 31,
-        "size": 2,
-        "rotation": 90
-      },
-      {
-        "id": "haz-convoy",
-        "kind": "hazard_zone",
-        "row": 7,
-        "col": 12,
-        "size": 2
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "hq-clear",
-        "bounds": [
-          37,
-          17,
-          39,
-          22
-        ]
-      }
-    ]
+    "exclusions": [{"id":"hq-clear","bounds":[37,17,39,22]}]
   },
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "maxAttackers": 2,
     "spawnIntervalSec": 4,
-    "nextWave": {
-      "when": "cleared",
-      "delaySec": 6
-    },
+    "nextWave": {"when":"cleared","delaySec":6},
     "entrances": [
-      {
-        "id": "garda-lakeshore",
-        "row": 0,
-        "col": 10
-      },
-      {
-        "id": "cypress-road",
-        "row": 0,
-        "col": 20
-      },
-      {
-        "id": "verona-east-gate",
-        "row": 0,
-        "col": 35
-      }
+      {"id":"garda-lakeshore","row":0,"col":10},
+      {"id":"cypress-road","row":0,"col":20},
+      {"id":"verona-east-gate","row":0,"col":35}
     ],
     "encounters": [
       {
         "id": "garda-vanguard",
         "label": "LAKESHORE: Convoy scouts sweep the Gardesana road and cypress lanes.",
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "STANDARD",
-          "SCOUT",
-          "HOVER",
-          "STANDARD",
-          "SCOUT"
-        ],
-        "initialCells": [
-          {
-            "row": 2,
-            "col": 10
-          },
-          {
-            "row": 3,
-            "col": 20
-          },
-          {
-            "row": 6,
-            "col": 10
-          },
-          {
-            "row": 5,
-            "col": 21
-          }
-        ],
-        "entrances": [
-          "garda-lakeshore",
-          "cypress-road"
-        ],
+        "enemies": ["SCOUT","STANDARD","STANDARD","SCOUT","HOVER","STANDARD","SCOUT"],
+        "initialCells": [{"row":2,"col":10},{"row":3,"col":20},{"row":6,"col":10},{"row":5,"col":21}],
+        "entrances": ["garda-lakeshore","cypress-road"],
         "patrolRoute": [
-          {
-            "row": 5,
-            "col": 10
-          },
-          {
-            "row": 11,
-            "col": 13
-          },
-          {
-            "row": 16,
-            "col": 13
-          },
-          {
-            "row": 23,
-            "col": 13
-          },
-          {
-            "row": 26,
-            "col": 11
-          },
-          {
-            "row": 26,
-            "col": 23
-          },
-          {
-            "row": 28,
-            "col": 19
-          },
-          {
-            "row": 34,
-            "col": 19
-          }
+          {"row":5,"col":10},
+          {"row":11,"col":13},
+          {"row":16,"col":13},
+          {"row":23,"col":13},
+          {"row":26,"col":11},
+          {"row":26,"col":23},
+          {"row":28,"col":19},
+          {"row":34,"col":19}
         ],
         "recoverySec": 0
       },
       {
         "id": "verona-garrison",
         "label": "VERONA: Howitzer support covers the Arena and eastern walls.",
-        "enemies": [
-          "HOWITZER",
-          "STANDARD",
-          "ARMOR",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD",
-          "HOVER",
-          "SCOUT"
-        ],
-        "entrances": [
-          "verona-east-gate",
-          "garda-lakeshore"
-        ],
+        "enemies": ["HOWITZER","STANDARD","ARMOR","SCOUT","STANDARD","STANDARD","HOVER","SCOUT"],
+        "entrances": ["verona-east-gate","garda-lakeshore"],
         "patrolRoute": [
-          {
-            "row": 5,
-            "col": 35
-          },
-          {
-            "row": 12,
-            "col": 35
-          },
-          {
-            "row": 18,
-            "col": 36
-          },
-          {
-            "row": 18,
-            "col": 31
-          },
-          {
-            "row": 22,
-            "col": 31
-          },
-          {
-            "row": 26,
-            "col": 31
-          },
-          {
-            "row": 26,
-            "col": 23
-          },
-          {
-            "row": 34,
-            "col": 20
-          }
+          {"row":5,"col":35},
+          {"row":12,"col":35},
+          {"row":18,"col":36},
+          {"row":18,"col":31},
+          {"row":22,"col":31},
+          {"row":26,"col":31},
+          {"row":26,"col":23},
+          {"row":34,"col":20}
         ],
         "recoverySec": 8
       },
       {
         "id": "convoy-rearguard",
         "label": "REARGUARD: Heavy escorts converge along all three corridors.",
-        "enemies": [
-          "ARMOR",
-          "STANDARD",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "ARMOR",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD"
-        ],
-        "entrances": [
-          "garda-lakeshore",
-          "cypress-road",
-          "verona-east-gate"
-        ],
+        "enemies": ["ARMOR","STANDARD","STANDARD","SCOUT","STANDARD","ARMOR","STANDARD","SCOUT","STANDARD"],
+        "entrances": ["garda-lakeshore","cypress-road","verona-east-gate"],
         "patrolRoute": [
-          {
-            "row": 7,
-            "col": 18
-          },
-          {
-            "row": 12,
-            "col": 18
-          },
-          {
-            "row": 19,
-            "col": 18
-          },
-          {
-            "row": 19,
-            "col": 23
-          },
-          {
-            "row": 26,
-            "col": 23
-          },
-          {
-            "row": 26,
-            "col": 11
-          },
-          {
-            "row": 34,
-            "col": 11
-          },
-          {
-            "row": 34,
-            "col": 19
-          }
+          {"row":7,"col":18},
+          {"row":12,"col":18},
+          {"row":19,"col":18},
+          {"row":19,"col":23},
+          {"row":26,"col":23},
+          {"row":26,"col":11},
+          {"row":34,"col":11},
+          {"row":34,"col":19}
         ],
         "recoverySec": 10
       }
     ]
   },
-  "surfaceLayout": [
-    "WWWWWWSVVVRRRVVVVVVVRRVVV.R...R....RR...",
-    "WWWWWWSSVVRRRVVVVVVVRRVVV.R...R....RR...",
-    "WWWWWWSSVVRRRVVVVVVVRRVVV.R...R....RR...",
-    "WWWWWWWSVVRRRVVVVVVVRRVVV.R...R....RR...",
-    "WWWWWWWSSVRRVVVVVVVVRRVVVRR...R....RR...",
-    "WWWWWWSSVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "WWWWWWSVVVRRVVVVVVVVRRVVV...VV..V..RR...",
-    "WWWWWSSVVVRRVLVVVVRRRRVVV..........RR...",
-    "WWWWWSSVVVRRVVVVVVRVVVVVV..........RR...",
-    "WWWWWS.VVVRRVVVVVVRVVVVVV..........RR...",
-    "WWWWWWSSVVRRVVVVVVRVVVVVV..........RR...",
-    "WWWWWWSSVVRRRRRVVVRVVVVVV..........RRR..",
-    "WWWWWWWSVVRRRRRRRRRRRRRRRRRRRRRRRRRRRR..",
-    "WWWWWWWSSVVVVRRVVVRVVVVVV..V........RR..",
-    "WWWWWWWSSVVVVRRVVVRVVVVVV...........RR..",
-    "WWWWWWSSVVVVVRRVVVRVVVVVV....SSSSS..RR..",
-    "WWWWWSRRRRRRRRRVVVRVVVVVV...S.....S.RR..",
-    "WWWWWSSSVVVVVRRVVVRVVVVVV...S.....S.RR..",
-    "WWWWWWSVVVVVVRRVVVRVVVVVV...S.....S.RR..",
-    "WWWWWWWSSVVVVRRVVVRRRRRRV...S.....S.RR..",
-    "WWWWWWWSSVVVVRRVVVVVVVVRV...S.....S.RR..",
-    "WWWWWWWMVVVVVRRVVVVVVVVRV....SSSSS..RR..",
-    "WWWWWWSMVVVVVRRVVVVVVVVRV...........RR..",
-    "WWWWWWMSVVRRRRRVVVVVVVVRV...VVV.....RR..",
-    "WWWWWSMVVVRRRRRVVVVVVVVRV...VVV.....RR..",
-    "WWWWWSSVVVRRVVVVVVVVVVVRV...........RR..",
-    "WWWWWWSSVVRRRRRRRRRRRRRRRRRRRRRRRRRRRR..",
-    "WWWWWWSVVVRRVVVVVVVVVVVRV.R.......RRRR..",
-    "WWWWWWWSSVRRVVVVVVVRRRRRV.R.......RR....",
-    "WWWWWWWSSVRRVVVVVVVRRVVVV.R.......RR....",
-    "WWWWWWSVVVRRVVVVVVVRRVVVV.R.......RR....",
-    "WWWWWWSSVVRRVVVVVVVRRVVVV.R.......RR....",
-    "WWWWWSSVVVRRVVVVVVVRRVVVVVR.......RR....",
-    "WWWWWS.VVVRRVVVVVVVRRVVVV.R.VV....RRRRRR",
-    "WWWWWSSVVVRRRRRRRRRRRRRRRRRRRRRRRRRR....",
-    "WWWWWWSSVRRRVVVVVVVRRVVVVRR..R.....R....",
-    "WWWWWWSVVVVRRVVVVVVVVVVVV....R.....R....",
-    "WWWWWWSSVVVRRVVVVV....VVV....R.....R....",
-    "WWWWWSSVVVVVVVVVVV....VVV....R.....R....",
-    "WWWWWS.VVVVVVVVVVV....VVV..............."
-  ],
-  "objectLayout": [
-    "........................................",
-    ".......Q.....AAA.F.....AAA.PPP.AAA....PP",
-    "........F....AAA.F.....AAA.PPP.AAA....PP",
-    "........F........F.....AAA.PPP.AAA....PP",
-    "...................X..X...........X...PP",
-    "......................................Q.",
-    "............D..FF.......T...FF..F.......",
-    "........F...D..F......F...........K.....",
-    "........F...K..F...F..FQ.BBCB..BBCB.....",
-    "........F......F...F..F..B.AAA..PPP.....",
-    "........F.....FFBB.F..F..B.AAA..PPP.....",
-    "...............FFF.F.....B..............",
-    "........................................",
-    ".........AAA...FFF...K.....F......U.....",
-    ".........AAA...FFF..F....B............PP",
-    ".......DC.......F...F....B........B...PP",
-    "................F...FF.B.C.B.......B..PP",
-    ".......Q...............B.B.B.......B..PP",
-    ".........CCBB..AA........B.B............",
-    "...............AA..........B..Q.K..B....",
-    ".........F......F........C.B.......B..AA",
-    ".........F.FF...F...F....B..B.....B...AA",
-    ".........F.FF...F...FF...B...BB.BB....AA",
-    ".........F...............B..FFF.......AA",
-    ".........F........FF.....C..FFF.......AA",
-    "........FF..FK....F...U..B..............",
-    "........FF........Q.....................",
-    "............F..............CCBBC.C......",
-    ".......AA....AAA.........C..............",
-    ".......AA....AAA.F...F..BB.PPP.......PPP",
-    ".......AA....AAA.F...F..BB.PPP.AA....PPP",
-    "........F........F...F.K...PPP.AAQ...PPP",
-    "........F...X.FF..F..F..FF.....AA....PPP",
-    "........F.........F..F......FF..........",
-    "........................................",
-    "............B....FF..FF....B............",
-    "........AAA..AAA........AAA...PPPP..AAA.",
-    "........AAA..AAA..CCCC..AAA...PPPP..AAA.",
-    "........AAA.Q.................PPPP..AAA.",
-    "...................HH..................."
-  ],
   "code": "",
-  "powerups": []
+  "terrain": {
+    "water": [[0,0,7,6],[3,6,2,1],[7,0,33,5],[10,5,6,1],[12,6,3,1],[18,5,6,1],[19,6,3,1],[26,5,6,1],[28,6,2,1],[35,5,3,1]],
+    "sand": [[0,6,3,1],[1,7,5,1],[4,8],[5,6,4,1],[7,5,3,1],[10,6,2,2],[12,7,4,1],[13,8,2,1],[15,6],[15,29,1,5],[16,5,2,1],[16,28,5,1],[16,34,5,1],[17,6,1,2],[18,6],[19,7,2,2],[21,29,1,5],[22,6],[23,7],[24,5,2,1],[25,6,3,1],[26,7],[30,6,3,1],[31,7],[32,5,3,1],[34,6,5,1],[35,7],[37,7],[38,5,2,1]],
+    "grass": [[0,7,1,3],[0,13,5,7],[0,22,5,3],[1,8,3,2],[4,9,12,1],[4,12],[5,8,8,1],[6,7,4,1],[6,13,1,7],[6,22,6,3],[6,28,1,2],[6,32],[7,14,4,4],[8,12,3,2],[8,19,4,3],[11,15,1,3],[13,10,3,3],[13,15,13,3],[13,19,6,6],[13,27],[15,8],[17,8,2,5],[18,7],[19,9,4,4],[19,24,7,1],[20,18,6,5],[21,8,7,1],[23,9,12,1],[23,28,2,3],[24,7,2,1],[25,12,1,3],[27,7],[27,12,1,11],[27,24,7,1],[28,12,6,7],[29,21,5,3],[30,7,1,2],[31,8,9,1],[32,7,3,1],[32,25],[33,28,1,2],[35,12,1,7],[35,21,2,4],[36,7],[36,9,4,2],[36,13,1,8],[37,13,3,5],[37,22,3,3],[38,7,2,1],[38,11,2,2]],
+    "road": [[0,10,4,3],[0,20,8,2],[0,26,6,1],[0,30,6,1],[0,35,13,2],[4,10,9,2],[4,25,2,1],[5,12,1,8],[5,22,1,3],[5,27,1,3],[5,31,1,4],[5,37,1,3],[7,18,1,2],[8,18,12,1],[11,12,2,3],[11,37,17,1],[12,15,1,3],[12,19,1,16],[13,13,12,2],[13,36,15,1],[16,6,1,7],[19,19,1,5],[20,23,9,1],[23,10,2,3],[25,10,11,2],[26,12,1,11],[26,24,1,12],[27,26,9,1],[27,34,8,2],[28,19,1,4],[29,19,7,2],[33,36,1,4],[34,12,1,7],[34,21,1,5],[34,27,1,7],[35,9],[35,25],[35,29,4,1],[35,35,4,1],[36,11,2,2]],
+    "oil": [[6,12,2,1],[7,13]],
+    "swamp": [[21,7,2,1],[23,6,2,1]],
+    "boxes": [[1,7],[5,38],[8,23],[17,7],[19,30],[26,18],[31,33],[38,12]],
+    "forest": [[1,17,3,1],[2,8,2,1],[6,15,1,2],[6,28,1,2],[6,32],[7,8,4,1],[7,15,5,1],[7,22,4,1],[8,19,4,1],[10,14],[11,16,1,2],[13,15,2,3],[13,27],[14,20,3,1],[15,16,2,1],[16,21],[20,9,7,1],[20,16,3,1],[21,11,2,2],[21,20,2,1],[22,21],[23,28,2,3],[24,18,1,2],[25,8,2,1],[25,12],[25,18],[27,12],[29,17,3,1],[29,21,5,1],[31,8,3,1],[32,14,1,2],[32,18,2,1],[32,24,1,2],[33,28,1,2],[35,17,1,2],[35,21,1,2]],
+    "hedgehog": [[4,19],[4,22],[4,34],[32,12]],
+    "barrel": [[6,12,2,1],[15,7]],
+    "water_tower": [[6,24]],
+    "crater": [[7,34],[8,12],[13,21],[19,32],[25,13],[31,23]],
+    "brick": [[8,25,1,2],[8,28],[8,31,1,2],[8,34],[9,25,3,1],[10,16,1,2],[14,25,2,1],[15,34],[16,23,2,1],[16,27,5,1],[16,35,2,1],[17,25,2,1],[18,11,1,2],[19,35,2,1],[21,25,3,1],[21,28],[21,34],[22,29,1,2],[22,32,1,2],[25,25],[27,29,1,2],[29,24,2,2],[35,12],[35,27]],
+    "concrete": [[8,27],[8,33],[15,8],[16,25],[18,9,1,2],[20,25],[24,25],[27,27,1,2],[27,31],[27,33],[28,25],[37,18,1,4]],
+    "rubble": [[13,34],[25,22]],
+    "house1": [[1,13,2,3,7],[1,23,3,3,2],[1,31,3,3,9],[9,27,2,3,1],[13,9,2,3,8],[18,15,2,2,7],[20,38,5,2,1],[28,7,3,2,8],[28,13,3,3,5],[30,31,3,2,11],[36,8,3,3,7],[36,13,2,3,1],[36,24,2,3,1],[36,36,3,3,6]],
+    "house2": [[1,27,3,3,2],[1,38,4,2,2],[9,32,2,3,6],[14,38,4,2,0],[29,27,3,3,6],[29,37,4,3,1],[36,30,3,4,8]],
+    "landmark": [["VERONA_ARENA",14,28]],
+    "decal": [["label",19,7,1,"LAKE GARDA"],["label",16,31,1,"VERONA ARENA"],["label",25,11,1,"GARDESANA RD"],["crosswalk",12,31,2],["hazard_zone",7,12,2]]
+  }
 }

@@ -8,104 +8,28 @@
   "gameMode": "survival",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 36,
-    "col": 17
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "gameMode": "survival",
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false,
-    "victoryOnAllEnemiesDestroyed": false
-  },
-  "completionReward": {
-    "credits": 0
-  },
-  "environment": {
-    "theme": "industrial",
-    "tint": "#f97316",
-    "fogColor": "#0f1420",
-    "groundColor": "#333b46"
-  },
-  "powerups": [
-    {
-      "type": "REPAIR",
-      "row": 29,
-      "col": 13
-    },
-    {
-      "type": "APS",
-      "row": 29,
-      "col": 26
-    },
-    {
-      "type": "MISSILE",
-      "row": 22,
-      "col": 8
-    },
-    {
-      "type": "EMP",
-      "row": 22,
-      "col": 31
-    },
-    {
-      "type": "REPAIR",
-      "row": 11,
-      "col": 19
-    },
-    {
-      "type": "APS",
-      "row": 34,
-      "col": 19
-    }
-  ],
+  "playerSpawnCell": {"row":36,"col":17},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"gameMode":"survival","spawnSectorBossOnClear":false,"defeatOnBaseLoss":false,"victoryOnAllEnemiesDestroyed":false},
+  "completionReward": {"credits":0},
+  "environment": {"theme":"industrial","tint":"#f97316","fogColor":"#0f1420","groundColor":"#333b46"},
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 6,
     "spawnIntervalSec": 2.2,
     "maxAttackers": 3,
-    "enemyPool": [
-      "SCOUT",
-      "STANDARD",
-      "SCOUT",
-      "STANDARD",
-      "SAPPER",
-      "SCOUT"
-    ],
+    "enemyPool": ["SCOUT","STANDARD","SCOUT","STANDARD","SAPPER","SCOUT"],
     "boss": {
       "name": "MAMMOTH MK-V",
       "title": "Super-Heavy Command Dreadnought",
       "enemyClass": "BOSS_MAMMOTH",
-      "spawnCell": {
-        "row": 3,
-        "col": 19
-      }
+      "spawnCell": {"row":3,"col":19}
     },
     "entrances": [
-      {
-        "id": "west",
-        "row": 2,
-        "col": 7
-      },
-      {
-        "id": "center-west",
-        "row": 2,
-        "col": 15
-      },
-      {
-        "id": "center-east",
-        "row": 2,
-        "col": 24
-      },
-      {
-        "id": "east",
-        "row": 2,
-        "col": 32
-      }
+      {"id":"west","row":2,"col":7},
+      {"id":"center-west","row":2,"col":15},
+      {"id":"center-east","row":2,"col":24},
+      {"id":"east","row":2,"col":32}
     ]
   },
   "decoration": {
@@ -113,325 +37,45 @@
     "seed": 50201,
     "theme": "industrial",
     "zones": [
-      {
-        "id": "north-staging-apron",
-        "bounds": [
-          1,
-          4,
-          8,
-          35
-        ],
-        "surface": "concrete",
-        "density": 0.35,
-        "details": [
-          "tracks",
-          "oil",
-          "cracks"
-        ]
-      },
+      {"id":"north-staging-apron","bounds":[1,4,8,35],"surface":"concrete","density":0.35,"details":["tracks","oil","cracks"]},
       {
         "id": "central-crucible-yard",
-        "bounds": [
-          12,
-          10,
-          28,
-          29
-        ],
+        "bounds": [12,10,28,29],
         "surface": "gravel",
         "density": 0.3,
-        "details": [
-          "rubble",
-          "tracks",
-          "patches"
-        ]
+        "details": ["rubble","tracks","patches"]
       },
-      {
-        "id": "south-bastion-apron",
-        "bounds": [
-          32,
-          12,
-          38,
-          27
-        ],
-        "surface": "pavers",
-        "density": 0.25,
-        "details": [
-          "patches",
-          "cracks"
-        ]
-      },
-      {
-        "id": "edge-west-north",
-        "bounds": [
-          0,
-          0,
-          19,
-          3
-        ],
-        "surface": "concrete",
-        "density": 0.45,
-        "details": [
-          "oil",
-          "tracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "edge-west-south",
-        "bounds": [
-          20,
-          0,
-          39,
-          3
-        ],
-        "surface": "gravel",
-        "density": 0.45,
-        "details": [
-          "tracks",
-          "rubble",
-          "cracks"
-        ]
-      },
-      {
-        "id": "edge-east-north",
-        "bounds": [
-          0,
-          36,
-          19,
-          39
-        ],
-        "surface": "gravel",
-        "density": 0.45,
-        "details": [
-          "oil",
-          "tracks",
-          "rubble"
-        ]
-      },
+      {"id":"south-bastion-apron","bounds":[32,12,38,27],"surface":"pavers","density":0.25,"details":["patches","cracks"]},
+      {"id":"edge-west-north","bounds":[0,0,19,3],"surface":"concrete","density":0.45,"details":["oil","tracks","rubble"]},
+      {"id":"edge-west-south","bounds":[20,0,39,3],"surface":"gravel","density":0.45,"details":["tracks","rubble","cracks"]},
+      {"id":"edge-east-north","bounds":[0,36,19,39],"surface":"gravel","density":0.45,"details":["oil","tracks","rubble"]},
       {
         "id": "edge-east-south",
-        "bounds": [
-          20,
-          36,
-          39,
-          39
-        ],
+        "bounds": [20,36,39,39],
         "surface": "concrete",
         "density": 0.45,
-        "details": [
-          "tracks",
-          "rubble",
-          "cracks"
-        ]
+        "details": ["tracks","rubble","cracks"]
       }
     ],
-    "paths": [
-      {
-        "id": "iron-crucible-rail-spur",
-        "points": [
-          [
-            1,
-            3
-          ],
-          [
-            38,
-            3
-          ]
-        ],
-        "width": 1.4,
-        "surface": "gravel",
-        "marking": "railway"
-      }
-    ],
-    "landmarks": [
-      {
-        "id": "center-crucible-pad",
-        "kind": "loading",
-        "row": 15,
-        "col": 19,
-        "size": 4,
-        "rotation": 0
-      },
-      {
-        "id": "south-repair-bay-mark",
-        "kind": "loading",
-        "row": 36,
-        "col": 19,
-        "size": 4,
-        "rotation": 0
-      },
-      {
-        "id": "label-crucible-center",
-        "kind": "label",
-        "row": 13,
-        "col": 19,
-        "size": 2,
-        "text": "IRON CRUCIBLE // KILL ZONE"
-      },
-      {
-        "id": "label-repair-bay",
-        "kind": "label",
-        "row": 35,
-        "col": 19,
-        "size": 2,
-        "text": "ALLIED REPAIR & GARAGE BAY"
-      },
-      {
-        "id": "edge-mark-0",
-        "kind": "loading",
-        "row": 10,
-        "col": 1,
-        "size": 1.8,
-        "rotation": 0
-      },
-      {
-        "id": "edge-mark-1",
-        "kind": "manhole",
-        "row": 25,
-        "col": 1,
-        "size": 1,
-        "rotation": 90
-      },
-      {
-        "id": "edge-mark-2",
-        "kind": "crosswalk",
-        "row": 12,
-        "col": 38,
-        "size": 2,
-        "rotation": 0
-      },
-      {
-        "id": "edge-mark-3",
-        "kind": "loading",
-        "row": 27,
-        "col": 37,
-        "size": 1.8,
-        "rotation": 90
-      },
-      {
-        "id": "iron-crucible-wt-haz-8-6",
-        "kind": "hazard_zone",
-        "row": 8,
-        "col": 6,
-        "size": 1.3
-      },
-      {
-        "id": "iron-crucible-helipad-hq",
-        "kind": "helipad",
-        "row": 35,
-        "col": 17,
-        "size": 1.8
-      },
-      {
-        "id": "iron-crucible-chev-main",
-        "kind": "chevron",
-        "row": 23,
-        "col": 18,
-        "size": 1.2,
-        "rotation": 0
-      },
-      {
-        "id": "iron-crucible-drain-w",
-        "kind": "drain_grate",
-        "row": 19,
-        "col": 1,
-        "size": 1
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "clear-repair-bay",
-        "bounds": [
-          35,
-          17,
-          38,
-          22
-        ]
-      }
-    ]
+    "paths": [{"id":"iron-crucible-rail-spur","points":[[1,3],[38,3]],"width":1.4,"surface":"gravel","marking":"railway"}],
+    "exclusions": [{"id":"clear-repair-bay","bounds":[35,17,38,22]}]
   },
-  "surfaceLayout": [
-    "........................................",
-    "..............................L.........",
-    "........................................",
-    "........................................",
-    "........................................",
-    "................L......L................",
-    "........R.......L......L................",
-    "........R...............................",
-    "........R.....L....R.....LL.............",
-    "........R.....L....R.....L..............",
-    "....WWWW.R.........R............WWWW....",
-    "....WWWW.R........L...M.........WWWW....",
-    "....WWWW.R......................WWWW....",
-    ".........R.........R....................",
-    ".........R.........R..........M.........",
-    ".........R.........R....................",
-    ".........R......L..R...L................",
-    ".........R......L..R...L................",
-    "...................R....................",
-    "...................R....................",
-    "....WWWW........................WWWW....",
-    "....WWWW...R....................WWWW....",
-    "....WWWW...R....................WWWW....",
-    "....WWWW...R.......R............WWWW....",
-    "....WWWW...........R............WWWW....",
-    "...................R....................",
-    "...................R....................",
-    "...................R....................",
-    ".R..............L..R...L................",
-    ".R..............L..R...L................",
-    ".R.................R....................",
-    "..............R....R....................",
-    "..............R....R....................",
-    "..............R.........................",
-    "............L..............L............",
-    "............L..............L............",
-    "........................................",
-    "........................................",
-    "............L...........................",
-    "........................................"
-  ],
-  "objectLayout": [
-    "........................................",
-    "....AA....PP...TK.AA.PK.....AA....PP....",
-    "....AA....PP......AA.P......AA....PP..C.",
-    "C.......................................",
-    "BB....AA.P..CC....BBBB....AA..PP.A......",
-    ".C....AA.P..CC..D......D..AA..PP.A....CC",
-    "....FF.....Q..............Q.......FF..C.",
-    "....FF...PPP....CCCCCCCC....AA.P..FF..C.",
-    "......T..PPP..D.......Q..D..AA.P........",
-    "CC.............Q........................",
-    "............AA.P........AA.P..........BB",
-    ".F..........AA.P...FF...AA.P..FF......CC",
-    "CF.................FF....Q...FFF........",
-    "............AA............PP..........B.",
-    "......FF..KQAA....B.AAK...PP....FF....B.",
-    ".B....FF..........B.AAQ.........FF......",
-    "BB........PP.A..D......D..PP.B.........F",
-    "C.........PP.A............PP.B........AA",
-    "CX....................................AA",
-    "..........PP.A............PP.A.........X",
-    ".F..............PPP.AA.P................",
-    "X...............PPP.AA.P...............X",
-    "C...............PPP.AA.P..............XX",
-    "C...............Q.....................BB",
-    "............FF............FF............",
-    "............FF....B.AA....FF............",
-    "CC....PP.AK.......B.AA........PP.A....BB",
-    "X.....PP.A..PP............AA..PP.A....F.",
-    "............PP..D......D..AA..........BB",
-    "B.....................................B.",
-    "....FF....PP.B............AA.P....FF....",
-    "X...FF....PP.B............AA.P....FF....",
-    "X...............AA....PP..............XX",
-    "XX....AA.P......AA....PP......AA.P....XX",
-    "CX....AA.P..D..............D..AA.P....X.",
-    "CB......................................",
-    "............BBBB........BBBB...........C",
-    "............BBBB.CCCCCC.BBBB...........C",
-    "....K....TK.................K.....K.....",
-    "...................HH..................."
-  ]
+  "terrain": {
+    "oil": [[1,30],[5,16,2,1],[5,23,2,1],[8,14,2,1],[8,25,1,2],[9,25],[11,18],[16,16,2,1],[16,23,2,1],[28,16,2,1],[28,23,2,1],[34,12,2,1],[34,27,2,1],[38,12]],
+    "road": [[6,8,4,1],[8,19,3,1],[10,9,8,1],[13,19,7,1],[21,11,3,1],[23,19,10,1],[28,1,3,1],[31,14,3,1]],
+    "water": [[10,4,3,4],[10,32,3,4],[20,4,5,4],[20,32,5,4]],
+    "swamp": [[11,22],[14,30]],
+    "water_tower": [[1,15],[8,6],[38,9]],
+    "crater": [[1,16],[1,22],[14,10],[14,22],[26,10],[38,4],[38,10],[38,28],[38,34]],
+    "concrete": [[2,38],[3,0],[4,12,2,2],[5,1],[5,38,1,2],[6,38,2,1],[7,16,1,8],[9,0,1,2],[11,38,1,2],[12,0],[17,0,2,1],[22,0,2,1],[26,0,1,2],[34,0,2,1],[36,39,2,1],[37,17,1,6]],
+    "brick": [[4,0,1,2],[4,18,1,4],[10,38,1,2],[13,38,2,1],[14,18,2,1],[15,1,2,1],[16,0],[16,29,2,1],[23,38,1,2],[25,18,2,1],[26,38,1,2],[28,38,1,2],[29,0],[29,38],[30,13,2,1],[35,1],[36,12,2,4],[36,24,2,4]],
+    "barrel": [[5,16],[5,23],[8,14],[8,25],[16,16],[16,23],[28,16],[28,23],[34,12],[34,27]],
+    "forest": [[6,4,2,2],[6,34,2,2],[11,1,2,1],[11,19,2,2],[11,30,2,2],[12,29],[14,6,2,2],[14,32,2,2],[16,39],[20,1],[24,12,2,2],[24,26,2,2],[27,38],[30,4,2,2],[30,34,2,2]],
+    "boxes": [[6,11],[6,26],[8,22],[9,15],[12,25],[14,11],[15,22],[23,16]],
+    "hedgehog": [[18,1],[19,39],[21,0],[21,39,2,1],[22,38],[27,0],[31,0,3,1],[32,38,2,2],[33,1,2,1],[34,38]],
+    "house1": [[1,4,2,2,10],[1,18,2,2,10],[1,28,2,2,9],[4,6,2,2,10],[4,26,2,2,11],[4,33,2,1,8],[7,28,2,2,9],[10,12,2,2,8],[10,24,2,2,9],[13,12,2,2,8],[14,20,2,2,8],[16,13,2,1,9],[17,38,2,2,10],[19,13,1,1,9],[19,29,1,1,10],[20,20,3,2,10],[25,20,2,2,10],[26,9,2,1,8],[26,33,2,1,9],[27,26,2,2,11],[30,26,2,2,9],[32,16,2,2,11],[33,6,2,2,9],[33,30,2,2,11]],
+    "house2": [[1,10,2,2,8],[1,21,2,1,2],[1,34,2,2,11],[4,9,2,1,4],[4,30,2,2,11],[7,9,2,3,2],[7,31,2,1,8],[10,15,2,1,6],[10,27,2,1,8],[13,26,2,2,3],[16,10,2,2,8],[16,26,2,2,1],[19,10,1,2,8],[19,26,1,2,7],[20,16,3,3,8],[20,23,3,1,0],[26,6,2,2,11],[26,30,2,2,6],[27,12,2,2,11],[30,10,2,2,7],[30,29,2,1,8],[32,22,2,2,2],[33,9,2,1,8],[33,33,2,1,1]],
+    "powerup": [["REPAIR",29,13],["APS",29,26],["MISSILE",22,8],["EMP",22,31],["REPAIR",11,19],["APS",34,19]],
+    "decal": [["loading",15,19,4],["loading",36,19,4],["label",13,19,2,"IRON CRUCIBLE // KILL ZONE"],["label",35,19,2,"ALLIED REPAIR & GARAGE BAY"],["loading",10,1,1.8],["manhole",25,1],["crosswalk",12,38,2],["loading",27,37,1.8],["hazard_zone",8,6,1.3],["helipad",35,17,1.8],["chevron",23,18,1.2],["drain_grate",19,1]]
+  }
 }

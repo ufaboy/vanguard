@@ -7,104 +7,40 @@
   "gameMode": "extermination",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "spawnSectorBossOnClear": true,
-    "defeatOnBaseLoss": false
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"spawnSectorBossOnClear":true,"defeatOnBaseLoss":false},
   "boss": {
     "enemyClass": "BOSS_HYDRA",
     "name": "HYDRA MLRS-9",
     "title": "Amphibious Rocket-Artillery Cruiser",
-    "spawnCell": {
-      "row": 4,
-      "col": 14
-    }
+    "spawnCell": {"row":4,"col":14}
   },
-  "completionReward": {
-    "credits": 1150
-  },
-  "environment": {
-    "theme": "coast",
-    "tint": "#8ec5d6",
-    "fogColor": "#27414e",
-    "groundColor": "#53676c"
-  },
+  "completionReward": {"credits":1150},
+  "environment": {"theme":"coast","tint":"#8ec5d6","fogColor":"#27414e","groundColor":"#53676c"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Assault a coastal storm-surge barrier and reclaimed polder network across the Scheldt Delta. Wide open estuary basins let hover packs and the amphibious Hydra MLRS-9 rocket cruiser strike from the water, while four dry causeways, sluice bridges, dune windbreaks, and destructible floodgate bulkheads give tracked armor covered approaches and flanking cuts.",
     "breaches": [
       {
         "name": "West dune dike barricade",
-        "cells": [
-          {
-            "row": 16,
-            "col": 2
-          },
-          {
-            "row": 16,
-            "col": 3
-          }
-        ],
-        "start": {
-          "row": 18,
-          "col": 2
-        },
-        "end": {
-          "row": 14,
-          "col": 2
-        },
+        "cells": [{"row":16,"col":2},{"row":16,"col":3}],
+        "start": {"row":18,"col":2},
+        "end": {"row":14,"col":2},
         "purpose": "Punch through the brick barricade on the western dune lane to flank northern hover and artillery staging areas without exposing yourself on the main dike road."
       },
       {
         "name": "West sluice floodgate bulkhead",
-        "cells": [
-          {
-            "row": 14,
-            "col": 16
-          },
-          {
-            "row": 15,
-            "col": 16
-          }
-        ],
-        "start": {
-          "row": 14,
-          "col": 14
-        },
-        "end": {
-          "row": 14,
-          "col": 18
-        },
+        "cells": [{"row":14,"col":16},{"row":15,"col":16}],
+        "start": {"row":14,"col":14},
+        "end": {"row":14,"col":18},
         "purpose": "Shatter the brick floodgate bulkhead connecting the west-central sluice dam to the storm-surge barrier island."
       },
       {
         "name": "East lock-house bulkhead",
-        "cells": [
-          {
-            "row": 14,
-            "col": 23
-          },
-          {
-            "row": 15,
-            "col": 23
-          }
-        ],
-        "start": {
-          "row": 14,
-          "col": 25
-        },
-        "end": {
-          "row": 14,
-          "col": 21
-        },
+        "cells": [{"row":14,"col":23},{"row":15,"col":23}],
+        "start": {"row":14,"col":25},
+        "end": {"row":14,"col":21},
         "purpose": "Breach the east lock-house brick wall to cross laterally between the storm-surge barrier island and the east-central lock causeway."
       }
     ],
@@ -127,192 +63,33 @@
     "seed": 26262026,
     "theme": "coast",
     "zones": [
-      {
-        "id": "west-dune-headland",
-        "bounds": [
-          0,
-          0,
-          39,
-          6
-        ],
-        "surface": "sand",
-        "density": 0.25,
-        "details": [
-          "weeds",
-          "tracks",
-          "patches"
-        ]
-      },
+      {"id":"west-dune-headland","bounds":[0,0,39,6],"surface":"sand","density":0.25,"details":["weeds","tracks","patches"]},
       {
         "id": "west-sluice-causeway",
-        "bounds": [
-          0,
-          12,
-          26,
-          16
-        ],
+        "bounds": [0,12,26,16],
         "surface": "concrete",
         "density": 0.24,
-        "details": [
-          "cracks",
-          "oil",
-          "tracks"
-        ]
+        "details": ["cracks","oil","tracks"]
       },
       {
         "id": "barrier-control-island",
-        "bounds": [
-          10,
-          17,
-          17,
-          22
-        ],
+        "bounds": [10,17,17,22],
         "surface": "concrete",
         "density": 0.28,
-        "details": [
-          "cracks",
-          "rubble",
-          "oil"
-        ]
+        "details": ["cracks","rubble","oil"]
       },
       {
         "id": "east-lock-causeway",
-        "bounds": [
-          0,
-          23,
-          26,
-          27
-        ],
+        "bounds": [0,23,26,27],
         "surface": "concrete",
         "density": 0.24,
-        "details": [
-          "cracks",
-          "oil",
-          "tracks"
-        ]
+        "details": ["cracks","oil","tracks"]
       },
-      {
-        "id": "east-polder-dike",
-        "bounds": [
-          0,
-          33,
-          39,
-          39
-        ],
-        "surface": "dirt",
-        "density": 0.22,
-        "details": [
-          "weeds",
-          "tracks",
-          "patches"
-        ]
-      },
-      {
-        "id": "south-polder-apron",
-        "bounds": [
-          27,
-          7,
-          39,
-          32
-        ],
-        "surface": "gravel",
-        "density": 0.2,
-        "details": [
-          "tracks",
-          "weeds",
-          "rubble"
-        ]
-      }
+      {"id":"east-polder-dike","bounds":[0,33,39,39],"surface":"dirt","density":0.22,"details":["weeds","tracks","patches"]},
+      {"id":"south-polder-apron","bounds":[27,7,39,32],"surface":"gravel","density":0.2,"details":["tracks","weeds","rubble"]}
     ],
-    "paths": [],
-    "landmarks": [
-      {
-        "id": "storm-barrier-label",
-        "kind": "label",
-        "row": 14,
-        "col": 19,
-        "size": 3,
-        "text": "STORM-SURGE BARRIER"
-      },
-      {
-        "id": "west-sluice-label",
-        "kind": "label",
-        "row": 9,
-        "col": 13,
-        "size": 3,
-        "text": "WEST SLUICE"
-      },
-      {
-        "id": "east-lock-label",
-        "kind": "label",
-        "row": 21,
-        "col": 25,
-        "size": 3,
-        "text": "EAST LOCK"
-      },
-      {
-        "id": "west-dike-crosswalk",
-        "kind": "crosswalk",
-        "row": 26,
-        "col": 4,
-        "size": 2,
-        "rotation": 90
-      },
-      {
-        "id": "east-dike-crosswalk",
-        "kind": "crosswalk",
-        "row": 26,
-        "col": 34,
-        "size": 2,
-        "rotation": 90
-      },
-      {
-        "id": "south-hq-helipad",
-        "kind": "helipad",
-        "row": 32,
-        "col": 19,
-        "size": 2
-      },
-      {
-        "id": "barrier-tower-hazard",
-        "kind": "hazard_zone",
-        "row": 13,
-        "col": 21,
-        "size": 1.3
-      },
-      {
-        "id": "south-polder-parking",
-        "kind": "parking",
-        "row": 35,
-        "col": 14,
-        "size": 2.5,
-        "rotation": 0
-      },
-      {
-        "id": "east-depot-loading",
-        "kind": "loading",
-        "row": 30,
-        "col": 34,
-        "size": 2.5,
-        "rotation": 0
-      },
-      {
-        "id": "sluice-drain-1",
-        "kind": "drain_grate",
-        "row": 15,
-        "col": 13,
-        "size": 1
-      },
-      {
-        "id": "lock-drain-2",
-        "kind": "drain_grate",
-        "row": 16,
-        "col": 25,
-        "size": 1
-      }
-    ]
+    "paths": []
   },
-  "landmarks3d": [],
   "enemies": {
     "enemyCount": 25,
     "initialSpawnCount": 4,
@@ -320,245 +97,60 @@
     "spawnIntervalSec": 3.6,
     "maxAttackers": 3,
     "entrances": [
-      {
-        "id": "west-dune-entry",
-        "row": 1,
-        "col": 4
-      },
-      {
-        "id": "west-sluice-entry",
-        "row": 1,
-        "col": 13
-      },
-      {
-        "id": "east-lock-entry",
-        "row": 1,
-        "col": 25
-      },
-      {
-        "id": "east-dike-entry",
-        "row": 1,
-        "col": 35
-      },
-      {
-        "id": "west-mid-slip",
-        "row": 8,
-        "col": 4
-      },
-      {
-        "id": "east-mid-slip",
-        "row": 8,
-        "col": 35
-      }
+      {"id":"west-dune-entry","row":1,"col":4},
+      {"id":"west-sluice-entry","row":1,"col":13},
+      {"id":"east-lock-entry","row":1,"col":25},
+      {"id":"east-dike-entry","row":1,"col":35},
+      {"id":"west-mid-slip","row":8,"col":4},
+      {"id":"east-mid-slip","row":8,"col":35}
     ],
     "encounters": [
       {
         "id": "opening-barrier-probe",
         "label": "DELTA BARRIER VANGUARD DETECTED",
         "recoverySec": 0,
-        "entrances": [
-          "west-dune-entry",
-          "west-sluice-entry",
-          "east-lock-entry",
-          "east-dike-entry"
-        ],
-        "initialCells": [
-          {
-            "row": 3,
-            "col": 4
-          },
-          {
-            "row": 3,
-            "col": 13
-          },
-          {
-            "row": 3,
-            "col": 25
-          },
-          {
-            "row": 3,
-            "col": 35
-          }
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 13
-          },
-          {
-            "row": 24,
-            "col": 13
-          },
-          {
-            "row": 31,
-            "col": 17
-          }
-        ],
-        "enemies": [
-          "STANDARD",
-          "HOVER",
-          "SCOUT",
-          "HOVER",
-          "STANDARD",
-          "SCOUT",
-          "HOWITZER",
-          "STANDARD"
-        ]
+        "entrances": ["west-dune-entry","west-sluice-entry","east-lock-entry","east-dike-entry"],
+        "initialCells": [{"row":3,"col":4},{"row":3,"col":13},{"row":3,"col":25},{"row":3,"col":35}],
+        "patrolRoute": [{"row":12,"col":13},{"row":24,"col":13},{"row":31,"col":17}],
+        "enemies": ["STANDARD","HOVER","SCOUT","HOVER","STANDARD","SCOUT","HOWITZER","STANDARD"]
       },
       {
         "id": "delta-amphibious-assault",
         "label": "ESTUARY HOVER PACK & ARTILLERY SUPPORT",
         "recoverySec": 8,
-        "entrances": [
-          "west-mid-slip",
-          "west-sluice-entry",
-          "east-lock-entry"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 25
-          },
-          {
-            "row": 24,
-            "col": 25
-          },
-          {
-            "row": 31,
-            "col": 21
-          }
-        ],
-        "enemies": [
-          "HOVER",
-          "HOWITZER",
-          "JAMMER",
-          "HOVER",
-          "ARMOR",
-          "STANDARD",
-          "HOVER",
-          "FLAMETHROWER",
-          "SAPPER"
-        ]
+        "entrances": ["west-mid-slip","west-sluice-entry","east-lock-entry"],
+        "patrolRoute": [{"row":12,"col":25},{"row":24,"col":25},{"row":31,"col":21}],
+        "enemies": ["HOVER","HOWITZER","JAMMER","HOVER","ARMOR","STANDARD","HOVER","FLAMETHROWER","SAPPER"]
       },
       {
         "id": "storm-surge-garrison",
         "label": "LOCKMASTER RESERVE — HYDRA INBOUND ON CLEAR",
         "recoverySec": 9,
-        "entrances": [
-          "west-dune-entry",
-          "west-sluice-entry",
-          "east-lock-entry",
-          "east-mid-slip"
-        ],
-        "patrolRoute": [
-          {
-            "row": 13,
-            "col": 4
-          },
-          {
-            "row": 26,
-            "col": 5
-          },
-          {
-            "row": 32,
-            "col": 16
-          }
-        ],
-        "enemies": [
-          "ARMOR",
-          "HOVER",
-          "JAMMER",
-          "HOWITZER",
-          "STEALTH",
-          "HOVER",
-          "ENGINEER",
-          "STANDARD"
-        ]
+        "entrances": ["west-dune-entry","west-sluice-entry","east-lock-entry","east-mid-slip"],
+        "patrolRoute": [{"row":13,"col":4},{"row":26,"col":5},{"row":32,"col":16}],
+        "enemies": ["ARMOR","HOVER","JAMMER","HOWITZER","STEALTH","HOVER","ENGINEER","STANDARD"]
       }
     ]
   },
-  "surfaceLayout": [
-    "SSSSRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "SSSSRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "SVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "S^VVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "S^VVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "SVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "SVVVRRSWWWWWWWWWWWWWWWWWWWWWWWWWWVRRVVVV",
-    "SVVVRRSWWWWWWWWWWWWWWWWWWWWWWWWWWVRRVVVV",
-    "SVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "SVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "SWWWWWWWWWWW.RR..SSSSSS..RR.WWWWWVRRVVVV",
-    "SWWWWWWWWWWW.RR..SSSSSS..RR.WWWWWVRRVVVV",
-    "VVVSRRSWWWWW.RR..........RR.WWWWWWWWWWWV",
-    "VVSSRRSWWWWW.RR..........RR.WSSWWWWWWWWV",
-    "V^SSRRSWWSSW.RR..........RR.WSSWWVRRVVVV",
-    "V^SSRRSWWSSW.RR..........RR.WSSWWVRRVVVV",
-    "VVSSRRSWWSSW.RR..SSSSSS..RR.WWWWWVRRVVVV",
-    "VVSSRRSWWWWW.RR..SSSSSS..RR.WWWWWVRRVVVV",
-    "VVVSRRSWWWWWWWWWWWWWWWWWWWWWWWWWWVRRVVVV",
-    "VVVSRRSWWWWWWWWWWWWWWWWWWWWWWWWWWVRRVVVV",
-    "VVSSRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "VVSSRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "SWWWWWWWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "SWWWWWWWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "VVVVRRSWWWWW.RR..WWWWWW..RR.WWWWWVRRVVVV",
-    "VVVVRRSMMMMM.RR..........RR.MMMMMVRRVVVV",
-    "VVVVRRSMMMMM.RR..........RR.MMMMMVRRVVVV",
-    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
-    "VV^VRRSVVVVV.RRVV......VVRR.VVVVVVRRVVVV",
-    "VV^VRRSVVVVV.RRVV......VVRR.VVVVVVRRVVVV",
-    "VVVVRRSVVVVV.RRVV......VVRR.VVVVVVRRVVVV",
-    "VVVVRRSVVVVV.VV..........VV.VVVVVVRRVVVV",
-    "VVVVRRSVVVVV.VV..........VV.VVVVVVRRVVVV",
-    "VVVVRRSVVVVV.RR..........RR.VVVVVVRRVVVV",
-    "VVVVRRSVVVVV.RR..........RR.VVVVVVRRVVVV",
-    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVV",
-    "VVVVRRSVVVVVVVVV........VVVVVVVVVVVVVVVV",
-    "VVVVRRSVVVVVVVVV........VVVVVVVVVVVVVVVV",
-    "VVVVRRSVVVVVVVVV........VVVVVVVVVVVVVVVV",
-    "VVVVRRSVVVVV................VVVVVVVVVVVV"
-  ],
-  "objectLayout": [
-    "........................................",
-    "............C..C........C..C.........FF.",
-    ".FF...X.....C..C........C..C.....X...FF.",
-    "..FF........C..CF......FC..C..........F.",
-    ".AA.........C..CF......FC..C.........AA.",
-    ".AA.........C..C........C..C.........AA.",
-    ".F...........==..........==.............",
-    ".FF..........==..........==.........FF..",
-    "..FK..Q.....C..CF......FC..C........QF..",
-    ".F.U........C..CF......FC..C........F...",
-    "....==......C..C........C..C.........FF.",
-    "....==......C..C.C....C.C..C.........FF.",
-    ".FF...............PP..............==....",
-    "AA................PP.T............==....",
-    "AA..........C...B......B...C........F...",
-    "......K.....C...B......B...C........FAD.",
-    "CCBB........C..C.Q...D..C..C.........AA.",
-    "............C..C........C..C.........FF.",
-    "......Q......==..........==.........QFF.",
-    ".............==..........==...........F.",
-    ".F..........C..C........C..C............",
-    "............C..C........C..C............",
-    "....==......C..CF......FC..C............",
-    "....==......C..CF......FC..C........AA..",
-    ".FF...X.....C..CF......FC..C.....X..AA..",
-    ".FF.................................FF..",
-    ".F........K.......U..U.......K......FF..",
-    "........................................",
-    ".AA.....FF.......K.DD.K......FF......AA.",
-    ".AA.....FF...PP....Q.....PP..FF..U...AA.",
-    "........F..X.PP..........PP.X.F.....D...",
-    ".FF..........FF..........FF.........QF..",
-    ".FF..........FF..........FF.........FF..",
-    ".........AA....K........K....AA.........",
-    ".PP......AA........X.........AA......PP.",
-    ".PP..................................PP.",
-    ".FF.........FF............FF.........FF.",
-    ".FF.........FF....CCCC....FF.........FF.",
-    ".FQ.......K..................K..........",
-    "...................HH..................."
-  ]
+  "terrain": {
+    "sand": [[0,0,2,4],[0,6,10,1],[2,0,10,1],[10,17,2,6],[12,3,10,1],[12,6,10,1],[13,2,5,1],[13,29,3,2],[14,9,3,2],[16,17,2,6],[20,2,2,1],[22,0,2,1],[24,6,3,1],[28,6,7,1],[36,6,4,1]],
+    "road": [[0,4,10,2],[0,13,6,2],[0,25,6,2],[0,34,12,2],[8,13,10,2],[8,25,10,2],[12,4,10,2],[14,34,22,2],[20,13,9,2],[20,25,9,2],[24,4,16,2],[27,6,1,7],[27,15,1,10],[27,27,1,7],[33,13,3,2],[33,25,3,2],[35,6,1,7],[35,15,1,10],[35,27,1,7]],
+    "water": [[0,7,14,5],[0,17,10,6],[0,28,13,5],[6,12,2,5],[6,23,2,5],[10,1,2,6],[12,33,2,6],[13,28,12,1],[13,31,12,2],[14,7,11,2],[14,11,11,1],[16,29,9,2],[17,9,8,2],[18,12,2,16],[20,17,5,6],[22,1,2,6]],
+    "grass": [[0,33,12,1],[0,36,12,4],[2,1,1,3],[3,2,7,2],[5,1,5,1],[12,0,1,3],[12,39,28,1],[13,0,1,2],[14,0,8,1],[14,33,13,1],[14,36,26,3],[16,1,6,1],[18,2,2,1],[24,0,4,4],[28,0,12,2],[28,3,12,1],[28,7,7,5],[28,15,3,2],[28,23,3,2],[28,28,7,6],[30,2,10,1],[31,13,2,2],[31,25,2,2],[36,7,3,9],[36,24,3,12],[39,7,1,5],[39,28,1,8]],
+    "stone": [[3,1,2,1],[14,1,2,1],[28,2,2,1]],
+    "swamp": [[25,7,1,5],[25,28,1,5],[26,7,1,3],[26,11],[26,28],[26,30,1,3]],
+    "concrete": [[1,12,5,1],[1,15,5,1],[1,24,5,1],[1,27,5,1],[8,12,4,1],[8,15,4,1],[8,24,4,1],[8,27,4,1],[11,17],[11,22],[14,12,4,1],[14,27,4,1],[16,0,1,2],[16,15,2,1],[16,24,2,1],[20,12,5,1],[20,15,5,1],[20,24,5,1],[20,27,5,1],[37,18,1,4]],
+    "forest": [[1,37,2,2],[2,1,1,2],[3,2,1,2],[3,16,2,1],[3,23,2,1],[3,38],[6,1,2,1],[7,2,2,1],[7,36,1,2],[8,16,2,1],[8,23,2,1],[8,37],[9,1],[9,36],[10,37,2,2],[12,1,1,2],[14,36,2,1],[17,37,2,2],[19,38],[20,1],[22,16,3,1],[22,23,3,1],[24,1,2,2],[25,36,2,2],[26,1],[28,8,2,2],[28,29,2,2],[30,8],[30,30],[31,1,2,2],[31,13,2,2],[31,25,2,2],[31,37,2,1],[32,36],[36,1,2,2],[36,12,2,2],[36,26,2,2],[36,37,2,2],[38,1]],
+    "hedgehog": [[2,6],[2,33],[24,6],[24,33],[30,11],[30,28],[34,19]],
+    "crater": [[8,3],[15,6],[26,10],[26,29],[28,17],[28,22],[33,15],[33,24],[38,10],[38,29]],
+    "boxes": [[8,6],[8,36],[16,17],[18,6],[18,36],[29,19],[31,36],[38,2]],
+    "rubble": [[9,3],[26,18],[26,21],[29,33]],
+    "water_tower": [[13,21]],
+    "brick": [[14,16,2,1],[14,23,2,1],[16,2,1,2]],
+    "barrel": [[15,38],[16,21],[28,19,1,2],[30,36]],
+    "bridge": [[6,13,2,2,"ns"],[6,25,2,2,"ns"],[10,4,2,2,"ns"],[12,34,2,2,"ns"],[18,13,2,2,"ns"],[18,25,2,2,"ns"],[22,4,2,2,"ns"]],
+    "house1": [[4,1,2,2,0],[4,37,2,2,5],[13,0,2,2,10],[15,37,2,1,4],[16,38,1,1,4],[23,36,2,2,0],[28,1,2,2,5],[28,37,2,2,9],[33,9,2,2,3],[33,29,2,2,9]],
+    "house2": [[12,18,2,2,2],[29,13,2,2,4],[29,25,2,2,1],[34,1,2,2,6],[34,37,2,2,3]],
+    "decal": [["label",14,19,3,"STORM-SURGE BARRIER"],["label",9,13,3,"WEST SLUICE"],["label",21,25,3,"EAST LOCK"],["crosswalk",26,4,2],["crosswalk",26,34,2],["helipad",32,19,2],["hazard_zone",13,21,1.3],["parking",35,14,2.5],["loading",30,34,2.5],["drain_grate",15,13],["drain_grate",16,25]]
+  }
 }

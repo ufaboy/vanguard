@@ -16,9 +16,9 @@ import { DEFAULT_CAMERA_AZIMUTH } from './input-camera.js';
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout, isContractMap } from '../levels.js';
 import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
-import { computeBuildingLayout } from '../terrains/building-layout.js';
 import { BUILDING_MAX_HP } from '../terrains/building-models.js';
 import { landmarkFootprintCenter } from '../terrains/landmarks.js';
+import { resolveBuildingCell } from '../terrains/terrain-format.js';
 import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { isSurfaceType, setCellObject } from '../terrains/layers.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
@@ -77,8 +77,8 @@ function sectorUsesLandmarks(sector) {
   return Boolean(
     sector.baseModel ||
       sector.landmarks3d?.length ||
-      sector.mineSigns?.length ||
-      sector.grid?.some((row) => row.includes(TileType.BRIDGE))
+      sector.bridges?.length ||
+      sector.mineSigns?.length
   );
 }
 
@@ -247,7 +247,6 @@ export class SectorLoaderController {
     engine.grid = [];
     engine.componentWaterEgress = false;
 
-    const buildingLayout = computeBuildingLayout(sector.grid, sector.theme);
     for (let r = 0; r < GRID_SIZE; r++) {
       const rowCells = [];
       for (let c = 0; c < GRID_SIZE; c++) {
@@ -263,7 +262,10 @@ export class SectorLoaderController {
         let surfaceMesh = null;
         let subMeshes;
         let hp = 1;
-        const building = !supply ? buildingLayout.get(`${r},${c}`) || null : null;
+        const building =
+          !supply && (type === TileType.HOUSE_1 || type === TileType.HOUSE_2)
+            ? resolveBuildingCell(sector.objectGrid, sector.buildingStyles, r, c)
+            : null;
 
         // Render flat surface layer underneath any placed object
         if (surface === TileType.ROAD && engine.modelFactory.createRoadBlock) {
@@ -356,36 +358,6 @@ export class SectorLoaderController {
             }
           }
           hp = engine.baseMaxHp || 1;
-        } else if (type === TileType.BRIDGE && engine.modelFactory.landmarkModels) {
-          const isBridge = (rr, cc) =>
-            rr >= 0 &&
-            rr < GRID_SIZE &&
-            cc >= 0 &&
-            cc < GRID_SIZE &&
-            sector.grid[rr][cc] === TileType.BRIDGE;
-          // One bridge per rectangular run of bridge cells, anchored on its top-left cell.
-          if (!isBridge(r, c - 1) && !isBridge(r - 1, c)) {
-            let cols = 1;
-            while (isBridge(r, c + cols)) cols++;
-            let rows = 1;
-            while (isBridge(r + rows, c)) rows++;
-            // The bridge spans across the water: water flanking the east / west
-            // edges means a north-south crossing, and vice versa.
-            const isWater = (rr, cc) =>
-              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE && sector.grid[rr][cc] === TileType.WATER;
-            let waterEW = 0;
-            for (let dr = 0; dr < rows; dr++) waterEW += isWater(r + dr, c - 1) + isWater(r + dr, c + cols);
-            let waterNS = 0;
-            for (let dc = 0; dc < cols; dc++) waterNS += isWater(r - 1, c + dc) + isWater(r + rows, c + dc);
-            const spanNS = waterEW > waterNS || (waterEW === waterNS && rows >= cols);
-            const bridgeMesh = spanNS
-              ? engine.modelFactory.landmarkModels.createBridge(rows, cols)
-              : engine.modelFactory.landmarkModels.createBridge(cols, rows);
-            if (!spanNS) bridgeMesh.rotation.y = Math.PI / 2;
-            bridgeMesh.position.set(x + ((cols - 1) * TILE_SIZE) / 2, 0, z + ((rows - 1) * TILE_SIZE) / 2);
-            engine.mapGroup.add(bridgeMesh);
-            mesh = bridgeMesh;
-          }
         } else if (type === TileType.ENEMY_BASE) {
           const enemyBaseBlock = engine.modelFactory.createEnemyBaseBlock();
           enemyBaseBlock.position.set(x, 0, z);
@@ -477,6 +449,23 @@ export class SectorLoaderController {
         const lmMesh = engine.modelFactory.landmarkModels.create(entry.kind);
         lmMesh.position.set(lmPos.x, 0, lmPos.z);
         engine.mapGroup.add(lmMesh);
+      }
+    }
+
+    if (sector.bridges?.length && engine.modelFactory.landmarkModels) {
+      for (const b of sector.bridges) {
+        const spanNS = b.orientation !== 'ew';
+        const bridgeMesh = spanNS
+          ? engine.modelFactory.landmarkModels.createBridge(b.rows, b.cols)
+          : engine.modelFactory.landmarkModels.createBridge(b.cols, b.rows);
+        if (!spanNS) bridgeMesh.rotation.y = Math.PI / 2;
+        const origin = this.gridToWorld(b.row, b.col);
+        bridgeMesh.position.set(
+          origin.x + ((b.cols - 1) * TILE_SIZE) / 2,
+          0,
+          origin.z + ((b.rows - 1) * TILE_SIZE) / 2
+        );
+        engine.mapGroup.add(bridgeMesh);
       }
     }
 

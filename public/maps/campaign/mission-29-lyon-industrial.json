@@ -7,104 +7,35 @@
   "gameMode": "stronghold_assault",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "enemyBase": {
-    "cell": {
-      "row": 3,
-      "col": 20
-    },
-    "name": "Consortium Refit Line",
-    "maxHp": 48,
-    "fortifyPerimeter": true
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 680
-  },
-  "environment": {
-    "theme": "industrial",
-    "tint": "#c8b8a4",
-    "fogColor": "#333438",
-    "groundColor": "#515356"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "enemyBase": {"cell":{"row":3,"col":20},"name":"Consortium Refit Line","maxHp":48,"fortifyPerimeter":true},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":680},
+  "environment": {"theme":"industrial","tint":"#c8b8a4","fogColor":"#333438","groundColor":"#515356"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Push north up the Lyon Chemical Corridor along three distinct approaches: the western Rhone bank and bridges, the central Consortium refit halls, and the eastern refinery tank farm and rail siding, breaking through brick containment bunds to reach the fortified refit line.",
     "breaches": [
       {
         "name": "North Stronghold Sluice Gate",
-        "cells": [
-          {
-            "row": 9,
-            "col": 19
-          },
-          {
-            "row": 9,
-            "col": 20
-          }
-        ],
-        "start": {
-          "row": 10,
-          "col": 19
-        },
-        "end": {
-          "row": 7,
-          "col": 19
-        },
+        "cells": [{"row":9,"col":19},{"row":9,"col":20}],
+        "start": {"row":10,"col":19},
+        "end": {"row":7,"col":19},
         "purpose": "Blast the northern brick gate to open a direct central approach toward the Consortium Refit Line."
       },
       {
         "name": "East Tank-Farm Containment Bund",
-        "cells": [
-          {
-            "row": 17,
-            "col": 29
-          },
-          {
-            "row": 18,
-            "col": 29
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 27
-        },
-        "end": {
-          "row": 17,
-          "col": 31
-        },
+        "cells": [{"row":17,"col":29},{"row":18,"col":29}],
+        "start": {"row":17,"col":27},
+        "end": {"row":17,"col":31},
         "purpose": "Punch through the eastern brick bund wall between the rail siding and the refinery tank farm."
       },
       {
         "name": "South Refit Loading Gate",
-        "cells": [
-          {
-            "row": 27,
-            "col": 18
-          },
-          {
-            "row": 27,
-            "col": 19
-          }
-        ],
-        "start": {
-          "row": 29,
-          "col": 18
-        },
-        "end": {
-          "row": 25,
-          "col": 18
-        },
+        "cells": [{"row":27,"col":18},{"row":27,"col":19}],
+        "start": {"row":29,"col":18},
+        "end": {"row":25,"col":18},
         "purpose": "Breach the southern brick loading gate to bypass the central factory block."
       }
     ],
@@ -130,414 +61,84 @@
     "zones": [
       {
         "id": "north-refit-stronghold",
-        "bounds": [
-          1,
-          15,
-          8,
-          25
-        ],
+        "bounds": [1,15,8,25],
         "surface": "concrete",
         "density": 0.25,
-        "details": [
-          "cracks",
-          "oil",
-          "patches"
-        ]
+        "details": ["cracks","oil","patches"]
       },
-      {
-        "id": "west-rhone-quay",
-        "bounds": [
-          2,
-          1,
-          35,
-          11
-        ],
-        "surface": "concrete",
-        "density": 0.24,
-        "details": [
-          "tracks",
-          "cracks",
-          "weeds"
-        ]
-      },
+      {"id":"west-rhone-quay","bounds":[2,1,35,11],"surface":"concrete","density":0.24,"details":["tracks","cracks","weeds"]},
       {
         "id": "central-refit-corridor",
-        "bounds": [
-          9,
-          12,
-          29,
-          26
-        ],
+        "bounds": [9,12,29,26],
         "surface": "asphalt",
         "density": 0.3,
-        "details": [
-          "tracks",
-          "cracks",
-          "rubble"
-        ]
+        "details": ["tracks","cracks","rubble"]
       },
-      {
-        "id": "east-refinery-farm",
-        "bounds": [
-          9,
-          27,
-          29,
-          38
-        ],
-        "surface": "gravel",
-        "density": 0.28,
-        "details": [
-          "oil",
-          "rubble",
-          "tracks"
-        ]
-      },
-      {
-        "id": "south-marshaling-apron",
-        "bounds": [
-          30,
-          8,
-          38,
-          33
-        ],
-        "surface": "asphalt",
-        "density": 0.22,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      }
+      {"id":"east-refinery-farm","bounds":[9,27,29,38],"surface":"gravel","density":0.28,"details":["oil","rubble","tracks"]},
+      {"id":"south-marshaling-apron","bounds":[30,8,38,33],"surface":"asphalt","density":0.22,"details":["cracks","tracks"]}
     ],
-    "paths": [
-      {
-        "id": "corridor-rail-siding",
-        "points": [
-          [
-            2,
-            26
-          ],
-          [
-            29,
-            26
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "edges"
-      }
-    ],
-    "landmarks": [
-      {
-        "id": "label-chemical-corridor",
-        "kind": "label",
-        "row": 11,
-        "col": 19,
-        "text": "CHEMICAL CORRIDOR"
-      },
-      {
-        "id": "label-rhone-quay",
-        "kind": "label",
-        "row": 19,
-        "col": 9,
-        "text": "RHONE QUAY"
-      },
-      {
-        "id": "label-refinery-farm",
-        "kind": "label",
-        "row": 12,
-        "col": 32,
-        "text": "REFINERY TANKS"
-      },
-      {
-        "id": "loading-central-refit",
-        "kind": "loading",
-        "row": 19,
-        "col": 19,
-        "size": 2,
-        "rotation": 0
-      },
-      {
-        "id": "hazard-refinery-north",
-        "kind": "hazard_zone",
-        "row": 14,
-        "col": 30,
-        "size": 2,
-        "rotation": 0
-      },
-      {
-        "id": "hazard-refinery-south",
-        "kind": "hazard_zone",
-        "row": 24,
-        "col": 28,
-        "size": 1.5,
-        "rotation": 0
-      },
-      {
-        "id": "drain-south-apron",
-        "kind": "drain_grate",
-        "row": 33,
-        "col": 22,
-        "size": 1
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "hq-clear-lane",
-        "bounds": [
-          37,
-          17,
-          39,
-          22
-        ]
-      }
-    ]
+    "paths": [{"id":"corridor-rail-siding","points":[[2,26],[29,26]],"width":2,"surface":"gravel","marking":"edges"}],
+    "exclusions": [{"id":"hq-clear-lane","bounds":[37,17,39,22]}]
   },
-  "landmarks3d": [],
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
     "entrances": [
-      {
-        "id": "north-west-bank",
-        "row": 0,
-        "col": 2
-      },
-      {
-        "id": "north-west-corridor",
-        "row": 0,
-        "col": 12
-      },
-      {
-        "id": "north-east-siding",
-        "row": 0,
-        "col": 26
-      },
-      {
-        "id": "north-east-refinery",
-        "row": 0,
-        "col": 35
-      },
-      {
-        "id": "upper-west-quay",
-        "row": 8,
-        "col": 2
-      },
-      {
-        "id": "upper-east-gate",
-        "row": 8,
-        "col": 38
-      }
+      {"id":"north-west-bank","row":0,"col":2},
+      {"id":"north-west-corridor","row":0,"col":12},
+      {"id":"north-east-siding","row":0,"col":26},
+      {"id":"north-east-refinery","row":0,"col":35},
+      {"id":"upper-west-quay","row":8,"col":2},
+      {"id":"upper-east-gate","row":8,"col":38}
     ],
     "encounters": [
       {
         "id": "corridor-outer-patrol",
         "label": "CHEMICAL CORRIDOR PATROL ENGAGED",
         "recoverySec": 0,
-        "entrances": [
-          "north-west-bank",
-          "north-west-corridor",
-          "north-east-siding",
-          "north-east-refinery"
-        ],
-        "initialCells": [
-          {
-            "row": 3,
-            "col": 2
-          },
-          {
-            "row": 3,
-            "col": 12
-          },
-          {
-            "row": 3,
-            "col": 26
-          },
-          {
-            "row": 3,
-            "col": 34
-          }
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 2
-          },
-          {
-            "row": 20,
-            "col": 12
-          },
-          {
-            "row": 30,
-            "col": 12
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "HOVER",
-          "SCOUT",
-          "SAPPER",
-          "ENGINEER",
-          "STANDARD",
-          "ARMOR"
-        ]
+        "entrances": ["north-west-bank","north-west-corridor","north-east-siding","north-east-refinery"],
+        "initialCells": [{"row":3,"col":2},{"row":3,"col":12},{"row":3,"col":26},{"row":3,"col":34}],
+        "patrolRoute": [{"row":10,"col":2},{"row":20,"col":12},{"row":30,"col":12}],
+        "enemies": ["SCOUT","STANDARD","HOVER","SCOUT","SAPPER","ENGINEER","STANDARD","ARMOR"]
       },
       {
         "id": "refinery-flank-counterattack",
         "label": "REFINERY TANK FARM COUNTERATTACK",
         "recoverySec": 8,
-        "entrances": [
-          "north-east-siding",
-          "north-east-refinery",
-          "upper-east-gate"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 34
-          },
-          {
-            "row": 20,
-            "col": 34
-          },
-          {
-            "row": 30,
-            "col": 26
-          }
-        ],
-        "enemies": [
-          "HOVER",
-          "FLAMETHROWER",
-          "HOWITZER",
-          "STANDARD",
-          "ARMOR",
-          "SAPPER",
-          "JAMMER",
-          "STRIKER",
-          "ENGINEER"
-        ]
+        "entrances": ["north-east-siding","north-east-refinery","upper-east-gate"],
+        "patrolRoute": [{"row":10,"col":34},{"row":20,"col":34},{"row":30,"col":26}],
+        "enemies": ["HOVER","FLAMETHROWER","HOWITZER","STANDARD","ARMOR","SAPPER","JAMMER","STRIKER","ENGINEER"]
       },
       {
         "id": "refit-stronghold-garrison",
         "label": "CONSORTIUM REFIT LINE GARRISON",
         "recoverySec": 9,
-        "entrances": [
-          "north-west-corridor",
-          "north-east-siding",
-          "upper-west-quay",
-          "upper-east-gate"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 19
-          },
-          {
-            "row": 20,
-            "col": 19
-          },
-          {
-            "row": 30,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "ARMOR",
-          "STRIKER",
-          "HOWITZER",
-          "STEALTH",
-          "HOVER",
-          "JAMMER",
-          "ARMOR",
-          "FLAMETHROWER",
-          "STANDARD"
-        ]
+        "entrances": ["north-west-corridor","north-east-siding","upper-west-quay","upper-east-gate"],
+        "patrolRoute": [{"row":10,"col":19},{"row":20,"col":19},{"row":30,"col":19}],
+        "enemies": ["ARMOR","STRIKER","HOWITZER","STEALTH","HOVER","JAMMER","ARMOR","FLAMETHROWER","STANDARD"]
       }
     ]
   },
-  "surfaceLayout": [
-    "VVRRWWWW..V.RR............V.......RR..VV",
-    "VVRRWWWW..V.RR............V.......RR..VV",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "VVRRWWWW..V.RR............V.......RR..VV",
-    "VVRRWWWW..V.RR............V.......RR..VV",
-    "..RRWWWW....RR....................RR....",
-    "..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
-    "..RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR.............LL.....RR....",
-    "VVRRWWWW..V.RR.............LL.....RR..VV",
-    "VVRRWWWW..V.RR.............LL.....RR..VV",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW..RRRRRRRRRRRRRRRRRRRRRRRRRR....",
-    "..RRWWWW..RRRRRRRRRRRRRRRRRRRRRRRRRR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR.............LL.....RR....",
-    "VVRRWWWW..V.RR.............LL.....RR..VV",
-    "VVRRWWWW..V.RR....................RR..VV",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW....RR....................RR....",
-    "..RRWWWW..RRRRRRRRRRRRRRRRRRRRRRRRRR....",
-    "..RRWWWW..RRRRRRRRRRRRRRRRRRRRRRRRRR....",
-    "..RRWWWW....RR....................RR....",
-    "VVRRWWWW..V.RR............V.......RR..VV",
-    "VVRRWWWW..V.RR............V.......RR..VV",
-    "..RRWWWW....RR....................RR....",
-    "..SSWWWW....RR....................RR....",
-    "..SSWWWW..........................RR....",
-    "....WWWW................................",
-    "VV..WWWW..............................VV"
-  ],
-  "objectLayout": [
-    "FF....................................FF",
-    "F.........B.....B.......B.....B........F",
-    "..........PP.....CCC.CCC.....PP.........",
-    "AA........PP.....C..E..C.....PP.....AA..",
-    "AA........PP.....C.....C.....PP.....AA..",
-    "..........PP.....CCBBBCC.....PP.........",
-    "........K.......C.......C...........K...",
-    "FF.......Q.B.................B.Q......FF",
-    "F.......AA.........K..BB.........AA....F",
-    "........AA.....B...BB.K......B...AA.....",
-    "........................................",
-    "........................................",
-    ".FF........B.....T...........B....FF....",
-    "........BB.................D.....B......",
-    "..........B..BB.........BB.D..D.CC....FF",
-    ".C........A..PP.BB...BB.PP.D..T..C....F.",
-    ".C........A..PP.........PP.......C......",
-    ".C...........PP.........PP...B........Q.",
-    ".C........Q..................B..CC..CCC.",
-    "..............BB..K.U...BB..............",
-    "....====................................",
-    "....====..PP..CCCBB.....................",
-    ".FF.......PP............................",
-    "AA....Q...PP...............D............",
-    "AA....K...PP..K........K...D.PP.........",
-    "..........C...BB.......BB...CPP...K...FF",
-    "FF........C.................CPP...Q...F.",
-    "F.........B....CCCBBCCC.....CPP.........",
-    "AA........X.........PPP.....X.....AA....",
-    "AA........Q.........PPP...........AA..FF",
-    "....====................................",
-    "....====................................",
-    "FF......AA....BB.......BB.....AA......FF",
-    "F.......AA........X...........AA.......F",
-    "......Q....B..............B.....Q.......",
-    "......B....B..............B.....B.......",
-    "FF......AA.........K..........AA......FF",
-    ".F............F...CCCC...F............F.",
-    "........................................",
-    "FF.................HH.................FF"
-  ]
+  "terrain": {
+    "grass": [[0,0,2,2],[0,10,2,1],[0,26,2,1],[0,38,2,2],[7,0,2,2],[7,10,2,1],[7,26,2,1],[7,38,2,2],[14,0,2,2],[14,10,2,1],[14,38,2,2],[24,0,2,2],[24,10,2,1],[24,38,2,2],[33,0,2,2],[33,10,2,1],[33,26,2,1],[33,38,2,2],[39,0,1,2],[39,38,1,2]],
+    "road": [[0,2,12,2],[0,12,15,2],[0,34,8,2],[8,35,4,1],[10,4,2,8],[10,14,2,21],[12,3,24,1],[13,2,9,1],[13,34,15,2],[15,12,22,1],[18,13,19,1],[20,10,1,2],[20,14,2,20],[23,2,13,1],[30,10,2,2],[30,14,2,22],[32,34,6,2]],
+    "water": [[0,4,10,4],[12,4,11,4],[23,4,17,2],[23,7,17,1],[25,6,9,1],[36,6,4,1]],
+    "oil": [[13,27,3,2],[23,27,2,2]],
+    "sand": [[36,2,2,2]],
+    "forest": [[0,0,1,2],[0,38,1,2],[1,0],[1,39],[7,0,1,2],[7,38,1,2],[8,0],[8,39],[12,1,1,2],[12,34,1,2],[14,38,1,2],[15,38],[22,1,1,2],[25,38,1,2],[26,0,1,2],[26,38],[27,0],[29,38,1,2],[32,0,1,2],[32,38,1,2],[33,0],[33,39],[36,0,1,2],[36,38,1,2],[37,1],[37,14],[37,25],[37,38],[39,0,1,2],[39,38,1,2]],
+    "brick": [[1,10],[1,16],[1,24],[1,30],[5,19,1,3],[7,11],[7,29],[8,22,1,2],[9,15],[9,19,1,2],[9,29],[12,11],[12,29],[13,8,1,2],[13,33],[14,10],[14,13,1,2],[14,24,1,2],[15,16,1,2],[15,21,1,2],[17,29,2,1],[19,14,1,2],[19,24,1,2],[21,17,1,2],[25,14,1,2],[25,23,1,2],[27,10],[27,18,1,2],[32,14,1,2],[32,23,1,2],[34,11,2,1],[34,26,2,1],[35,6],[35,32]],
+    "concrete": [[2,17,1,3],[2,21,1,3],[3,17,3,1],[3,23,3,1],[5,18],[5,22],[6,16],[6,24],[14,32,1,2],[15,1,4,1],[15,33,2,1],[18,32,1,2],[18,36,1,3],[21,14,1,3],[25,10,2,1],[25,28,3,1],[27,15,1,3],[27,20,1,3],[37,18,1,4]],
+    "enemy_base": [[3,20]],
+    "crater": [[6,8],[6,36],[8,19],[9,22],[19,18],[24,6],[24,14],[24,23],[25,34],[36,19]],
+    "boxes": [[7,9],[7,31],[17,38],[18,10],[23,6],[26,34],[29,10],[34,6],[34,32]],
+    "water_tower": [[12,17],[15,30]],
+    "barrel": [[13,27,3,1],[14,30],[23,27,2,1]],
+    "rubble": [[19,20]],
+    "hedgehog": [[28,10],[28,28],[33,18]],
+    "bridge": [[20,4,2,4,"ew"],[30,4,2,4,"ew"]],
+    "house2": [[2,10,4,2,10],[2,29,4,2,10],[15,13,3,2,5],[15,24,3,2,9],[21,10,4,2,10],[24,29,4,2,5],[28,20,2,3,8]],
+    "house1": [[3,0,2,2,10],[3,36,2,2,0],[8,8,2,2,10],[8,33,2,2,8],[15,10,2,1,11],[23,0,2,2,8],[28,0,2,2,8],[28,34,2,2,8],[32,8,2,2,2],[32,30,2,2,9],[36,8,1,2,8],[36,30,1,2,11]],
+    "decal": [["label",11,19,1,"CHEMICAL CORRIDOR"],["label",19,9,1,"RHONE QUAY"],["label",12,32,1,"REFINERY TANKS"],["loading",19,19,2],["hazard_zone",14,30,2],["hazard_zone",24,28,1.5],["drain_grate",33,22]]
+  }
 }

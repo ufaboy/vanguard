@@ -7,27 +7,11 @@
   "gameMode": "extermination",
   "gridSize": 40,
   "tileSize": 2,
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 20
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 240
-  },
-  "environment": {
-    "theme": "urban",
-    "tint": "#f2deb4",
-    "fogColor": "#827d6a",
-    "groundColor": "#8c8870"
-  },
+  "baseCell": {"row":39,"col":19},
+  "playerSpawnCell": {"row":35,"col":20},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":240},
+  "environment": {"theme":"urban","tint":"#f2deb4","fogColor":"#827d6a","groundColor":"#8c8870"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Interlocking urban loops replace the exposed central firing lane. A temple court, a residential block on the bent avenue and the Colosseum shell split the middle into short fights with cross streets and two-sided exits. Patrols cross between the Forum and the avenue instead of following parallel perimeter lanes. The second group brings the single howitzer; four supply pockets reward moving north and across flanks.",
@@ -54,456 +38,58 @@
     "breaches": [
       {
         "name": "Forum temple courtyard",
-        "cells": [
-          {
-            "row": 18,
-            "col": 11
-          },
-          {
-            "row": 18,
-            "col": 12
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 11
-        },
-        "end": {
-          "row": 19,
-          "col": 11
-        },
+        "cells": [{"row":18,"col":11},{"row":18,"col":12}],
+        "start": {"row":17,"col":11},
+        "end": {"row":19,"col":11},
         "purpose": "Break the southern temple wall to leave the supply court directly instead of retracing the northern entrance."
       },
       {
         "name": "Labicana courtyard wall",
-        "cells": [
-          {
-            "row": 15,
-            "col": 34
-          }
-        ],
-        "start": {
-          "row": 15,
-          "col": 33
-        },
-        "end": {
-          "row": 15,
-          "col": 35
-        },
+        "cells": [{"row":15,"col":34}],
+        "start": {"row":15,"col":33},
+        "end": {"row":15,"col":35},
         "purpose": "Open a side exit from the northern forecourt onto the east street instead of circling the courtyard wall."
       },
       {
         "name": "Constantine checkpoint",
-        "cells": [
-          {
-            "row": 28,
-            "col": 28
-          }
-        ],
-        "start": {
-          "row": 26,
-          "col": 28
-        },
-        "end": {
-          "row": 29,
-          "col": 28
-        },
+        "cells": [{"row":28,"col":28}],
+        "start": {"row":26,"col":28},
+        "end": {"row":29,"col":28},
         "purpose": "Clear the central arch to move directly between the Colosseum circuit and the southern streets."
       }
     ]
   },
-  "landmarks3d": [
-    {
-      "kind": "COLOSSEUM",
-      "row": 17,
-      "col": 25
-    },
-    {
-      "kind": "ARCH_OF_CONSTANTINE",
-      "row": 27,
-      "col": 25
-    },
-    {
-      "kind": "FORUM_COLUMNS",
-      "row": 12,
-      "col": 9
-    },
-    {
-      "kind": "FORUM_COLUMNS",
-      "row": 21,
-      "col": 12
-    },
-    {
-      "kind": "PANTHEON",
-      "row": 12,
-      "col": 22
-    }
-  ],
   "decoration": {
     "version": 1,
     "seed": 753202612,
     "theme": "urban",
     "zones": [
-      {
-        "id": "forum-excavations",
-        "bounds": [
-          7,
-          1,
-          26,
-          17
-        ],
-        "surface": "dirt",
-        "density": 0.32,
-        "details": [
-          "weeds",
-          "rubble",
-          "cracks"
-        ]
-      },
-      {
-        "id": "colosseum-square",
-        "bounds": [
-          15,
-          23,
-          26,
-          36
-        ],
-        "surface": "pavers",
-        "density": 0.2,
-        "details": [
-          "cracks",
-          "leaves"
-        ]
-      },
-      {
-        "id": "arena-floor",
-        "bounds": [
-          19,
-          28,
-          22,
-          31
-        ],
-        "surface": "sand",
-        "density": 0.12,
-        "details": [
-          "tracks"
-        ]
-      },
-      {
-        "id": "constantine-square",
-        "bounds": [
-          26,
-          24,
-          30,
-          33
-        ],
-        "surface": "pavers",
-        "density": 0.15,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      },
-      {
-        "id": "monti-blocks",
-        "bounds": [
-          0,
-          22,
-          14,
-          39
-        ],
-        "surface": "pavers",
-        "density": 0.2,
-        "details": [
-          "patches",
-          "leaves"
-        ]
-      },
-      {
-        "id": "palatine-gardens",
-        "bounds": [
-          35,
-          8,
-          37,
-          17
-        ],
-        "surface": "dirt",
-        "density": 0.2,
-        "details": [
-          "leaves",
-          "weeds"
-        ]
-      },
-      {
-        "id": "western-blocks",
-        "bounds": [
-          0,
-          0,
-          37,
-          5
-        ],
-        "surface": "pavers",
-        "density": 0.22,
-        "details": [
-          "cracks",
-          "patches"
-        ]
-      },
-      {
-        "id": "southern-blocks",
-        "bounds": [
-          29,
-          25,
-          39,
-          39
-        ],
-        "surface": "pavers",
-        "density": 0.24,
-        "details": [
-          "cracks",
-          "leaves"
-        ]
-      },
-      {
-        "id": "field-workshop",
-        "bounds": [
-          35,
-          18,
-          39,
-          23
-        ],
-        "surface": "concrete",
-        "density": 0.15,
-        "details": [
-          "tracks",
-          "cracks"
-        ]
-      },
-      {
-        "id": "central-urban-block",
-        "bounds": [
-          14,
-          16,
-          23,
-          24
-        ],
-        "surface": "pavers",
-        "density": 0.22,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      }
+      {"id":"forum-excavations","bounds":[7,1,26,17],"surface":"dirt","density":0.32,"details":["weeds","rubble","cracks"]},
+      {"id":"colosseum-square","bounds":[15,23,26,36],"surface":"pavers","density":0.2,"details":["cracks","leaves"]},
+      {"id":"arena-floor","bounds":[19,28,22,31],"surface":"sand","density":0.12,"details":["tracks"]},
+      {"id":"constantine-square","bounds":[26,24,30,33],"surface":"pavers","density":0.15,"details":["cracks","tracks"]},
+      {"id":"monti-blocks","bounds":[0,22,14,39],"surface":"pavers","density":0.2,"details":["patches","leaves"]},
+      {"id":"palatine-gardens","bounds":[35,8,37,17],"surface":"dirt","density":0.2,"details":["leaves","weeds"]},
+      {"id":"western-blocks","bounds":[0,0,37,5],"surface":"pavers","density":0.22,"details":["cracks","patches"]},
+      {"id":"southern-blocks","bounds":[29,25,39,39],"surface":"pavers","density":0.24,"details":["cracks","leaves"]},
+      {"id":"field-workshop","bounds":[35,18,39,23],"surface":"concrete","density":0.15,"details":["tracks","cracks"]},
+      {"id":"central-urban-block","bounds":[14,16,23,24],"surface":"pavers","density":0.22,"details":["cracks","tracks"]}
     ],
     "paths": [
       {
         "id": "imperial-avenue",
-        "points": [
-          [
-            0,
-            18
-          ],
-          [
-            7,
-            18
-          ],
-          [
-            8,
-            20
-          ],
-          [
-            15,
-            20
-          ],
-          [
-            16,
-            23
-          ],
-          [
-            21,
-            23
-          ],
-          [
-            22,
-            20
-          ],
-          [
-            27,
-            20
-          ]
-        ],
+        "points": [[0,18],[7,18],[8,20],[15,20],[16,23],[21,23],[22,20],[27,20]],
         "width": 2,
         "surface": "asphalt",
         "marking": "edges"
       },
-      {
-        "id": "via-labicana",
-        "points": [
-          [
-            6,
-            35
-          ],
-          [
-            33,
-            35
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      },
-      {
-        "id": "via-sacra",
-        "points": [
-          [
-            7,
-            7
-          ],
-          [
-            26,
-            7
-          ]
-        ],
-        "width": 1,
-        "surface": "pavers",
-        "marking": "none"
-      },
-      {
-        "id": "forum-north-crossing",
-        "points": [
-          [
-            11,
-            7
-          ],
-          [
-            11,
-            20
-          ]
-        ],
-        "width": 2,
-        "surface": "pavers",
-        "marking": "none"
-      },
-      {
-        "id": "forum-west-bypass",
-        "points": [
-          [
-            14,
-            17
-          ],
-          [
-            20,
-            17
-          ],
-          [
-            22,
-            17
-          ]
-        ],
-        "width": 2,
-        "surface": "pavers",
-        "marking": "none"
-      },
-      {
-        "id": "forum-middle-crossing",
-        "points": [
-          [
-            19,
-            7
-          ],
-          [
-            19,
-            16
-          ],
-          [
-            22,
-            16
-          ],
-          [
-            22,
-            23
-          ]
-        ],
-        "width": 2,
-        "surface": "pavers",
-        "marking": "none"
-      },
-      {
-        "id": "colosseum-south-crossing",
-        "points": [
-          [
-            26,
-            25
-          ],
-          [
-            26,
-            35
-          ]
-        ],
-        "width": 2,
-        "surface": "pavers",
-        "marking": "none"
-      },
-      {
-        "id": "southern-street",
-        "points": [
-          [
-            34,
-            0
-          ],
-          [
-            34,
-            39
-          ]
-        ],
-        "width": 2,
-        "surface": "asphalt",
-        "marking": "edges"
-      }
-    ],
-    "landmarks": [
-      {
-        "id": "forum-label",
-        "kind": "label",
-        "row": 20,
-        "col": 10,
-        "text": "ROMAN FORUM"
-      },
-      {
-        "id": "colosseum-label",
-        "kind": "label",
-        "row": 25,
-        "col": 29,
-        "text": "COLOSSEUM"
-      },
-      {
-        "id": "avenue-label",
-        "kind": "label",
-        "row": 12,
-        "col": 20,
-        "text": "VIA DEI FORI IMPERIALI"
-      },
-      {
-        "id": "arch-label",
-        "kind": "label",
-        "row": 30,
-        "col": 28,
-        "text": "ARCH OF CONSTANTINE"
-      },
-      {
-        "id": "north-crosswalk",
-        "kind": "crosswalk",
-        "row": 6,
-        "col": 19,
-        "size": 2
-      },
-      {
-        "id": "east-crosswalk",
-        "kind": "crosswalk",
-        "row": 28,
-        "col": 35,
-        "size": 2
-      }
+      {"id":"via-labicana","points":[[6,35],[33,35]],"width":2,"surface":"asphalt","marking":"edges"},
+      {"id":"via-sacra","points":[[7,7],[26,7]],"width":1,"surface":"pavers","marking":"none"},
+      {"id":"forum-north-crossing","points":[[11,7],[11,20]],"width":2,"surface":"pavers","marking":"none"},
+      {"id":"forum-west-bypass","points":[[14,17],[20,17],[22,17]],"width":2,"surface":"pavers","marking":"none"},
+      {"id":"forum-middle-crossing","points":[[19,7],[19,16],[22,16],[22,23]],"width":2,"surface":"pavers","marking":"none"},
+      {"id":"colosseum-south-crossing","points":[[26,25],[26,35]],"width":2,"surface":"pavers","marking":"none"},
+      {"id":"southern-street","points":[[34,0],[34,39]],"width":2,"surface":"asphalt","marking":"edges"}
     ]
   },
   "enemies": {
@@ -511,291 +97,80 @@
     "maxConcurrent": 8,
     "maxAttackers": 2,
     "spawnIntervalSec": 4,
-    "nextWave": {
-      "when": "cleared",
-      "delaySec": 6
-    },
+    "nextWave": {"when":"cleared","delaySec":6},
     "entrances": [
-      {
-        "id": "forum-approach",
-        "row": 0,
-        "col": 6
-      },
-      {
-        "id": "imperial-avenue",
-        "row": 0,
-        "col": 18
-      },
-      {
-        "id": "labicana-approach",
-        "row": 0,
-        "col": 35
-      }
+      {"id":"forum-approach","row":0,"col":6},
+      {"id":"imperial-avenue","row":0,"col":18},
+      {"id":"labicana-approach","row":0,"col":35}
     ],
     "encounters": [
       {
         "id": "forum-probe",
         "label": "FORUM: Patrols cross the temple courts. Use the side passages.",
-        "enemies": [
-          "STANDARD",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD",
-          "SCOUT"
-        ],
-        "initialCells": [
-          {
-            "row": 2,
-            "col": 18
-          },
-          {
-            "row": 3,
-            "col": 6
-          },
-          {
-            "row": 8,
-            "col": 9
-          },
-          {
-            "row": 5,
-            "col": 15
-          }
-        ],
-        "entrances": [
-          "forum-approach"
-        ],
+        "enemies": ["STANDARD","STANDARD","SCOUT","STANDARD","STANDARD","SCOUT"],
+        "initialCells": [{"row":2,"col":18},{"row":3,"col":6},{"row":8,"col":9},{"row":5,"col":15}],
+        "entrances": ["forum-approach"],
         "patrolRoute": [
-          {
-            "row": 6,
-            "col": 6
-          },
-          {
-            "row": 11,
-            "col": 7
-          },
-          {
-            "row": 11,
-            "col": 17
-          },
-          {
-            "row": 15,
-            "col": 17
-          },
-          {
-            "row": 20,
-            "col": 16
-          },
-          {
-            "row": 20,
-            "col": 8
-          },
-          {
-            "row": 27,
-            "col": 7
-          },
-          {
-            "row": 28,
-            "col": 16
-          }
+          {"row":6,"col":6},
+          {"row":11,"col":7},
+          {"row":11,"col":17},
+          {"row":15,"col":17},
+          {"row":20,"col":16},
+          {"row":20,"col":8},
+          {"row":27,"col":7},
+          {"row":28,"col":16}
         ],
         "recoverySec": 0
       },
       {
         "id": "colosseum-flank",
         "label": "COLOSSEUM: A howitzer covers the centre. Circle the blocks to reach it.",
-        "enemies": [
-          "HOWITZER",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD"
-        ],
-        "entrances": [
-          "labicana-approach"
-        ],
+        "enemies": ["HOWITZER","SCOUT","STANDARD","STANDARD","SCOUT","STANDARD","STANDARD"],
+        "entrances": ["labicana-approach"],
         "patrolRoute": [
-          {
-            "row": 11,
-            "col": 35
-          },
-          {
-            "row": 11,
-            "col": 29
-          },
-          {
-            "row": 15,
-            "col": 30
-          },
-          {
-            "row": 16,
-            "col": 24
-          },
-          {
-            "row": 22,
-            "col": 24
-          },
-          {
-            "row": 26,
-            "col": 28
-          },
-          {
-            "row": 26,
-            "col": 35
-          },
-          {
-            "row": 30,
-            "col": 36
-          }
+          {"row":11,"col":35},
+          {"row":11,"col":29},
+          {"row":15,"col":30},
+          {"row":16,"col":24},
+          {"row":22,"col":24},
+          {"row":26,"col":28},
+          {"row":26,"col":35},
+          {"row":30,"col":36}
         ],
         "recoverySec": 8
       },
       {
         "id": "consortium-rearguard",
         "label": "REARGUARD: The last teams converge through the Forum and the bent avenue.",
-        "enemies": [
-          "STANDARD",
-          "STANDARD",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD"
-        ],
-        "entrances": [
-          "imperial-avenue",
-          "forum-approach"
-        ],
+        "enemies": ["STANDARD","STANDARD","STANDARD","SCOUT","STANDARD","STANDARD","STANDARD"],
+        "entrances": ["imperial-avenue","forum-approach"],
         "patrolRoute": [
-          {
-            "row": 8,
-            "col": 20
-          },
-          {
-            "row": 15,
-            "col": 20
-          },
-          {
-            "row": 16,
-            "col": 23
-          },
-          {
-            "row": 22,
-            "col": 23
-          },
-          {
-            "row": 22,
-            "col": 16
-          },
-          {
-            "row": 19,
-            "col": 16
-          },
-          {
-            "row": 19,
-            "col": 8
-          },
-          {
-            "row": 28,
-            "col": 8
-          },
-          {
-            "row": 28,
-            "col": 20
-          },
-          {
-            "row": 32,
-            "col": 22
-          }
+          {"row":8,"col":20},
+          {"row":15,"col":20},
+          {"row":16,"col":23},
+          {"row":22,"col":23},
+          {"row":22,"col":16},
+          {"row":19,"col":16},
+          {"row":19,"col":8},
+          {"row":28,"col":8},
+          {"row":28,"col":20},
+          {"row":32,"col":22}
         ],
         "recoverySec": 10
       }
     ]
   },
-  "surfaceLayout": [
-    "......RR..........RR...............RR...",
-    "......RR..........RR...............RR...",
-    "......RR..........RR...............RR...",
-    "......RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "......RR..........RR...............RR...",
-    "......RR..........RR...............RR...",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "......RRVVVVVVVVVVRR...............RR...",
-    "......RRVVVVVVVVVVRRRR.............RR...",
-    "......RRVVVVVVVVVVVVRR.............RR...",
-    "......RRVVVVVVVVVVVVRR.............RR...",
-    "......RR............RRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRVVVVVVVVVVVVRR.............RR...",
-    "......RRVVVVVVVVVVVVRR.............RR...",
-    "......RRVVVVVVVVVVVVRR.............RR...",
-    "......RRVVVVVVVV....RRRRR..........RR...",
-    "......RRVVVVVVVV....RRRRR..........RR...",
-    "......RRVVVVVVVV.......RR..........RR...",
-    "......RRVVVVVVVV.......RR..........RR...",
-    "......RR...............RR..........RR...",
-    "RRRRRRRR...............RR..........RR...",
-    "......RRVVVVVVVV....RRRRR..........RR...",
-    "......RRVVVVVVVV....RRRRR..........RR...",
-    "......RRVVVVVVVVVVVVRR.............RR...",
-    "......RRVVVVVVVVV...RR.............RR...",
-    "RRRRRRRRVVVVVVVVV...RR.............RR...",
-    "......RRVVVVVVVVV...RR.............RR...",
-    "......RRVVVVVVVVVVVVRR.............RR...",
-    "RRRRRRRRRRRRRRRRRRRRRRRRR........RRRRRRR",
-    "......RR.........V....RR...........RR...",
-    "......RR.........V....RR...........RR...",
-    "......RR.........V....RR...........RR...",
-    "......RR.........VVV..RR...........RR...",
-    "......RR..............RR...........RR...",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "......VVVVVVVVVVVVVRR...................",
-    "......VVVVVVVVVVVVVRR...................",
-    "......VVVVVVVVVVVVVV....................",
-    "RRRRRRRRRRRRRRRRRR....RRRRRRRRRRRRRRRRRR",
-    "............VVVVVVVV.................VVV"
-  ],
-  "objectLayout": [
-    "PPPP........PPPPP.......PPPPP..AAA....PP",
-    "PPPP........PPPPP....Q..PPPPP..AAA....PP",
-    "PPPP.F......PPPPP.......PPPPP..AAA....PP",
-    "....................................Q...",
-    "AAAA....PPP.....FF...FF..AAA...PPP....AA",
-    "AAAA....PPP.....FF...FF..AAA...PPP....AA",
-    "........................................",
-    "PPPP.......CC..CC.....................PP",
-    "PPPP.F.....C....C.....PPP......AAA....PP",
-    "PPPPQF.....C....C.....PPP......AAA....PP",
-    "PPPP.......CC.BCC.....PPP......AAA....PP",
-    "........................................",
-    ".................FFF......PPP..PPPB..AAA",
-    ".................FFF......PPP..PPPB..AAA",
-    "PPPP.....CC..CCC..........PPP..PPPB.....",
-    "PPPP.....C.....C..........CC......B..AAA",
-    "PPPP.....C.....C..........Q.......B..AAA",
-    "PP...F...C..Q..C..PPPP...............AAA",
-    "PP...F...CCBBCCC..PPPP..................",
-    "..................PPPP...............PPP",
-    "..................PPPP...............PPP",
-    "PPPP.................................PPP",
-    "PPPP.....CCC............................",
-    "PP...F...C......FF...................AAA",
-    "PP...F...C..BB...PPP.................AAA",
-    ".........CC.BB...PPP.......U.........AAA",
-    "AAAA.............PPP...FF...............",
-    "AAAA.F......FFF........FF.............PP",
-    "............................B...........",
-    "PPPP.......PPPPP..AAA........FFF......PP",
-    "PPPP.F.....PPPPP.QAAA........FFF..Q...PP",
-    "PPPP.F.....PPP....AAA....PPP.........AAA",
-    "..................FFF....PPP.........AAA",
-    "AAAA........AAA..........PPP.........AAA",
-    "........................................",
-    "PPPP....FFF..F.FFF.......PPP...PPPP..AAA",
-    "PPPP....FFF..FFFFF.......PPP...PPPP..AAA",
-    "PPPP.....F..FFFF..CCCC...PPP...PPPP.....",
-    ".....Q..................................",
-    "AAAA........FFF....HH..........AAA....FF"
-  ]
+  "terrain": {
+    "road": [[0,6,35,2],[0,18,9,2],[0,35,35,2],[3,8,1,10],[3,20,1,15],[3,37,1,3],[6,0,1,6],[6,8,1,10],[6,20,1,15],[6,37,1,3],[8,20,9,2],[11,22,1,13],[11,37,1,3],[12,0,1,6],[15,22,2,3],[17,23,6,2],[20,0,1,6],[21,20,2,3],[23,20,6,2],[25,0,1,6],[28,0,1,6],[28,8,1,12],[28,22,1,3],[28,33,1,2],[28,37,1,3],[29,22,6,2],[34,0,1,6],[34,8,1,14],[34,24,1,11],[34,37,1,3],[35,19,2,2],[38,0,1,18],[38,22,1,18]],
+    "grass": [[7,8,4,10],[9,18,2,2],[12,8,3,12],[15,8,4,8],[21,8,7,8],[23,16,1,4],[24,16,4,1],[27,17,1,3],[29,17,4,1],[32,18,1,2],[35,6,3,13],[37,19],[39,12,1,8],[39,37,1,3]],
+    "boxes": [[1,21],[3,36],[9,4],[16,26],[17,12],[30,17],[30,34],[38,5]],
+    "forest": [[2,5],[4,16,2,2],[4,21,2,2],[8,5,2,1],[12,17,2,3],[17,5,2,1],[23,5,2,1],[23,16,1,2],[26,23,2,2],[27,5],[27,12,1,3],[29,29,2,3],[30,5,2,1],[32,18,1,3],[35,8,2,3],[35,13,3,1],[35,15,2,3],[36,14,2,1],[37,9],[37,12],[37,15],[39,12,1,3],[39,38,1,2]],
+    "concrete": [[7,11,1,2],[7,15,1,2],[8,11,3,1],[8,16,3,1],[10,12],[10,15],[14,9,1,2],[14,13,1,3],[15,9,4,1],[15,15,4,1],[15,26,1,2],[18,10],[18,13,1,2],[22,9,1,3],[23,9,3,1],[25,10],[37,18,1,4]],
+    "brick": [[10,14],[12,34,5,1],[18,11,1,2],[24,12,2,2],[28,28]],
+    "rubble": [[25,27]],
+    "house2": [[0,0,3,4,2],[0,12,3,5,7],[0,24,3,5,4],[0,38,3,2,4],[4,8,2,3,4],[4,31,2,3,1],[7,0,4,4,5],[7,38,4,2,4],[8,22,3,3,4],[12,26,3,3,6],[12,31,3,3,0],[14,0,3,4,5],[17,0,2,2,5],[17,18,4,4,6],[19,37,3,3,4],[21,0,2,4,2],[23,0,2,2,2],[24,17,3,3,6],[27,38,1,2,6],[29,0,3,4,7],[29,11,2,5,7],[29,38,2,2,0],[31,11,1,3,7],[31,25,3,3,6],[35,0,3,4,1],[35,25,3,3,7],[35,31,3,4,6]],
+    "house1": [[0,31,3,3,5],[4,0,2,4,0],[4,25,2,3,7],[4,38,2,2,2],[8,31,3,3,7],[12,37,2,3,4],[15,37,3,3,3],[23,37,3,3,7],[26,0,2,4,5],[29,18,3,3,0],[31,37,3,3,0],[33,0,1,4,6],[33,12,1,3,3],[35,37,2,3,2],[39,0,1,4,6],[39,31,1,3,2]],
+    "landmark": [["COLOSSEUM",17,25],["ARCH_OF_CONSTANTINE",27,25],["FORUM_COLUMNS",12,9],["FORUM_COLUMNS",21,12],["PANTHEON",12,22]],
+    "decal": [["label",20,10,1,"ROMAN FORUM"],["label",25,29,1,"COLOSSEUM"],["label",12,20,1,"VIA DEI FORI IMPERIALI"],["label",30,28,1,"ARCH OF CONSTANTINE"],["crosswalk",6,19,2],["crosswalk",28,35,2]]
+  }
 }

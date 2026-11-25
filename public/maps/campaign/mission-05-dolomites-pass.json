@@ -7,126 +7,42 @@
   "gameMode": "stronghold_assault",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "enemyBase": {
-    "cell": {
-      "row": 5,
-      "col": 20
-    },
-    "name": "Consortium Pass Fort",
-    "maxHp": 48,
-    "fortifyPerimeter": true
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 450
-  },
-  "environment": {
-    "theme": "alpine",
-    "tint": "#c5dcf2",
-    "fogColor": "#435366",
-    "groundColor": "#7d8891"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "enemyBase": {"cell":{"row":5,"col":20},"name":"Consortium Pass Fort","maxHp":48,"fortifyPerimeter":true},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":450},
+  "environment": {"theme":"alpine","tint":"#c5dcf2","fogColor":"#435366","groundColor":"#7d8891"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Climb the switchback mountain road, flank through conifer-covered scree, or blast through rubble slides to storm the Consortium concrete fort blocking the Austrian border.",
     "breaches": [
       {
         "name": "South fort sally wall",
-        "cells": [
-          {
-            "row": 10,
-            "col": 19
-          },
-          {
-            "row": 10,
-            "col": 20
-          }
-        ],
-        "start": {
-          "row": 12,
-          "col": 20
-        },
-        "end": {
-          "row": 8,
-          "col": 20
-        },
+        "cells": [{"row":10,"col":19},{"row":10,"col":20}],
+        "start": {"row":12,"col":20},
+        "end": {"row":8,"col":20},
         "purpose": "Breach the southern curtain wall of the Consortium fort for a direct shot at the command core."
       },
       {
         "name": "West rubble slide",
-        "cells": [
-          {
-            "row": 15,
-            "col": 5
-          },
-          {
-            "row": 15,
-            "col": 6
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 5
-        },
-        "end": {
-          "row": 13,
-          "col": 5
-        },
+        "cells": [{"row":15,"col":5},{"row":15,"col":6}],
+        "start": {"row":17,"col":5},
+        "end": {"row":13,"col":5},
         "purpose": "Clear the collapsed rock slide to cut directly up the western alpine flank toward the fort."
       },
       {
         "name": "East rubble slide",
-        "cells": [
-          {
-            "row": 22,
-            "col": 33
-          },
-          {
-            "row": 22,
-            "col": 34
-          }
-        ],
-        "start": {
-          "row": 24,
-          "col": 33
-        },
-        "end": {
-          "row": 20,
-          "col": 33
-        },
+        "cells": [{"row":22,"col":33},{"row":22,"col":34}],
+        "start": {"row":24,"col":33},
+        "end": {"row":20,"col":33},
         "purpose": "Blast through the eastern landslide to link the lower switchback with the east glacier approach."
       },
       {
         "name": "Lower hairpin cut",
-        "cells": [
-          {
-            "row": 28,
-            "col": 15
-          },
-          {
-            "row": 28,
-            "col": 16
-          }
-        ],
-        "start": {
-          "row": 30,
-          "col": 15
-        },
-        "end": {
-          "row": 26,
-          "col": 15
-        },
+        "cells": [{"row":28,"col":15},{"row":28,"col":16}],
+        "start": {"row":30,"col":15},
+        "end": {"row":26,"col":15},
         "purpose": "Open a shortcut through the customs retaining wall between the south valley and mid-pass."
       }
     ],
@@ -150,397 +66,73 @@
     "seed": 5052026,
     "theme": "alpine",
     "zones": [
-      {
-        "id": "alpine-snow-pack",
-        "bounds": [
-          0,
-          0,
-          39,
-          39
-        ],
-        "surface": "snow",
-        "density": 0.2,
-        "details": [
-          "patches",
-          "cracks"
-        ]
-      },
-      {
-        "id": "fort-concrete-apron",
-        "bounds": [
-          3,
-          16,
-          10,
-          24
-        ],
-        "surface": "concrete",
-        "density": 0.35,
-        "details": [
-          "cracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "customs-yard-gravel",
-        "bounds": [
-          30,
-          10,
-          34,
-          15
-        ],
-        "surface": "gravel",
-        "density": 0.3,
-        "details": [
-          "tracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "depot-asphalt-pad",
-        "bounds": [
-          24,
-          24,
-          28,
-          28
-        ],
-        "surface": "asphalt",
-        "density": 0.3,
-        "details": [
-          "oil",
-          "tracks"
-        ]
-      }
+      {"id":"alpine-snow-pack","bounds":[0,0,39,39],"surface":"snow","density":0.2,"details":["patches","cracks"]},
+      {"id":"fort-concrete-apron","bounds":[3,16,10,24],"surface":"concrete","density":0.35,"details":["cracks","rubble"]},
+      {"id":"customs-yard-gravel","bounds":[30,10,34,15],"surface":"gravel","density":0.3,"details":["tracks","rubble"]},
+      {"id":"depot-asphalt-pad","bounds":[24,24,28,28],"surface":"asphalt","density":0.3,"details":["oil","tracks"]}
     ],
     "paths": [],
-    "landmarks": [
-      {
-        "id": "fort-label",
-        "kind": "label",
-        "row": 12,
-        "col": 20,
-        "size": 3,
-        "text": "CONSORTIUM PASS FORT"
-      },
-      {
-        "id": "customs-label",
-        "kind": "label",
-        "row": 34,
-        "col": 12,
-        "size": 3,
-        "text": "VALLEY CUSTOMS"
-      },
-      {
-        "id": "glacier-label",
-        "kind": "label",
-        "row": 14,
-        "col": 34,
-        "size": 3,
-        "text": "EAST GLACIER"
-      },
-      {
-        "id": "helipad-hq",
-        "kind": "helipad",
-        "row": 36,
-        "col": 14,
-        "size": 1.8
-      },
-      {
-        "id": "depot-loading",
-        "kind": "loading",
-        "row": 24,
-        "col": 26,
-        "size": 2,
-        "rotation": 0
-      },
-      {
-        "id": "pass-chevron",
-        "kind": "chevron",
-        "row": 21,
-        "col": 19,
-        "size": 1.2,
-        "rotation": 0
-      },
-      {
-        "id": "wt-hazard",
-        "kind": "hazard_zone",
-        "row": 22,
-        "col": 22,
-        "size": 1.3
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "fort-gate-clear",
-        "bounds": [
-          11,
-          18,
-          13,
-          21
-        ]
-      }
-    ]
+    "exclusions": [{"id":"fort-gate-clear","bounds":[11,18,13,21]}]
   },
-  "landmarks3d": [],
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 4,
     "spawnIntervalSec": 3.8,
     "entrances": [
-      {
-        "id": "north-west-pass",
-        "row": 1,
-        "col": 5
-      },
-      {
-        "id": "north-fort-west",
-        "row": 1,
-        "col": 13
-      },
-      {
-        "id": "north-fort-east",
-        "row": 1,
-        "col": 25
-      },
-      {
-        "id": "north-east-glacier",
-        "row": 1,
-        "col": 31
-      },
-      {
-        "id": "upper-west-ledge",
-        "row": 6,
-        "col": 4
-      },
-      {
-        "id": "upper-east-ridge",
-        "row": 6,
-        "col": 35
-      }
+      {"id":"north-west-pass","row":1,"col":5},
+      {"id":"north-fort-west","row":1,"col":13},
+      {"id":"north-fort-east","row":1,"col":25},
+      {"id":"north-east-glacier","row":1,"col":31},
+      {"id":"upper-west-ledge","row":6,"col":4},
+      {"id":"upper-east-ridge","row":6,"col":35}
     ],
     "encounters": [
       {
         "id": "pass-picket",
         "label": "FORT PICKET: Patrols descending the summit switchback.",
         "recoverySec": 0,
-        "entrances": [
-          "north-west-pass",
-          "north-fort-west",
-          "north-fort-east",
-          "north-east-glacier"
-        ],
-        "initialCells": [
-          {
-            "row": 4,
-            "col": 6
-          },
-          {
-            "row": 4,
-            "col": 14
-          },
-          {
-            "row": 4,
-            "col": 26
-          },
-          {
-            "row": 4,
-            "col": 31
-          }
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 11
-          },
-          {
-            "row": 21,
-            "col": 11
-          },
-          {
-            "row": 21,
-            "col": 29
-          },
-          {
-            "row": 29,
-            "col": 29
-          },
-          {
-            "row": 30,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD"
-        ]
+        "entrances": ["north-west-pass","north-fort-west","north-fort-east","north-east-glacier"],
+        "initialCells": [{"row":4,"col":6},{"row":4,"col":14},{"row":4,"col":26},{"row":4,"col":31}],
+        "patrolRoute": [{"row":12,"col":11},{"row":21,"col":11},{"row":21,"col":29},{"row":29,"col":29},{"row":30,"col":19}],
+        "enemies": ["SCOUT","STANDARD","SCOUT","STANDARD","STANDARD","STANDARD"]
       },
       {
         "id": "pass-flankers",
         "label": "ALPINE FLANKERS: Reinforcements sweeping the west and east pass trails.",
         "recoverySec": 8,
-        "entrances": [
-          "north-west-pass",
-          "north-east-glacier",
-          "upper-west-ledge"
-        ],
-        "patrolRoute": [
-          {
-            "row": 14,
-            "col": 6
-          },
-          {
-            "row": 25,
-            "col": 5
-          },
-          {
-            "row": 34,
-            "col": 11
-          },
-          {
-            "row": 34,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD"
-        ]
+        "entrances": ["north-west-pass","north-east-glacier","upper-west-ledge"],
+        "patrolRoute": [{"row":14,"col":6},{"row":25,"col":5},{"row":34,"col":11},{"row":34,"col":19}],
+        "enemies": ["SCOUT","STANDARD","STANDARD","STANDARD","SCOUT","STANDARD","STANDARD"]
       },
       {
         "id": "fort-garrison",
         "label": "CONSORTIUM GARRISON: Main fort defenders deploying down the pass.",
         "recoverySec": 9,
-        "entrances": [
-          "north-fort-west",
-          "north-fort-east",
-          "upper-east-ridge",
-          "north-west-pass"
-        ],
-        "patrolRoute": [
-          {
-            "row": 11,
-            "col": 20
-          },
-          {
-            "row": 21,
-            "col": 29
-          },
-          {
-            "row": 29,
-            "col": 29
-          },
-          {
-            "row": 30,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "STANDARD",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD"
-        ]
+        "entrances": ["north-fort-west","north-fort-east","upper-east-ridge","north-west-pass"],
+        "patrolRoute": [{"row":11,"col":20},{"row":21,"col":29},{"row":29,"col":29},{"row":30,"col":19}],
+        "enemies": ["STANDARD","STANDARD","STANDARD","STANDARD","STANDARD","STANDARD","STANDARD"]
       }
     ],
-    "boss": {
-      "enabled": false
-    }
+    "boss": {"enabled":false}
   },
-  "surfaceLayout": [
-    "IVVVVRRVVV...RR..........RR...VVVIVIVVVV",
-    "IVVVVRRVVV...RR..........RR...VVIIIIIVVV",
-    "IVVVVRRVVV^^^RR^^^^^^^^^^RR^^^VVIIIIIVVV",
-    "VVVVVRRVVV^^^RR^^^^^^^^^^RR^^^VIIIIIIVVV",
-    "VVVVVRRVVV^^^^^^^^^^^^^^^^^^^^VIIIIIIVVV",
-    "VIIVVRRVVV^^^^^^^^^^^^^^^^^^^^VVIVIIVVVV",
-    "IIII.RRVVV^^^^^^^^^^^^^^^^^.....VVVIVVVV",
-    "VIII.RR....^^^^^^^^^^^^^^^^.....VVVVVVVV",
-    "IIII.RR....^^^^^^^^^^^^^^^^.....VIIVIVVV",
-    "VIII.RR............^^...........VIIIIIII",
-    "IIIVVRR............RR.........VVIIIIIIIV",
-    "VVVVVRRRRRRRRRRRRRRRR.........VVIIII.VVV",
-    "VVVVVRRRRRRRRRRRRRRRR.........VIIIIIIVVV",
-    "V^^^^^^^VVRR..................VVVVVVVVVV",
-    "V^^^^^^^^VRR............VVVV..VVVVVVVVVV",
-    "V^^^^^^^^^^^^^^...VVVVVVV..V..VVVVIVVVVI",
-    "V^^^^^^^^^^^^^^...VVVVVVV..V..VVVIIIIVII",
-    "V^^^^^^^V^^^^^^..VVVVVVVV..V..VVVIIIIIIV",
-    "V^VV^^^^VVRR.....VVVVVVVVVVV..VIIIIIIIIV",
-    "V^V^V^^^VVRRVVVVVVVVVVVV......VVIIIIIIVV",
-    "V^^V^^^^VVRRRRRRRRRRRRRRRRRRRRRIIIIIIVVV",
-    "VVVVVVVVVVRRRRRRRRRRRRRRRRRRRRR^^^^^^^^V",
-    "VVVVVVVVVV...................RR^^^^^^^^I",
-    "VVVVVVVVVV.....III...........RR^^^^^^^^I",
-    "VVVVVVVVVV.....IIIII.........RR^^^^^^^^I",
-    "VVVVVVVVVV.....IIIII.........RR^^^^^^^^I",
-    "VVVVVVVVVVVV.................RR^^^^^^^^I",
-    "VVVVVVVVVVVVV................RR^^^^^^^^I",
-    "VVVVVVVVVV...................RR^^^^^^^^I",
-    "VVVVVVVVVV.........RRRRRRRRRRRR^^^^^^^^I",
-    "VVVVVVVVVV.........RRRRRRRRRRRR^^^^^^^^I",
-    "VVVVVVVVVV.........RR...IIIII.V^^^^VV^^I",
-    "VVVVVVVVVV.....VV..RR...IIIII.V.....VVVI",
-    "VVVVVVVVVV.....VVRRRR......II.V.....VVII",
-    "VVVVVVVVVVRRRRRRRRRRR.........V.....VVII",
-    "IVVVVVVVVV.........RR.........V.....VVII",
-    "IIVVVVVVVV.........RR........VVVVVVVVVII",
-    "IIIIVVVVVVV..................VVVVVVVVIII",
-    "IIIIVVVVVVVV..................VVVVVVVIII",
-    "IIIIIVVVVV....................VVVVVVVIII"
-  ],
-  "objectLayout": [
-    ".FFF.................................FF.",
-    ".FF..................................FF.",
-    ".FF..................................FF.",
-    ".FF.....K......XCC.....CX...............",
-    "..FF.......CC...CCCC.CCCC...CC..........",
-    "...........CC.....CCECC.....CC..........",
-    "..................CBBBC.............FF..",
-    "........Q.......Q.......D...AAA.....FFF.",
-    ".......PPP.......D.....X....AAAQ........",
-    ".......PPP...K..CCC..CCC..K.............",
-    "...FF..PPP....XUCCCBBCCX................",
-    ".FFF.....................CCC........K...",
-    "..FFF....................CCC............",
-    ".........K........K...K........FF.......",
-    ".....U......U......CCCC........FF.......",
-    ".CCCCBBCC............K...AA....FF...FF..",
-    "......U............FF....AA.............",
-    "...............AA..FFF...AA.............",
-    "..FF.....F....DAA...FF..U...............",
-    "..F.F....F.........K...K................",
-    "...Q....................................",
-    "..FF..................Q..........U......",
-    "..FFF.........X......T..X......CCBBCCCC.",
-    "..................CCCCC...........U.....",
-    ".....FF.....K...........................",
-    "....FFF.......U..........PPPD.......Q...",
-    ".....FF...FF.........CC..PPP............",
-    "..........FFF.......K...XPPP.U..........",
-    "............CCCBBCC......K..............",
-    "..FF....................................",
-    "..FFF...................................",
-    "..FF.......AAA.X..K....X...........FF...",
-    "...........AAA.FF....U..............FF..",
-    ".............Q.FF.......CCC.....AAA.FF..",
-    "........................CCC.....AAA.....",
-    "...FF....................K..............",
-    "...FFF.....X.............X...FF.........",
-    "....FF...FF.......CCCC.......FFF...FF...",
-    ".........FFF................Q......FF...",
-    "...................HH..................."
-  ],
   "code": "",
-  "powerups": []
+  "terrain": {
+    "ice": [[0,0,3,1],[0,33,5,1],[0,35,7,1],[1,32,5,1],[1,34,5,1],[1,36,4,1],[3,31,2,1],[5,1,6,2],[6,0],[6,3,4,1],[8,0],[8,33,5,2],[8,36,3,1],[9,35,4,1],[9,37,1,3],[10,0],[10,32,3,1],[10,37,1,2],[12,31],[12,36],[15,34,6,1],[15,39,2,1],[16,33,5,1],[16,35,5,2],[16,38,3,1],[17,37,3,1],[18,31,1,2],[19,32,2,1],[20,31],[22,39,18,1],[23,15,3,3],[24,18,2,2],[31,24,2,5],[33,27,1,2],[33,38,7,1],[35,0,5,1],[36,1,4,1],[37,2,3,2],[37,37,3,1],[39,4]],
+    "grass": [[0,1,5,4],[0,7,7,3],[0,30,1,3],[0,34],[0,36,1,4],[1,30,2,2],[1,37,8,3],[3,0,3,1],[3,30,3,1],[5,3,1,2],[5,31],[5,33,3,1],[5,36,3,1],[6,32,4,1],[6,34,2,1],[7,0],[7,35,2,1],[9,0],[10,3,3,2],[10,30,2,2],[10,39,5,1],[11,0,2,3],[11,37,5,2],[12,30,8,1],[13,0,22,1],[13,8,1,2],[13,31,2,6],[14,9],[14,24,1,4],[15,18,4,7],[15,27,4,1],[15,31,1,3],[15,35,1,2],[16,31,2,2],[16,37],[17,8,23,1],[17,17,3,1],[17,39,5,1],[18,2,1,2],[18,9,22,1],[18,25,1,2],[19,2],[19,4],[19,12,1,5],[19,18,1,6],[19,31],[19,38,2,1],[20,3,17,1],[20,37],[21,1,15,2],[21,4,18,4],[26,10,2,2],[27,12],[31,30,9,1],[31,35,1,2],[32,15,2,2],[32,36,1,3],[33,36,4,2],[36,2],[36,29,2,1],[36,31,4,5],[37,10,2,1],[37,36,3,1],[38,11],[39,5,1,3]],
+    "road": [[0,5,13,2],[0,13,4,2],[0,25,4,2],[10,19,3,2],[11,7,2,12],[13,10,2,2],[18,10,4,2],[20,12,2,19],[22,29,5,2],[27,30,4,1],[28,29,3,1],[29,19,2,10],[31,19,6,2],[33,17,2,2],[34,10,1,7]],
+    "stone": [[2,10,5,3],[2,15,7,10],[2,27,4,3],[4,13,5,2],[4,25,5,2],[7,11,2,2],[9,19,1,2],[13,1,5,7],[14,8,3,1],[15,9,3,6],[18,1,3,1],[18,4,1,4],[19,3],[19,5,2,3],[20,2],[20,4],[21,31,10,8],[31,31,1,4],[31,37,1,2]],
+    "forest": [[0,1,1,3],[0,37,3,2],[1,1,3,2],[4,2,1,2],[6,36,2,2],[7,38],[10,3,1,2],[11,1,1,3],[12,2,1,3],[13,31,3,2],[15,36,1,2],[16,19,2,2],[17,21,2,1],[18,2,1,2],[18,9,2,1],[18,20],[19,2],[19,4],[21,2,2,2],[22,4],[24,5,3,2],[25,4],[26,10,2,2],[27,12],[29,2,3,2],[30,4],[31,35,1,2],[32,15,2,2],[32,36,2,2],[35,3,2,2],[36,5,2,1],[36,29,2,2],[37,4],[37,9,2,2],[37,31],[37,35,2,2],[38,11]],
+    "crater": [[3,8],[9,13],[9,26],[11,36],[13,9],[13,18],[13,22],[15,21],[19,19],[19,23],[24,12],[27,20],[28,25],[31,18],[35,25]],
+    "hedgehog": [[3,15],[3,24],[8,23],[10,14],[10,23],[22,14],[22,24],[27,24],[31,15],[31,23],[36,11],[36,25]],
+    "concrete": [[3,16,2,2],[3,23,2,1],[4,11,2,2],[4,18,2,2],[4,21,2,2],[4,24],[4,28,2,2],[6,18],[6,22],[9,16,2,3],[9,21,1,3],[10,21,1,2],[11,25,2,3],[14,19,1,4],[15,1,1,4],[15,7,1,2],[22,31,1,2],[22,35,1,4],[23,18,1,5],[26,21,1,2],[28,12,1,3],[28,17,1,2],[33,24,2,3],[37,18,1,4]],
+    "enemy_base": [[5,20]],
+    "brick": [[6,19,1,3],[10,19,1,2],[15,5,1,2],[22,33,1,2],[28,15,1,2]],
+    "boxes": [[7,8],[7,16],[8,31],[20,3],[21,22],[25,36],[33,13],[38,28]],
+    "barrel": [[7,24],[8,17],[18,14],[25,28]],
+    "rubble": [[10,15],[14,5],[14,12],[16,6],[18,24],[21,33],[23,34],[25,14],[27,29],[32,21]],
+    "water_tower": [[22,21]],
+    "house1": [[7,28,2,3,4],[15,25,3,2,6],[17,15,2,2,10],[31,11,2,3,9],[33,32,2,3,1]],
+    "house2": [[8,7,3,3,9],[25,25,3,3,0]],
+    "decal": [["label",12,20,3,"CONSORTIUM PASS FORT"],["label",34,12,3,"VALLEY CUSTOMS"],["label",14,34,3,"EAST GLACIER"],["helipad",36,14,1.8],["loading",24,26,2],["chevron",21,19,1.2],["hazard_zone",22,22,1.3]]
+  }
 }
