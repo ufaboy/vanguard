@@ -151,7 +151,11 @@ export function packTerrain({
 
   // 5. Point entities
   for (const lm of landmarks3d) {
-    pushGroup(terrain, 'landmark', [lm.kind, lm.row, lm.col]);
+    pushGroup(
+      terrain,
+      'landmark',
+      lm.rotation ? [lm.kind, lm.row, lm.col, lm.rotation] : [lm.kind, lm.row, lm.col]
+    );
   }
   for (const pw of powerups) {
     pushGroup(terrain, 'powerup', [pw.type, pw.row, pw.col]);

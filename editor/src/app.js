@@ -429,7 +429,14 @@ class MapEditorApp {
     // 1. Landmark (anchor cell)
     const lm = this.state.landmarks3d.find((l) => l.row === row && l.col === col);
     if (lm) {
-      this.moveDrag = { kind: 'landmark', item: lm, fromRow: row, fromCol: col, snapshot: this._snapshot() };
+      this.moveDrag = {
+        kind: 'landmark',
+        item: lm,
+        fromRow: row,
+        fromCol: col,
+        originRotation: lm.rotation || 0,
+        snapshot: this._snapshot(),
+      };
       this._toast(`Moving landmark ${lm.kind}`);
       return;
     }
@@ -732,7 +739,9 @@ class MapEditorApp {
         this._toast(`Moved region by (${dRow >= 0 ? '+' : ''}${dRow}, ${dCol >= 0 ? '+' : ''}${dCol})`);
         return;
       }
-      if (!cell || (cell.row === drag.fromRow && cell.col === drag.fromCol)) {
+      const rotatedLandmark =
+        drag.kind === 'landmark' && (drag.item.rotation || 0) !== (drag.originRotation || 0);
+      if ((!cell || (cell.row === drag.fromRow && cell.col === drag.fromCol)) && !rotatedLandmark) {
         if (drag.kind === 'ground' && drag.decorations.length > 0) {
           for (const entry of drag.decorations) {
             entry.item.row = entry.originRow;
@@ -994,7 +1003,18 @@ class MapEditorApp {
     this.state.landmarks3d.forEach((l, idx) => {
       const row = document.createElement('div');
       row.className = 'list-row';
-      row.innerHTML = `<span>${l.kind} (${l.row}, ${l.col})</span>`;
+      row.innerHTML = `<span>${l.kind} (${l.row}, ${l.col})${l.rotation ? ` ${l.rotation}°` : ''}</span>`;
+      const actions = document.createElement('span');
+      const rotBtn = document.createElement('button');
+      rotBtn.textContent = '↻';
+      rotBtn.title = 'Rotate 90°';
+      rotBtn.onclick = () => {
+        const prev = this._snapshot();
+        l.rotation = ((l.rotation || 0) + 90) % 360;
+        this.viewport.rebuildLandmarks();
+        this._syncLists();
+        this._commitSnapshot(prev);
+      };
       const del = document.createElement('button');
       del.textContent = '×';
       del.onclick = () => {
@@ -1004,7 +1024,9 @@ class MapEditorApp {
         this._syncLists();
         this._commitSnapshot(prev);
       };
-      row.appendChild(del);
+      actions.appendChild(rotBtn);
+      actions.appendChild(del);
+      row.appendChild(actions);
       lList.appendChild(row);
     });
 
@@ -1160,6 +1182,14 @@ class MapEditorApp {
     window.addEventListener('keydown', (e) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
 
+      if (e.code === 'Space' && this.moveDrag?.kind === 'landmark') {
+        e.preventDefault();
+        this.moveDrag.item.rotation = ((this.moveDrag.item.rotation || 0) + 90) % 360;
+        this.viewport.rebuildLandmarks();
+        this._syncLists();
+        this._toast(`Rotated ${this.moveDrag.item.kind} to ${this.moveDrag.item.rotation}°`);
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') {
         e.preventDefault();
         if (e.shiftKey) $('btn-redo').click();

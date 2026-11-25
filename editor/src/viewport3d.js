@@ -6,6 +6,8 @@ import { landmarkFootprintCenter } from '/public/src/game/terrains/landmarks.js'
 import { computeBuildingLayout } from './building-layout.js';
 import { computeBridgeLayout } from './bridge-layout.js';
 import { BUILDING_MAX_HP } from '/public/src/game/terrains/building-models.js';
+import { normalizeDecoration } from '/public/src/game/render/decoration.js';
+import { createUrbanGroundTexture } from '/public/src/game/terrains/urban-ground.js';
 import { GRID_SIZE, TILE_SIZE } from './catalog.js';
 
 export function gridToWorld(row, col, size = GRID_SIZE) {
@@ -87,6 +89,7 @@ export class Viewport3D {
     this.surfaceCells = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
     this.objectCells = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
     this.buildingLayout = new Map();
+    this.urbanGroundTexture = null;
 
     // Shared flat materials for water/ice/fallback
     this.waterGeo = new THREE.PlaneGeometry(TILE_SIZE, TILE_SIZE);
@@ -140,8 +143,13 @@ export class Viewport3D {
     if (!this.state) return;
     const { fogColor, groundColor, tint } = this.state.environment;
     this.scene.background = new THREE.Color(fogColor || '#18212a');
-    this.groundMat.color.set(groundColor || '#687478');
+    if (!this.urbanGroundTexture) {
+      this.groundMat.color.set(groundColor || '#687478');
+    } else {
+      this.groundMat.color.set('#ffffff');
+    }
     this.dirLight.color.set(tint || '#fff6e5');
+    this.rebuildDecorations();
   }
 
   setGridVisible(visible) {
@@ -421,13 +429,23 @@ export class Viewport3D {
   rebuildLandmarks() {
     this.landmarkGroup.clear();
     if (!this.state || !this.modelFactory.landmarkModels) return;
+    this.modelFactory.landmarkModels.clearLiveGroups?.();
+    const kinds = this.state.landmarks3d.map((entry) => entry.kind);
+    if (kinds.length > 0) {
+      this.modelFactory.landmarkModels.ensureLoaded?.(kinds);
+    }
     for (const entry of this.state.landmarks3d) {
       try {
-        const lmPos = landmarkFootprintCenter(entry.kind, entry.row, entry.col, (rr, cc) =>
-          gridToWorld(rr, cc, this.state.size)
+        const lmPos = landmarkFootprintCenter(
+          entry.kind,
+          entry.row,
+          entry.col,
+          (rr, cc) => gridToWorld(rr, cc, this.state.size),
+          entry.rotation || 0
         );
         const lmMesh = this.modelFactory.landmarkModels.create(entry.kind);
         lmMesh.position.set(lmPos.x, 0, lmPos.z);
+        if (entry.rotation) lmMesh.rotation.y = (entry.rotation * Math.PI) / 180;
         this.landmarkGroup.add(lmMesh);
       } catch {
         // Ignore unknown landmark kinds
@@ -437,35 +455,58 @@ export class Viewport3D {
 
   rebuildDecorations() {
     this.decoGroup.clear();
-    const items = this.state?.decoration?.landmarks;
-    if (!Array.isArray(items)) return;
-    const decoColors = {
-      crosswalk: 0xe2e8f0,
-      parking: 0x94a3b8,
-      manhole: 0x475569,
-      loading: 0xf59e0b,
-      helipad: 0x38bdf8,
-      hazard_zone: 0xeab308,
-      chevron: 0xfb923c,
-      drain_grate: 0x64748b,
-      label: 0xa855f7,
-    };
-    for (const d of items) {
-      const pos = gridToWorld(d.row, d.col, this.state.size);
-      const span = Math.max(1, Number(d.size) || 1) * TILE_SIZE * 0.85;
-      const mesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(span, span),
-        new THREE.MeshBasicMaterial({
-          color: decoColors[d.kind] || 0xf59e0b,
-          transparent: true,
-          opacity: 0.65,
-          depthWrite: false,
-        })
-      );
-      mesh.rotation.x = -Math.PI / 2;
-      mesh.position.set(pos.x, 0.04, pos.z);
-      this.decoGroup.add(mesh);
+    this.urbanGroundTexture?.dispose?.();
+    this.urbanGroundTexture = null;
+
+    if (!this.state) return;
+    const size = this.state.size;
+    const theme = this.state.environment?.theme || 'urban';
+    const rawDeco = this.state.decoration;
+    let decoration = null;
+    if (rawDeco) {
+      try {
+        decoration = normalizeDecoration({
+          environment: this.state.environment,
+          decoration: rawDeco,
+        });
+      } catch {
+        decoration = null;
+      }
     }
+
+    if (theme === 'urban' || decoration) {
+      const grid = Array.from({ length: size }, (_, r) =>
+        Array.from({ length: size }, (__, c) => this.state.objectGrid[r][c] ?? this.state.surfaceGrid[r][c])
+      );
+      const groundHex = this.state.environment?.groundColor || '#687478';
+      const parsedGround = Number.parseInt(String(groundHex).replace(/^#/, ''), 16);
+      const sectorProxy = {
+        id: this.state.raw?.id ?? 1,
+        theme,
+        groundColor: Number.isNaN(parsedGround) ? 0x687478 : parsedGround,
+        grid,
+        surfaceGrid: this.state.surfaceGrid,
+        objectGrid: this.state.objectGrid,
+        decoration,
+      };
+      try {
+        this.urbanGroundTexture = createUrbanGroundTexture(sectorProxy, {
+          maxTextureSize: this.renderer.capabilities.maxTextureSize,
+        });
+      } catch (err) {
+        console.warn('Editor ground decoration texture failed:', err);
+        this.urbanGroundTexture = null;
+      }
+    }
+
+    if (this.urbanGroundTexture) {
+      this.groundMat.map = this.urbanGroundTexture;
+      this.groundMat.color.set('#ffffff');
+    } else {
+      this.groundMat.map = null;
+      this.groundMat.color.set(this.state.environment?.groundColor || '#687478');
+    }
+    this.groundMat.needsUpdate = true;
   }
 
   _pickCell(clientX, clientY) {

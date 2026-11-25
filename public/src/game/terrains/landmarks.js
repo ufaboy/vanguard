@@ -148,22 +148,44 @@ export const PLACEABLE_LANDMARKS = Object.freeze([
   'ERASMUS_BRIDGE',
 ]);
 
-/** Grid cells blocked by a `{ kind, row, col }` landmark entry. */
+function normalizeQuarterTurns(rotation = 0) {
+  return ((Math.round((Number(rotation) || 0) / 90) % 4) + 4) % 4;
+}
+
+/** Grid cells blocked by a `{ kind, row, col, rotation? }` landmark entry. */
 export function landmarkBlockedCells(entry) {
   const spec = LANDMARK_SPECS[entry?.kind];
   if (!spec) throw new Error(`Unknown landmark kind: ${entry?.kind}`);
-  return spec.blocked.map(([dr, dc]) => ({ row: entry.row + dr, col: entry.col + dc }));
+  const q = normalizeQuarterTurns(entry?.rotation);
+  return spec.blocked.map(([dr, dc]) => {
+    let rOff = dr;
+    let cOff = dc;
+    if (q === 1) {
+      rOff = spec.cols - 1 - dc;
+      cOff = dr;
+    } else if (q === 2) {
+      rOff = spec.rows - 1 - dr;
+      cOff = spec.cols - 1 - dc;
+    } else if (q === 3) {
+      rOff = dc;
+      cOff = spec.rows - 1 - dr;
+    }
+    return { row: entry.row + rOff, col: entry.col + cOff };
+  });
 }
 
 /** World-space centre of a landmark footprint whose top-left cell is (row, col). */
-export function landmarkFootprintCenter(kind, row, col, gridToWorld) {
+export function landmarkFootprintCenter(kind, row, col, gridToWorld, rotation = 0) {
   const spec = LANDMARK_SPECS[kind];
   if (!spec) throw new Error(`Unknown landmark kind: ${kind}`);
+  const q = normalizeQuarterTurns(rotation);
+  const effCols = q % 2 === 1 ? spec.rows : spec.cols;
+  const effRows = q % 2 === 1 ? spec.cols : spec.rows;
   const topLeft = gridToWorld(row, col);
   const cell = 2.0;
   return {
-    x: topLeft.x + ((spec.cols - 1) * cell) / 2,
-    z: topLeft.z + ((spec.rows - 1) * cell) / 2,
+    x: topLeft.x + ((effCols - 1) * cell) / 2,
+    z: topLeft.z + ((effRows - 1) * cell) / 2,
   };
 }
 

@@ -143,7 +143,13 @@ export function unpackTerrain(terrain, size = 40) {
 
     if (type === 'landmark') {
       for (const tup of tuples) {
-        landmarks3d.push({ kind: tup[0], row: Number(tup[1]), col: Number(tup[2]) });
+        const rot = Number(tup[3]) || 0;
+        landmarks3d.push({
+          kind: tup[0],
+          row: Number(tup[1]),
+          col: Number(tup[2]),
+          ...(rot ? { rotation: rot } : {}),
+        });
       }
     } else if (type === 'powerup') {
       for (const tup of tuples) {

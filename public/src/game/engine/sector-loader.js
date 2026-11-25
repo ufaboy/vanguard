@@ -443,11 +443,16 @@ export class SectorLoaderController {
 
     if (sector.landmarks3d?.length && engine.modelFactory.landmarkModels) {
       for (const entry of sector.landmarks3d) {
-        const lmPos = landmarkFootprintCenter(entry.kind, entry.row, entry.col, (rr, cc) =>
-          this.gridToWorld(rr, cc)
+        const lmPos = landmarkFootprintCenter(
+          entry.kind,
+          entry.row,
+          entry.col,
+          (rr, cc) => this.gridToWorld(rr, cc),
+          entry.rotation || 0
         );
         const lmMesh = engine.modelFactory.landmarkModels.create(entry.kind);
         lmMesh.position.set(lmPos.x, 0, lmPos.z);
+        if (entry.rotation) lmMesh.rotation.y = (entry.rotation * Math.PI) / 180;
         engine.mapGroup.add(lmMesh);
       }
     }
