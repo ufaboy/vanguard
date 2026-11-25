@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 /**
- * Unified parallel map validator, fixer, and baker.
+ * Unified parallel map validator, fixer, and baker for the compact `terrain` format.
  *
  * Passes (executed in deterministic dependency order):
- *   1. base-hq       Syncs the two 'H' tiles in objectLayout with baseCell and clears stray 'H'.
- *   2. oil           Sets surfaceLayout to 'L' (OIL_SLICK) under barrels ('D'/'O') adjacent to 'L'.
- *   3. layer-compat  Fixes incompatible (object, surface) pairs via canPlaceOnSurface():
- *                    bridges ('=') get 'W', other incompatible objects get '.'.
- *   4. bridges       Bakes `bridges` array (merged rectangles + orientation) or removes if empty.
- *   5. buildings     Bakes `buildings` array (compact `"row,col:tier:part:yawDeg:style"`) or removes if empty.
+ *   1. oil           Sets surface to OIL_SLICK under barrels adjacent to OIL_SLICK.
+ *   2. layer-compat  Fixes incompatible (object, surface) pairs via canPlaceOnSurface():
+ *                    bridges get WATER if their surface isn't in {WATER,ICE,STONE,SWAMP,RUBBLE};
+ *                    other incompatible objects get EMPTY.
+ *   3. bridges       Recomputes merged bridge rectangles + orientation via computeBridgeLayout().
+ *   4. buildings     Recomputes modular building styles via computeBuildingLayout().
  *
  * Usage:
  *   node scripts/bake-map.mjs [files...]
  *   node scripts/bake-map.mjs --check [files...]
- *   node scripts/bake-map.mjs --only=bridges,buildings [files...]
+ *   node scripts/bake-map.mjs --only=oil,layer-compat,bridges,buildings [files...]
  */
 
 import fs from 'node:fs/promises';
@@ -21,11 +21,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TileType } from '../public/src/game/terrains/surfaces.js';
 import { canPlaceOnSurface } from '../public/src/game/terrains/layers.js';
+import { unpackTerrain } from '../public/src/game/terrains/terrain-format.js';
 import { computeBridgeLayout } from '../editor/src/bridge-layout.js';
-import {
-  computeBuildingLayout,
-  serializeBuildingLayout,
-} from '../editor/src/building-layout.js';
+import { computeBuildingLayout } from '../editor/src/building-layout.js';
+import { packTerrain, formatMapJson } from '../editor/src/terrain-pack.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MAP_DIRS = [
@@ -34,45 +33,7 @@ const MAP_DIRS = [
   path.join(ROOT, 'public/maps/survival'),
 ];
 
-const ALL_PASSES = ['base-hq', 'oil', 'layer-compat', 'bridges', 'buildings'];
-
-const SURFACE_CHAR_TO_TILE = {
-  '.': TileType.EMPTY,
-  _: TileType.EMPTY,
-  ' ': TileType.EMPTY,
-  G: TileType.EMPTY,
-  R: TileType.ROAD,
-  W: TileType.WATER,
-  I: TileType.ICE,
-  S: TileType.SAND,
-  N: TileType.SAND,
-  '^': TileType.STONE,
-  V: TileType.GRASS,
-  M: TileType.SWAMP,
-  L: TileType.OIL_SLICK,
-};
-
-const OBJECT_CHAR_TO_TILE = {
-  '.': null,
-  _: null,
-  ' ': null,
-  B: TileType.BRICK,
-  C: TileType.CONCRETE,
-  F: TileType.FOREST,
-  X: TileType.HEDGEHOG,
-  Z: TileType.HEDGEHOG,
-  D: TileType.BARREL,
-  O: TileType.BARREL,
-  Q: TileType.BOXES,
-  K: TileType.CRATER,
-  T: TileType.WATER_TOWER,
-  '=': TileType.BRIDGE,
-  U: TileType.RUBBLE,
-  A: TileType.HOUSE_1,
-  P: TileType.HOUSE_2,
-  H: TileType.BASE,
-  E: TileType.ENEMY_BASE,
-};
+const ALL_PASSES = ['oil', 'layer-compat', 'bridges', 'buildings'];
 
 const NEIGHBOR_8 = [
   [-1, -1], [-1, 0], [-1, 1],
@@ -132,163 +93,114 @@ async function collectMapFiles(targets) {
   return files.sort();
 }
 
-function runBaseHqPass(map) {
-  const { objectLayout, baseCell } = map;
-  if (!Array.isArray(objectLayout) || !baseCell) return 0;
-  const size = objectLayout.length;
-  const { row, col } = baseCell;
-  if (!Number.isInteger(row) || !Number.isInteger(col) || row < 0 || row >= size || col < 0 || col + 1 >= size) {
-    return 0;
-  }
-
-  let changes = 0;
-  for (let r = 0; r < size; r++) {
-    const chars = objectLayout[r].split('');
-    let rowChanged = false;
-    for (let c = 0; c < chars.length; c++) {
-      const isHqCell = r === row && (c === col || c === col + 1);
-      if (isHqCell && chars[c] !== 'H') {
-        chars[c] = 'H';
-        rowChanged = true;
-        changes++;
-      } else if (!isHqCell && chars[c] === 'H') {
-        chars[c] = '.';
-        rowChanged = true;
-        changes++;
-      }
-    }
-    if (rowChanged) objectLayout[r] = chars.join('');
-  }
-  return changes;
-}
-
-function runOilPass(map) {
-  const { surfaceLayout, objectLayout } = map;
-  if (!Array.isArray(surfaceLayout) || !Array.isArray(objectLayout)) return 0;
-
+function runOilPass(objectGrid, surfaceGrid) {
+  const size = objectGrid.length;
   let changes = 0;
   let passChanged = true;
   while (passChanged) {
     passChanged = false;
-    const snapshot = surfaceLayout.slice();
-    for (let r = 0; r < objectLayout.length; r++) {
-      const objRow = objectLayout[r] || '';
-      const chars = (surfaceLayout[r] || '').split('');
-      let rowChanged = false;
-      for (let c = 0; c < objRow.length; c++) {
-        if (objRow[c] !== 'D' && objRow[c] !== 'O') continue;
-        if (chars[c] === 'L') continue;
-        const adjOil = NEIGHBOR_8.some(([dr, dc]) => snapshot[r + dr]?.[c + dc] === 'L');
+    const snapshot = surfaceGrid.map((row) => row.slice());
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (objectGrid[r][c] !== TileType.BARREL) continue;
+        if (surfaceGrid[r][c] === TileType.OIL_SLICK) continue;
+        const adjOil = NEIGHBOR_8.some(([dr, dc]) => snapshot[r + dr]?.[c + dc] === TileType.OIL_SLICK);
         if (!adjOil) continue;
-        chars[c] = 'L';
-        rowChanged = true;
+        surfaceGrid[r][c] = TileType.OIL_SLICK;
         passChanged = true;
         changes++;
       }
-      if (rowChanged) surfaceLayout[r] = chars.join('');
     }
   }
   return changes;
 }
 
-function runLayerCompatPass(map) {
-  const { surfaceLayout, objectLayout } = map;
-  if (!Array.isArray(surfaceLayout) || !Array.isArray(objectLayout)) return 0;
-
+function runLayerCompatPass(objectGrid, surfaceGrid) {
+  const size = objectGrid.length;
   let changes = 0;
-  for (let r = 0; r < objectLayout.length; r++) {
-    const objRow = objectLayout[r] || '';
-    const chars = (surfaceLayout[r] || '').split('');
-    let rowChanged = false;
-    for (let c = 0; c < objRow.length; c++) {
-      const oc = objRow[c];
-      const sc = chars[c];
-      const objTile = OBJECT_CHAR_TO_TILE[oc] ?? OBJECT_CHAR_TO_TILE[oc?.toUpperCase()] ?? null;
-      if (objTile == null) continue;
-      const surfTile = SURFACE_CHAR_TO_TILE[sc] ?? SURFACE_CHAR_TO_TILE[sc?.toUpperCase()] ?? TileType.EMPTY;
-      if (canPlaceOnSurface(objTile, surfTile)) continue;
-      chars[c] = objTile === TileType.BRIDGE ? 'W' : '.';
-      rowChanged = true;
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      const obj = objectGrid[r][c];
+      if (obj == null) continue;
+      const surf = surfaceGrid[r][c];
+      if (canPlaceOnSurface(obj, surf)) continue;
+      surfaceGrid[r][c] = obj === TileType.BRIDGE ? TileType.WATER : TileType.EMPTY;
       changes++;
     }
-    if (rowChanged) surfaceLayout[r] = chars.join('');
   }
   return changes;
-}
-
-function buildGrids(map) {
-  const size = Number(map.gridSize) || map.objectLayout?.length || map.surfaceLayout?.length || 40;
-  const objectGrid = Array.from({ length: size }, () => Array(size).fill(null));
-  const surfaceGrid = Array.from({ length: size }, () => Array(size).fill(TileType.EMPTY));
-
-  for (let r = 0; r < size; r++) {
-    const oRow = map.objectLayout?.[r] || '';
-    const sRow = map.surfaceLayout?.[r] || '';
-    for (let c = 0; c < size; c++) {
-      const oc = oRow[c];
-      const sc = sRow[c];
-      objectGrid[r][c] = OBJECT_CHAR_TO_TILE[oc] ?? OBJECT_CHAR_TO_TILE[oc?.toUpperCase()] ?? null;
-      surfaceGrid[r][c] = SURFACE_CHAR_TO_TILE[sc] ?? SURFACE_CHAR_TO_TILE[sc?.toUpperCase()] ?? TileType.EMPTY;
-    }
-  }
-  return { objectGrid, surfaceGrid };
 }
 
 async function processMapFile(filePath, passes, checkOnly) {
   const raw = await fs.readFile(filePath, 'utf8');
   const map = JSON.parse(raw);
-  if (!Array.isArray(map.objectLayout) || !Array.isArray(map.surfaceLayout)) {
+  if (!Array.isArray(map.terrain)) {
     return null;
   }
 
+  const size = Number(map.gridSize) || 40;
+  const unpacked = unpackTerrain(map.terrain, size);
+  const { surfaceGrid, objectGrid, buildingStyles, landmarks3d, powerups, mines, mineSigns, decals } = unpacked;
+  let { bridges } = unpacked;
+
   const summary = [];
 
-  if (passes.has('base-hq')) {
-    const n = runBaseHqPass(map);
-    if (n > 0) summary.push(`base-hq(${n})`);
-  }
   if (passes.has('oil')) {
-    const n = runOilPass(map);
+    const n = runOilPass(objectGrid, surfaceGrid);
     if (n > 0) summary.push(`oil(${n})`);
   }
+
   if (passes.has('layer-compat')) {
-    const n = runLayerCompatPass(map);
+    const n = runLayerCompatPass(objectGrid, surfaceGrid);
     if (n > 0) summary.push(`layer-compat(${n})`);
   }
 
-  const { objectGrid, surfaceGrid } = buildGrids(map);
-
   if (passes.has('bridges')) {
     const nextBridges = computeBridgeLayout(objectGrid, surfaceGrid);
-    const hadProp = Object.prototype.hasOwnProperty.call(map, 'bridges');
-    const prevSer = hadProp ? JSON.stringify(map.bridges) : null;
-    const nextSer = nextBridges.length > 0 ? JSON.stringify(nextBridges) : null;
-    if (prevSer !== nextSer) {
-      if (nextBridges.length > 0) map.bridges = nextBridges;
-      else delete map.bridges;
+    if (JSON.stringify(bridges) !== JSON.stringify(nextBridges)) {
+      bridges = nextBridges;
       summary.push(`bridges(${nextBridges.length})`);
     }
   }
 
+  let buildingLayout = new Map();
   if (passes.has('buildings')) {
-    const nextBuildings = serializeBuildingLayout(
-      computeBuildingLayout(objectGrid, map.environment?.theme || 'urban')
-    );
-    const hadProp = Object.prototype.hasOwnProperty.call(map, 'buildings');
-    const prevSer = hadProp ? JSON.stringify(map.buildings) : null;
-    const nextSer = nextBuildings.length > 0 ? JSON.stringify(nextBuildings) : null;
-    if (prevSer !== nextSer) {
-      if (nextBuildings.length > 0) map.buildings = nextBuildings;
-      else delete map.buildings;
-      summary.push(`buildings(${nextBuildings.length})`);
+    buildingLayout = computeBuildingLayout(objectGrid, map.environment?.theme || 'urban');
+    let styleDiffs = 0;
+    for (const [key, entry] of buildingLayout.entries()) {
+      const [r, c] = key.split(',').map(Number);
+      if (buildingStyles[r][c] !== entry.style) styleDiffs++;
+    }
+    if (styleDiffs > 0) summary.push(`buildings(${styleDiffs})`);
+  } else {
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (buildingStyles[r][c] >= 0) {
+          buildingLayout.set(`${r},${c}`, { style: buildingStyles[r][c] });
+        }
+      }
     }
   }
 
-  if (summary.length === 0) return null;
+  const nextTerrain = packTerrain({
+    surfaceGrid,
+    objectGrid,
+    bridges,
+    buildingLayout,
+    landmarks3d,
+    powerups,
+    mines,
+    mineSigns,
+    decals,
+  });
 
+  const nextText = formatMapJson({ ...map, terrain: nextTerrain });
+  if (nextText === raw) return null;
+
+  if (summary.length === 0) summary.push('repack');
   const rel = path.relative(ROOT, filePath).replace(/\\/g, '/');
   if (!checkOnly) {
-    await fs.writeFile(filePath, JSON.stringify(map, null, 2) + '\n', 'utf8');
+    await fs.writeFile(filePath, nextText, 'utf8');
   }
   return { rel, summary };
 }

@@ -18,6 +18,7 @@ import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
 import { BUILDING_MAX_HP } from '../terrains/building-models.js';
 import { landmarkFootprintCenter } from '../terrains/landmarks.js';
+import { resolveBuildingCell } from '../terrains/terrain-format.js';
 import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { isSurfaceType, setCellObject } from '../terrains/layers.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
@@ -59,23 +60,6 @@ export function getSectorEnemyClasses(sector) {
     }
   }
   return [...classes];
-}
-
-function parseBuildingLayout(entries) {
-  const layout = new Map();
-  if (!Array.isArray(entries) || entries.length === 0) return layout;
-  for (const raw of entries) {
-    if (typeof raw !== 'string') continue;
-    const parts = raw.split(':');
-    if (parts.length !== 5) continue;
-    const [key, tierStr, part, yawDegStr, styleStr] = parts;
-    const kind = tierStr === '2' ? 'house2' : 'house1';
-    const deg = Number(yawDegStr) || 0;
-    const yaw = deg === 270 ? -Math.PI / 2 : (deg * Math.PI) / 180;
-    const style = Number(styleStr) || 0;
-    layout.set(key, { kind, part, yaw, style });
-  }
-  return layout;
 }
 
 /** True when a sector uses 3D landmarks (Élysée HQ, Paris monuments, bridges, or mine signs). */
@@ -263,7 +247,6 @@ export class SectorLoaderController {
     engine.grid = [];
     engine.componentWaterEgress = false;
 
-    const buildingLayout = parseBuildingLayout(sector.buildings);
     for (let r = 0; r < GRID_SIZE; r++) {
       const rowCells = [];
       for (let c = 0; c < GRID_SIZE; c++) {
@@ -279,7 +262,10 @@ export class SectorLoaderController {
         let surfaceMesh = null;
         let subMeshes;
         let hp = 1;
-        const building = !supply ? buildingLayout.get(`${r},${c}`) || null : null;
+        const building =
+          !supply && (type === TileType.HOUSE_1 || type === TileType.HOUSE_2)
+            ? resolveBuildingCell(sector.objectGrid, sector.buildingStyles, r, c)
+            : null;
 
         // Render flat surface layer underneath any placed object
         if (surface === TileType.ROAD && engine.modelFactory.createRoadBlock) {

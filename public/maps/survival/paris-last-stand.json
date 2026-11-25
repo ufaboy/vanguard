@@ -38,272 +38,6 @@
     "fogColor": "#0d1322",
     "groundColor": "#2c333f"
   },
-  "landmarks3d": [
-    {
-      "kind": "SACRE_COEUR",
-      "row": 3,
-      "col": 25
-    },
-    {
-      "kind": "ARC_DE_TRIOMPHE",
-      "row": 7,
-      "col": 6
-    },
-    {
-      "kind": "CONCORDE_OBELISK",
-      "row": 22,
-      "col": 12
-    },
-    {
-      "kind": "LOUVRE_PYRAMID",
-      "row": 21,
-      "col": 29
-    },
-    {
-      "kind": "NOTRE_DAME",
-      "row": 27,
-      "col": 28
-    },
-    {
-      "kind": "EIFFEL_TOWER",
-      "row": 33,
-      "col": 6
-    }
-  ],
-  "mines": [
-    {
-      "row": 5,
-      "col": 11
-    },
-    {
-      "row": 5,
-      "col": 14
-    },
-    {
-      "row": 6,
-      "col": 22
-    },
-    {
-      "row": 6,
-      "col": 34
-    },
-    {
-      "row": 10,
-      "col": 5
-    },
-    {
-      "row": 4,
-      "col": 15
-    },
-    {
-      "row": 4,
-      "col": 24
-    },
-    {
-      "row": 10,
-      "col": 35
-    },
-    {
-      "row": 13,
-      "col": 9
-    },
-    {
-      "row": 8,
-      "col": 10
-    },
-    {
-      "row": 8,
-      "col": 29
-    },
-    {
-      "row": 13,
-      "col": 31
-    },
-    {
-      "row": 16,
-      "col": 5
-    },
-    {
-      "row": 14,
-      "col": 2
-    },
-    {
-      "row": 14,
-      "col": 37
-    },
-    {
-      "row": 16,
-      "col": 34
-    },
-    {
-      "row": 20,
-      "col": 5
-    },
-    {
-      "row": 20,
-      "col": 34
-    },
-    {
-      "row": 24,
-      "col": 8
-    },
-    {
-      "row": 3,
-      "col": 15
-    },
-    {
-      "row": 3,
-      "col": 24
-    },
-    {
-      "row": 24,
-      "col": 34
-    },
-    {
-      "row": 25,
-      "col": 6
-    },
-    {
-      "row": 36,
-      "col": 14
-    },
-    {
-      "row": 35,
-      "col": 11
-    },
-    {
-      "row": 30,
-      "col": 9
-    },
-    {
-      "row": 30,
-      "col": 15
-    },
-    {
-      "row": 30,
-      "col": 24
-    },
-    {
-      "row": 31,
-      "col": 34
-    },
-    {
-      "row": 34,
-      "col": 15
-    },
-    {
-      "row": 34,
-      "col": 24
-    },
-    {
-      "row": 35,
-      "col": 29
-    }
-  ],
-  "mineSigns": [
-    {
-      "row": 5,
-      "col": 10,
-      "rotation": 0.4
-    },
-    {
-      "row": 6,
-      "col": 21,
-      "rotation": -0.3
-    },
-    {
-      "row": 10,
-      "col": 14,
-      "rotation": 0.2
-    },
-    {
-      "row": 10,
-      "col": 25,
-      "rotation": -0.2
-    },
-    {
-      "row": 13,
-      "col": 8,
-      "rotation": 0
-    },
-    {
-      "row": 13,
-      "col": 30,
-      "rotation": 0
-    },
-    {
-      "row": 16,
-      "col": 10,
-      "rotation": 0.5
-    },
-    {
-      "row": 16,
-      "col": 29,
-      "rotation": -0.5
-    },
-    {
-      "row": 24,
-      "col": 14,
-      "rotation": 0
-    },
-    {
-      "row": 24,
-      "col": 25,
-      "rotation": 0
-    },
-    {
-      "row": 25,
-      "col": 5,
-      "rotation": 0.3
-    },
-    {
-      "row": 30,
-      "col": 14,
-      "rotation": 3.14
-    },
-    {
-      "row": 30,
-      "col": 25,
-      "rotation": 3.14
-    },
-    {
-      "row": 34,
-      "col": 16,
-      "rotation": 3.14
-    }
-  ],
-  "powerups": [
-    {
-      "type": "REPAIR",
-      "row": 15,
-      "col": 19
-    },
-    {
-      "type": "APS",
-      "row": 22,
-      "col": 18
-    },
-    {
-      "type": "MISSILE",
-      "row": 11,
-      "col": 7
-    },
-    {
-      "type": "EMP",
-      "row": 19,
-      "col": 26
-    },
-    {
-      "type": "REPAIR",
-      "row": 31,
-      "col": 19
-    },
-    {
-      "type": "APS",
-      "row": 23,
-      "col": 12
-    }
-  ],
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 6,
@@ -416,79 +150,6 @@
         "marking": "dashed"
       }
     ],
-    "landmarks": [
-      {
-        "id": "label-elysee-hq",
-        "kind": "label",
-        "row": 16,
-        "col": 19,
-        "size": 2,
-        "text": "PALAIS DE L'ELYSEE // ALLIED HQ"
-      },
-      {
-        "id": "label-etoile",
-        "kind": "label",
-        "row": 10,
-        "col": 7,
-        "size": 1.8,
-        "text": "PLACE DE L'ETOILE"
-      },
-      {
-        "id": "label-concorde",
-        "kind": "label",
-        "row": 24,
-        "col": 12,
-        "size": 1.8,
-        "text": "PLACE DE LA CONCORDE"
-      },
-      {
-        "id": "label-louvre",
-        "kind": "label",
-        "row": 24,
-        "col": 29,
-        "size": 1.8,
-        "text": "COUR NAPOLEON // LOUVRE"
-      },
-      {
-        "id": "label-cite",
-        "kind": "label",
-        "row": 25,
-        "col": 29,
-        "size": 1.8,
-        "text": "ILE DE LA CITE"
-      },
-      {
-        "id": "label-champ-de-mars",
-        "kind": "label",
-        "row": 31,
-        "col": 7,
-        "size": 1.8,
-        "text": "CHAMP DE MARS // TOUR EIFFEL"
-      },
-      {
-        "id": "elysee-helipad",
-        "kind": "helipad",
-        "row": 21,
-        "col": 19,
-        "size": 1.8
-      },
-      {
-        "id": "concorde-crosswalk",
-        "kind": "crosswalk",
-        "row": 25,
-        "col": 12,
-        "size": 2,
-        "rotation": 0
-      },
-      {
-        "id": "alexandre-crosswalk",
-        "kind": "crosswalk",
-        "row": 25,
-        "col": 19,
-        "size": 2,
-        "rotation": 0
-      }
-    ],
     "exclusions": [
       {
         "id": "clear-elysee-hq",
@@ -501,178 +162,303 @@
       }
     ]
   },
-  "surfaceLayout": [
-    "......RR...........RR...........RR......",
-    "......RR...........RR...........RR......",
-    "......RR...........RR...........RR......",
-    "......RR...........RR...........RR......",
-    "....VVRR...........RR..V.....V..RR..VV..",
-    "....VVRR...........RR..V.....V..RR..VV..",
-    "RRR...RR........L..RR..L........RR...RRR",
-    ".......R........L..RR..L........RR......",
-    "RRR....R...........RR...........RR...RRR",
-    "......RRR......RRRRRRRRR.....RRRRR......",
-    ".......RRRRR...RR......RR....RR..R......",
-    ".........RRRRRRRR......RRRRRRRR..R......",
-    ".......V....RR............RR....VR......",
-    "......VV....RR............RR.LL.VV......",
-    "............RR............RR............",
-    "............RR.....RR.....RR............",
-    "............RR............RR............",
-    "............RR............RR............",
-    "RRR.........RRR..........RRR.........RRR",
-    "............RRR..........RRR............",
-    "RRR.........RR............RR.........RRR",
-    "............RR............RR............",
-    "...................RR.....VV............",
-    "............RR............VV............",
-    ".........L..RR....RRRR....RR..L.........",
-    ".........L..RR....RRRR....RR..L.........",
-    "......RRRRRRRRRRRRRRRRRRRRWWWWWWWWRRRR..",
-    "WWWWWWWWWWWWWWWWWWWWWWWWWW.R.....RWWWWWW",
-    "WWWWWWWWWWWWWWWWWWWWWWWWWW.R.....RWWWWWW",
-    "......RRRRRRRRRRRRRRRRRRRRWWWWWWWWRRRR..",
-    "............RR....RRRR....RR............",
-    "............RR....RRRR....RR............",
-    "......VV....RR....RRRR....RR....VV......",
-    "RRR....R..........RRRR..........RR...RRR",
-    "......RRR......RRRRRRRRR.....RRRRR......",
-    "....V..R.......RR......RR....RR..V......",
-    "...VV.RRR......RR......RR....RR..VV.....",
-    "......RR...........RR...........RR......",
-    "......RR...........RR...........RR......",
-    "......RR...........RR...........RR......"
-  ],
-  "objectLayout": [
-    "........................................",
-    "....B....B.......B....B.......B....B..Q.",
-    "...X......X.....X......X.....X......X...",
-    "............AA...........AAA............",
-    "....FF....K.AA..Q......F.AAA.F......FF..",
-    "..C.FF.................F.....F......FF.C",
-    "............XX..D......D.XX.............",
-    "......B.B...............................",
-    "......B.B...AA...........AA.............",
-    ".Q..........AA...........AA.............",
-    "....X..............PP...............X...",
-    "...AA..............PP...............AA..",
-    "...AA..F...........Q............F...AA..",
-    "......FF..D....XX......XX....D..FF......",
-    "....X.....B...CCCCC..CCCCC...B.....X....",
-    "......CC..B...C..........C...B..CC......",
-    "....X.CC......C...CCCCCC.C......CC.X....",
-    ".........BB...C.C......C.C...BB.........",
-    "......X..BC.....C.HH...C.....CB..X......",
-    ".........BC.....C......C.....CB.........",
-    "......X..BB...C.C......C.C...BB..X......",
-    ".........B....C.CCCCCC...C...BB.........",
-    "....X.CC....BCC..........CFF.BB.CC.X....",
-    "......CC.Q....CCCCC..CCCCCFF..Q.CC......",
-    "....X....D.....XX......XX.....D....X....",
-    "...BB..XX.......................XX..BB..",
-    "..........................==....==......",
-    ".......==...==.....==.......BBBB....==..",
-    ".......==...==.....==.......BBBB....==..",
-    "..........................==....==......",
-    "...BB..XX.......................XX..BB..",
-    "....X....D.....XX......XX.....D....X....",
-    "......FF.Q....................Q.FF......",
-    "......B.B...BB............BB............",
-    "............BB...........BB.............",
-    "....F.B.B..........CC............F......",
-    "...FF.....K........CC.....K......FF.....",
-    "...X......X.....X......X.....X......X...",
-    "....B....B.......B....B.......B....B....",
-    "........................................"
-  ],
-  "bridges": [
-    {
-      "row": 26,
-      "col": 26,
-      "rows": 1,
-      "cols": 2,
-      "orientation": "ns"
-    },
-    {
-      "row": 26,
-      "col": 32,
-      "rows": 1,
-      "cols": 2,
-      "orientation": "ns"
-    },
-    {
-      "row": 27,
-      "col": 7,
-      "rows": 2,
-      "cols": 2,
-      "orientation": "ns"
-    },
-    {
-      "row": 27,
-      "col": 12,
-      "rows": 2,
-      "cols": 2,
-      "orientation": "ns"
-    },
-    {
-      "row": 27,
-      "col": 19,
-      "rows": 2,
-      "cols": 2,
-      "orientation": "ns"
-    },
-    {
-      "row": 27,
-      "col": 36,
-      "rows": 2,
-      "cols": 2,
-      "orientation": "ns"
-    },
-    {
-      "row": 29,
-      "col": 26,
-      "rows": 1,
-      "cols": 2,
-      "orientation": "ns"
-    },
-    {
-      "row": 29,
-      "col": 32,
-      "rows": 1,
-      "cols": 2,
-      "orientation": "ns"
-    }
-  ],
-  "buildings": [
-    "3,12:1:corner:180:0",
-    "3,13:1:corner:90:0",
-    "3,25:1:corner:180:2",
-    "3,26:1:edge:180:2",
-    "3,27:1:corner:90:2",
-    "4,12:1:corner:270:0",
-    "4,13:1:corner:0:0",
-    "4,25:1:corner:270:2",
-    "4,26:1:edge:0:2",
-    "4,27:1:corner:0:2",
-    "8,12:1:corner:180:5",
-    "8,13:1:corner:90:5",
-    "8,25:1:corner:180:7",
-    "8,26:1:corner:90:7",
-    "9,12:1:corner:270:5",
-    "9,13:1:corner:0:5",
-    "9,25:1:corner:270:7",
-    "9,26:1:corner:0:7",
-    "10,19:2:corner:180:3",
-    "10,20:2:corner:90:3",
-    "11,3:1:corner:180:0",
-    "11,4:1:corner:90:0",
-    "11,19:2:corner:270:3",
-    "11,20:2:corner:0:3",
-    "11,36:1:corner:180:6",
-    "11,37:1:corner:90:6",
-    "12,3:1:corner:270:0",
-    "12,4:1:corner:0:0",
-    "12,36:1:corner:270:6",
-    "12,37:1:corner:0:6"
+  "terrain": [
+    {"t":"road","r":0,"c":6,"h":7,"w":2},
+    {"t":"road","r":0,"c":19,"h":10,"w":2},
+    {"t":"road","r":0,"c":32,"h":10,"w":2},
+    {"t":"grass","r":4,"c":4,"h":2,"w":2},
+    {"t":"grass","r":4,"c":23,"h":2},
+    {"t":"grass","r":4,"c":29,"h":2},
+    {"t":"grass","r":4,"c":36,"h":2,"w":2},
+    {"t":"road","r":6,"c":0,"w":3},
+    {"t":"oil","r":6,"c":16,"h":2},
+    {"t":"oil","r":6,"c":23,"h":2},
+    {"t":"road","r":6,"c":37,"w":3},
+    {"t":"road","r":7,"c":7,"h":4},
+    {"t":"road","r":8,"c":0,"w":3},
+    {"t":"road","r":8,"c":37,"w":3},
+    {"t":"road","r":9,"c":6},
+    {"t":"road","r":9,"c":8,"h":2},
+    {"t":"road","r":9,"c":15,"w":4},
+    {"t":"road","r":9,"c":21,"w":3},
+    {"t":"road","r":9,"c":29,"w":3},
+    {"t":"road","r":10,"c":9,"h":2,"w":3},
+    {"t":"road","r":10,"c":15,"h":2,"w":2},
+    {"t":"road","r":10,"c":23,"h":2,"w":2},
+    {"t":"road","r":10,"c":29,"h":2,"w":2},
+    {"t":"road","r":10,"c":33,"h":3},
+    {"t":"road","r":11,"c":12,"w":3},
+    {"t":"road","r":11,"c":25,"w":4},
+    {"t":"grass","r":12,"c":7,"h":2},
+    {"t":"road","r":12,"c":12,"h":10,"w":2},
+    {"t":"road","r":12,"c":26,"h":10,"w":2},
+    {"t":"grass","r":12,"c":32,"h":2},
+    {"t":"grass","r":13,"c":6},
+    {"t":"oil","r":13,"c":29,"w":2},
+    {"t":"grass","r":13,"c":33},
+    {"t":"road","r":15,"c":19,"w":2},
+    {"t":"road","r":18,"c":0,"w":3},
+    {"t":"road","r":18,"c":14,"h":2},
+    {"t":"road","r":18,"c":25,"h":2},
+    {"t":"road","r":18,"c":37,"w":3},
+    {"t":"road","r":20,"c":0,"w":3},
+    {"t":"road","r":20,"c":37,"w":3},
+    {"t":"road","r":22,"c":19,"w":2},
+    {"t":"grass","r":22,"c":26,"h":2,"w":2},
+    {"t":"road","r":23,"c":12,"h":4,"w":2},
+    {"t":"oil","r":24,"c":9,"h":2},
+    {"t":"road","r":24,"c":18,"h":3,"w":4},
+    {"t":"road","r":24,"c":26,"h":2,"w":2},
+    {"t":"oil","r":24,"c":30,"h":2},
+    {"t":"road","r":26,"c":6,"w":6},
+    {"t":"road","r":26,"c":14,"w":4},
+    {"t":"road","r":26,"c":22,"w":4},
+    {"t":"water","r":26,"c":26,"w":8},
+    {"t":"road","r":26,"c":34,"w":4},
+    {"t":"water","r":27,"c":0,"h":2,"w":26},
+    {"t":"road","r":27,"c":27,"h":2},
+    {"t":"road","r":27,"c":33,"h":2},
+    {"t":"water","r":27,"c":34,"h":2,"w":6},
+    {"t":"road","r":29,"c":6,"w":20},
+    {"t":"water","r":29,"c":26,"w":8},
+    {"t":"road","r":29,"c":34,"w":4},
+    {"t":"road","r":30,"c":12,"h":3,"w":2},
+    {"t":"road","r":30,"c":18,"h":5,"w":4},
+    {"t":"road","r":30,"c":26,"h":3,"w":2},
+    {"t":"grass","r":32,"c":6,"w":2},
+    {"t":"grass","r":32,"c":32,"w":2},
+    {"t":"road","r":33,"c":0,"w":3},
+    {"t":"road","r":33,"c":7,"h":7},
+    {"t":"road","r":33,"c":32,"h":2,"w":2},
+    {"t":"road","r":33,"c":37,"w":3},
+    {"t":"road","r":34,"c":6},
+    {"t":"road","r":34,"c":8},
+    {"t":"road","r":34,"c":15,"w":3},
+    {"t":"road","r":34,"c":22,"w":2},
+    {"t":"road","r":34,"c":29,"w":3},
+    {"t":"grass","r":35,"c":4,"h":2},
+    {"t":"road","r":35,"c":15,"h":2,"w":2},
+    {"t":"road","r":35,"c":23,"h":2,"w":2},
+    {"t":"road","r":35,"c":29,"h":2,"w":2},
+    {"t":"grass","r":35,"c":33,"h":2},
+    {"t":"grass","r":36,"c":3},
+    {"t":"road","r":36,"c":6,"h":4},
+    {"t":"road","r":36,"c":8},
+    {"t":"grass","r":36,"c":34},
+    {"t":"road","r":37,"c":19,"h":3,"w":2},
+    {"t":"road","r":37,"c":32,"h":3,"w":2},
+    {"t":"brick","r":1,"c":4},
+    {"t":"brick","r":1,"c":9},
+    {"t":"brick","r":1,"c":17},
+    {"t":"brick","r":1,"c":22},
+    {"t":"brick","r":1,"c":30},
+    {"t":"brick","r":1,"c":35},
+    {"t":"boxes","r":1,"c":38},
+    {"t":"hedgehog","r":2,"c":3},
+    {"t":"hedgehog","r":2,"c":10},
+    {"t":"hedgehog","r":2,"c":16},
+    {"t":"hedgehog","r":2,"c":23},
+    {"t":"hedgehog","r":2,"c":29},
+    {"t":"hedgehog","r":2,"c":36},
+    {"t":"forest","r":4,"c":4,"h":2,"w":2},
+    {"t":"crater","r":4,"c":10},
+    {"t":"boxes","r":4,"c":16},
+    {"t":"forest","r":4,"c":23,"h":2},
+    {"t":"forest","r":4,"c":29,"h":2},
+    {"t":"forest","r":4,"c":36,"h":2,"w":2},
+    {"t":"concrete","r":5,"c":2},
+    {"t":"concrete","r":5,"c":39},
+    {"t":"hedgehog","r":6,"c":12,"w":2},
+    {"t":"barrel","r":6,"c":16},
+    {"t":"barrel","r":6,"c":23},
+    {"t":"hedgehog","r":6,"c":25,"w":2},
+    {"t":"brick","r":7,"c":6,"h":2},
+    {"t":"brick","r":7,"c":8,"h":2},
+    {"t":"boxes","r":9,"c":1},
+    {"t":"hedgehog","r":10,"c":4},
+    {"t":"hedgehog","r":10,"c":36},
+    {"t":"forest","r":12,"c":7,"h":2},
+    {"t":"boxes","r":12,"c":19},
+    {"t":"forest","r":12,"c":32,"h":2},
+    {"t":"forest","r":13,"c":6},
+    {"t":"barrel","r":13,"c":10},
+    {"t":"hedgehog","r":13,"c":15,"w":2},
+    {"t":"hedgehog","r":13,"c":23,"w":2},
+    {"t":"barrel","r":13,"c":29},
+    {"t":"forest","r":13,"c":33},
+    {"t":"hedgehog","r":14,"c":4},
+    {"t":"brick","r":14,"c":10,"h":2},
+    {"t":"concrete","r":14,"c":14,"w":5},
+    {"t":"concrete","r":14,"c":21,"w":5},
+    {"t":"brick","r":14,"c":29,"h":2},
+    {"t":"hedgehog","r":14,"c":35},
+    {"t":"concrete","r":15,"c":6,"h":2,"w":2},
+    {"t":"concrete","r":15,"c":14,"h":3},
+    {"t":"concrete","r":15,"c":25,"h":3},
+    {"t":"concrete","r":15,"c":32,"h":2,"w":2},
+    {"t":"hedgehog","r":16,"c":4},
+    {"t":"concrete","r":16,"c":18,"w":6},
+    {"t":"hedgehog","r":16,"c":35},
+    {"t":"brick","r":17,"c":9,"w":2},
+    {"t":"concrete","r":17,"c":16,"h":5},
+    {"t":"concrete","r":17,"c":23,"h":4},
+    {"t":"brick","r":17,"c":29,"w":2},
+    {"t":"hedgehog","r":18,"c":6},
+    {"t":"brick","r":18,"c":9,"h":4},
+    {"t":"concrete","r":18,"c":10,"h":2},
+    {"t":"concrete","r":18,"c":29,"h":2},
+    {"t":"brick","r":18,"c":30,"h":5},
+    {"t":"hedgehog","r":18,"c":33},
+    {"t":"hedgehog","r":20,"c":6},
+    {"t":"brick","r":20,"c":10},
+    {"t":"concrete","r":20,"c":14,"h":4},
+    {"t":"concrete","r":20,"c":25,"h":4},
+    {"t":"brick","r":20,"c":29,"h":3},
+    {"t":"hedgehog","r":20,"c":33},
+    {"t":"concrete","r":21,"c":17,"w":5},
+    {"t":"hedgehog","r":22,"c":4},
+    {"t":"concrete","r":22,"c":6,"h":2,"w":2},
+    {"t":"brick","r":22,"c":12},
+    {"t":"concrete","r":22,"c":13},
+    {"t":"forest","r":22,"c":26,"h":2,"w":2},
+    {"t":"concrete","r":22,"c":32,"h":2,"w":2},
+    {"t":"hedgehog","r":22,"c":35},
+    {"t":"boxes","r":23,"c":9},
+    {"t":"concrete","r":23,"c":15,"w":4},
+    {"t":"concrete","r":23,"c":21,"w":4},
+    {"t":"boxes","r":23,"c":30},
+    {"t":"hedgehog","r":24,"c":4},
+    {"t":"barrel","r":24,"c":9},
+    {"t":"hedgehog","r":24,"c":15,"w":2},
+    {"t":"hedgehog","r":24,"c":23,"w":2},
+    {"t":"barrel","r":24,"c":30},
+    {"t":"hedgehog","r":24,"c":35},
+    {"t":"brick","r":25,"c":3,"w":2},
+    {"t":"hedgehog","r":25,"c":7,"w":2},
+    {"t":"hedgehog","r":25,"c":32,"w":2},
+    {"t":"brick","r":25,"c":36,"w":2},
+    {"t":"brick","r":27,"c":28,"h":2,"w":4},
+    {"t":"brick","r":30,"c":3,"w":2},
+    {"t":"hedgehog","r":30,"c":7,"w":2},
+    {"t":"hedgehog","r":30,"c":32,"w":2},
+    {"t":"brick","r":30,"c":36,"w":2},
+    {"t":"hedgehog","r":31,"c":4},
+    {"t":"barrel","r":31,"c":9},
+    {"t":"hedgehog","r":31,"c":15,"w":2},
+    {"t":"hedgehog","r":31,"c":23,"w":2},
+    {"t":"barrel","r":31,"c":30},
+    {"t":"hedgehog","r":31,"c":35},
+    {"t":"forest","r":32,"c":6,"w":2},
+    {"t":"boxes","r":32,"c":9},
+    {"t":"boxes","r":32,"c":30},
+    {"t":"forest","r":32,"c":32,"w":2},
+    {"t":"brick","r":33,"c":6},
+    {"t":"brick","r":33,"c":8},
+    {"t":"brick","r":33,"c":12,"h":2,"w":2},
+    {"t":"brick","r":33,"c":26,"w":2},
+    {"t":"brick","r":34,"c":25,"w":2},
+    {"t":"forest","r":35,"c":4,"h":2},
+    {"t":"brick","r":35,"c":6},
+    {"t":"brick","r":35,"c":8},
+    {"t":"concrete","r":35,"c":19,"h":2,"w":2},
+    {"t":"forest","r":35,"c":33,"h":2},
+    {"t":"forest","r":36,"c":3},
+    {"t":"crater","r":36,"c":10},
+    {"t":"crater","r":36,"c":26},
+    {"t":"forest","r":36,"c":34},
+    {"t":"hedgehog","r":37,"c":3},
+    {"t":"hedgehog","r":37,"c":10},
+    {"t":"hedgehog","r":37,"c":16},
+    {"t":"hedgehog","r":37,"c":23},
+    {"t":"hedgehog","r":37,"c":29},
+    {"t":"hedgehog","r":37,"c":36},
+    {"t":"brick","r":38,"c":4},
+    {"t":"brick","r":38,"c":9},
+    {"t":"brick","r":38,"c":17},
+    {"t":"brick","r":38,"c":22},
+    {"t":"brick","r":38,"c":30},
+    {"t":"brick","r":38,"c":35},
+    {"t":"bridge","r":26,"c":26,"w":2,"dir":"ns"},
+    {"t":"bridge","r":26,"c":32,"w":2,"dir":"ns"},
+    {"t":"bridge","r":27,"c":7,"h":2,"w":2,"dir":"ns"},
+    {"t":"bridge","r":27,"c":12,"h":2,"w":2,"dir":"ns"},
+    {"t":"bridge","r":27,"c":19,"h":2,"w":2,"dir":"ns"},
+    {"t":"bridge","r":27,"c":36,"h":2,"w":2,"dir":"ns"},
+    {"t":"bridge","r":29,"c":26,"w":2,"dir":"ns"},
+    {"t":"bridge","r":29,"c":32,"w":2,"dir":"ns"},
+    {"t":"house1","r":3,"c":12,"h":2,"w":2,"style":0},
+    {"t":"house1","r":3,"c":25,"h":2,"w":3,"style":2},
+    {"t":"house1","r":8,"c":12,"h":2,"w":2,"style":5},
+    {"t":"house1","r":8,"c":25,"h":2,"w":2,"style":7},
+    {"t":"house2","r":10,"c":19,"h":2,"w":2,"style":3},
+    {"t":"house1","r":11,"c":3,"h":2,"w":2,"style":0},
+    {"t":"house1","r":11,"c":36,"h":2,"w":2,"style":6},
+    {"t":"landmark","kind":"SACRE_COEUR","r":3,"c":25},
+    {"t":"landmark","kind":"ARC_DE_TRIOMPHE","r":7,"c":6},
+    {"t":"landmark","kind":"CONCORDE_OBELISK","r":22,"c":12},
+    {"t":"landmark","kind":"LOUVRE_PYRAMID","r":21,"c":29},
+    {"t":"landmark","kind":"NOTRE_DAME","r":27,"c":28},
+    {"t":"landmark","kind":"EIFFEL_TOWER","r":33,"c":6},
+    {"t":"powerup","kind":"REPAIR","r":15,"c":19},
+    {"t":"powerup","kind":"APS","r":22,"c":18},
+    {"t":"powerup","kind":"MISSILE","r":11,"c":7},
+    {"t":"powerup","kind":"EMP","r":19,"c":26},
+    {"t":"powerup","kind":"REPAIR","r":31,"c":19},
+    {"t":"powerup","kind":"APS","r":23,"c":12},
+    {"t":"mine","r":5,"c":11},
+    {"t":"mine","r":5,"c":14},
+    {"t":"mine","r":6,"c":22},
+    {"t":"mine","r":6,"c":34},
+    {"t":"mine","r":10,"c":5},
+    {"t":"mine","r":4,"c":15},
+    {"t":"mine","r":4,"c":24},
+    {"t":"mine","r":10,"c":35},
+    {"t":"mine","r":13,"c":9},
+    {"t":"mine","r":8,"c":10},
+    {"t":"mine","r":8,"c":29},
+    {"t":"mine","r":13,"c":31},
+    {"t":"mine","r":16,"c":5},
+    {"t":"mine","r":14,"c":2},
+    {"t":"mine","r":14,"c":37},
+    {"t":"mine","r":16,"c":34},
+    {"t":"mine","r":20,"c":5},
+    {"t":"mine","r":20,"c":34},
+    {"t":"mine","r":24,"c":8},
+    {"t":"mine","r":3,"c":15},
+    {"t":"mine","r":3,"c":24},
+    {"t":"mine","r":24,"c":34},
+    {"t":"mine","r":25,"c":6},
+    {"t":"mine","r":36,"c":14},
+    {"t":"mine","r":35,"c":11},
+    {"t":"mine","r":30,"c":9},
+    {"t":"mine","r":30,"c":15},
+    {"t":"mine","r":30,"c":24},
+    {"t":"mine","r":31,"c":34},
+    {"t":"mine","r":34,"c":15},
+    {"t":"mine","r":34,"c":24},
+    {"t":"mine","r":35,"c":29},
+    {"t":"mine_sign","r":5,"c":10,"rot":0.4},
+    {"t":"mine_sign","r":6,"c":21,"rot":-0.3},
+    {"t":"mine_sign","r":10,"c":14,"rot":0.2},
+    {"t":"mine_sign","r":10,"c":25,"rot":-0.2},
+    {"t":"mine_sign","r":13,"c":8},
+    {"t":"mine_sign","r":13,"c":30},
+    {"t":"mine_sign","r":16,"c":10,"rot":0.5},
+    {"t":"mine_sign","r":16,"c":29,"rot":-0.5},
+    {"t":"mine_sign","r":24,"c":14},
+    {"t":"mine_sign","r":24,"c":25},
+    {"t":"mine_sign","r":25,"c":5,"rot":0.3},
+    {"t":"mine_sign","r":30,"c":14,"rot":3.14},
+    {"t":"mine_sign","r":30,"c":25,"rot":3.14},
+    {"t":"mine_sign","r":34,"c":16,"rot":3.14},
+    {"t":"decal","kind":"label","r":16,"c":19,"size":2,"text":"PALAIS DE L'ELYSEE // ALLIED HQ"},
+    {"t":"decal","kind":"label","r":10,"c":7,"size":1.8,"text":"PLACE DE L'ETOILE"},
+    {"t":"decal","kind":"label","r":24,"c":12,"size":1.8,"text":"PLACE DE LA CONCORDE"},
+    {"t":"decal","kind":"label","r":24,"c":29,"size":1.8,"text":"COUR NAPOLEON // LOUVRE"},
+    {"t":"decal","kind":"label","r":25,"c":29,"size":1.8,"text":"ILE DE LA CITE"},
+    {"t":"decal","kind":"label","r":31,"c":7,"size":1.8,"text":"CHAMP DE MARS // TOUR EIFFEL"},
+    {"t":"decal","kind":"helipad","r":21,"c":19,"size":1.8},
+    {"t":"decal","kind":"crosswalk","r":25,"c":12,"size":2},
+    {"t":"decal","kind":"crosswalk","r":25,"c":19,"size":2}
   ]
 }

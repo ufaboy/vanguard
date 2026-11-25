@@ -51,6 +51,7 @@ import { resolveMapRules } from './mapRules.js';
 import { normalizeDecoration } from './render/decoration.js';
 import { POWERUP, POWERUP_TYPES, POWERUP_MAX_ON_MAP } from './powerups.js';
 import { PLACEABLE_LANDMARKS, landmarkBlockedCells } from './terrains/landmarks.js';
+import { unpackTerrain } from './terrains/terrain-format.js';
 
 export const GRID_SIZE = 40;
 export const TILE_SIZE = 2.0;
@@ -87,44 +88,6 @@ export function getBaseLayout(baseCell = BASE_CELL, size = GRID_SIZE, options = 
   };
 }
 
-const SURFACE_CHAR_TO_TILE = {
-  '.': TileType.EMPTY,
-  _: TileType.EMPTY,
-  ' ': TileType.EMPTY,
-  G: TileType.EMPTY,
-  R: TileType.ROAD,
-  W: TileType.WATER,
-  I: TileType.ICE,
-  S: TileType.SAND,
-  N: TileType.SAND,
-  '^': TileType.STONE,
-  V: TileType.GRASS,
-  M: TileType.SWAMP,
-  L: TileType.OIL_SLICK,
-};
-
-const OBJECT_CHAR_TO_TILE = {
-  '.': null,
-  _: null,
-  ' ': null,
-  B: TileType.BRICK,
-  C: TileType.CONCRETE,
-  F: TileType.FOREST,
-  X: TileType.HEDGEHOG,
-  Z: TileType.HEDGEHOG,
-  D: TileType.BARREL,
-  O: TileType.BARREL,
-  Q: TileType.BOXES,
-  K: TileType.CRATER,
-  T: TileType.WATER_TOWER,
-  '=': TileType.BRIDGE,
-  U: TileType.RUBBLE,
-  A: TileType.HOUSE_1,
-  P: TileType.HOUSE_2,
-  H: TileType.BASE,
-  E: TileType.ENEMY_BASE,
-};
-
 /** Map `enemies.nextWave`: `{ when: "cleared", delaySec }` starts each group `delaySec` after the field is empty. */
 function normalizeNextWave(raw, mapId = 'map') {
   if (raw == null) return null;
@@ -146,36 +109,22 @@ function parseHexColor(val, fallback = 0x0b1120) {
 }
 
 /**
- * Parses a JSON map's `surfaceLayout` + `objectLayout` into `{ grid, surfaceGrid, objectGrid }`.
- * A map without layouts is an empty arena; the retired single-layer `layout` / `grid` format is rejected.
+ * Parses a JSON map's unified `terrain` array into `{ grid, surfaceGrid, objectGrid, ... }`.
  */
 function parseMapGrids(mapJson) {
-  if (mapJson?.layout !== undefined || mapJson?.grid !== undefined) {
+  if (
+    mapJson?.layout !== undefined ||
+    mapJson?.grid !== undefined ||
+    mapJson?.surfaceLayout !== undefined ||
+    mapJson?.objectLayout !== undefined
+  ) {
     throw new Error(
-      `${mapJson?.mapId || 'map'}: the single-layer layout format is no longer supported; use surfaceLayout + objectLayout`
+      `${mapJson?.mapId || 'map'}: legacy layout/surfaceLayout/objectLayout formats are no longer supported; use terrain array format`
     );
   }
   const size = mapJson?.gridSize || GRID_SIZE;
-  const surfaceGrid = Array.from({ length: size }, () => Array(size).fill(TileType.EMPTY));
-  const objectGrid = Array.from({ length: size }, () => Array(size).fill(null));
-  const rawSurface = mapJson?.surfaceLayout || [];
-  const rawObject = mapJson?.objectLayout || [];
-  for (let r = 0; r < size; r++) {
-    const sRow = rawSurface[r];
-    const oRow = rawObject[r];
-    for (let c = 0; c < size; c++) {
-      const sTok = sRow?.[c];
-      if (typeof sTok === 'number') surfaceGrid[r][c] = sTok;
-      else if (typeof sTok === 'string') {
-        surfaceGrid[r][c] = SURFACE_CHAR_TO_TILE[sTok] ?? SURFACE_CHAR_TO_TILE[sTok.toUpperCase()] ?? TileType.EMPTY;
-      }
-      const oTok = oRow?.[c];
-      if (typeof oTok === 'number') objectGrid[r][c] = oTok === TileType.EMPTY ? null : oTok;
-      else if (typeof oTok === 'string') {
-        objectGrid[r][c] = OBJECT_CHAR_TO_TILE[oTok] ?? OBJECT_CHAR_TO_TILE[oTok.toUpperCase()] ?? null;
-      }
-    }
-  }
+  const unpacked = unpackTerrain(mapJson?.terrain, size);
+  const { surfaceGrid, objectGrid, buildingStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals } = unpacked;
 
   const baseCell = {
     row: mapJson?.baseCell?.row ?? BASE_CELL.row,
@@ -185,26 +134,19 @@ function parseMapGrids(mapJson) {
     footprint: mapJson?.baseFootprint,
     baseDefense: mapJson?.baseDefense,
   });
-  for (let r = 0; r < size; r++) {
-    for (let c = 0; c < size; c++) {
-      if (objectGrid[r][c] === TileType.BASE) objectGrid[r][c] = null;
-    }
-  }
   for (const { row, col } of layout.cells) {
     surfaceGrid[row][col] = TileType.EMPTY;
     objectGrid[row][col] = TileType.BASE;
   }
 
-  if (Array.isArray(mapJson?.landmarks3d)) {
-    for (const entry of mapJson.landmarks3d) {
-      if (!PLACEABLE_LANDMARKS.includes(entry?.kind)) {
-        throw new Error(`${mapJson.mapId || 'map'}: unsupported landmark kind ${entry?.kind}`);
-      }
-      for (const { row, col } of landmarkBlockedCells(entry)) {
-        if (row >= 0 && row < size && col >= 0 && col < size) {
-          surfaceGrid[row][col] = TileType.EMPTY;
-          objectGrid[row][col] = TileType.LANDMARK;
-        }
+  for (const entry of landmarks3d) {
+    if (!PLACEABLE_LANDMARKS.includes(entry?.kind)) {
+      throw new Error(`${mapJson.mapId || 'map'}: unsupported landmark kind ${entry?.kind}`);
+    }
+    for (const { row, col } of landmarkBlockedCells(entry)) {
+      if (row >= 0 && row < size && col >= 0 && col < size) {
+        surfaceGrid[row][col] = TileType.EMPTY;
+        objectGrid[row][col] = TileType.LANDMARK;
       }
     }
   }
@@ -212,7 +154,7 @@ function parseMapGrids(mapJson) {
   const grid = Array.from({ length: size }, (_, r) =>
     Array.from({ length: size }, (__, c) => objectGrid[r][c] ?? surfaceGrid[r][c])
   );
-  return { grid, surfaceGrid, objectGrid };
+  return { grid, surfaceGrid, objectGrid, buildingStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals };
 }
 
 /** Normalizes a raw JSON map object from `/public/maps/*.json` into the runtime Sector format. */
@@ -259,13 +201,34 @@ export function normalizeMapDefinition(rawMap, index = 0) {
     : [];
 
   const rules = resolveMapRules(rawMap);
-  const decoration = normalizeDecoration(rawMap);
-  const { grid, surfaceGrid, objectGrid } = parseMapGrids(rawMap);
+  const {
+    grid,
+    surfaceGrid,
+    objectGrid,
+    buildingStyles,
+    bridges,
+    landmarks3d,
+    powerups: rawPowerups,
+    mines,
+    mineSigns,
+    decals,
+  } = parseMapGrids(rawMap);
+  const decoSource =
+    decals.length > 0
+      ? {
+          version: 1,
+          seed: 1,
+          theme: envCfg.theme || 'urban',
+          ...(rawMap.decoration || {}),
+          landmarks: decals,
+        }
+      : rawMap.decoration;
+  const decoration = normalizeDecoration({ ...rawMap, decoration: decoSource });
   const pickupCells = new Set();
-  if (rawMap.powerups !== undefined && (!Array.isArray(rawMap.powerups) || rawMap.powerups.length > POWERUP_MAX_ON_MAP)) {
+  if (rawPowerups.length > POWERUP_MAX_ON_MAP) {
     throw new Error(`${rawMap.mapId}: invalid authored powerup collection`);
   }
-  const powerups = (rawMap.powerups || []).map(pickup => {
+  const powerups = rawPowerups.map(pickup => {
     const type = POWERUP[pickup.type] || pickup.type;
     const { row, col } = pickup;
     const key = `${row},${col}`;
@@ -288,39 +251,6 @@ export function normalizeMapDefinition(rawMap, index = 0) {
     pickupCells.add(key);
     return { type, row, col };
   });
-
-  const landmarks3d = Array.isArray(rawMap.landmarks3d)
-    ? rawMap.landmarks3d.map((item) => ({
-        kind: item.kind,
-        row: Number(item.row),
-        col: Number(item.col),
-      }))
-    : [];
-  const bridges = Array.isArray(rawMap.bridges)
-    ? rawMap.bridges.map((item) => ({
-        row: Number(item.row),
-        col: Number(item.col),
-        rows: Math.max(1, Number(item.rows) || 1),
-        cols: Math.max(1, Number(item.cols) || 1),
-        orientation: item.orientation === 'ew' ? 'ew' : 'ns',
-      }))
-    : [];
-  const buildings = Array.isArray(rawMap.buildings)
-    ? rawMap.buildings.filter((item) => typeof item === 'string')
-    : [];
-  const mines = Array.isArray(rawMap.mines)
-    ? rawMap.mines.map((item) => ({
-        row: Number(item.row),
-        col: Number(item.col),
-      }))
-    : [];
-  const mineSigns = Array.isArray(rawMap.mineSigns)
-    ? rawMap.mineSigns.map((item) => ({
-        row: Number(item.row),
-        col: Number(item.col),
-        rotation: Number(item.rotation || 0),
-      }))
-    : [];
 
   return {
     id: rawMap.id ?? index + 1,
@@ -353,7 +283,7 @@ export function normalizeMapDefinition(rawMap, index = 0) {
     baseDefense: rawMap.baseDefense || 'standard',
     landmarks3d,
     bridges,
-    buildings,
+    buildingStyles,
     mines,
     mineSigns,
     playerSpawnCell: rawMap.playerSpawnCell || {

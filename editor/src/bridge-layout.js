@@ -54,35 +54,61 @@ export function computeBridgeLayout(objectGrid, surfaceGrid = null) {
         }
       }
 
-      let waterEW = 0;
+      let gapEW = 0;
       for (let dr = 0; dr < height; dr++) {
-        waterEW += isSurface(r + dr, c - 1, TileType.WATER) + isSurface(r + dr, c + width, TileType.WATER);
+        gapEW +=
+          isSurface(r + dr, c - 1, TileType.WATER) +
+          isSurface(r + dr, c - 1, TileType.ICE) +
+          isSurface(r + dr, c - 1, TileType.SWAMP) +
+          isSurface(r + dr, c + width, TileType.WATER) +
+          isSurface(r + dr, c + width, TileType.ICE) +
+          isSurface(r + dr, c + width, TileType.SWAMP);
       }
-      let waterNS = 0;
+      let gapNS = 0;
       for (let dc = 0; dc < width; dc++) {
-        waterNS += isSurface(r - 1, c + dc, TileType.WATER) + isSurface(r + height, c + dc, TileType.WATER);
+        gapNS +=
+          isSurface(r - 1, c + dc, TileType.WATER) +
+          isSurface(r - 1, c + dc, TileType.ICE) +
+          isSurface(r - 1, c + dc, TileType.SWAMP) +
+          isSurface(r + height, c + dc, TileType.WATER) +
+          isSurface(r + height, c + dc, TileType.ICE) +
+          isSurface(r + height, c + dc, TileType.SWAMP);
       }
 
       let orientation;
-      if (waterEW > waterNS) {
+      if (gapEW > gapNS) {
         orientation = 'ns';
-      } else if (waterNS > waterEW) {
+      } else if (gapNS > gapEW) {
         orientation = 'ew';
       } else {
-        let roadEW = 0;
+        let stoneEW = 0;
         for (let dr = 0; dr < height; dr++) {
-          roadEW += isSurface(r + dr, c - 1, TileType.ROAD) + isSurface(r + dr, c + width, TileType.ROAD);
+          stoneEW += isSurface(r + dr, c - 1, TileType.STONE) + isSurface(r + dr, c + width, TileType.STONE);
         }
-        let roadNS = 0;
+        let stoneNS = 0;
         for (let dc = 0; dc < width; dc++) {
-          roadNS += isSurface(r - 1, c + dc, TileType.ROAD) + isSurface(r + height, c + dc, TileType.ROAD);
+          stoneNS += isSurface(r - 1, c + dc, TileType.STONE) + isSurface(r + height, c + dc, TileType.STONE);
         }
-        if (roadEW > roadNS) {
-          orientation = 'ew';
-        } else if (roadNS > roadEW) {
+        if (stoneEW > stoneNS) {
           orientation = 'ns';
+        } else if (stoneNS > stoneEW) {
+          orientation = 'ew';
         } else {
-          orientation = height >= width ? 'ns' : 'ew';
+          let roadEW = 0;
+          for (let dr = 0; dr < height; dr++) {
+            roadEW += isSurface(r + dr, c - 1, TileType.ROAD) + isSurface(r + dr, c + width, TileType.ROAD);
+          }
+          let roadNS = 0;
+          for (let dc = 0; dc < width; dc++) {
+            roadNS += isSurface(r - 1, c + dc, TileType.ROAD) + isSurface(r + height, c + dc, TileType.ROAD);
+          }
+          if (roadEW > roadNS) {
+            orientation = 'ew';
+          } else if (roadNS > roadEW) {
+            orientation = 'ns';
+          } else {
+            orientation = height >= width ? 'ns' : 'ew';
+          }
         }
       }
 

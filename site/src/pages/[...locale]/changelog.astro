@@ -47,6 +47,12 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.11.0 // MAP ARCHITECTURE &amp; EDITOR")}</span>
+            <strong>{t("Unified Compact Terrain Format &amp; Map Editor Improvements")}</strong>
+            <p>{t("Migrated all 47 battlefield maps to a unified compact terrain array of rectangular regions and point entities, offloading bridge orientation and building style layout from runtime loading into a parallel bake-map validation tool. The 3D Map Editor now synchronizes modular building styles in real time, merges and auto-orients bridges across water, ice, stone, swamp, and rubble, and moves objects independently of ground surfaces and decals.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 4.10.0 // TACTICAL MECHANICS")}</span>
             <strong>{t("Proximity Mine Detection &amp; Radar Markers")}</strong>
             <p>{t("Map-placed and enemy mines now remain hidden until detected within a 3-cell radius of the player tank (through obstacles) or revealed by the Recon Drone, fading smoothly into view with a mine-detector audio ping and staying marked permanently once discovered. Player air-dropped mines remain visible immediately, and all discovered mines within radar range appear as distinct amber markers on the tactical minimap unaffected by Jammer ECM.")}</p>
