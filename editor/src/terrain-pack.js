@@ -4,17 +4,33 @@
  */
 
 import { TileType } from '../../public/src/game/terrains/surfaces.js';
-import {
-  OBJECT_NAME_TO_TILE,
-  SURFACE_NAME_TO_TILE,
-} from '../../public/src/game/terrains/terrain-format.js';
 
-const TILE_TO_SURFACE_NAME = new Map(
-  Object.entries(SURFACE_NAME_TO_TILE).map(([name, tile]) => [tile, name])
-);
-const TILE_TO_OBJECT_NAME = new Map(
-  Object.entries(OBJECT_NAME_TO_TILE).map(([name, tile]) => [tile, name])
-);
+const TILE_TO_SURFACE_NAME = new Map([
+  [TileType.ROAD, 'road'],
+  [TileType.WATER, 'water'],
+  [TileType.ICE, 'ice'],
+  [TileType.SAND, 'sand'],
+  [TileType.STONE, 'stone'],
+  [TileType.GRASS, 'grass'],
+  [TileType.SWAMP, 'swamp'],
+  [TileType.OIL_SLICK, 'oil'],
+]);
+
+const TILE_TO_OBJECT_NAME = new Map([
+  [TileType.BRICK, 'brick'],
+  [TileType.CONCRETE, 'concrete'],
+  [TileType.FOREST, 'forest'],
+  [TileType.HEDGEHOG, 'hedgehog'],
+  [TileType.BARREL, 'barrel'],
+  [TileType.BOXES, 'boxes'],
+  [TileType.CRATER, 'crater'],
+  [TileType.WATER_TOWER, 'water_tower'],
+  [TileType.BRIDGE, 'bridge'],
+  [TileType.RUBBLE, 'rubble'],
+  [TileType.HOUSE_1, 'house1'],
+  [TileType.HOUSE_2, 'house2'],
+  [TileType.ENEMY_BASE, 'enemy_base'],
+]);
 
 function packRects(rows, cols, getKey) {
   const visited = Array.from({ length: rows }, () => new Uint8Array(cols));

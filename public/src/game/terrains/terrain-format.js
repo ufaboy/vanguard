@@ -5,7 +5,7 @@
 
 import { TileType } from './surfaces.js';
 
-export const SURFACE_NAME_TO_TILE = Object.freeze({
+const SURFACE_NAME_TO_TILE = Object.freeze({
   road: TileType.ROAD,
   water: TileType.WATER,
   ice: TileType.ICE,
@@ -16,7 +16,7 @@ export const SURFACE_NAME_TO_TILE = Object.freeze({
   oil: TileType.OIL_SLICK,
 });
 
-export const OBJECT_NAME_TO_TILE = Object.freeze({
+const OBJECT_NAME_TO_TILE = Object.freeze({
   brick: TileType.BRICK,
   concrete: TileType.CONCRETE,
   forest: TileType.FOREST,

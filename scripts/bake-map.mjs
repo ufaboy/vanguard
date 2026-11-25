@@ -195,7 +195,7 @@ async function processMapFile(filePath, passes, checkOnly) {
   });
 
   const nextText = formatMapJson({ ...map, terrain: nextTerrain });
-  if (nextText === raw) return null;
+  if (nextText === raw.replace(/\r\n/g, '\n')) return null;
 
   if (summary.length === 0) summary.push('repack');
   const rel = path.relative(ROOT, filePath).replace(/\\/g, '/');
