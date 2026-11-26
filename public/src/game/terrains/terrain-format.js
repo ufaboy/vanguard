@@ -39,7 +39,7 @@ const OBJECT_NAME_TO_TILE = Object.freeze({
   rail_bridge: TileType.RAIL_BRIDGE,
 });
 
-export const PROP_KINDS = Object.freeze(['lamp', 'fence', 'car', 'shrub', 'barricade']);
+export const PROP_KINDS = Object.freeze(['lamp', 'fence', 'car', 'car_wreck', 'shrub', 'barricade']);
 const PROP_KIND_SET = new Set(PROP_KINDS);
 
 const RAIL_CURVE_BASE_CELLS = Object.freeze([

@@ -7,6 +7,35 @@ import { getSharedGltfLoader } from '../render/gltf-loader.js';
 
 const RAIL_CAR_BODY_HEXES = Object.freeze([0xb43c28, 0x2563eb, 0x2e6f40, 0xca8a04]);
 
+export const CAR_MODEL_KEYS = Object.freeze(['CAR_SEDAN', 'CAR_SUV', 'CAR_VAN']);
+export const CAR_WRECK_MODEL_KEYS = Object.freeze([
+  'CAR_SEDAN_WRECK',
+  'CAR_SUV_WRECK',
+  'CAR_VAN_WRECK',
+]);
+export const CAR_PAINT_COLORS = Object.freeze([
+  0xe2e8f0, // Pearl Silver
+  0xf8fafc, // Alpine White
+  0x64748b, // Slate Grey
+  0x334155, // Graphite Charcoal
+  0x1e293b, // Obsidian Black
+  0x991b1b, // Crimson Red
+  0x7f1d1d, // Burgundy Wine
+  0xdc2626, // Signal Red
+  0x1e3a8a, // Midnight Navy
+  0x2563eb, // Cobalt Blue
+  0x0284c7, // Azure Blue
+  0x166534, // Racing Green
+  0x3f6212, // Olive Moss
+  0x0f766e, // Deep Teal
+  0xd97706, // Amber Ochre
+  0xeab308, // Mustard Yellow
+  0xc2410c, // Burnt Terracotta
+  0xd6d3d1, // Champagne Stone
+  0x78350f, // Espresso Bronze
+  0x581c87, // Plum Metallic
+]);
+
 /** Blender tactical terrain GLB pack loader (single mesh per geometry + cached Three.js color materials). */
 export class TacticalModels {
   constructor(renderer = null) {
@@ -196,12 +225,9 @@ function ensureTacticalMaterials(factory) {
       roughness: 0.2,
     }),
     fenceWood: new THREE.MeshStandardMaterial({ color: 0x78553a, roughness: 0.88, metalness: 0.05 }),
-    carBodyColors: [
-      new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.45, metalness: 0.5 }),
-      new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.45, metalness: 0.45 }),
-      new THREE.MeshStandardMaterial({ color: 0x1e40af, roughness: 0.45, metalness: 0.45 }),
-      new THREE.MeshStandardMaterial({ color: 0xd6d3d1, roughness: 0.45, metalness: 0.4 }),
-    ],
+    carBodyColors: CAR_PAINT_COLORS.map(
+      (hex) => new THREE.MeshStandardMaterial({ color: hex, roughness: 0.45, metalness: 0.45 })
+    ),
     carGlass: new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2, metalness: 0.8 }),
     tireRubber: new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.9, metalness: 0.08 }),
     shrubGreen: new THREE.MeshStandardMaterial({ color: 0x3f6212, roughness: 0.88, metalness: 0.02 }),
@@ -578,14 +604,14 @@ export function createSandbagsBlock(factory, neighborMask = 0) {
 
   const mats = ensureTacticalMaterials(factory);
   const group = new THREE.Group();
-  const bagGeo = factory.sharedGeometry('BoxGeometry', 0.56, 0.2, 0.34);
+  const bagGeo = factory.sharedGeometry('BoxGeometry', 0.58, 0.26, 0.48);
 
-  for (let row = 0; row < 3; row++) {
-    const count = row === 2 ? 2 : 3;
+  for (let row = 0; row < 4; row++) {
+    const count = row % 2 === 0 ? 4 : 3;
     for (let i = 0; i < count; i++) {
-      const offset = (i - (count - 1) / 2) * 0.58;
+      const offset = (i - (count - 1) / 2) * 0.49;
       const bag = new THREE.Mesh(bagGeo, (row + i) % 2 === 0 ? mats.burlap : mats.burlapDark);
-      bag.position.set(offset, 0.1 + row * 0.18, (row % 2 === 0 ? 0.04 : -0.04));
+      bag.position.set(offset, 0.13 + row * 0.22, (row % 2 === 0 ? 0.05 : -0.05));
       bag.rotation.y = ((i + row) % 3 - 1) * 0.06;
       bag.castShadow = true;
       bag.receiveShadow = true;
@@ -799,8 +825,21 @@ export function createCrushableProp(factory, kind, theme = 'urban', seed = 0) {
       rail.position.set(0, ry, 0);
       group.add(rail);
     }
-  } else if (kind === 'car') {
-    const bodyMat = mats.carBodyColors[Math.abs(seed) % mats.carBodyColors.length];
+  } else if (kind === 'car' || kind === 'car_wreck') {
+    const isWreck = kind === 'car_wreck';
+    const s = Math.abs(seed | 0);
+    const modelKeys = isWreck ? CAR_WRECK_MODEL_KEYS : CAR_MODEL_KEYS;
+    const modelKey = modelKeys[s % modelKeys.length];
+    const colorIdx = (Math.imul(s + 1, 2654435761) >>> 0) % CAR_PAINT_COLORS.length;
+    const paintHex = isWreck ? null : CAR_PAINT_COLORS[colorIdx];
+
+    if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
+      if (factory.tacticalModels.apply(group, modelKey, { castShadow: false, receiveShadow: true, paintHex })) {
+        return group;
+      }
+    }
+
+    const bodyMat = isWreck ? mats.railCarDamaged : mats.carBodyColors[colorIdx % mats.carBodyColors.length];
     const chassis = new THREE.Mesh(
       factory.sharedGeometry('BoxGeometry', 0.84, 0.34, 1.56),
       bodyMat
@@ -810,7 +849,7 @@ export function createCrushableProp(factory, kind, theme = 'urban', seed = 0) {
 
     const cabin = new THREE.Mesh(
       factory.sharedGeometry('BoxGeometry', 0.72, 0.26, 0.82),
-      mats.carGlass
+      isWreck ? mats.darkIron : mats.carGlass
     );
     cabin.position.set(0, 0.52, -0.08);
     group.add(cabin);

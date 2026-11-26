@@ -8,7 +8,13 @@ import { canPlaceOnSurface, cellMovement, isTilePassable } from '../public/src/g
 import { PROP_KINDS, railCurveCells, unpackTerrain } from '../public/src/game/terrains/terrain-format.js';
 import { extractRailTracks } from '../public/src/game/terrains/rail-paths.js';
 import { validateRailroadLayout } from '../public/src/game/terrains/rail-rules.js';
-import { TacticalModels } from '../public/src/game/terrains/tactical-models.js';
+import {
+  CAR_MODEL_KEYS,
+  CAR_PAINT_COLORS,
+  CAR_WRECK_MODEL_KEYS,
+  TacticalModels,
+  createCrushableProp,
+} from '../public/src/game/terrains/tactical-models.js';
 import { packTerrain } from '../editor/src/terrain-pack.js';
 
 test('canPlaceOnSurface enforces rules for new surfaces and objects', () => {
@@ -357,4 +363,61 @@ test('3x3 rail curves smooth into curved Bezier arcs even on closed loops', () =
   const mid = nwPoints[Math.floor(nwPoints.length / 2)];
   // Straight chord midpoint between (10,12) and (12,10) is (-17, -17); curved arc bends closer to (-18, -18)
   assert.ok(mid.x < -17.3 && mid.z < -17.3, `Expected curved arc midpoint, got (${mid.x}, ${mid.z})`);
+});
+
+test('car and car_wreck props select across 3 Blender models, large paint pool, and manifest entries', () => {
+  assert.equal(PROP_KINDS.includes('car_wreck'), true);
+  assert.equal(CAR_MODEL_KEYS.length, 3);
+  assert.equal(CAR_WRECK_MODEL_KEYS.length, 3);
+  assert.ok(CAR_PAINT_COLORS.length >= 16, `Expected large car paint pool, got ${CAR_PAINT_COLORS.length}`);
+
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join('assets', 'blender', 'tactical_terrain', 'manifest.json'), 'utf8')
+  );
+  const manifestNames = new Set(manifest.models.map((m) => m.name));
+  for (const key of [...CAR_MODEL_KEYS, ...CAR_WRECK_MODEL_KEYS]) {
+    assert.equal(manifestNames.has(key), true, `Missing ${key} in tactical_terrain/manifest.json`);
+  }
+
+  const scene = new THREE.Scene();
+  const matPainted = new THREE.MeshStandardMaterial({ name: 'Tactical_Painted', color: 0xffffff });
+  const matMatte = new THREE.MeshStandardMaterial({ name: 'Tactical_Matte', color: 0xffffff });
+  for (const key of CAR_MODEL_KEYS) {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), matPainted);
+    mesh.name = key;
+    scene.add(mesh);
+  }
+  for (const key of CAR_WRECK_MODEL_KEYS) {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), matMatte);
+    mesh.name = key;
+    scene.add(mesh);
+  }
+
+  const tm = new TacticalModels();
+  assert.equal(tm.loadFromScene(scene), true);
+  const factory = {
+    useBlenderTactical: true,
+    tacticalModels: tm,
+    sharedGeometry: () => new THREE.BoxGeometry(1, 1, 1),
+  };
+
+  const seenModels = new Set();
+  const seenColors = new Set();
+  for (let seed = 0; seed < 30; seed++) {
+    const car = createCrushableProp(factory, 'car', 'urban', seed);
+    seenModels.add(car.userData.tacticalGlbKey);
+    seenColors.add(car.children[0].material.color.getHex());
+  }
+  assert.equal(seenModels.size, 3);
+  assert.ok(seenColors.size >= 10, `Expected diverse car paint colors, got ${seenColors.size}`);
+
+  const seenWrecks = new Set();
+  for (let seed = 0; seed < 9; seed++) {
+    const wreck = createCrushableProp(factory, 'car_wreck', 'urban', seed);
+    seenWrecks.add(wreck.userData.tacticalGlbKey);
+    assert.equal(wreck.children[0].material, matMatte);
+  }
+  assert.equal(seenWrecks.size, 3);
+
+  tm.dispose();
 });
