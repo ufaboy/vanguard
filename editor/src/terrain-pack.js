@@ -34,6 +34,7 @@ const TILE_TO_OBJECT_NAME = new Map([
   [TileType.TRANSFORMER, 'transformer'],
   [TileType.SANDBAGS, 'sandbags'],
   [TileType.RAIL_CAR, 'rail_car'],
+  [TileType.LOCOMOTIVE, 'locomotive'],
   [TileType.ENEMY_BASE, 'enemy_base'],
 ]);
 

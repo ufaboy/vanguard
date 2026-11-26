@@ -12,6 +12,8 @@ test('canPlaceOnSurface enforces rules for new surfaces and objects', () => {
   assert.equal(canPlaceOnSurface(TileType.RAIL_CAR, TileType.EMPTY), false);
   assert.equal(canPlaceOnSurface(TileType.RAIL_CAR, TileType.ROAD), false);
   assert.equal(canPlaceOnSurface(TileType.RAIL_CAR, TileType.WATER), false);
+  assert.equal(canPlaceOnSurface(TileType.LOCOMOTIVE, TileType.RAIL), true);
+  assert.equal(canPlaceOnSurface(TileType.LOCOMOTIVE, TileType.EMPTY), false);
 
   for (const obj of [TileType.CONTAINER, TileType.TRANSFORMER, TileType.SANDBAGS]) {
     assert.equal(canPlaceOnSurface(obj, TileType.EMPTY), true);
@@ -36,6 +38,7 @@ test('isTilePassable allows SANDBAGS only when canCrushSandbags is true', () => 
   assert.equal(isTilePassable(TileType.CONTAINER, false, true), false);
   assert.equal(isTilePassable(TileType.TRANSFORMER, false, true), false);
   assert.equal(isTilePassable(TileType.RAIL_CAR, false, true), false);
+  assert.equal(isTilePassable(TileType.LOCOMOTIVE, false, true), false);
   assert.equal(isTilePassable(TileType.RAIL, false, false), true);
 });
 
@@ -43,6 +46,7 @@ test('unpackTerrain and packTerrain round-trip new tiles and props', () => {
   const terrain = {
     rail: [[10, 5, 1, 4]],
     rail_car: [[10, 6]],
+    locomotive: [[10, 8]],
     container: [[12, 8, 1, 2]],
     transformer: [[14, 14]],
     sandbags: [[16, 10, 1, 3]],
@@ -51,6 +55,7 @@ test('unpackTerrain and packTerrain round-trip new tiles and props', () => {
   const unpacked = unpackTerrain(terrain, 40);
   assert.equal(unpacked.surfaceGrid[10][5], TileType.RAIL);
   assert.equal(unpacked.objectGrid[10][6], TileType.RAIL_CAR);
+  assert.equal(unpacked.objectGrid[10][8], TileType.LOCOMOTIVE);
   assert.equal(unpacked.objectGrid[12][8], TileType.CONTAINER);
   assert.equal(unpacked.objectGrid[14][14], TileType.TRANSFORMER);
   assert.equal(unpacked.objectGrid[16][12], TileType.SANDBAGS);
@@ -64,6 +69,7 @@ test('unpackTerrain and packTerrain round-trip new tiles and props', () => {
   });
   assert.deepEqual(repacked.rail, [[10, 5, 1, 4]]);
   assert.deepEqual(repacked.rail_car, [[10, 6]]);
+  assert.deepEqual(repacked.locomotive, [[10, 8]]);
   assert.deepEqual(repacked.container, [[12, 8, 1, 2]]);
   assert.deepEqual(repacked.transformer, [[14, 14]]);
   assert.deepEqual(repacked.sandbags, [[16, 10, 1, 3]]);
@@ -81,11 +87,11 @@ test('all maps place RAIL_CAR on RAIL and use valid prop kinds', () => {
       const { surfaceGrid, objectGrid, props } = unpackTerrain(raw.terrain, size);
       for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
-          if (objectGrid[r][c] === TileType.RAIL_CAR) {
+          if (objectGrid[r][c] === TileType.RAIL_CAR || objectGrid[r][c] === TileType.LOCOMOTIVE) {
             assert.equal(
               surfaceGrid[r][c],
               TileType.RAIL,
-              `${file}: RAIL_CAR at (${r},${c}) must sit on RAIL`
+              `${file}: rail rolling stock at (${r},${c}) must sit on RAIL`
             );
           }
         }

@@ -500,6 +500,42 @@ export class SectorLoaderController {
             );
             engine.mapGroup.add(mesh);
           }
+        } else if (type === TileType.LOCOMOTIVE && engine.modelFactory.createLocomotiveBlock) {
+          hp = 16;
+          if (!pairedCells.has(`${r},${c}`)) {
+            const sameLoco = (rr, cc) =>
+              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+              !pairedCells.has(`${rr},${cc}`) &&
+              (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.LOCOMOTIVE;
+            const pairE = sameLoco(r, c + 1);
+            const pairS = !pairE && sameLoco(r + 1, c);
+            const isRailAxis = (rr, cc) =>
+              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+              (sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL;
+            const orientation = pairE
+              ? 'ew'
+              : pairS
+              ? 'ns'
+              : (isRailAxis(r, c - 1) || isRailAxis(r, c + 1)) && !(isRailAxis(r - 1, c) || isRailAxis(r + 1, c))
+              ? 'ew'
+              : 'ns';
+            if (pairE) {
+              pairedCells.add(`${r},${c}`);
+              pairedCells.add(`${r},${c + 1}`);
+              pairLinks.push([r, c, r, c + 1]);
+            } else if (pairS) {
+              pairedCells.add(`${r},${c}`);
+              pairedCells.add(`${r + 1},${c}`);
+              pairLinks.push([r, c, r + 1, c]);
+            }
+            mesh = engine.modelFactory.createLocomotiveBlock(orientation, pairE || pairS ? 2 : 1);
+            mesh.position.set(
+              x + (pairE ? TILE_SIZE * 0.5 : 0),
+              0,
+              z + (pairS ? TILE_SIZE * 0.5 : 0)
+            );
+            engine.mapGroup.add(mesh);
+          }
         }
 
         if (!mesh && surfaceMesh) {

@@ -374,7 +374,7 @@ export class ExplosionsController {
           rebuildIce = true;
         } else if (cell.type === TileType.BOXES || cell.type === TileType.WATER_TOWER || cell.type === TileType.BRICK) {
           engine.damageTileCell(cell, tileDmg, pos.x, pos.z, fromPlayer);
-        } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR) {
+        } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR || cell.type === TileType.LOCOMOTIVE) {
           engine.damageTileCell(cell, Math.max(4, tileDmg), pos.x, pos.z, fromPlayer);
         } else if (cell.type === TileType.TRANSFORMER || cell.type === TileType.SANDBAGS) {
           engine.damageTileCell(cell, Math.max(2, tileDmg), pos.x, pos.z, fromPlayer);
@@ -496,7 +496,7 @@ export class ExplosionsController {
             engine.explodeBarrel(cell, fromPlayer);
           } else if (cell.type === TileType.WATER_TOWER) {
             engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
-          } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR) {
+          } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR || cell.type === TileType.LOCOMOTIVE) {
             engine.damageTileCell(cell, 4, pos.x, pos.z, fromPlayer);
           } else if (cell.type === TileType.TRANSFORMER || cell.type === TileType.SANDBAGS) {
             engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);

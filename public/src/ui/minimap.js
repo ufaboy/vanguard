@@ -230,6 +230,9 @@ function renderOffscreenTerrain(grid) {
       } else if (type === TileType.RAIL_CAR) {
         ctx.fillStyle = '#9a3412';
         ctx.fillRect(x + 0.4, y + 0.4, s - 0.8, s - 0.8);
+      } else if (type === TileType.LOCOMOTIVE) {
+        ctx.fillStyle = '#1e3a5f';
+        ctx.fillRect(x + 0.3, y + 0.3, s - 0.6, s - 0.6);
       }
     }
   }

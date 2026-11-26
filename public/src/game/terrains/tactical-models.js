@@ -505,6 +505,68 @@ export function updateRailCarDamage(factory, mesh, hp, maxHp = 10) {
   body.material = hp <= maxHp * 0.5 ? mats.railCarDamaged : mats.railCarBody;
 }
 
+/** Heavy diesel-electric railway locomotive sitting on bogies (16 HP, 1 or 2 cells). */
+export function createLocomotiveBlock(factory, orientation = 'ns', spanCells = 1) {
+  const isPair = spanCells >= 2;
+  if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
+    const group = new THREE.Group();
+    if (factory.tacticalModels.apply(group, 'LOCOMOTIVE_INTACT', { castShadow: true, receiveShadow: true })) {
+      if (!isPair) group.scale.z = 0.5;
+      if (orientation === 'ew') group.rotation.y = Math.PI / 2;
+      group.userData.batchTile = true;
+      return markOwned(group, { geometries: false, materials: false });
+    }
+  }
+
+  const mats = ensureTacticalMaterials(factory);
+  const group = new THREE.Group();
+  const lenZ = isPair ? 3.88 : 1.9;
+
+  const underframe = new THREE.Mesh(
+    factory.sharedGeometry('BoxGeometry', 1.38, 0.14, lenZ),
+    mats.darkIron
+  );
+  underframe.position.y = 0.39;
+  group.add(underframe);
+
+  const body = new THREE.Mesh(
+    factory.sharedGeometry('BoxGeometry', 1.44, 1.32, lenZ - 0.1),
+    mats.darkIron
+  );
+  body.position.y = 1.12;
+  body.castShadow = true;
+  body.receiveShadow = true;
+  group.add(body);
+
+  const cab = new THREE.Mesh(
+    factory.sharedGeometry('BoxGeometry', 1.46, 0.36, isPair ? 1.1 : 0.6),
+    mats.transformerBody
+  );
+  cab.position.set(0, 1.86, isPair ? -1.1 : -0.5);
+  cab.castShadow = true;
+  group.add(cab);
+
+  if (orientation === 'ew') group.rotation.y = Math.PI / 2;
+  group.userData.locomotiveBody = body;
+  group.userData.batchTile = true;
+  return markOwned(group, { geometries: false, materials: false });
+}
+
+export function updateLocomotiveDamage(factory, mesh, hp, maxHp = 16) {
+  if (!mesh) return;
+  if (mesh.userData?.tacticalGlbKey && factory.tacticalModels?.ready) {
+    const target = hp <= maxHp * 0.5 ? 'LOCOMOTIVE_DAMAGED' : 'LOCOMOTIVE_INTACT';
+    if (mesh.userData.tacticalGlbKey !== target) {
+      factory.tacticalModels.apply(mesh, target, { castShadow: true, receiveShadow: true });
+    }
+    return;
+  }
+  const body = mesh.userData?.locomotiveBody;
+  if (!body) return;
+  const mats = ensureTacticalMaterials(factory);
+  body.material = hp <= maxHp * 0.5 ? mats.railCarDamaged : mats.darkIron;
+}
+
 /**
  * Small crushable 3D dressing props (`lamp`, `fence`, `car`, `shrub`, `barricade`).
  * No shadows, shared geometries/materials, destroyed on tank contact or blast.

@@ -29,11 +29,13 @@ import {
   TacticalModels,
   createContainerBlock as buildContainerBlock,
   createCrushableProp as buildCrushableProp,
+  createLocomotiveBlock as buildLocomotiveBlock,
   createRailBlock as buildRailBlock,
   createRailCarBlock as buildRailCarBlock,
   createSandbagsBlock as buildSandbagsBlock,
   createTransformerBlock as buildTransformerBlock,
   updateContainerDamage as refreshContainerDamage,
+  updateLocomotiveDamage as refreshLocomotiveDamage,
   updateRailCarDamage as refreshRailCarDamage,
   updateTransformerDamage as refreshTransformerDamage,
 } from '../terrains/tactical-models.js';
@@ -4307,6 +4309,14 @@ export class ModelFactory extends TextureGenerator {
 
   updateRailCarDamage(mesh, hp, maxHp = 10) {
     refreshRailCarDamage(this, mesh, hp, maxHp);
+  }
+
+  createLocomotiveBlock(orientation = 'ns', spanCells = 1) {
+    return buildLocomotiveBlock(this, orientation, spanCells);
+  }
+
+  updateLocomotiveDamage(mesh, hp, maxHp = 16) {
+    refreshLocomotiveDamage(this, mesh, hp, maxHp);
   }
 
   createCrushableProp(kind, theme = 'urban', seed = 0) {

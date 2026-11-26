@@ -37,6 +37,7 @@ const FACILITY_TILE_SET = new Set([
   TileType.BASE,
   TileType.ENEMY_BASE,
   TileType.RAIL_CAR,
+  TileType.LOCOMOTIVE,
 ]);
 
 const DECORATION_TILE_SET = new Set([
@@ -106,7 +107,7 @@ function isDecorationType(tileType) {
 export function canPlaceOnSurface(objectType, surfaceType) {
   if (objectType == null || objectType === TileType.EMPTY) return true;
   if (objectType === TileType.BRIDGE) return BRIDGE_SURFACES.has(surfaceType);
-  if (objectType === TileType.RAIL_CAR) return surfaceType === TileType.RAIL;
+  if (objectType === TileType.RAIL_CAR || objectType === TileType.LOCOMOTIVE) return surfaceType === TileType.RAIL;
   if (isFacilityType(objectType)) return FACILITY_SURFACES.has(surfaceType);
   if (objectType === TileType.FOREST) return FOREST_SURFACES.has(surfaceType);
   if (objectType === TileType.BARREL) return BARREL_SURFACES.has(surfaceType);
@@ -180,6 +181,7 @@ const TILE_TYPE_TO_CONFIG = Object.freeze({
   [TileType.TRANSFORMER]: SURFACE_CONFIGS[SURFACE_TYPES.TRANSFORMER],
   [TileType.SANDBAGS]: SURFACE_CONFIGS[SURFACE_TYPES.SANDBAGS],
   [TileType.RAIL_CAR]: SURFACE_CONFIGS[SURFACE_TYPES.RAIL_CAR],
+  [TileType.LOCOMOTIVE]: SURFACE_CONFIGS[SURFACE_TYPES.LOCOMOTIVE],
 });
 
 /** Catalog config for a numeric TileType, or null for unknown types. */

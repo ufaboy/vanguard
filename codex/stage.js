@@ -323,6 +323,19 @@ export class CodexStage {
             e.codexStageGroup.add(car);
           }
           return;
+        } else if (item.surfaceType === 'LOCOMOTIVE') {
+          if (idx === 0) {
+            for (const zOff of [-0.95, 0.95]) {
+              const rail = e.modelFactory.createRailBlock(0, zOff, 5);
+              rail.scale.setScalar(0.95);
+              e.codexStageGroup.add(rail);
+            }
+            const loco = e.modelFactory.createLocomotiveBlock('ns', 2);
+            loco.position.set(0, 0, 0);
+            loco.scale.setScalar(0.95);
+            e.codexStageGroup.add(loco);
+          }
+          return;
         } else if (item.surfaceType === 'GRASS') {
           block = e.modelFactory.createGrassBlock(pos.x, pos.z);
         } else if (item.surfaceType === 'STONE') {

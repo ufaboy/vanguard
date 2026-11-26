@@ -32,6 +32,7 @@ export const TileType = Object.freeze({
   TRANSFORMER: 27,
   SANDBAGS: 28,
   RAIL_CAR: 29,
+  LOCOMOTIVE: 30,
 });
 
 export const SURFACE_TYPES = Object.freeze({
@@ -64,6 +65,7 @@ export const SURFACE_TYPES = Object.freeze({
   TRANSFORMER: 'TRANSFORMER',
   SANDBAGS: 'SANDBAGS',
   RAIL_CAR: 'RAIL_CAR',
+  LOCOMOTIVE: 'LOCOMOTIVE',
   TURRET_CANNON: 'TURRET_CANNON',
   TURRET_HOWITZER: 'TURRET_HOWITZER',
   TURRET_MLRS: 'TURRET_MLRS',
@@ -903,6 +905,32 @@ export const SURFACE_CONFIGS = Object.freeze({
       Object.freeze({ label: 'AFTERMATH', value: 'Collapses into persistent RUBBLE' }),
     ]),
   }),
+
+  [SURFACE_TYPES.LOCOMOTIVE]: Object.freeze({
+    id: 'tile_locomotive',
+    surfaceType: SURFACE_TYPES.LOCOMOTIVE,
+    tileId: TileType.LOCOMOTIVE,
+    code: 'TILE-LOCOMOTIVE',
+    name: 'Heavy Diesel Locomotive',
+    role: 'Armored Railway Engine Cover',
+    accentHex: '#1E3A5F',
+    destructible: true,
+    maxHP: 16,
+    normalShellDamage: 1,
+    heavyShellDamage: 2,
+    artilleryDamage: 4,
+    passableByTracks: false,
+    passableByHover: false,
+    blocksProjectiles: true,
+    blocksLineOfSight: true,
+    description:
+      'Heavy diesel-electric railway locomotive parked on tracks (16 HP). Blocks line of sight and direct fire like reinforced concrete before collapsing into persistent rubble.',
+    specs: Object.freeze([
+      Object.freeze({ label: 'DURABILITY', value: '16 HP (Mk1–3: -1 / Mk4–5: -2 / Blast: -4)' }),
+      Object.freeze({ label: 'PLACEMENT', value: 'Railroad Track (RAIL) only' }),
+      Object.freeze({ label: 'AFTERMATH', value: 'Collapses into persistent RUBBLE' }),
+    ]),
+  }),
 });
 
 /** Ordered list of the interactive arena surface & obstacle types displayed in the 3D Codex. */
@@ -930,6 +958,7 @@ export const SURFACE_CATALOG = Object.freeze([
   SURFACE_CONFIGS[SURFACE_TYPES.TRANSFORMER],
   SURFACE_CONFIGS[SURFACE_TYPES.SANDBAGS],
   SURFACE_CONFIGS[SURFACE_TYPES.RAIL_CAR],
+  SURFACE_CONFIGS[SURFACE_TYPES.LOCOMOTIVE],
   SURFACE_CONFIGS[SURFACE_TYPES.BASE],
   SURFACE_CONFIGS[SURFACE_TYPES.ENEMY_BASE],
   SURFACE_CONFIGS[SURFACE_TYPES.TURRET_CANNON],

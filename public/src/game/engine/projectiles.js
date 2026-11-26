@@ -336,6 +336,7 @@ export class ProjectilesController {
           cell.type === TileType.CONTAINER ||
           cell.type === TileType.TRANSFORMER ||
           cell.type === TileType.RAIL_CAR ||
+          cell.type === TileType.LOCOMOTIVE ||
           (cell.type === TileType.BRICK && !p.pierceBricks) ||
           cell.type === TileType.CONCRETE ||
           cell.type === TileType.HOUSE_1 ||
@@ -808,6 +809,7 @@ export class ProjectilesController {
             TileType.CONTAINER,
             TileType.TRANSFORMER,
             TileType.RAIL_CAR,
+            TileType.LOCOMOTIVE,
             TileType.BRICK,
             TileType.CONCRETE,
             TileType.HOUSE_1,
@@ -866,7 +868,7 @@ export class ProjectilesController {
           engine.damageTileCell(cell, wtDmg, p.x, p.z, p.fromPlayer);
           engine.removeProjectile(i);
           continue;
-        } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR) {
+        } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR || cell.type === TileType.LOCOMOTIVE) {
           if (p.isMissile) engine.detonateMissile(p);
           const cargoDmg = p.isMissile ? 4 : p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1;
           engine.damageTileCell(cell, cargoDmg, p.x, p.z, p.fromPlayer);

@@ -37,6 +37,7 @@ export const OBJECTS = [
   { tile: TileType.TRANSFORMER, char: 'Y', name: 'EMP Transformer (2 HP)', color: '#38bdf8' },
   { tile: TileType.SANDBAGS, char: 'S', name: 'Sandbags (3 HP)', color: '#c2a67d' },
   { tile: TileType.RAIL_CAR, char: 'V', name: 'Freight Rail Car (10 HP)', color: '#7c2d12' },
+  { tile: TileType.LOCOMOTIVE, char: 'M', name: 'Diesel Locomotive (16 HP)', color: '#1e3a5f' },
   { tile: TileType.ENEMY_BASE, char: 'E', name: 'Enemy Stronghold', color: '#ef4444' },
 ];
 
@@ -121,6 +122,7 @@ export const OBJECT_CHAR_TO_TILE = {
   Y: TileType.TRANSFORMER,
   S: TileType.SANDBAGS,
   V: TileType.RAIL_CAR,
+  M: TileType.LOCOMOTIVE,
   H: TileType.BASE,
   E: TileType.ENEMY_BASE,
 };

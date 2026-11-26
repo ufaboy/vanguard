@@ -357,6 +357,10 @@ export class TerrainDestructionController {
       sound.playSteelHit({ x: hitX, z: hitZ });
       engine.fx.armorHit(hitX, 0.85, hitZ, { scale: 0.95, colorHex: 0xf97316 });
       engine.modelFactory.updateRailCarDamage?.(cell.mesh, cell.hp, cell.maxHp || 10);
+    } else if (cell.type === TileType.LOCOMOTIVE) {
+      sound.playSteelHit({ x: hitX, z: hitZ });
+      engine.fx.armorHit(hitX, 0.9, hitZ, { scale: 1.05, colorHex: 0x38bdf8 });
+      engine.modelFactory.updateLocomotiveDamage?.(cell.mesh, cell.hp, cell.maxHp || 16);
     } else if (cell.type === TileType.SANDBAGS) {
       sound.playBrickHit({ x: hitX, z: hitZ });
       engine.fx.masonryHit(hitX, 0.35, hitZ, { concrete: false, heavy: false });
@@ -408,7 +412,7 @@ export class TerrainDestructionController {
     const wasBoxes = cell.type === TileType.BOXES;
     const wasConcrete = cell.type === TileType.CONCRETE;
     const wasForest = cell.type === TileType.FOREST;
-    const wasRailCar = cell.type === TileType.RAIL_CAR;
+    const wasRailCar = cell.type === TileType.RAIL_CAR || cell.type === TileType.LOCOMOTIVE;
     if (wasConcrete) {
       engine.medalTracker?.recordConcreteDestroyed();
     }
@@ -564,7 +568,7 @@ export class TerrainDestructionController {
           chainBarrels.push(neighbor);
         } else if (neighbor.type === TileType.WATER_TOWER) {
           engine.damageTileCell(neighbor, 2, nPos.x, nPos.z, fromPlayer);
-        } else if (neighbor.type === TileType.CONTAINER || neighbor.type === TileType.RAIL_CAR) {
+        } else if (neighbor.type === TileType.CONTAINER || neighbor.type === TileType.RAIL_CAR || neighbor.type === TileType.LOCOMOTIVE) {
           engine.damageTileCell(neighbor, 4, nPos.x, nPos.z, fromPlayer);
         } else if (neighbor.type === TileType.TRANSFORMER || neighbor.type === TileType.SANDBAGS) {
           engine.damageTileCell(neighbor, 2, nPos.x, nPos.z, fromPlayer);

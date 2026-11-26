@@ -386,6 +386,13 @@ export class Viewport3D {
       const nsRail = isRail(r - 1, c) || isRail(r + 1, c);
       oMesh = this.modelFactory.createRailCarBlock(ewRail && !nsRail ? 'ew' : 'ns', (r + c) % 2 === 0 ? 'closed' : 'open', 1);
       oMesh.position.set(x, 0, z);
+    } else if (object === TileType.LOCOMOTIVE && this.modelFactory.createLocomotiveBlock) {
+      const isRail = (rr, cc) =>
+        rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
+      const ewRail = isRail(r, c - 1) || isRail(r, c + 1);
+      const nsRail = isRail(r - 1, c) || isRail(r + 1, c);
+      oMesh = this.modelFactory.createLocomotiveBlock(ewRail && !nsRail ? 'ew' : 'ns', 1);
+      oMesh.position.set(x, 0, z);
     } else if (object === TileType.RUBBLE) {
       oMesh = new THREE.Mesh(
         new THREE.BoxGeometry(1.5, 0.45, 1.5),

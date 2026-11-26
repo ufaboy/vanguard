@@ -35,6 +35,7 @@ const OBJECT_NAME_TO_TILE = Object.freeze({
   transformer: TileType.TRANSFORMER,
   sandbags: TileType.SANDBAGS,
   rail_car: TileType.RAIL_CAR,
+  locomotive: TileType.LOCOMOTIVE,
 });
 
 export const PROP_KINDS = Object.freeze(['lamp', 'fence', 'car', 'shrub', 'barricade']);
