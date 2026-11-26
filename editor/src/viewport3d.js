@@ -136,6 +136,32 @@ export class Viewport3D {
 
     this.scene.add(this.cursorMesh);
 
+    // Selection & Move highlight frame
+    const selGeo = new THREE.PlaneGeometry(TILE_SIZE, TILE_SIZE);
+    selGeo.rotateX(-Math.PI / 2);
+    this.selectionMat = new THREE.MeshBasicMaterial({
+      color: 0x06b6d4,
+      transparent: true,
+      opacity: 0.42,
+      depthWrite: false,
+    });
+    this.selectionBox = new THREE.Mesh(selGeo, this.selectionMat);
+    const selEdges = new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.BoxGeometry(TILE_SIZE, 0.08, TILE_SIZE)),
+      new THREE.LineBasicMaterial({ color: 0xffffff })
+    );
+    this.selectionBox.add(selEdges);
+    this.selectionBox.position.y = 0.09;
+    this.selectionBox.renderOrder = 11;
+    this.selectionBox.visible = false;
+    this.scene.add(this.selectionBox);
+
+    // Ghost / carried mesh preview for 2-click Move
+    this.movePreviewGroup = new THREE.Group();
+    this.movePreviewGroup.visible = false;
+    this.scene.add(this.movePreviewGroup);
+    this._movePreviewSpan = { rows: 1, cols: 1 };
+
     // Camera orbit/pan state
     this.camTarget = new THREE.Vector3(0, 0, 0);
     this.camDistance = 76;
@@ -201,6 +227,60 @@ export class Viewport3D {
     if (this.cursorArrow) {
       this.cursorArrow.rotation.y = (this.placementRotation * Math.PI) / 180;
     }
+  }
+
+  setSelectionHighlight(row, col, rows = 1, cols = 1, color = 0x06b6d4) {
+    if (row == null || col == null || !this.state) {
+      this.selectionBox.visible = false;
+      return;
+    }
+    const size = this.state.size || GRID_SIZE;
+    const pos = gridToWorld(row, col, size);
+    this.selectionMat.color.setHex(color);
+    this.selectionBox.scale.set(cols, 1, rows);
+    this.selectionBox.position.set(
+      pos.x + ((cols - 1) * TILE_SIZE) / 2,
+      0.09,
+      pos.z + ((rows - 1) * TILE_SIZE) / 2
+    );
+    this.selectionBox.visible = true;
+  }
+
+  setMovePreview(meshOrNull, row, col, rows = 1, cols = 1) {
+    this.movePreviewGroup.clear();
+    this._movePreviewSpan = { rows, cols };
+    if (meshOrNull) {
+      meshOrNull.position.set(0, 0.12, 0);
+      this.movePreviewGroup.add(meshOrNull);
+      this.movePreviewGroup.visible = true;
+    } else {
+      this.movePreviewGroup.visible = false;
+    }
+    this.updateMovePreviewCell(row, col);
+  }
+
+  updateMovePreviewCell(row, col, rotationDeg = null) {
+    if (!this.state) return;
+    const { rows, cols } = this._movePreviewSpan;
+    this.setSelectionHighlight(row, col, rows, cols, 0xf59e0b);
+    if (this.movePreviewGroup.visible && row != null && col != null) {
+      const size = this.state.size || GRID_SIZE;
+      const pos = gridToWorld(row, col, size);
+      this.movePreviewGroup.position.set(
+        pos.x + ((cols - 1) * TILE_SIZE) / 2,
+        0,
+        pos.z + ((rows - 1) * TILE_SIZE) / 2
+      );
+      if (rotationDeg != null && this.movePreviewGroup.children[0]) {
+        this.movePreviewGroup.children[0].rotation.y = (rotationDeg * Math.PI) / 180;
+      }
+    }
+  }
+
+  clearMovePreview() {
+    this.movePreviewGroup.clear();
+    this.movePreviewGroup.visible = false;
+    this.selectionBox.visible = false;
   }
 
   toggleTopDown() {

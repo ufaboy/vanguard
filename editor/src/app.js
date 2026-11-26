@@ -48,6 +48,7 @@ class MapEditorApp {
     this.rectStartCell = null;
     this.strokeChanged = false;
     this.moveDrag = null;
+    this.pickedItem = null;
 
     this.viewport = new Viewport3D($('viewport'), {
       isEyedropperActive: () => this.activeTool === 'eyedropper',
@@ -899,7 +900,8 @@ class MapEditorApp {
 
   _onPointerDownCell(cell, e) {
     if (this.activeTool === 'eyedropper') {
-      this._pickFromCell(cell);
+      if (e?.altKey) this._pickFromCell(cell);
+      else this._selectElementAt(cell);
       return;
     }
     if (this.activeTool === 'rotate') {
@@ -907,7 +909,14 @@ class MapEditorApp {
       return;
     }
     if (this.activeTool === 'move') {
-      this._startMoveAt(cell);
+      if (this.moveDrag) {
+        this._finishMoveAt(cell);
+      } else {
+        this._startMoveAt(cell);
+        if (this.moveDrag) {
+          this._setupMoveVisual(cell);
+        }
+      }
       return;
     }
     if ((this.activeTab === 'markers' || this.activeTab === 'landmarks') && this.activeTool !== 'eraser') {
@@ -928,43 +937,7 @@ class MapEditorApp {
   }
 
   _onPointerDragCell(cell) {
-    if (this.activeTool === 'move' && this.moveDrag) {
-      if (this.moveDrag.kind === 'landmark') {
-        this.moveDrag.item.row = cell.row;
-        this.moveDrag.item.col = cell.col;
-        this.viewport.rebuildLandmarks();
-      } else if (this.moveDrag.kind === 'ground') {
-        if (this.moveDrag.decorations.length > 0) {
-          for (const entry of this.moveDrag.decorations) {
-            entry.item.row = cell.row;
-            entry.item.col = cell.col;
-          }
-          this.viewport.rebuildDecorations();
-        }
-      } else if (this.moveDrag.kind === 'prop') {
-        this.moveDrag.item.row = cell.row;
-        this.moveDrag.item.col = cell.col;
-        this.viewport.rebuildMarkers();
-      } else if (this.moveDrag.kind === 'railCurve') {
-        const size = this.state.size;
-        this.moveDrag.item.row = Math.max(0, Math.min(size - 3, cell.row - this.moveDrag.rowOffset));
-        this.moveDrag.item.col = Math.max(0, Math.min(size - 3, cell.col - this.moveDrag.colOffset));
-        this.viewport.rebuildRailCurves();
-      } else if (this.moveDrag.kind === 'powerup') {
-        this.moveDrag.item.row = cell.row;
-        this.moveDrag.item.col = cell.col;
-        this.viewport.rebuildMarkers();
-      } else if (this.moveDrag.kind === 'playerSpawn') {
-        this.state.playerSpawnCell = { row: cell.row, col: cell.col };
-        this.viewport.rebuildMarkers();
-      } else if (this.moveDrag.kind === 'baseCell') {
-        this.state.baseCell = { row: cell.row, col: Math.min(cell.col, this.state.size - 2) };
-        this.viewport.rebuildMarkers();
-      } else if (this.moveDrag.kind === 'region') {
-        this._applyRegionOffsets(this.moveDrag, cell.row - this.moveDrag.fromRow, cell.col - this.moveDrag.fromCol);
-      }
-      return;
-    }
+    if (this.activeTool === 'move') return;
     if (
       this.activeTool === 'eraser' ||
       (this.activeTool === 'brush' &&
@@ -977,136 +950,7 @@ class MapEditorApp {
   }
 
   _onPointerUpCell(cell) {
-    if (this.activeTool === 'move' && this.moveDrag) {
-      const drag = this.moveDrag;
-      this.moveDrag = null;
-      if (drag.kind === 'region') {
-        const dRow = cell ? cell.row - drag.fromRow : 0;
-        const dCol = cell ? cell.col - drag.fromCol : 0;
-        if (!cell || (dRow === 0 && dCol === 0)) {
-          this._applyRegionOffsets(drag, 0, 0);
-          return;
-        }
-        const size = this.state.size;
-        this._applyRegionOffsets(drag, dRow, dCol);
-
-        for (const o of drag.objects) {
-          this.state.objectGrid[o.row][o.col] = null;
-          this.viewport.updateCell(o.row, o.col, false);
-          this.viewport.refreshRoadNeighbors(o.row, o.col);
-        }
-        for (const o of drag.objects) {
-          const nr = o.row + dRow;
-          const nc = o.col + dCol;
-          if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
-            this.state.objectGrid[nr][nc] = o.value;
-            this.viewport.updateCell(nr, nc, false);
-            this.viewport.refreshRoadNeighbors(nr, nc);
-          }
-        }
-        if (drag.objects.length > 0) {
-          this.viewport.syncBuildings();
-        }
-
-        for (const s of drag.surfaces) {
-          this.state.surfaceGrid[s.row][s.col] = TileType.EMPTY;
-          this.viewport.updateCell(s.row, s.col, false);
-          this.viewport.refreshRoadNeighbors(s.row, s.col);
-        }
-        for (const s of drag.surfaces) {
-          const nr = s.row + dRow;
-          const nc = s.col + dCol;
-          if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
-            this.state.surfaceGrid[nr][nc] = s.value;
-            this.viewport.updateCell(nr, nc, false);
-            this.viewport.refreshRoadNeighbors(nr, nc);
-          }
-        }
-        if (drag.surfaces.length > 0 && drag.objects.length === 0) {
-          this.viewport.rebuildBridges();
-        }
-
-        if (
-          drag.landmarks.length ||
-          drag.decorations.length ||
-          drag.powerups.length ||
-          drag.playerSpawn ||
-          drag.baseCell
-        ) {
-          this._syncLists();
-        }
-        this._commitSnapshot(drag.snapshot);
-        this._toast(`Moved region by (${dRow >= 0 ? '+' : ''}${dRow}, ${dCol >= 0 ? '+' : ''}${dCol})`);
-        return;
-      }
-      const rotatedItem =
-        (drag.kind === 'landmark' && (drag.item.rotation || 0) !== (drag.originRotation || 0)) ||
-        (drag.kind === 'prop' && (drag.item.rotation || 0) !== (drag.originRotation || 0)) ||
-        (drag.kind === 'railCurve' && (drag.item.rotation || 0) !== (drag.originRotation || 0)) ||
-        (drag.kind === 'object' && drag.rotation !== drag.originRotation);
-      if ((!cell || (cell.row === drag.fromRow && cell.col === drag.fromCol)) && !rotatedItem && drag.kind !== 'railCurve') {
-        if (drag.kind === 'ground' && drag.decorations.length > 0) {
-          for (const entry of drag.decorations) {
-            entry.item.row = entry.originRow;
-            entry.item.col = entry.originCol;
-          }
-          this.viewport.rebuildDecorations();
-        }
-        return;
-      }
-      if (drag.kind === 'object') {
-        const destRow = cell ? cell.row : drag.fromRow;
-        const destCol = cell ? cell.col : drag.fromCol;
-        this.state.objectGrid[drag.fromRow][drag.fromCol] = null;
-        if (this.state.objectRotations?.[drag.fromRow]) this.state.objectRotations[drag.fromRow][drag.fromCol] = 0;
-        if (this.state.tacticalStyles?.[drag.fromRow]) this.state.tacticalStyles[drag.fromRow][drag.fromCol] = -1;
-        this.state.objectGrid[destRow][destCol] = drag.value;
-        if (this.state.objectRotations?.[destRow]) this.state.objectRotations[destRow][destCol] = drag.rotation || 0;
-        if (this.state.tacticalStyles?.[destRow]) this.state.tacticalStyles[destRow][destCol] = drag.style ?? -1;
-        this.viewport.updateCell(drag.fromRow, drag.fromCol, false);
-        this.viewport.refreshRoadNeighbors(drag.fromRow, drag.fromCol);
-        this.viewport.updateCell(destRow, destCol, false);
-        this.viewport.refreshRoadNeighbors(destRow, destCol);
-        this.viewport.syncBuildings();
-        this.viewport.rebuildBridges();
-      } else if (drag.kind === 'railCurve') {
-        if (drag.item.row === drag.fromRow && drag.item.col === drag.fromCol && !rotatedItem) {
-          this._syncRailCurveSurface(drag.item, true);
-          this.viewport.rebuildRailCurves();
-          return;
-        }
-        this._syncRailCurveSurface(drag.item, true);
-        this.viewport.rebuildRailCurves();
-        this.viewport.refreshRailRegion(drag.fromRow, drag.fromCol);
-        this.viewport.refreshRailRegion(drag.item.row, drag.item.col);
-        this._commitSnapshot(drag.snapshot);
-        this._toast(`Moved Rail Curve to (${drag.item.row}, ${drag.item.col})`);
-        return;
-      } else if (drag.kind === 'ground') {
-        if (drag.decorations.length > 0) {
-          for (const entry of drag.decorations) {
-            entry.item.row = cell.row;
-            entry.item.col = cell.col;
-          }
-          this.viewport.rebuildDecorations();
-          this._syncLists();
-        }
-        if (drag.surface !== null) {
-          this.state.surfaceGrid[drag.fromRow][drag.fromCol] = TileType.EMPTY;
-          this.state.surfaceGrid[cell.row][cell.col] = drag.surface;
-          this.viewport.updateCell(drag.fromRow, drag.fromCol, false);
-          this.viewport.refreshRoadNeighbors(drag.fromRow, drag.fromCol);
-          this.viewport.updateCell(cell.row, cell.col, false);
-          this.viewport.refreshRoadNeighbors(cell.row, cell.col);
-          this.viewport.rebuildBridges();
-        }
-      } else {
-        this._syncLists();
-      }
-      this._commitSnapshot(drag.snapshot);
-      this._toast(`Moved to (${cell.row}, ${cell.col})`);
-      return;
-    }
+    if (this.activeTool === 'move') return;
 
     if (this.activeTool === 'rect' && this.rectStartCell && cell) {
       const r0 = Math.min(this.rectStartCell.row, cell.row);
@@ -1169,6 +1013,211 @@ class MapEditorApp {
     this.strokeChanged = false;
   }
 
+  _setupMoveVisual(cell) {
+    const drag = this.moveDrag;
+    if (!drag) return;
+    if (drag.kind === 'object') {
+      const srcMesh = this.viewport.objectCells?.[drag.fromRow]?.[drag.fromCol];
+      const preview = srcMesh ? srcMesh.clone() : null;
+      this.state.objectGrid[drag.fromRow][drag.fromCol] = null;
+      this.viewport.updateCell(drag.fromRow, drag.fromCol, false);
+      this.viewport.syncBuildings();
+      this.viewport.setMovePreview(preview, cell.row, cell.col, 1, 1);
+    } else if (drag.kind === 'railCurve') {
+      this.viewport.setMovePreview(null, drag.item.row, drag.item.col, 3, 3);
+    } else if (drag.kind === 'baseCell') {
+      this.viewport.setMovePreview(null, this.state.baseCell.row, this.state.baseCell.col, 1, 2);
+    } else if (drag.kind === 'region') {
+      this.viewport.setMovePreview(null, cell.row, cell.col, this.brushSize, this.brushSize);
+    } else {
+      this.viewport.setMovePreview(null, cell.row, cell.col, 1, 1);
+    }
+    this._toast('Move: hover target cell and click to place (Space: rotate, Esc: cancel)');
+  }
+
+  _moveCarriedTo(cell) {
+    const drag = this.moveDrag;
+    if (!drag || !cell) return;
+    if (drag.kind === 'landmark') {
+      drag.item.row = cell.row;
+      drag.item.col = cell.col;
+      this.viewport.rebuildLandmarks();
+      this.viewport.updateMovePreviewCell(cell.row, cell.col);
+    } else if (drag.kind === 'prop') {
+      drag.item.row = cell.row;
+      drag.item.col = cell.col;
+      this.viewport.rebuildMarkers();
+      this.viewport.updateMovePreviewCell(cell.row, cell.col);
+    } else if (drag.kind === 'railCurve') {
+      const size = this.state.size;
+      drag.item.row = Math.max(0, Math.min(size - 3, cell.row - drag.rowOffset));
+      drag.item.col = Math.max(0, Math.min(size - 3, cell.col - drag.colOffset));
+      this.viewport.rebuildRailCurves();
+      this.viewport.updateMovePreviewCell(drag.item.row, drag.item.col);
+    } else if (drag.kind === 'powerup') {
+      drag.item.row = cell.row;
+      drag.item.col = cell.col;
+      this.viewport.rebuildMarkers();
+      this.viewport.updateMovePreviewCell(cell.row, cell.col);
+    } else if (drag.kind === 'playerSpawn') {
+      this.state.playerSpawnCell = { row: cell.row, col: cell.col };
+      this.viewport.rebuildMarkers();
+      this.viewport.updateMovePreviewCell(cell.row, cell.col);
+    } else if (drag.kind === 'baseCell') {
+      this.state.baseCell = { row: cell.row, col: Math.min(cell.col, this.state.size - 2) };
+      this.viewport.rebuildMarkers();
+      this.viewport.updateMovePreviewCell(this.state.baseCell.row, this.state.baseCell.col);
+    } else if (drag.kind === 'object') {
+      this.viewport.updateMovePreviewCell(cell.row, cell.col, drag.rotation || 0);
+    } else if (drag.kind === 'ground') {
+      if (drag.decorations.length > 0) {
+        for (const entry of drag.decorations) {
+          entry.item.row = cell.row;
+          entry.item.col = cell.col;
+        }
+        this.viewport.rebuildDecorations();
+      }
+      this.viewport.updateMovePreviewCell(cell.row, cell.col);
+    } else if (drag.kind === 'region') {
+      this._applyRegionOffsets(drag, cell.row - drag.fromRow, cell.col - drag.fromCol);
+      this.viewport.updateMovePreviewCell(cell.row, cell.col);
+    }
+  }
+
+  _finishMoveAt(cell) {
+    const drag = this.moveDrag;
+    if (!drag) return;
+    this.moveDrag = null;
+    this.viewport.clearMovePreview();
+
+    if (drag.kind === 'region') {
+      const dRow = cell ? cell.row - drag.fromRow : 0;
+      const dCol = cell ? cell.col - drag.fromCol : 0;
+      if (!cell || (dRow === 0 && dCol === 0)) {
+        this._applyRegionOffsets(drag, 0, 0);
+        return;
+      }
+      const size = this.state.size;
+      this._applyRegionOffsets(drag, dRow, dCol);
+      for (const o of drag.objects) {
+        this.state.objectGrid[o.row][o.col] = null;
+        this.viewport.updateCell(o.row, o.col, false);
+        this.viewport.refreshRoadNeighbors(o.row, o.col);
+      }
+      for (const o of drag.objects) {
+        const nr = o.row + dRow;
+        const nc = o.col + dCol;
+        if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+          this.state.objectGrid[nr][nc] = o.value;
+          this.viewport.updateCell(nr, nc, false);
+          this.viewport.refreshRoadNeighbors(nr, nc);
+        }
+      }
+      if (drag.objects.length > 0) this.viewport.syncBuildings();
+      for (const s of drag.surfaces) {
+        this.state.surfaceGrid[s.row][s.col] = TileType.EMPTY;
+        this.viewport.updateCell(s.row, s.col, false);
+        this.viewport.refreshRoadNeighbors(s.row, s.col);
+      }
+      for (const s of drag.surfaces) {
+        const nr = s.row + dRow;
+        const nc = s.col + dCol;
+        if (nr >= 0 && nr < size && nc >= 0 && nc < size) {
+          this.state.surfaceGrid[nr][nc] = s.value;
+          this.viewport.updateCell(nr, nc, false);
+          this.viewport.refreshRoadNeighbors(nr, nc);
+        }
+      }
+      if (drag.surfaces.length > 0 && drag.objects.length === 0) this.viewport.rebuildBridges();
+      if (drag.landmarks.length || drag.decorations.length || drag.powerups.length || drag.playerSpawn || drag.baseCell) {
+        this._syncLists();
+      }
+      this._commitSnapshot(drag.snapshot);
+      this._toast(`Moved region by (${dRow >= 0 ? '+' : ''}${dRow}, ${dCol >= 0 ? '+' : ''}${dCol})`);
+      return;
+    }
+
+    if (drag.kind === 'object') {
+      const destRow = cell ? cell.row : drag.fromRow;
+      const destCol = cell ? cell.col : drag.fromCol;
+      if (this.state.objectRotations?.[drag.fromRow]) this.state.objectRotations[drag.fromRow][drag.fromCol] = 0;
+      if (this.state.tacticalStyles?.[drag.fromRow]) this.state.tacticalStyles[drag.fromRow][drag.fromCol] = -1;
+      this.state.objectGrid[destRow][destCol] = drag.value;
+      if (this.state.objectRotations?.[destRow]) this.state.objectRotations[destRow][destCol] = drag.rotation || 0;
+      if (this.state.tacticalStyles?.[destRow]) this.state.tacticalStyles[destRow][destCol] = drag.style ?? -1;
+      this.viewport.refreshRoadNeighbors(drag.fromRow, drag.fromCol);
+      this.viewport.updateCell(destRow, destCol, false);
+      this.viewport.refreshRoadNeighbors(destRow, destCol);
+      this.viewport.syncBuildings();
+      this.viewport.rebuildBridges();
+      this._commitSnapshot(drag.snapshot);
+      this._toast(`Moved to (${destRow}, ${destCol})`);
+      return;
+    }
+
+    if (drag.kind === 'railCurve') {
+      this._syncRailCurveSurface(drag.item, true);
+      this.viewport.rebuildRailCurves();
+      this.viewport.refreshRailRegion(drag.fromRow, drag.fromCol);
+      this.viewport.refreshRailRegion(drag.item.row, drag.item.col);
+      this._commitSnapshot(drag.snapshot);
+      this._toast(`Moved Rail Curve to (${drag.item.row}, ${drag.item.col})`);
+      return;
+    }
+
+    if (drag.kind === 'ground' && cell) {
+      if (drag.decorations.length > 0) {
+        for (const entry of drag.decorations) {
+          entry.item.row = cell.row;
+          entry.item.col = cell.col;
+        }
+        this.viewport.rebuildDecorations();
+        this._syncLists();
+      }
+      if (drag.surface !== null) {
+        this.state.surfaceGrid[drag.fromRow][drag.fromCol] = TileType.EMPTY;
+        this.state.surfaceGrid[cell.row][cell.col] = drag.surface;
+        this.viewport.updateCell(drag.fromRow, drag.fromCol, false);
+        this.viewport.refreshRoadNeighbors(drag.fromRow, drag.fromCol);
+        this.viewport.updateCell(cell.row, cell.col, false);
+        this.viewport.refreshRoadNeighbors(cell.row, cell.col);
+        this.viewport.rebuildBridges();
+      }
+    } else {
+      this._syncLists();
+    }
+    this._commitSnapshot(drag.snapshot);
+    if (cell) this._toast(`Moved to (${cell.row}, ${cell.col})`);
+  }
+
+  _cancelMove() {
+    if (!this.moveDrag) return;
+    const snap = this.moveDrag.snapshot;
+    this.moveDrag = null;
+    this.viewport.clearMovePreview();
+    if (snap) {
+      const data = JSON.parse(snap);
+      this.state.surfaceGrid = data.surfaceGrid;
+      this.state.objectGrid = data.objectGrid;
+      if (Array.isArray(data.tacticalStyles)) {
+        this.state.tacticalStyles = data.tacticalStyles.map((row) => Int8Array.from(row));
+      }
+      if (Array.isArray(data.objectRotations)) {
+        this.state.objectRotations = data.objectRotations.map((row) => Int16Array.from(row));
+      }
+      this.state.baseCell = data.baseCell;
+      this.state.playerSpawnCell = data.playerSpawnCell;
+      this.state.powerups = data.powerups;
+      this.state.props = data.props || [];
+      this.state.railCurves = data.railCurves || [];
+      this.state.landmarks3d = data.landmarks3d;
+      this.state.decoration = data.decoration ?? null;
+      this.viewport.setState(this.state);
+      this._syncInspector();
+    }
+    this._toast('Move cancelled');
+  }
+
   _setTab(tab) {
     this.activeTab = tab;
     document.querySelectorAll('.tab-btn').forEach((b) => {
@@ -1179,6 +1228,8 @@ class MapEditorApp {
   }
 
   _setTool(tool) {
+    if (this.moveDrag && tool !== 'move') this._cancelMove();
+    if (tool !== 'eyedropper') this._clearPickedItem();
     this.activeTool = tool;
     document.querySelectorAll('#tool-buttons button').forEach((b) => {
       b.classList.toggle('active', b.dataset.tool === tool);
@@ -1202,7 +1253,7 @@ class MapEditorApp {
         const btn = this._makePaletteItem(s.name, `Token: '${s.char}'`, s.color, s.tile === this.selectedSurface);
         btn.onclick = () => {
           this.selectedSurface = s.tile;
-          if (this.activeTool === 'eraser') this._setTool('brush');
+          this._setTool('brush');
           this._renderPalette();
           this._updateStatusActive();
         };
@@ -1213,7 +1264,7 @@ class MapEditorApp {
         const btn = this._makePaletteItem(o.name, `Token: '${o.char}'`, o.color, o.tile === this.selectedObject);
         btn.onclick = () => {
           this.selectedObject = o.tile;
-          if (this.activeTool === 'eraser') this._setTool('brush');
+          this._setTool('brush');
           this._renderPalette();
           this._updateStatusActive();
         };
@@ -1224,6 +1275,7 @@ class MapEditorApp {
         const btn = this._makePaletteItem(m.name, m.sub, m.color, m.id === this.selectedMarker);
         btn.onclick = () => {
           this.selectedMarker = m.id;
+          this._setTool('brush');
           this._renderPalette();
           this._updateStatusActive();
         };
@@ -1234,6 +1286,7 @@ class MapEditorApp {
         const btn = this._makePaletteItem(l.name, 'Click cell to place/remove', l.color, l.kind === this.selectedLandmark);
         btn.onclick = () => {
           this.selectedLandmark = l.kind;
+          this._setTool('brush');
           this._renderPalette();
           this._updateStatusActive();
         };
@@ -1245,7 +1298,7 @@ class MapEditorApp {
         const btn = this._makePaletteItem(d.name, sub, d.color, d.kind === this.selectedDecoration);
         btn.onclick = () => {
           this.selectedDecoration = d.kind;
-          if (this.activeTool === 'eraser') this._setTool('brush');
+          this._setTool('brush');
           this._renderPalette();
           this._updateStatusActive();
         };
@@ -1336,8 +1389,318 @@ class MapEditorApp {
     return { decals, zones, paths, exclusions };
   }
 
+  _clearPickedItem() {
+    this.pickedItem = null;
+    if (!this.moveDrag) this.viewport.setSelectionHighlight(null, null);
+    $('selected-panel')?.classList.add('hidden');
+  }
+
+  _selectElementAt(cell) {
+    if (!cell) return;
+    const { row, col } = cell;
+    const lm = this.state.landmarks3d.find((l) => l.row === row && l.col === col);
+    if (lm) {
+      this.pickedItem = { kind: 'landmark', row, col, item: lm };
+      this.viewport.setSelectionHighlight(row, col, 1, 1, 0x06b6d4);
+      this._renderSelectedPanel();
+      return;
+    }
+    const pr = (this.state.props || []).find((p) => p.row === row && p.col === col);
+    if (pr) {
+      this.pickedItem = { kind: 'prop', row, col, item: pr };
+      this.viewport.setSelectionHighlight(row, col, 1, 1, 0x06b6d4);
+      this._renderSelectedPanel();
+      return;
+    }
+    const rc = this._findRailCurveAt(row, col);
+    if (rc) {
+      this.pickedItem = { kind: 'railCurve', row: rc.row, col: rc.col, item: rc };
+      this.viewport.setSelectionHighlight(rc.row, rc.col, 3, 3, 0x06b6d4);
+      this._renderSelectedPanel();
+      return;
+    }
+    const pw = this.state.powerups.find((p) => p.row === row && p.col === col);
+    if (pw) {
+      this.pickedItem = { kind: 'powerup', row, col, item: pw };
+      this.viewport.setSelectionHighlight(row, col, 1, 1, 0x06b6d4);
+      this._renderSelectedPanel();
+      return;
+    }
+    const obj = this.state.objectGrid[row]?.[col];
+    if (obj !== null && obj !== undefined) {
+      this.pickedItem = { kind: 'object', row, col, tile: obj };
+      this.viewport.setSelectionHighlight(row, col, 1, 1, 0x06b6d4);
+      this._renderSelectedPanel();
+      return;
+    }
+    const deco = (this.state.decoration?.landmarks || []).find((d) => d.row === row && d.col === col);
+    if (deco) {
+      this.pickedItem = { kind: 'decal', row, col, item: deco };
+      this.viewport.setSelectionHighlight(row, col, 1, 1, 0x06b6d4);
+      this._renderSelectedPanel();
+      return;
+    }
+    this._clearPickedItem();
+    this._toast('No editable element on this cell');
+  }
+
+  _rotatePickedItem(delta = 90) {
+    const p = this.pickedItem;
+    if (!p) return;
+    const step = (cur) => (((((cur || 0) + delta) % 360) + 360) % 360);
+    const prev = this._snapshot();
+    if (p.kind === 'landmark') {
+      p.item.rotation = step(p.item.rotation);
+      this.viewport.rebuildLandmarks();
+      this._syncLists();
+    } else if (p.kind === 'prop') {
+      const next = step(p.item.rotation);
+      if (next) p.item.rotation = next;
+      else delete p.item.rotation;
+      this.viewport.rebuildMarkers();
+      this._syncLists();
+    } else if (p.kind === 'railCurve') {
+      this._syncRailCurveSurface(p.item, false);
+      const next = step(p.item.rotation);
+      if (next) p.item.rotation = next;
+      else delete p.item.rotation;
+      this._syncRailCurveSurface(p.item, true);
+      this.viewport.rebuildRailCurves();
+      this.viewport.refreshRailRegion(p.item.row, p.item.col);
+    } else if (p.kind === 'object') {
+      const next = step(this.state.objectRotations?.[p.row]?.[p.col] || 0);
+      if (this.state.objectRotations?.[p.row]) this.state.objectRotations[p.row][p.col] = next;
+      this.viewport.updateCell(p.row, p.col, false);
+    } else if (p.kind === 'decal') {
+      const next = step(p.item.rotation);
+      if (next) p.item.rotation = next;
+      else delete p.item.rotation;
+      this.viewport.rebuildDecorations();
+      this._syncLists();
+    } else {
+      return;
+    }
+    this._commitSnapshot(prev);
+    this._renderSelectedPanel();
+  }
+
+  _deletePickedItem() {
+    const p = this.pickedItem;
+    if (!p) return;
+    const prev = this._snapshot();
+    if (p.kind === 'landmark') {
+      const idx = this.state.landmarks3d.indexOf(p.item);
+      if (idx >= 0) this.state.landmarks3d.splice(idx, 1);
+      this.viewport.rebuildLandmarks();
+    } else if (p.kind === 'prop') {
+      const idx = (this.state.props || []).indexOf(p.item);
+      if (idx >= 0) this.state.props.splice(idx, 1);
+      this.viewport.rebuildMarkers();
+    } else if (p.kind === 'railCurve') {
+      const idx = (this.state.railCurves || []).indexOf(p.item);
+      if (idx >= 0) this.state.railCurves.splice(idx, 1);
+      this._syncRailCurveSurface(p.item, false);
+      this.viewport.rebuildRailCurves();
+      this.viewport.refreshRailRegion(p.item.row, p.item.col);
+    } else if (p.kind === 'powerup') {
+      const idx = this.state.powerups.indexOf(p.item);
+      if (idx >= 0) this.state.powerups.splice(idx, 1);
+      this.viewport.rebuildMarkers();
+    } else if (p.kind === 'object') {
+      this.state.objectGrid[p.row][p.col] = null;
+      if (this.state.objectRotations?.[p.row]) this.state.objectRotations[p.row][p.col] = 0;
+      if (this.state.tacticalStyles?.[p.row]) this.state.tacticalStyles[p.row][p.col] = -1;
+      this.viewport.updateCell(p.row, p.col, true);
+    } else if (p.kind === 'decal') {
+      const list = this.state.decoration?.landmarks || [];
+      const idx = list.indexOf(p.item);
+      if (idx >= 0) list.splice(idx, 1);
+      this.viewport.rebuildDecorations();
+    }
+    this._syncLists();
+    this._commitSnapshot(prev);
+    this._clearPickedItem();
+    this._toast('Deleted element');
+  }
+
+  _renderSelectedPanel() {
+    const panel = $('selected-panel');
+    const titleEl = $('sel-title');
+    const controlsEl = $('sel-controls');
+    const p = this.pickedItem;
+    if (!panel || !p) {
+      panel?.classList.add('hidden');
+      return;
+    }
+    panel.classList.remove('hidden');
+    controlsEl.innerHTML = '';
+
+    let title = '';
+    if (p.kind === 'landmark') title = `Landmark: ${p.item.kind} (${p.row}, ${p.col})`;
+    else if (p.kind === 'prop') title = `Prop: ${p.item.kind} (${p.row}, ${p.col})`;
+    else if (p.kind === 'railCurve') title = `Rail Curve 3×3 (${p.row}, ${p.col})`;
+    else if (p.kind === 'powerup') title = `Crate: ${p.item.type} (${p.row}, ${p.col})`;
+    else if (p.kind === 'object') title = `${OBJECT_BY_TILE.get(p.tile)?.name || p.tile} (${p.row}, ${p.col})`;
+    else if (p.kind === 'decal') title = `Decal: ${p.item.kind} (${p.row}, ${p.col})`;
+    titleEl.textContent = title;
+
+    // Rotation control
+    if (['landmark', 'prop', 'railCurve', 'object', 'decal'].includes(p.kind)) {
+      const curRot = p.kind === 'object' ? (this.state.objectRotations?.[p.row]?.[p.col] || 0) : (p.item.rotation || 0);
+      const rowEl = document.createElement('div');
+      rowEl.className = 'sel-row';
+      rowEl.innerHTML = `<span>Rotation</span>`;
+      const btns = document.createElement('div');
+      btns.className = 'sel-btns';
+      const ccw = document.createElement('button');
+      ccw.textContent = '↺ -90°';
+      ccw.onclick = () => this._rotatePickedItem(-90);
+      const val = document.createElement('span');
+      val.textContent = `${curRot}°`;
+      const cw = document.createElement('button');
+      cw.textContent = '↻ +90°';
+      cw.onclick = () => this._rotatePickedItem(90);
+      btns.append(ccw, val, cw);
+      rowEl.appendChild(btns);
+      controlsEl.appendChild(rowEl);
+    }
+
+    // Color swatches for CONTAINER & RAIL_CAR
+    if (p.kind === 'object' && (p.tile === TileType.CONTAINER || p.tile === TileType.RAIL_CAR)) {
+      const curColor = this.state.tacticalStyles?.[p.row]?.[p.col] ?? -1;
+      const rowEl = document.createElement('div');
+      rowEl.className = 'sel-row';
+      rowEl.innerHTML = `<span>Color</span>`;
+      const swatches = document.createElement('div');
+      swatches.className = 'swatch-row';
+      const colors = ['#b43c28', '#2563eb', '#2e6f40', '#ca8a04'];
+      colors.forEach((hex, idx) => {
+        const b = document.createElement('button');
+        b.className = `swatch-btn${curColor === idx ? ' active' : ''}`;
+        b.style.background = hex;
+        b.title = `Color ${idx}`;
+        b.onclick = () => {
+          const prev = this._snapshot();
+          if (this.state.tacticalStyles?.[p.row]) this.state.tacticalStyles[p.row][p.col] = idx;
+          this.viewport.updateCell(p.row, p.col, false);
+          this._commitSnapshot(prev);
+          this._renderSelectedPanel();
+        };
+        swatches.appendChild(b);
+      });
+      rowEl.appendChild(swatches);
+      controlsEl.appendChild(rowEl);
+    }
+
+    // Prop kind selector
+    if (p.kind === 'prop') {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'sel-row';
+      rowEl.innerHTML = `<span>Kind</span>`;
+      const sel = document.createElement('select');
+      for (const k of ['lamp', 'fence', 'car', 'shrub', 'barricade']) {
+        const opt = document.createElement('option');
+        opt.value = k;
+        opt.textContent = k;
+        opt.selected = p.item.kind === k;
+        sel.appendChild(opt);
+      }
+      sel.onchange = () => {
+        const prev = this._snapshot();
+        p.item.kind = sel.value;
+        this.viewport.rebuildMarkers();
+        this._syncLists();
+        this._commitSnapshot(prev);
+        this._renderSelectedPanel();
+      };
+      rowEl.appendChild(sel);
+      controlsEl.appendChild(rowEl);
+    }
+
+    // Powerup type selector
+    if (p.kind === 'powerup') {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'sel-row';
+      rowEl.innerHTML = `<span>Crate Type</span>`;
+      const sel = document.createElement('select');
+      for (const k of ['REPAIR', 'EMP', 'BASE_RESTORE', 'APS', 'MISSILE', 'AMMO']) {
+        const opt = document.createElement('option');
+        opt.value = k;
+        opt.textContent = k;
+        opt.selected = p.item.type === k;
+        sel.appendChild(opt);
+      }
+      sel.onchange = () => {
+        const prev = this._snapshot();
+        p.item.type = sel.value;
+        this.viewport.rebuildMarkers();
+        this._syncLists();
+        this._commitSnapshot(prev);
+        this._renderSelectedPanel();
+      };
+      rowEl.appendChild(sel);
+      controlsEl.appendChild(rowEl);
+    }
+
+    // Decal size & label text
+    if (p.kind === 'decal') {
+      const sizeRow = document.createElement('div');
+      sizeRow.className = 'sel-row';
+      sizeRow.innerHTML = `<span>Size</span>`;
+      const inp = document.createElement('input');
+      inp.type = 'number';
+      inp.min = '0.5';
+      inp.max = '8';
+      inp.step = '0.5';
+      inp.value = String(p.item.size || 1);
+      inp.style.width = '64px';
+      inp.onchange = () => {
+        const prev = this._snapshot();
+        p.item.size = Math.max(0.5, Math.min(8, Number(inp.value) || 1));
+        this.viewport.rebuildDecorations();
+        this._syncLists();
+        this._commitSnapshot(prev);
+      };
+      sizeRow.appendChild(inp);
+      controlsEl.appendChild(sizeRow);
+
+      if (p.item.kind === 'label') {
+        const textRow = document.createElement('div');
+        textRow.className = 'sel-row';
+        textRow.innerHTML = `<span>Label</span>`;
+        const txt = document.createElement('input');
+        txt.type = 'text';
+        txt.maxLength = 40;
+        txt.value = p.item.text || '';
+        txt.style.width = '140px';
+        txt.onchange = () => {
+          const prev = this._snapshot();
+          p.item.text = txt.value.slice(0, 40) || 'SECTOR';
+          this.viewport.rebuildDecorations();
+          this._syncLists();
+          this._commitSnapshot(prev);
+        };
+        textRow.appendChild(txt);
+        controlsEl.appendChild(textRow);
+      }
+    }
+
+    // Delete button
+    const delRow = document.createElement('div');
+    delRow.className = 'sel-row';
+    const delBtn = document.createElement('button');
+    delBtn.className = 'danger-btn';
+    delBtn.textContent = 'Delete Element';
+    delBtn.onclick = () => this._deletePickedItem();
+    delRow.appendChild(delBtn);
+    controlsEl.appendChild(delRow);
+  }
+
   _updateCellInspector(cell) {
     this.hoveredCell = cell;
+    if (this.activeTool === 'move' && this.moveDrag && cell) {
+      this._moveCarriedTo(cell);
+    }
     if (!cell) {
       $('status-coords').textContent = 'Row: —, Col: —';
       $('info-coords').textContent = '—';
@@ -1686,6 +2049,16 @@ class MapEditorApp {
     window.addEventListener('keydown', (e) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
 
+      if (e.code === 'Escape') {
+        if (this.moveDrag) this._cancelMove();
+        else if (this.pickedItem) this._clearPickedItem();
+        return;
+      }
+      if ((e.code === 'Delete' || e.code === 'Backspace') && this.pickedItem) {
+        e.preventDefault();
+        this._deletePickedItem();
+        return;
+      }
       if (e.code === 'Space') {
         e.preventDefault();
         if (this.moveDrag?.kind === 'landmark') {
@@ -1704,11 +2077,14 @@ class MapEditorApp {
           this._toast(`Rotated Rail Curve to ${this.moveDrag.item.rotation}°`);
         } else if (this.moveDrag?.kind === 'object') {
           this.moveDrag.rotation = ((this.moveDrag.rotation || 0) + 90) % 360;
-          if (this.state.objectRotations?.[this.moveDrag.fromRow]) {
-            this.state.objectRotations[this.moveDrag.fromRow][this.moveDrag.fromCol] = this.moveDrag.rotation;
-          }
-          this.viewport.updateCell(this.moveDrag.fromRow, this.moveDrag.fromCol, false);
+          this.viewport.updateMovePreviewCell(
+            this.hoveredCell?.row ?? this.moveDrag.fromRow,
+            this.hoveredCell?.col ?? this.moveDrag.fromCol,
+            this.moveDrag.rotation
+          );
           this._toast(`Rotated object to ${this.moveDrag.rotation}°`);
+        } else if (this.pickedItem) {
+          this._rotatePickedItem(e.shiftKey ? -90 : 90);
         } else {
           this._cyclePlacementRotation(e.shiftKey ? -90 : 90);
           this._toast(`Placement angle: ${this.placementRotation}°`);

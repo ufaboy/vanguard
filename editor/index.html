@@ -38,7 +38,7 @@
           <button data-tool="move" title="Move Object / Marker / Landmark (M)">Move</button>
           <button data-tool="rotate" title="Rotate Object / Prop / Landmark / Deco 90° (O, Shift+Click CCW)">Rotate</button>
           <button data-tool="eraser" title="Eraser (X)">Eraser</button>
-          <button data-tool="eyedropper" title="Eyedropper (I or Alt+Click)">Pick</button>
+          <button data-tool="eyedropper" title="Pick & Edit Element Properties (I); Alt+Click to sample tile">Pick</button>
           <button data-tool="rect" title="Rectangle Fill (R)">Rect</button>
           <button data-tool="fill" title="Flood Fill (F)">Fill</button>
         </div>
@@ -93,6 +93,12 @@
 
         <!-- Right Inspector -->
         <aside id="inspector" class="sidebar">
+          <section id="selected-panel" class="insp-section hidden">
+            <h3>Selected Element</h3>
+            <div id="sel-title" class="sel-title">—</div>
+            <div id="sel-controls" class="sel-controls"></div>
+          </section>
+
           <section class="insp-section">
             <h3>Cell Inspector</h3>
             <div id="cell-info" class="kv-grid">

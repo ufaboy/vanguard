@@ -356,3 +356,58 @@ input[type="color"] {
 .status-help {
   margin-left: auto;
 }
+
+/* Selected Element Panel */
+.sel-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin-bottom: 6px;
+}
+
+.sel-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.sel-row > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.sel-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.swatch-row {
+  display: flex;
+  gap: 6px;
+}
+
+.swatch-btn {
+  width: 24px;
+  height: 20px;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: 3px;
+}
+
+.swatch-btn.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px var(--accent-2);
+}
+
+.danger-btn {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.4);
+}
