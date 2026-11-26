@@ -25,6 +25,22 @@ import {
 } from '../terrains/perimeter-buildings.js';
 import { buildEnemyStronghold } from '../terrains/enemy-stronghold.js';
 import { createSandCanvas, createSandPatchMask } from '../terrains/sand.js';
+import {
+  TacticalModels,
+  createContainerBlock as buildContainerBlock,
+  createCrushableProp as buildCrushableProp,
+  createLocomotiveBlock as buildLocomotiveBlock,
+  createRailBlock as buildRailBlock,
+  createRailBridgeBlock as buildRailBridgeBlock,
+  createRailCarBlock as buildRailCarBlock,
+  createRailCurveBlock as buildRailCurveBlock,
+  createSandbagsBlock as buildSandbagsBlock,
+  createTransformerBlock as buildTransformerBlock,
+  updateContainerDamage as refreshContainerDamage,
+  updateLocomotiveDamage as refreshLocomotiveDamage,
+  updateRailCarDamage as refreshRailCarDamage,
+  updateTransformerDamage as refreshTransformerDamage,
+} from '../terrains/tactical-models.js';
 
 /** Runtime sand patches: rim variants, share of the patch the cell occupies, and pattern repeat in cells. */
 const SAND_PATCH_VARIANTS = 6;
@@ -400,6 +416,13 @@ export class ModelFactory extends TextureGenerator {
         ? this.loadTileModels(this.buildingModels, () => this.onBuildingModelsReady?.())
         : Promise.resolve(false)
     );
+    this.tacticalModels = options.tacticalModels || new TacticalModels(renderer);
+    this.useBlenderTactical = options.useBlenderTactical ?? !isSoftwareGl;
+    this.tacticalModelsPromise = options.tacticalModelsPromise ?? (
+      !headless && this.useBlenderTactical
+        ? this.loadTileModels(this.tacticalModels, () => this.onTacticalModelsReady?.())
+        : Promise.resolve(false)
+    );
     if (!headless) {
       this.concreteTex = this.generated('createConcreteTextures');
       this.groundTex = this.generated('createGroundTexture');
@@ -548,6 +571,7 @@ export class ModelFactory extends TextureGenerator {
       this.brickModelsPromise,
       this.concreteModelsPromise,
       this.buildingModelsPromise,
+      this.tacticalModelsPromise,
       this.ensureEnemyModels(enemyClasses),
     ];
     // `options.landmarks`: the sector's landmark kinds (only their GLB packs load), or true for every pack.
@@ -2865,6 +2889,9 @@ export class ModelFactory extends TextureGenerator {
     disposeBag(this.barrelMats);
     disposeBag(this.waterTowerMats);
     disposeBag(this.themePropMats);
+    disposeBag(this._railBridgeMats);
+    disposeBag(this._tacticalMats);
+    this._tacticalMats = null;
     disposeBag(this.perimeterBuildingCatalog);
     disposeBag(this.powerUpMatCache);
     disposeBag(this.powerUpSpriteMatCache);
@@ -2875,6 +2902,7 @@ export class ModelFactory extends TextureGenerator {
     disposeTex(this.powerUpBeamTex);
     this.powerUpBeamTex = null;
 
+    this.tacticalModels?.dispose?.();
     disposeBag(this.brickTex);
     disposeBag(this.concreteTex);
     disposeBag(this.groundTex);
@@ -4254,6 +4282,58 @@ export class ModelFactory extends TextureGenerator {
 
     group.userData.batchTile = true;
     return markOwned(group, { geometries: false, materials: false });
+  }
+
+  createRailBlock(x = 0, z = 0, neighborMask = 5) {
+    return buildRailBlock(this, x, z, neighborMask);
+  }
+
+  createRailBridgeBlock(x = 0, z = 0, neighborMask = 5) {
+    return buildRailBridgeBlock(this, x, z, neighborMask);
+  }
+
+  createRailCurveBlock(x = 0, z = 0, rotationDeg = 0) {
+    return buildRailCurveBlock(this, x, z, rotationDeg);
+  }
+
+  createContainerBlock(colorIndex = 0, orientation = 'ns', spanCells = 1) {
+    return buildContainerBlock(this, colorIndex, orientation, spanCells);
+  }
+
+  updateContainerDamage(mesh, hp, maxHp = 8) {
+    refreshContainerDamage(this, mesh, hp, maxHp);
+  }
+
+  createTransformerBlock() {
+    return buildTransformerBlock(this);
+  }
+
+  updateTransformerDamage(mesh, hp) {
+    refreshTransformerDamage(this, mesh, hp);
+  }
+
+  createSandbagsBlock(neighborMask = 0) {
+    return buildSandbagsBlock(this, neighborMask);
+  }
+
+  createRailCarBlock(orientation = 'ns', variant = 'closed', spanCells = 1, colorIndex = 0) {
+    return buildRailCarBlock(this, orientation, variant, spanCells, colorIndex);
+  }
+
+  updateRailCarDamage(mesh, hp, maxHp = 10) {
+    refreshRailCarDamage(this, mesh, hp, maxHp);
+  }
+
+  createLocomotiveBlock(orientation = 'ns', spanCells = 1) {
+    return buildLocomotiveBlock(this, orientation, spanCells);
+  }
+
+  updateLocomotiveDamage(mesh, hp, maxHp = 16) {
+    refreshLocomotiveDamage(this, mesh, hp, maxHp);
+  }
+
+  createCrushableProp(kind, theme = 'urban', seed = 0) {
+    return buildCrushableProp(this, kind, theme, seed);
   }
 
   getPowerUpEmblemTexture(type) {

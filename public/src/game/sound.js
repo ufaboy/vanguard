@@ -542,6 +542,36 @@ export class SoundManager {
     this.playBuffer('boss_alarm', { volume: 0.85, pitchVariation: 0.02, pos });
   }
 
+  /** Synthesizes a two-tone diesel locomotive air horn with distance attenuation. */
+  playTrainHorn({ x, z } = {}) {
+    if (!this._enabled || this.paused || !this.hasUserGesture()) return;
+    if (this.shouldThrottle('train_horn', 1.8)) return;
+    const ctx = this.ensureContext();
+    if (!ctx || typeof ctx.createOscillator !== 'function') return;
+    try {
+      const t = ctx.currentTime;
+      const dist = Math.hypot((x ?? this.listenerX) - this.listenerX, (z ?? this.listenerZ) - this.listenerZ);
+      const atten = Math.max(0.15, 1.0 - dist / (this.sightRadius * 1.4));
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.linearRampToValueAtTime(0.22 * atten, t + 0.05);
+      gain.gain.setValueAtTime(0.20 * atten, t + 0.42);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.65);
+      gain.connect(this.compressor || ctx.destination);
+
+      for (const freq of [185, 233]) {
+        const osc = ctx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, t);
+        osc.connect(gain);
+        osc.start(t);
+        osc.stop(t + 0.68);
+      }
+    } catch {
+      // Ignore Web Audio errors in headless/test environments.
+    }
+  }
+
   playPowerUp() {
     if (this.shouldThrottle('powerup', 0.06)) return;
     this.playBuffer('powerup', { volume: 0.85, pitchVariation: 0.02 });

@@ -487,6 +487,11 @@ export class PowerupsController {
 
       case POWERUP.EMP:
         engine.empTimer = POWERUP_TYPES[POWERUP.EMP].duration;
+        engine.screenShake = Math.max(engine.screenShake || 0, 0.55);
+        engine.fx?.empWave?.(engine.playerX, engine.playerZ, { radius: 44, duration: 1.45, global: true });
+        for (const e of engine.enemies || []) {
+          if (e && e.hp > 0) engine.fx?.electric?.(e.x, 0.85, e.z, 0x38bdf8, 3, 0.8);
+        }
         engine.setStatusBanner?.(
           t('EMP BLAST ACTIVATED! ALL HOSTILE ARMOR DISABLED FOR 10s!'),
           2.8

@@ -351,6 +351,7 @@ export class ExplosionsController {
     const minRow = Math.max(0, minG.row - 1);
     const maxRow = Math.min(engine.grid.length - 1, maxG.row + 1);
     const minCol = Math.max(0, minG.col - 1);
+    const damagedPairs = new Set();
     for (let r = minRow; r <= maxRow; r++) {
       const row = engine.grid[r];
       if (!row) continue;
@@ -374,6 +375,14 @@ export class ExplosionsController {
           rebuildIce = true;
         } else if (cell.type === TileType.BOXES || cell.type === TileType.WATER_TOWER || cell.type === TileType.BRICK) {
           engine.damageTileCell(cell, tileDmg, pos.x, pos.z, fromPlayer);
+        } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR || cell.type === TileType.LOCOMOTIVE) {
+          if (!damagedPairs.has(cell)) {
+            damagedPairs.add(cell);
+            if (cell.pairPartner) damagedPairs.add(cell.pairPartner);
+            engine.damageTileCell(cell, Math.max(4, tileDmg), pos.x, pos.z, fromPlayer);
+          }
+        } else if (cell.type === TileType.TRANSFORMER || cell.type === TileType.SANDBAGS) {
+          engine.damageTileCell(cell, Math.max(2, tileDmg), pos.x, pos.z, fromPlayer);
         } else if (cell.type === TileType.BARREL) {
           engine.explodeBarrel(cell, fromPlayer);
         } else if (cell.type === TileType.OIL_SLICK) {
@@ -387,6 +396,18 @@ export class ExplosionsController {
           baseHitDmg = Math.max(baseHitDmg, tileDmg);
         } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
           engine.damageEnemyBase(cell, tileDmg, pos.x, pos.z);
+        }
+      }
+    }
+    if (engine.trainController) {
+      for (const train of engine.trainController.trains || []) {
+        if (train.offscreen || train.destroyed) continue;
+        for (const unit of train.units) {
+          if (!unit.alive) continue;
+          const d = Math.hypot(unit.x - x, unit.z - z);
+          if (d <= radius + unit.hitRadius) {
+            engine.trainController.damageUnit(train, unit, unit.cfg.artilleryDamage, unit.x, unit.z);
+          }
         }
       }
     }
@@ -405,6 +426,7 @@ export class ExplosionsController {
     if (impactCell && impactCell.type !== TileType.RUBBLE && radius >= TILE_SIZE * 1.1) {
       engine.terrainDestruction?.convertCellToCrater?.(impactCell);
     }
+    engine.terrainDestruction?.crushPropsNear?.(x, z, searchSpan);
 
     if (fromPlayer) {
       const targets = [...engine.enemies];
@@ -475,6 +497,7 @@ export class ExplosionsController {
     const maxRow = Math.min(GRID_SIZE - 1, maxG.row + 1);
     const minCol = Math.max(0, minG.col - 1);
     const maxCol = Math.min(GRID_SIZE - 1, maxG.col + 1);
+    const damagedPairs = new Set();
     for (let r = minRow; r <= maxRow; r++) {
       for (let c = minCol; c <= maxCol; c++) {
         const cell = engine.grid[r]?.[c];
@@ -490,6 +513,14 @@ export class ExplosionsController {
           } else if (cell.type === TileType.BARREL) {
             engine.explodeBarrel(cell, fromPlayer);
           } else if (cell.type === TileType.WATER_TOWER) {
+            engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
+          } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR || cell.type === TileType.LOCOMOTIVE) {
+            if (!damagedPairs.has(cell)) {
+              damagedPairs.add(cell);
+              if (cell.pairPartner) damagedPairs.add(cell.pairPartner);
+              engine.damageTileCell(cell, 4, pos.x, pos.z, fromPlayer);
+            }
+          } else if (cell.type === TileType.TRANSFORMER || cell.type === TileType.SANDBAGS) {
             engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
           } else if (cell.type === TileType.OIL_SLICK) {
             engine.terrainDestruction?.igniteOilSlick?.(cell);
@@ -509,6 +540,18 @@ export class ExplosionsController {
         }
       }
     }
+    if (engine.trainController) {
+      for (const train of engine.trainController.trains || []) {
+        if (train.offscreen || train.destroyed) continue;
+        for (const unit of train.units) {
+          if (!unit.alive) continue;
+          const d = Math.hypot(unit.x - x, unit.z - z);
+          if (d <= radius + unit.hitRadius) {
+            engine.trainController.damageUnit(train, unit, unit.cfg.artilleryDamage, unit.x, unit.z);
+          }
+        }
+      }
+    }
     if (hitCommandBase) {
       engine.terrainDestruction.damageCommandBase(Math.min(damage || 18, 22), x, z);
     }
@@ -518,6 +561,7 @@ export class ExplosionsController {
     if (impactCell && impactCell.type !== TileType.RUBBLE && radius >= TILE_SIZE * 1.1) {
       engine.terrainDestruction?.convertCellToCrater?.(impactCell);
     }
+    engine.terrainDestruction?.crushPropsNear?.(x, z, searchSpan);
 
     if (fromPlayer) {
       const targets = [...engine.enemies];

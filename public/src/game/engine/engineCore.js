@@ -12,6 +12,7 @@ import { GarageOps } from './garage-ops.js';
 import { PerfMonitor } from './perfMonitor.js';
 import { BossCombat } from './boss-combat.js';
 import { DefenseTurretsController } from './defense-turrets.js';
+import { TrainController } from './trains-controller.js';
 import { buildHudSnapshot } from './hud-snapshot.js';
 import { ForestFireController } from '../terrains/forest-fire.js';
 import { ProfileSaveController } from './profile-save.js';
@@ -652,6 +653,7 @@ export class TankGameEngine {
   get garageOps() { return (this._garageOps ||= new GarageOps(this)); }
   get bossCombat() { return (this._bossCombat ||= new BossCombat(this)); }
   get defenseTurretsCtrl() { return (this._defenseTurretsCtrl ||= new DefenseTurretsController(this)); }
+  get trainController() { return (this._trainController ||= new TrainController(this)); }
   get forestFire() { return (this._forestFire ||= new ForestFireController(this)); }
 
   setupAimReticle() {
@@ -1218,6 +1220,7 @@ export class TankGameEngine {
         }
         this.updateEnemies(dt, elapsed);
         this.defenseTurretsCtrl.update(dt, elapsed);
+        this.trainController.update(dt, elapsed);
         if (perf) perf.recordUpdatePhase('enemies', performance.now() - t);
 
         t = perf ? performance.now() : 0;
@@ -1234,6 +1237,7 @@ export class TankGameEngine {
         this.reconDroneController.update(dt, elapsed);
         this.playerController.updateSmokeAndLoot(dt);
         this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateTransformerPulses(dt);
         this.terrainDestruction.updateBurningOil(dt);
         this.updateBrickRubble(dt);
         this.forestFire.update(dt, elapsed);
@@ -1246,6 +1250,7 @@ export class TankGameEngine {
         this.updateProjectiles(dt);
         this.explosions.updateHazardZones(dt, elapsed);
         this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateTransformerPulses(dt);
         this.terrainDestruction.updateBurningOil(dt);
         this.updateBrickRubble(dt);
         this.forestFire.update(dt, elapsed);
@@ -1269,6 +1274,7 @@ export class TankGameEngine {
         this.updateProjectiles(dt);
         this.explosions.updateHazardZones(dt, elapsed);
         this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateTransformerPulses(dt);
         this.terrainDestruction.updateBurningOil(dt);
         this.updateBrickRubble(dt);
         this.forestFire.update(dt, elapsed);
@@ -1690,8 +1696,8 @@ export class TankGameEngine {
     this.physics.resolveEnemyCollisions();
   }
 
-  checkTankWallCollision(x, z, radius, canCrossWater = false) {
-    return this.physics.checkTankWallCollision(x, z, radius, canCrossWater);
+  checkTankWallCollision(x, z, radius, canCrossWater = false, canCrushSandbags = false) {
+    return this.physics.checkTankWallCollision(x, z, radius, canCrossWater, canCrushSandbags);
   }
 
   lerpAngle(current, target, alpha) {

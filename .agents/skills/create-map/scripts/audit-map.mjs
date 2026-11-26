@@ -2,6 +2,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { effectiveLayout } from './layered-layout.mjs';
+import { unpackTerrain } from '../../../../public/src/game/terrains/terrain-format.js';
+import { validateRailroadLayout } from '../../../../public/src/game/terrains/rail-rules.js';
 
 const SOLID_BLOCKS = new Set(['B', 'C', 'W', 'H', 'X', 'D', 'T', 'Q', 'E']);
 const PASSABLE_ROAD_BASE = new Set(['.', 'R', 'K', 'L', 'M', 'I', 'S', 'P', '^']);
@@ -174,6 +176,13 @@ export function auditMap(filePath) {
           message: `Landmark '${lm.id}' (${lm.kind}) at (${r},${c}) is on '${ch}'`,
         });
       }
+    }
+  }
+
+  if (map.terrain && !Array.isArray(map.terrain)) {
+    const railCheck = validateRailroadLayout(unpackTerrain(map.terrain, map.gridSize || 40));
+    for (const iss of railCheck.issues) {
+      issues.push({ type: iss.code, message: iss.message });
     }
   }
 

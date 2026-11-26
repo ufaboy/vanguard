@@ -69,6 +69,7 @@ Gameplay wins over realism, but resolve conflicts by moving, compressing or addi
 - **HQ cover (always)**: the HQ must be shielded from direct fire from the north. Author a row of `CONCRETE` (`C`) in `objectLayout` two rows north of the HQ (`baseRow - 2`), covering at least `baseCol - 1` … `baseCol + 2` (4 cells), with exactly one open row between it and the HQ (`baseRow - 1`, same columns) so the player tank can drive up to the base. That gap row and the cells beside the HQ stay free of objects, and the gap is reachable from the side on at least one end (preferably both). The game never adds this wall or clears the lane at load: only the map file decides what is there.
 - **Stronghold mode**: the `E` enemy base sits deep in the north (rows 2–7), never mid-map, with `enemyBase.fortifyPerimeter: true` and concrete around it.
 - **Placement compatibility**: every object stands on a surface allowed by `canPlaceOnSurface` (see catalog.md).
+- **Railroad rules**: `RAIL` lines must never be interrupted by foreign objects or other surfaces (dead-ends into open ground are allowed). Turns may only use the 3×3 `rail_curve` (at most 2 per map; no sharp 90° corners). Any map with `RAIL` must include at least one coupled train consist (`LOCOMOTIVE` directly adjacent to `RAIL_CAR`); standalone single or coupled `RAIL_CAR`s are also allowed on straight track.
 
 ### 6. Tactical minimum
 

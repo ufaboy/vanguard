@@ -106,8 +106,9 @@ export class DefenseTurretsController {
 
     for (const t of engine.defenseTurrets) {
       if (!t.alive) continue;
+      if (t.empTimer > 0) t.empTimer = Math.max(0, t.empTimer - dt);
 
-      if (empStunned) {
+      if (empStunned || (t.empTimer || 0) > 0) {
         if (Math.random() < 0.12) engine.spawnSparks(t.x, 0.9, t.z, 0x06b6d4, 2);
         continue;
       }

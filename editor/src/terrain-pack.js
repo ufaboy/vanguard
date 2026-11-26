@@ -4,6 +4,7 @@
  */
 
 import { TileType } from '../../public/src/game/terrains/surfaces.js';
+import { railCurveCells } from '../../public/src/game/terrains/terrain-format.js';
 
 const TILE_TO_SURFACE_NAME = new Map([
   [TileType.ROAD, 'road'],
@@ -14,6 +15,7 @@ const TILE_TO_SURFACE_NAME = new Map([
   [TileType.GRASS, 'grass'],
   [TileType.SWAMP, 'swamp'],
   [TileType.OIL_SLICK, 'oil'],
+  [TileType.RAIL, 'rail'],
 ]);
 
 const TILE_TO_OBJECT_NAME = new Map([
@@ -29,6 +31,12 @@ const TILE_TO_OBJECT_NAME = new Map([
   [TileType.RUBBLE, 'rubble'],
   [TileType.HOUSE_1, 'house1'],
   [TileType.HOUSE_2, 'house2'],
+  [TileType.CONTAINER, 'container'],
+  [TileType.TRANSFORMER, 'transformer'],
+  [TileType.SANDBAGS, 'sandbags'],
+  [TileType.RAIL_CAR, 'rail_car'],
+  [TileType.LOCOMOTIVE, 'locomotive'],
+  [TileType.RAIL_BRIDGE, 'rail_bridge'],
   [TileType.ENEMY_BASE, 'enemy_base'],
 ]);
 
@@ -81,20 +89,34 @@ export function packTerrain({
   surfaceGrid,
   objectGrid,
   bridges = [],
+  railCurves = [],
   buildingLayout = new Map(),
+  tacticalStyles = null,
+  objectRotations = null,
   landmarks3d = [],
   powerups = [],
   mines = [],
   mineSigns = [],
   decals = [],
+  props = [],
+  railBridges = [],
+  fixedObjects = [],
 }) {
   const rows = surfaceGrid?.length || objectGrid?.length || 0;
   const cols = surfaceGrid?.[0]?.length || objectGrid?.[0]?.length || 0;
   const terrain = {};
 
+  const railCurveCellSet = new Set();
+  for (const rc of railCurves) {
+    for (const cell of railCurveCells(rc.row, rc.col, rc.rotation || 0)) {
+      railCurveCellSet.add(`${cell.row},${cell.col}`);
+    }
+  }
+
   // 1. Surfaces
   for (const rect of packRects(rows, cols, (r, c) => {
     const t = surfaceGrid[r][c];
+    if (t === TileType.RAIL && railCurveCellSet.has(`${r},${c}`)) return null;
     return t === TileType.EMPTY ? null : TILE_TO_SURFACE_NAME.get(t) ?? null;
   })) {
     pushGroup(
@@ -112,18 +134,31 @@ export function packTerrain({
       t === TileType.BASE ||
       t === TileType.LANDMARK ||
       t === TileType.BRIDGE ||
+      t === TileType.RAIL_BRIDGE ||
+      t === TileType.CONTAINER ||
+      t === TileType.LOCOMOTIVE ||
       t === TileType.HOUSE_1 ||
       t === TileType.HOUSE_2
     ) {
       return null;
     }
-    return TILE_TO_OBJECT_NAME.get(t) ?? null;
+    const name = TILE_TO_OBJECT_NAME.get(t);
+    if (!name) return null;
+    if ((t === TileType.CONTAINER || t === TileType.RAIL_CAR) && tacticalStyles?.[r]?.[c] >= 0) {
+      return `${name}:${tacticalStyles[r][c]}`;
+    }
+    return name;
   })) {
-    pushGroup(
-      terrain,
-      rect.key,
-      rect.h === 1 && rect.w === 1 ? [rect.r, rect.c] : [rect.r, rect.c, rect.h, rect.w]
-    );
+    const [name, styleStr] = rect.key.split(':');
+    if (styleStr !== undefined) {
+      pushGroup(terrain, name, [rect.r, rect.c, rect.h, rect.w, Number(styleStr)]);
+    } else {
+      pushGroup(
+        terrain,
+        name,
+        rect.h === 1 && rect.w === 1 ? [rect.r, rect.c] : [rect.r, rect.c, rect.h, rect.w]
+      );
+    }
   }
 
   // 3. Bridges
@@ -135,6 +170,18 @@ export function packTerrain({
       b.cols,
       b.orientation === 'ew' ? 'ew' : 'ns',
     ]);
+  }
+
+  // Railroad bridges are object overlays, stored separately so trains can occupy their cells.
+  const railBridgeCells = new Set(railBridges.map(({ row, col }) => `${row},${col}`));
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (objectGrid[r][c] === TileType.RAIL_BRIDGE) railBridgeCells.add(`${r},${c}`);
+    }
+  }
+  for (const key of railBridgeCells) {
+    const [row, col] = key.split(',').map(Number);
+    pushGroup(terrain, 'rail_bridge', [row, col]);
   }
 
   // 4. Houses (grouped by tile + baked style)
@@ -149,7 +196,29 @@ export function packTerrain({
     pushGroup(terrain, name, [rect.r, rect.c, rect.h, rect.w, Number(styleStr)]);
   }
 
-  // 5. Point entities
+  // 5. Point entities (fixed_object before rotations so orientation & defaults are clear)
+  for (const rc of railCurves) {
+    pushGroup(
+      terrain,
+      'rail_curve',
+      rc.rotation ? [rc.row, rc.col, rc.rotation] : [rc.row, rc.col]
+    );
+  }
+  const ewFixedCells = new Set();
+  for (const item of fixedObjects) {
+    if (item.orientation === 'ew') {
+      ewFixedCells.add(`${item.row},${item.col}`);
+      ewFixedCells.add(`${item.row},${item.col + 1}`);
+    }
+    const colorIndex = item.colorIndex ?? tacticalStyles?.[item.row]?.[item.col] ?? -1;
+    pushGroup(terrain, 'fixed_object', [
+      item.kind,
+      item.row,
+      item.col,
+      item.orientation === 'ew' ? 'ew' : 'ns',
+      ...(item.kind === 'container' && colorIndex >= 0 ? [colorIndex] : []),
+    ]);
+  }
   for (const lm of landmarks3d) {
     pushGroup(
       terrain,
@@ -159,6 +228,27 @@ export function packTerrain({
   }
   for (const pw of powerups) {
     pushGroup(terrain, 'powerup', [pw.type, pw.row, pw.col]);
+  }
+
+  // 6. Non-zero grid object rotations (90 / 180 / 270; skip default 90° on 'ew' fixed_object)
+  if (objectRotations) {
+    for (const rect of packRects(rows, cols, (r, c) => {
+      const t = objectGrid[r][c];
+      if (t == null || t === TileType.BASE || t === TileType.LANDMARK || t === TileType.BRIDGE || t === TileType.RAIL_BRIDGE) {
+        return null;
+      }
+      const deg = objectRotations[r]?.[c] || 0;
+      if (!deg) return null;
+      if (deg === 90 && ewFixedCells.has(`${r},${c}`)) return null;
+      return String(deg);
+    })) {
+      const deg = Number(rect.key);
+      pushGroup(
+        terrain,
+        'rotations',
+        rect.h === 1 && rect.w === 1 ? [rect.r, rect.c, deg] : [rect.r, rect.c, rect.h, rect.w, deg]
+      );
+    }
   }
   for (const m of mines) {
     pushGroup(terrain, 'mine', [m.row, m.col]);
@@ -171,13 +261,22 @@ export function packTerrain({
     );
   }
   for (const d of decals) {
-    if (d.text != null) {
+    if (d.rotation) {
+      pushGroup(terrain, 'decal', [d.kind, d.row, d.col, d.size || 1, d.text ?? null, d.rotation]);
+    } else if (d.text != null) {
       pushGroup(terrain, 'decal', [d.kind, d.row, d.col, d.size || 1, d.text]);
     } else if (d.size && d.size !== 1) {
       pushGroup(terrain, 'decal', [d.kind, d.row, d.col, d.size]);
     } else {
       pushGroup(terrain, 'decal', [d.kind, d.row, d.col]);
     }
+  }
+  for (const p of props) {
+    pushGroup(
+      terrain,
+      'prop',
+      p.rotation ? [p.kind, p.row, p.col, p.rotation] : [p.kind, p.row, p.col]
+    );
   }
 
   return terrain;

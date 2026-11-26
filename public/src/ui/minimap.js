@@ -215,6 +215,29 @@ function renderOffscreenTerrain(grid) {
       } else if (type === TileType.CRATER || type === TileType.RUBBLE) {
         ctx.fillStyle = '#2c2f26';
         ctx.fillRect(x + 1, y + 1, s - 2, s - 2);
+      } else if (type === TileType.RAIL) {
+        ctx.fillStyle = '#3f3f46';
+        ctx.fillRect(x, y, s, s);
+      } else if (type === TileType.RAIL_BRIDGE) {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x, y, s, s);
+        ctx.fillStyle = '#3f3f46';
+        ctx.fillRect(x + 0.6, y + 0.6, s - 1.2, s - 1.2);
+      } else if (type === TileType.CONTAINER) {
+        ctx.fillStyle = '#2563eb';
+        ctx.fillRect(x + 0.5, y + 0.5, s - 1, s - 1);
+      } else if (type === TileType.TRANSFORMER) {
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 0.5, y + 0.5, s - 1, s - 1);
+      } else if (type === TileType.SANDBAGS) {
+        ctx.fillStyle = '#c2a67d';
+        ctx.fillRect(x + 0.5, y + 0.5, s - 1, s - 1);
+      } else if (type === TileType.RAIL_CAR) {
+        ctx.fillStyle = '#9a3412';
+        ctx.fillRect(x + 0.4, y + 0.4, s - 0.8, s - 0.8);
+      } else if (type === TileType.LOCOMOTIVE) {
+        ctx.fillStyle = '#1e3a5f';
+        ctx.fillRect(x + 0.3, y + 0.3, s - 0.6, s - 0.6);
       }
     }
   }

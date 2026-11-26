@@ -508,6 +508,9 @@ export class PlayerController {
     if (engine.apsRearmTimer > 0)
       engine.apsRearmTimer = Math.max(0, engine.apsRearmTimer - dt);
     if (engine.empTimer > 0) engine.empTimer = Math.max(0, engine.empTimer - dt);
+    if (engine.playerEmpDisruptTimer > 0) {
+      engine.playerEmpDisruptTimer = Math.max(0, engine.playerEmpDisruptTimer - dt);
+    }
     if (engine.smokeCooldown > 0) engine.smokeCooldown = Math.max(0, engine.smokeCooldown - dt);
 
     stepAutomaticTrackRepair(engine.subsystems, dt);
@@ -533,9 +536,18 @@ export class PlayerController {
       engine.playerX, engine.playerZ, TANK_HIT_RADIUS.PLAYER, false
     )) engine.componentWaterEgress = false;
     const canCrossWater = engine.playerStats.canCrossWater || engine.componentWaterEgress;
+    const canCrushSandbags = Boolean(
+      engine.playerLoadout?.optionalEquipment?.includes('DOZER_BLADE') ||
+      engine.playerLoadout?.frame === 'F5' ||
+      (engine.upgrades?.frame || 1) >= 5
+    );
     if (currentCell?.type === TileType.RUBBLE && engine.playerLoadout?.optionalEquipment?.includes('DOZER_BLADE')) {
       engine.terrainDestruction?.clearRubbleCell?.(currentCell);
     }
+    if (currentCell?.type === TileType.SANDBAGS && canCrushSandbags) {
+      engine.terrainDestruction?.crushSandbagsCell?.(currentCell);
+    }
+    engine.terrainDestruction?.crushPropsNear?.(engine.playerX, engine.playerZ, 0.95);
     engine.onWater = currentCell?.type === TileType.WATER;
     engine.onIce = !canHover && !allTerrain && currentCell?.type === TileType.ICE;
     engine.onSand = !canHover && !allTerrain && currentCell?.type === TileType.SAND;
@@ -667,7 +679,8 @@ export class PlayerController {
         nextX,
         engine.playerZ,
         radius,
-        canCrossWater
+        canCrossWater,
+        canCrushSandbags
       )
     ) {
       engine.playerX = nextX;
@@ -684,7 +697,8 @@ export class PlayerController {
         engine.playerX,
         nextZ,
         radius,
-        canCrossWater
+        canCrossWater,
+        canCrushSandbags
       )
     ) {
       engine.playerZ = nextZ;
@@ -716,7 +730,8 @@ export class PlayerController {
             pushedX,
             pushedZ,
             radius,
-            canCrossWater
+            canCrossWater,
+            canCrushSandbags
           )
         ) {
           engine.playerX = pushedX;
@@ -889,9 +904,10 @@ export class PlayerController {
     return false;
   }
 
-  /** True while the player is inside the close-range APS / ATGM disruption radius of a living JAMMER. */
+  /** True while the player is inside the close-range APS / ATGM disruption radius of a living JAMMER or EMP surge. */
   isInsideJammerSystemRadius() {
     const engine = this.engine;
+    if ((engine.playerEmpDisruptTimer || 0) > 0) return true;
     return isPointWithinJammerRadius(
       engine.playerX,
       engine.playerZ,

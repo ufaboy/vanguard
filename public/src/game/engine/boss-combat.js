@@ -299,7 +299,7 @@ export class BossCombat {
     const detectRadius = BOSS_APS.DETECT_RADIUS * TILE_SIZE;
     for (const e of engine.enemies) {
       if (!e.isBoss || e.hp <= DURABILITY.ZERO_HP) continue;
-      if ((e.apsCharges || 0) <= 0 || (e.apsRearmTimer || 0) > 0 || (e.phaseShieldTimer || 0) > 0) continue;
+      if ((e.empTimer || 0) > 0 || (e.apsCharges || 0) <= 0 || (e.apsRearmTimer || 0) > 0 || (e.phaseShieldTimer || 0) > 0) continue;
       const toBossX = e.x - projectile.x;
       const toBossZ = e.z - projectile.z;
       const dist = Math.hypot(toBossX, toBossZ);

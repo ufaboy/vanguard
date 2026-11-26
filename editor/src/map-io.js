@@ -77,11 +77,17 @@ export function parseMapState(rawJson) {
   const {
     surfaceGrid,
     objectGrid,
+    tacticalStyles,
+    objectRotations,
+    railCurves,
+    railBridges,
+    fixedObjects,
     landmarks3d,
     powerups,
     mines,
     mineSigns,
     decals,
+    props,
   } = unpackTerrain(rawJson.terrain, size);
 
   let decoration = rawJson.decoration ? structuredClone(rawJson.decoration) : null;
@@ -100,6 +106,11 @@ export function parseMapState(rawJson) {
     size,
     surfaceGrid,
     objectGrid,
+    tacticalStyles,
+    objectRotations,
+    railCurves,
+    railBridges,
+    fixedObjects,
     baseCell: {
       row: rawJson.baseCell?.row ?? 39,
       col: rawJson.baseCell?.col ?? 19,
@@ -112,6 +123,7 @@ export function parseMapState(rawJson) {
     landmarks3d,
     mines,
     mineSigns,
+    props,
     decoration,
     environment: {
       theme: rawJson.environment?.theme || 'urban',
@@ -145,6 +157,7 @@ export function serializeMapState(state) {
   delete out.surfaceLayout;
   delete out.objectLayout;
   delete out.bridges;
+  delete out.railBridges;
   delete out.buildings;
   delete out.landmarks3d;
   delete out.powerups;
@@ -176,12 +189,18 @@ export function serializeMapState(state) {
     surfaceGrid: state.surfaceGrid,
     objectGrid: state.objectGrid,
     bridges,
+    railCurves: state.railCurves || [],
+    railBridges: state.railBridges || [],
+    fixedObjects: state.fixedObjects || [],
     buildingLayout,
+    tacticalStyles: state.tacticalStyles || null,
+    objectRotations: state.objectRotations || null,
     landmarks3d: state.landmarks3d || [],
     powerups: state.powerups || [],
     mines: state.mines || [],
     mineSigns: state.mineSigns || [],
     decals: state.decoration?.landmarks || [],
+    props: state.props || [],
   });
 
   return formatMapJson(out);

@@ -1,6 +1,6 @@
 import { adManager } from '../app/ads.js';
 import { analyticsManager } from '../app/analyticsManager.js';
-import { PAGE_PATHS } from '../app/routes.js';
+import { pageUrl } from '../app/routes.js';
 import { FPS_CAP_OPTIONS } from '../app/state.js';
 import { CAMPAIGN_MISSIONS } from '../game/campaign.js';
 import { QUALITY_PRESETS } from '../game/engine/engineCore.js';
@@ -84,7 +84,7 @@ export function setupDelegatedEvents(
 
     switch (action) {
       case 'menu-page':
-        location.href = PAGE_PATHS[btn.dataset.page] || PAGE_PATHS.index;
+        location.href = pageUrl(btn.dataset.page);
         break;
       case 'select-campaign-mission': {
         const missionId = btn.dataset.mission;
@@ -171,7 +171,7 @@ export function setupDelegatedEvents(
         // Settle first (saves the survival record and reports mission_abort), then leave.
         engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.survival;
+          location.href = pageUrl('survival');
           break;
         }
         state.menuPage = 'survival';
@@ -184,7 +184,7 @@ export function setupDelegatedEvents(
       case 'return-contracts':
         engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.contracts;
+          location.href = pageUrl('contracts');
           break;
         }
         state.menuPage = 'contracts';
@@ -201,7 +201,7 @@ export function setupDelegatedEvents(
       case 'return-campaign':
         engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.campaign;
+          location.href = pageUrl('campaign');
           break;
         }
         state.menuPage = 'campaign';
@@ -210,7 +210,7 @@ export function setupDelegatedEvents(
       case 'main-menu':
         engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.index;
+          location.href = pageUrl('index');
           break;
         }
         state.menuPage = 'home';
@@ -372,7 +372,7 @@ export function setupDelegatedEvents(
       case 'abort-mission':
         engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.index;
+          location.href = pageUrl('index');
           break;
         }
         state.menuPage = 'home';
