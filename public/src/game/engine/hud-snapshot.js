@@ -16,6 +16,7 @@ import {
   isPointWithinJammerRadius,
 } from '../../sim/jammer.js';
 import { buildSurvivalHudSnapshot } from '../../sim/survival.js';
+import { getRankProgress } from '../../sim/medals.js';
 import { N_ } from '../../i18n/index.js';
 import { isActiveAirStrikeMission } from './air-support-controller.js';
 
@@ -238,6 +239,10 @@ export function buildHudSnapshot(engine) {
     medalTrackerState: engine.medalTracker?.snapshot() || null,
     statusMessage: engine.statusMessage,
     airSupportTargeting: engine.airSupportTargeting ? { ...engine.airSupportTargeting } : null,
+    profileMode: engine.profileMode || 'campaign',
+    playerRankId:
+      engine.airSupportController?.getPlayerRankId?.() ||
+      getRankProgress(engine.campaignSaveRepo?.loadPlayerSave?.()).currentRank.id,
     terrainGrid: engine.grid,
   };
 }

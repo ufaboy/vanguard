@@ -396,4 +396,8 @@ export default {
   "STRIKE": "SCHLAG",
   "Call Supply Air Drop [Key 5]": "Nachschub-Luftabwurf anfordern [Taste 5]",
   "DROP": "ABWURF",
+  "REQUIRES RANK: {rank}": "ERFORDERT RANG: {rank}",
+  "Req: {rank}": "Erf: {rank}",
+  "Air Support: {items}": "Luftunterstützung: {items}",
+  "Air Support Unlocked: {items}": "Luftunterstützung freigeschaltet: {items}",
 };

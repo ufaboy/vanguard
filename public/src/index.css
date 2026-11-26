@@ -4297,6 +4297,19 @@ html.campaign-hydrating .campaign-recon-square > * {
   cursor: not-allowed;
 }
 
+.hud-air-variant-btn.is-locked {
+  opacity: 0.5;
+  border-style: dashed;
+  border-color: rgba(100, 116, 139, 0.7);
+  cursor: not-allowed;
+}
+
+.hud-air-req {
+  color: #f59e0b;
+  font-size: 10px;
+  font-weight: 700;
+}
+
 .hud-mod-top {
   display: flex;
   align-items: center;
@@ -5460,6 +5473,10 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
 
 .medal-ladder-node {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
   text-align: center;
   padding: 4px 0;
   font-size: 11px;
@@ -5468,6 +5485,11 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
   color: #64748b;
   background: #0d131f;
   border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.medal-ladder-unlock {
+  font-size: 9px;
+  opacity: 0.85;
 }
 
 .medal-ladder-node.is-reached {
@@ -5628,6 +5650,13 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
 .battle-rank-xp {
   font-size: 11px;
   color: #94a3b8;
+}
+
+.battle-air-unlock-banner {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fbbf24;
 }
 
 .battle-medals-grid {

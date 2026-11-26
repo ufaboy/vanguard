@@ -396,4 +396,8 @@ export default {
   "STRIKE": "FRAPPE",
   "Call Supply Air Drop [Key 5]": "Appeler un largage de ravitaillement [Touche 5]",
   "DROP": "LARG.",
+  "REQUIRES RANK: {rank}": "RANG REQUIS : {rank}",
+  "Req: {rank}": "Req : {rank}",
+  "Air Support: {items}": "Soutien aérien : {items}",
+  "Air Support Unlocked: {items}": "Soutien aérien débloqué : {items}",
 };

@@ -396,4 +396,8 @@ export default {
   "STRIKE": "ATAQUE",
   "Call Supply Air Drop [Key 5]": "Chamar Suprimento Aéreo [Tecla 5]",
   "DROP": "SUPRIM.",
+  "REQUIRES RANK: {rank}": "REQUER PATENTE: {rank}",
+  "Req: {rank}": "Req: {rank}",
+  "Air Support: {items}": "Apoio aéreo: {items}",
+  "Air Support Unlocked: {items}": "Apoio aéreo desbloqueado: {items}",
 };

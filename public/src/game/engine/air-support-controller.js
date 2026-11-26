@@ -2,6 +2,11 @@ import * as THREE from 'three';
 import { t } from '../../i18n/index.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { determineHitAspect } from '../../sim/ballistics.js';
+import {
+  getAirStrikeRequiredRank,
+  getRankProgress,
+  isAirStrikeVariantUnlocked,
+} from '../../sim/medals.js';
 import { AIR_ORDNANCE, CANNONS } from '../components/ordnance.js';
 import {
   AIR_SUPPORT,
@@ -175,6 +180,19 @@ export class AirSupportController {
     return (this.engine.airSupportMissions || []).some(isActiveAirStrikeMission);
   }
 
+  getPlayerRankId() {
+    const save = this.engine.campaignSaveRepo?.loadPlayerSave?.();
+    return getRankProgress(save).currentRank.id;
+  }
+
+  isStrikeVariantUnlocked(variant) {
+    return isAirStrikeVariantUnlocked(
+      variant,
+      this.getPlayerRankId(),
+      this.engine.profileMode || 'campaign'
+    );
+  }
+
   startTargeting(type, strikeVariant = 'STRIKE_BOMBS') {
     const { engine } = this;
     if (engine.status !== GameStatus.PLAYING && !engine.airSupportTargeting) return false;
@@ -184,6 +202,12 @@ export class AirSupportController {
 
     const cfg = this.getTargetingConfig(type, strikeVariant);
     if (!cfg) return false;
+
+    if (type === 'STRIKE' && !this.isStrikeVariantUnlocked(strikeVariant)) {
+      const reqRank = getAirStrikeRequiredRank(strikeVariant);
+      engine.setStatusBanner(t('REQUIRES RANK: {rank}', { rank: t(reqRank.title) }), 2.0);
+      return false;
+    }
 
     if ((type === 'STRIKE' || type === 'MINES') && this.hasActiveStrike()) {
       engine.setStatusBanner(t('AIR STRIKE ALREADY IN PROGRESS'), 2.0);
@@ -195,12 +219,12 @@ export class AirSupportController {
       return false;
     }
     if (type === 'STRIKE') {
-      const minStrikeCost = Math.min(
-        AIR_SUPPORT.STRIKE_BOMBS.cost,
-        AIR_SUPPORT.STRIKE_THERMO.cost,
-        AIR_SUPPORT.STRIKE_AC130.cost,
-        AIR_SUPPORT.MINES.cost
-      );
+      const unlockedCosts = Object.entries(STRIKE_VARIANTS)
+        .filter(([variantId]) => this.isStrikeVariantUnlocked(variantId))
+        .map(([, variantCfg]) => variantCfg.cost);
+      const minStrikeCost = unlockedCosts.length > 0
+        ? Math.min(...unlockedCosts)
+        : AIR_SUPPORT.STRIKE_BOMBS.cost;
       if (!this.canAfford(minStrikeCost)) {
         engine.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost: minStrikeCost }), 2.0);
         return false;
@@ -232,6 +256,11 @@ export class AirSupportController {
     const { engine } = this;
     if (!engine.airSupportTargeting || engine.airSupportTargeting.type !== 'STRIKE') return false;
     if (!STRIKE_VARIANTS[variant]) return false;
+    if (!this.isStrikeVariantUnlocked(variant)) {
+      const reqRank = getAirStrikeRequiredRank(variant);
+      engine.setStatusBanner(t('REQUIRES RANK: {rank}', { rank: t(reqRank.title) }), 2.0);
+      return false;
+    }
     engine.airSupportTargeting.strikeVariant = variant;
     this.createOrUpdateReticle(engine.aimWorld?.x ?? engine.playerX, engine.aimWorld?.z ?? engine.playerZ);
     engine.emitHudUpdate?.();
@@ -259,6 +288,12 @@ export class AirSupportController {
     if (!targeting) return false;
     const cfg = this.getTargetingConfig(targeting.type, targeting.strikeVariant);
     if (!cfg) return false;
+
+    if (targeting.type === 'STRIKE' && !this.isStrikeVariantUnlocked(targeting.strikeVariant)) {
+      const reqRank = getAirStrikeRequiredRank(targeting.strikeVariant);
+      engine.setStatusBanner(t('REQUIRES RANK: {rank}', { rank: t(reqRank.title) }), 2.0);
+      return false;
+    }
 
     if ((targeting.type === 'STRIKE' || targeting.type === 'MINES') && this.hasActiveStrike()) {
       engine.setStatusBanner(t('AIR STRIKE ALREADY IN PROGRESS'), 2.0);
