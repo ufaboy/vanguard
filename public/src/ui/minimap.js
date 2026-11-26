@@ -272,7 +272,8 @@ function drawTerrainViewport(canvas, hud) {
   const playerCellZ = ((hud.playerZ || 0) + halfArena) / TILE_SIZE;
   const srcCenterX = playerCellX * TERRAIN_CELL_PX;
   const srcCenterY = playerCellZ * TERRAIN_CELL_PX;
-  const srcHalf = RADAR_RANGE_CELLS * TERRAIN_CELL_PX;
+  const radarRangeCells = hud.radarRangeCells || RADAR_RANGE_CELLS;
+  const srcHalf = radarRangeCells * TERRAIN_CELL_PX;
   const camRotRad = getRadarCameraRotationRad(hud.cameraAzimuth);
   const w = canvas.width;
   const h = canvas.height;
@@ -323,8 +324,9 @@ export function renderNorthUpSensorMinimap(hud) {
   }
 
   const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
+  const radarRangeCells = hud.radarRangeCells || RADAR_RANGE_CELLS;
   const RADAR_RADIUS = R_MAP - 3;
-  const RADAR_RANGE = RADAR_RANGE_CELLS * TILE_SIZE;
+  const RADAR_RANGE = radarRangeCells * TILE_SIZE;
   const playerX = hud.playerX || 0;
   const playerZ = hud.playerZ || 0;
   const camRotRad = getRadarCameraRotationRad(hud.cameraAzimuth);

@@ -229,7 +229,8 @@ export class SectorLoaderController {
     }
     engine.defenseTurrets = [];
     engine.baseAlive = true;
-    engine.baseMaxHp = sector.baseMaxHp || 1;
+    const baseHpMult = engine.getHqBonuses?.().baseHpMultiplier || 1;
+    engine.baseMaxHp = Math.max(1, Math.round((sector.baseMaxHp || 1) * baseHpMult));
     engine.baseHp = engine.baseMaxHp;
     engine.baseLandmarkMesh = null;
     if (sectorUsesLandmarks(sector)) {
@@ -844,10 +845,13 @@ export class SectorLoaderController {
 
     engine.playerHp = engine.playerMaxHp;
 
-    if (isIsolatedSector) {
-      engine.playerController.initApsLaunchers(APS.START_ROUNDS);
-      engine.missileAmmo = 2;
-    } else if (Array.isArray(engine.playerSave?.apsAmmo)) {
+    engine.apsOwned = isIsolatedSector ? false : Boolean(engine.playerSave?.apsOwned);
+    engine.atgmOwned = isIsolatedSector ? false : Boolean(engine.playerSave?.atgmOwned);
+    engine.preBattleApsOwned = engine.apsOwned;
+    engine.preBattleAtgmOwned = engine.atgmOwned;
+    if (!engine.apsOwned) {
+      engine.apsAmmo = [0, 0, 0, 0];
+    } else if (!isIsolatedSector && Array.isArray(engine.playerSave?.apsAmmo)) {
       engine.apsAmmo = [...engine.playerSave.apsAmmo];
       const total = engine.apsAmmo.reduce((a, b) => a + b, 0);
       if (total < APS.START_ROUNDS) {
@@ -857,7 +861,9 @@ export class SectorLoaderController {
       engine.playerController.initApsLaunchers(APS.START_ROUNDS);
     }
     engine.apsRearmTimer = 0;
-    if (!isIsolatedSector) {
+    if (!engine.atgmOwned) {
+      engine.missileAmmo = 0;
+    } else if (!isIsolatedSector) {
       engine.missileAmmo = Math.max(engine.missileAmmo, 2);
     }
     engine.cannonAmmo = engine.getPlayerMaxCannonAmmo();

@@ -82,6 +82,7 @@ export const APS = Object.freeze({
   MAX_TOTAL_AMMO: 12, // Maximum intercept ammunition capacity across all 4 corner launchers (Frame Tier 5)
   MAX_TOTAL_BY_FRAME: Object.freeze([4, 6, 8, 10, 12]), // Max APS capacity per Frame tier 1..5
   CHARGE_CREDIT_PRICE: 1000, // Credit cost in Garage for one APS charge
+  MODULE_CREDIT_PRICE: 2000, // Credit cost in Garage to install the 4-Corner APS module
   INITIAL_PER_LAUNCHER: Object.freeze([1, 0, 0, 1]), // Starting ammo per launcher index [FR, RR, RL, FL]
   DETECT_RADIUS: 2.6, // Threat detection radius in grid cells (2.6 cells = 5.2m world units)
   REARM_TIME: 0.35, // Cooldown in seconds between consecutive APS launcher interceptions
@@ -294,7 +295,8 @@ export function computeEffectiveDamage(
 export const RADAR_RANGE_CELLS = 16;
 
 export const MISSILE = Object.freeze({
-  CREDIT_PRICE: 3000, // Price per missile in the garage
+  CREDIT_PRICE: 1500, // Price per missile in the garage
+  MODULE_CREDIT_PRICE: 2000, // Credit cost in Garage to install the Homing ATGM Pod
   GUIDED: true, // Whether missiles have active homing towards the target coordinate
   DAMAGE: 30, // Base explosion damage dealt upon impact
   PENETRATION: 80, // High armor penetration percentage (80%) of anti-tank guided missile

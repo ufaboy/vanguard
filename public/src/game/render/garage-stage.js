@@ -194,6 +194,26 @@ export class GarageStage {
 
   setView(view) { this.targetAngle = ({ front: 0.67, side: 1.48, rear: 2.8 })[view] ?? 0.67; }
 
+  getComponentStageCoords(track, rect) {
+    if (!rect || rect.width < 1 || rect.height < 1) return null;
+    const anchors = {
+      cannon: [0, 1.02, 1.35],
+      armor: [0.48, 0.86, 0.55],
+      engine: [0, 0.74, -0.95],
+      frame: [-0.55, 0.52, 0.25],
+      chassis: [0.78, 0.26, 0.35],
+    };
+    const pt = anchors[track] || anchors.cannon;
+    const vec = (this._projVec ||= new THREE.Vector3()).set(pt[0], pt[1], pt[2]);
+    vec.project(this.camera);
+    const x = (vec.x * 0.5 + 0.5) * rect.width;
+    const y = (-vec.y * 0.5 + 0.5) * rect.height;
+    return {
+      x: Math.max(16, Math.min(rect.width - 16, x)),
+      y: Math.max(16, Math.min(rect.height - 16, y)),
+    };
+  }
+
   update(dt, upgrades, missileAmmo, apsAmmo, elapsed) {
     this.angle = THREE.MathUtils.damp(this.angle, this.targetAngle, 5, dt);
     this.factory.updatePlayerTankVisuals(this.rig, upgrades, false, missileAmmo, apsAmmo, 0, elapsed);

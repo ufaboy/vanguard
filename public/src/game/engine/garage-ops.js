@@ -23,6 +23,13 @@ import {
   mountPartInGarage,
   resolveAssembledTank,
 } from '../../sim/garage.js';
+import {
+  canUpgradeHqNode,
+  getHqBonuses,
+  getHqNodeSpec,
+  upgradeHqNode as applyHqNodeUpgrade,
+} from '../../sim/hq-tree.js';
+import { getRankProgress } from '../../sim/medals.js';
 import { N_, t } from '../../i18n/index.js';
 
 const TRACK_LABELS = Object.freeze({
@@ -98,8 +105,39 @@ export class GarageOps {
     const e = this.engine;
     if (!e.isGarageOpen) return false;
     e.garageStage?.update?.(dt, e.effectiveUpgrades, e.missileAmmo, e.apsAmmo, elapsed);
+    this.updateCalloutLeaderLine();
     this.tickBaseMaintenance(dt);
     return true;
+  }
+
+  updateCalloutLeaderLine() {
+    if (typeof document === 'undefined') return;
+    const e = this.engine;
+    const card = document.querySelector('.garage-callout-card');
+    const stageEl = document.querySelector('.garage-visual');
+    const line = document.getElementById('garage-callout-line');
+    const dot = document.getElementById('garage-callout-dot');
+    const ring = document.getElementById('garage-callout-ring');
+    if (!card || !stageEl || !line || !dot || !ring || !e.garageStage?.getComponentStageCoords) return;
+
+    const stageRect = stageEl.getBoundingClientRect();
+    const track = card.getAttribute('data-callout-track') || 'cannon';
+    const target = e.garageStage.getComponentStageCoords(track, stageRect);
+    if (!target) return;
+
+    const cardRect = card.getBoundingClientRect();
+    const startX = cardRect.right - stageRect.left;
+    const startY = cardRect.top - stageRect.top + cardRect.height * 0.5;
+    const elbowX = startX + Math.max(18, (target.x - startX) * 0.45);
+
+    line.setAttribute(
+      'points',
+      `${startX.toFixed(1)},${startY.toFixed(1)} ${elbowX.toFixed(1)},${startY.toFixed(1)} ${target.x.toFixed(1)},${target.y.toFixed(1)}`
+    );
+    dot.setAttribute('cx', target.x.toFixed(1));
+    dot.setAttribute('cy', target.y.toFixed(1));
+    ring.setAttribute('cx', target.x.toFixed(1));
+    ring.setAttribute('cy', target.y.toFixed(1));
   }
 
   tickBaseMaintenance(dt) {
@@ -263,6 +301,7 @@ export class GarageOps {
   buyMissile() {
     const e = this.engine;
     if (!e.isGarageOpen) return { success: false, reason: t('Open the garage to purchase missiles.') };
+    if (!e.atgmOwned) return { success: false, reason: t('Install the ATGM pod first.') };
     const maxMissiles = e.getPlayerMaxMissileAmmo ? e.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(e.upgrades?.frame || 1);
     if (e.missileAmmo >= maxMissiles) {
       return { success: false, reason: t('Missile magazine is full ({maxMissiles}).', { maxMissiles }) };
@@ -289,6 +328,9 @@ export class GarageOps {
     const e = this.engine;
     if (!e.isGarageOpen) {
       return { success: false, reason: t('Open the garage to purchase APS charges.') };
+    }
+    if (!e.apsOwned) {
+      return { success: false, reason: t('Install the APS module first.') };
     }
     const maxAps = e.getPlayerMaxApsAmmo ? e.getPlayerMaxApsAmmo() : getMaxApsAmmo(e.upgrades?.frame || 1);
     const currentTotal = e.apsAmmo.reduce((a, b) => a + b, 0);
@@ -353,6 +395,58 @@ export class GarageOps {
     return { success: true, reason: t('Recon Drone installed.') };
   }
 
+  buyApsModule() {
+    const e = this.engine;
+    if (!e.isGarageOpen) return { success: false, reason: t('Open the garage to install the APS module.') };
+    if (e.apsOwned) return { success: false, reason: t('APS module is already installed.') };
+    const cost = APS.MODULE_CREDIT_PRICE || 3000;
+    const { ok, inBattle } = this.spendForPurchase(cost);
+    if (!ok) {
+      return { success: false, reason: t('Insufficient Credits (Need ${cost}).', { cost }) };
+    }
+    e.apsOwned = true;
+    if (e.playerController?.initApsLaunchers) {
+      e.playerController.initApsLaunchers(APS.START_ROUNDS);
+    } else {
+      distributeApsRounds(e.apsAmmo, APS.START_ROUNDS, getMaxApsAmmo(e.upgrades?.frame || 1));
+    }
+    if (!inBattle && e.playerSave) {
+      e.playerSave.apsOwned = true;
+      e.playerSave.apsAmmo = [...e.apsAmmo];
+      e.syncCampaignCredits?.();
+      e.saveRepo?.savePlayerSave?.(e.playerSave);
+    }
+    e.recomputePlayerStats?.(true);
+    sound.playPowerUp();
+    e.setStatusBanner(t('APS MODULE INSTALLED! (-${cost})', { cost }), 2.5);
+    e.emitHudUpdate();
+    return { success: true, reason: t('APS module installed.') };
+  }
+
+  buyAtgmModule() {
+    const e = this.engine;
+    if (!e.isGarageOpen) return { success: false, reason: t('Open the garage to install the ATGM pod.') };
+    if (e.atgmOwned) return { success: false, reason: t('ATGM pod is already installed.') };
+    const cost = MISSILE.MODULE_CREDIT_PRICE || 3500;
+    const { ok, inBattle } = this.spendForPurchase(cost);
+    if (!ok) {
+      return { success: false, reason: t('Insufficient Credits (Need ${cost}).', { cost }) };
+    }
+    e.atgmOwned = true;
+    e.missileAmmo = Math.min(getMaxMissileAmmo(e.upgrades?.frame || 1), Math.max(e.missileAmmo || 0, 2));
+    if (!inBattle && e.playerSave) {
+      e.playerSave.atgmOwned = true;
+      e.playerSave.missileAmmo = e.missileAmmo;
+      e.syncCampaignCredits?.();
+      e.saveRepo?.savePlayerSave?.(e.playerSave);
+    }
+    e.recomputePlayerStats?.(true);
+    sound.playPowerUp();
+    e.setStatusBanner(t('ATGM POD INSTALLED! (-${cost})', { cost }), 2.5);
+    e.emitHudUpdate();
+    return { success: true, reason: t('ATGM pod installed.') };
+  }
+
   toggleFavoritePart(instanceId) {
     const e = this.engine;
     const part = (e.playerSave.parts || []).find((p) => p.instanceId === instanceId);
@@ -361,5 +455,139 @@ export class GarageOps {
       e.saveRepo.savePlayerSave(e.playerSave);
       e.emitHudUpdate();
     }
+  }
+
+  upgradeHqNode(nodeId) {
+    const e = this.engine;
+    const hqTree = e.getHqTree();
+    const campaignSave = e.campaignSaveRepo?.loadPlayerSave?.();
+    const playerRankId = getRankProgress(campaignSave).currentRank.id;
+    const inBattle = e.isBattleActive ? e.isBattleActive() : e.status !== GameStatus.MENU;
+    const available = inBattle
+      ? (e.getAvailableCredits ? e.getAvailableCredits() : (e.playerSave?.credits || 0))
+      : (e.playerSave?.credits || 0);
+    const check = canUpgradeHqNode({
+      hqTree,
+      nodeId,
+      credits: available,
+      playerRankId,
+      profileMode: e.profileMode || 'campaign',
+    });
+    if (!check.ok) {
+      return { success: false, reason: check.reason };
+    }
+    const { ok } = this.spendForPurchase(check.cost);
+    if (!ok) {
+      return { success: false, reason: t('Insufficient credits (${cost})', { cost: check.cost }) };
+    }
+    const prevBaseMult = getHqBonuses(hqTree).baseHpMultiplier;
+    e.hqTree = applyHqNodeUpgrade(hqTree, nodeId);
+    if (!inBattle) {
+      e.syncCampaignCredits?.();
+      e.saveRepo?.savePlayerSave?.(e.playerSave);
+    }
+    e.profileSaveController.saveProgress();
+
+    if (nodeId === 'HQ_FORTIFICATION' && e.baseAlive && e.baseMaxHp > 0) {
+      const nextBaseMult = getHqBonuses(e.hqTree).baseHpMultiplier;
+      const ratio = nextBaseMult / Math.max(1, prevBaseMult);
+      const prevMax = e.baseMaxHp;
+      e.baseMaxHp = Math.max(1, Math.round(e.baseMaxHp * ratio));
+      e.baseHp = Math.min(e.baseMaxHp, (e.baseHp || prevMax) + Math.max(0, e.baseMaxHp - prevMax));
+    }
+    if (nodeId === 'RECON_OPTICS') {
+      e.recomputePlayerStats?.(true);
+    }
+
+    const spec = getHqNodeSpec(nodeId);
+    e.setStatusBanner(
+      t('{name} UPGRADED TO LV {lvl}', { name: t(spec?.name || nodeId).toUpperCase(), lvl: check.nextLevel }),
+      2.2
+    );
+    sound.playPowerUp();
+    e.emitHudUpdate();
+    return { success: true, level: check.nextLevel };
+  }
+
+  buyMaxSupply(kind) {
+    const e = this.engine;
+    if (!e.isGarageOpen) return { success: false, reason: t('Open the garage to purchase ammunition.') };
+    const inBattle = e.isBattleActive ? e.isBattleActive() : e.status !== GameStatus.MENU;
+    const available = inBattle
+      ? (e.getAvailableCredits ? e.getAvailableCredits() : (e.playerSave?.credits || 0))
+      : (e.playerSave?.credits || 0);
+
+    if (kind === 'cannon') {
+      const maxAmmo = e.getPlayerMaxCannonAmmo();
+      const missing = Math.max(0, maxAmmo - (e.cannonAmmo || 0));
+      if (missing <= 0) return { success: false, reason: t('Ammunition magazine is full ({maxAmmo} shells).', { maxAmmo }) };
+      const packSize = CANNON_AMMO.SHELLS_PER_PACK;
+      const packCost = CANNON_AMMO.CREDIT_PRICE_PER_PACK;
+      const packsNeeded = Math.ceil(missing / packSize);
+      const packsAffordable = Math.floor(available / packCost);
+      const packs = Math.min(packsNeeded, packsAffordable);
+      if (packs <= 0) return { success: false, reason: t('Insufficient Credits (Need {cost}).', { cost: packCost }) };
+      const totalCost = packs * packCost;
+      this.spendForPurchase(totalCost);
+      e.cannonAmmo = Math.min(maxAmmo, (e.cannonAmmo || 0) + packs * packSize);
+      if (!inBattle) {
+        e.syncCampaignCredits?.();
+        e.saveRepo?.savePlayerSave?.(e.playerSave);
+      }
+      sound.playPowerUp();
+      e.emitHudUpdate?.();
+      return { success: true, reason: t('Shells refilled ({cur}/{max}) (-${cost})', { cur: e.cannonAmmo, max: maxAmmo, cost: totalCost }) };
+    }
+
+    if (kind === 'aps') {
+      if (!e.apsOwned) return { success: false, reason: t('Install the APS module first.') };
+      const maxAps = e.getPlayerMaxApsAmmo ? e.getPlayerMaxApsAmmo() : getMaxApsAmmo(e.upgrades?.frame || 1);
+      const currentTotal = e.apsAmmo.reduce((a, b) => a + b, 0);
+      const missing = Math.max(0, maxAps - currentTotal);
+      if (missing <= 0) return { success: false, reason: t('APS magazine is already at maximum capacity ({maxAps} charges).', { maxAps }) };
+      const unitCost = APS.CHARGE_CREDIT_PRICE || 1000;
+      const units = Math.min(missing, Math.floor(available / unitCost));
+      if (units <= 0) return { success: false, reason: t('Insufficient Credits (Need ${cost}).', { cost: unitCost }) };
+      const totalCost = units * unitCost;
+      this.spendForPurchase(totalCost);
+      if (e.addApsRounds) {
+        e.addApsRounds(units);
+      } else {
+        distributeApsRounds(e.apsAmmo, units, maxAps);
+      }
+      if (!inBattle) {
+        e.syncCampaignCredits?.();
+        e.playerSave.apsAmmo = [...e.apsAmmo];
+        e.saveRepo?.savePlayerSave?.(e.playerSave);
+      }
+      sound.playPowerUp();
+      e.emitHudUpdate?.();
+      const newTotal = e.apsAmmo.reduce((a, b) => a + b, 0);
+      return { success: true, reason: t('APS refilled ({cur}/{max}) (-${cost})', { cur: newTotal, max: maxAps, cost: totalCost }) };
+    }
+
+    if (kind === 'missile') {
+      if (!e.atgmOwned) return { success: false, reason: t('Install the ATGM pod first.') };
+      const maxMissiles = e.getPlayerMaxMissileAmmo ? e.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(e.upgrades?.frame || 1);
+      const missing = Math.max(0, maxMissiles - (e.missileAmmo || 0));
+      if (missing <= 0) return { success: false, reason: t('Missile magazine is full ({maxMissiles}).', { maxMissiles }) };
+      const unitCost = MISSILE.CREDIT_PRICE;
+      const units = Math.min(missing, Math.floor(available / unitCost));
+      if (units <= 0) return { success: false, reason: t('Insufficient Credits (Need ${cost}).', { cost: unitCost }) };
+      const totalCost = units * unitCost;
+      this.spendForPurchase(totalCost);
+      e.missileAmmo = Math.min(maxMissiles, (e.missileAmmo || 0) + units);
+      if (!inBattle) {
+        e.syncCampaignCredits?.();
+        e.playerSave.missileAmmo = e.missileAmmo;
+        e.saveRepo?.savePlayerSave?.(e.playerSave);
+      }
+      e.recomputePlayerStats?.(true);
+      sound.playPowerUp();
+      e.emitHudUpdate?.();
+      return { success: true, reason: t('Missiles refilled ({cur}/{max}) (-${cost})', { cur: e.missileAmmo, max: maxMissiles, cost: totalCost }) };
+    }
+
+    return { success: false, reason: '' };
   }
 }

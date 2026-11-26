@@ -4552,6 +4552,513 @@ html.campaign-hydrating .campaign-recon-square > * {
   white-space: nowrap;
 }
 
+/* --- Garage HQ Command Skill Tree --- */
+.garage-hq-icon {
+  font-size: 16px;
+  line-height: 1;
+  color: #fbbf24;
+}
+
+.garage-hq-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.garage-hq-branches {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.garage-hq-branch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.garage-hq-branch-title {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #38bdf8;
+}
+
+.garage-hq-nodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 8px;
+}
+
+.garage-hq-node {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px 10px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(71, 85, 105, 0.75);
+}
+
+.garage-hq-node.is-maxed {
+  border-color: rgba(52, 211, 153, 0.6);
+}
+
+.garage-hq-node-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 12px;
+  color: #f8fafc;
+}
+
+.garage-hq-lvl {
+  font-size: 10px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.garage-hq-pips {
+  display: flex;
+  gap: 4px;
+}
+
+.garage-hq-pips i {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(51, 65, 85, 0.9);
+}
+
+.garage-hq-pips i.filled {
+  background: #fbbf24;
+}
+
+.garage-hq-effect {
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.garage-hq-next {
+  font-size: 10px;
+  color: #34d399;
+}
+
+.garage-hq-btn {
+  margin-top: auto;
+  padding: 5px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(251, 191, 36, 0.7);
+  background: rgba(120, 53, 15, 0.45);
+  color: #fef3c7;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.garage-hq-btn:disabled {
+  opacity: 0.48;
+  border-color: rgba(71, 85, 105, 0.7);
+  background: rgba(15, 23, 42, 0.85);
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* --- Redesigned Garage Layout, Larger Typography & Right Telemetry --- */
+.garage-shell {
+  grid-template-columns: 460px minmax(0, 1fr);
+}
+
+.garage-tab-name {
+  font-size: 15px;
+}
+
+.garage-tab-tier {
+  font-size: 12.5px;
+}
+
+.garage-component-head h2 {
+  font-size: 24px;
+}
+
+.garage-next-title {
+  font-size: 12px;
+}
+
+.garage-next-desc {
+  font-size: 13.5px;
+  line-height: 1.48;
+}
+
+.garage-buy {
+  font-size: 14px;
+  padding: 12px 14px;
+}
+
+.garage-mode-switcher {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.garage-mode-switcher.is-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.garage-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 4px;
+  border: 1px solid #2e3d3c;
+  background: #141f23;
+  color: #9eb0a6;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.garage-mode-btn:hover {
+  background: #1b2a2f;
+  color: #f8fafc;
+}
+
+.garage-mode-btn.is-active {
+  border-color: #fbbf24;
+  background: rgba(120, 53, 15, 0.52);
+  color: #fef3c7;
+}
+
+.garage-mode-btn small {
+  font-size: 10px;
+  color: #38bdf8;
+}
+
+.garage-supplies-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #2b3837;
+}
+
+.garage-supply-card {
+  --supply-color: #7dd3fc;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 11px;
+  border-radius: 6px;
+  background: #152125;
+  border: 1px solid #2b3a3e;
+}
+
+.garage-supply-card.supply-cannon { --supply-color: #38bdf8; }
+.garage-supply-card.supply-aps { --supply-color: #7dd3fc; }
+.garage-supply-card.supply-missile { --supply-color: #fbbf75; }
+.garage-supply-card.supply-recon { --supply-color: #34d399; }
+
+.garage-supply-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.garage-supply-title-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.garage-supply-title-wrap strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.garage-supply-count {
+  font-family: var(--font-mono, monospace);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--supply-color);
+}
+
+.garage-supply-count small,
+.garage-supply-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.garage-supply-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.garage-supply-btn.is-max {
+  background: transparent;
+  color: var(--supply-color);
+}
+
+.garage-supply-btn.is-max:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.14);
+}
+
+.garage-supply-bar {
+  height: 6px;
+}
+
+/* Right-side Tank Telemetry Card */
+.garage-telemetry-card {
+  position: absolute;
+  top: 76px;
+  right: 20px;
+  width: min(330px, 34vw);
+  padding: 14px 16px;
+  border-radius: 6px;
+  background: rgba(11, 15, 23, 0.92);
+  border: 1px solid rgba(71, 85, 105, 0.8);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.65);
+  pointer-events: auto;
+}
+
+.garage-tele-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.75);
+  font-family: var(--font-mono, monospace);
+}
+
+.garage-tele-head span {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #fbbf24;
+}
+
+.garage-tele-head small {
+  font-size: 10.5px;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+}
+
+.garage-tele-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.garage-tele-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.7);
+}
+
+.garage-tele-row:last-child {
+  border-bottom: 0;
+}
+
+.garage-tele-label {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.garage-tele-vals {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.garage-tele-cur {
+  font-size: 15px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.garage-tele-next {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.garage-tele-next.is-good {
+  color: #34d399;
+}
+
+.garage-tele-next.is-warn {
+  color: #f59e0b;
+}
+
+/* Inline Component Upgrade Row & Stage Callout */
+.garage-system {
+  cursor: pointer;
+  padding: 9px 11px;
+}
+
+.garage-tab-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.garage-tab-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.garage-row-btn {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(251, 191, 36, 0.75);
+  background: rgba(120, 53, 15, 0.55);
+  color: #fef3c7;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.garage-row-btn:hover:not(:disabled) {
+  background: rgba(146, 64, 14, 0.8);
+}
+
+.garage-row-btn:disabled {
+  opacity: 0.45;
+  border-color: rgba(71, 85, 105, 0.7);
+  background: rgba(15, 23, 42, 0.85);
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.garage-row-btn.is-repair {
+  border-color: rgba(248, 113, 113, 0.8);
+  background: rgba(127, 29, 29, 0.65);
+  color: #fecaca;
+}
+
+.garage-row-max {
+  flex-shrink: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 800;
+  color: #34d399;
+  padding: 4px 8px;
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  border-radius: 4px;
+  background: rgba(6, 78, 59, 0.35);
+}
+
+.garage-callout-card {
+  position: absolute;
+  left: 24px;
+  width: min(320px, 32vw);
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: rgba(11, 15, 23, 0.92);
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+  pointer-events: auto;
+}
+
+.garage-callout-card.pos-cannon { top: 82px; }
+.garage-callout-card.pos-armor { top: 140px; }
+.garage-callout-card.pos-engine { top: 200px; }
+.garage-callout-card.pos-frame { bottom: 84px; }
+.garage-callout-card.pos-chassis { bottom: 72px; }
+
+.garage-callout-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.garage-callout-head strong {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.garage-callout-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+.garage-callout-next {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(51, 65, 85, 0.75);
+}
+
+.garage-callout-next span {
+  display: block;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 800;
+  color: #fbbf24;
+  margin-bottom: 3px;
+}
+
+.garage-callout-next p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #94a3b8;
+}
+
+.garage-callout-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.garage-callout-line {
+  fill: none;
+  stroke: #fbbf24;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+
+.garage-callout-ring {
+  fill: rgba(251, 191, 36, 0.14);
+  stroke: #fbbf24;
+  stroke-width: 1.5;
+}
+
+.garage-callout-dot {
+  fill: #fbbf24;
+}
+
 .hud-mod-top {
   display: flex;
   align-items: center;

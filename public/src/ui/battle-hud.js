@@ -134,6 +134,19 @@ export function renderBattlefieldHud({
         </button>
 
         <button
+          data-action="open-hq-garage"
+          class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border ${
+            hud.inBaseRepairZone
+              ? 'border-sky-400 text-sky-300'
+              : 'border-sky-500/50 text-sky-300'
+          } px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+          title="${t('HQ Command Skill Tree')}"
+        >
+          <span>★</span>
+          <span class="hidden sm:inline">${t('HQ')}</span>
+        </button>
+
+        <button
           data-action="rotate-camera"
           data-dir="-1"
           class="flex items-center gap-1 bg-[#0B0F17]/95 hover:bg-slate-800 border border-slate-700/70 px-2 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider text-slate-200 transition-colors cursor-pointer"
@@ -415,7 +428,8 @@ export function renderBattlefieldHud({
         : 'is-empty';
       const smokeIconColor = smokeOnCd ? '#fbbf24' : smokeCharges > 0 ? '#38bdf8' : '#64748b';
 
-      const canFireMissile = hud.missileAmmo > 0 && hud.missileCooldown <= 0;
+      const atgmOwned = Boolean(hud.atgmOwned);
+      const canFireMissile = atgmOwned && hud.missileAmmo > 0 && hud.missileCooldown <= 0;
       const missileMax = hud.missileMaxAmmo ?? getMaxMissileAmmo(upgrades.frame);
       const missileStateClass = canFireMissile ? 'tone-amber is-ready' : 'is-empty';
 
