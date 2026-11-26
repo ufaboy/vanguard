@@ -310,6 +310,9 @@ export class TerrainDestructionController {
       return;
     }
     cell.hp -= dmg;
+    if (cell.pairPartner) {
+      cell.pairPartner.hp = cell.hp;
+    }
 
     if (cell.type === TileType.HOUSE_1 || cell.type === TileType.HOUSE_2) {
       sound.playBrickHit({ x: hitX, z: hitZ });
@@ -391,6 +394,12 @@ export class TerrainDestructionController {
     const factory = engine.modelFactory;
     const prevMesh = cell.mesh;
     const buildingInfo = prevMesh?.userData?.building;
+    const partner = cell.pairPartner || null;
+    if (partner) {
+      cell.pairPartner = null;
+      partner.pairPartner = null;
+      if (partner.mesh === cell.mesh) partner.mesh = null;
+    }
     if (cell.mesh) {
       engine.mapGroup.remove(cell.mesh);
       cell.mesh = null;
@@ -446,6 +455,10 @@ export class TerrainDestructionController {
       z,
       wasBoxes ? 'boxes' : wasConcrete ? 'concrete' : wasForest ? 'forest' : 'brick'
     );
+
+    if (partner && partner.type !== TileType.EMPTY) {
+      this.destroyTileCell(partner);
+    }
   }
 
   updateBrickRubble(dt) {

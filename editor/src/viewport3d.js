@@ -364,7 +364,7 @@ export class Viewport3D {
         rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.objectGrid[rr][cc] === TileType.CONTAINER;
       const ewLink = isCont(r, c - 1) || isCont(r, c + 1);
       const nsLink = isCont(r - 1, c) || isCont(r + 1, c);
-      oMesh = this.modelFactory.createContainerBlock((r * 3 + c * 7) % 4, ewLink && !nsLink ? 'ew' : 'ns', ewLink || nsLink);
+      oMesh = this.modelFactory.createContainerBlock((r * 3 + c * 7) % 4, ewLink && !nsLink ? 'ew' : 'ns', 1);
       oMesh.position.set(x, 0, z);
     } else if (object === TileType.TRANSFORMER && this.modelFactory.createTransformerBlock) {
       oMesh = this.modelFactory.createTransformerBlock();
@@ -384,7 +384,7 @@ export class Viewport3D {
         rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
       const ewRail = isRail(r, c - 1) || isRail(r, c + 1);
       const nsRail = isRail(r - 1, c) || isRail(r + 1, c);
-      oMesh = this.modelFactory.createRailCarBlock(ewRail && !nsRail ? 'ew' : 'ns');
+      oMesh = this.modelFactory.createRailCarBlock(ewRail && !nsRail ? 'ew' : 'ns', (r + c) % 2 === 0 ? 'closed' : 'open', 1);
       oMesh.position.set(x, 0, z);
     } else if (object === TileType.RUBBLE) {
       oMesh = new THREE.Mesh(

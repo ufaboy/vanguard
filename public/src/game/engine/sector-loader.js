@@ -249,6 +249,8 @@ export class SectorLoaderController {
 
     engine.grid = [];
     engine.componentWaterEgress = false;
+    const pairedCells = new Set();
+    const pairLinks = [];
 
     for (let r = 0; r < GRID_SIZE; r++) {
       const rowCells = [];
@@ -415,17 +417,34 @@ export class SectorLoaderController {
           engine.mapGroup.add(mesh);
           hp = 2;
         } else if (type === TileType.CONTAINER && engine.modelFactory.createContainerBlock) {
-          const isCont = (rr, cc) =>
-            rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
-            (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.CONTAINER;
-          const ewLink = isCont(r, c - 1) || isCont(r, c + 1);
-          const nsLink = isCont(r - 1, c) || isCont(r + 1, c);
-          const orientation = ewLink && !nsLink ? 'ew' : 'ns';
-          const colorIdx = (r * 3 + c * 7) % 4;
-          mesh = engine.modelFactory.createContainerBlock(colorIdx, orientation, ewLink || nsLink);
-          mesh.position.set(x, 0, z);
-          engine.mapGroup.add(mesh);
           hp = 8;
+          if (!pairedCells.has(`${r},${c}`)) {
+            const sameCont = (rr, cc) =>
+              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+              !pairedCells.has(`${rr},${cc}`) &&
+              (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.CONTAINER;
+            const pairE = sameCont(r, c + 1);
+            const pairS = !pairE && sameCont(r + 1, c);
+            const spanCells = pairE || pairS ? 2 : 1;
+            const orientation = pairE ? 'ew' : 'ns';
+            if (pairE) {
+              pairedCells.add(`${r},${c}`);
+              pairedCells.add(`${r},${c + 1}`);
+              pairLinks.push([r, c, r, c + 1]);
+            } else if (pairS) {
+              pairedCells.add(`${r},${c}`);
+              pairedCells.add(`${r + 1},${c}`);
+              pairLinks.push([r, c, r + 1, c]);
+            }
+            const colorIdx = (r * 3 + c * 7) % 4;
+            mesh = engine.modelFactory.createContainerBlock(colorIdx, orientation, spanCells);
+            mesh.position.set(
+              x + (pairE ? TILE_SIZE * 0.5 : 0),
+              0,
+              z + (pairS ? TILE_SIZE * 0.5 : 0)
+            );
+            engine.mapGroup.add(mesh);
+          }
         } else if (type === TileType.TRANSFORMER && engine.modelFactory.createTransformerBlock) {
           mesh = engine.modelFactory.createTransformerBlock();
           mesh.position.set(x, 0, z);
@@ -445,18 +464,42 @@ export class SectorLoaderController {
           engine.mapGroup.add(mesh);
           hp = 3;
         } else if (type === TileType.RAIL_CAR && engine.modelFactory.createRailCarBlock) {
-          const isRailAxis = (rr, cc) => {
-            if (rr < 0 || rr >= GRID_SIZE || cc < 0 || cc >= GRID_SIZE) return false;
-            const s = sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
-            return s === TileType.RAIL;
-          };
-          const ewRail = isRailAxis(r, c - 1) || isRailAxis(r, c + 1);
-          const nsRail = isRailAxis(r - 1, c) || isRailAxis(r + 1, c);
-          const orientation = ewRail && !nsRail ? 'ew' : 'ns';
-          mesh = engine.modelFactory.createRailCarBlock(orientation);
-          mesh.position.set(x, 0, z);
-          engine.mapGroup.add(mesh);
           hp = 10;
+          if (!pairedCells.has(`${r},${c}`)) {
+            const sameCar = (rr, cc) =>
+              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+              !pairedCells.has(`${rr},${cc}`) &&
+              (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL_CAR;
+            const pairE = sameCar(r, c + 1);
+            const pairS = !pairE && sameCar(r + 1, c);
+            const isRailAxis = (rr, cc) =>
+              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+              (sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL;
+            const orientation = pairE
+              ? 'ew'
+              : pairS
+              ? 'ns'
+              : (isRailAxis(r, c - 1) || isRailAxis(r, c + 1)) && !(isRailAxis(r - 1, c) || isRailAxis(r + 1, c))
+              ? 'ew'
+              : 'ns';
+            if (pairE) {
+              pairedCells.add(`${r},${c}`);
+              pairedCells.add(`${r},${c + 1}`);
+              pairLinks.push([r, c, r, c + 1]);
+            } else if (pairS) {
+              pairedCells.add(`${r},${c}`);
+              pairedCells.add(`${r + 1},${c}`);
+              pairLinks.push([r, c, r + 1, c]);
+            }
+            const variant = (r + c) % 2 === 0 ? 'closed' : 'open';
+            mesh = engine.modelFactory.createRailCarBlock(orientation, variant, pairE || pairS ? 2 : 1);
+            mesh.position.set(
+              x + (pairE ? TILE_SIZE * 0.5 : 0),
+              0,
+              z + (pairS ? TILE_SIZE * 0.5 : 0)
+            );
+            engine.mapGroup.add(mesh);
+          }
         }
 
         if (!mesh && surfaceMesh) {
@@ -477,6 +520,16 @@ export class SectorLoaderController {
         });
       }
       engine.grid.push(rowCells);
+    }
+
+    for (const [r1, c1, r2, c2] of pairLinks) {
+      const a = engine.grid[r1]?.[c1];
+      const b = engine.grid[r2]?.[c2];
+      if (a && b) {
+        a.pairPartner = b;
+        b.pairPartner = a;
+        b.mesh = a.mesh;
+      }
     }
 
     if (engine.activeMapRules.hasEnemyFortifiedBase && !engine.enemyBaseAlive) {

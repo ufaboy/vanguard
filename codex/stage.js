@@ -292,7 +292,13 @@ export class CodexStage {
           const railMasks = [6, 12, 3, 9];
           block = e.modelFactory.createRailBlock(pos.x, pos.z, railMasks[idx]);
         } else if (item.surfaceType === 'CONTAINER') {
-          block = e.modelFactory.createContainerBlock(idx, idx % 2 === 0 ? 'ns' : 'ew', false);
+          if (idx === 0 || idx === 1) {
+            const cont = e.modelFactory.createContainerBlock(idx, 'ns', 2);
+            cont.position.set(idx === 0 ? -1.4 : 1.4, 0, 0);
+            cont.scale.setScalar(0.85);
+            e.codexStageGroup.add(cont);
+          }
+          return;
         } else if (item.surfaceType === 'TRANSFORMER') {
           if (idx === 0) {
             const tr = e.modelFactory.createTransformerBlock();
@@ -304,12 +310,16 @@ export class CodexStage {
         } else if (item.surfaceType === 'SANDBAGS') {
           block = e.modelFactory.createSandbagsBlock(idx % 2 === 0 ? 10 : 5);
         } else if (item.surfaceType === 'RAIL_CAR') {
-          if (idx === 0) {
-            const rail = e.modelFactory.createRailBlock(0, 0, 5);
-            rail.scale.setScalar(1.2);
-            e.codexStageGroup.add(rail);
-            const car = e.modelFactory.createRailCarBlock('ns');
-            car.scale.setScalar(1.2);
+          if (idx === 0 || idx === 1) {
+            const xOff = idx === 0 ? -1.4 : 1.4;
+            for (const zOff of [-0.85, 0.85]) {
+              const rail = e.modelFactory.createRailBlock(xOff, zOff, 5);
+              rail.scale.setScalar(0.85);
+              e.codexStageGroup.add(rail);
+            }
+            const car = e.modelFactory.createRailCarBlock('ns', idx === 0 ? 'closed' : 'open', 2);
+            car.position.set(xOff, 0, 0);
+            car.scale.setScalar(0.85);
             e.codexStageGroup.add(car);
           }
           return;

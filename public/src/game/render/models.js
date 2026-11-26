@@ -4281,8 +4281,8 @@ export class ModelFactory extends TextureGenerator {
     return buildRailBlock(this, x, z, neighborMask);
   }
 
-  createContainerBlock(colorIndex = 0, orientation = 'ns', connectedEnds = false) {
-    return buildContainerBlock(this, colorIndex, orientation, connectedEnds);
+  createContainerBlock(colorIndex = 0, orientation = 'ns', spanCells = 1) {
+    return buildContainerBlock(this, colorIndex, orientation, spanCells);
   }
 
   updateContainerDamage(mesh, hp, maxHp = 8) {
@@ -4301,8 +4301,8 @@ export class ModelFactory extends TextureGenerator {
     return buildSandbagsBlock(this, neighborMask);
   }
 
-  createRailCarBlock(orientation = 'ns') {
-    return buildRailCarBlock(this, orientation);
+  createRailCarBlock(orientation = 'ns', variant = 'closed', spanCells = 1) {
+    return buildRailCarBlock(this, orientation, variant, spanCells);
   }
 
   updateRailCarDamage(mesh, hp, maxHp = 10) {
