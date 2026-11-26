@@ -1,5 +1,5 @@
 import { CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from './game/campaign.js';
-import { CONTRACT_IDS, PAGE_PATHS, battlefieldUrl, resolveBattlefieldMission } from './app/routes.js';
+import { CONTRACT_IDS, battlefieldUrl, pageUrl, resolveBattlefieldMission } from './app/routes.js';
 import { attachSettingsModal } from './app/shell.js';
 import {
   CAMERA_LABELS,
@@ -465,7 +465,7 @@ function initApp() {
 
     if (state.hud.status === GameStatus.MENU && !state.showUpgradeDrawer) {
       if (e.code === 'Escape' && document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-        location.href = PAGE_PATHS.index;
+        location.href = pageUrl('index');
       }
       return;
     }
@@ -602,7 +602,7 @@ function applyRoute(route) {
       return;
     }
   }
-  location.replace(PAGE_PATHS.index);
+  location.replace(pageUrl('index'));
 }
 
 function cycleCameraPreset() {
