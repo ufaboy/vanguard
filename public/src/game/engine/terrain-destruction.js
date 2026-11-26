@@ -974,9 +974,13 @@ export class TerrainDestructionController {
     const playerDisruptSec = cfg?.playerDisruptSec ?? 2.0;
 
     sound.playEnvironmentalExplosion({ x, z });
-    engine.screenShake = Math.max(engine.screenShake, 0.5);
-    engine.fx?.shockwave?.(x, 0.25, z, 0.4, empRadius, 0x38bdf8, 0.55);
-    engine.fx?.sparks?.(x, 0.7, z, 0x38bdf8, 36, { speed: 3.4, up: 2.0 });
+    engine.screenShake = Math.max(engine.screenShake, 0.55);
+    if (engine.fx?.empWave) {
+      engine.fx.empWave(x, z, { radius: empRadius, duration: 0.95, global: false });
+    } else {
+      engine.fx?.shockwave?.(x, 0.25, z, 0.4, empRadius, 0x38bdf8, 0.55);
+      engine.fx?.sparks?.(x, 0.7, z, 0x38bdf8, 36, { speed: 3.4, up: 2.0 });
+    }
 
     for (const e of engine.enemies || []) {
       if (!e || e.hp <= 0) continue;
@@ -985,7 +989,7 @@ export class TerrainDestructionController {
         if (e.phaseShieldTimer > 0) e.phaseShieldTimer = 0;
         e.phaseShieldActive = false;
         if (e.apsCharges > 0) e.apsCharges = 0;
-        engine.fx?.armorHit?.(e.x, 0.8, e.z, { scale: 1.1, colorHex: 0x38bdf8 });
+        engine.fx?.electric?.(e.x, 0.85, e.z, 0x38bdf8, 4, 0.8);
       }
     }
 
@@ -993,7 +997,7 @@ export class TerrainDestructionController {
       if (!turret?.alive) continue;
       if (Math.hypot(turret.x - x, turret.z - z) <= empRadius) {
         turret.empTimer = Math.max(turret.empTimer || 0, enemyStunSec);
-        engine.fx?.armorHit?.(turret.x, 0.8, turret.z, { scale: 1.0, colorHex: 0x38bdf8 });
+        engine.fx?.electric?.(turret.x, 0.85, turret.z, 0x38bdf8, 3, 0.7);
       }
     }
 
