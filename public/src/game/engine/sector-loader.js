@@ -436,7 +436,8 @@ export class SectorLoaderController {
               pairedCells.add(`${r + 1},${c}`);
               pairLinks.push([r, c, r + 1, c]);
             }
-            const colorIdx = (r * 3 + c * 7) % 4;
+            const bakedColor = sector.tacticalStyles?.[r]?.[c];
+            const colorIdx = bakedColor >= 0 ? bakedColor : (r * 3 + c * 7) % 4;
             mesh = engine.modelFactory.createContainerBlock(colorIdx, orientation, spanCells);
             mesh.position.set(
               x + (pairE ? TILE_SIZE * 0.5 : 0),
@@ -492,7 +493,9 @@ export class SectorLoaderController {
               pairLinks.push([r, c, r + 1, c]);
             }
             const variant = (r + c) % 2 === 0 ? 'closed' : 'open';
-            mesh = engine.modelFactory.createRailCarBlock(orientation, variant, pairE || pairS ? 2 : 1);
+            const bakedColor = sector.tacticalStyles?.[r]?.[c];
+            const colorIdx = bakedColor >= 0 ? bakedColor : (r * 5 + c * 11) % 4;
+            mesh = engine.modelFactory.createRailCarBlock(orientation, variant, pairE || pairS ? 2 : 1, colorIdx);
             mesh.position.set(
               x + (pairE ? TILE_SIZE * 0.5 : 0),
               0,

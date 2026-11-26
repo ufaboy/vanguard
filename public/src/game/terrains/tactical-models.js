@@ -12,6 +12,22 @@ const TACTICAL_CONTAINER_KEYS = Object.freeze([
   'CONTAINER_OCHRE',
 ]);
 
+const TACTICAL_RAIL_CLOSED_KEYS = Object.freeze([
+  'RAIL_CAR_CLOSED_0',
+  'RAIL_CAR_CLOSED_1',
+  'RAIL_CAR_CLOSED_2',
+  'RAIL_CAR_CLOSED_3',
+]);
+
+const TACTICAL_RAIL_OPEN_KEYS = Object.freeze([
+  'RAIL_CAR_OPEN_0',
+  'RAIL_CAR_OPEN_1',
+  'RAIL_CAR_OPEN_2',
+  'RAIL_CAR_OPEN_3',
+]);
+
+const RAIL_CAR_BODY_HEXES = Object.freeze([0xb43c28, 0x2563eb, 0x2e6f40, 0xca8a04]);
+
 /** Blender tactical terrain GLB pack loader (RAIL, CONTAINER, TRANSFORMER, SANDBAGS, RAIL_CAR). */
 export class TacticalModels {
   constructor(renderer = null) {
@@ -109,6 +125,9 @@ function ensureTacticalMaterials(factory) {
     }),
     burlap: new THREE.MeshStandardMaterial({ color: 0xc2a67d, roughness: 0.92, metalness: 0.02 }),
     burlapDark: new THREE.MeshStandardMaterial({ color: 0xa3855c, roughness: 0.94, metalness: 0.02 }),
+    railCarBodyColors: RAIL_CAR_BODY_HEXES.map(
+      (hex) => new THREE.MeshStandardMaterial({ color: hex, roughness: 0.72, metalness: 0.25 })
+    ),
     railCarBody: new THREE.MeshStandardMaterial({ color: 0x7c2d12, roughness: 0.72, metalness: 0.25 }),
     railCarDamaged: new THREE.MeshStandardMaterial({ color: 0x44403c, roughness: 0.85, metalness: 0.3 }),
     railCarRoof: new THREE.MeshStandardMaterial({ color: 0x52525b, roughness: 0.65, metalness: 0.45 }),
@@ -400,16 +419,18 @@ export function createSandbagsBlock(factory, neighborMask = 0) {
 }
 
 /** Armored freight rail car sitting on bogies (10 HP, closed boxcar or open gondola, 1 or 2 cells). */
-export function createRailCarBlock(factory, orientation = 'ns', variant = 'closed', spanCells = 1) {
+export function createRailCarBlock(factory, orientation = 'ns', variant = 'closed', spanCells = 1, colorIndex = 0) {
   const isOpen = variant === 'open';
   const isPair = spanCells >= 2;
+  const cIdx = Math.abs(colorIndex) % TACTICAL_RAIL_CLOSED_KEYS.length;
   if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
     const group = new THREE.Group();
-    const key = isOpen ? 'RAIL_CAR_OPEN_INTACT' : 'RAIL_CAR_CLOSED_INTACT';
+    const key = isOpen ? TACTICAL_RAIL_OPEN_KEYS[cIdx] : TACTICAL_RAIL_CLOSED_KEYS[cIdx];
     if (factory.tacticalModels.apply(group, key, { castShadow: true, receiveShadow: true })) {
       if (!isPair) group.scale.z = 0.5;
       if (orientation === 'ew') group.rotation.y = Math.PI / 2;
       group.userData.railCarVariant = isOpen ? 'open' : 'closed';
+      group.userData.railCarColorKey = key;
       group.userData.batchTile = true;
       return markOwned(group, { geometries: false, materials: false });
     }
@@ -418,6 +439,7 @@ export function createRailCarBlock(factory, orientation = 'ns', variant = 'close
   const mats = ensureTacticalMaterials(factory);
   const group = new THREE.Group();
   const lenZ = isPair ? 3.84 : 1.88;
+  const hullMat = mats.railCarBodyColors?.[cIdx] || mats.railCarBody;
 
   // Twin bogies / chassis frame (0.00 .. 0.46m)
   const underframe = new THREE.Mesh(
@@ -440,7 +462,7 @@ export function createRailCarBlock(factory, orientation = 'ns', variant = 'close
   if (isOpen) {
     body = new THREE.Mesh(
       factory.sharedGeometry('BoxGeometry', 1.36, 1.12, lenZ - 0.1),
-      mats.darkIron
+      hullMat
     );
     body.position.y = 1.02;
     body.castShadow = true;
@@ -449,7 +471,7 @@ export function createRailCarBlock(factory, orientation = 'ns', variant = 'close
   } else {
     body = new THREE.Mesh(
       factory.sharedGeometry('BoxGeometry', 1.36, 1.38, lenZ - 0.1),
-      mats.railCarBody
+      hullMat
     );
     body.position.y = 1.15;
     body.castShadow = true;
@@ -458,7 +480,7 @@ export function createRailCarBlock(factory, orientation = 'ns', variant = 'close
 
     const door = new THREE.Mesh(
       factory.sharedGeometry('BoxGeometry', 1.42, 1.18, isPair ? 1.12 : 0.64),
-      mats.railCarDoor
+      hullMat
     );
     door.position.y = 1.13;
     group.add(door);
@@ -474,6 +496,7 @@ export function createRailCarBlock(factory, orientation = 'ns', variant = 'close
 
   if (orientation === 'ew') group.rotation.y = Math.PI / 2;
   group.userData.railCarBody = body;
+  group.userData.railCarHullMat = hullMat;
   group.userData.railCarVariant = isOpen ? 'open' : 'closed';
   group.userData.batchTile = true;
   return markOwned(group, { geometries: false, materials: false });
@@ -483,9 +506,10 @@ export function updateRailCarDamage(factory, mesh, hp, maxHp = 10) {
   if (!mesh) return;
   if (mesh.userData?.tacticalGlbKey && factory.tacticalModels?.ready) {
     const isOpen = mesh.userData.railCarVariant === 'open';
+    const intactKey = mesh.userData.railCarColorKey || (isOpen ? 'RAIL_CAR_OPEN_0' : 'RAIL_CAR_CLOSED_0');
     const target = hp <= maxHp * 0.5
       ? (isOpen ? 'RAIL_CAR_OPEN_DAMAGED' : 'RAIL_CAR_CLOSED_DAMAGED')
-      : (isOpen ? 'RAIL_CAR_OPEN_INTACT' : 'RAIL_CAR_CLOSED_INTACT');
+      : intactKey;
     if (mesh.userData.tacticalGlbKey !== target) {
       factory.tacticalModels.apply(mesh, target, { castShadow: true, receiveShadow: true });
     }
@@ -494,7 +518,7 @@ export function updateRailCarDamage(factory, mesh, hp, maxHp = 10) {
   const body = mesh.userData?.railCarBody;
   if (!body) return;
   const mats = ensureTacticalMaterials(factory);
-  body.material = hp <= maxHp * 0.5 ? mats.railCarDamaged : mats.railCarBody;
+  body.material = hp <= maxHp * 0.5 ? mats.railCarDamaged : (mesh.userData.railCarHullMat || mats.railCarBody);
 }
 
 /** Heavy diesel-electric railway locomotive sitting on bogies (16 HP, 1 or 2 cells). */

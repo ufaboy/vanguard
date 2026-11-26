@@ -317,7 +317,7 @@ export class CodexStage {
               rail.scale.setScalar(0.85);
               e.codexStageGroup.add(rail);
             }
-            const car = e.modelFactory.createRailCarBlock('ns', idx === 0 ? 'closed' : 'open', 2);
+            const car = e.modelFactory.createRailCarBlock('ns', idx === 0 ? 'closed' : 'open', 2, idx);
             car.position.set(xOff, 0, 0);
             car.scale.setScalar(0.85);
             e.codexStageGroup.add(car);

@@ -4303,8 +4303,8 @@ export class ModelFactory extends TextureGenerator {
     return buildSandbagsBlock(this, neighborMask);
   }
 
-  createRailCarBlock(orientation = 'ns', variant = 'closed', spanCells = 1) {
-    return buildRailCarBlock(this, orientation, variant, spanCells);
+  createRailCarBlock(orientation = 'ns', variant = 'closed', spanCells = 1, colorIndex = 0) {
+    return buildRailCarBlock(this, orientation, variant, spanCells, colorIndex);
   }
 
   updateRailCarDamage(mesh, hp, maxHp = 10) {

@@ -51,6 +51,7 @@ export function unpackTerrain(terrain, size = 40) {
   const surfaceGrid = Array.from({ length: size }, () => Array(size).fill(TileType.EMPTY));
   const objectGrid = Array.from({ length: size }, () => Array(size).fill(null));
   const buildingStyles = Array.from({ length: size }, () => new Int8Array(size).fill(-1));
+  const tacticalStyles = Array.from({ length: size }, () => new Int8Array(size).fill(-1));
   const bridges = [];
   const landmarks3d = [];
   const powerups = [];
@@ -60,7 +61,7 @@ export function unpackTerrain(terrain, size = 40) {
   const props = [];
 
   if (!terrain || typeof terrain !== 'object' || Array.isArray(terrain)) {
-    return { surfaceGrid, objectGrid, buildingStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props };
+    return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props };
   }
 
   for (const [type, tuples] of Object.entries(terrain)) {
@@ -133,18 +134,23 @@ export function unpackTerrain(terrain, size = 40) {
 
     const objTile = OBJECT_NAME_TO_TILE[type];
     if (objTile !== undefined) {
+      const hasColorStyle = type === 'container' || type === 'rail_car';
       for (const tup of tuples) {
         const r = Number(tup[0]);
         const c = Number(tup[1]);
         if (!Number.isInteger(r) || !Number.isInteger(c)) continue;
         const h = Math.max(1, Number(tup[2]) || 1);
         const w = Math.max(1, Number(tup[3]) || 1);
+        const colorIdx = hasColorStyle && tup[4] != null ? Number(tup[4]) : -1;
         for (let dr = 0; dr < h; dr++) {
           const rr = r + dr;
           if (rr < 0 || rr >= size) continue;
           for (let dc = 0; dc < w; dc++) {
             const cc = c + dc;
-            if (cc >= 0 && cc < size) objectGrid[rr][cc] = objTile;
+            if (cc >= 0 && cc < size) {
+              objectGrid[rr][cc] = objTile;
+              if (colorIdx >= 0) tacticalStyles[rr][cc] = colorIdx;
+            }
           }
         }
       }
@@ -207,7 +213,7 @@ export function unpackTerrain(terrain, size = 40) {
     }
   }
 
-  return { surfaceGrid, objectGrid, buildingStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props };
+  return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props };
 }
 
 /**

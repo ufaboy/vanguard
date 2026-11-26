@@ -88,6 +88,7 @@ export function packTerrain({
   objectGrid,
   bridges = [],
   buildingLayout = new Map(),
+  tacticalStyles = null,
   landmarks3d = [],
   powerups = [],
   mines = [],
@@ -124,13 +125,23 @@ export function packTerrain({
     ) {
       return null;
     }
-    return TILE_TO_OBJECT_NAME.get(t) ?? null;
+    const name = TILE_TO_OBJECT_NAME.get(t);
+    if (!name) return null;
+    if ((t === TileType.CONTAINER || t === TileType.RAIL_CAR) && tacticalStyles?.[r]?.[c] >= 0) {
+      return `${name}:${tacticalStyles[r][c]}`;
+    }
+    return name;
   })) {
-    pushGroup(
-      terrain,
-      rect.key,
-      rect.h === 1 && rect.w === 1 ? [rect.r, rect.c] : [rect.r, rect.c, rect.h, rect.w]
-    );
+    const [name, styleStr] = rect.key.split(':');
+    if (styleStr !== undefined) {
+      pushGroup(terrain, name, [rect.r, rect.c, rect.h, rect.w, Number(styleStr)]);
+    } else {
+      pushGroup(
+        terrain,
+        name,
+        rect.h === 1 && rect.w === 1 ? [rect.r, rect.c] : [rect.r, rect.c, rect.h, rect.w]
+      );
+    }
   }
 
   // 3. Bridges

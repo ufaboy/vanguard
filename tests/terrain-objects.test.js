@@ -45,9 +45,9 @@ test('isTilePassable allows SANDBAGS only when canCrushSandbags is true', () => 
 test('unpackTerrain and packTerrain round-trip new tiles and props', () => {
   const terrain = {
     rail: [[10, 5, 1, 4]],
-    rail_car: [[10, 6]],
+    rail_car: [[10, 6, 1, 2, 2]],
     locomotive: [[10, 8]],
-    container: [[12, 8, 1, 2]],
+    container: [[12, 8, 1, 2, 3]],
     transformer: [[14, 14]],
     sandbags: [[16, 10, 1, 3]],
     prop: [['lamp', 18, 19], ['car', 20, 12, 90]],
@@ -55,8 +55,10 @@ test('unpackTerrain and packTerrain round-trip new tiles and props', () => {
   const unpacked = unpackTerrain(terrain, 40);
   assert.equal(unpacked.surfaceGrid[10][5], TileType.RAIL);
   assert.equal(unpacked.objectGrid[10][6], TileType.RAIL_CAR);
+  assert.equal(unpacked.tacticalStyles[10][6], 2);
   assert.equal(unpacked.objectGrid[10][8], TileType.LOCOMOTIVE);
   assert.equal(unpacked.objectGrid[12][8], TileType.CONTAINER);
+  assert.equal(unpacked.tacticalStyles[12][8], 3);
   assert.equal(unpacked.objectGrid[14][14], TileType.TRANSFORMER);
   assert.equal(unpacked.objectGrid[16][12], TileType.SANDBAGS);
   assert.equal(unpacked.props.length, 2);
@@ -65,12 +67,13 @@ test('unpackTerrain and packTerrain round-trip new tiles and props', () => {
   const repacked = packTerrain({
     surfaceGrid: unpacked.surfaceGrid,
     objectGrid: unpacked.objectGrid,
+    tacticalStyles: unpacked.tacticalStyles,
     props: unpacked.props,
   });
   assert.deepEqual(repacked.rail, [[10, 5, 1, 4]]);
-  assert.deepEqual(repacked.rail_car, [[10, 6]]);
+  assert.deepEqual(repacked.rail_car, [[10, 6, 1, 2, 2]]);
   assert.deepEqual(repacked.locomotive, [[10, 8]]);
-  assert.deepEqual(repacked.container, [[12, 8, 1, 2]]);
+  assert.deepEqual(repacked.container, [[12, 8, 1, 2, 3]]);
   assert.deepEqual(repacked.transformer, [[14, 14]]);
   assert.deepEqual(repacked.sandbags, [[16, 10, 1, 3]]);
   assert.deepEqual(repacked.prop, [['lamp', 18, 19], ['car', 20, 12, 90]]);

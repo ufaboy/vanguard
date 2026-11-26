@@ -77,6 +77,8 @@ export function parseMapState(rawJson) {
   const {
     surfaceGrid,
     objectGrid,
+    tacticalStyles,
+    tacticalStyles,
     landmarks3d,
     powerups,
     mines,
@@ -101,6 +103,7 @@ export function parseMapState(rawJson) {
     size,
     surfaceGrid,
     objectGrid,
+    tacticalStyles,
     baseCell: {
       row: rawJson.baseCell?.row ?? 39,
       col: rawJson.baseCell?.col ?? 19,
@@ -179,6 +182,7 @@ export function serializeMapState(state) {
     objectGrid: state.objectGrid,
     bridges,
     buildingLayout,
+    tacticalStyles: state.tacticalStyles || null,
     landmarks3d: state.landmarks3d || [],
     powerups: state.powerups || [],
     mines: state.mines || [],
