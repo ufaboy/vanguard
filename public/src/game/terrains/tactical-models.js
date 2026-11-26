@@ -3,6 +3,76 @@
 import * as THREE from 'three';
 import { TILE_SIZE } from '../levels.js';
 import { markOwned } from '../render/dispose.js';
+import { getSharedGltfLoader } from '../render/gltf-loader.js';
+
+const TACTICAL_CONTAINER_KEYS = Object.freeze([
+  'CONTAINER_BLUE',
+  'CONTAINER_RED',
+  'CONTAINER_GREEN',
+  'CONTAINER_OCHRE',
+]);
+
+/** Blender tactical terrain GLB pack loader (RAIL, CONTAINER, TRANSFORMER, SANDBAGS, RAIL_CAR). */
+export class TacticalModels {
+  constructor(renderer = null) {
+    this.url = new URL('../../../models/terrain/tactical.glb', import.meta.url).href;
+    this.prefix = 'TACTICAL';
+    this.renderer = renderer;
+    this.templates = new Map();
+    this.ready = false;
+    this.disposed = false;
+  }
+
+  async load() {
+    const gltf = await getSharedGltfLoader(this.renderer).loadAsync(this.url);
+    gltf.scene.updateMatrixWorld(true);
+    gltf.scene.traverse((node) => {
+      if (!node.isMesh || !node.name) return;
+      const geo = node.geometry.clone();
+      geo.applyMatrix4(node.matrixWorld);
+      const mats = Array.isArray(node.material) ? node.material : [node.material];
+      for (const m of mats) {
+        if (m) m.userData.batchKey ||= `tactical-${m.name || 'mat'}`;
+      }
+      this.templates.set(node.name, { geometry: geo, material: node.material });
+    });
+    if (this.disposed) {
+      this.dispose();
+      return false;
+    }
+    this.ready = this.templates.size > 0;
+    return this.ready;
+  }
+
+  apply(group, name, { castShadow = true, receiveShadow = true } = {}) {
+    const tpl = this.templates.get(name);
+    if (!tpl) return false;
+    group.clear();
+    const mesh = new THREE.Mesh(tpl.geometry, tpl.material);
+    mesh.castShadow = castShadow;
+    mesh.receiveShadow = receiveShadow;
+    group.add(mesh);
+    group.userData.tacticalGlbKey = name;
+    return true;
+  }
+
+  dispose() {
+    this.disposed = true;
+    this.ready = false;
+    const disposedMats = new Set();
+    for (const tpl of this.templates.values()) {
+      tpl.geometry?.dispose?.();
+      const mats = Array.isArray(tpl.material) ? tpl.material : [tpl.material];
+      for (const m of mats) {
+        if (m && !disposedMats.has(m)) {
+          disposedMats.add(m);
+          m.dispose?.();
+        }
+      }
+    }
+    this.templates.clear();
+  }
+}
 
 const CONTAINER_COLORS = Object.freeze([0x1d4ed8, 0xb91c1c, 0x15803d, 0xb45309]);
 
@@ -72,15 +142,27 @@ function ensureTacticalMaterials(factory) {
 
 /** Flat ballasted railway track tile with N/E/S/W auto-connecting sleepers and steel rails. */
 export function createRailBlock(factory, x = 0, z = 0, neighborMask = 5) {
-  const mats = ensureTacticalMaterials(factory);
-  const group = new THREE.Group();
-  const S = TILE_SIZE;
   const n = Boolean(neighborMask & 1);
   const e = Boolean(neighborMask & 2);
   const s = Boolean(neighborMask & 4);
   const w = Boolean(neighborMask & 8);
   const hasEW = e || w;
   const hasNS = n || s || !hasEW;
+
+  if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
+    const group = new THREE.Group();
+    const key = hasNS && hasEW ? 'RAIL_JUNCTION' : 'RAIL_STRAIGHT';
+    if (factory.tacticalModels.apply(group, key, { castShadow: false, receiveShadow: true })) {
+      if (!hasNS && hasEW) group.rotation.y = Math.PI / 2;
+      group.position.set(x, 0, z);
+      group.userData.batchTile = true;
+      return markOwned(group, { geometries: false, materials: false });
+    }
+  }
+
+  const mats = ensureTacticalMaterials(factory);
+  const group = new THREE.Group();
+  const S = TILE_SIZE;
 
   const ballast = new THREE.Mesh(
     factory.sharedGeometry('BoxGeometry', S, 0.035, S),
@@ -117,6 +199,17 @@ export function createRailBlock(factory, x = 0, z = 0, neighborMask = 5) {
 
 /** Corrugated steel shipping container (8 HP), optionally elongated along connected axis. */
 export function createContainerBlock(factory, colorIndex = 0, orientation = 'ns', connectedEnds = false) {
+  if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
+    const group = new THREE.Group();
+    const colorKey = TACTICAL_CONTAINER_KEYS[Math.abs(colorIndex) % TACTICAL_CONTAINER_KEYS.length];
+    if (factory.tacticalModels.apply(group, colorKey, { castShadow: true, receiveShadow: true })) {
+      if (orientation === 'ew') group.rotation.y = Math.PI / 2;
+      group.userData.containerColorKey = colorKey;
+      group.userData.batchTile = true;
+      return markOwned(group, { geometries: false, materials: false });
+    }
+  }
+
   const mats = ensureTacticalMaterials(factory);
   const group = new THREE.Group();
   const hullMat = mats.containerHulls[Math.abs(colorIndex) % mats.containerHulls.length];
@@ -164,6 +257,13 @@ export function createContainerBlock(factory, colorIndex = 0, orientation = 'ns'
 
 export function updateContainerDamage(factory, mesh, hp, maxHp = 8) {
   if (!mesh) return;
+  if (mesh.userData?.containerColorKey && factory.tacticalModels?.ready) {
+    const target = hp <= maxHp * 0.5 ? 'CONTAINER_DAMAGED' : mesh.userData.containerColorKey;
+    if (mesh.userData.tacticalGlbKey !== target) {
+      factory.tacticalModels.apply(mesh, target, { castShadow: true, receiveShadow: true });
+    }
+    return;
+  }
   const body = mesh.userData?.containerBody;
   if (!body) return;
   const mats = ensureTacticalMaterials(factory);
@@ -172,6 +272,14 @@ export function updateContainerDamage(factory, mesh, hp, maxHp = 8) {
 
 /** High-voltage electrical substation transformer (2 HP, EMP surge on destruction). */
 export function createTransformerBlock(factory) {
+  if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
+    const group = new THREE.Group();
+    if (factory.tacticalModels.apply(group, 'TRANSFORMER_INTACT', { castShadow: true, receiveShadow: true })) {
+      group.userData.batchTile = true;
+      return markOwned(group, { geometries: false, materials: false });
+    }
+  }
+
   const mats = ensureTacticalMaterials(factory);
   const group = new THREE.Group();
 
@@ -238,6 +346,13 @@ export function createTransformerBlock(factory) {
 
 export function updateTransformerDamage(factory, mesh, hp) {
   if (!mesh) return;
+  if (mesh.userData?.tacticalGlbKey && factory.tacticalModels?.ready) {
+    const target = hp <= 1 ? 'TRANSFORMER_DAMAGED' : 'TRANSFORMER_INTACT';
+    if (mesh.userData.tacticalGlbKey !== target) {
+      factory.tacticalModels.apply(mesh, target, { castShadow: true, receiveShadow: true });
+    }
+    return;
+  }
   const ind = mesh.userData?.transformerIndicator;
   if (!ind) return;
   const mats = ensureTacticalMaterials(factory);
@@ -246,16 +361,25 @@ export function updateTransformerDamage(factory, mesh, hp) {
 
 /** Low stacked sandbag parapet (3 HP, shells fly over, crushable by Dozer/F5/Boss). */
 export function createSandbagsBlock(factory, neighborMask = 0) {
-  const mats = ensureTacticalMaterials(factory);
-  const group = new THREE.Group();
-  const bagGeo = factory.sharedGeometry('BoxGeometry', 0.56, 0.2, 0.34);
-  const stakeGeo = factory.sharedGeometry('CylinderGeometry', 0.04, 0.04, 0.68, 6);
-
   const e = Boolean(neighborMask & 2);
   const w = Boolean(neighborMask & 8);
   const n = Boolean(neighborMask & 1);
   const s = Boolean(neighborMask & 4);
   const alongZ = (n || s) && !(e || w);
+
+  if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
+    const group = new THREE.Group();
+    if (factory.tacticalModels.apply(group, 'SANDBAGS_STRAIGHT', { castShadow: true, receiveShadow: true })) {
+      if (alongZ) group.rotation.y = Math.PI / 2;
+      group.userData.batchTile = true;
+      return markOwned(group, { geometries: false, materials: false });
+    }
+  }
+
+  const mats = ensureTacticalMaterials(factory);
+  const group = new THREE.Group();
+  const bagGeo = factory.sharedGeometry('BoxGeometry', 0.56, 0.2, 0.34);
+  const stakeGeo = factory.sharedGeometry('CylinderGeometry', 0.04, 0.04, 0.68, 6);
 
   for (let row = 0; row < 3; row++) {
     const count = row === 2 ? 2 : 3;
@@ -283,6 +407,15 @@ export function createSandbagsBlock(factory, neighborMask = 0) {
 
 /** Armored freight boxcar sitting on RAIL (10 HP, collapses into RUBBLE). */
 export function createRailCarBlock(factory, orientation = 'ns') {
+  if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
+    const group = new THREE.Group();
+    if (factory.tacticalModels.apply(group, 'RAIL_CAR_INTACT', { castShadow: true, receiveShadow: true })) {
+      if (orientation === 'ew') group.rotation.y = Math.PI / 2;
+      group.userData.batchTile = true;
+      return markOwned(group, { geometries: false, materials: false });
+    }
+  }
+
   const mats = ensureTacticalMaterials(factory);
   const group = new THREE.Group();
 
@@ -335,6 +468,13 @@ export function createRailCarBlock(factory, orientation = 'ns') {
 
 export function updateRailCarDamage(factory, mesh, hp, maxHp = 10) {
   if (!mesh) return;
+  if (mesh.userData?.tacticalGlbKey && factory.tacticalModels?.ready) {
+    const target = hp <= maxHp * 0.5 ? 'RAIL_CAR_DAMAGED' : 'RAIL_CAR_INTACT';
+    if (mesh.userData.tacticalGlbKey !== target) {
+      factory.tacticalModels.apply(mesh, target, { castShadow: true, receiveShadow: true });
+    }
+    return;
+  }
   const body = mesh.userData?.railCarBody;
   if (!body) return;
   const mats = ensureTacticalMaterials(factory);

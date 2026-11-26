@@ -26,6 +26,7 @@ import {
 import { buildEnemyStronghold } from '../terrains/enemy-stronghold.js';
 import { createSandCanvas, createSandPatchMask } from '../terrains/sand.js';
 import {
+  TacticalModels,
   createContainerBlock as buildContainerBlock,
   createCrushableProp as buildCrushableProp,
   createRailBlock as buildRailBlock,
@@ -411,6 +412,13 @@ export class ModelFactory extends TextureGenerator {
         ? this.loadTileModels(this.buildingModels, () => this.onBuildingModelsReady?.())
         : Promise.resolve(false)
     );
+    this.tacticalModels = options.tacticalModels || new TacticalModels(renderer);
+    this.useBlenderTactical = options.useBlenderTactical ?? !isSoftwareGl;
+    this.tacticalModelsPromise = options.tacticalModelsPromise ?? (
+      !headless && this.useBlenderTactical
+        ? this.loadTileModels(this.tacticalModels, () => this.onTacticalModelsReady?.())
+        : Promise.resolve(false)
+    );
     if (!headless) {
       this.concreteTex = this.generated('createConcreteTextures');
       this.groundTex = this.generated('createGroundTexture');
@@ -559,6 +567,7 @@ export class ModelFactory extends TextureGenerator {
       this.brickModelsPromise,
       this.concreteModelsPromise,
       this.buildingModelsPromise,
+      this.tacticalModelsPromise,
       this.ensureEnemyModels(enemyClasses),
     ];
     // `options.landmarks`: the sector's landmark kinds (only their GLB packs load), or true for every pack.
@@ -2886,6 +2895,7 @@ export class ModelFactory extends TextureGenerator {
     disposeTex(this.powerUpBeamTex);
     this.powerUpBeamTex = null;
 
+    this.tacticalModels?.dispose?.();
     disposeBag(this.brickTex);
     disposeBag(this.concreteTex);
     disposeBag(this.groundTex);
