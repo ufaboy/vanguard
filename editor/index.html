@@ -36,6 +36,7 @@
         <div class="tb-group" id="tool-buttons">
           <button data-tool="brush" class="active" title="Brush (B)">Brush</button>
           <button data-tool="move" title="Move Object / Marker / Landmark (M)">Move</button>
+          <button data-tool="rotate" title="Rotate Object / Prop / Landmark / Deco 90° (O, Shift+Click CCW)">Rotate</button>
           <button data-tool="eraser" title="Eraser (X)">Eraser</button>
           <button data-tool="eyedropper" title="Eyedropper (I or Alt+Click)">Pick</button>
           <button data-tool="rect" title="Rectangle Fill (R)">Rect</button>
@@ -46,6 +47,10 @@
           <button data-size="1" class="active">1×1</button>
           <button data-size="2">2×2</button>
           <button data-size="3">3×3</button>
+        </div>
+
+        <div class="tb-group">
+          <button id="btn-placement-rot" title="Cycle Placement Rotation 0°/90°/180°/270° (Space)">↻ 0°</button>
         </div>
 
         <div class="tb-sep"></div>
@@ -94,6 +99,8 @@
               <span class="k">Coords</span><span id="info-coords">—</span>
               <span class="k">Surface</span><span id="info-surface">—</span>
               <span class="k">Object</span><span id="info-object">—</span>
+              <span class="k">Rotation</span><span id="info-rotation">—</span>
+              <span class="k">Deco</span><span id="info-deco">—</span>
               <span class="k">Extra</span><span id="info-extra">—</span>
             </div>
           </section>
@@ -176,7 +183,7 @@
         <span id="status-coords">Row: —, Col: —</span>
         <span id="status-active">Active: Ground (.)</span>
         <span id="status-cam">Camera: Isometric</span>
-        <span class="status-help">LMB: Paint | RMB Drag: Pan | Wheel: Zoom | Alt+LMB Drag: Orbit | Q/E: Rotate | T: Top-Down</span>
+        <span class="status-help">LMB: Paint | Space: Rotate 90° | O: Rotate Tool | RMB Drag: Pan | Wheel: Zoom | Alt+LMB Drag: Orbit | Q/E: Rotate Cam | T: Top-Down</span>
       </footer>
     </div>
 

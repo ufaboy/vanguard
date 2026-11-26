@@ -124,7 +124,7 @@ function parseMapGrids(mapJson) {
   }
   const size = mapJson?.gridSize || GRID_SIZE;
   const unpacked = unpackTerrain(mapJson?.terrain, size);
-  const { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props } = unpacked;
+  const { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props } = unpacked;
 
   const baseCell = {
     row: mapJson?.baseCell?.row ?? BASE_CELL.row,
@@ -154,7 +154,7 @@ function parseMapGrids(mapJson) {
   const grid = Array.from({ length: size }, (_, r) =>
     Array.from({ length: size }, (__, c) => objectGrid[r][c] ?? surfaceGrid[r][c])
   );
-  return { grid, surfaceGrid, objectGrid, buildingStyles, tacticalStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props };
+  return { grid, surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props };
 }
 
 /** Normalizes a raw JSON map object from `/public/maps/*.json` into the runtime Sector format. */
@@ -207,7 +207,9 @@ export function normalizeMapDefinition(rawMap, index = 0) {
     objectGrid,
     buildingStyles,
     tacticalStyles,
+    objectRotations,
     bridges,
+    railCurves,
     landmarks3d,
     powerups: rawPowerups,
     mines,
@@ -285,8 +287,10 @@ export function normalizeMapDefinition(rawMap, index = 0) {
     baseDefense: rawMap.baseDefense || 'standard',
     landmarks3d,
     bridges,
+    railCurves,
     buildingStyles,
     tacticalStyles,
+    objectRotations,
     mines,
     mineSigns,
     props,

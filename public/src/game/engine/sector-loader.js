@@ -18,7 +18,7 @@ import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
 import { BUILDING_MAX_HP } from '../terrains/building-models.js';
 import { landmarkFootprintCenter } from '../terrains/landmarks.js';
-import { resolveBuildingCell } from '../terrains/terrain-format.js';
+import { railCurveCells, resolveBuildingCell } from '../terrains/terrain-format.js';
 import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { isSurfaceType, setCellObject } from '../terrains/layers.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
@@ -251,6 +251,12 @@ export class SectorLoaderController {
     engine.componentWaterEgress = false;
     const pairedCells = new Set();
     const pairLinks = [];
+    const railCurveCellSet = new Set();
+    for (const rc of sector.railCurves || []) {
+      for (const cell of railCurveCells(rc.row, rc.col, rc.rotation || 0)) {
+        railCurveCellSet.add(`${cell.row},${cell.col}`);
+      }
+    }
 
     for (let r = 0; r < GRID_SIZE; r++) {
       const rowCells = [];
@@ -307,7 +313,7 @@ export class SectorLoaderController {
         } else if (surface === TileType.OIL_SLICK && engine.modelFactory.createOilSlickBlock) {
           surfaceMesh = engine.modelFactory.createOilSlickBlock(x, z);
           engine.mapGroup.add(surfaceMesh);
-        } else if (surface === TileType.RAIL && engine.modelFactory.createRailBlock) {
+        } else if (surface === TileType.RAIL && engine.modelFactory.createRailBlock && !railCurveCellSet.has(`${r},${c}`)) {
           const isRail = (rr, cc) => {
             if (rr < 0 || rr >= GRID_SIZE || cc < 0 || cc >= GRID_SIZE) return false;
             const s = sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
@@ -322,10 +328,14 @@ export class SectorLoaderController {
           engine.mapGroup.add(surfaceMesh);
         }
 
+        const rotDeg = sector.objectRotations?.[r]?.[c] || 0;
+        const rotRad = (rotDeg * Math.PI) / 180;
+
         if (type === TileType.BRICK) {
           hp = 4;
           const brick = engine.modelFactory.createBrickBlock();
           brick.group.position.set(x, 0, z);
+          if (rotDeg) brick.group.rotation.y = rotRad;
           engine.mapGroup.add(brick.group);
           mesh = brick.group;
           subMeshes = brick.subMeshes;
@@ -333,13 +343,14 @@ export class SectorLoaderController {
           hp = 16;
           const concrete = engine.modelFactory.createConcreteBlock();
           concrete.position.set(x, 0, z);
+          if (rotDeg) concrete.rotation.y = rotRad;
           engine.mapGroup.add(concrete);
           mesh = concrete;
         } else if (type === TileType.HOUSE_1 || type === TileType.HOUSE_2) {
           if (building) {
             hp = BUILDING_MAX_HP[building.kind];
             const built = engine.modelFactory.createBuildingBlock(
-              building.kind, building.part, building.yaw, hp, hp, building.style
+              building.kind, building.part, building.yaw + rotRad, hp, hp, building.style
             );
             built.group.position.set(x, 0, z);
             engine.mapGroup.add(built.group);
@@ -349,6 +360,7 @@ export class SectorLoaderController {
         } else if (type === TileType.FOREST) {
           const forest = engine.modelFactory.createForestBlock();
           forest.position.set(x, 0, z);
+          if (rotDeg) forest.rotation.y = rotRad;
           engine.mapGroup.add(forest);
           mesh = forest;
         } else if (type === TileType.WATER) {
@@ -379,6 +391,7 @@ export class SectorLoaderController {
         } else if (type === TileType.ENEMY_BASE) {
           const enemyBaseBlock = engine.modelFactory.createEnemyBaseBlock();
           enemyBaseBlock.position.set(x, 0, z);
+          if (rotDeg) enemyBaseBlock.rotation.y = rotRad;
           engine.mapGroup.add(enemyBaseBlock);
           mesh = enemyBaseBlock;
           hp = engine.enemyBaseMaxHp;
@@ -388,32 +401,37 @@ export class SectorLoaderController {
         } else if (type === TileType.HEDGEHOG) {
           const hedgehog = engine.modelFactory.createHedgehogBlock();
           hedgehog.position.set(x, 0, z);
+          if (rotDeg) hedgehog.rotation.y = rotRad;
           engine.mapGroup.add(hedgehog);
           mesh = hedgehog;
           hp = 1;
         } else if (type === TileType.BOXES) {
           mesh = engine.modelFactory.createBoxesBlock();
           mesh.position.set(x, 0, z);
+          if (rotDeg) mesh.rotation.y = rotRad;
           engine.mapGroup.add(mesh);
           hp = 2;
         } else if (type === TileType.BARREL) {
           const barrel = engine.modelFactory.createBarrelBlock();
           barrel.position.set(x, 0, z);
+          if (rotDeg) barrel.rotation.y = rotRad;
           engine.mapGroup.add(barrel);
           mesh = barrel;
           hp = 1;
         } else if (type === TileType.CRATER && engine.modelFactory.createCraterBlock) {
           mesh = engine.modelFactory.createCraterBlock(x, z);
+          if (rotDeg) mesh.rotation.y = rotRad;
           engine.mapGroup.add(mesh);
         } else if (type === TileType.RUBBLE && engine.modelFactory.createRubbleBlock) {
           mesh = engine.modelFactory.createRubbleBlock('house2');
           mesh.position.set(x, 0, z);
-          mesh.rotation.y = ((r * 7 + c * 13) % 4) * (Math.PI / 2);
+          mesh.rotation.y = rotDeg ? rotRad : ((r * 7 + c * 13) % 4) * (Math.PI / 2);
           engine.mapGroup.add(mesh);
           hp = 1;
         } else if (type === TileType.WATER_TOWER && engine.modelFactory.createWaterTowerBlock) {
           mesh = engine.modelFactory.createWaterTowerBlock();
           mesh.position.set(x, 0, z);
+          if (rotDeg) mesh.rotation.y = rotRad;
           engine.mapGroup.add(mesh);
           hp = 2;
         } else if (type === TileType.CONTAINER && engine.modelFactory.createContainerBlock) {
@@ -438,17 +456,20 @@ export class SectorLoaderController {
             }
             const bakedColor = sector.tacticalStyles?.[r]?.[c];
             const colorIdx = bakedColor >= 0 ? bakedColor : (r * 3 + c * 7) % 4;
-            mesh = engine.modelFactory.createContainerBlock(colorIdx, orientation, spanCells);
+            mesh = engine.modelFactory.createContainerBlock(colorIdx, spanCells === 1 && rotDeg ? 'ns' : orientation, spanCells);
             mesh.position.set(
               x + (pairE ? TILE_SIZE * 0.5 : 0),
               0,
               z + (pairS ? TILE_SIZE * 0.5 : 0)
             );
+            if (spanCells === 1 && rotDeg) mesh.rotation.y = rotRad;
+            else if (spanCells === 2 && (rotDeg === 180 || rotDeg === 270)) mesh.rotation.y += Math.PI;
             engine.mapGroup.add(mesh);
           }
         } else if (type === TileType.TRANSFORMER && engine.modelFactory.createTransformerBlock) {
           mesh = engine.modelFactory.createTransformerBlock();
           mesh.position.set(x, 0, z);
+          if (rotDeg) mesh.rotation.y = rotRad;
           engine.mapGroup.add(mesh);
           hp = 2;
         } else if (type === TileType.SANDBAGS && engine.modelFactory.createSandbagsBlock) {
@@ -462,6 +483,7 @@ export class SectorLoaderController {
             (isBags(r, c - 1) ? 8 : 0);
           mesh = engine.modelFactory.createSandbagsBlock(bagMask);
           mesh.position.set(x, 0, z);
+          if (rotDeg) mesh.rotation.y += rotRad;
           engine.mapGroup.add(mesh);
           hp = 3;
         } else if (type === TileType.RAIL_CAR && engine.modelFactory.createRailCarBlock) {
@@ -495,12 +517,15 @@ export class SectorLoaderController {
             const variant = (r + c) % 2 === 0 ? 'closed' : 'open';
             const bakedColor = sector.tacticalStyles?.[r]?.[c];
             const colorIdx = bakedColor >= 0 ? bakedColor : (r * 5 + c * 11) % 4;
-            mesh = engine.modelFactory.createRailCarBlock(orientation, variant, pairE || pairS ? 2 : 1, colorIdx);
+            const spanCells = pairE || pairS ? 2 : 1;
+            mesh = engine.modelFactory.createRailCarBlock(spanCells === 1 && rotDeg ? 'ns' : orientation, variant, spanCells, colorIdx);
             mesh.position.set(
               x + (pairE ? TILE_SIZE * 0.5 : 0),
               0,
               z + (pairS ? TILE_SIZE * 0.5 : 0)
             );
+            if (spanCells === 1 && rotDeg) mesh.rotation.y = rotRad;
+            else if (spanCells === 2 && (rotDeg === 180 || rotDeg === 270)) mesh.rotation.y += Math.PI;
             engine.mapGroup.add(mesh);
           }
         } else if (type === TileType.LOCOMOTIVE && engine.modelFactory.createLocomotiveBlock) {
@@ -531,12 +556,15 @@ export class SectorLoaderController {
               pairedCells.add(`${r + 1},${c}`);
               pairLinks.push([r, c, r + 1, c]);
             }
-            mesh = engine.modelFactory.createLocomotiveBlock(orientation, pairE || pairS ? 2 : 1);
+            const spanCells = pairE || pairS ? 2 : 1;
+            mesh = engine.modelFactory.createLocomotiveBlock(spanCells === 1 && rotDeg ? 'ns' : orientation, spanCells);
             mesh.position.set(
               x + (pairE ? TILE_SIZE * 0.5 : 0),
               0,
               z + (pairS ? TILE_SIZE * 0.5 : 0)
             );
+            if (spanCells === 1 && rotDeg) mesh.rotation.y = rotRad;
+            else if (spanCells === 2 && (rotDeg === 180 || rotDeg === 270)) mesh.rotation.y += Math.PI;
             engine.mapGroup.add(mesh);
           }
         }
@@ -605,6 +633,14 @@ export class SectorLoaderController {
         lmMesh.position.set(lmPos.x, 0, lmPos.z);
         if (entry.rotation) lmMesh.rotation.y = (entry.rotation * Math.PI) / 180;
         engine.mapGroup.add(lmMesh);
+      }
+    }
+
+    if (sector.railCurves?.length && engine.modelFactory.createRailCurveBlock) {
+      for (const rc of sector.railCurves) {
+        const center = this.gridToWorld(rc.row + 1, rc.col + 1);
+        const curveMesh = engine.modelFactory.createRailCurveBlock(center.x, center.z, rc.rotation || 0);
+        engine.mapGroup.add(curveMesh);
       }
     }
 

@@ -1,5 +1,7 @@
 /** Main controller for the BATTLE TANK 3D Map Editor. */
 import { TileType } from '/public/src/game/terrains/surfaces.js';
+import { railCurveCells } from '/public/src/game/terrains/terrain-format.js';
+import { validateRailroadLayout } from '/public/src/game/terrains/rail-rules.js';
 import {
   DECORATIONS,
   LANDMARKS,
@@ -32,8 +34,10 @@ class MapEditorApp {
     this.dirty = false;
 
     this.activeTab = 'surfaces';
-    this.activeTool = 'brush'; // brush | eraser | eyedropper | rect | fill
+    this.activeTool = 'brush'; // brush | move | rotate | eraser | eyedropper | rect | fill
     this.brushSize = 1;
+    this.placementRotation = 0;
+    this.hoveredCell = null;
     this.selectedSurface = TileType.ROAD;
     this.selectedObject = TileType.BRICK;
     this.selectedMarker = 'playerSpawn';
@@ -48,7 +52,7 @@ class MapEditorApp {
     this.viewport = new Viewport3D($('viewport'), {
       isEyedropperActive: () => this.activeTool === 'eyedropper',
       onHoverCell: (cell) => this._updateCellInspector(cell),
-      onPointerDownCell: (cell) => this._onPointerDownCell(cell),
+      onPointerDownCell: (cell, e) => this._onPointerDownCell(cell, e),
       onPointerDragCell: (cell) => this._onPointerDragCell(cell),
       onPointerUpCell: (cell) => this._onPointerUpCell(cell),
       onEyedropperCell: (cell) => this._pickFromCell(cell),
@@ -104,9 +108,13 @@ class MapEditorApp {
     return JSON.stringify({
       surfaceGrid: this.state.surfaceGrid,
       objectGrid: this.state.objectGrid,
+      tacticalStyles: (this.state.tacticalStyles || []).map((row) => Array.from(row)),
+      objectRotations: (this.state.objectRotations || []).map((row) => Array.from(row)),
       baseCell: this.state.baseCell,
       playerSpawnCell: this.state.playerSpawnCell,
       powerups: this.state.powerups,
+      props: this.state.props || [],
+      railCurves: this.state.railCurves || [],
       landmarks3d: this.state.landmarks3d,
       decoration: this.state.decoration,
       environment: this.state.environment,
@@ -118,9 +126,17 @@ class MapEditorApp {
     const data = JSON.parse(jsonStr);
     this.state.surfaceGrid = data.surfaceGrid;
     this.state.objectGrid = data.objectGrid;
+    if (Array.isArray(data.tacticalStyles)) {
+      this.state.tacticalStyles = data.tacticalStyles.map((row) => Int8Array.from(row));
+    }
+    if (Array.isArray(data.objectRotations)) {
+      this.state.objectRotations = data.objectRotations.map((row) => Int16Array.from(row));
+    }
     this.state.baseCell = data.baseCell;
     this.state.playerSpawnCell = data.playerSpawnCell;
     this.state.powerups = data.powerups;
+    this.state.props = data.props || [];
+    this.state.railCurves = data.railCurves || [];
     this.state.landmarks3d = data.landmarks3d;
     this.state.decoration = data.decoration ?? null;
     this.state.environment = data.environment;
@@ -174,12 +190,7 @@ class MapEditorApp {
 
     if (mode === 'eraser') {
       if (this.activeTab === 'decorations') {
-        const list = this.state.decoration?.landmarks;
-        if (!Array.isArray(list)) return false;
-        const idx = list.findIndex((d) => d.row === r && d.col === c);
-        if (idx < 0) return false;
-        list.splice(idx, 1);
-        return true;
+        return this._clearDecorationsAt(r, c);
       }
       if (this.activeTab === 'landmarks') {
         const list = this.state.landmarks3d;
@@ -189,6 +200,16 @@ class MapEditorApp {
         return true;
       }
       if (this.activeTab === 'markers') {
+        const rcIdx = (this.state.railCurves || []).findIndex((rc) =>
+          railCurveCells(rc.row, rc.col, rc.rotation || 0).some((p) => p.row === r && p.col === c)
+        );
+        if (rcIdx >= 0) {
+          const [removed] = this.state.railCurves.splice(rcIdx, 1);
+          this._syncRailCurveSurface(removed, false);
+          this.viewport.rebuildRailCurves();
+          this.viewport.refreshRailRegion(removed.row, removed.col);
+          return true;
+        }
         const list = this.state.powerups;
         const idx = list.findIndex((p) => p.row === r && p.col === c);
         if (idx < 0) return false;
@@ -199,6 +220,8 @@ class MapEditorApp {
       const hadSurf = this.state.surfaceGrid[r][c] !== TileType.EMPTY;
       if (hadObj) {
         this.state.objectGrid[r][c] = null;
+        if (this.state.objectRotations?.[r]) this.state.objectRotations[r][c] = 0;
+        if (this.state.tacticalStyles?.[r]) this.state.tacticalStyles[r][c] = -1;
       } else if (hadSurf) {
         this.state.surfaceGrid[r][c] = TileType.EMPTY;
       } else {
@@ -218,21 +241,57 @@ class MapEditorApp {
     }
 
     if (this.activeTab === 'objects') {
-      if (this.state.objectGrid[r][c] === this.selectedObject) return false;
+      const curRot = this.state.objectRotations?.[r]?.[c] || 0;
+      if (this.state.objectGrid[r][c] === this.selectedObject && curRot === this.placementRotation) {
+        return false;
+      }
       this.state.objectGrid[r][c] = this.selectedObject;
+      if (this.state.objectRotations?.[r]) {
+        this.state.objectRotations[r][c] = this.selectedObject === null ? 0 : this.placementRotation;
+      }
       this.viewport.updateCell(r, c, updateNeighbors);
       if (!updateNeighbors) this.viewport.refreshRoadNeighbors(r, c);
       return true;
     }
 
     if (this.activeTab === 'decorations') {
+      if (this.selectedDecoration === null) {
+        return this._clearDecorationsAt(r, c);
+      }
       if (!this.state.decoration) {
         this.state.decoration = {
           version: 1,
           seed: 1,
           theme: this.state.environment.theme || 'urban',
           landmarks: [],
+          zones: [],
         };
+      }
+      if (String(this.selectedDecoration).startsWith('zone:')) {
+        const surface = String(this.selectedDecoration).slice('zone:'.length);
+        this.state.decoration.zones ||= [];
+        const zones = this.state.decoration.zones;
+        const already = zones.some(
+          (z) =>
+            z.surface === surface &&
+            z.bounds?.[0] === r &&
+            z.bounds?.[1] === c &&
+            z.bounds?.[2] === r &&
+            z.bounds?.[3] === c
+        );
+        if (already) return false;
+        if (zones.length >= 64) {
+          this._toast('Max 64 decoration zones per map');
+          return false;
+        }
+        zones.push({
+          id: `zone-${surface}-${r}-${c}-${Date.now().toString(36).slice(-4)}`,
+          bounds: [r, c, r, c],
+          surface,
+          density: 0.35,
+          details: ['cracks'],
+        });
+        return true;
       }
       if (!Array.isArray(this.state.decoration.landmarks)) {
         this.state.decoration.landmarks = [];
@@ -240,8 +299,12 @@ class MapEditorApp {
       const list = this.state.decoration.landmarks;
       const existing = list.find((d) => d.row === r && d.col === c);
       if (existing) {
-        if (existing.kind === this.selectedDecoration) return false;
+        if (existing.kind === this.selectedDecoration && (existing.rotation || 0) === this.placementRotation) {
+          return false;
+        }
         existing.kind = this.selectedDecoration;
+        if (this.placementRotation) existing.rotation = this.placementRotation;
+        else delete existing.rotation;
         if (this.selectedDecoration === 'label' && !existing.text) existing.text = 'SECTOR';
         return true;
       }
@@ -250,7 +313,14 @@ class MapEditorApp {
         return false;
       }
       const id = `deco-${this.selectedDecoration.replace(/_/g, '-')}-${r}-${c}`;
-      const entry = { id, kind: this.selectedDecoration, row: r, col: c, size: 1 };
+      const entry = {
+        id,
+        kind: this.selectedDecoration,
+        row: r,
+        col: c,
+        size: 1,
+        ...(this.placementRotation ? { rotation: this.placementRotation } : {}),
+      };
       if (this.selectedDecoration === 'label') entry.text = 'SECTOR';
       list.push(entry);
       return true;
@@ -350,6 +420,33 @@ class MapEditorApp {
     this._toast(`Flood filled ${visited.size} cells`);
   }
 
+  _findRailCurveAt(row, col) {
+    return (this.state.railCurves || []).find((rc) =>
+      railCurveCells(rc.row, rc.col, rc.rotation || 0).some((p) => p.row === row && p.col === col)
+    );
+  }
+
+  _syncRailCurveSurface(rc, add) {
+    const size = this.state.size;
+    const stillCovered = new Set();
+    if (!add) {
+      for (const other of this.state.railCurves || []) {
+        if (other === rc) continue;
+        for (const p of railCurveCells(other.row, other.col, other.rotation || 0)) {
+          stillCovered.add(`${p.row},${p.col}`);
+        }
+      }
+    }
+    for (const p of railCurveCells(rc.row, rc.col, rc.rotation || 0)) {
+      if (p.row < 0 || p.row >= size || p.col < 0 || p.col >= size) continue;
+      if (add) {
+        this.state.surfaceGrid[p.row][p.col] = TileType.RAIL;
+      } else if (!stillCovered.has(`${p.row},${p.col}`)) {
+        this.state.surfaceGrid[p.row][p.col] = TileType.EMPTY;
+      }
+    }
+  }
+
   _placeMarkerOrLandmark(cell) {
     const prev = this._snapshot();
     if (this.activeTab === 'markers') {
@@ -357,6 +454,25 @@ class MapEditorApp {
         this.state.playerSpawnCell = { row: cell.row, col: cell.col };
       } else if (this.selectedMarker === 'baseCell') {
         this.state.baseCell = { row: cell.row, col: Math.min(cell.col, this.state.size - 2) };
+      } else if (this.selectedMarker === 'railCurve') {
+        this.state.railCurves ||= [];
+        const existingIdx = this.state.railCurves.findIndex((rc) =>
+          railCurveCells(rc.row, rc.col, rc.rotation || 0).some((p) => p.row === cell.row && p.col === cell.col)
+        );
+        if (existingIdx >= 0) {
+          const [removed] = this.state.railCurves.splice(existingIdx, 1);
+          this._syncRailCurveSurface(removed, false);
+          this.viewport.rebuildRailCurves();
+          this.viewport.refreshRailRegion(removed.row, removed.col);
+        } else {
+          const r = Math.min(cell.row, this.state.size - 3);
+          const c = Math.min(cell.col, this.state.size - 3);
+          const rc = { row: r, col: c, ...(this.placementRotation ? { rotation: this.placementRotation } : {}) };
+          this.state.railCurves.push(rc);
+          this._syncRailCurveSurface(rc, true);
+          this.viewport.rebuildRailCurves();
+          this.viewport.refreshRailRegion(r, c);
+        }
       } else if (this.selectedMarker.startsWith('powerup:')) {
         const type = MARKERS.find((m) => m.id === this.selectedMarker)?.powerupType || 'REPAIR';
         const existingIdx = this.state.powerups.findIndex(
@@ -380,7 +496,12 @@ class MapEditorApp {
         if (existingIdx >= 0) {
           this.state.props.splice(existingIdx, 1);
         } else {
-          this.state.props.push({ kind, row: cell.row, col: cell.col });
+          this.state.props.push({
+            kind,
+            row: cell.row,
+            col: cell.col,
+            ...(this.placementRotation ? { rotation: this.placementRotation } : {}),
+          });
         }
       }
       this.viewport.rebuildMarkers();
@@ -393,7 +514,12 @@ class MapEditorApp {
       if (existingIdx >= 0) {
         this.state.landmarks3d.splice(existingIdx, 1);
       } else {
-        this.state.landmarks3d.push({ kind: this.selectedLandmark, row: cell.row, col: cell.col });
+        this.state.landmarks3d.push({
+          kind: this.selectedLandmark,
+          row: cell.row,
+          col: cell.col,
+          ...(this.placementRotation ? { rotation: this.placementRotation } : {}),
+        });
       }
       this.viewport.rebuildLandmarks();
       this._syncLists();
@@ -472,7 +598,40 @@ class MapEditorApp {
       return;
     }
 
-    // 2. Powerup crate
+    // 2. Crushable prop
+    const pr = (this.state.props || []).find((p) => p.row === row && p.col === col);
+    if (pr) {
+      this.moveDrag = {
+        kind: 'prop',
+        item: pr,
+        fromRow: row,
+        fromCol: col,
+        originRotation: pr.rotation || 0,
+        snapshot: this._snapshot(),
+      };
+      this._toast(`Moving prop ${pr.kind}`);
+      return;
+    }
+
+    // 2.5 Rail Curve (3x3)
+    const rc = this._findRailCurveAt(row, col);
+    if (rc) {
+      this.moveDrag = {
+        kind: 'railCurve',
+        item: rc,
+        fromRow: rc.row,
+        fromCol: rc.col,
+        rowOffset: row - rc.row,
+        colOffset: col - rc.col,
+        originRotation: rc.rotation || 0,
+        snapshot: this._snapshot(),
+      };
+      this._syncRailCurveSurface(rc, false);
+      this._toast('Moving Rail Curve (3×3)');
+      return;
+    }
+
+    // 3. Powerup crate
     const pw = this.state.powerups.find((p) => p.row === row && p.col === col);
     if (pw) {
       this.moveDrag = { kind: 'powerup', item: pw, fromRow: row, fromCol: col, snapshot: this._snapshot() };
@@ -500,7 +659,18 @@ class MapEditorApp {
     // 5. Grid object (moves only the object, without decorations or surface)
     const obj = this.state.objectGrid[row][col];
     if (obj !== null) {
-      this.moveDrag = { kind: 'object', value: obj, fromRow: row, fromCol: col, snapshot: this._snapshot() };
+      const rot = this.state.objectRotations?.[row]?.[col] || 0;
+      const style = this.state.tacticalStyles?.[row]?.[col] ?? -1;
+      this.moveDrag = {
+        kind: 'object',
+        value: obj,
+        rotation: rot,
+        originRotation: rot,
+        style,
+        fromRow: row,
+        fromCol: col,
+        snapshot: this._snapshot(),
+      };
       this._toast(`Moving ${OBJECT_BY_TILE.get(obj)?.name || 'object'}`);
       return;
     }
@@ -643,9 +813,97 @@ class MapEditorApp {
     }
   }
 
-  _onPointerDownCell(cell) {
+  _cyclePlacementRotation(delta = 90) {
+    this.placementRotation = (((this.placementRotation + delta) % 360) + 360) % 360;
+    const btn = $('btn-placement-rot');
+    if (btn) btn.textContent = `↻ ${this.placementRotation}°`;
+    this.viewport.setPlacementRotation(this.placementRotation);
+  }
+
+  _rotateCellAt(cell, delta = 90) {
+    if (!cell) return false;
+    const { row, col } = cell;
+    const step = (cur) => (((((cur || 0) + delta) % 360) + 360) % 360);
+
+    const lm = this.state.landmarks3d.find((l) => l.row === row && l.col === col);
+    if (lm) {
+      const prev = this._snapshot();
+      lm.rotation = step(lm.rotation);
+      this.viewport.rebuildLandmarks();
+      this._syncLists();
+      this._commitSnapshot(prev);
+      this._updateCellInspector(cell);
+      this._toast(`Rotated ${lm.kind} to ${lm.rotation}°`);
+      return true;
+    }
+
+    const pr = (this.state.props || []).find((p) => p.row === row && p.col === col);
+    if (pr) {
+      const prev = this._snapshot();
+      const next = step(pr.rotation);
+      if (next) pr.rotation = next;
+      else delete pr.rotation;
+      this.viewport.rebuildMarkers();
+      this._syncLists();
+      this._commitSnapshot(prev);
+      this._updateCellInspector(cell);
+      this._toast(`Rotated prop ${pr.kind} to ${next}°`);
+      return true;
+    }
+
+    const obj = this.state.objectGrid[row]?.[col];
+    if (obj !== null && obj !== undefined) {
+      const prev = this._snapshot();
+      const next = step(this.state.objectRotations?.[row]?.[col] || 0);
+      if (this.state.objectRotations?.[row]) this.state.objectRotations[row][col] = next;
+      this.viewport.updateCell(row, col, false);
+      this._commitSnapshot(prev);
+      this._updateCellInspector(cell);
+      this._toast(`Rotated ${OBJECT_BY_TILE.get(obj)?.name || 'object'} to ${next}°`);
+      return true;
+    }
+
+    const rc = this._findRailCurveAt(row, col);
+    if (rc) {
+      const prev = this._snapshot();
+      this._syncRailCurveSurface(rc, false);
+      const next = step(rc.rotation);
+      if (next) rc.rotation = next;
+      else delete rc.rotation;
+      this._syncRailCurveSurface(rc, true);
+      this.viewport.rebuildRailCurves();
+      this.viewport.refreshRailRegion(rc.row, rc.col);
+      this._commitSnapshot(prev);
+      this._updateCellInspector(cell);
+      this._toast(`Rotated Rail Curve to ${next}°`);
+      return true;
+    }
+
+    const deco = (this.state.decoration?.landmarks || []).find((d) => d.row === row && d.col === col);
+    if (deco) {
+      const prev = this._snapshot();
+      const next = step(deco.rotation);
+      if (next) deco.rotation = next;
+      else delete deco.rotation;
+      this.viewport.rebuildDecorations();
+      this._syncLists();
+      this._commitSnapshot(prev);
+      this._updateCellInspector(cell);
+      this._toast(`Rotated ${deco.kind} to ${next}°`);
+      return true;
+    }
+
+    this._toast('Nothing to rotate on this cell');
+    return false;
+  }
+
+  _onPointerDownCell(cell, e) {
     if (this.activeTool === 'eyedropper') {
       this._pickFromCell(cell);
+      return;
+    }
+    if (this.activeTool === 'rotate') {
+      this._rotateCellAt(cell, e?.shiftKey ? -90 : 90);
       return;
     }
     if (this.activeTool === 'move') {
@@ -683,6 +941,15 @@ class MapEditorApp {
           }
           this.viewport.rebuildDecorations();
         }
+      } else if (this.moveDrag.kind === 'prop') {
+        this.moveDrag.item.row = cell.row;
+        this.moveDrag.item.col = cell.col;
+        this.viewport.rebuildMarkers();
+      } else if (this.moveDrag.kind === 'railCurve') {
+        const size = this.state.size;
+        this.moveDrag.item.row = Math.max(0, Math.min(size - 3, cell.row - this.moveDrag.rowOffset));
+        this.moveDrag.item.col = Math.max(0, Math.min(size - 3, cell.col - this.moveDrag.colOffset));
+        this.viewport.rebuildRailCurves();
       } else if (this.moveDrag.kind === 'powerup') {
         this.moveDrag.item.row = cell.row;
         this.moveDrag.item.col = cell.col;
@@ -772,9 +1039,12 @@ class MapEditorApp {
         this._toast(`Moved region by (${dRow >= 0 ? '+' : ''}${dRow}, ${dCol >= 0 ? '+' : ''}${dCol})`);
         return;
       }
-      const rotatedLandmark =
-        drag.kind === 'landmark' && (drag.item.rotation || 0) !== (drag.originRotation || 0);
-      if ((!cell || (cell.row === drag.fromRow && cell.col === drag.fromCol)) && !rotatedLandmark) {
+      const rotatedItem =
+        (drag.kind === 'landmark' && (drag.item.rotation || 0) !== (drag.originRotation || 0)) ||
+        (drag.kind === 'prop' && (drag.item.rotation || 0) !== (drag.originRotation || 0)) ||
+        (drag.kind === 'railCurve' && (drag.item.rotation || 0) !== (drag.originRotation || 0)) ||
+        (drag.kind === 'object' && drag.rotation !== drag.originRotation);
+      if ((!cell || (cell.row === drag.fromRow && cell.col === drag.fromCol)) && !rotatedItem && drag.kind !== 'railCurve') {
         if (drag.kind === 'ground' && drag.decorations.length > 0) {
           for (const entry of drag.decorations) {
             entry.item.row = entry.originRow;
@@ -785,14 +1055,33 @@ class MapEditorApp {
         return;
       }
       if (drag.kind === 'object') {
+        const destRow = cell ? cell.row : drag.fromRow;
+        const destCol = cell ? cell.col : drag.fromCol;
         this.state.objectGrid[drag.fromRow][drag.fromCol] = null;
-        this.state.objectGrid[cell.row][cell.col] = drag.value;
+        if (this.state.objectRotations?.[drag.fromRow]) this.state.objectRotations[drag.fromRow][drag.fromCol] = 0;
+        if (this.state.tacticalStyles?.[drag.fromRow]) this.state.tacticalStyles[drag.fromRow][drag.fromCol] = -1;
+        this.state.objectGrid[destRow][destCol] = drag.value;
+        if (this.state.objectRotations?.[destRow]) this.state.objectRotations[destRow][destCol] = drag.rotation || 0;
+        if (this.state.tacticalStyles?.[destRow]) this.state.tacticalStyles[destRow][destCol] = drag.style ?? -1;
         this.viewport.updateCell(drag.fromRow, drag.fromCol, false);
         this.viewport.refreshRoadNeighbors(drag.fromRow, drag.fromCol);
-        this.viewport.updateCell(cell.row, cell.col, false);
-        this.viewport.refreshRoadNeighbors(cell.row, cell.col);
+        this.viewport.updateCell(destRow, destCol, false);
+        this.viewport.refreshRoadNeighbors(destRow, destCol);
         this.viewport.syncBuildings();
         this.viewport.rebuildBridges();
+      } else if (drag.kind === 'railCurve') {
+        if (drag.item.row === drag.fromRow && drag.item.col === drag.fromCol && !rotatedItem) {
+          this._syncRailCurveSurface(drag.item, true);
+          this.viewport.rebuildRailCurves();
+          return;
+        }
+        this._syncRailCurveSurface(drag.item, true);
+        this.viewport.rebuildRailCurves();
+        this.viewport.refreshRailRegion(drag.fromRow, drag.fromCol);
+        this.viewport.refreshRailRegion(drag.item.row, drag.item.col);
+        this._commitSnapshot(drag.snapshot);
+        this._toast(`Moved Rail Curve to (${drag.item.row}, ${drag.item.col})`);
+        return;
       } else if (drag.kind === 'ground') {
         if (drag.decorations.length > 0) {
           for (const entry of drag.decorations) {
@@ -824,6 +1113,34 @@ class MapEditorApp {
       const r1 = Math.max(this.rectStartCell.row, cell.row);
       const c0 = Math.min(this.rectStartCell.col, cell.col);
       const c1 = Math.max(this.rectStartCell.col, cell.col);
+      if (this.activeTab === 'decorations' && String(this.selectedDecoration).startsWith('zone:')) {
+        const surface = String(this.selectedDecoration).slice('zone:'.length);
+        this.state.decoration ||= {
+          version: 1,
+          seed: 1,
+          theme: this.state.environment.theme || 'urban',
+          landmarks: [],
+          zones: [],
+        };
+        this.state.decoration.zones ||= [];
+        if (this.state.decoration.zones.length >= 64) {
+          this._toast('Max 64 decoration zones per map');
+        } else {
+          this.state.decoration.zones.push({
+            id: `zone-${surface}-${r0}-${c0}-${Date.now().toString(36).slice(-4)}`,
+            bounds: [r0, c0, r1, c1],
+            surface,
+            density: 0.35,
+            details: ['cracks'],
+          });
+          this.viewport.rebuildDecorations();
+          this._syncLists();
+          this._commitSnapshot(this.strokeSnapshot);
+        }
+        this.rectStartCell = null;
+        this.strokeSnapshot = null;
+        return;
+      }
       let changed = false;
       for (let r = r0; r <= r1; r++) {
         for (let c = c0; c <= c1; c++) {
@@ -924,7 +1241,8 @@ class MapEditorApp {
       }
     } else if (this.activeTab === 'decorations') {
       for (const d of DECORATIONS) {
-        const btn = this._makePaletteItem(d.name, `Ground decal (${d.kind})`, d.color, d.kind === this.selectedDecoration);
+        const sub = d.sub || (d.group === 'zone' ? '2D ground zone (Brush/Rect)' : `Ground decal (${d.kind})`);
+        const btn = this._makePaletteItem(d.name, sub, d.color, d.kind === this.selectedDecoration);
         btn.onclick = () => {
           this.selectedDecoration = d.kind;
           if (this.activeTool === 'eraser') this._setTool('brush');
@@ -962,17 +1280,71 @@ class MapEditorApp {
     } else if (this.activeTab === 'landmarks') {
       label = `Landmark: ${this.selectedLandmark}`;
     } else {
-      label = `Deco: ${this.selectedDecoration}`;
+      const d = DECORATIONS.find((item) => item.kind === this.selectedDecoration);
+      label = this.selectedDecoration === null ? 'Deco: Empty (Clear)' : `Deco: ${d?.name || this.selectedDecoration}`;
     }
     $('status-active').textContent = label;
   }
 
+  _clearDecorationsAt(r, c) {
+    if (!this.state.decoration) return false;
+    const decals = this.state.decoration.landmarks;
+    if (Array.isArray(decals)) {
+      const idx = decals.findIndex((d) => Math.round(d.row) === r && Math.round(d.col) === c);
+      if (idx >= 0) {
+        decals.splice(idx, 1);
+        return true;
+      }
+    }
+    const zones = this.state.decoration.zones;
+    if (Array.isArray(zones)) {
+      for (let i = zones.length - 1; i >= 0; i--) {
+        const b = zones[i].bounds;
+        if (b && r >= b[0] && r <= b[2] && c >= b[1] && c <= b[3]) {
+          zones.splice(i, 1);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  _getCellDecorations(row, col) {
+    const dec = this.state.decoration;
+    if (!dec) return { decals: [], zones: [], paths: [], exclusions: [] };
+    const decals = (dec.landmarks || []).filter((d) => Math.round(d.row) === row && Math.round(d.col) === col);
+    const zones = (dec.zones || []).filter(
+      (z) => z.bounds && row >= z.bounds[0] && row <= z.bounds[2] && col >= z.bounds[1] && col <= z.bounds[3]
+    );
+    const paths = (dec.paths || []).filter((p) => {
+      const pts = p.points || [];
+      const halfW = Math.max(0.6, (p.width || 1) * 0.5);
+      for (let i = 1; i < pts.length; i++) {
+        const [r0, c0] = pts[i - 1];
+        const [r1, c1] = pts[i];
+        const dr = r1 - r0;
+        const dc = c1 - c0;
+        const len2 = dr * dr + dc * dc;
+        const t = len2 ? Math.max(0, Math.min(1, ((row - r0) * dr + (col - c0) * dc) / len2)) : 0;
+        if (Math.hypot(row - r0 - t * dr, col - c0 - t * dc) <= halfW) return true;
+      }
+      return false;
+    });
+    const exclusions = (dec.exclusions || []).filter(
+      (ex) => ex.bounds && row >= ex.bounds[0] && row <= ex.bounds[2] && col >= ex.bounds[1] && col <= ex.bounds[3]
+    );
+    return { decals, zones, paths, exclusions };
+  }
+
   _updateCellInspector(cell) {
+    this.hoveredCell = cell;
     if (!cell) {
       $('status-coords').textContent = 'Row: —, Col: —';
       $('info-coords').textContent = '—';
       $('info-surface').textContent = '—';
       $('info-object').textContent = '—';
+      $('info-rotation').textContent = '—';
+      $('info-deco').textContent = '—';
       $('info-extra').textContent = '—';
       return;
     }
@@ -992,8 +1364,31 @@ class MapEditorApp {
     }
     const pw = this.state.powerups.find((p) => p.row === cell.row && p.col === cell.col);
     if (pw) extras.push(`Crate: ${pw.type}`);
+    const pr = (this.state.props || []).find((p) => p.row === cell.row && p.col === cell.col);
+    if (pr) extras.push(`Prop: ${pr.kind}`);
     const lm = this.state.landmarks3d.find((l) => l.row === cell.row && l.col === cell.col);
     if (lm) extras.push(`Landmark: ${lm.kind}`);
+    const rc = this._findRailCurveAt(cell.row, cell.col);
+    if (rc) extras.push('Rail Curve (3×3)');
+    const deco = (this.state.decoration?.landmarks || []).find((d) => d.row === cell.row && d.col === cell.col);
+
+    let rotText = '—';
+    if (lm) rotText = `${lm.rotation || 0}°`;
+    else if (pr) rotText = `${pr.rotation || 0}°`;
+    else if (o !== null) rotText = `${this.state.objectRotations?.[cell.row]?.[cell.col] || 0}°`;
+    else if (rc) rotText = `${rc.rotation || 0}°`;
+    else if (deco) rotText = `${deco.rotation || 0}°`;
+    $('info-rotation').textContent = rotText;
+
+    const cellDeco = this._getCellDecorations(cell.row, cell.col);
+    const decoParts = [
+      ...cellDeco.decals.map((d) => `decal:${d.kind}`),
+      ...cellDeco.zones.map((z) => `zone:${z.surface}`),
+      ...cellDeco.paths.map((p) => `path:${p.surface}${p.marking && p.marking !== 'none' ? `(${p.marking})` : ''}`),
+      ...cellDeco.exclusions.map(() => 'excl'),
+    ];
+    $('info-deco').textContent = decoParts.length ? decoParts.join(', ') : '—';
+
     $('info-extra').textContent = extras.length ? extras.join(', ') : '—';
   }
 
@@ -1064,18 +1459,84 @@ class MapEditorApp {
     });
 
     const decos = this.state.decoration?.landmarks || [];
-    $('deco-count').textContent = String(decos.length);
+    const zones = this.state.decoration?.zones || [];
+    const paths = this.state.decoration?.paths || [];
+    const exclusions = this.state.decoration?.exclusions || [];
+    $('deco-count').textContent = String(decos.length + zones.length + paths.length + exclusions.length);
     const dList = $('deco-list');
     dList.innerHTML = '';
     decos.forEach((d, idx) => {
       const row = document.createElement('div');
       row.className = 'list-row';
-      row.innerHTML = `<span>${d.kind} (${d.row}, ${d.col})</span>`;
+      row.innerHTML = `<span>[decal] ${d.kind} (${d.row}, ${d.col})${d.rotation ? ` ${d.rotation}°` : ''}</span>`;
+      const actions = document.createElement('span');
+      const rotBtn = document.createElement('button');
+      rotBtn.textContent = '↻';
+      rotBtn.title = 'Rotate 90°';
+      rotBtn.onclick = () => {
+        const prev = this._snapshot();
+        const next = ((d.rotation || 0) + 90) % 360;
+        if (next) d.rotation = next;
+        else delete d.rotation;
+        this.viewport.rebuildDecorations();
+        this._syncLists();
+        this._commitSnapshot(prev);
+      };
       const del = document.createElement('button');
       del.textContent = '×';
       del.onclick = () => {
         const prev = this._snapshot();
         decos.splice(idx, 1);
+        this.viewport.rebuildDecorations();
+        this._syncLists();
+        this._commitSnapshot(prev);
+      };
+      actions.appendChild(rotBtn);
+      actions.appendChild(del);
+      row.appendChild(actions);
+      dList.appendChild(row);
+    });
+    zones.forEach((z, idx) => {
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `<span>[zone] ${z.surface} [${(z.bounds || []).join(',')}]</span>`;
+      const del = document.createElement('button');
+      del.textContent = '×';
+      del.onclick = () => {
+        const prev = this._snapshot();
+        zones.splice(idx, 1);
+        this.viewport.rebuildDecorations();
+        this._syncLists();
+        this._commitSnapshot(prev);
+      };
+      row.appendChild(del);
+      dList.appendChild(row);
+    });
+    paths.forEach((p, idx) => {
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `<span>[path] ${p.surface}/${p.marking || 'none'} (${p.points?.length || 0}pt)</span>`;
+      const del = document.createElement('button');
+      del.textContent = '×';
+      del.onclick = () => {
+        const prev = this._snapshot();
+        paths.splice(idx, 1);
+        this.viewport.rebuildDecorations();
+        this._syncLists();
+        this._commitSnapshot(prev);
+      };
+      row.appendChild(del);
+      dList.appendChild(row);
+    });
+    exclusions.forEach((ex, idx) => {
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `<span>[excl] [${(ex.bounds || []).join(',')}]</span>`;
+      const del = document.createElement('button');
+      del.textContent = '×';
+      del.onclick = () => {
+        const prev = this._snapshot();
+        exclusions.splice(idx, 1);
         this.viewport.rebuildDecorations();
         this._syncLists();
         this._commitSnapshot(prev);
@@ -1094,7 +1555,15 @@ class MapEditorApp {
       if (res.fallbackError) {
         this._toast(`Direct save failed (${res.fallbackError}); downloaded ${this.currentFileName}`);
       } else {
-        this._toast(res.method === 'fs' ? `Saved ${this.currentFileName}` : `Downloaded ${this.currentFileName}`);
+        const railCheck = validateRailroadLayout(this.state);
+        if (!railCheck.ok) {
+          console.warn('Railroad validation warnings:', railCheck.issues);
+          this._toast(
+            `Saved ${this.currentFileName} (⚠ ${railCheck.issues.length} railroad warning(s): ${railCheck.issues[0].message})`
+          );
+        } else {
+          this._toast(res.method === 'fs' ? `Saved ${this.currentFileName}` : `Downloaded ${this.currentFileName}`);
+        }
       }
     } catch (err) {
       if (err?.name !== 'AbortError') {
@@ -1116,6 +1585,8 @@ class MapEditorApp {
     document.querySelectorAll('#brush-sizes button').forEach((b) => {
       b.onclick = () => this._setBrushSize(Number(b.dataset.size));
     });
+    const rotBtn = $('btn-placement-rot');
+    if (rotBtn) rotBtn.onclick = () => this._cyclePlacementRotation(90);
 
     // Map loading
     $('map-select').onchange = async (e) => {
@@ -1215,12 +1686,33 @@ class MapEditorApp {
     window.addEventListener('keydown', (e) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
 
-      if (e.code === 'Space' && this.moveDrag?.kind === 'landmark') {
+      if (e.code === 'Space') {
         e.preventDefault();
-        this.moveDrag.item.rotation = ((this.moveDrag.item.rotation || 0) + 90) % 360;
-        this.viewport.rebuildLandmarks();
-        this._syncLists();
-        this._toast(`Rotated ${this.moveDrag.item.kind} to ${this.moveDrag.item.rotation}°`);
+        if (this.moveDrag?.kind === 'landmark') {
+          this.moveDrag.item.rotation = ((this.moveDrag.item.rotation || 0) + 90) % 360;
+          this.viewport.rebuildLandmarks();
+          this._syncLists();
+          this._toast(`Rotated ${this.moveDrag.item.kind} to ${this.moveDrag.item.rotation}°`);
+        } else if (this.moveDrag?.kind === 'prop') {
+          this.moveDrag.item.rotation = ((this.moveDrag.item.rotation || 0) + 90) % 360;
+          this.viewport.rebuildMarkers();
+          this._syncLists();
+          this._toast(`Rotated prop ${this.moveDrag.item.kind} to ${this.moveDrag.item.rotation}°`);
+        } else if (this.moveDrag?.kind === 'railCurve') {
+          this.moveDrag.item.rotation = ((this.moveDrag.item.rotation || 0) + 90) % 360;
+          this.viewport.rebuildRailCurves();
+          this._toast(`Rotated Rail Curve to ${this.moveDrag.item.rotation}°`);
+        } else if (this.moveDrag?.kind === 'object') {
+          this.moveDrag.rotation = ((this.moveDrag.rotation || 0) + 90) % 360;
+          if (this.state.objectRotations?.[this.moveDrag.fromRow]) {
+            this.state.objectRotations[this.moveDrag.fromRow][this.moveDrag.fromCol] = this.moveDrag.rotation;
+          }
+          this.viewport.updateCell(this.moveDrag.fromRow, this.moveDrag.fromCol, false);
+          this._toast(`Rotated object to ${this.moveDrag.rotation}°`);
+        } else {
+          this._cyclePlacementRotation(e.shiftKey ? -90 : 90);
+          this._toast(`Placement angle: ${this.placementRotation}°`);
+        }
         return;
       }
       if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') {
@@ -1237,6 +1729,8 @@ class MapEditorApp {
         this._setTool('brush');
       } else if (e.code === 'KeyM') {
         this._setTool('move');
+      } else if (e.code === 'KeyO') {
+        this._setTool('rotate');
       } else if (e.code === 'KeyE' && !e.ctrlKey) {
         // Note: E also rotates camera if held; only switch if Shift+E or keep simple: X for eraser
       } else if (e.code === 'KeyX') {

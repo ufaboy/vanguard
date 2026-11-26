@@ -192,8 +192,8 @@ async function processMapFile(filePath, passes, checkOnly) {
 
   const size = Number(map.gridSize) || 40;
   const unpacked = unpackTerrain(map.terrain, size);
-  const { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, landmarks3d, powerups, mines, mineSigns, decals, props } = unpacked;
-  let { bridges } = unpacked;
+  const { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges: unpackedBridges, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props } = unpacked;
+  let bridges = unpackedBridges;
 
   const summary = [];
 
@@ -246,8 +246,10 @@ async function processMapFile(filePath, passes, checkOnly) {
     surfaceGrid,
     objectGrid,
     bridges,
+    railCurves,
     buildingLayout,
     tacticalStyles: nextTacticalStyles,
+    objectRotations,
     landmarks3d,
     powerups,
     mines,

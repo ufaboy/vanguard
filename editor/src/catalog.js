@@ -52,6 +52,7 @@ export const PROPS = [
 export const MARKERS = [
   { id: 'playerSpawn', name: 'Player Spawn', sub: 'Sets playerSpawnCell', color: '#22c55e' },
   { id: 'baseCell', name: 'Allied HQ (2×1)', sub: 'Sets baseCell anchor', color: '#3b82f6' },
+  { id: 'railCurve', name: 'Rail Curve (3×3)', sub: 'Gentle 90° track turn (Space to rotate)', color: '#71717a' },
   { id: `powerup:${POWERUP.REPAIR}`, powerupType: 'REPAIR', name: 'Crate: Repair', sub: 'Field Repair Kit', color: '#22c55e' },
   { id: `powerup:${POWERUP.EMP}`, powerupType: 'EMP', name: 'Crate: EMP', sub: 'EMP Blast (10s)', color: '#06b6d4' },
   { id: `powerup:${POWERUP.BASE_RESTORE}`, powerupType: 'BASE_RESTORE', name: 'Crate: Base Restore', sub: 'Fortify HQ', color: '#60a5fa' },
@@ -72,15 +73,23 @@ export const LANDMARKS = PLACEABLE_LANDMARKS.map((kind) => ({
 }));
 
 export const DECORATIONS = [
-  { kind: 'crosswalk', name: 'Crosswalk', color: '#e2e8f0' },
-  { kind: 'parking', name: 'Parking Bay', color: '#94a3b8' },
-  { kind: 'manhole', name: 'Manhole', color: '#475569' },
-  { kind: 'loading', name: 'Loading Zone', color: '#f59e0b' },
-  { kind: 'helipad', name: 'Helipad', color: '#38bdf8' },
-  { kind: 'hazard_zone', name: 'Hazard Zone', color: '#eab308' },
-  { kind: 'chevron', name: 'Chevron', color: '#fb923c' },
-  { kind: 'drain_grate', name: 'Drain Grate', color: '#64748b' },
-  { kind: 'label', name: 'District Label', color: '#a855f7' },
+  { kind: null, group: 'clear', name: 'Empty (Clear Deco)', sub: 'Clear decal / zone on cell', color: '#1e293b' },
+  { kind: 'crosswalk', group: 'decal', name: 'Crosswalk', color: '#e2e8f0' },
+  { kind: 'parking', group: 'decal', name: 'Parking Bay', color: '#94a3b8' },
+  { kind: 'manhole', group: 'decal', name: 'Manhole', color: '#475569' },
+  { kind: 'loading', group: 'decal', name: 'Loading Zone', color: '#f59e0b' },
+  { kind: 'helipad', group: 'decal', name: 'Helipad', color: '#38bdf8' },
+  { kind: 'hazard_zone', group: 'decal', name: 'Hazard Zone', color: '#eab308' },
+  { kind: 'chevron', group: 'decal', name: 'Chevron', color: '#fb923c' },
+  { kind: 'drain_grate', group: 'decal', name: 'Drain Grate', color: '#64748b' },
+  { kind: 'label', group: 'decal', name: 'District Label', color: '#a855f7' },
+  { kind: 'zone:asphalt', group: 'zone', surface: 'asphalt', name: 'Zone: Asphalt', color: '#343e44' },
+  { kind: 'zone:pavers', group: 'zone', surface: 'pavers', name: 'Zone: Pavers', color: '#696b61' },
+  { kind: 'zone:concrete', group: 'zone', surface: 'concrete', name: 'Zone: Concrete', color: '#72766e' },
+  { kind: 'zone:dirt', group: 'zone', surface: 'dirt', name: 'Zone: Dirt', color: '#695a43' },
+  { kind: 'zone:gravel', group: 'zone', surface: 'gravel', name: 'Zone: Gravel', color: '#66665b' },
+  { kind: 'zone:sand', group: 'zone', surface: 'sand', name: 'Zone: Sand', color: '#ae956c' },
+  { kind: 'zone:snow', group: 'zone', surface: 'snow', name: 'Zone: Snow', color: '#b5bfbd' },
 ];
 
 export const SURFACE_CHAR_TO_TILE = {

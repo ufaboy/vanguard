@@ -246,6 +246,67 @@ export function createRailBlock(factory, x = 0, z = 0, neighborMask = 5) {
   return markOwned(group, { geometries: false, materials: false });
 }
 
+/** Gentle 3x3 90-degree railway curve (`0° = S->E`, `90° = E->N`, `180° = N->W`, `270° = W->S`). */
+export function createRailCurveBlock(factory, x = 0, z = 0, rotationDeg = 0) {
+  const rotRad = (rotationDeg * Math.PI) / 180;
+  if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
+    const group = new THREE.Group();
+    if (factory.tacticalModels.apply(group, 'RAIL_CURVE_3X3', { castShadow: false, receiveShadow: true })) {
+      group.rotation.y = rotRad;
+      group.position.set(x, 0, z);
+      group.userData.batchTile = true;
+      return markOwned(group, { geometries: false, materials: false });
+    }
+  }
+
+  const mats = ensureTacticalMaterials(factory);
+  const group = new THREE.Group();
+  const R = 5.0;
+  const cx = 3.0;
+  const cz = 3.0;
+  const segs = 16;
+  const a0 = Math.PI;
+  const a1 = Math.PI * 1.5;
+
+  const sleeperGeo = factory.sharedGeometry('BoxGeometry', 1.44, 0.045, 0.14);
+  for (let i = 0; i < 16; i++) {
+    const t = (i + 0.5) / 16;
+    const ang = a0 + (a1 - a0) * t;
+    const sleeper = new THREE.Mesh(sleeperGeo, mats.sleeper);
+    sleeper.position.set(cx + R * Math.cos(ang), 0.045, cz + R * Math.sin(ang));
+    sleeper.rotation.y = -ang;
+    sleeper.receiveShadow = true;
+    group.add(sleeper);
+  }
+
+  const segArcLen = (R * (Math.PI / 2)) / segs + 0.06;
+  const ballastSegGeo = factory.sharedGeometry('BoxGeometry', 1.76, 0.038, segArcLen);
+  const railSegGeo = factory.sharedGeometry('BoxGeometry', 0.09, 0.06, segArcLen);
+  for (let i = 0; i < segs; i++) {
+    const t = (i + 0.5) / segs;
+    const ang = a0 + (a1 - a0) * t;
+    const ballast = new THREE.Mesh(ballastSegGeo, mats.ballast);
+    ballast.position.set(cx + R * Math.cos(ang), 0.019, cz + R * Math.sin(ang));
+    ballast.rotation.y = -ang + Math.PI / 2;
+    ballast.receiveShadow = true;
+    group.add(ballast);
+
+    for (const offset of [-0.46, 0.46]) {
+      const rr = R + offset;
+      const rail = new THREE.Mesh(railSegGeo, mats.railSteel);
+      rail.position.set(cx + rr * Math.cos(ang), 0.08, cz + rr * Math.sin(ang));
+      rail.rotation.y = -ang + Math.PI / 2;
+      rail.receiveShadow = true;
+      group.add(rail);
+    }
+  }
+
+  group.rotation.y = rotRad;
+  group.position.set(x, 0, z);
+  group.userData.batchTile = true;
+  return markOwned(group, { geometries: false, materials: false });
+}
+
 /** Corrugated steel shipping container (8 HP), spanning 1 or 2 cells (`spanCells`). */
 export function createContainerBlock(factory, colorIndex = 0, orientation = 'ns', spanCells = 1) {
   const isPair = spanCells >= 2;

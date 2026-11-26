@@ -41,6 +41,34 @@ const OBJECT_NAME_TO_TILE = Object.freeze({
 export const PROP_KINDS = Object.freeze(['lamp', 'fence', 'car', 'shrub', 'barricade']);
 const PROP_KIND_SET = new Set(PROP_KINDS);
 
+const RAIL_CURVE_BASE_CELLS = Object.freeze([
+  [2, 0],
+  [1, 0],
+  [1, 1],
+  [0, 1],
+  [0, 2],
+]);
+
+/** Returns the 5 grid cells covered by a 3x3 90° rail curve anchored at (row, col) with rotation 0/90/180/270. */
+export function railCurveCells(row, col, rotation = 0) {
+  const rot = (((Math.round(Number(rotation || 0) / 90) * 90) % 360) + 360) % 360;
+  return RAIL_CURVE_BASE_CELLS.map(([dr, dc]) => {
+    let rOff = dr;
+    let cOff = dc;
+    if (rot === 90) {
+      rOff = 2 - dc;
+      cOff = dr;
+    } else if (rot === 180) {
+      rOff = 2 - dr;
+      cOff = 2 - dc;
+    } else if (rot === 270) {
+      rOff = dc;
+      cOff = 2 - dr;
+    }
+    return { row: row + rOff, col: col + cOff };
+  });
+}
+
 /**
  * Unpacks a map's grouped `terrain` object (`{ water: [[r,c,h,w], ...], ... }`)
  * into 2D grids and entity lists.
@@ -52,7 +80,9 @@ export function unpackTerrain(terrain, size = 40) {
   const objectGrid = Array.from({ length: size }, () => Array(size).fill(null));
   const buildingStyles = Array.from({ length: size }, () => new Int8Array(size).fill(-1));
   const tacticalStyles = Array.from({ length: size }, () => new Int8Array(size).fill(-1));
+  const objectRotations = Array.from({ length: size }, () => new Int16Array(size));
   const bridges = [];
+  const railCurves = [];
   const landmarks3d = [];
   const powerups = [];
   const mines = [];
@@ -61,7 +91,7 @@ export function unpackTerrain(terrain, size = 40) {
   const props = [];
 
   if (!terrain || typeof terrain !== 'object' || Array.isArray(terrain)) {
-    return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props };
+    return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props };
   }
 
   for (const [type, tuples] of Object.entries(terrain)) {
@@ -167,6 +197,20 @@ export function unpackTerrain(terrain, size = 40) {
           ...(rot ? { rotation: rot } : {}),
         });
       }
+    } else if (type === 'rail_curve') {
+      for (const tup of tuples) {
+        const r = Number(tup[0]);
+        const c = Number(tup[1]);
+        if (!Number.isInteger(r) || !Number.isInteger(c)) continue;
+        if (r < 0 || r > size - 3 || c < 0 || c > size - 3) continue;
+        const rot = (((Math.round(Number(tup[2] || 0) / 90) * 90) % 360) + 360) % 360;
+        railCurves.push({ row: r, col: c, ...(rot ? { rotation: rot } : {}) });
+        for (const cell of railCurveCells(r, c, rot)) {
+          if (cell.row >= 0 && cell.row < size && cell.col >= 0 && cell.col < size) {
+            surfaceGrid[cell.row][cell.col] = TileType.RAIL;
+          }
+        }
+      }
     } else if (type === 'powerup') {
       for (const tup of tuples) {
         powerups.push({ type: tup[0], row: Number(tup[1]), col: Number(tup[2]) });
@@ -179,6 +223,26 @@ export function unpackTerrain(terrain, size = 40) {
       for (const tup of tuples) {
         mineSigns.push({ row: Number(tup[0]), col: Number(tup[1]), rotation: Number(tup[2] || 0) });
       }
+    } else if (type === 'rotations') {
+      for (const tup of tuples) {
+        const r = Number(tup[0]);
+        const c = Number(tup[1]);
+        if (!Number.isInteger(r) || !Number.isInteger(c)) continue;
+        const isRect = tup.length >= 5;
+        const h = isRect ? Math.max(1, Number(tup[2]) || 1) : 1;
+        const w = isRect ? Math.max(1, Number(tup[3]) || 1) : 1;
+        const rawDeg = Number(isRect ? tup[4] : tup[2]) || 0;
+        const deg = (((Math.round(rawDeg / 90) * 90) % 360) + 360) % 360;
+        if (!deg) continue;
+        for (let dr = 0; dr < h; dr++) {
+          const rr = r + dr;
+          if (rr < 0 || rr >= size) continue;
+          for (let dc = 0; dc < w; dc++) {
+            const cc = c + dc;
+            if (cc >= 0 && cc < size) objectRotations[rr][cc] = deg;
+          }
+        }
+      }
     } else if (type === 'decal') {
       for (const tup of tuples) {
         const kind = tup[0];
@@ -186,6 +250,7 @@ export function unpackTerrain(terrain, size = 40) {
         const c = Number(tup[2]);
         const decalSize = Number(tup[3]) || 1;
         const text = tup[4];
+        const rot = Number(tup[5]) || 0;
         decals.push({
           id: `deco-${String(kind).replace(/_/g, '-')}-${r}-${c}`,
           kind,
@@ -193,6 +258,7 @@ export function unpackTerrain(terrain, size = 40) {
           col: c,
           size: decalSize,
           ...(text != null ? { text } : {}),
+          ...(rot ? { rotation: rot } : {}),
         });
       }
     } else if (type === 'prop') {
@@ -213,7 +279,7 @@ export function unpackTerrain(terrain, size = 40) {
     }
   }
 
-  return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props };
+  return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props };
 }
 
 /**

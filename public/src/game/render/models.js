@@ -32,6 +32,7 @@ import {
   createLocomotiveBlock as buildLocomotiveBlock,
   createRailBlock as buildRailBlock,
   createRailCarBlock as buildRailCarBlock,
+  createRailCurveBlock as buildRailCurveBlock,
   createSandbagsBlock as buildSandbagsBlock,
   createTransformerBlock as buildTransformerBlock,
   updateContainerDamage as refreshContainerDamage,
@@ -4281,6 +4282,10 @@ export class ModelFactory extends TextureGenerator {
 
   createRailBlock(x = 0, z = 0, neighborMask = 5) {
     return buildRailBlock(this, x, z, neighborMask);
+  }
+
+  createRailCurveBlock(x = 0, z = 0, rotationDeg = 0) {
+    return buildRailCurveBlock(this, x, z, rotationDeg);
   }
 
   createContainerBlock(colorIndex = 0, orientation = 'ns', spanCells = 1) {

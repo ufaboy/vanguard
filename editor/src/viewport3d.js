@@ -1,6 +1,7 @@
 /** Three.js 3D Isometric / Top-Down Map Editor Viewport. */
 import * as THREE from 'three';
 import { TileType } from '/public/src/game/terrains/surfaces.js';
+import { railCurveCells } from '/public/src/game/terrains/terrain-format.js';
 import { ModelFactory } from '/public/src/game/render/models.js';
 import { landmarkFootprintCenter } from '/public/src/game/terrains/landmarks.js';
 import { computeBuildingLayout } from './building-layout.js';
@@ -55,6 +56,7 @@ export class Viewport3D {
     this.modelFactory.onBrickModelsReady = () => this.rebuildAll();
     this.modelFactory.onConcreteModelsReady = () => this.rebuildAll();
     this.modelFactory.onBuildingModelsReady = () => this.rebuildAll();
+    this.modelFactory.onTacticalModelsReady = () => this.rebuildAll();
 
     // Scene layers
     const arenaSpan = GRID_SIZE * TILE_SIZE;
@@ -72,6 +74,7 @@ export class Viewport3D {
     this.scene.add(this.gridHelper);
 
     this.surfaceGroup = new THREE.Group();
+    this.railCurveGroup = new THREE.Group();
     this.objectGroup = new THREE.Group();
     this.bridgeGroup = new THREE.Group();
     this.markerGroup = new THREE.Group();
@@ -79,12 +82,14 @@ export class Viewport3D {
     this.decoGroup = new THREE.Group();
     this.scene.add(
       this.surfaceGroup,
+      this.railCurveGroup,
       this.objectGroup,
       this.bridgeGroup,
       this.markerGroup,
       this.landmarkGroup,
       this.decoGroup
     );
+    this.railCurveCellSet = new Set();
 
     this.surfaceCells = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
     this.objectCells = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
@@ -110,6 +115,25 @@ export class Viewport3D {
     this.cursorMesh.position.y = 0.05;
     this.cursorMesh.renderOrder = 10;
     this.cursorMesh.visible = false;
+
+    this.placementRotation = 0;
+    const arrowShape = new THREE.Shape();
+    arrowShape.moveTo(0, -TILE_SIZE * 0.44);
+    arrowShape.lineTo(-TILE_SIZE * 0.16, -TILE_SIZE * 0.22);
+    arrowShape.lineTo(TILE_SIZE * 0.16, -TILE_SIZE * 0.22);
+    arrowShape.closePath();
+    const arrowGeo = new THREE.ShapeGeometry(arrowShape);
+    arrowGeo.rotateX(-Math.PI / 2);
+    const arrowMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+    });
+    this.cursorArrow = new THREE.Mesh(arrowGeo, arrowMat);
+    this.cursorArrow.position.y = 0.02;
+    this.cursorMesh.add(this.cursorArrow);
+
     this.scene.add(this.cursorMesh);
 
     // Camera orbit/pan state
@@ -158,6 +182,7 @@ export class Viewport3D {
 
   setSurfaceVisible(visible) {
     this.surfaceGroup.visible = visible;
+    this.railCurveGroup.visible = visible;
   }
 
   setObjectsVisible(visible) {
@@ -169,6 +194,13 @@ export class Viewport3D {
   setBrushSize(size) {
     this.brushSize = size;
     this.cursorMesh.scale.set(size, 1, size);
+  }
+
+  setPlacementRotation(deg) {
+    this.placementRotation = (((Math.round(Number(deg) / 90) * 90) % 360) + 360) % 360;
+    if (this.cursorArrow) {
+      this.cursorArrow.rotation.y = (this.placementRotation * Math.PI) / 180;
+    }
   }
 
   toggleTopDown() {
@@ -191,10 +223,38 @@ export class Viewport3D {
     this._updateCamera();
   }
 
+  rebuildRailCurves() {
+    this.railCurveGroup.clear();
+    this.railCurveCellSet = new Set();
+    if (!this.state) return;
+    const size = this.state.size;
+    for (const rc of this.state.railCurves || []) {
+      for (const cell of railCurveCells(rc.row, rc.col, rc.rotation || 0)) {
+        this.railCurveCellSet.add(`${cell.row},${cell.col}`);
+      }
+      if (this.modelFactory.createRailCurveBlock) {
+        const center = gridToWorld(rc.row + 1, rc.col + 1, size);
+        const mesh = this.modelFactory.createRailCurveBlock(center.x, center.z, rc.rotation || 0);
+        this.railCurveGroup.add(mesh);
+      }
+    }
+  }
+
+  refreshRailRegion(row, col) {
+    if (!this.state) return;
+    const size = this.state.size;
+    for (let r = Math.max(0, row - 1); r <= Math.min(size - 1, row + 3); r++) {
+      for (let c = Math.max(0, col - 1); c <= Math.min(size - 1, col + 3); c++) {
+        this.updateCell(r, c, false);
+      }
+    }
+  }
+
   rebuildAll() {
     if (!this.state) return;
     this.surfaceGroup.clear();
     this.objectGroup.clear();
+    this.rebuildRailCurves();
     this.buildingLayout = computeBuildingLayout(
       this.state.objectGrid,
       this.state.environment?.theme || 'urban'
@@ -318,7 +378,7 @@ export class Viewport3D {
       sMesh = this.modelFactory.createSwampBlock(x, z);
     } else if (surface === TileType.OIL_SLICK && this.modelFactory.createOilSlickBlock) {
       sMesh = this.modelFactory.createOilSlickBlock(x, z);
-    } else if (surface === TileType.RAIL && this.modelFactory.createRailBlock) {
+    } else if (surface === TileType.RAIL && this.modelFactory.createRailBlock && !this.railCurveCellSet?.has(`${r},${c}`)) {
       const isRail = (rr, cc) =>
         rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
       const railMask =
@@ -336,29 +396,39 @@ export class Viewport3D {
 
     // Object mesh
     let oMesh = null;
+    const rotDeg = this.state.objectRotations?.[r]?.[c] || 0;
+    const rotRad = (rotDeg * Math.PI) / 180;
     if (object === TileType.BRICK) {
       oMesh = this.modelFactory.createBrickBlock().group;
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.CONCRETE) {
       oMesh = this.modelFactory.createConcreteBlock();
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.FOREST) {
       oMesh = this.modelFactory.createForestBlock();
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.HEDGEHOG) {
       oMesh = this.modelFactory.createHedgehogBlock();
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.BARREL) {
       oMesh = this.modelFactory.createBarrelBlock();
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.BOXES) {
       oMesh = this.modelFactory.createBoxesBlock();
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.CRATER && this.modelFactory.createCraterBlock) {
       oMesh = this.modelFactory.createCraterBlock(x, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.WATER_TOWER && this.modelFactory.createWaterTowerBlock) {
       oMesh = this.modelFactory.createWaterTowerBlock();
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.CONTAINER && this.modelFactory.createContainerBlock) {
       const isCont = (rr, cc) =>
         rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.objectGrid[rr][cc] === TileType.CONTAINER;
@@ -366,11 +436,13 @@ export class Viewport3D {
       const nsLink = isCont(r - 1, c) || isCont(r + 1, c);
       const bakedColor = this.state.tacticalStyles?.[r]?.[c];
       const colorIdx = bakedColor >= 0 ? bakedColor : (r * 3 + c * 7) % 4;
-      oMesh = this.modelFactory.createContainerBlock(colorIdx, ewLink && !nsLink ? 'ew' : 'ns', 1);
+      oMesh = this.modelFactory.createContainerBlock(colorIdx, rotDeg ? 'ns' : ewLink && !nsLink ? 'ew' : 'ns', 1);
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.TRANSFORMER && this.modelFactory.createTransformerBlock) {
       oMesh = this.modelFactory.createTransformerBlock();
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.SANDBAGS && this.modelFactory.createSandbagsBlock) {
       const isBags = (rr, cc) =>
         rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.objectGrid[rr][cc] === TileType.SANDBAGS;
@@ -381,6 +453,7 @@ export class Viewport3D {
         (isBags(r, c - 1) ? 8 : 0);
       oMesh = this.modelFactory.createSandbagsBlock(bagMask);
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y += rotRad;
     } else if (object === TileType.RAIL_CAR && this.modelFactory.createRailCarBlock) {
       const isRail = (rr, cc) =>
         rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
@@ -388,21 +461,24 @@ export class Viewport3D {
       const nsRail = isRail(r - 1, c) || isRail(r + 1, c);
       const bakedColor = this.state.tacticalStyles?.[r]?.[c];
       const colorIdx = bakedColor >= 0 ? bakedColor : (r * 5 + c * 11) % 4;
-      oMesh = this.modelFactory.createRailCarBlock(ewRail && !nsRail ? 'ew' : 'ns', (r + c) % 2 === 0 ? 'closed' : 'open', 1, colorIdx);
+      oMesh = this.modelFactory.createRailCarBlock(rotDeg ? 'ns' : ewRail && !nsRail ? 'ew' : 'ns', (r + c) % 2 === 0 ? 'closed' : 'open', 1, colorIdx);
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.LOCOMOTIVE && this.modelFactory.createLocomotiveBlock) {
       const isRail = (rr, cc) =>
         rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
       const ewRail = isRail(r, c - 1) || isRail(r, c + 1);
       const nsRail = isRail(r - 1, c) || isRail(r + 1, c);
-      oMesh = this.modelFactory.createLocomotiveBlock(ewRail && !nsRail ? 'ew' : 'ns', 1);
+      oMesh = this.modelFactory.createLocomotiveBlock(rotDeg ? 'ns' : ewRail && !nsRail ? 'ew' : 'ns', 1);
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.RUBBLE) {
       oMesh = new THREE.Mesh(
         new THREE.BoxGeometry(1.5, 0.45, 1.5),
         new THREE.MeshStandardMaterial({ color: 0x71717a, roughness: 0.9 })
       );
       oMesh.position.set(x, 0.225, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.HOUSE_1 || object === TileType.HOUSE_2) {
       const b = this.buildingLayout.get(`${r},${c}`) || {
         kind: object === TileType.HOUSE_2 ? 'house2' : 'house1',
@@ -411,11 +487,12 @@ export class Viewport3D {
         style: 0,
       };
       const hp = BUILDING_MAX_HP[b.kind] || 25;
-      oMesh = this.modelFactory.createBuildingBlock(b.kind, b.part, b.yaw, hp, hp, b.style).group;
+      oMesh = this.modelFactory.createBuildingBlock(b.kind, b.part, b.yaw + rotRad, hp, hp, b.style).group;
       oMesh.position.set(x, 0, z);
     } else if (object === TileType.ENEMY_BASE) {
       oMesh = this.modelFactory.createEnemyBaseBlock();
       oMesh.position.set(x, 0, z);
+      if (rotDeg) oMesh.rotation.y = rotRad;
     }
 
     if (oMesh) {

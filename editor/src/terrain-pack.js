@@ -4,6 +4,7 @@
  */
 
 import { TileType } from '../../public/src/game/terrains/surfaces.js';
+import { railCurveCells } from '../../public/src/game/terrains/terrain-format.js';
 
 const TILE_TO_SURFACE_NAME = new Map([
   [TileType.ROAD, 'road'],
@@ -87,8 +88,10 @@ export function packTerrain({
   surfaceGrid,
   objectGrid,
   bridges = [],
+  railCurves = [],
   buildingLayout = new Map(),
   tacticalStyles = null,
+  objectRotations = null,
   landmarks3d = [],
   powerups = [],
   mines = [],
@@ -100,9 +103,17 @@ export function packTerrain({
   const cols = surfaceGrid?.[0]?.length || objectGrid?.[0]?.length || 0;
   const terrain = {};
 
+  const railCurveCellSet = new Set();
+  for (const rc of railCurves) {
+    for (const cell of railCurveCells(rc.row, rc.col, rc.rotation || 0)) {
+      railCurveCellSet.add(`${cell.row},${cell.col}`);
+    }
+  }
+
   // 1. Surfaces
   for (const rect of packRects(rows, cols, (r, c) => {
     const t = surfaceGrid[r][c];
+    if (t === TileType.RAIL && railCurveCellSet.has(`${r},${c}`)) return null;
     return t === TileType.EMPTY ? null : TILE_TO_SURFACE_NAME.get(t) ?? null;
   })) {
     pushGroup(
@@ -167,7 +178,33 @@ export function packTerrain({
     pushGroup(terrain, name, [rect.r, rect.c, rect.h, rect.w, Number(styleStr)]);
   }
 
-  // 5. Point entities
+  // 5. Non-zero grid object rotations (90 / 180 / 270)
+  if (objectRotations) {
+    for (const rect of packRects(rows, cols, (r, c) => {
+      const t = objectGrid[r][c];
+      if (t == null || t === TileType.BASE || t === TileType.LANDMARK || t === TileType.BRIDGE) {
+        return null;
+      }
+      const deg = objectRotations[r]?.[c] || 0;
+      return deg ? String(deg) : null;
+    })) {
+      const deg = Number(rect.key);
+      pushGroup(
+        terrain,
+        'rotations',
+        rect.h === 1 && rect.w === 1 ? [rect.r, rect.c, deg] : [rect.r, rect.c, rect.h, rect.w, deg]
+      );
+    }
+  }
+
+  // 6. Point entities
+  for (const rc of railCurves) {
+    pushGroup(
+      terrain,
+      'rail_curve',
+      rc.rotation ? [rc.row, rc.col, rc.rotation] : [rc.row, rc.col]
+    );
+  }
   for (const lm of landmarks3d) {
     pushGroup(
       terrain,
@@ -189,7 +226,9 @@ export function packTerrain({
     );
   }
   for (const d of decals) {
-    if (d.text != null) {
+    if (d.rotation) {
+      pushGroup(terrain, 'decal', [d.kind, d.row, d.col, d.size || 1, d.text ?? null, d.rotation]);
+    } else if (d.text != null) {
       pushGroup(terrain, 'decal', [d.kind, d.row, d.col, d.size || 1, d.text]);
     } else if (d.size && d.size !== 1) {
       pushGroup(terrain, 'decal', [d.kind, d.row, d.col, d.size]);

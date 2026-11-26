@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { TileType, SURFACE_CONFIGS, SURFACE_TYPES } from '../public/src/game/terrains/surfaces.js';
 import { canPlaceOnSurface, cellMovement, isTilePassable } from '../public/src/game/terrains/layers.js';
-import { PROP_KINDS, unpackTerrain } from '../public/src/game/terrains/terrain-format.js';
+import { PROP_KINDS, railCurveCells, unpackTerrain } from '../public/src/game/terrains/terrain-format.js';
+import { validateRailroadLayout } from '../public/src/game/terrains/rail-rules.js';
 import { packTerrain } from '../editor/src/terrain-pack.js';
 
 test('canPlaceOnSurface enforces rules for new surfaces and objects', () => {
@@ -79,6 +80,140 @@ test('unpackTerrain and packTerrain round-trip new tiles and props', () => {
   assert.deepEqual(repacked.prop, [['lamp', 18, 19], ['car', 20, 12, 90]]);
 });
 
+test('unpackTerrain and packTerrain round-trip objectRotations and decal rotation', () => {
+  const terrain = {
+    brick: [[5, 5, 2, 2], [9, 9]],
+    transformer: [[12, 14]],
+    rotations: [[5, 5, 2, 2, 90], [9, 9, 180], [12, 14, 270]],
+    decal: [['chevron', 20, 22, 1, null, 270]],
+  };
+  const unpacked = unpackTerrain(terrain, 40);
+  assert.equal(unpacked.objectRotations[5][5], 90);
+  assert.equal(unpacked.objectRotations[6][6], 90);
+  assert.equal(unpacked.objectRotations[9][9], 180);
+  assert.equal(unpacked.objectRotations[12][14], 270);
+  assert.equal(unpacked.objectRotations[0][0], 0);
+  assert.equal(unpacked.decals[0].rotation, 270);
+
+  const repacked = packTerrain({
+    surfaceGrid: unpacked.surfaceGrid,
+    objectGrid: unpacked.objectGrid,
+    objectRotations: unpacked.objectRotations,
+    decals: unpacked.decals,
+  });
+  assert.deepEqual(repacked.rotations, [[5, 5, 2, 2, 90], [9, 9, 180], [12, 14, 270]]);
+  assert.deepEqual(repacked.decal, [['chevron', 20, 22, 1, null, 270]]);
+
+  // Zero-rotation grids omit terrain.rotations completely
+  const zeroUnpacked = unpackTerrain({ brick: [[3, 3]] }, 40);
+  const zeroRepacked = packTerrain({
+    surfaceGrid: zeroUnpacked.surfaceGrid,
+    objectGrid: zeroUnpacked.objectGrid,
+    objectRotations: zeroUnpacked.objectRotations,
+  });
+  assert.equal(zeroRepacked.rotations, undefined);
+});
+
+test('railCurveCells and rail_curve round-trip across all 4 rotations', () => {
+  for (const rot of [0, 90, 180, 270]) {
+    const cells = railCurveCells(10, 20, rot);
+    assert.equal(cells.length, 5);
+    for (const c of cells) {
+      assert.equal(c.row >= 10 && c.row <= 12, true);
+      assert.equal(c.col >= 20 && c.col <= 22, true);
+    }
+  }
+  assert.deepEqual(railCurveCells(10, 20, 0)[0], { row: 12, col: 20 });
+  assert.deepEqual(railCurveCells(10, 20, 0)[4], { row: 10, col: 22 });
+
+  const terrain = {
+    rail: [[13, 20], [10, 23]],
+    rail_curve: [[10, 20], [15, 25, 90]],
+  };
+  const unpacked = unpackTerrain(terrain, 40);
+  assert.equal(unpacked.railCurves.length, 2);
+  assert.equal(unpacked.surfaceGrid[12][20], TileType.RAIL);
+  assert.equal(unpacked.surfaceGrid[11][21], TileType.RAIL);
+  assert.equal(unpacked.surfaceGrid[10][22], TileType.RAIL);
+  assert.equal(unpacked.surfaceGrid[17][27], TileType.RAIL);
+  assert.equal(unpacked.surfaceGrid[15][25], TileType.RAIL);
+
+  const repacked = packTerrain({
+    surfaceGrid: unpacked.surfaceGrid,
+    objectGrid: unpacked.objectGrid,
+    railCurves: unpacked.railCurves,
+  });
+  assert.deepEqual(repacked.rail_curve, [[10, 20], [15, 25, 90]]);
+  // Curve cells must not be duplicated into terrain.rail
+  assert.deepEqual(repacked.rail, [[10, 23], [13, 20]]);
+});
+
+test('validateRailroadLayout enforces continuity, curve limit, no 90° turns, and train consist', () => {
+  // Valid line with coupled loco + rail_car, standalone rail_car, and dead-end
+  const valid = unpackTerrain({
+    rail: [[10, 5, 1, 10]],
+    locomotive: [[10, 6, 1, 2]],
+    rail_car: [[10, 8, 1, 2], [10, 12]],
+  }, 40);
+  assert.equal(validateRailroadLayout(valid).ok, true);
+
+  // Valid 2 curves
+  const twoCurves = unpackTerrain({
+    rail: [[10, 2, 1, 5]],
+    locomotive: [[10, 2, 1, 2]],
+    rail_car: [[10, 4]],
+    rail_curve: [[10, 10], [15, 15, 90]],
+  }, 40);
+  assert.equal(validateRailroadLayout(twoCurves).ok, true);
+
+  // 3 curves -> rail_curve_limit
+  const threeCurves = unpackTerrain({
+    rail: [[10, 2, 1, 5]],
+    locomotive: [[10, 2, 1, 2]],
+    rail_car: [[10, 4]],
+    rail_curve: [[10, 10], [15, 15, 90], [20, 20, 180]],
+  }, 40);
+  assert.equal(validateRailroadLayout(threeCurves).issues.some((i) => i.code === 'rail_curve_limit'), true);
+
+  // Sharp 90° L-corner & T-junction -> rail_right_angle_turn, but full '+' crossing -> ok
+  const sharpCorner = unpackTerrain({
+    rail: [[10, 5, 1, 5], [11, 5, 3, 1]],
+    locomotive: [[10, 6, 1, 2]],
+    rail_car: [[10, 8]],
+  }, 40);
+  assert.equal(validateRailroadLayout(sharpCorner).issues.some((i) => i.code === 'rail_right_angle_turn'), true);
+
+  const tJunction = unpackTerrain({
+    rail: [[10, 3, 1, 7], [11, 5, 3, 1]],
+    locomotive: [[10, 6, 1, 2]],
+    rail_car: [[10, 8]],
+  }, 40);
+  assert.equal(validateRailroadLayout(tJunction).issues.some((i) => i.code === 'rail_right_angle_turn'), true);
+
+  const fullCrossing = unpackTerrain({
+    rail: [[10, 3, 1, 9], [7, 5, 7, 1]],
+    locomotive: [[10, 7, 1, 2]],
+    rail_car: [[10, 9]],
+  }, 40);
+  assert.equal(validateRailroadLayout(fullCrossing).ok, true);
+
+  // Interrupted by road -> rail_interrupted
+  const interrupted = unpackTerrain({
+    rail: [[10, 2, 1, 4], [10, 7, 1, 4]],
+    road: [[10, 6]],
+    locomotive: [[10, 2, 1, 2]],
+    rail_car: [[10, 4]],
+  }, 40);
+  assert.equal(validateRailroadLayout(interrupted).issues.some((i) => i.code === 'rail_interrupted'), true);
+
+  // Missing coupled train -> rail_missing_train
+  const noTrain = unpackTerrain({
+    rail: [[10, 2, 1, 6]],
+    rail_car: [[10, 3]],
+  }, 40);
+  assert.equal(validateRailroadLayout(noTrain).issues.some((i) => i.code === 'rail_missing_train'), true);
+});
+
 test('all maps place RAIL_CAR on RAIL and use valid prop kinds', () => {
   const mapDirs = ['public/maps/campaign', 'public/maps/contracts', 'public/maps/survival'];
   const validKinds = new Set(PROP_KINDS);
@@ -87,7 +222,13 @@ test('all maps place RAIL_CAR on RAIL and use valid prop kinds', () => {
       if (!file.endsWith('.json') || file === 'index.json') continue;
       const raw = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
       const size = raw.gridSize || 40;
-      const { surfaceGrid, objectGrid, props } = unpackTerrain(raw.terrain, size);
+      const { surfaceGrid, objectGrid, railCurves, props } = unpackTerrain(raw.terrain, size);
+      const railCheck = validateRailroadLayout({ surfaceGrid, objectGrid, railCurves });
+      assert.equal(
+        railCheck.ok,
+        true,
+        `${file}: railroad layout violation: ${railCheck.issues.map((i) => i.message).join('; ')}`
+      );
       for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
           if (objectGrid[r][c] === TileType.RAIL_CAR || objectGrid[r][c] === TileType.LOCOMOTIVE) {
