@@ -393,6 +393,19 @@ export class ExplosionsController {
           engine.damageEnemyBase(cell, tileDmg, pos.x, pos.z);
         }
       }
+
+      if (engine.trainController) {
+        for (const train of engine.trainController.trains || []) {
+          if (train.offscreen || train.destroyed) continue;
+          for (const unit of train.units) {
+            if (!unit.alive) continue;
+            const d = Math.hypot(unit.x - x, unit.z - z);
+            if (d <= radius + unit.hitRadius) {
+              engine.trainController.damageUnit(train, unit, unit.cfg.artilleryDamage, unit.x, unit.z);
+            }
+          }
+        }
+      }
     }
     if (baseHitDmg > 0) {
       engine.terrainDestruction.damageCommandBase(baseHitDmg, x, z);

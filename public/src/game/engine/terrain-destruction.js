@@ -562,6 +562,9 @@ export class TerrainDestructionController {
         } else if (neighbor.type === TileType.CONCRETE) {
           const hit = breachPointToward(nPos.x, nPos.z, x, z);
           engine.damageTileCell(neighbor, 6, hit.x, hit.z);
+        } else if (neighbor.type === TileType.HOUSE_1 || neighbor.type === TileType.HOUSE_2) {
+          const hit = breachPointToward(nPos.x, nPos.z, x, z);
+          engine.damageTileCell(neighbor, neighbor.type === TileType.HOUSE_1 ? 10 : 14, hit.x, hit.z, fromPlayer);
         } else if (neighbor.type === TileType.FOREST) {
           engine.destroyTileCell(neighbor);
         } else if (neighbor.type === TileType.BARREL && !neighbor._exploding) {
@@ -586,6 +589,17 @@ export class TerrainDestructionController {
       });
     }
     this.crushPropsNear(x, z, blastRadius);
+    if (engine.trainController) {
+      for (const train of engine.trainController.trains || []) {
+        if (train.offscreen || train.destroyed) continue;
+        for (const unit of train.units) {
+          if (!unit.alive) continue;
+          if (Math.hypot(unit.x - x, unit.z - z) <= blastRadius + unit.hitRadius) {
+            engine.trainController.damageUnit(train, unit, 4, unit.x, unit.z);
+          }
+        }
+      }
+    }
   }
 
   updateBarrelExplosions(dt) {

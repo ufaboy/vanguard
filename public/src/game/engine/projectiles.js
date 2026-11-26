@@ -945,6 +945,22 @@ export class ProjectilesController {
         }
       }
 
+      const trainHit = !playerMissileAloft ? engine.trainController?.findUnitAtPoint?.(p.x, p.z) : null;
+      if (trainHit) {
+        const { train, unit } = trainHit;
+        const isHeavy = p.isMissile || p.isArtillery || p.weaponId === 'CANNON_Mk4' || p.weaponId === 'CANNON_Mk5';
+        const dmg = p.isMissile || p.isArtillery
+          ? unit.cfg.artilleryDamage
+          : isHeavy
+          ? unit.cfg.heavyShellDamage
+          : unit.cfg.normalShellDamage;
+        if (p.fromPlayer) engine.shotsHit++;
+        if (p.isMissile) engine.detonateMissile(p);
+        engine.trainController.damageUnit(train, unit, dmg, p.x, p.z);
+        engine.removeProjectile(i);
+        continue;
+      }
+
       if (p.fromPlayer) {
         const mineTriggerDist = p.isMissile
           ? MISSILE.MINE_TRIGGER_RADIUS * TILE_SIZE

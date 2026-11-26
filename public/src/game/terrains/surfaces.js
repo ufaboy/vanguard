@@ -1,6 +1,8 @@
 /** Surface & Obstacle Types, Characteristics, and Descriptions. */
 import { BOX_POWERUP_DROP_CHANCE } from './boxes-loot.js';
 
+import { TRAIN_UNIT_CONFIGS, TRAIN_UNIT_TYPES } from '../vehicles/trains.js';
+
 export const TileType = Object.freeze({
   EMPTY: 0,
   BRICK: 1,
@@ -919,10 +921,10 @@ export const SURFACE_CONFIGS = Object.freeze({
     role: 'Heavy Railway Cover',
     accentHex: '#78350F',
     destructible: true,
-    maxHP: 10,
-    normalShellDamage: 1,
-    heavyShellDamage: 2,
-    artilleryDamage: 4,
+    maxHP: TRAIN_UNIT_CONFIGS[TRAIN_UNIT_TYPES.RAIL_CAR_CLOSED].maxHP,
+    normalShellDamage: TRAIN_UNIT_CONFIGS[TRAIN_UNIT_TYPES.RAIL_CAR_CLOSED].normalShellDamage,
+    heavyShellDamage: TRAIN_UNIT_CONFIGS[TRAIN_UNIT_TYPES.RAIL_CAR_CLOSED].heavyShellDamage,
+    artilleryDamage: TRAIN_UNIT_CONFIGS[TRAIN_UNIT_TYPES.RAIL_CAR_CLOSED].artilleryDamage,
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,
@@ -945,10 +947,10 @@ export const SURFACE_CONFIGS = Object.freeze({
     role: 'Armored Railway Engine Cover',
     accentHex: '#1E3A5F',
     destructible: true,
-    maxHP: 16,
-    normalShellDamage: 1,
-    heavyShellDamage: 2,
-    artilleryDamage: 4,
+    maxHP: TRAIN_UNIT_CONFIGS[TRAIN_UNIT_TYPES.LOCOMOTIVE].maxHP,
+    normalShellDamage: TRAIN_UNIT_CONFIGS[TRAIN_UNIT_TYPES.LOCOMOTIVE].normalShellDamage,
+    heavyShellDamage: TRAIN_UNIT_CONFIGS[TRAIN_UNIT_TYPES.LOCOMOTIVE].heavyShellDamage,
+    artilleryDamage: TRAIN_UNIT_CONFIGS[TRAIN_UNIT_TYPES.LOCOMOTIVE].artilleryDamage,
     passableByTracks: false,
     passableByHover: false,
     blocksProjectiles: true,

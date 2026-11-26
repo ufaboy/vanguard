@@ -75,6 +75,7 @@ export class EnemyAiController {
     if (dist <= 0.5) return true;
 
     if (engine.isSegmentInSmoke(x0, z0, x1, z1)) return false;
+    if (engine.trainController?.blocksLineOfSight?.(x0, z0, x1, z1)) return false;
 
     const half = (GRID_SIZE * TILE_SIZE) / 2;
     const targetCol = Math.floor((x1 + half) / TILE_SIZE);

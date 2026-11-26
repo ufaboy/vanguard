@@ -263,6 +263,7 @@ export class SectorLoaderController {
     }
     const railCurveCellSet = new Set();
     const railBridgeCellSet = new Set((sector.railBridges || []).map(({ row, col }) => `${row},${col}`));
+    const movingTrackCells = engine.trainController?.prepareTracks?.(sector) || new Set();
     for (const rc of sector.railCurves || []) {
       for (const cell of railCurveCells(rc.row, rc.col, rc.rotation || 0)) {
         railCurveCellSet.add(`${cell.row},${cell.col}`);
@@ -275,9 +276,15 @@ export class SectorLoaderController {
         const supply = sector.powerups?.find((item) => item.row === r && item.col === c);
         const rawCell = sector.grid[r][c];
         const surface = sector.surfaceGrid?.[r]?.[c] ?? (isSurfaceType(rawCell) ? rawCell : TileType.EMPTY);
-        const object = supply
+        const rawObject = supply
           ? TileType.BOXES
           : sector.objectGrid?.[r]?.[c] ?? (!isSurfaceType(rawCell) && rawCell !== TileType.EMPTY ? rawCell : null);
+        const isMovingStock =
+          movingTrackCells.has(`${r},${c}`) &&
+          (rawObject === TileType.LOCOMOTIVE || rawObject === TileType.RAIL_CAR);
+        const object = isMovingStock
+          ? (railBridgeCellSet.has(`${r},${c}`) ? TileType.RAIL_BRIDGE : null)
+          : rawObject;
         const type = object ?? surface;
         const { x, z } = this.gridToWorld(r, c);
         let mesh = null;
@@ -599,6 +606,7 @@ export class SectorLoaderController {
       }
     }
     engine.setupDefenseTurrets();
+    engine.trainController?.setup?.(sector);
 
     if (sector.landmarks3d?.length && engine.modelFactory.landmarkModels) {
       for (const entry of sector.landmarks3d) {
