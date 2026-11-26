@@ -1,6 +1,5 @@
 /** Moving railway trains controller: path following, transit respawn, horn warning, ramming, and destruction. */
 
-import * as THREE from 'three';
 import {
   TRAIN_DEFAULTS,
   TRAIN_UNIT_CONFIGS,
@@ -134,7 +133,12 @@ export class TrainController {
         Number(override?.respawnSec) >= 0 ? Number(override.respawnSec) : TRAIN_DEFAULTS.transitRespawnSec;
 
       let direction = override?.direction === -1 ? -1 : 1;
-      let startHeadDist = track.mode === 'transit' ? -TRAIN_DEFAULTS.offscreenMargin : 0;
+      let startHeadDist =
+        track.mode === 'transit'
+          ? direction < 0
+            ? track.totalLength + TRAIN_DEFAULTS.offscreenMargin
+            : -TRAIN_DEFAULTS.offscreenMargin
+          : 0;
 
       if (placed && placed.locoPos) {
         const proj = projectOntoTrack(track, placed.locoPos.x, placed.locoPos.z);
@@ -375,10 +379,17 @@ export class TrainController {
     const loco = train.units[0];
     if (loco?.alive && loco.mesh && this.engine.modelFactory?.tacticalModels?.ready) {
       if (train.headlightFlashTimer > 0) {
+        train._headlightFlashing = true;
         const flashOn = Math.floor(elapsed * 12) % 2 === 0;
         this.engine.modelFactory.tacticalModels.recolor(loco.mesh, {
           paintHex: loco.hp <= loco.maxHp * 0.5 ? 0x334155 : TRAIN_UNIT_CONFIGS.LOCOMOTIVE.paintHex,
-          glowHex: flashOn ? 0xffffff : 0xfef08a,
+          glowHex: flashOn ? 0xffffff : TRAIN_UNIT_CONFIGS.LOCOMOTIVE.glowHex,
+        });
+      } else if (train._headlightFlashing) {
+        train._headlightFlashing = false;
+        this.engine.modelFactory.tacticalModels.recolor(loco.mesh, {
+          paintHex: loco.hp <= loco.maxHp * 0.5 ? 0x334155 : TRAIN_UNIT_CONFIGS.LOCOMOTIVE.paintHex,
+          glowHex: TRAIN_UNIT_CONFIGS.LOCOMOTIVE.glowHex,
         });
       }
     }
@@ -443,12 +454,52 @@ export class TrainController {
       onHit(sideX * pushSign * pushDist, sideZ * pushSign * pushDist, unit.cfg.ramDamage);
     };
 
+    const arenaHalf = (GRID_SIZE * TILE_SIZE) / 2;
+    const applySafeKnockback = (entity, px, pz, radius, canCrossWater = false, canCrushSandbags = false) => {
+      const steps = 4;
+      const stepX = px / steps;
+      const stepZ = pz / steps;
+      let curX = entity.x;
+      let curZ = entity.z;
+      const clampCoord = (v) => Math.max(-arenaHalf + radius, Math.min(arenaHalf - radius, v));
+      for (let s = 0; s < steps; s++) {
+        const nx = clampCoord(curX + stepX);
+        const nz = clampCoord(curZ + stepZ);
+        if (typeof engine.checkTankWallCollision === 'function') {
+          if (!engine.checkTankWallCollision(nx, nz, radius, canCrossWater, canCrushSandbags)) {
+            curX = nx;
+            curZ = nz;
+          } else if (!engine.checkTankWallCollision(nx, curZ, radius, canCrossWater, canCrushSandbags)) {
+            curX = nx;
+          } else if (!engine.checkTankWallCollision(curX, nz, radius, canCrossWater, canCrushSandbags)) {
+            curZ = nz;
+          } else {
+            break;
+          }
+        } else {
+          curX = nx;
+          curZ = nz;
+        }
+      }
+      entity.x = curX;
+      entity.z = curZ;
+    };
+
     for (const unit of train.units) {
       if (!unit.alive) continue;
       if (engine.playerHp > 0) {
         testUnitAgainst(unit, engine.playerX, engine.playerZ, 0.85, 'player', (px, pz, dmg) => {
-          engine.playerX += px;
-          engine.playerZ += pz;
+          const pTarget = { x: engine.playerX, z: engine.playerZ };
+          applySafeKnockback(
+            pTarget,
+            px,
+            pz,
+            0.85,
+            Boolean(engine.playerStats?.canCrossWater),
+            Boolean(engine.playerStats?.canCrushSandbags)
+          );
+          engine.playerX = pTarget.x;
+          engine.playerZ = pTarget.z;
           engine.damagePlayer(dmg, { zone: 'hull', aspect: 'side' }, 'TRAIN_RAM');
           engine.fx?.armorHit?.(engine.playerX, 0.85, engine.playerZ, { scale: 1.1, colorHex: 0xf97316 });
           sound.playSteelHit?.({ x: unit.x, z: unit.z });
@@ -458,14 +509,21 @@ export class TrainController {
         if (enemy.hp <= 0) continue;
         const eRadius = enemy.isBoss ? 1.15 : 0.85;
         testUnitAgainst(unit, enemy.x, enemy.z, eRadius, `enemy_${enemy.id}`, (px, pz, dmg) => {
-          enemy.x += px;
-          enemy.z += pz;
-          enemy.hp -= dmg;
+          applySafeKnockback(
+            enemy,
+            px,
+            pz,
+            eRadius,
+            Boolean(enemy.stats?.canCrossWater),
+            Boolean(enemy.stats?.canCrushSandbags)
+          );
+          if (typeof engine.damageEnemy === 'function') {
+            engine.damageEnemy(enemy, dmg, { fromPlayer: false, aspect: 'side', hitX: enemy.x, hitZ: enemy.z });
+          } else {
+            enemy.hp -= dmg;
+          }
           engine.fx?.armorHit?.(enemy.x, 0.85, enemy.z, { scale: 1.0, colorHex: 0xf97316 });
           sound.playSteelHit?.({ x: unit.x, z: unit.z });
-          if (enemy.hp <= 0) {
-            engine.destroyEnemy?.(enemy);
-          }
         });
       }
     }
@@ -517,7 +575,7 @@ export class TrainController {
 
     engine.fx?.explosion?.(destroyedUnit.x, 0.9, destroyedUnit.z, { scale: 1.8 });
     sound.playExplosion?.(1.6, { x: destroyedUnit.x, z: destroyedUnit.z });
-    engine.addCameraShake?.(0.45);
+    engine.screenShake = Math.max(engine.screenShake || 0, 0.45);
 
     if (destroyedUnit.mesh && engine.mapGroup) {
       engine.mapGroup.remove(destroyedUnit.mesh);
@@ -542,6 +600,10 @@ export class TrainController {
         for (const gc of occupiedCells) {
           const cell = engine.grid[gc.row]?.[gc.col];
           if (!cell) continue;
+          if (cell.mesh && engine.mapGroup) {
+            engine.mapGroup.remove(cell.mesh);
+            cell.mesh = null;
+          }
           setCellObject(cell, TileType.RUBBLE);
           cell.hp = 1;
           cell.maxHp = 1;
@@ -551,10 +613,12 @@ export class TrainController {
             rubble.position.set(cw.x, cell.railBridge ? 0.20 : 0, cw.z);
             engine.mapGroup.add(rubble);
             cell.mesh = rubble;
+            engine.tileBatcher?.markDirty?.(rubble);
           }
         }
       } else {
         // Keep surviving stopped car mesh in place and mark its cells as blocking obstacles
+        const unitCells = [];
         for (const gc of occupiedCells) {
           const cell = engine.grid[gc.row]?.[gc.col];
           if (!cell) continue;
@@ -562,6 +626,11 @@ export class TrainController {
           cell.hp = unit.hp;
           cell.maxHp = unit.maxHp;
           cell.mesh = unit.mesh;
+          unitCells.push(cell);
+        }
+        if (unitCells.length === 2) {
+          unitCells[0].pairPartner = unitCells[1];
+          unitCells[1].pairPartner = unitCells[0];
         }
       }
     }

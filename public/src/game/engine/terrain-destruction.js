@@ -19,6 +19,7 @@ const SAND_PROOF_OBJECTS = new Set([
   TileType.ENEMY_BASE,
   TileType.LANDMARK,
   TileType.BRIDGE,
+  TileType.RAIL_BRIDGE,
   TileType.WATER_TOWER,
 ]);
 
@@ -63,7 +64,7 @@ export class TerrainDestructionController {
       engine.mapGroup?.remove(cell.mesh);
       cell.mesh = null;
     }
-    cell.object = null;
+    cell.object = cell.railBridge ? TileType.RAIL_BRIDGE : null;
     syncCellType(cell);
     cell.hp = 0;
     cell.maxHp = 0;
@@ -547,6 +548,7 @@ export class TerrainDestructionController {
     const row = cell.row;
     const col = cell.col;
     const chainBarrels = [];
+    const damagedPairs = new Set();
 
     for (let dr = -1; dr <= 1; dr++) {
       for (let dc = -1; dc <= 1; dc++) {
@@ -572,7 +574,11 @@ export class TerrainDestructionController {
         } else if (neighbor.type === TileType.WATER_TOWER) {
           engine.damageTileCell(neighbor, 2, nPos.x, nPos.z, fromPlayer);
         } else if (neighbor.type === TileType.CONTAINER || neighbor.type === TileType.RAIL_CAR || neighbor.type === TileType.LOCOMOTIVE) {
-          engine.damageTileCell(neighbor, 4, nPos.x, nPos.z, fromPlayer);
+          if (!damagedPairs.has(neighbor)) {
+            damagedPairs.add(neighbor);
+            if (neighbor.pairPartner) damagedPairs.add(neighbor.pairPartner);
+            engine.damageTileCell(neighbor, 4, nPos.x, nPos.z, fromPlayer);
+          }
         } else if (neighbor.type === TileType.TRANSFORMER || neighbor.type === TileType.SANDBAGS) {
           engine.damageTileCell(neighbor, 2, nPos.x, nPos.z, fromPlayer);
         }
@@ -767,6 +773,7 @@ export class TerrainDestructionController {
       minCol = Math.max(0, minG.col - 1);
       maxColBound = maxG.col + 1;
     }
+    const damagedPairs = new Set();
     for (let r = minRow; r <= maxRow; r++) {
       const row = engine.grid[r];
       if (!row) continue;
@@ -925,7 +932,7 @@ export class TerrainDestructionController {
       engine.mapGroup?.remove(cell.mesh);
       cell.mesh = null;
     }
-    cell.object = null;
+    cell.object = cell.railBridge ? TileType.RAIL_BRIDGE : null;
     syncCellType(cell);
     cell.hp = 0;
     engine.blocksDestroyed++;

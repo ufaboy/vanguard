@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { TileType, SURFACE_CONFIGS, SURFACE_TYPES } from '../public/src/game/terrains/surfaces.js';
 import { canPlaceOnSurface, cellMovement, isTilePassable } from '../public/src/game/terrains/layers.js';
 import { PROP_KINDS, railCurveCells, unpackTerrain } from '../public/src/game/terrains/terrain-format.js';
+import { extractRailTracks } from '../public/src/game/terrains/rail-paths.js';
 import { validateRailroadLayout } from '../public/src/game/terrains/rail-rules.js';
 import { TacticalModels } from '../public/src/game/terrains/tactical-models.js';
 import { packTerrain } from '../editor/src/terrain-pack.js';
@@ -299,8 +300,9 @@ test('all maps place RAIL_CAR on RAIL and use valid prop kinds', () => {
       if (!file.endsWith('.json') || file === 'index.json') continue;
       const raw = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
       const size = raw.gridSize || 40;
-      const { surfaceGrid, objectGrid, railCurves, props } = unpackTerrain(raw.terrain, size);
-      const railCheck = validateRailroadLayout({ surfaceGrid, objectGrid, railCurves });
+      const { surfaceGrid, objectGrid, railCurves, railBridges, props } = unpackTerrain(raw.terrain, size);
+      const railBridgeSet = new Set((railBridges || []).map((b) => `${b.row},${b.col}`));
+      const railCheck = validateRailroadLayout({ surfaceGrid, objectGrid, railCurves, railBridges });
       assert.equal(
         railCheck.ok,
         true,
@@ -310,9 +312,9 @@ test('all maps place RAIL_CAR on RAIL and use valid prop kinds', () => {
         for (let c = 0; c < size; c++) {
           if (objectGrid[r][c] === TileType.RAIL_CAR || objectGrid[r][c] === TileType.LOCOMOTIVE) {
             assert.equal(
-              surfaceGrid[r][c],
-              TileType.RAIL,
-              `${file}: rail rolling stock at (${r},${c}) must sit on RAIL`
+              surfaceGrid[r][c] === TileType.RAIL || railBridgeSet.has(`${r},${c}`),
+              true,
+              `${file}: rail rolling stock at (${r},${c}) must sit on RAIL or RAIL_BRIDGE`
             );
           }
         }
@@ -323,4 +325,36 @@ test('all maps place RAIL_CAR on RAIL and use valid prop kinds', () => {
       }
     }
   }
+});
+
+test('3x3 rail curves smooth into curved Bezier arcs even on closed loops', () => {
+  const loopTerrain = {
+    rail: [
+      [10, 12, 1, 6],
+      [19, 12, 1, 6],
+      [12, 10, 6, 1],
+      [12, 19, 6, 1],
+    ],
+    rail_curve: [
+      [10, 10, 0],
+      [10, 17, 270],
+      [17, 17, 180],
+      [17, 10, 90],
+    ],
+  };
+  const loop = unpackTerrain(loopTerrain, 40);
+  const [track] = extractRailTracks({
+    surfaceGrid: loop.surfaceGrid,
+    objectGrid: loop.objectGrid,
+    railCurves: loop.railCurves,
+    railBridges: loop.railBridges,
+  });
+  assert.equal(track.mode, 'loop');
+  // A 10x10 rectangle with 4 smoothed 3x3 corners has 4 * 9 = 36 curve points + straight corners
+  // Verify the NW corner (10,12)->(12,10) bends outward toward (-20,-20) rather than cutting a straight diagonal
+  const nwPoints = track.points.filter((p) => p.x < -15 && p.z < -15);
+  assert.ok(nwPoints.length >= 5, `Expected smoothed NW curve points, got ${nwPoints.length}`);
+  const mid = nwPoints[Math.floor(nwPoints.length / 2)];
+  // Straight chord midpoint between (10,12) and (12,10) is (-17, -17); curved arc bends closer to (-18, -18)
+  assert.ok(mid.x < -17.3 && mid.z < -17.3, `Expected curved arc midpoint, got (${mid.x}, ${mid.z})`);
 });

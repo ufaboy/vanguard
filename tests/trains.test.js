@@ -104,15 +104,21 @@ test('TrainController runs transit respawn, ramming, and permanent wreck on dest
   );
 
   let playerDamaged = 0;
+  let enemyDamageCalls = 0;
+  const mockEnemy = { id: 'e1', hp: 10, x: 0, z: 0 };
   const mockEngine = {
     grid,
     mapGroup,
     playerHp: 50,
     playerX: 0,
     playerZ: 0,
-    enemies: [],
+    enemies: [mockEnemy],
     damagePlayer(dmg) {
       playerDamaged += dmg;
+    },
+    damageEnemy(enemy, dmg) {
+      enemyDamageCalls++;
+      enemy.hp -= dmg;
     },
     fx: { armorHit() {}, explosion() {} },
     modelFactory: {
@@ -131,12 +137,16 @@ test('TrainController runs transit respawn, ramming, and permanent wreck on dest
   const train = ctrl.trains[0];
   assert.equal(train.units.length, 2); // LOCOMOTIVE + RAIL_CAR
 
-  // Place player directly in front of the locomotive and step simulation
+  // Place player and enemy directly in front of the locomotive and step simulation
   const loco = train.units[0];
   mockEngine.playerX = loco.x;
   mockEngine.playerZ = loco.z;
+  mockEnemy.x = loco.x;
+  mockEnemy.z = loco.z;
   ctrl.update(0.1, 0.1);
   assert.ok(playerDamaged > 0);
+  assert.equal(enemyDamageCalls, 1);
+  assert.ok(mockEnemy.hp <= 0);
   assert.ok(Math.abs(mockEngine.playerZ - loco.z) > 1.5); // knocked off the track
 
   // Advance train past the end of the map -> goes offscreen and respawns

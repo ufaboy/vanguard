@@ -2890,6 +2890,8 @@ export class ModelFactory extends TextureGenerator {
     disposeBag(this.waterTowerMats);
     disposeBag(this.themePropMats);
     disposeBag(this._railBridgeMats);
+    disposeBag(this._tacticalMats);
+    this._tacticalMats = null;
     disposeBag(this.perimeterBuildingCatalog);
     disposeBag(this.powerUpMatCache);
     disposeBag(this.powerUpSpriteMatCache);

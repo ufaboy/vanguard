@@ -427,7 +427,7 @@ export class Viewport3D {
         }
       }
     }
-    if (bases.length === 0 && this.state.raw?.gameMode === 'stronghold_assault') {
+    if (bases.length === 0 && (this.state.meta?.gameMode || this.state.raw?.gameMode) === 'stronghold_assault') {
       const eb = this.state.raw?.enemyBaseCell || { row: 3, col: 17 };
       if (eb.row >= 0 && eb.row < size && eb.col >= 0 && eb.col < size) {
         bases.push({ row: eb.row, col: eb.col });
@@ -435,9 +435,15 @@ export class Viewport3D {
     }
     if (bases.length === 0) return;
 
-    const mapId = String(this.state.meta?.id || this.state.raw?.id || '');
-    const missionMatch = mapId.match(/mission-(\d+)/i);
-    const sectorIdx = missionMatch ? Number(missionMatch[1]) - 1 : -1;
+    const rawId = this.state.raw?.id;
+    const mapIdStr = String(this.state.raw?.mapId || this.state.meta?.id || rawId || '');
+    const missionMatch = mapIdStr.match(/(?:mission|campaign)-(\d+)/i);
+    const numericId = Number(rawId);
+    const sectorIdx = missionMatch
+      ? Number(missionMatch[1]) - 1
+      : Number.isInteger(numericId) && numericId > 0
+      ? numericId - 1
+      : -1;
     const isComplexAssault = [9, 14, 18, 21, 26, 29, 31, 33].includes(sectorIdx);
 
     for (const ebCell of bases) {
@@ -678,10 +684,9 @@ export class Viewport3D {
         if (rotDeg === 180 || rotDeg === 270) oMesh.rotation.y += Math.PI;
       }
     } else if (object === TileType.RUBBLE) {
-      oMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(1.5, 0.45, 1.5),
-        new THREE.MeshStandardMaterial({ color: 0x71717a, roughness: 0.9 })
-      );
+      this._rubbleGeo ||= new THREE.BoxGeometry(1.5, 0.45, 1.5);
+      this._rubbleMat ||= new THREE.MeshStandardMaterial({ color: 0x71717a, roughness: 0.9 });
+      oMesh = new THREE.Mesh(this._rubbleGeo, this._rubbleMat);
       oMesh.position.set(x, 0.225, z);
       if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.HOUSE_1 || object === TileType.HOUSE_2) {
@@ -764,10 +769,9 @@ export class Viewport3D {
 
     // Player spawn marker
     const sp = gridToWorld(this.state.playerSpawnCell.row, this.state.playerSpawnCell.col, this.state.size);
-    const spMesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.75, 0.85, 0.35, 16),
-      new THREE.MeshStandardMaterial({ color: 0x22c55e, emissive: 0x166534, emissiveIntensity: 0.6 })
-    );
+    this._spawnGeo ||= new THREE.CylinderGeometry(0.75, 0.85, 0.35, 16);
+    this._spawnMat ||= new THREE.MeshStandardMaterial({ color: 0x22c55e, emissive: 0x166534, emissiveIntensity: 0.6 });
+    const spMesh = new THREE.Mesh(this._spawnGeo, this._spawnMat);
     spMesh.position.set(sp.x, 0.2, sp.z);
     this.markerGroup.add(spMesh);
 
@@ -786,16 +790,21 @@ export class Viewport3D {
       MISSILE: 0xf97316,
       AMMO: 0xeab308,
     };
+    this._powerupGeo ||= new THREE.BoxGeometry(1.1, 1.1, 1.1);
+    this._powerupMats ||= new Map();
     for (const p of this.state.powerups) {
       const pos = gridToWorld(p.row, p.col, this.state.size);
-      const box = new THREE.Mesh(
-        new THREE.BoxGeometry(1.1, 1.1, 1.1),
-        new THREE.MeshStandardMaterial({
-          color: pColors[p.type] || 0xffffff,
-          emissive: pColors[p.type] || 0xffffff,
+      const color = pColors[p.type] || 0xffffff;
+      let mat = this._powerupMats.get(color);
+      if (!mat) {
+        mat = new THREE.MeshStandardMaterial({
+          color,
+          emissive: color,
           emissiveIntensity: 0.35,
-        })
-      );
+        });
+        this._powerupMats.set(color, mat);
+      }
+      const box = new THREE.Mesh(this._powerupGeo, mat);
       box.position.set(pos.x, 0.65, pos.z);
       this.markerGroup.add(box);
     }

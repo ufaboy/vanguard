@@ -218,6 +218,11 @@ function renderOffscreenTerrain(grid) {
       } else if (type === TileType.RAIL) {
         ctx.fillStyle = '#3f3f46';
         ctx.fillRect(x, y, s, s);
+      } else if (type === TileType.RAIL_BRIDGE) {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x, y, s, s);
+        ctx.fillStyle = '#3f3f46';
+        ctx.fillRect(x + 0.6, y + 0.6, s - 1.2, s - 1.2);
       } else if (type === TileType.CONTAINER) {
         ctx.fillStyle = '#2563eb';
         ctx.fillRect(x + 0.5, y + 0.5, s - 1, s - 1);

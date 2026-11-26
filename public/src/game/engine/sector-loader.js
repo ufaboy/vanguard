@@ -253,17 +253,22 @@ export class SectorLoaderController {
     const pairLinks = [];
     const fixedObjectByAnchor = new Map();
     const fixedObjectTailSet = new Set();
+    const movingTrackCells = engine.trainController?.prepareTracks?.(sector) || new Set();
     for (const instance of sector.fixedObjects || []) {
       const tail = instance.orientation === 'ew'
         ? { row: instance.row, col: instance.col + 1 }
         : { row: instance.row + 1, col: instance.col };
+      const isMovingLoco =
+        instance.kind === 'locomotive' &&
+        (movingTrackCells.has(`${instance.row},${instance.col}`) ||
+          movingTrackCells.has(`${tail.row},${tail.col}`));
+      if (isMovingLoco) continue;
       fixedObjectByAnchor.set(`${instance.row},${instance.col}`, instance);
       fixedObjectTailSet.add(`${tail.row},${tail.col}`);
       pairLinks.push([instance.row, instance.col, tail.row, tail.col]);
     }
     const railCurveCellSet = new Set();
     const railBridgeCellSet = new Set((sector.railBridges || []).map(({ row, col }) => `${row},${col}`));
-    const movingTrackCells = engine.trainController?.prepareTracks?.(sector) || new Set();
     for (const rc of sector.railCurves || []) {
       for (const cell of railCurveCells(rc.row, rc.col, rc.rotation || 0)) {
         railCurveCellSet.add(`${cell.row},${cell.col}`);
@@ -579,7 +584,7 @@ export class SectorLoaderController {
     for (const [r1, c1, r2, c2] of pairLinks) {
       const a = engine.grid[r1]?.[c1];
       const b = engine.grid[r2]?.[c2];
-      if (a && b) {
+      if (a && b && a.object && a.object === b.object) {
         a.pairPartner = b;
         b.pairPartner = a;
         b.mesh = a.mesh;

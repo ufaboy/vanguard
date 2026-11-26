@@ -194,7 +194,8 @@ class MapEditorApp {
     if (railCurvesChanged) {
       this.viewport.rebuildRailCurves();
     }
-    if (prevRailBridgesStr !== JSON.stringify(this.state.railBridges)) {
+    const railBridgesChanged = prevRailBridgesStr !== JSON.stringify(this.state.railBridges);
+    if (railBridgesChanged) {
       this.viewport.rebuildRailBridges();
     }
 
@@ -241,7 +242,16 @@ class MapEditorApp {
 
     for (const [r, c] of changedCells) {
       this.viewport.updateCell(r, c, false);
+      this.viewport.refreshRailVehicleNeighbors(r, c);
       if (touchedRoadOrRail) this.viewport.refreshRoadNeighbors(r, c);
+    }
+    if (railBridgesChanged) {
+      const prevRailBridges = JSON.parse(prevRailBridgesStr || '[]');
+      for (const b of [...prevRailBridges, ...(this.state.railBridges || [])]) {
+        if (b?.row != null && b?.col != null) {
+          this.viewport.updateCell(b.row, b.col, false);
+        }
+      }
     }
     if (railCurvesChanged) {
       for (const rc of prevRailCurves) this.viewport.refreshRailRegion(rc.row, rc.col);
@@ -322,6 +332,48 @@ class MapEditorApp {
     this._toastTimer = setTimeout(() => el.classList.add('hidden'), 2400);
   }
 
+  _clearObjectCell(r, c, updateNeighbors = false) {
+    const size = this.state.size;
+    const obj = this.state.objectGrid[r]?.[c];
+    if (obj == null) return false;
+    if (obj === TileType.CONTAINER || obj === TileType.LOCOMOTIVE) {
+      const instance = this.viewport.getFixedObjectAt(r, c, obj);
+      const orientation = instance?.orientation || 'ns';
+      const cells = instance
+        ? (orientation === 'ew'
+          ? [{ row: instance.row, col: instance.col }, { row: instance.row, col: instance.col + 1 }]
+          : [{ row: instance.row, col: instance.col }, { row: instance.row + 1, col: instance.col }])
+        : [{ row: r, col: c }];
+      if (instance) {
+        this.state.fixedObjects = (this.state.fixedObjects || []).filter((item) => item !== instance);
+      }
+      for (const cell of cells) {
+        if (cell.row < 0 || cell.row >= size || cell.col < 0 || cell.col >= size) continue;
+        this.state.objectGrid[cell.row][cell.col] =
+          obj === TileType.LOCOMOTIVE && this.viewport.isRailBridgeCell(cell.row, cell.col)
+            ? TileType.RAIL_BRIDGE
+            : null;
+        if (this.state.objectRotations?.[cell.row]) this.state.objectRotations[cell.row][cell.col] = 0;
+        if (this.state.tacticalStyles?.[cell.row]) this.state.tacticalStyles[cell.row][cell.col] = -1;
+        this.viewport.updateCell(cell.row, cell.col, false);
+      }
+      if (updateNeighbors) this.viewport.rebuildTurrets();
+      return true;
+    }
+    if (obj === TileType.RAIL_BRIDGE) {
+      this.state.railBridges = (this.state.railBridges || []).filter((b) => b.row !== r || b.col !== c);
+      this.viewport.rebuildRailBridges();
+      this.state.objectGrid[r][c] = null;
+    } else {
+      this.state.objectGrid[r][c] = this.viewport.isRailBridgeCell(r, c) ? TileType.RAIL_BRIDGE : null;
+    }
+    if (this.state.objectRotations?.[r]) this.state.objectRotations[r][c] = 0;
+    if (this.state.tacticalStyles?.[r]) this.state.tacticalStyles[r][c] = -1;
+    this.viewport.updateCell(r, c, updateNeighbors);
+    if (!updateNeighbors) this.viewport.refreshRoadNeighbors(r, c);
+    return true;
+  }
+
   _applyCell(r, c, mode, updateNeighbors = true) {
     const size = this.state.size;
     if (r < 0 || r >= size || c < 0 || c >= size) return false;
@@ -340,45 +392,22 @@ class MapEditorApp {
       if (this.activeTab === 'markers') {
         const list = this.state.powerups;
         const idx = list.findIndex((p) => p.row === r && p.col === c);
-        if (idx < 0) return false;
-        list.splice(idx, 1);
-        return true;
+        if (idx >= 0) {
+          list.splice(idx, 1);
+          return true;
+        }
+        const props = this.state.props || [];
+        const pIdx = props.findIndex((p) => p.row === r && p.col === c);
+        if (pIdx >= 0) {
+          props.splice(pIdx, 1);
+          return true;
+        }
+        return false;
       }
       const hadObj = this.state.objectGrid[r][c] !== null;
       const hadSurf = this.state.surfaceGrid[r][c] !== TileType.EMPTY;
       if (hadObj) {
-        const erasedType = this.state.objectGrid[r][c];
-        if (erasedType === TileType.CONTAINER || erasedType === TileType.LOCOMOTIVE) {
-          const instance = this.viewport.getFixedObjectAt(r, c, erasedType);
-          const orientation = instance?.orientation || 'ns';
-          const cells = instance
-            ? (orientation === 'ew'
-              ? [{ row: instance.row, col: instance.col }, { row: instance.row, col: instance.col + 1 }]
-              : [{ row: instance.row, col: instance.col }, { row: instance.row + 1, col: instance.col }])
-            : [{ row: r, col: c }];
-          this.state.fixedObjects = (this.state.fixedObjects || []).filter((item) => item !== instance);
-          for (const cell of cells) {
-            if (cell.row < 0 || cell.row >= size || cell.col < 0 || cell.col >= size) continue;
-            this.state.objectGrid[cell.row][cell.col] = null;
-            if (erasedType === TileType.LOCOMOTIVE && this.viewport.isRailBridgeCell(cell.row, cell.col)) {
-              this.state.objectGrid[cell.row][cell.col] = TileType.RAIL_BRIDGE;
-            }
-            this.state.objectRotations[cell.row][cell.col] = 0;
-            this.state.tacticalStyles[cell.row][cell.col] = -1;
-            this.viewport.updateCell(cell.row, cell.col, false);
-          }
-        } else if (erasedType === TileType.RAIL_BRIDGE) {
-          this.state.railBridges = (this.state.railBridges || []).filter((b) => b.row !== r || b.col !== c);
-          this.viewport.rebuildRailBridges();
-          this.state.objectGrid[r][c] = null;
-        } else {
-          this.state.objectGrid[r][c] = null;
-          if ((this.state.railBridges || []).some((b) => b.row === r && b.col === c)) {
-            this.state.objectGrid[r][c] = TileType.RAIL_BRIDGE;
-          }
-        }
-        if (this.state.objectRotations?.[r]) this.state.objectRotations[r][c] = 0;
-        if (this.state.tacticalStyles?.[r]) this.state.tacticalStyles[r][c] = -1;
+        return this._clearObjectCell(r, c, updateNeighbors);
       } else if (hadSurf) {
         const rcIdx = (this.state.railCurves || []).findIndex((rc) =>
           railCurveCells(rc.row, rc.col, rc.rotation || 0).some((p) => p.row === r && p.col === c)
@@ -419,13 +448,22 @@ class MapEditorApp {
         this.viewport.rebuildRailBridges();
         return true;
       }
+      const prevObj = this.state.objectGrid[r][c];
       const curRot = this.state.objectRotations?.[r]?.[c] || 0;
-      if (this.state.objectGrid[r][c] === this.selectedObject && curRot === this.placementRotation) {
+      if (prevObj === this.selectedObject && curRot === this.placementRotation) {
         return false;
+      }
+      if (prevObj != null && prevObj !== this.selectedObject) {
+        if (prevObj === TileType.CONTAINER || prevObj === TileType.LOCOMOTIVE || prevObj === TileType.RAIL_BRIDGE) {
+          this._clearObjectCell(r, c, false);
+        }
+      }
+      if (this.selectedObject === null) {
+        return prevObj != null ? this._clearObjectCell(r, c, updateNeighbors) : false;
       }
       this.state.objectGrid[r][c] = this.selectedObject;
       if (this.state.objectRotations?.[r]) {
-        this.state.objectRotations[r][c] = this.selectedObject === null ? 0 : this.placementRotation;
+        this.state.objectRotations[r][c] = this.placementRotation;
       }
       this.viewport.updateCell(r, c, updateNeighbors);
       if (!updateNeighbors) this.viewport.refreshRoadNeighbors(r, c);
@@ -576,6 +614,7 @@ class MapEditorApp {
         ) {
           this.viewport.rebuildBridges();
         }
+        this.viewport.rebuildTurrets();
       }
     }
     return changed;
@@ -596,6 +635,10 @@ class MapEditorApp {
         : this.selectedObject;
 
     if (targetVal === replaceVal) return;
+    if (!isSurf && (replaceVal === TileType.CONTAINER || replaceVal === TileType.LOCOMOTIVE)) {
+      this._toast('Use Brush to place 2-cell objects');
+      return;
+    }
 
     const prev = this._snapshot();
     const queue = [[startCell.row, startCell.col]];
@@ -603,6 +646,12 @@ class MapEditorApp {
 
     while (queue.length > 0) {
       const [r, c] = queue.shift();
+      if (!isSurf) {
+        const curObj = grid[r][c];
+        if (curObj === TileType.CONTAINER || curObj === TileType.LOCOMOTIVE || curObj === TileType.RAIL_BRIDGE) {
+          this._clearObjectCell(r, c, false);
+        }
+      }
       grid[r][c] = replaceVal;
       this.viewport.updateCell(r, c, false);
 
@@ -1272,6 +1321,15 @@ class MapEditorApp {
         this.strokeSnapshot = null;
         return;
       }
+      if (
+        this.activeTab === 'objects' &&
+        (this.selectedObject === TileType.CONTAINER || this.selectedObject === TileType.LOCOMOTIVE)
+      ) {
+        this._toast('Use Brush to place 2-cell objects');
+        this.rectStartCell = null;
+        this.strokeSnapshot = null;
+        return;
+      }
       let changed = false;
       for (let r = r0; r <= r1; r++) {
         for (let c = c0; c <= c1; c++) {
@@ -1285,6 +1343,7 @@ class MapEditorApp {
         } else {
           this.viewport.syncBuildings();
           this.viewport.rebuildBridges();
+          this.viewport.rebuildTurrets();
         }
         this._commitSnapshot(this.strokeSnapshot);
       }
@@ -1817,8 +1876,15 @@ class MapEditorApp {
     }
     const obj = this.state.objectGrid[row]?.[col];
     if (obj !== null && obj !== undefined) {
-      this.pickedItem = { kind: 'object', row, col, tile: obj };
-      this.viewport.setSelectionHighlight(row, col, 1, 1, 0x06b6d4);
+      const fixed = (obj === TileType.CONTAINER || obj === TileType.LOCOMOTIVE)
+        ? this.viewport.getFixedObjectAt(row, col, obj)
+        : null;
+      const pickRow = fixed ? fixed.row : row;
+      const pickCol = fixed ? fixed.col : col;
+      const spanRows = fixed?.orientation === 'ns' ? 2 : 1;
+      const spanCols = fixed?.orientation === 'ew' ? 2 : 1;
+      this.pickedItem = { kind: 'object', row: pickRow, col: pickCol, tile: obj };
+      this.viewport.setSelectionHighlight(pickRow, pickCol, spanRows, spanCols, 0x06b6d4);
       this._renderSelectedPanel();
       return;
     }
@@ -1900,10 +1966,7 @@ class MapEditorApp {
       if (idx >= 0) this.state.powerups.splice(idx, 1);
       this.viewport.rebuildMarkers();
     } else if (p.kind === 'object') {
-      this.state.objectGrid[p.row][p.col] = null;
-      if (this.state.objectRotations?.[p.row]) this.state.objectRotations[p.row][p.col] = 0;
-      if (this.state.tacticalStyles?.[p.row]) this.state.tacticalStyles[p.row][p.col] = -1;
-      this.viewport.updateCell(p.row, p.col, true);
+      this._clearObjectCell(p.row, p.col, true);
     } else if (p.kind === 'decal') {
       const list = this.state.decoration?.landmarks || [];
       const idx = list.indexOf(p.item);
@@ -1960,7 +2023,8 @@ class MapEditorApp {
 
     // Color swatches for CONTAINER & RAIL_CAR
     if (p.kind === 'object' && (p.tile === TileType.CONTAINER || p.tile === TileType.RAIL_CAR)) {
-      const curColor = this.state.tacticalStyles?.[p.row]?.[p.col] ?? -1;
+      const fixed = p.tile === TileType.CONTAINER ? this.viewport.getFixedObjectAt(p.row, p.col, p.tile) : null;
+      const curColor = fixed?.colorIndex ?? this.state.tacticalStyles?.[p.row]?.[p.col] ?? -1;
       const rowEl = document.createElement('div');
       rowEl.className = 'sel-row';
       rowEl.innerHTML = `<span>Color</span>`;
@@ -1974,8 +2038,19 @@ class MapEditorApp {
         b.title = `Color ${idx}`;
         b.onclick = () => {
           const prev = this._snapshot();
-          if (this.state.tacticalStyles?.[p.row]) this.state.tacticalStyles[p.row][p.col] = idx;
-          this.viewport.updateCell(p.row, p.col, false);
+          if (fixed) {
+            fixed.colorIndex = idx;
+            const tail = fixed.orientation === 'ew'
+              ? { row: fixed.row, col: fixed.col + 1 }
+              : { row: fixed.row + 1, col: fixed.col };
+            if (this.state.tacticalStyles?.[fixed.row]) this.state.tacticalStyles[fixed.row][fixed.col] = idx;
+            if (this.state.tacticalStyles?.[tail.row]) this.state.tacticalStyles[tail.row][tail.col] = idx;
+            this.viewport.updateCell(fixed.row, fixed.col, false);
+          } else {
+            if (this.state.tacticalStyles?.[p.row]) this.state.tacticalStyles[p.row][p.col] = idx;
+            this.viewport.updateCell(p.row, p.col, false);
+            this.viewport.refreshRailVehicleNeighbors(p.row, p.col);
+          }
           this._commitSnapshot(prev);
           this._renderSelectedPanel();
         };
@@ -2470,6 +2545,10 @@ class MapEditorApp {
           this._toast(`Rotated Rail Curve to ${this.moveDrag.item.rotation}°`);
         } else if (this.moveDrag?.kind === 'object') {
           this.moveDrag.rotation = ((this.moveDrag.rotation || 0) + 90) % 360;
+          if (this.moveDrag.tile === TileType.CONTAINER || this.moveDrag.tile === TileType.LOCOMOTIVE) {
+            const span = this.viewport._movePreviewSpan;
+            this.viewport._movePreviewSpan = { rows: span.cols, cols: span.rows };
+          }
           this.viewport.updateMovePreviewCell(
             this.hoveredCell?.row ?? this.moveDrag.fromRow,
             this.hoveredCell?.col ?? this.moveDrag.fromCol,

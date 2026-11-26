@@ -96,10 +96,17 @@ export function validateRailroadLayout({ surfaceGrid, objectGrid, railCurves = [
       // Check 1-2 cell coaxial gaps interrupted by non-empty surface or object
       for (const [dr, dc] of [[0, 1], [1, 0]]) {
         if (isRail(r + dr, c + dc)) continue;
+        // Only treat (r,c) -> (er,ec) as a coaxial gap if at least one end continues along (dr,dc)
+        // and (r,c) is not solely part of an orthogonal parallel track
+        const perp = dr === 0
+          ? (isRail(r - 1, c) || isRail(r + 1, c)) && !isRail(r, c - 1)
+          : (isRail(r, c - 1) || isRail(r, c + 1)) && !isRail(r - 1, c);
+        if (perp) continue;
         for (const step of [2, 3]) {
           const er = r + dr * step;
           const ec = c + dc * step;
           if (!isRail(er, ec)) continue;
+          if (!isRail(r - dr, c - dc) && !isRail(er + dr, ec + dc)) break;
           let interrupted = false;
           for (let k = 1; k < step; k++) {
             const mr = r + dr * k;

@@ -162,13 +162,20 @@ function runOilPass(objectGrid, surfaceGrid) {
   return changes;
 }
 
-function runLayerCompatPass(objectGrid, surfaceGrid) {
+function runLayerCompatPass(objectGrid, surfaceGrid, railBridges = []) {
   const size = objectGrid.length;
+  const railBridgeSet = new Set(railBridges.map((b) => `${b.row},${b.col}`));
   let changes = 0;
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
       const obj = objectGrid[r][c];
       if (obj == null) continue;
+      if (
+        railBridgeSet.has(`${r},${c}`) &&
+        (obj === TileType.RAIL_CAR || obj === TileType.LOCOMOTIVE || obj === TileType.RAIL_BRIDGE)
+      ) {
+        continue;
+      }
       const surf = surfaceGrid[r][c];
       if (canPlaceOnSurface(obj, surf)) continue;
       surfaceGrid[r][c] =
@@ -192,7 +199,23 @@ async function processMapFile(filePath, passes, checkOnly) {
 
   const size = Number(map.gridSize) || 40;
   const unpacked = unpackTerrain(map.terrain, size);
-  const { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges: unpackedBridges, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props } = unpacked;
+  const {
+    surfaceGrid,
+    objectGrid,
+    buildingStyles,
+    tacticalStyles,
+    objectRotations,
+    bridges: unpackedBridges,
+    railBridges,
+    railCurves,
+    fixedObjects,
+    landmarks3d,
+    powerups,
+    mines,
+    mineSigns,
+    decals,
+    props,
+  } = unpacked;
   let bridges = unpackedBridges;
 
   const summary = [];
@@ -203,7 +226,7 @@ async function processMapFile(filePath, passes, checkOnly) {
   }
 
   if (passes.has('layer-compat')) {
-    const n = runLayerCompatPass(objectGrid, surfaceGrid);
+    const n = runLayerCompatPass(objectGrid, surfaceGrid, railBridges);
     if (n > 0) summary.push(`layer-compat(${n})`);
   }
 
@@ -239,6 +262,11 @@ async function processMapFile(filePath, passes, checkOnly) {
     const mapSeed = hashString(String(map.mapId || path.basename(filePath)));
     const { nextStyles, diffs } = runTacticalColorsPass(objectGrid, tacticalStyles, mapSeed);
     nextTacticalStyles = nextStyles;
+    for (const item of fixedObjects || []) {
+      if (item.kind === 'container' && nextTacticalStyles[item.row]?.[item.col] >= 0) {
+        item.colorIndex = nextTacticalStyles[item.row][item.col];
+      }
+    }
     if (diffs > 0) summary.push(`tactical-colors(${diffs})`);
   }
 
@@ -246,7 +274,9 @@ async function processMapFile(filePath, passes, checkOnly) {
     surfaceGrid,
     objectGrid,
     bridges,
+    railBridges,
     railCurves,
+    fixedObjects,
     buildingLayout,
     tacticalStyles: nextTacticalStyles,
     objectRotations,

@@ -41,14 +41,19 @@ export function extractRailTracks({
   tileSize = 2,
 }) {
   const railBridgeSet = new Set(railBridges.map((b) => keyOf(b.row, b.col)));
+  for (let r = 0; r < gridSize; r++) {
+    for (let c = 0; c < gridSize; c++) {
+      if (objectGrid?.[r]?.[c] === TileType.RAIL_BRIDGE) {
+        railBridgeSet.add(keyOf(r, c));
+      }
+    }
+  }
   const isRailCell = (r, c) =>
     r >= 0 &&
     r < gridSize &&
     c >= 0 &&
     c < gridSize &&
-    (surfaceGrid?.[r]?.[c] === TileType.RAIL ||
-      railBridgeSet.has(keyOf(r, c)) ||
-      objectGrid?.[r]?.[c] === TileType.RAIL_BRIDGE);
+    (surfaceGrid?.[r]?.[c] === TileType.RAIL || railBridgeSet.has(keyOf(r, c)));
 
   // Build adjacency graph among rail cells, treating each 3x3 curve's 5 cells as a smooth chain
   const adj = new Map();
@@ -125,9 +130,14 @@ export function extractRailTracks({
     let orderedKeys = null;
 
     if (!hasBranch && endpoints.length === 0) {
-      // Closed loop
+      // Closed loop: start outside any 3x3 curve's interior cells so no curve is split across start/end
       mode = 'loop';
-      orderedKeys = walkOrderedPath(comp[0], adj, true);
+      const loopStart =
+        comp.find((k) => {
+          const ci = curveCellToInfo.get(k);
+          return !ci || ci.posIdx === 0 || ci.posIdx === 4;
+        }) || comp[0];
+      orderedKeys = walkOrderedPath(loopStart, adj, true);
     } else if (!hasBranch && endpoints.length === 2) {
       const [e0, e1] = endpoints;
       const [r0, c0] = e0.split(',').map(Number);
@@ -186,15 +196,16 @@ function buildSmoothPolyline(orderedKeys, curveCellToInfo, railBridgeSet, gridSi
       curveCellToInfo.get(orderedKeys[i + 4])?.curveIdx === info.curveIdx
     ) {
       const [r0, c0] = orderedKeys[i].split(',').map(Number);
-      const [r2, c2] = orderedKeys[i + 2].split(',').map(Number);
+      const [r1, c1] = orderedKeys[i + 1].split(',').map(Number);
       const [r4, c4] = orderedKeys[i + 4].split(',').map(Number);
       const p0 = cellToWorld(r0, c0, gridSize, tileSize);
+      const p1 = cellToWorld(r1, c1, gridSize, tileSize);
       const p4 = cellToWorld(r4, c4, gridSize, tileSize);
       // Tangent intersection of a 90-degree curve lies at the outer corner cell of the 3x3 block
-      const ctrl = {
-        x: Math.abs(p0.x - cellToWorld(r2, c2, gridSize, tileSize).x) > 0.01 ? p4.x : p0.x,
-        z: Math.abs(p0.z - cellToWorld(r2, c2, gridSize, tileSize).z) > 0.01 ? p4.z : p0.z,
-      };
+      const ctrl =
+        Math.abs(p1.x - p0.x) > 0.01
+          ? { x: p4.x, z: p0.z }
+          : { x: p0.x, z: p4.z };
       const steps = 8;
       for (let s = 0; s <= steps; s++) {
         const t = s / steps;

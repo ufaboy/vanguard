@@ -92,6 +92,7 @@ export function unpackTerrain(terrain, size = 40) {
   const mineSigns = [];
   const decals = [];
   const props = [];
+  const pendingRotations = [];
 
   if (!terrain || typeof terrain !== 'object' || Array.isArray(terrain)) {
     return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges, railBridges, fixedObjects, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props };
@@ -203,26 +204,34 @@ export function unpackTerrain(terrain, size = 40) {
           const orientation = w > h ? 'ew' : 'ns';
           const colorIdx = kind === 'container' && tup[4] != null ? Number(tup[4]) : -1;
           if (orientation === 'ew') {
-            for (let dc = 0; dc < w; dc += 2) {
-              const anchorCol = c + dc;
-              fixedObjects.push({ kind, row: r, col: anchorCol, orientation, ...(colorIdx >= 0 ? { colorIndex: colorIdx } : {}) });
-              for (let offset = 0; offset < 2 && anchorCol + offset < size; offset++) {
-                if (r >= 0 && r < size && anchorCol + offset >= 0) {
-                  objectGrid[r][anchorCol + offset] = objTile;
-                  if (colorIdx >= 0) tacticalStyles[r][anchorCol + offset] = colorIdx;
-                  objectRotations[r][anchorCol + offset] = 90;
+            for (let dr = 0; dr < h; dr++) {
+              const rr = r + dr;
+              if (rr < 0 || rr >= size) continue;
+              for (let dc = 0; dc < w; dc += 2) {
+                const anchorCol = c + dc;
+                fixedObjects.push({ kind, row: rr, col: anchorCol, orientation, ...(colorIdx >= 0 ? { colorIndex: colorIdx } : {}) });
+                for (let offset = 0; offset < 2 && anchorCol + offset < size; offset++) {
+                  if (anchorCol + offset >= 0) {
+                    objectGrid[rr][anchorCol + offset] = objTile;
+                    if (colorIdx >= 0) tacticalStyles[rr][anchorCol + offset] = colorIdx;
+                    objectRotations[rr][anchorCol + offset] = 90;
+                  }
                 }
               }
             }
           } else {
-            for (let dr = 0; dr < h; dr += 2) {
-              const anchorRow = r + dr;
-              fixedObjects.push({ kind, row: anchorRow, col: c, orientation, ...(colorIdx >= 0 ? { colorIndex: colorIdx } : {}) });
-              for (let offset = 0; offset < 2 && anchorRow + offset < size; offset++) {
-                if (anchorRow + offset >= 0 && c >= 0 && c < size) {
-                  objectGrid[anchorRow + offset][c] = objTile;
-                  if (colorIdx >= 0) tacticalStyles[anchorRow + offset][c] = colorIdx;
-                  objectRotations[anchorRow + offset][c] = 0;
+            for (let dc = 0; dc < w; dc++) {
+              const cc = c + dc;
+              if (cc < 0 || cc >= size) continue;
+              for (let dr = 0; dr < h; dr += 2) {
+                const anchorRow = r + dr;
+                fixedObjects.push({ kind, row: anchorRow, col: cc, orientation, ...(colorIdx >= 0 ? { colorIndex: colorIdx } : {}) });
+                for (let offset = 0; offset < 2 && anchorRow + offset < size; offset++) {
+                  if (anchorRow + offset >= 0 && anchorRow + offset < size) {
+                    objectGrid[anchorRow + offset][cc] = objTile;
+                    if (colorIdx >= 0) tacticalStyles[anchorRow + offset][cc] = colorIdx;
+                    objectRotations[anchorRow + offset][cc] = 0;
+                  }
                 }
               }
             }
@@ -230,7 +239,7 @@ export function unpackTerrain(terrain, size = 40) {
         }
         continue;
       }
-      const hasColorStyle = type === 'container' || type === 'rail_car';
+      const hasColorStyle = type === 'rail_car';
       for (const tup of tuples) {
         const r = Number(tup[0]);
         const c = Number(tup[1]);
@@ -297,60 +306,7 @@ export function unpackTerrain(terrain, size = 40) {
         mineSigns.push({ row: Number(tup[0]), col: Number(tup[1]), rotation: Number(tup[2] || 0) });
       }
     } else if (type === 'rotations') {
-      for (const tup of tuples) {
-        const r = Number(tup[0]);
-        const c = Number(tup[1]);
-        if (!Number.isInteger(r) || !Number.isInteger(c)) continue;
-        const isRect = tup.length >= 5;
-        const h = isRect ? Math.max(1, Number(tup[2]) || 1) : 1;
-        const w = isRect ? Math.max(1, Number(tup[3]) || 1) : 1;
-        const rawDeg = Number(isRect ? tup[4] : tup[2]) || 0;
-        const deg = (((Math.round(rawDeg / 90) * 90) % 360) + 360) % 360;
-        if (!deg) continue;
-        for (let dr = 0; dr < h; dr++) {
-          const rr = r + dr;
-          if (rr < 0 || rr >= size) continue;
-          for (let dc = 0; dc < w; dc++) {
-            const cc = c + dc;
-            if (cc >= 0 && cc < size) {
-              objectRotations[rr][cc] = deg;
-              const fixed = fixedObjects.find((item) =>
-                (item.kind === 'container' || item.kind === 'locomotive') &&
-                ((item.row === rr && item.col === cc) ||
-                  (item.orientation === 'ew'
-                    ? item.row === rr && item.col + 1 === cc
-                    : item.row + 1 === rr && item.col === cc))
-              );
-              if (fixed) {
-                const nextOrientation = deg % 180 ? 'ew' : 'ns';
-                if (fixed.orientation !== nextOrientation) {
-                  const oldTail = fixed.orientation === 'ew'
-                    ? { row: fixed.row, col: fixed.col + 1 }
-                    : { row: fixed.row + 1, col: fixed.col };
-                  const newTail = nextOrientation === 'ew'
-                    ? { row: fixed.row, col: fixed.col + 1 }
-                    : { row: fixed.row + 1, col: fixed.col };
-                  const tile = fixed.kind === 'container' ? TileType.CONTAINER : TileType.LOCOMOTIVE;
-                  if (oldTail.row >= 0 && oldTail.row < size && oldTail.col >= 0 && oldTail.col < size) {
-                    objectGrid[oldTail.row][oldTail.col] =
-                      railBridges.some((bridge) => bridge.row === oldTail.row && bridge.col === oldTail.col)
-                        ? TileType.RAIL_BRIDGE
-                        : null;
-                    objectRotations[oldTail.row][oldTail.col] = 0;
-                    tacticalStyles[oldTail.row][oldTail.col] = -1;
-                  }
-                  if (newTail.row >= 0 && newTail.row < size && newTail.col >= 0 && newTail.col < size) {
-                    objectGrid[newTail.row][newTail.col] = tile;
-                    objectRotations[newTail.row][newTail.col] = deg;
-                    if (fixed.colorIndex != null) tacticalStyles[newTail.row][newTail.col] = fixed.colorIndex;
-                  }
-                  fixed.orientation = nextOrientation;
-                }
-              }
-            }
-          }
-        }
-      }
+      pendingRotations.push(...tuples);
     } else if (type === 'decal') {
       for (const tup of tuples) {
         const kind = tup[0];
@@ -383,6 +339,65 @@ export function unpackTerrain(terrain, size = 40) {
           col: c,
           ...(rot ? { rotation: rot } : {}),
         });
+      }
+    }
+  }
+
+  if (pendingRotations.length > 0) {
+    const clearedOldTails = new Set();
+    for (const tup of pendingRotations) {
+      const r = Number(tup[0]);
+      const c = Number(tup[1]);
+      if (!Number.isInteger(r) || !Number.isInteger(c)) continue;
+      const isRect = tup.length >= 5;
+      const h = isRect ? Math.max(1, Number(tup[2]) || 1) : 1;
+      const w = isRect ? Math.max(1, Number(tup[3]) || 1) : 1;
+      const rawDeg = Number(isRect ? tup[4] : tup[2]) || 0;
+      const deg = (((Math.round(rawDeg / 90) * 90) % 360) + 360) % 360;
+      if (!deg) continue;
+      for (let dr = 0; dr < h; dr++) {
+        const rr = r + dr;
+        if (rr < 0 || rr >= size) continue;
+        for (let dc = 0; dc < w; dc++) {
+          const cc = c + dc;
+          if (cc < 0 || cc >= size) continue;
+          if (clearedOldTails.has(`${rr},${cc}`)) continue;
+          objectRotations[rr][cc] = deg;
+          const fixed = fixedObjects.find((item) =>
+            (item.kind === 'container' || item.kind === 'locomotive') &&
+            ((item.row === rr && item.col === cc) ||
+              (item.orientation === 'ew'
+                ? item.row === rr && item.col + 1 === cc
+                : item.row + 1 === rr && item.col === cc))
+          );
+          if (fixed) {
+            const nextOrientation = deg % 180 ? 'ew' : 'ns';
+            if (fixed.orientation !== nextOrientation) {
+              const oldTail = fixed.orientation === 'ew'
+                ? { row: fixed.row, col: fixed.col + 1 }
+                : { row: fixed.row + 1, col: fixed.col };
+              const newTail = nextOrientation === 'ew'
+                ? { row: fixed.row, col: fixed.col + 1 }
+                : { row: fixed.row + 1, col: fixed.col };
+              const tile = fixed.kind === 'container' ? TileType.CONTAINER : TileType.LOCOMOTIVE;
+              if (oldTail.row >= 0 && oldTail.row < size && oldTail.col >= 0 && oldTail.col < size) {
+                objectGrid[oldTail.row][oldTail.col] =
+                  railBridges.some((bridge) => bridge.row === oldTail.row && bridge.col === oldTail.col)
+                    ? TileType.RAIL_BRIDGE
+                    : null;
+                objectRotations[oldTail.row][oldTail.col] = 0;
+                tacticalStyles[oldTail.row][oldTail.col] = -1;
+                clearedOldTails.add(`${oldTail.row},${oldTail.col}`);
+              }
+              if (newTail.row >= 0 && newTail.row < size && newTail.col >= 0 && newTail.col < size) {
+                objectGrid[newTail.row][newTail.col] = tile;
+                objectRotations[newTail.row][newTail.col] = deg;
+                if (fixed.colorIndex != null) tacticalStyles[newTail.row][newTail.col] = fixed.colorIndex;
+              }
+              fixed.orientation = nextOrientation;
+            }
+          }
+        }
       }
     }
   }

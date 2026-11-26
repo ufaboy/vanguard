@@ -630,10 +630,10 @@ export function createRailCarBlock(factory, orientation = 'ns', variant = 'close
   group.add(underframe);
 
   const wheelGeo = factory.sharedGeometry('CylinderGeometry', 0.15, 0.15, 1.15, 10);
-  wheelGeo.rotateZ(Math.PI / 2);
   const axleOffsets = isPair ? [-1.35, -0.95, 0.95, 1.35] : [-0.62, 0.62];
   for (const wz of axleOffsets) {
     const axle = new THREE.Mesh(wheelGeo, mats.railSteel);
+    axle.rotation.z = Math.PI / 2;
     axle.position.set(0, 0.16, wz);
     group.add(axle);
   }
@@ -816,9 +816,9 @@ export function createCrushableProp(factory, kind, theme = 'urban', seed = 0) {
     group.add(cabin);
 
     const wheelGeo = factory.sharedGeometry('CylinderGeometry', 0.14, 0.14, 0.12, 8);
-    wheelGeo.rotateZ(Math.PI / 2);
     for (const [wx, wz] of [[-0.42, -0.46], [0.42, -0.46], [-0.42, 0.46], [0.42, 0.46]]) {
       const wheel = new THREE.Mesh(wheelGeo, mats.tireRubber);
+      wheel.rotation.z = Math.PI / 2;
       wheel.position.set(wx, 0.14, wz);
       group.add(wheel);
     }

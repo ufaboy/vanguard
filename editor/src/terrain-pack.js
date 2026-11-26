@@ -196,26 +196,7 @@ export function packTerrain({
     pushGroup(terrain, name, [rect.r, rect.c, rect.h, rect.w, Number(styleStr)]);
   }
 
-  // 5. Non-zero grid object rotations (90 / 180 / 270)
-  if (objectRotations) {
-    for (const rect of packRects(rows, cols, (r, c) => {
-      const t = objectGrid[r][c];
-      if (t == null || t === TileType.BASE || t === TileType.LANDMARK || t === TileType.BRIDGE || t === TileType.RAIL_BRIDGE) {
-        return null;
-      }
-      const deg = objectRotations[r]?.[c] || 0;
-      return deg ? String(deg) : null;
-    })) {
-      const deg = Number(rect.key);
-      pushGroup(
-        terrain,
-        'rotations',
-        rect.h === 1 && rect.w === 1 ? [rect.r, rect.c, deg] : [rect.r, rect.c, rect.h, rect.w, deg]
-      );
-    }
-  }
-
-  // 6. Point entities
+  // 5. Point entities (fixed_object before rotations so orientation & defaults are clear)
   for (const rc of railCurves) {
     pushGroup(
       terrain,
@@ -223,7 +204,12 @@ export function packTerrain({
       rc.rotation ? [rc.row, rc.col, rc.rotation] : [rc.row, rc.col]
     );
   }
+  const ewFixedCells = new Set();
   for (const item of fixedObjects) {
+    if (item.orientation === 'ew') {
+      ewFixedCells.add(`${item.row},${item.col}`);
+      ewFixedCells.add(`${item.row},${item.col + 1}`);
+    }
     const colorIndex = item.colorIndex ?? tacticalStyles?.[item.row]?.[item.col] ?? -1;
     pushGroup(terrain, 'fixed_object', [
       item.kind,
@@ -242,6 +228,27 @@ export function packTerrain({
   }
   for (const pw of powerups) {
     pushGroup(terrain, 'powerup', [pw.type, pw.row, pw.col]);
+  }
+
+  // 6. Non-zero grid object rotations (90 / 180 / 270; skip default 90° on 'ew' fixed_object)
+  if (objectRotations) {
+    for (const rect of packRects(rows, cols, (r, c) => {
+      const t = objectGrid[r][c];
+      if (t == null || t === TileType.BASE || t === TileType.LANDMARK || t === TileType.BRIDGE || t === TileType.RAIL_BRIDGE) {
+        return null;
+      }
+      const deg = objectRotations[r]?.[c] || 0;
+      if (!deg) return null;
+      if (deg === 90 && ewFixedCells.has(`${r},${c}`)) return null;
+      return String(deg);
+    })) {
+      const deg = Number(rect.key);
+      pushGroup(
+        terrain,
+        'rotations',
+        rect.h === 1 && rect.w === 1 ? [rect.r, rect.c, deg] : [rect.r, rect.c, rect.h, rect.w, deg]
+      );
+    }
   }
   for (const m of mines) {
     pushGroup(terrain, 'mine', [m.row, m.col]);

@@ -948,7 +948,7 @@ export class ProjectilesController {
       const trainHit = !playerMissileAloft ? engine.trainController?.findUnitAtPoint?.(p.x, p.z) : null;
       if (trainHit) {
         const { train, unit } = trainHit;
-        const isHeavy = p.isMissile || p.isArtillery || p.weaponId === 'CANNON_Mk4' || p.weaponId === 'CANNON_Mk5';
+        const isHeavy = p.isMissile || p.isArtillery || p.bulletPower === BULLET_POWER.HEAVY;
         const dmg = p.isMissile || p.isArtillery
           ? unit.cfg.artilleryDamage
           : isHeavy
