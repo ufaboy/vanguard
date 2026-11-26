@@ -14,6 +14,7 @@ const TILE_TO_SURFACE_NAME = new Map([
   [TileType.GRASS, 'grass'],
   [TileType.SWAMP, 'swamp'],
   [TileType.OIL_SLICK, 'oil'],
+  [TileType.RAIL, 'rail'],
 ]);
 
 const TILE_TO_OBJECT_NAME = new Map([
@@ -29,6 +30,10 @@ const TILE_TO_OBJECT_NAME = new Map([
   [TileType.RUBBLE, 'rubble'],
   [TileType.HOUSE_1, 'house1'],
   [TileType.HOUSE_2, 'house2'],
+  [TileType.CONTAINER, 'container'],
+  [TileType.TRANSFORMER, 'transformer'],
+  [TileType.SANDBAGS, 'sandbags'],
+  [TileType.RAIL_CAR, 'rail_car'],
   [TileType.ENEMY_BASE, 'enemy_base'],
 ]);
 
@@ -87,6 +92,7 @@ export function packTerrain({
   mines = [],
   mineSigns = [],
   decals = [],
+  props = [],
 }) {
   const rows = surfaceGrid?.length || objectGrid?.length || 0;
   const cols = surfaceGrid?.[0]?.length || objectGrid?.[0]?.length || 0;
@@ -178,6 +184,13 @@ export function packTerrain({
     } else {
       pushGroup(terrain, 'decal', [d.kind, d.row, d.col]);
     }
+  }
+  for (const p of props) {
+    pushGroup(
+      terrain,
+      'prop',
+      p.rotation ? [p.kind, p.row, p.col, p.rotation] : [p.kind, p.row, p.col]
+    );
   }
 
   return terrain;

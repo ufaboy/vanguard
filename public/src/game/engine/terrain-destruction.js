@@ -9,6 +9,7 @@ import { sound } from '../sound.js';
 import { rollBoxLoot } from '../terrains/boxes-loot.js';
 import { breachPointToward } from '../terrains/breach-models.js';
 import { canPlaceOnSurface, setCellObject, syncCellType } from '../terrains/layers.js';
+import { SURFACE_CONFIGS, SURFACE_TYPES } from '../terrains/surfaces.js';
 import { GameStatus, TileType, checkMapDefeat, checkMapVictory } from '../types.js';
 import { t } from '../../i18n/index.js';
 
@@ -338,10 +339,24 @@ export class TerrainDestructionController {
 
     if (cell.type === TileType.BRICK) {
       engine.modelFactory.updateBrickBlockDamage(cell.mesh, cell.hp, this.hitOffset(cell, hitX, hitZ));
-    }
-    else if (cell.type === TileType.WATER_TOWER) {
+    } else if (cell.type === TileType.WATER_TOWER) {
       sound.playSteelHit({ x: hitX, z: hitZ });
       engine.fx.armorHit(hitX, 0.85, hitZ, { scale: 0.9, colorHex: 0x38bdf8 });
+    } else if (cell.type === TileType.CONTAINER) {
+      sound.playSteelHit({ x: hitX, z: hitZ });
+      engine.fx.armorHit(hitX, 0.75, hitZ, { scale: 0.9, colorHex: 0xf59e0b });
+      engine.modelFactory.updateContainerDamage?.(cell.mesh, cell.hp, cell.maxHp || 8);
+    } else if (cell.type === TileType.TRANSFORMER) {
+      sound.playSteelHit({ x: hitX, z: hitZ });
+      engine.fx.armorHit(hitX, 0.8, hitZ, { scale: 1.0, colorHex: 0x38bdf8 });
+      engine.modelFactory.updateTransformerDamage?.(cell.mesh, cell.hp);
+    } else if (cell.type === TileType.RAIL_CAR) {
+      sound.playSteelHit({ x: hitX, z: hitZ });
+      engine.fx.armorHit(hitX, 0.85, hitZ, { scale: 0.95, colorHex: 0xf97316 });
+      engine.modelFactory.updateRailCarDamage?.(cell.mesh, cell.hp, cell.maxHp || 10);
+    } else if (cell.type === TileType.SANDBAGS) {
+      sound.playBrickHit({ x: hitX, z: hitZ });
+      engine.fx.masonryHit(hitX, 0.35, hitZ, { concrete: false, heavy: false });
     }
     engine.tileBatcher.markDirty(cell.mesh);
 
@@ -367,6 +382,10 @@ export class TerrainDestructionController {
       this.ruptureWaterTower(cell);
       return;
     }
+    if (cell.type === TileType.TRANSFORMER) {
+      this.detonateTransformer(cell);
+      return;
+    }
     const { x, z } = engine.gridToWorld(cell.row, cell.col);
 
     const factory = engine.modelFactory;
@@ -380,11 +399,12 @@ export class TerrainDestructionController {
     const wasBoxes = cell.type === TileType.BOXES;
     const wasConcrete = cell.type === TileType.CONCRETE;
     const wasForest = cell.type === TileType.FOREST;
+    const wasRailCar = cell.type === TileType.RAIL_CAR;
     if (wasConcrete) {
       engine.medalTracker?.recordConcreteDestroyed();
     }
 
-    if (buildingInfo || wasConcrete) {
+    if (buildingInfo || wasConcrete || wasRailCar) {
       // Destroyed buildings and reinforced concrete walls collapse into persistent concrete rubble (passable with severe speed penalty).
       cell.object = TileType.RUBBLE;
       syncCellType(cell);
@@ -531,6 +551,10 @@ export class TerrainDestructionController {
           chainBarrels.push(neighbor);
         } else if (neighbor.type === TileType.WATER_TOWER) {
           engine.damageTileCell(neighbor, 2, nPos.x, nPos.z, fromPlayer);
+        } else if (neighbor.type === TileType.CONTAINER || neighbor.type === TileType.RAIL_CAR) {
+          engine.damageTileCell(neighbor, 4, nPos.x, nPos.z, fromPlayer);
+        } else if (neighbor.type === TileType.TRANSFORMER || neighbor.type === TileType.SANDBAGS) {
+          engine.damageTileCell(neighbor, 2, nPos.x, nPos.z, fromPlayer);
         }
         if ((neighbor.surface === TileType.OIL_SLICK || neighbor.type === TileType.OIL_SLICK) && !neighbor.isBurning) {
           this.igniteOilSlick(neighbor);
@@ -544,6 +568,7 @@ export class TerrainDestructionController {
         engine.pendingBarrelExplosions.push({ cell: b, fromPlayer, remaining: 0.075 * (idx + 1) });
       });
     }
+    this.crushPropsNear(x, z, blastRadius);
   }
 
   updateBarrelExplosions(dt) {
@@ -908,6 +933,146 @@ export class TerrainDestructionController {
 
     if (engine.tileBatcher) {
       engine.tileBatcher.sync();
+    }
+  }
+
+  /** Destroys a TRANSFORMER, unleashing a 3.5-cell EMP pulse with chain reactions. */
+  detonateTransformer(cell) {
+    const { engine } = this;
+    if (!cell || cell.type !== TileType.TRANSFORMER || cell._empDetonating) return;
+    cell._empDetonating = true;
+    const { x, z } = engine.gridToWorld(cell.row, cell.col);
+
+    if (cell.mesh) {
+      engine.mapGroup?.remove(cell.mesh);
+      cell.mesh = null;
+    }
+    setCellObject(cell, null);
+    cell.hp = 0;
+    engine.blocksDestroyed++;
+
+    const cfg = SURFACE_CONFIGS[SURFACE_TYPES.TRANSFORMER];
+    const empRadius = (cfg?.empRadiusCells ?? 3.5) * TILE_SIZE;
+    const enemyStunSec = cfg?.enemyEmpDurationSec ?? 4.0;
+    const playerDisruptSec = cfg?.playerDisruptSec ?? 2.0;
+
+    sound.playEnvironmentalExplosion({ x, z });
+    engine.screenShake = Math.max(engine.screenShake, 0.5);
+    engine.fx?.shockwave?.(x, 0.25, z, 0.4, empRadius, 0x38bdf8, 0.55);
+    engine.fx?.sparks?.(x, 0.7, z, 0x38bdf8, 36, { speed: 3.4, up: 2.0 });
+
+    for (const e of engine.enemies || []) {
+      if (!e || e.hp <= 0) continue;
+      if (Math.hypot(e.x - x, e.z - z) <= empRadius) {
+        e.empTimer = Math.max(e.empTimer || 0, enemyStunSec);
+        if (e.phaseShieldTimer > 0) e.phaseShieldTimer = 0;
+        e.phaseShieldActive = false;
+        if (e.apsCharges > 0) e.apsCharges = 0;
+        engine.fx?.armorHit?.(e.x, 0.8, e.z, { scale: 1.1, colorHex: 0x38bdf8 });
+      }
+    }
+
+    for (const turret of engine.defenseTurrets || []) {
+      if (!turret?.alive) continue;
+      if (Math.hypot(turret.x - x, turret.z - z) <= empRadius) {
+        turret.empTimer = Math.max(turret.empTimer || 0, enemyStunSec);
+        engine.fx?.armorHit?.(turret.x, 0.8, turret.z, { scale: 1.0, colorHex: 0x38bdf8 });
+      }
+    }
+
+    if (engine.projectiles?.length) {
+      for (let i = engine.projectiles.length - 1; i >= 0; i--) {
+        const p = engine.projectiles[i];
+        if (p?.isMissile && !p.fromPlayer && Math.hypot(p.x - x, p.z - z) <= empRadius) {
+          engine.detonateMissile?.(p);
+          engine.removeProjectile?.(i);
+        }
+      }
+    }
+
+    if (engine.playerHp > DURABILITY.ZERO_HP && Math.hypot(engine.playerX - x, engine.playerZ - z) <= empRadius) {
+      engine.playerEmpDisruptTimer = Math.max(engine.playerEmpDisruptTimer || 0, playerDisruptSec);
+      engine.setStatusBanner?.(t('EMP SURGE! APS & ATGM OFFLINE'), playerDisruptSec);
+    }
+
+    const span = Math.ceil(cfg?.empRadiusCells ?? 3.5);
+    const chainTransformers = [];
+    for (let dr = -span; dr <= span; dr++) {
+      for (let dc = -span; dc <= span; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        const neighbor = engine.grid[cell.row + dr]?.[cell.col + dc];
+        if (!neighbor || neighbor.type !== TileType.TRANSFORMER || neighbor._empDetonating) continue;
+        const nPos = engine.gridToWorld(neighbor.row, neighbor.col);
+        if (Math.hypot(nPos.x - x, nPos.z - z) <= empRadius) {
+          chainTransformers.push(neighbor);
+        }
+      }
+    }
+    if (chainTransformers.length > 0) {
+      engine.pendingTransformerPulses ||= [];
+      chainTransformers.forEach((tr, idx) => {
+        engine.pendingTransformerPulses.push({ cell: tr, remaining: 0.12 * (idx + 1) });
+      });
+    }
+    this.crushPropsNear(x, z, empRadius * 0.6);
+  }
+
+  updateTransformerPulses(dt) {
+    const { engine } = this;
+    if (engine.isDisposed || engine.isGaragePaused || engine.isAdPaused || engine.status !== GameStatus.PLAYING) return;
+    const pending = engine.pendingTransformerPulses || [];
+    if (!pending.length) return;
+    engine.pendingTransformerPulses = [];
+    for (const event of pending) {
+      const { cell } = event;
+      if (engine.grid[cell.row]?.[cell.col] !== cell || cell.type !== TileType.TRANSFORMER) continue;
+      event.remaining -= dt;
+      if (event.remaining > 0) {
+        engine.pendingTransformerPulses.push(event);
+      } else {
+        this.detonateTransformer(cell);
+      }
+    }
+  }
+
+  /** Crushes a SANDBAGS cell on contact (Dozer Blade / Frame F5 / Boss). */
+  crushSandbagsCell(cell) {
+    const { engine } = this;
+    if (!cell || cell.type !== TileType.SANDBAGS) return false;
+    if (cell.mesh) {
+      disposeOwned(cell.mesh);
+      engine.mapGroup?.remove(cell.mesh);
+      cell.mesh = null;
+    }
+    setCellObject(cell, null);
+    cell.hp = 0;
+    cell.maxHp = 0;
+    engine.blocksDestroyed++;
+    const pos = engine.gridToWorld(cell.row, cell.col);
+    sound.playBrickHit({ x: pos.x, z: pos.z });
+    engine.fx?.masonryHit?.(pos.x, 0.3, pos.z, { concrete: false, heavy: false });
+    return true;
+  }
+
+  /** Destroys any crushable 3D dressing props within `radius` of `(x, z)` with zero speed penalty. */
+  crushPropsNear(x, z, radius = 0.95) {
+    const { engine } = this;
+    const props = engine.crushableProps;
+    if (!props?.length) return;
+    for (let i = props.length - 1; i >= 0; i--) {
+      const prop = props[i];
+      if (!prop?.alive) continue;
+      if (Math.hypot(prop.x - x, prop.z - z) <= radius) {
+        prop.alive = false;
+        if (prop.mesh) {
+          disposeOwned(prop.mesh);
+          engine.mapGroup?.remove(prop.mesh);
+          prop.mesh = null;
+        }
+        sound.playBrickHit({ x: prop.x, z: prop.z });
+        engine.fx?.masonryHit?.(prop.x, 0.25, prop.z, { concrete: false, heavy: false });
+        props.splice(i, 1);
+      }
     }
   }
 }

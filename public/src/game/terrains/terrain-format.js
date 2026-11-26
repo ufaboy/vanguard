@@ -14,6 +14,7 @@ const SURFACE_NAME_TO_TILE = Object.freeze({
   grass: TileType.GRASS,
   swamp: TileType.SWAMP,
   oil: TileType.OIL_SLICK,
+  rail: TileType.RAIL,
 });
 
 const OBJECT_NAME_TO_TILE = Object.freeze({
@@ -30,7 +31,14 @@ const OBJECT_NAME_TO_TILE = Object.freeze({
   house1: TileType.HOUSE_1,
   house2: TileType.HOUSE_2,
   enemy_base: TileType.ENEMY_BASE,
+  container: TileType.CONTAINER,
+  transformer: TileType.TRANSFORMER,
+  sandbags: TileType.SANDBAGS,
+  rail_car: TileType.RAIL_CAR,
 });
+
+export const PROP_KINDS = Object.freeze(['lamp', 'fence', 'car', 'shrub', 'barricade']);
+const PROP_KIND_SET = new Set(PROP_KINDS);
 
 /**
  * Unpacks a map's grouped `terrain` object (`{ water: [[r,c,h,w], ...], ... }`)
@@ -48,9 +56,10 @@ export function unpackTerrain(terrain, size = 40) {
   const mines = [];
   const mineSigns = [];
   const decals = [];
+  const props = [];
 
   if (!terrain || typeof terrain !== 'object' || Array.isArray(terrain)) {
-    return { surfaceGrid, objectGrid, buildingStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals };
+    return { surfaceGrid, objectGrid, buildingStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props };
   }
 
   for (const [type, tuples] of Object.entries(terrain)) {
@@ -179,10 +188,25 @@ export function unpackTerrain(terrain, size = 40) {
           ...(text != null ? { text } : {}),
         });
       }
+    } else if (type === 'prop') {
+      for (const tup of tuples) {
+        const kind = String(tup[0] ?? '').toLowerCase();
+        const r = Number(tup[1]);
+        const c = Number(tup[2]);
+        if (!PROP_KIND_SET.has(kind) || !Number.isInteger(r) || !Number.isInteger(c)) continue;
+        if (r < 0 || r >= size || c < 0 || c >= size) continue;
+        const rot = Number(tup[3]) || 0;
+        props.push({
+          kind,
+          row: r,
+          col: c,
+          ...(rot ? { rotation: rot } : {}),
+        });
+      }
     }
   }
 
-  return { surfaceGrid, objectGrid, buildingStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals };
+  return { surfaceGrid, objectGrid, buildingStyles, bridges, landmarks3d, powerups, mines, mineSigns, decals, props };
 }
 
 /**

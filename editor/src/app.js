@@ -371,6 +371,17 @@ class MapEditorApp {
           }
           this.state.powerups.push({ type, row: cell.row, col: cell.col });
         }
+      } else if (this.selectedMarker.startsWith('prop:')) {
+        const kind = MARKERS.find((m) => m.id === this.selectedMarker)?.propKind || 'lamp';
+        this.state.props ||= [];
+        const existingIdx = this.state.props.findIndex(
+          (p) => p.row === cell.row && p.col === cell.col
+        );
+        if (existingIdx >= 0) {
+          this.state.props.splice(existingIdx, 1);
+        } else {
+          this.state.props.push({ kind, row: cell.row, col: cell.col });
+        }
       }
       this.viewport.rebuildMarkers();
       this._syncLists();

@@ -318,6 +318,15 @@ export class Viewport3D {
       sMesh = this.modelFactory.createSwampBlock(x, z);
     } else if (surface === TileType.OIL_SLICK && this.modelFactory.createOilSlickBlock) {
       sMesh = this.modelFactory.createOilSlickBlock(x, z);
+    } else if (surface === TileType.RAIL && this.modelFactory.createRailBlock) {
+      const isRail = (rr, cc) =>
+        rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
+      const railMask =
+        (isRail(r - 1, c) ? 1 : 0) |
+        (isRail(r, c + 1) ? 2 : 0) |
+        (isRail(r + 1, c) ? 4 : 0) |
+        (isRail(r, c - 1) ? 8 : 0);
+      sMesh = this.modelFactory.createRailBlock(x, z, railMask);
     }
 
     if (sMesh) {
@@ -349,6 +358,33 @@ export class Viewport3D {
       oMesh = this.modelFactory.createCraterBlock(x, z);
     } else if (object === TileType.WATER_TOWER && this.modelFactory.createWaterTowerBlock) {
       oMesh = this.modelFactory.createWaterTowerBlock();
+      oMesh.position.set(x, 0, z);
+    } else if (object === TileType.CONTAINER && this.modelFactory.createContainerBlock) {
+      const isCont = (rr, cc) =>
+        rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.objectGrid[rr][cc] === TileType.CONTAINER;
+      const ewLink = isCont(r, c - 1) || isCont(r, c + 1);
+      const nsLink = isCont(r - 1, c) || isCont(r + 1, c);
+      oMesh = this.modelFactory.createContainerBlock((r * 3 + c * 7) % 4, ewLink && !nsLink ? 'ew' : 'ns', ewLink || nsLink);
+      oMesh.position.set(x, 0, z);
+    } else if (object === TileType.TRANSFORMER && this.modelFactory.createTransformerBlock) {
+      oMesh = this.modelFactory.createTransformerBlock();
+      oMesh.position.set(x, 0, z);
+    } else if (object === TileType.SANDBAGS && this.modelFactory.createSandbagsBlock) {
+      const isBags = (rr, cc) =>
+        rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.objectGrid[rr][cc] === TileType.SANDBAGS;
+      const bagMask =
+        (isBags(r - 1, c) ? 1 : 0) |
+        (isBags(r, c + 1) ? 2 : 0) |
+        (isBags(r + 1, c) ? 4 : 0) |
+        (isBags(r, c - 1) ? 8 : 0);
+      oMesh = this.modelFactory.createSandbagsBlock(bagMask);
+      oMesh.position.set(x, 0, z);
+    } else if (object === TileType.RAIL_CAR && this.modelFactory.createRailCarBlock) {
+      const isRail = (rr, cc) =>
+        rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
+      const ewRail = isRail(r, c - 1) || isRail(r, c + 1);
+      const nsRail = isRail(r - 1, c) || isRail(r + 1, c);
+      oMesh = this.modelFactory.createRailCarBlock(ewRail && !nsRail ? 'ew' : 'ns');
       oMesh.position.set(x, 0, z);
     } else if (object === TileType.RUBBLE) {
       oMesh = new THREE.Mesh(
@@ -423,6 +459,17 @@ export class Viewport3D {
       );
       box.position.set(pos.x, 0.65, pos.z);
       this.markerGroup.add(box);
+    }
+
+    if (this.modelFactory.createCrushableProp) {
+      const theme = this.state.environment?.theme || 'urban';
+      for (const p of this.state.props || []) {
+        const pos = gridToWorld(p.row, p.col, this.state.size);
+        const mesh = this.modelFactory.createCrushableProp(p.kind, theme, p.row * 31 + p.col * 17);
+        mesh.position.set(pos.x, 0, pos.z);
+        if (p.rotation) mesh.rotation.y = (p.rotation * Math.PI) / 180;
+        this.markerGroup.add(mesh);
+      }
     }
   }
 

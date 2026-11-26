@@ -82,6 +82,7 @@ export function parseMapState(rawJson) {
     mines,
     mineSigns,
     decals,
+    props,
   } = unpackTerrain(rawJson.terrain, size);
 
   let decoration = rawJson.decoration ? structuredClone(rawJson.decoration) : null;
@@ -112,6 +113,7 @@ export function parseMapState(rawJson) {
     landmarks3d,
     mines,
     mineSigns,
+    props,
     decoration,
     environment: {
       theme: rawJson.environment?.theme || 'urban',
@@ -182,6 +184,7 @@ export function serializeMapState(state) {
     mines: state.mines || [],
     mineSigns: state.mineSigns || [],
     decals: state.decoration?.landmarks || [],
+    props: state.props || [],
   });
 
   return formatMapJson(out);

@@ -333,6 +333,9 @@ export class ProjectilesController {
         (cell.type === TileType.BOXES ||
           cell.type === TileType.BARREL ||
           cell.type === TileType.WATER_TOWER ||
+          cell.type === TileType.CONTAINER ||
+          cell.type === TileType.TRANSFORMER ||
+          cell.type === TileType.RAIL_CAR ||
           (cell.type === TileType.BRICK && !p.pierceBricks) ||
           cell.type === TileType.CONCRETE ||
           cell.type === TileType.HOUSE_1 ||
@@ -802,6 +805,9 @@ export class ProjectilesController {
             TileType.BOXES,
             TileType.BARREL,
             TileType.WATER_TOWER,
+            TileType.CONTAINER,
+            TileType.TRANSFORMER,
+            TileType.RAIL_CAR,
             TileType.BRICK,
             TileType.CONCRETE,
             TileType.HOUSE_1,
@@ -858,6 +864,18 @@ export class ProjectilesController {
           if (p.isMissile) engine.detonateMissile(p);
           const wtDmg = p.isMissile || p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1;
           engine.damageTileCell(cell, wtDmg, p.x, p.z, p.fromPlayer);
+          engine.removeProjectile(i);
+          continue;
+        } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR) {
+          if (p.isMissile) engine.detonateMissile(p);
+          const cargoDmg = p.isMissile ? 4 : p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1;
+          engine.damageTileCell(cell, cargoDmg, p.x, p.z, p.fromPlayer);
+          engine.removeProjectile(i);
+          continue;
+        } else if (cell.type === TileType.TRANSFORMER) {
+          if (p.isMissile) engine.detonateMissile(p);
+          const trDmg = p.isMissile || p.bulletPower === BULLET_POWER.HEAVY ? 2 : 1;
+          engine.damageTileCell(cell, trDmg, p.x, p.z, p.fromPlayer);
           engine.removeProjectile(i);
           continue;
         } else if (cell.type === TileType.OIL_SLICK && p.isFlame) {

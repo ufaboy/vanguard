@@ -16,6 +16,7 @@ export const SURFACES = [
   { tile: TileType.GRASS, char: 'V', name: 'Grassland', color: '#16a34a' },
   { tile: TileType.SWAMP, char: 'M', name: 'Swamp / Mud', color: '#4d7c0f' },
   { tile: TileType.OIL_SLICK, char: 'L', name: 'Oil Slick', color: '#1e1b4b' },
+  { tile: TileType.RAIL, char: '#', name: 'Railroad Track', color: '#52525b' },
 ];
 
 export const OBJECTS = [
@@ -32,7 +33,19 @@ export const OBJECTS = [
   { tile: TileType.RUBBLE, char: 'U', name: 'Rubble', color: '#71717a' },
   { tile: TileType.HOUSE_1, char: 'A', name: 'Building Type 1', color: '#b45309' },
   { tile: TileType.HOUSE_2, char: 'P', name: 'Building Type 2', color: '#9a3412' },
+  { tile: TileType.CONTAINER, char: 'J', name: 'Shipping Container (8 HP)', color: '#2563eb' },
+  { tile: TileType.TRANSFORMER, char: 'Y', name: 'EMP Transformer (2 HP)', color: '#38bdf8' },
+  { tile: TileType.SANDBAGS, char: 'S', name: 'Sandbags (3 HP)', color: '#c2a67d' },
+  { tile: TileType.RAIL_CAR, char: 'V', name: 'Freight Rail Car (10 HP)', color: '#7c2d12' },
   { tile: TileType.ENEMY_BASE, char: 'E', name: 'Enemy Stronghold', color: '#ef4444' },
+];
+
+export const PROPS = [
+  { kind: 'lamp', name: 'Prop: Streetlamp', color: '#fde047' },
+  { kind: 'fence', name: 'Prop: Fence', color: '#a16207' },
+  { kind: 'car', name: 'Prop: Abandoned Car', color: '#64748b' },
+  { kind: 'shrub', name: 'Prop: Shrub / Lavender', color: '#4ade80' },
+  { kind: 'barricade', name: 'Prop: Road Barricade', color: '#ef4444' },
 ];
 
 export const MARKERS = [
@@ -44,6 +57,11 @@ export const MARKERS = [
   { id: `powerup:${POWERUP.APS}`, powerupType: 'APS', name: 'Crate: APS', sub: 'Active Protection', color: '#a855f7' },
   { id: `powerup:${POWERUP.MISSILE}`, powerupType: 'MISSILE', name: 'Crate: ATGM', sub: 'Guided Missiles', color: '#f97316' },
   { id: `powerup:${POWERUP.AMMO}`, powerupType: 'AMMO', name: 'Crate: Ammo', sub: 'Shell Resupply', color: '#eab308' },
+  { id: 'prop:lamp', propKind: 'lamp', name: 'Prop: Streetlamp', sub: 'Crushable 3D Prop', color: '#fde047' },
+  { id: 'prop:fence', propKind: 'fence', name: 'Prop: Fence', sub: 'Crushable 3D Prop', color: '#a16207' },
+  { id: 'prop:car', propKind: 'car', name: 'Prop: Abandoned Car', sub: 'Crushable 3D Prop', color: '#64748b' },
+  { id: 'prop:shrub', propKind: 'shrub', name: 'Prop: Shrub / Lavender', sub: 'Crushable 3D Prop', color: '#4ade80' },
+  { id: 'prop:barricade', propKind: 'barricade', name: 'Prop: Barricade', sub: 'Crushable 3D Prop', color: '#ef4444' },
 ];
 
 export const LANDMARKS = PLACEABLE_LANDMARKS.map((kind) => ({
@@ -78,6 +96,7 @@ export const SURFACE_CHAR_TO_TILE = {
   V: TileType.GRASS,
   M: TileType.SWAMP,
   L: TileType.OIL_SLICK,
+  '#': TileType.RAIL,
 };
 
 export const OBJECT_CHAR_TO_TILE = {
@@ -98,6 +117,10 @@ export const OBJECT_CHAR_TO_TILE = {
   U: TileType.RUBBLE,
   A: TileType.HOUSE_1,
   P: TileType.HOUSE_2,
+  J: TileType.CONTAINER,
+  Y: TileType.TRANSFORMER,
+  S: TileType.SANDBAGS,
+  V: TileType.RAIL_CAR,
   H: TileType.BASE,
   E: TileType.ENEMY_BASE,
 };

@@ -288,6 +288,31 @@ export class CodexStage {
         } else if (item.surfaceType === 'ROAD') {
           const roadMasks = [6, 12, 3, 9];
           block = e.modelFactory.createRoadBlock(pos.x, pos.z, roadMasks[idx], 0);
+        } else if (item.surfaceType === 'RAIL') {
+          const railMasks = [6, 12, 3, 9];
+          block = e.modelFactory.createRailBlock(pos.x, pos.z, railMasks[idx]);
+        } else if (item.surfaceType === 'CONTAINER') {
+          block = e.modelFactory.createContainerBlock(idx, idx % 2 === 0 ? 'ns' : 'ew', false);
+        } else if (item.surfaceType === 'TRANSFORMER') {
+          if (idx === 0) {
+            const tr = e.modelFactory.createTransformerBlock();
+            tr.position.set(0, 0, 0);
+            tr.scale.setScalar(1.35);
+            e.codexStageGroup.add(tr);
+          }
+          return;
+        } else if (item.surfaceType === 'SANDBAGS') {
+          block = e.modelFactory.createSandbagsBlock(idx % 2 === 0 ? 10 : 5);
+        } else if (item.surfaceType === 'RAIL_CAR') {
+          if (idx === 0) {
+            const rail = e.modelFactory.createRailBlock(0, 0, 5);
+            rail.scale.setScalar(1.2);
+            e.codexStageGroup.add(rail);
+            const car = e.modelFactory.createRailCarBlock('ns');
+            car.scale.setScalar(1.2);
+            e.codexStageGroup.add(car);
+          }
+          return;
         } else if (item.surfaceType === 'GRASS') {
           block = e.modelFactory.createGrassBlock(pos.x, pos.z);
         } else if (item.surfaceType === 'STONE') {

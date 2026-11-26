@@ -1234,6 +1234,7 @@ export class TankGameEngine {
         this.reconDroneController.update(dt, elapsed);
         this.playerController.updateSmokeAndLoot(dt);
         this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateTransformerPulses(dt);
         this.terrainDestruction.updateBurningOil(dt);
         this.updateBrickRubble(dt);
         this.forestFire.update(dt, elapsed);
@@ -1246,6 +1247,7 @@ export class TankGameEngine {
         this.updateProjectiles(dt);
         this.explosions.updateHazardZones(dt, elapsed);
         this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateTransformerPulses(dt);
         this.terrainDestruction.updateBurningOil(dt);
         this.updateBrickRubble(dt);
         this.forestFire.update(dt, elapsed);
@@ -1269,6 +1271,7 @@ export class TankGameEngine {
         this.updateProjectiles(dt);
         this.explosions.updateHazardZones(dt, elapsed);
         this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateTransformerPulses(dt);
         this.terrainDestruction.updateBurningOil(dt);
         this.updateBrickRubble(dt);
         this.forestFire.update(dt, elapsed);
@@ -1690,8 +1693,8 @@ export class TankGameEngine {
     this.physics.resolveEnemyCollisions();
   }
 
-  checkTankWallCollision(x, z, radius, canCrossWater = false) {
-    return this.physics.checkTankWallCollision(x, z, radius, canCrossWater);
+  checkTankWallCollision(x, z, radius, canCrossWater = false, canCrushSandbags = false) {
+    return this.physics.checkTankWallCollision(x, z, radius, canCrossWater, canCrushSandbags);
   }
 
   lerpAngle(current, target, alpha) {

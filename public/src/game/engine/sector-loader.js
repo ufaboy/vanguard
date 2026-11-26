@@ -201,6 +201,9 @@ export class SectorLoaderController {
     engine.enemySpawner.clearPendingTimeouts();
     engine.modelFactory?.clearPendingRigs?.();
     engine.pendingBarrelExplosions = [];
+    engine.pendingTransformerPulses = [];
+    engine.playerEmpDisruptTimer = 0;
+    engine.crushableProps = [];
     engine.enemies = [];
     engine.brickRubble = [];
     if (engine.projectiles) {
@@ -302,6 +305,19 @@ export class SectorLoaderController {
         } else if (surface === TileType.OIL_SLICK && engine.modelFactory.createOilSlickBlock) {
           surfaceMesh = engine.modelFactory.createOilSlickBlock(x, z);
           engine.mapGroup.add(surfaceMesh);
+        } else if (surface === TileType.RAIL && engine.modelFactory.createRailBlock) {
+          const isRail = (rr, cc) => {
+            if (rr < 0 || rr >= GRID_SIZE || cc < 0 || cc >= GRID_SIZE) return false;
+            const s = sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
+            return s === TileType.RAIL;
+          };
+          const railMask =
+            (isRail(r - 1, c) ? 1 : 0) |
+            (isRail(r, c + 1) ? 2 : 0) |
+            (isRail(r + 1, c) ? 4 : 0) |
+            (isRail(r, c - 1) ? 8 : 0);
+          surfaceMesh = engine.modelFactory.createRailBlock(x, z, railMask);
+          engine.mapGroup.add(surfaceMesh);
         }
 
         if (type === TileType.BRICK) {
@@ -398,6 +414,49 @@ export class SectorLoaderController {
           mesh.position.set(x, 0, z);
           engine.mapGroup.add(mesh);
           hp = 2;
+        } else if (type === TileType.CONTAINER && engine.modelFactory.createContainerBlock) {
+          const isCont = (rr, cc) =>
+            rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+            (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.CONTAINER;
+          const ewLink = isCont(r, c - 1) || isCont(r, c + 1);
+          const nsLink = isCont(r - 1, c) || isCont(r + 1, c);
+          const orientation = ewLink && !nsLink ? 'ew' : 'ns';
+          const colorIdx = (r * 3 + c * 7) % 4;
+          mesh = engine.modelFactory.createContainerBlock(colorIdx, orientation, ewLink || nsLink);
+          mesh.position.set(x, 0, z);
+          engine.mapGroup.add(mesh);
+          hp = 8;
+        } else if (type === TileType.TRANSFORMER && engine.modelFactory.createTransformerBlock) {
+          mesh = engine.modelFactory.createTransformerBlock();
+          mesh.position.set(x, 0, z);
+          engine.mapGroup.add(mesh);
+          hp = 2;
+        } else if (type === TileType.SANDBAGS && engine.modelFactory.createSandbagsBlock) {
+          const isBags = (rr, cc) =>
+            rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+            (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.SANDBAGS;
+          const bagMask =
+            (isBags(r - 1, c) ? 1 : 0) |
+            (isBags(r, c + 1) ? 2 : 0) |
+            (isBags(r + 1, c) ? 4 : 0) |
+            (isBags(r, c - 1) ? 8 : 0);
+          mesh = engine.modelFactory.createSandbagsBlock(bagMask);
+          mesh.position.set(x, 0, z);
+          engine.mapGroup.add(mesh);
+          hp = 3;
+        } else if (type === TileType.RAIL_CAR && engine.modelFactory.createRailCarBlock) {
+          const isRailAxis = (rr, cc) => {
+            if (rr < 0 || rr >= GRID_SIZE || cc < 0 || cc >= GRID_SIZE) return false;
+            const s = sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
+            return s === TileType.RAIL;
+          };
+          const ewRail = isRailAxis(r, c - 1) || isRailAxis(r, c + 1);
+          const nsRail = isRailAxis(r - 1, c) || isRailAxis(r + 1, c);
+          const orientation = ewRail && !nsRail ? 'ew' : 'ns';
+          mesh = engine.modelFactory.createRailCarBlock(orientation);
+          mesh.position.set(x, 0, z);
+          engine.mapGroup.add(mesh);
+          hp = 10;
         }
 
         if (!mesh && surfaceMesh) {
@@ -493,6 +552,32 @@ export class SectorLoaderController {
           armTimer: 0,
           life: Infinity,
           silent: true,
+        });
+      }
+    }
+
+    if (sector.props?.length && engine.modelFactory.createCrushableProp) {
+      const propTheme =
+        sector.mapId?.includes('provence') || sector.name?.toLowerCase().includes('provence')
+          ? 'provence'
+          : sector.decoration?.theme || sector.theme || 'urban';
+      for (let idx = 0; idx < sector.props.length; idx++) {
+        const p = sector.props[idx];
+        const cell = engine.grid[p.row]?.[p.col];
+        if (!cell || cell.object != null || cell.surface === TileType.WATER) continue;
+        const propPos = this.gridToWorld(p.row, p.col);
+        const propMesh = engine.modelFactory.createCrushableProp(p.kind, propTheme, p.row * 31 + p.col * 17 + idx);
+        propMesh.position.set(propPos.x, 0, propPos.z);
+        if (p.rotation) propMesh.rotation.y = (p.rotation * Math.PI) / 180;
+        engine.mapGroup.add(propMesh);
+        engine.crushableProps.push({
+          kind: p.kind,
+          row: p.row,
+          col: p.col,
+          x: propPos.x,
+          z: propPos.z,
+          alive: true,
+          mesh: propMesh,
         });
       }
     }

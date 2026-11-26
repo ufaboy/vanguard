@@ -25,6 +25,17 @@ import {
 } from '../terrains/perimeter-buildings.js';
 import { buildEnemyStronghold } from '../terrains/enemy-stronghold.js';
 import { createSandCanvas, createSandPatchMask } from '../terrains/sand.js';
+import {
+  createContainerBlock as buildContainerBlock,
+  createCrushableProp as buildCrushableProp,
+  createRailBlock as buildRailBlock,
+  createRailCarBlock as buildRailCarBlock,
+  createSandbagsBlock as buildSandbagsBlock,
+  createTransformerBlock as buildTransformerBlock,
+  updateContainerDamage as refreshContainerDamage,
+  updateRailCarDamage as refreshRailCarDamage,
+  updateTransformerDamage as refreshTransformerDamage,
+} from '../terrains/tactical-models.js';
 
 /** Runtime sand patches: rim variants, share of the patch the cell occupies, and pattern repeat in cells. */
 const SAND_PATCH_VARIANTS = 6;
@@ -4254,6 +4265,42 @@ export class ModelFactory extends TextureGenerator {
 
     group.userData.batchTile = true;
     return markOwned(group, { geometries: false, materials: false });
+  }
+
+  createRailBlock(x = 0, z = 0, neighborMask = 5) {
+    return buildRailBlock(this, x, z, neighborMask);
+  }
+
+  createContainerBlock(colorIndex = 0, orientation = 'ns', connectedEnds = false) {
+    return buildContainerBlock(this, colorIndex, orientation, connectedEnds);
+  }
+
+  updateContainerDamage(mesh, hp, maxHp = 8) {
+    refreshContainerDamage(this, mesh, hp, maxHp);
+  }
+
+  createTransformerBlock() {
+    return buildTransformerBlock(this);
+  }
+
+  updateTransformerDamage(mesh, hp) {
+    refreshTransformerDamage(this, mesh, hp);
+  }
+
+  createSandbagsBlock(neighborMask = 0) {
+    return buildSandbagsBlock(this, neighborMask);
+  }
+
+  createRailCarBlock(orientation = 'ns') {
+    return buildRailCarBlock(this, orientation);
+  }
+
+  updateRailCarDamage(mesh, hp, maxHp = 10) {
+    refreshRailCarDamage(this, mesh, hp, maxHp);
+  }
+
+  createCrushableProp(kind, theme = 'urban', seed = 0) {
+    return buildCrushableProp(this, kind, theme, seed);
   }
 
   getPowerUpEmblemTexture(type) {

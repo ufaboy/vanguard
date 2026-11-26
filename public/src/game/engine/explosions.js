@@ -374,6 +374,10 @@ export class ExplosionsController {
           rebuildIce = true;
         } else if (cell.type === TileType.BOXES || cell.type === TileType.WATER_TOWER || cell.type === TileType.BRICK) {
           engine.damageTileCell(cell, tileDmg, pos.x, pos.z, fromPlayer);
+        } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR) {
+          engine.damageTileCell(cell, Math.max(4, tileDmg), pos.x, pos.z, fromPlayer);
+        } else if (cell.type === TileType.TRANSFORMER || cell.type === TileType.SANDBAGS) {
+          engine.damageTileCell(cell, Math.max(2, tileDmg), pos.x, pos.z, fromPlayer);
         } else if (cell.type === TileType.BARREL) {
           engine.explodeBarrel(cell, fromPlayer);
         } else if (cell.type === TileType.OIL_SLICK) {
@@ -405,6 +409,7 @@ export class ExplosionsController {
     if (impactCell && impactCell.type !== TileType.RUBBLE && radius >= TILE_SIZE * 1.1) {
       engine.terrainDestruction?.convertCellToCrater?.(impactCell);
     }
+    engine.terrainDestruction?.crushPropsNear?.(x, z, searchSpan);
 
     if (fromPlayer) {
       const targets = [...engine.enemies];
@@ -491,6 +496,10 @@ export class ExplosionsController {
             engine.explodeBarrel(cell, fromPlayer);
           } else if (cell.type === TileType.WATER_TOWER) {
             engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
+          } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR) {
+            engine.damageTileCell(cell, 4, pos.x, pos.z, fromPlayer);
+          } else if (cell.type === TileType.TRANSFORMER || cell.type === TileType.SANDBAGS) {
+            engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
           } else if (cell.type === TileType.OIL_SLICK) {
             engine.terrainDestruction?.igniteOilSlick?.(cell);
           } else if (cell.type === TileType.FOREST) {
@@ -518,6 +527,7 @@ export class ExplosionsController {
     if (impactCell && impactCell.type !== TileType.RUBBLE && radius >= TILE_SIZE * 1.1) {
       engine.terrainDestruction?.convertCellToCrater?.(impactCell);
     }
+    engine.terrainDestruction?.crushPropsNear?.(x, z, searchSpan);
 
     if (fromPlayer) {
       const targets = [...engine.enemies];

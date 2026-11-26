@@ -951,7 +951,11 @@ export class EnemyAiController {
         e.phaseShieldMesh.visible = false;
       }
 
-      if (empStunned) {
+      if (e.empTimer > 0) {
+        e.empTimer = Math.max(0, e.empTimer - dt);
+      }
+
+      if (empStunned || (e.empTimer || 0) > 0) {
         // Keep fog-of-war / stealth / recon drone visibility responsive while stunned.
         const distToPlayer = Math.hypot(engine.playerX - e.x, engine.playerZ - e.z);
         this.syncEnemyVisibility(e, dt, distToPlayer);
@@ -1143,8 +1147,14 @@ export class EnemyAiController {
           !e.isBoss && hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
         const { row: eRow, col: eCol } = engine.worldToGrid?.(e.x, e.z) ?? { row: 0, col: 0 };
         const eCell = engine.grid?.[eRow]?.[eCol];
+        const canCrushSandbags = Boolean(
+          e.isBoss || e.loadout?.optionalEquipment?.includes('DOZER_BLADE')
+        );
         if (eCell?.type === TileType.RUBBLE && e.loadout?.optionalEquipment?.includes('DOZER_BLADE')) {
           engine.terrainDestruction?.clearRubbleCell?.(eCell);
+        }
+        if (eCell?.type === TileType.SANDBAGS && canCrushSandbags) {
+          engine.terrainDestruction?.crushSandbagsCell?.(eCell);
         }
         const eAllTerrain = Boolean(e.stats.canHover || e.stats.allTerrain);
         const tileMove = cellMovement(eCell, { allTerrain: eAllTerrain, isBoss: e.isBoss, isEnemy: true });
@@ -1230,7 +1240,7 @@ export class EnemyAiController {
         }
         let blocked = false;
         if (
-          !engine.checkTankWallCollision?.(nextX, e.z, radius, e.stats.canCrossWater) &&
+          !engine.checkTankWallCollision?.(nextX, e.z, radius, e.stats.canCrossWater, canCrushSandbags) &&
           !engine.checkTankEnemyCollision?.(e, nextX, e.z, radius) &&
           Math.hypot(nextX - engine.playerX, e.z - engine.playerZ) > radius + 0.72
         ) {
@@ -1245,13 +1255,16 @@ export class EnemyAiController {
           if (e.isBoss) engine.crushBossObstacles?.(e.x, nextZ, radius);
         }
         if (
-          !engine.checkTankWallCollision?.(e.x, nextZ, radius, e.stats.canCrossWater) &&
+          !engine.checkTankWallCollision?.(e.x, nextZ, radius, e.stats.canCrossWater, canCrushSandbags) &&
           !engine.checkTankEnemyCollision?.(e, e.x, nextZ, radius) &&
           Math.hypot(e.x - engine.playerX, nextZ - engine.playerZ) > radius + 0.72
         ) {
           e.z = nextZ;
         } else {
           blocked = true;
+        }
+        if (isTryingToMove) {
+          engine.terrainDestruction?.crushPropsNear?.(e.x, e.z, radius + 0.25);
         }
 
         const distMoved = Math.hypot(e.x - startX, e.z - startZ);

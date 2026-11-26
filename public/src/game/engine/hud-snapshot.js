@@ -66,12 +66,14 @@ export function buildHudSnapshot(engine) {
     engine.enemies,
     JAMMER_ECM.RADAR_RADIUS_CELLS * TILE_SIZE
   );
-  const apsJammed = isPointWithinJammerRadius(
-    engine.playerX,
-    engine.playerZ,
-    engine.enemies,
-    JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
-  );
+  const apsJammed =
+    (engine.playerEmpDisruptTimer || 0) > 0 ||
+    isPointWithinJammerRadius(
+      engine.playerX,
+      engine.playerZ,
+      engine.enemies,
+      JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
+    );
   const sensorContactsList = radarJammed
     ? applyRadarJamming(rawSensorContacts, {
         playerX: engine.playerX,
