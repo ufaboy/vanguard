@@ -37,6 +37,7 @@ import { setHidden, setHtml } from './ui/dom-helpers.js';
 import { renderNorthUpSensorMinimap } from './ui/minimap.js';
 import { renderContractHud } from './ui/contract-hud.js';
 import { renderBattlefieldHud } from './ui/battle-hud.js';
+import { renderAirReconHud } from './ui/air-recon-hud.js';
 import { renderBattlefieldLoaderHtml, renderStatusModal } from './ui/status-modal.js';
 import { setupDelegatedEvents } from './ui/battle-events.js';
 import {
@@ -221,6 +222,7 @@ function initApp() {
       <div id="target-badge" class="hidden fixed top-36 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-teal-500/70 px-4 py-1.5 rounded text-xs font-mono uppercase tracking-wider shadow-lg"></div>
       <div id="status-toast" class="hidden fixed top-48 left-1/2 -translate-x-1/2 z-20 pointer-events-none bg-[#0B0F17]/95 border border-amber-500/70 px-5 py-2 rounded text-xs font-mono uppercase tracking-[0.12em] text-amber-300 shadow-lg"></div>
       <div id="modifiers-strip" class="fixed top-64 right-4 z-20 flex flex-col gap-1.5 items-end pointer-events-none"></div>
+      <div id="air-recon-hud" class="hidden fixed inset-0 z-20 pointer-events-none"></div>
       <div id="upgrade-drawer" class="hidden garage-shell" role="dialog" aria-modal="true" aria-label="${t('Vehicle maintenance garage')}"></div>
       <footer id="bottom-hud" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-20 w-[min(1120px,96vw)] bg-[#0B0F17]/95 border border-slate-700/70 px-5 py-3 rounded shadow-2xl flex flex-wrap items-center justify-between gap-4"></footer>
       <div id="touch-controls" class="hidden touch-controls-layer" aria-hidden="true"></div>
@@ -739,6 +741,7 @@ function syncTouchControlsVisibility(hud) {
   const show =
     enabled &&
     hud?.status === GameStatus.PLAYING &&
+    !hud?.airSupportTargeting &&
     !state.showUpgradeDrawer &&
     !engine?.isAdPaused;
   touchControls.sync(Boolean(show), hud);
@@ -768,7 +771,7 @@ function renderUI(forceModals = false) {
   statusModal?.classList.toggle('menu-screen', menuVisible && state.menuPage !== 'battlefield');
   engine?.setSceneOccluded(menuVisible);
   if (menuVisible) {
-    for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'status-toast', 'modifiers-strip', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'upgrade-drawer']) {
+    for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'status-toast', 'modifiers-strip', 'air-recon-hud', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'upgrade-drawer']) {
       setHidden(document.getElementById(id), true);
     }
     setHidden(statusModal, false);
@@ -781,7 +784,7 @@ function renderUI(forceModals = false) {
   if (statusModal) delete statusModal.dataset.page;
 
   if (state.showUpgradeDrawer) {
-    for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'status-toast', 'modifiers-strip', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'status-modal']) {
+    for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'status-toast', 'modifiers-strip', 'air-recon-hud', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'status-modal']) {
       setHidden(document.getElementById(id), true);
     }
     renderGarageAndWorkshopDrawer(hud, upgrades);
@@ -789,6 +792,26 @@ function renderUI(forceModals = false) {
   }
   setHidden(upgradeDrawer, true);
 
+  const airReconHud = document.getElementById('air-recon-hud');
+  if (hud.airSupportTargeting) {
+    for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'sensor-minimap', 'boss-banner', 'target-badge', 'modifiers-strip', 'contract-hud', 'contract-action-bar', 'bottom-hud', 'touch-controls', 'status-modal']) {
+      setHidden(document.getElementById(id), true);
+    }
+    const statusToast = document.getElementById('status-toast');
+    if (statusToast) {
+      if (hud.statusMessage) {
+        setHtml(statusToast, hud.statusMessage);
+        setHidden(statusToast, false);
+      } else {
+        setHidden(statusToast, true);
+      }
+    }
+    setHidden(airReconHud, false);
+    renderAirReconHud(airReconHud, hud);
+    return;
+  }
+
+  setHidden(airReconHud, true);
   for (const id of ['top-telemetry', 'top-compass', 'top-controls', 'modifiers-strip']) {
     setHidden(document.getElementById(id), false);
   }

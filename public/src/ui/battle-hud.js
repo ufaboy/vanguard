@@ -1,5 +1,5 @@
 import { AIR_SUPPORT, POWERUP, getMaxMissileAmmo } from '../game/constants.js';
-import { getAirStrikeRequiredRank, isAirStrikeVariantUnlocked } from '../sim/medals.js';
+import { isAirStrikeVariantUnlocked } from '../sim/medals.js';
 import { DRONE_CONFIGS } from '../game/vehicles/drones.js';
 import { renderPowerUpBadgeSvg } from '../game/icons.js';
 import { GameStatus } from '../game/types.js';
@@ -308,76 +308,10 @@ export function renderBattlefieldHud({
     }
   }
 
-  // 5. Active Modifiers Strip & Air Support Targeting Banner
+  // 5. Active Modifiers Strip
   if (modifiersStrip) {
     const items = [];
-    if (hud.airSupportTargeting) {
-      const targeting = hud.airSupportTargeting;
-      const credits = hud.credits ?? 0;
-      const title =
-        targeting.type === 'STRIKE'
-          ? t('AIR STRIKE TARGETING — CLICK MAP TO STRIKE [RMB / ESC TO CANCEL]')
-          : targeting.type === 'MINES'
-          ? t('AIR MINES TARGETING — CLICK MAP TO DEPLOY [RMB / ESC TO CANCEL]')
-          : t('AIR DROP TARGETING — CLICK MAP TO DROP [RMB / ESC TO CANCEL]');
-
-      let variantHtml = '';
-      const profileMode = hud.profileMode || 'campaign';
-      const playerRankId = hud.playerRankId || 'recruit';
-      if (targeting.type === 'STRIKE') {
-        const variants = [
-          AIR_SUPPORT.STRIKE_BOMBS,
-          AIR_SUPPORT.STRIKE_THERMO,
-          AIR_SUPPORT.STRIKE_AC130,
-          { ...AIR_SUPPORT.MINES, id: 'STRIKE_MINES', label: N_('Air Mines') },
-        ];
-        variantHtml = `
-          <div class="hud-air-variants">
-            ${variants
-              .map((v, idx) => {
-                const unlocked = isAirStrikeVariantUnlocked(v.id, playerRankId, profileMode);
-                const reqRank = getAirStrikeRequiredRank(v.id);
-                const active = unlocked && targeting.strikeVariant === v.id;
-                const affordable = credits >= v.cost;
-                const enabled = unlocked && affordable;
-                const stateClass = !unlocked
-                  ? ' is-locked'
-                  : `${active ? ' is-active' : ''}${affordable ? '' : ' is-poor'}`;
-                const rightText = unlocked
-                  ? `<strong>$${v.cost}</strong>`
-                  : `<span class="hud-air-req">${t('Req: {rank}', { rank: t(reqRank.title) })}</span>`;
-                return `
-                  <button
-                    data-action="air-strike-variant"
-                    data-variant="${v.id}"
-                    ${enabled ? '' : 'disabled'}
-                    class="hud-air-variant-btn${stateClass}"
-                  >
-                    <span class="hud-mod-key">${idx + 1}</span>
-                    <span>${t(v.label)}</span>
-                    ${rightText}
-                  </button>
-                `;
-              })
-              .join('')}
-          </div>
-        `;
-      }
-
-      const stripKey = `air|${targeting.type}|${targeting.strikeVariant}|${credits}|${profileMode}|${playerRankId}`;
-      if (modifiersStrip.__stripKey !== stripKey) {
-        modifiersStrip.__stripKey = stripKey;
-        setHtml(modifiersStrip, `
-          <div class="hud-air-targeting-bar pointer-events-auto">
-            <div class="hud-air-targeting-head">
-              <span>${title}</span>
-              <button data-action="air-support-cancel" class="hud-air-cancel-btn">${t('CANCEL')}</button>
-            </div>
-            ${variantHtml}
-          </div>
-        `);
-      }
-    } else if (hud.status === GameStatus.PLAYING) {
+    if (hud.status === GameStatus.PLAYING) {
       if (hud.apsJammed) {
         items.push(`
           <div class="bg-purple-950/95 border border-purple-500/80 px-3.5 py-1.5 rounded flex items-center gap-2 text-xs font-mono text-purple-200 shadow-lg">

@@ -400,4 +400,10 @@ export default {
   "Req: {rank}": "Req : {rank}",
   "Air Support: {items}": "Soutien aérien : {items}",
   "Air Support Unlocked: {items}": "Soutien aérien débloqué : {items}",
+  "RECON-01 // AIR SUPPORT OPTICS": "RECON-01 // OPTIQUE DE SOUTIEN AÉRIEN",
+  "CLICK MAP TO DESIGNATE TARGET · WASD PAN · SCROLL ZOOM": "CLIQUEZ SUR LA CARTE POUR CIBLER · WASD DÉPLACER · MOLETTE ZOOM",
+  "ABORT [RMB / ESC]": "ANNULER [RMB / ESC]",
+  "ARMED": "ARMÉ",
+  "LOCKED": "VERROUILLÉ",
+  "READY": "PRÊT",
 };
