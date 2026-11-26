@@ -146,11 +146,17 @@ const faqPage = {
         </p>
 
         <div class="hero-tactical-actions">
-          <a class="armored-action-btn primary" href={href('campaign')}>
+          <a class="armored-action-btn primary desktop-edition-cta" href={href('campaign')}>
             <span aria-hidden="true"></span>
             <span class="btn-body">
               <small>{t('PRIMARY CAMPAIGN')}</small>
               <strong>{t('DEPLOY TO THE FRONT')} <span class="action-arrow" aria-hidden="true">»</span></strong>
+            </span>
+          </a>
+          <a class="armored-action-btn secondary mobile-edition-cta" href="https://mobile.battletank.online/">
+            <span class="btn-body">
+              <small>{t('PLAYING ON A PHONE?')}</small>
+              <strong>{t('OPEN MOBILE VERSION')}</strong>
             </span>
           </a>
         </div>

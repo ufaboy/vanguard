@@ -25,6 +25,7 @@ const LINKS = [
           : link[0] === slug
             ? <a class="is-active" aria-current="page" href={pageHref(link[0], locale, slug)}>{t(link[1])}</a>
             : <a href={pageHref(link[0], locale, slug)}>{t(link[1])}</a>)}
+        <a href="https://mobile.battletank.online/">{t('MOBILE VERSION')}</a>
         {isLocalized(slug) && <details class="lang-menu" data-lang-menu>
           <summary aria-label={t('Language')}><span data-lang-current>{locale.toUpperCase()}</span></summary>
           <div class="lang-menu-list">
