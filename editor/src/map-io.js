@@ -80,6 +80,8 @@ export function parseMapState(rawJson) {
     tacticalStyles,
     objectRotations,
     railCurves,
+    railBridges,
+    fixedObjects,
     landmarks3d,
     powerups,
     mines,
@@ -107,6 +109,8 @@ export function parseMapState(rawJson) {
     tacticalStyles,
     objectRotations,
     railCurves,
+    railBridges,
+    fixedObjects,
     baseCell: {
       row: rawJson.baseCell?.row ?? 39,
       col: rawJson.baseCell?.col ?? 19,
@@ -153,6 +157,7 @@ export function serializeMapState(state) {
   delete out.surfaceLayout;
   delete out.objectLayout;
   delete out.bridges;
+  delete out.railBridges;
   delete out.buildings;
   delete out.landmarks3d;
   delete out.powerups;
@@ -185,6 +190,8 @@ export function serializeMapState(state) {
     objectGrid: state.objectGrid,
     bridges,
     railCurves: state.railCurves || [],
+    railBridges: state.railBridges || [],
+    fixedObjects: state.fixedObjects || [],
     buildingLayout,
     tacticalStyles: state.tacticalStyles || null,
     objectRotations: state.objectRotations || null,

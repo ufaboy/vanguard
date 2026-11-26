@@ -387,6 +387,13 @@ export class CodexStage {
       crate.position.set(0, 0.35, 0);
       e.codexStageGroup.add(crate);
       e.codexTankRig = { root: crate, isCrate: true };
+    } else if (item.category === 'OBJECTS' && item.objectType === 'RAIL_BRIDGE') {
+      const bridge = new THREE.Group();
+      for (let segment = -2; segment <= 2; segment++) {
+        bridge.add(e.modelFactory.createRailBridgeBlock(0, segment * 1.9, 5));
+      }
+      e.codexStageGroup.add(bridge);
+      this.fitLandmarkOnPedestal(bridge);
     } else if (item.category === 'LANDMARKS' && item.landmarkKind) {
       const kind = item.landmarkKind;
       const landmark = e.modelFactory.landmarkModels.create(kind);

@@ -36,6 +36,7 @@ const OBJECT_NAME_TO_TILE = Object.freeze({
   sandbags: TileType.SANDBAGS,
   rail_car: TileType.RAIL_CAR,
   locomotive: TileType.LOCOMOTIVE,
+  rail_bridge: TileType.RAIL_BRIDGE,
 });
 
 export const PROP_KINDS = Object.freeze(['lamp', 'fence', 'car', 'shrub', 'barricade']);
@@ -82,6 +83,8 @@ export function unpackTerrain(terrain, size = 40) {
   const tacticalStyles = Array.from({ length: size }, () => new Int8Array(size).fill(-1));
   const objectRotations = Array.from({ length: size }, () => new Int16Array(size));
   const bridges = [];
+  const railBridges = [];
+  const fixedObjects = [];
   const railCurves = [];
   const landmarks3d = [];
   const powerups = [];
@@ -91,11 +94,36 @@ export function unpackTerrain(terrain, size = 40) {
   const props = [];
 
   if (!terrain || typeof terrain !== 'object' || Array.isArray(terrain)) {
-    return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props };
+    return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges, railBridges, fixedObjects, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props };
   }
 
   for (const [type, tuples] of Object.entries(terrain)) {
     if (!Array.isArray(tuples)) continue;
+
+    if (type === 'fixed_object') {
+      for (const tup of tuples) {
+        const kind = String(tup[0] || '').toLowerCase();
+        const tile = kind === 'container' ? TileType.CONTAINER : kind === 'locomotive' ? TileType.LOCOMOTIVE : null;
+        const r = Number(tup[1]);
+        const c = Number(tup[2]);
+        const orientation = tup[3] === 'ew' ? 'ew' : 'ns';
+        const colorIdx = Number(tup[4] ?? -1);
+        if (tile == null || !Number.isInteger(r) || !Number.isInteger(c)) continue;
+        fixedObjects.push({ kind, row: r, col: c, orientation, ...(colorIdx >= 0 ? { colorIndex: colorIdx } : {}) });
+        const cells = orientation === 'ew'
+          ? [{ row: r, col: c }, { row: r, col: c + 1 }]
+          : [{ row: r, col: c }, { row: r + 1, col: c }];
+        for (const cell of cells) {
+          if (cell.row < 0 || cell.row >= size || cell.col < 0 || cell.col >= size) continue;
+          objectGrid[cell.row][cell.col] = tile;
+          if (!objectRotations[cell.row][cell.col]) {
+            objectRotations[cell.row][cell.col] = orientation === 'ew' ? 90 : 0;
+          }
+          if (colorIdx >= 0) tacticalStyles[cell.row][cell.col] = colorIdx;
+        }
+      }
+      continue;
+    }
 
     const surfTile = SURFACE_NAME_TO_TILE[type];
     if (surfTile !== undefined) {
@@ -164,6 +192,44 @@ export function unpackTerrain(terrain, size = 40) {
 
     const objTile = OBJECT_NAME_TO_TILE[type];
     if (objTile !== undefined) {
+      if (objTile === TileType.CONTAINER || objTile === TileType.LOCOMOTIVE) {
+        const kind = objTile === TileType.CONTAINER ? 'container' : 'locomotive';
+        for (const tup of tuples) {
+          const r = Number(tup[0]);
+          const c = Number(tup[1]);
+          if (!Number.isInteger(r) || !Number.isInteger(c)) continue;
+          const h = Math.max(1, Number(tup[2]) || 1);
+          const w = Math.max(1, Number(tup[3]) || 1);
+          const orientation = w > h ? 'ew' : 'ns';
+          const colorIdx = kind === 'container' && tup[4] != null ? Number(tup[4]) : -1;
+          if (orientation === 'ew') {
+            for (let dc = 0; dc < w; dc += 2) {
+              const anchorCol = c + dc;
+              fixedObjects.push({ kind, row: r, col: anchorCol, orientation, ...(colorIdx >= 0 ? { colorIndex: colorIdx } : {}) });
+              for (let offset = 0; offset < 2 && anchorCol + offset < size; offset++) {
+                if (r >= 0 && r < size && anchorCol + offset >= 0) {
+                  objectGrid[r][anchorCol + offset] = objTile;
+                  if (colorIdx >= 0) tacticalStyles[r][anchorCol + offset] = colorIdx;
+                  objectRotations[r][anchorCol + offset] = 90;
+                }
+              }
+            }
+          } else {
+            for (let dr = 0; dr < h; dr += 2) {
+              const anchorRow = r + dr;
+              fixedObjects.push({ kind, row: anchorRow, col: c, orientation, ...(colorIdx >= 0 ? { colorIndex: colorIdx } : {}) });
+              for (let offset = 0; offset < 2 && anchorRow + offset < size; offset++) {
+                if (anchorRow + offset >= 0 && c >= 0 && c < size) {
+                  objectGrid[anchorRow + offset][c] = objTile;
+                  if (colorIdx >= 0) tacticalStyles[anchorRow + offset][c] = colorIdx;
+                  objectRotations[anchorRow + offset][c] = 0;
+                }
+              }
+            }
+          }
+        }
+        continue;
+      }
       const hasColorStyle = type === 'container' || type === 'rail_car';
       for (const tup of tuples) {
         const r = Number(tup[0]);
@@ -178,7 +244,14 @@ export function unpackTerrain(terrain, size = 40) {
           for (let dc = 0; dc < w; dc++) {
             const cc = c + dc;
             if (cc >= 0 && cc < size) {
-              objectGrid[rr][cc] = objTile;
+              if (objTile === TileType.RAIL_BRIDGE) {
+                railBridges.push({ row: rr, col: cc });
+                if (objectGrid[rr][cc] == null || objectGrid[rr][cc] === TileType.RAIL_BRIDGE) {
+                  objectGrid[rr][cc] = TileType.RAIL_BRIDGE;
+                }
+              } else {
+                objectGrid[rr][cc] = objTile;
+              }
               if (colorIdx >= 0) tacticalStyles[rr][cc] = colorIdx;
             }
           }
@@ -239,7 +312,42 @@ export function unpackTerrain(terrain, size = 40) {
           if (rr < 0 || rr >= size) continue;
           for (let dc = 0; dc < w; dc++) {
             const cc = c + dc;
-            if (cc >= 0 && cc < size) objectRotations[rr][cc] = deg;
+            if (cc >= 0 && cc < size) {
+              objectRotations[rr][cc] = deg;
+              const fixed = fixedObjects.find((item) =>
+                (item.kind === 'container' || item.kind === 'locomotive') &&
+                ((item.row === rr && item.col === cc) ||
+                  (item.orientation === 'ew'
+                    ? item.row === rr && item.col + 1 === cc
+                    : item.row + 1 === rr && item.col === cc))
+              );
+              if (fixed) {
+                const nextOrientation = deg % 180 ? 'ew' : 'ns';
+                if (fixed.orientation !== nextOrientation) {
+                  const oldTail = fixed.orientation === 'ew'
+                    ? { row: fixed.row, col: fixed.col + 1 }
+                    : { row: fixed.row + 1, col: fixed.col };
+                  const newTail = nextOrientation === 'ew'
+                    ? { row: fixed.row, col: fixed.col + 1 }
+                    : { row: fixed.row + 1, col: fixed.col };
+                  const tile = fixed.kind === 'container' ? TileType.CONTAINER : TileType.LOCOMOTIVE;
+                  if (oldTail.row >= 0 && oldTail.row < size && oldTail.col >= 0 && oldTail.col < size) {
+                    objectGrid[oldTail.row][oldTail.col] =
+                      railBridges.some((bridge) => bridge.row === oldTail.row && bridge.col === oldTail.col)
+                        ? TileType.RAIL_BRIDGE
+                        : null;
+                    objectRotations[oldTail.row][oldTail.col] = 0;
+                    tacticalStyles[oldTail.row][oldTail.col] = -1;
+                  }
+                  if (newTail.row >= 0 && newTail.row < size && newTail.col >= 0 && newTail.col < size) {
+                    objectGrid[newTail.row][newTail.col] = tile;
+                    objectRotations[newTail.row][newTail.col] = deg;
+                    if (fixed.colorIndex != null) tacticalStyles[newTail.row][newTail.col] = fixed.colorIndex;
+                  }
+                  fixed.orientation = nextOrientation;
+                }
+              }
+            }
           }
         }
       }
@@ -279,7 +387,7 @@ export function unpackTerrain(terrain, size = 40) {
     }
   }
 
-  return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props };
+  return { surfaceGrid, objectGrid, buildingStyles, tacticalStyles, objectRotations, bridges, railBridges, fixedObjects, railCurves, landmarks3d, powerups, mines, mineSigns, decals, props };
 }
 
 /**

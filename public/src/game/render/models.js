@@ -31,6 +31,7 @@ import {
   createCrushableProp as buildCrushableProp,
   createLocomotiveBlock as buildLocomotiveBlock,
   createRailBlock as buildRailBlock,
+  createRailBridgeBlock as buildRailBridgeBlock,
   createRailCarBlock as buildRailCarBlock,
   createRailCurveBlock as buildRailCurveBlock,
   createSandbagsBlock as buildSandbagsBlock,
@@ -2888,6 +2889,7 @@ export class ModelFactory extends TextureGenerator {
     disposeBag(this.barrelMats);
     disposeBag(this.waterTowerMats);
     disposeBag(this.themePropMats);
+    disposeBag(this._railBridgeMats);
     disposeBag(this.perimeterBuildingCatalog);
     disposeBag(this.powerUpMatCache);
     disposeBag(this.powerUpSpriteMatCache);
@@ -4282,6 +4284,10 @@ export class ModelFactory extends TextureGenerator {
 
   createRailBlock(x = 0, z = 0, neighborMask = 5) {
     return buildRailBlock(this, x, z, neighborMask);
+  }
+
+  createRailBridgeBlock(x = 0, z = 0, neighborMask = 5) {
+    return buildRailBridgeBlock(this, x, z, neighborMask);
   }
 
   createRailCurveBlock(x = 0, z = 0, rotationDeg = 0) {

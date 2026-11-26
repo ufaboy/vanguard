@@ -251,7 +251,18 @@ export class SectorLoaderController {
     engine.componentWaterEgress = false;
     const pairedCells = new Set();
     const pairLinks = [];
+    const fixedObjectByAnchor = new Map();
+    const fixedObjectTailSet = new Set();
+    for (const instance of sector.fixedObjects || []) {
+      const tail = instance.orientation === 'ew'
+        ? { row: instance.row, col: instance.col + 1 }
+        : { row: instance.row + 1, col: instance.col };
+      fixedObjectByAnchor.set(`${instance.row},${instance.col}`, instance);
+      fixedObjectTailSet.add(`${tail.row},${tail.col}`);
+      pairLinks.push([instance.row, instance.col, tail.row, tail.col]);
+    }
     const railCurveCellSet = new Set();
+    const railBridgeCellSet = new Set((sector.railBridges || []).map(({ row, col }) => `${row},${col}`));
     for (const rc of sector.railCurves || []) {
       for (const cell of railCurveCells(rc.row, rc.col, rc.rotation || 0)) {
         railCurveCellSet.add(`${cell.row},${cell.col}`);
@@ -313,11 +324,11 @@ export class SectorLoaderController {
         } else if (surface === TileType.OIL_SLICK && engine.modelFactory.createOilSlickBlock) {
           surfaceMesh = engine.modelFactory.createOilSlickBlock(x, z);
           engine.mapGroup.add(surfaceMesh);
-        } else if (surface === TileType.RAIL && engine.modelFactory.createRailBlock && !railCurveCellSet.has(`${r},${c}`)) {
+        } else if (surface === TileType.RAIL && !railCurveCellSet.has(`${r},${c}`)) {
           const isRail = (rr, cc) => {
             if (rr < 0 || rr >= GRID_SIZE || cc < 0 || cc >= GRID_SIZE) return false;
             const s = sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
-            return s === TileType.RAIL;
+            return s === TileType.RAIL || railBridgeCellSet.has(`${rr},${cc}`);
           };
           const railMask =
             (isRail(r - 1, c) ? 1 : 0) |
@@ -436,34 +447,18 @@ export class SectorLoaderController {
           hp = 2;
         } else if (type === TileType.CONTAINER && engine.modelFactory.createContainerBlock) {
           hp = 8;
-          if (!pairedCells.has(`${r},${c}`)) {
-            const sameCont = (rr, cc) =>
-              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
-              !pairedCells.has(`${rr},${cc}`) &&
-              (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.CONTAINER;
-            const pairE = sameCont(r, c + 1);
-            const pairS = !pairE && sameCont(r + 1, c);
-            const spanCells = pairE || pairS ? 2 : 1;
-            const orientation = pairE ? 'ew' : 'ns';
-            if (pairE) {
-              pairedCells.add(`${r},${c}`);
-              pairedCells.add(`${r},${c + 1}`);
-              pairLinks.push([r, c, r, c + 1]);
-            } else if (pairS) {
-              pairedCells.add(`${r},${c}`);
-              pairedCells.add(`${r + 1},${c}`);
-              pairLinks.push([r, c, r + 1, c]);
-            }
+          if (!fixedObjectTailSet.has(`${r},${c}`)) {
+            const fixed = fixedObjectByAnchor.get(`${r},${c}`);
+            const orientation = fixed?.orientation || 'ns';
             const bakedColor = sector.tacticalStyles?.[r]?.[c];
             const colorIdx = bakedColor >= 0 ? bakedColor : (r * 3 + c * 7) % 4;
-            mesh = engine.modelFactory.createContainerBlock(colorIdx, spanCells === 1 && rotDeg ? 'ns' : orientation, spanCells);
+            mesh = engine.modelFactory.createContainerBlock(colorIdx, orientation, 2);
             mesh.position.set(
-              x + (pairE ? TILE_SIZE * 0.5 : 0),
+              x + (orientation === 'ew' ? TILE_SIZE * 0.5 : 0),
               0,
-              z + (pairS ? TILE_SIZE * 0.5 : 0)
+              z + (orientation === 'ns' ? TILE_SIZE * 0.5 : 0)
             );
-            if (spanCells === 1 && rotDeg) mesh.rotation.y = rotRad;
-            else if (spanCells === 2 && (rotDeg === 180 || rotDeg === 270)) mesh.rotation.y += Math.PI;
+            if (rotDeg === 180 || rotDeg === 270) mesh.rotation.y += Math.PI;
             engine.mapGroup.add(mesh);
           }
         } else if (type === TileType.TRANSFORMER && engine.modelFactory.createTransformerBlock) {
@@ -497,7 +492,7 @@ export class SectorLoaderController {
             const pairS = !pairE && sameCar(r + 1, c);
             const isRailAxis = (rr, cc) =>
               rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
-              (sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL;
+              ((sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL || railBridgeCellSet.has(`${rr},${cc}`));
             const orientation = pairE
               ? 'ew'
               : pairS
@@ -521,7 +516,7 @@ export class SectorLoaderController {
             mesh = engine.modelFactory.createRailCarBlock(spanCells === 1 && rotDeg ? 'ns' : orientation, variant, spanCells, colorIdx);
             mesh.position.set(
               x + (pairE ? TILE_SIZE * 0.5 : 0),
-              0,
+              railBridgeCellSet.has(`${r},${c}`) || (pairE && railBridgeCellSet.has(`${r},${c + 1}`)) || (pairS && railBridgeCellSet.has(`${r + 1},${c}`)) ? 0.20 : 0,
               z + (pairS ? TILE_SIZE * 0.5 : 0)
             );
             if (spanCells === 1 && rotDeg) mesh.rotation.y = rotRad;
@@ -530,41 +525,25 @@ export class SectorLoaderController {
           }
         } else if (type === TileType.LOCOMOTIVE && engine.modelFactory.createLocomotiveBlock) {
           hp = 16;
-          if (!pairedCells.has(`${r},${c}`)) {
-            const sameLoco = (rr, cc) =>
-              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
-              !pairedCells.has(`${rr},${cc}`) &&
-              (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.LOCOMOTIVE;
-            const pairE = sameLoco(r, c + 1);
-            const pairS = !pairE && sameLoco(r + 1, c);
+          if (!fixedObjectTailSet.has(`${r},${c}`)) {
+            const fixed = fixedObjectByAnchor.get(`${r},${c}`);
             const isRailAxis = (rr, cc) =>
               rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
-              (sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL;
-            const orientation = pairE
-              ? 'ew'
-              : pairS
-              ? 'ns'
-              : (isRailAxis(r, c - 1) || isRailAxis(r, c + 1)) && !(isRailAxis(r - 1, c) || isRailAxis(r + 1, c))
+              ((sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL || railBridgeCellSet.has(`${rr},${cc}`));
+            const railOrientation =
+              (isRailAxis(r, c - 1) || isRailAxis(r, c + 1)) && !(isRailAxis(r - 1, c) || isRailAxis(r + 1, c))
               ? 'ew'
               : 'ns';
-            if (pairE) {
-              pairedCells.add(`${r},${c}`);
-              pairedCells.add(`${r},${c + 1}`);
-              pairLinks.push([r, c, r, c + 1]);
-            } else if (pairS) {
-              pairedCells.add(`${r},${c}`);
-              pairedCells.add(`${r + 1},${c}`);
-              pairLinks.push([r, c, r + 1, c]);
-            }
-            const spanCells = pairE || pairS ? 2 : 1;
-            mesh = engine.modelFactory.createLocomotiveBlock(spanCells === 1 && rotDeg ? 'ns' : orientation, spanCells);
+            const orientation = fixed?.orientation || railOrientation;
+            mesh = engine.modelFactory.createLocomotiveBlock(orientation, 2);
             mesh.position.set(
-              x + (pairE ? TILE_SIZE * 0.5 : 0),
-              0,
-              z + (pairS ? TILE_SIZE * 0.5 : 0)
+              x + (orientation === 'ew' ? TILE_SIZE * 0.5 : 0),
+              railBridgeCellSet.has(`${r},${c}`) ||
+                (orientation === 'ew' && railBridgeCellSet.has(`${r},${c + 1}`)) ||
+                (orientation === 'ns' && railBridgeCellSet.has(`${r + 1},${c}`)) ? 0.20 : 0,
+              z + (orientation === 'ns' ? TILE_SIZE * 0.5 : 0)
             );
-            if (spanCells === 1 && rotDeg) mesh.rotation.y = rotRad;
-            else if (spanCells === 2 && (rotDeg === 180 || rotDeg === 270)) mesh.rotation.y += Math.PI;
+            if (rotDeg === 180 || rotDeg === 270) mesh.rotation.y += Math.PI;
             engine.mapGroup.add(mesh);
           }
         }
@@ -584,6 +563,7 @@ export class SectorLoaderController {
           mesh,
           surfaceMesh,
           subMeshes,
+          railBridge: railBridgeCellSet.has(`${r},${c}`),
         });
       }
       engine.grid.push(rowCells);
@@ -711,12 +691,22 @@ export class SectorLoaderController {
     }
 
     engine.waterSurfaceMesh = engine.modelFactory.createWaterBlock(
-      engine.grid.map((row) =>
-        row.map((cell) => (cell.type === TileType.BRIDGE ? TileType.WATER : cell.type))
-      ),
+      engine.grid.map((row) => row.map((cell) => cell.surface)),
       TileType.WATER
     );
     engine.mapGroup.add(engine.waterSurfaceMesh);
+    for (const { row, col } of sector.railBridges || []) {
+      const { x, z } = this.gridToWorld(row, col);
+      const isRail = (rr, cc) =>
+        rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+        ((sector.surfaceGrid?.[rr]?.[cc] ?? TileType.EMPTY) === TileType.RAIL || railBridgeCellSet.has(`${rr},${cc}`));
+      const mask =
+        (isRail(row - 1, col) ? 1 : 0) |
+        (isRail(row, col + 1) ? 2 : 0) |
+        (isRail(row + 1, col) ? 4 : 0) |
+        (isRail(row, col - 1) ? 8 : 0);
+      engine.mapGroup.add(engine.modelFactory.createRailBridgeBlock(x, z, mask));
+    }
     engine.iceSurfaceMesh = engine.modelFactory.createIceBlock(
       engine.grid.map((row) => row.map((cell) => cell.type)),
       TileType.ICE

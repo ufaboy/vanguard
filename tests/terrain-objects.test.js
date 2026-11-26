@@ -2,10 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import * as THREE from 'three';
 import { TileType, SURFACE_CONFIGS, SURFACE_TYPES } from '../public/src/game/terrains/surfaces.js';
 import { canPlaceOnSurface, cellMovement, isTilePassable } from '../public/src/game/terrains/layers.js';
 import { PROP_KINDS, railCurveCells, unpackTerrain } from '../public/src/game/terrains/terrain-format.js';
 import { validateRailroadLayout } from '../public/src/game/terrains/rail-rules.js';
+import { TacticalModels } from '../public/src/game/terrains/tactical-models.js';
 import { packTerrain } from '../editor/src/terrain-pack.js';
 
 test('canPlaceOnSurface enforces rules for new surfaces and objects', () => {
@@ -69,15 +71,53 @@ test('unpackTerrain and packTerrain round-trip new tiles and props', () => {
     surfaceGrid: unpacked.surfaceGrid,
     objectGrid: unpacked.objectGrid,
     tacticalStyles: unpacked.tacticalStyles,
+    objectRotations: unpacked.objectRotations,
+    fixedObjects: unpacked.fixedObjects,
+    railBridges: unpacked.railBridges,
     props: unpacked.props,
   });
   assert.deepEqual(repacked.rail, [[10, 5, 1, 4]]);
   assert.deepEqual(repacked.rail_car, [[10, 6, 1, 2, 2]]);
-  assert.deepEqual(repacked.locomotive, [[10, 8]]);
-  assert.deepEqual(repacked.container, [[12, 8, 1, 2, 3]]);
+  assert.deepEqual(repacked.fixed_object, [
+    ['locomotive', 10, 8, 'ns'],
+    ['container', 12, 8, 'ew', 3],
+  ]);
   assert.deepEqual(repacked.transformer, [[14, 14]]);
   assert.deepEqual(repacked.sandbags, [[16, 10, 1, 3]]);
   assert.deepEqual(repacked.prop, [['lamp', 18, 19], ['car', 20, 12, 90]]);
+});
+
+test('unpackTerrain and packTerrain round-trip fixed_object 4-way rotations and rail_bridge', () => {
+  const terrain = {
+    water: [[5, 10, 1, 3]],
+    rail_bridge: [[5, 10, 1, 3]],
+    fixed_object: [
+      ['locomotive', 5, 10, 'ew'],
+      ['container', 12, 12, 'ns', 2],
+    ],
+    rotations: [[5, 10, 1, 2, 270], [12, 12, 2, 1, 180]],
+  };
+  const unpacked = unpackTerrain(terrain, 40);
+  assert.equal(unpacked.railBridges.length, 3);
+  assert.equal(unpacked.objectGrid[5][10], TileType.LOCOMOTIVE);
+  assert.equal(unpacked.objectGrid[5][11], TileType.LOCOMOTIVE);
+  assert.equal(unpacked.objectGrid[5][12], TileType.RAIL_BRIDGE);
+  assert.equal(unpacked.objectRotations[5][10], 270);
+  assert.equal(unpacked.objectRotations[12][12], 180);
+
+  const repacked = packTerrain({
+    surfaceGrid: unpacked.surfaceGrid,
+    objectGrid: unpacked.objectGrid,
+    tacticalStyles: unpacked.tacticalStyles,
+    objectRotations: unpacked.objectRotations,
+    fixedObjects: unpacked.fixedObjects,
+    railBridges: unpacked.railBridges,
+  });
+  const reUnpacked = unpackTerrain(repacked, 40);
+  assert.equal(reUnpacked.railBridges.length, 3);
+  assert.equal(reUnpacked.objectRotations[5][10], 270);
+  assert.equal(reUnpacked.objectRotations[12][12], 180);
+  assert.deepEqual(reUnpacked.fixedObjects, unpacked.fixedObjects);
 });
 
 test('unpackTerrain and packTerrain round-trip objectRotations and decal rotation', () => {
@@ -212,6 +252,43 @@ test('validateRailroadLayout enforces continuity, curve limit, no 90° turns, an
     rail_car: [[10, 3]],
   }, 40);
   assert.equal(validateRailroadLayout(noTrain).issues.some((i) => i.code === 'rail_missing_train'), true);
+});
+
+test('TacticalModels loads both single-mesh and multi-primitive GLTF groups and tints painted slots', () => {
+  const scene = new THREE.Scene();
+  const matSteel = new THREE.MeshStandardMaterial({ name: 'Tactical_Steel', color: 0xffffff });
+  const matPainted = new THREE.MeshStandardMaterial({ name: 'Tactical_Painted', color: 0xffffff });
+
+  const singleMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), matSteel);
+  singleMesh.name = 'SANDBAGS_STRAIGHT';
+  scene.add(singleMesh);
+
+  const multiGroup = new THREE.Group();
+  multiGroup.name = 'LOCOMOTIVE';
+  const child1 = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), matSteel);
+  child1.name = 'LOCOMOTIVE_1';
+  const child2 = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), matPainted);
+  child2.name = 'LOCOMOTIVE_2';
+  multiGroup.add(child1, child2);
+  scene.add(multiGroup);
+
+  const tm = new TacticalModels();
+  assert.equal(tm.loadFromScene(scene), true);
+
+  const target = new THREE.Group();
+  assert.equal(tm.apply(target, 'LOCOMOTIVE', { paintHex: 0x2563eb }), true);
+  assert.equal(target.children.length, 2);
+  assert.equal(target.children[0].material, matSteel);
+  assert.equal(target.children[1].material.color.getHex(), 0x2563eb);
+
+  assert.equal(tm.recolor(target, { paintHex: 0xca8a04 }), true);
+  assert.equal(target.children[1].material.color.getHex(), 0xca8a04);
+
+  const bags = new THREE.Group();
+  assert.equal(tm.apply(bags, 'SANDBAGS_STRAIGHT'), true);
+  assert.equal(bags.children.length, 1);
+
+  tm.dispose();
 });
 
 test('all maps place RAIL_CAR on RAIL and use valid prop kinds', () => {

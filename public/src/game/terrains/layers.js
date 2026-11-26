@@ -38,6 +38,7 @@ const FACILITY_TILE_SET = new Set([
   TileType.ENEMY_BASE,
   TileType.RAIL_CAR,
   TileType.LOCOMOTIVE,
+  TileType.RAIL_BRIDGE,
 ]);
 
 const DECORATION_TILE_SET = new Set([
@@ -106,8 +107,11 @@ function isDecorationType(tileType) {
 /** Hard compatibility check: can `objectType` be placed on `surfaceType`? */
 export function canPlaceOnSurface(objectType, surfaceType) {
   if (objectType == null || objectType === TileType.EMPTY) return true;
+  if (objectType === TileType.RAIL_BRIDGE) return true;
   if (objectType === TileType.BRIDGE) return BRIDGE_SURFACES.has(surfaceType);
-  if (objectType === TileType.RAIL_CAR || objectType === TileType.LOCOMOTIVE) return surfaceType === TileType.RAIL;
+  if (objectType === TileType.RAIL_CAR || objectType === TileType.LOCOMOTIVE) {
+    return surfaceType === TileType.RAIL || surfaceType === TileType.RAIL_BRIDGE;
+  }
   if (isFacilityType(objectType)) return FACILITY_SURFACES.has(surfaceType);
   if (objectType === TileType.FOREST) return FOREST_SURFACES.has(surfaceType);
   if (objectType === TileType.BARREL) return BARREL_SURFACES.has(surfaceType);
@@ -177,6 +181,7 @@ const TILE_TYPE_TO_CONFIG = Object.freeze({
   [TileType.STONE]: SURFACE_CONFIGS[SURFACE_TYPES.STONE],
   [TileType.GRASS]: SURFACE_CONFIGS[SURFACE_TYPES.GRASS],
   [TileType.RAIL]: SURFACE_CONFIGS[SURFACE_TYPES.RAIL],
+  [TileType.RAIL_BRIDGE]: SURFACE_CONFIGS[SURFACE_TYPES.RAIL_BRIDGE],
   [TileType.CONTAINER]: SURFACE_CONFIGS[SURFACE_TYPES.CONTAINER],
   [TileType.TRANSFORMER]: SURFACE_CONFIGS[SURFACE_TYPES.TRANSFORMER],
   [TileType.SANDBAGS]: SURFACE_CONFIGS[SURFACE_TYPES.SANDBAGS],

@@ -33,6 +33,7 @@ export const TileType = Object.freeze({
   SANDBAGS: 28,
   RAIL_CAR: 29,
   LOCOMOTIVE: 30,
+  RAIL_BRIDGE: 31,
 });
 
 export const SURFACE_TYPES = Object.freeze({
@@ -66,6 +67,7 @@ export const SURFACE_TYPES = Object.freeze({
   SANDBAGS: 'SANDBAGS',
   RAIL_CAR: 'RAIL_CAR',
   LOCOMOTIVE: 'LOCOMOTIVE',
+  RAIL_BRIDGE: 'RAIL_BRIDGE',
   TURRET_CANNON: 'TURRET_CANNON',
   TURRET_HOWITZER: 'TURRET_HOWITZER',
   TURRET_MLRS: 'TURRET_MLRS',
@@ -798,6 +800,34 @@ export const SURFACE_CONFIGS = Object.freeze({
       Object.freeze({ label: 'PASSABILITY', value: 'All tracked & hover vehicles' }),
       Object.freeze({ label: 'SPEED BONUS', value: '+10% max speed & acceleration' }),
       Object.freeze({ label: 'SUPPORTS', value: 'Freight Rail Cars & dry fortifications' }),
+    ]),
+  }),
+
+  [SURFACE_TYPES.RAIL_BRIDGE]: Object.freeze({
+    id: 'tile_rail_bridge',
+    surfaceType: SURFACE_TYPES.RAIL_BRIDGE,
+    tileId: TileType.RAIL_BRIDGE,
+    code: 'TILE-RAIL-BRIDGE',
+    name: 'Steel Through-Truss Rail Bridge',
+    role: 'Railway Bridge Deck',
+    accentHex: '#64748B',
+    destructible: false,
+    maxHP: 0,
+    passableByTracks: true,
+    passableByHover: true,
+    blocksProjectiles: false,
+    blocksLineOfSight: false,
+    speedMultiplier: 1.1,
+    accelMultiplier: 1.1,
+    turnMultiplier: 1.0,
+    brakeMultiplier: 1.05,
+    hudLabel: 'Railroad Bridge',
+    description:
+      'Elevated ballasted rail deck carried by weathered steel through-trusses, cross-bracing, and riveted plate girders. Keeps the railway continuous across rivers and supports locomotives, freight cars, and tracked vehicles.',
+    specs: Object.freeze([
+      Object.freeze({ label: 'PASSABILITY', value: 'All tracked & hover vehicles' }),
+      Object.freeze({ label: 'RAILWAY', value: 'Supports freight rail cars & locomotives' }),
+      Object.freeze({ label: 'STRUCTURE', value: 'Riveted steel through-truss construction' }),
     ]),
   }),
 

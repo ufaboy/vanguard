@@ -36,6 +36,7 @@ const TILE_TO_OBJECT_NAME = new Map([
   [TileType.SANDBAGS, 'sandbags'],
   [TileType.RAIL_CAR, 'rail_car'],
   [TileType.LOCOMOTIVE, 'locomotive'],
+  [TileType.RAIL_BRIDGE, 'rail_bridge'],
   [TileType.ENEMY_BASE, 'enemy_base'],
 ]);
 
@@ -98,6 +99,8 @@ export function packTerrain({
   mineSigns = [],
   decals = [],
   props = [],
+  railBridges = [],
+  fixedObjects = [],
 }) {
   const rows = surfaceGrid?.length || objectGrid?.length || 0;
   const cols = surfaceGrid?.[0]?.length || objectGrid?.[0]?.length || 0;
@@ -131,6 +134,9 @@ export function packTerrain({
       t === TileType.BASE ||
       t === TileType.LANDMARK ||
       t === TileType.BRIDGE ||
+      t === TileType.RAIL_BRIDGE ||
+      t === TileType.CONTAINER ||
+      t === TileType.LOCOMOTIVE ||
       t === TileType.HOUSE_1 ||
       t === TileType.HOUSE_2
     ) {
@@ -166,6 +172,18 @@ export function packTerrain({
     ]);
   }
 
+  // Railroad bridges are object overlays, stored separately so trains can occupy their cells.
+  const railBridgeCells = new Set(railBridges.map(({ row, col }) => `${row},${col}`));
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (objectGrid[r][c] === TileType.RAIL_BRIDGE) railBridgeCells.add(`${r},${c}`);
+    }
+  }
+  for (const key of railBridgeCells) {
+    const [row, col] = key.split(',').map(Number);
+    pushGroup(terrain, 'rail_bridge', [row, col]);
+  }
+
   // 4. Houses (grouped by tile + baked style)
   for (const rect of packRects(rows, cols, (r, c) => {
     const t = objectGrid[r][c];
@@ -182,7 +200,7 @@ export function packTerrain({
   if (objectRotations) {
     for (const rect of packRects(rows, cols, (r, c) => {
       const t = objectGrid[r][c];
-      if (t == null || t === TileType.BASE || t === TileType.LANDMARK || t === TileType.BRIDGE) {
+      if (t == null || t === TileType.BASE || t === TileType.LANDMARK || t === TileType.BRIDGE || t === TileType.RAIL_BRIDGE) {
         return null;
       }
       const deg = objectRotations[r]?.[c] || 0;
@@ -204,6 +222,16 @@ export function packTerrain({
       'rail_curve',
       rc.rotation ? [rc.row, rc.col, rc.rotation] : [rc.row, rc.col]
     );
+  }
+  for (const item of fixedObjects) {
+    const colorIndex = item.colorIndex ?? tacticalStyles?.[item.row]?.[item.col] ?? -1;
+    pushGroup(terrain, 'fixed_object', [
+      item.kind,
+      item.row,
+      item.col,
+      item.orientation === 'ew' ? 'ew' : 'ns',
+      ...(item.kind === 'container' && colorIndex >= 0 ? [colorIndex] : []),
+    ]);
   }
   for (const lm of landmarks3d) {
     pushGroup(

@@ -161,6 +161,12 @@ export const CODEX_CATEGORIES = Object.freeze([
     icon: '▣',
   }),
   Object.freeze({
+    id: 'OBJECTS',
+    label: 'OBJECTS & INFRASTRUCTURE',
+    count: 1,
+    icon: '▤',
+  }),
+  Object.freeze({
     id: 'LANDMARKS',
     label: 'LANDMARKS',
     count: LANDMARK_CATALOG.length,
@@ -266,6 +272,23 @@ export const CODEX_ITEMS = Object.freeze([
   ),
 
   ...LANDMARK_CATALOG,
+  Object.freeze({
+    id: 'object_rail_bridge',
+    category: 'OBJECTS',
+    code: 'OBJECT-RAIL-BRIDGE',
+    name: 'Steel Through-Truss Rail Bridge',
+    badge: 'Railway Object',
+    accentHex: '#64748B',
+    objectType: 'RAIL_BRIDGE',
+    previewType: 'OBJECT',
+    summary: 'Riveted steel through-truss railway bridge placed as an object over the underlying terrain.',
+    tacticalNotes: 'Passable railway deck. Trains may occupy bridge cells while the bridge remains underneath.',
+    specs: [
+      { label: 'PLACEMENT', value: 'Object layer; overlays any surface' },
+      { label: 'RAILWAY', value: 'Connects rail track across water and ground' },
+      { label: 'STRUCTURE', value: 'Steel trusses, cross-bracing, ballast, sleepers, and rails' },
+    ],
+  }),
 
   ...Object.values(POWERUP_TYPES).map((p) =>
     Object.freeze({
@@ -456,6 +479,8 @@ export const CODEX_ITEMS = Object.freeze([
         ? 'SURFACE'
         : item.category === 'LANDMARKS'
         ? 'LANDMARK'
+        : item.category === 'OBJECTS'
+        ? 'OBJECT'
         : 'EFFECT'),
     isBoss: Boolean(item.id?.startsWith('boss_')),
   })

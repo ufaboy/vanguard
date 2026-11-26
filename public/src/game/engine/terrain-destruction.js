@@ -425,7 +425,7 @@ export class TerrainDestructionController {
       cell.maxHp = 1;
       if (factory?.createRubbleBlock && engine.mapGroup) {
         const rubble = factory.createRubbleBlock(buildingInfo ? buildingInfo.kind : 'house2');
-        rubble.position.set(x, 0, z);
+        rubble.position.set(x, wasRailCar && cell.railBridge ? 0.20 : 0, z);
         rubble.rotation.y = prevMesh?.userData?.breach
           ? prevMesh.rotation.y
           : ((cell.row * 7 + cell.col * 13) % 4) * (Math.PI / 2);

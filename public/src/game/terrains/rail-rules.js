@@ -12,7 +12,7 @@ const MAX_RAIL_CURVES = 2;
  * - No 1-2 cell coaxial interruptions by foreign objects or non-empty surfaces (dead-ends allowed).
  * - Maps with RAIL must include at least one coupled train consist (LOCOMOTIVE adjacent to RAIL_CAR).
  */
-export function validateRailroadLayout({ surfaceGrid, objectGrid, railCurves = [] }) {
+export function validateRailroadLayout({ surfaceGrid, objectGrid, railCurves = [], railBridges = [] }) {
   const issues = [];
   const rows = surfaceGrid?.length || 0;
   const cols = surfaceGrid?.[0]?.length || 0;
@@ -30,9 +30,13 @@ export function validateRailroadLayout({ surfaceGrid, objectGrid, railCurves = [
       curveSet.add(`${cell.row},${cell.col}`);
     }
   }
+  const railBridgeSet = new Set(railBridges.map(({ row, col }) => `${row},${col}`));
 
   const isRail = (r, c) =>
-    r >= 0 && r < rows && c >= 0 && c < cols && surfaceGrid[r][c] === TileType.RAIL;
+    r >= 0 && r < rows && c >= 0 && c < cols &&
+    (surfaceGrid[r][c] === TileType.RAIL ||
+      railBridgeSet.has(`${r},${c}`) ||
+      objectGrid?.[r]?.[c] === TileType.RAIL_BRIDGE);
 
   let railCount = 0;
   let hasCoupledTrain = false;
@@ -44,7 +48,7 @@ export function validateRailroadLayout({ surfaceGrid, objectGrid, railCurves = [
       const obj = objectGrid?.[r]?.[c] ?? null;
       const onCurve = curveSet.has(`${r},${c}`);
 
-      if (obj !== null && obj !== TileType.RAIL_CAR && obj !== TileType.LOCOMOTIVE) {
+      if (obj !== null && obj !== TileType.RAIL_CAR && obj !== TileType.LOCOMOTIVE && obj !== TileType.RAIL_BRIDGE) {
         issues.push({
           code: 'rail_object_forbidden',
           row: r,

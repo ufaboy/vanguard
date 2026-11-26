@@ -77,6 +77,8 @@ export class Viewport3D {
     this.railCurveGroup = new THREE.Group();
     this.objectGroup = new THREE.Group();
     this.bridgeGroup = new THREE.Group();
+    this.railBridgeGroup = new THREE.Group();
+    this.turretGroup = new THREE.Group();
     this.markerGroup = new THREE.Group();
     this.landmarkGroup = new THREE.Group();
     this.decoGroup = new THREE.Group();
@@ -85,10 +87,13 @@ export class Viewport3D {
       this.railCurveGroup,
       this.objectGroup,
       this.bridgeGroup,
+      this.railBridgeGroup,
+      this.turretGroup,
       this.markerGroup,
       this.landmarkGroup,
       this.decoGroup
     );
+    this._hiddenTurretBaseCells = [];
     this.railCurveCellSet = new Set();
 
     this.surfaceCells = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(null));
@@ -173,7 +178,10 @@ export class Viewport3D {
     this.keysDown = new Set();
     this.dragMode = null; // 'paint' | 'pan' | 'orbit'
     this.lastPointer = { x: 0, y: 0 };
+    this._lastHoverKey = null;
+    this._lastDragKey = null;
     this.brushSize = 1;
+    this.brushFootprint = { width: 1, height: 1 };
 
     this.raycaster = new THREE.Raycaster();
     this.groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -185,11 +193,11 @@ export class Viewport3D {
 
   setState(state) {
     this.state = state;
-    this.applyEnvironment();
+    this.applyEnvironment(false);
     this.rebuildAll();
   }
 
-  applyEnvironment() {
+  applyEnvironment(rebuildDeco = true) {
     if (!this.state) return;
     const { fogColor, groundColor, tint } = this.state.environment;
     this.scene.background = new THREE.Color(fogColor || '#18212a');
@@ -199,7 +207,7 @@ export class Viewport3D {
       this.groundMat.color.set('#ffffff');
     }
     this.dirLight.color.set(tint || '#fff6e5');
-    this.rebuildDecorations();
+    if (rebuildDeco) this.rebuildDecorations();
   }
 
   setGridVisible(visible) {
@@ -214,12 +222,19 @@ export class Viewport3D {
   setObjectsVisible(visible) {
     this.objectGroup.visible = visible;
     this.bridgeGroup.visible = visible;
+    this.railBridgeGroup.visible = visible;
+    this.turretGroup.visible = visible;
     this.landmarkGroup.visible = visible;
   }
 
   setBrushSize(size) {
     this.brushSize = size;
-    this.cursorMesh.scale.set(size, 1, size);
+    this.setBrushFootprint(size, size);
+  }
+
+  setBrushFootprint(width, height) {
+    this.brushFootprint = { width, height };
+    this.cursorMesh.scale.set(width, 1, height);
   }
 
   setPlacementRotation(deg) {
@@ -350,6 +365,8 @@ export class Viewport3D {
     this.rebuildMarkers();
     this.rebuildLandmarks();
     this.rebuildBridges();
+    this.rebuildRailBridges();
+    this.rebuildTurrets();
     this.rebuildDecorations();
   }
 
@@ -373,6 +390,87 @@ export class Viewport3D {
     }
   }
 
+  rebuildRailBridges() {
+    this.railBridgeGroup.clear();
+    if (!this.state || !this.modelFactory.createRailBridgeBlock) return;
+    const size = this.state.size;
+    const bridgeCells = new Set((this.state.railBridges || []).map(({ row, col }) => `${row},${col}`));
+    const isRail = (row, col) =>
+      row >= 0 && row < size && col >= 0 && col < size &&
+      (this.state.surfaceGrid[row][col] === TileType.RAIL || bridgeCells.has(`${row},${col}`));
+    for (const { row, col } of this.state.railBridges || []) {
+      const mask =
+        (isRail(row - 1, col) ? 1 : 0) |
+        (isRail(row, col + 1) ? 2 : 0) |
+        (isRail(row + 1, col) ? 4 : 0) |
+        (isRail(row, col - 1) ? 8 : 0);
+      const pos = gridToWorld(row, col, size);
+      this.railBridgeGroup.add(this.modelFactory.createRailBridgeBlock(pos.x, pos.z, mask));
+    }
+  }
+
+  rebuildTurrets() {
+    for (const [r, c] of this._hiddenTurretBaseCells || []) {
+      const mesh = this.objectCells?.[r]?.[c];
+      if (mesh) mesh.visible = true;
+    }
+    this._hiddenTurretBaseCells = [];
+    this.turretGroup.clear();
+    if (!this.state || !this.modelFactory.createDefenseTurretRig) return;
+
+    const size = this.state.size;
+    const bases = [];
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (this.state.objectGrid[r]?.[c] === TileType.ENEMY_BASE) {
+          bases.push({ row: r, col: c });
+        }
+      }
+    }
+    if (bases.length === 0 && this.state.raw?.gameMode === 'stronghold_assault') {
+      const eb = this.state.raw?.enemyBaseCell || { row: 3, col: 17 };
+      if (eb.row >= 0 && eb.row < size && eb.col >= 0 && eb.col < size) {
+        bases.push({ row: eb.row, col: eb.col });
+      }
+    }
+    if (bases.length === 0) return;
+
+    const mapId = String(this.state.meta?.id || this.state.raw?.id || '');
+    const missionMatch = mapId.match(/mission-(\d+)/i);
+    const sectorIdx = missionMatch ? Number(missionMatch[1]) - 1 : -1;
+    const isComplexAssault = [9, 14, 18, 21, 26, 29, 31, 33].includes(sectorIdx);
+
+    for (const ebCell of bases) {
+      const slots = [
+        { row: ebCell.row + 1, col: ebCell.col - 1, type: 'CANNON' },
+        { row: ebCell.row + 1, col: ebCell.col + 1, type: 'CANNON' },
+        { row: ebCell.row - 1, col: ebCell.col - 1, type: 'HOWITZER' },
+        { row: ebCell.row - 1, col: ebCell.col + 1, type: 'HOWITZER' },
+      ];
+      if (isComplexAssault) {
+        slots.push(
+          { row: ebCell.row, col: ebCell.col - 2, type: 'MLRS' },
+          { row: ebCell.row, col: ebCell.col + 2, type: 'MLRS' }
+        );
+      }
+      for (const slot of slots) {
+        if (slot.row < 0 || slot.row >= size || slot.col < 0 || slot.col >= size) continue;
+        const rig = this.modelFactory.createDefenseTurretRig(slot.type);
+        const pos = gridToWorld(slot.row, slot.col, size);
+        rig.root.position.set(pos.x, 0, pos.z);
+        rig.turret.rotation.y = Math.PI;
+        if (rig.hpBarBg) rig.hpBarBg.visible = false;
+        if (rig.hpBarFill) rig.hpBarFill.visible = false;
+        this.turretGroup.add(rig.root);
+        const underlying = this.objectCells?.[slot.row]?.[slot.col];
+        if (underlying) {
+          underlying.visible = false;
+          this._hiddenTurretBaseCells.push([slot.row, slot.col]);
+        }
+      }
+    }
+  }
+
   refreshRoadNeighbors(r, c) {
     if (!this.state) return;
     const size = this.state.size;
@@ -380,7 +478,7 @@ export class Viewport3D {
       const nr = r + dr;
       const nc = c + dc;
       if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
-      if (this.state.surfaceGrid[nr][nc] === TileType.ROAD) {
+      if (this.state.surfaceGrid[nr][nc] === TileType.ROAD || this.isRailCell(nr, nc)) {
         this.updateCell(nr, nc, false);
       }
     }
@@ -459,8 +557,7 @@ export class Viewport3D {
     } else if (surface === TileType.OIL_SLICK && this.modelFactory.createOilSlickBlock) {
       sMesh = this.modelFactory.createOilSlickBlock(x, z);
     } else if (surface === TileType.RAIL && this.modelFactory.createRailBlock && !this.railCurveCellSet?.has(`${r},${c}`)) {
-      const isRail = (rr, cc) =>
-        rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
+      const isRail = (rr, cc) => this.isRailCell(rr, cc);
       const railMask =
         (isRail(r - 1, c) ? 1 : 0) |
         (isRail(r, c + 1) ? 2 : 0) |
@@ -510,15 +607,19 @@ export class Viewport3D {
       oMesh.position.set(x, 0, z);
       if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.CONTAINER && this.modelFactory.createContainerBlock) {
-      const isCont = (rr, cc) =>
-        rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.objectGrid[rr][cc] === TileType.CONTAINER;
-      const ewLink = isCont(r, c - 1) || isCont(r, c + 1);
-      const nsLink = isCont(r - 1, c) || isCont(r + 1, c);
-      const bakedColor = this.state.tacticalStyles?.[r]?.[c];
-      const colorIdx = bakedColor >= 0 ? bakedColor : (r * 3 + c * 7) % 4;
-      oMesh = this.modelFactory.createContainerBlock(colorIdx, rotDeg ? 'ns' : ewLink && !nsLink ? 'ew' : 'ns', 1);
-      oMesh.position.set(x, 0, z);
-      if (rotDeg) oMesh.rotation.y = rotRad;
+      const fixed = this.getFixedObjectAt(r, c, TileType.CONTAINER);
+      const isAnchor = !fixed || (fixed.row === r && fixed.col === c);
+      if (!isAnchor) {
+        this.objectCells[r][c] = null;
+        oMesh = null;
+      } else {
+        const orientation = fixed?.orientation || (rotDeg % 180 ? 'ew' : 'ns');
+        const bakedColor = this.state.tacticalStyles?.[r]?.[c];
+        const colorIdx = bakedColor >= 0 ? bakedColor : (r * 3 + c * 7) % 4;
+        oMesh = this.modelFactory.createContainerBlock(colorIdx, orientation, 2);
+        oMesh.position.set(x + (orientation === 'ew' ? TILE_SIZE / 2 : 0), 0, z + (orientation === 'ns' ? TILE_SIZE / 2 : 0));
+        if (rotDeg === 180 || rotDeg === 270) oMesh.rotation.y += Math.PI;
+      }
     } else if (object === TileType.TRANSFORMER && this.modelFactory.createTransformerBlock) {
       oMesh = this.modelFactory.createTransformerBlock();
       oMesh.position.set(x, 0, z);
@@ -535,23 +636,47 @@ export class Viewport3D {
       oMesh.position.set(x, 0, z);
       if (rotDeg) oMesh.rotation.y += rotRad;
     } else if (object === TileType.RAIL_CAR && this.modelFactory.createRailCarBlock) {
-      const isRail = (rr, cc) =>
-        rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
+      const isRail = (rr, cc) => this.isRailCell(rr, cc);
+      const pairE = this.state.objectGrid[r][c + 1] === TileType.RAIL_CAR;
+      const pairS = !pairE && this.state.objectGrid[r + 1]?.[c] === TileType.RAIL_CAR;
+      const onBridge = this.isRailBridgeCell(r, c) ||
+        (pairE && this.isRailBridgeCell(r, c + 1)) ||
+        (pairS && this.isRailBridgeCell(r + 1, c));
+      const alreadyPaired = this.isRailVehiclePartner(r, c, TileType.RAIL_CAR);
+      if (alreadyPaired) {
+        this.objectCells[r][c] = null;
+        oMesh = null;
+      } else {
       const ewRail = isRail(r, c - 1) || isRail(r, c + 1);
       const nsRail = isRail(r - 1, c) || isRail(r + 1, c);
       const bakedColor = this.state.tacticalStyles?.[r]?.[c];
       const colorIdx = bakedColor >= 0 ? bakedColor : (r * 5 + c * 11) % 4;
-      oMesh = this.modelFactory.createRailCarBlock(rotDeg ? 'ns' : ewRail && !nsRail ? 'ew' : 'ns', (r + c) % 2 === 0 ? 'closed' : 'open', 1, colorIdx);
-      oMesh.position.set(x, 0, z);
-      if (rotDeg) oMesh.rotation.y = rotRad;
+      const spanCells = pairE || pairS ? 2 : 1;
+      const orientation = pairE ? 'ew' : pairS ? 'ns' : ewRail && !nsRail ? 'ew' : 'ns';
+      oMesh = this.modelFactory.createRailCarBlock(spanCells === 1 && rotDeg ? 'ns' : orientation, (r + c) % 2 === 0 ? 'closed' : 'open', spanCells, colorIdx);
+      oMesh.position.set(x + (pairE ? TILE_SIZE / 2 : 0), onBridge ? 0.20 : 0, z + (pairS ? TILE_SIZE / 2 : 0));
+      if (spanCells === 1 && rotDeg) oMesh.rotation.y = rotRad;
+      else if (spanCells === 2 && (rotDeg === 180 || rotDeg === 270)) oMesh.rotation.y += Math.PI;
+      }
     } else if (object === TileType.LOCOMOTIVE && this.modelFactory.createLocomotiveBlock) {
-      const isRail = (rr, cc) =>
-        rr >= 0 && rr < size && cc >= 0 && cc < size && this.state.surfaceGrid[rr][cc] === TileType.RAIL;
-      const ewRail = isRail(r, c - 1) || isRail(r, c + 1);
-      const nsRail = isRail(r - 1, c) || isRail(r + 1, c);
-      oMesh = this.modelFactory.createLocomotiveBlock(rotDeg ? 'ns' : ewRail && !nsRail ? 'ew' : 'ns', 1);
-      oMesh.position.set(x, 0, z);
-      if (rotDeg) oMesh.rotation.y = rotRad;
+      const isRail = (rr, cc) => this.isRailCell(rr, cc);
+      const fixed = this.getFixedObjectAt(r, c, TileType.LOCOMOTIVE);
+      const isAnchor = !fixed || (fixed.row === r && fixed.col === c);
+      const orientation = fixed?.orientation || (rotDeg % 180 ? 'ew' : 'ns');
+      const tail = orientation === 'ew' ? { row: r, col: c + 1 } : { row: r + 1, col: c };
+      const onBridge = this.isRailBridgeCell(r, c) || this.isRailBridgeCell(tail.row, tail.col);
+      if (!isAnchor) {
+        this.objectCells[r][c] = null;
+        oMesh = null;
+      } else {
+        const ewRail = isRail(r, c - 1) || isRail(r, c + 1);
+        const nsRail = isRail(r - 1, c) || isRail(r + 1, c);
+        const railOrientation = ewRail && !nsRail ? 'ew' : 'ns';
+        const modelOrientation = fixed?.orientation || railOrientation;
+        oMesh = this.modelFactory.createLocomotiveBlock(modelOrientation, 2);
+        oMesh.position.set(x + (modelOrientation === 'ew' ? TILE_SIZE / 2 : 0), onBridge ? 0.20 : 0, z + (modelOrientation === 'ns' ? TILE_SIZE / 2 : 0));
+        if (rotDeg === 180 || rotDeg === 270) oMesh.rotation.y += Math.PI;
+      }
     } else if (object === TileType.RUBBLE) {
       oMesh = new THREE.Mesh(
         new THREE.BoxGeometry(1.5, 0.45, 1.5),
@@ -582,8 +707,54 @@ export class Viewport3D {
 
     if (updateNeighbors) {
       this.refreshRoadNeighbors(r, c);
+      this.refreshRailVehicleNeighbors(r, c);
       this.syncBuildings();
       this.rebuildBridges();
+      this.rebuildTurrets();
+    }
+  }
+
+  isRailCell(row, col) {
+    if (!this.state || row < 0 || row >= this.state.size || col < 0 || col >= this.state.size) return false;
+    return this.state.surfaceGrid[row][col] === TileType.RAIL ||
+      (this.state.railBridges || []).some((bridge) => bridge.row === row && bridge.col === col);
+  }
+
+  isRailBridgeCell(row, col) {
+    return (this.state?.railBridges || []).some((bridge) => bridge.row === row && bridge.col === col);
+  }
+
+  getFixedObjectAt(row, col, type) {
+    const kind = type === TileType.CONTAINER ? 'container' : type === TileType.LOCOMOTIVE ? 'locomotive' : null;
+    if (!kind) return null;
+    const instance = (this.state?.fixedObjects || []).find((item) => {
+      if (item.kind !== kind) return false;
+      const tail = item.orientation === 'ew'
+        ? { row: item.row, col: item.col + 1 }
+        : { row: item.row + 1, col: item.col };
+      return (item.row === row && item.col === col) || (tail.row === row && tail.col === col);
+    });
+    return instance || null;
+  }
+
+  isRailVehiclePartner(row, col, type) {
+    const grid = this.state.objectGrid;
+    let startCol = col;
+    while (startCol > 0 && grid[row][startCol - 1] === type) startCol--;
+    if (startCol < col) return (col - startCol) % 2 === 1;
+    let startRow = row;
+    while (startRow > 0 && grid[startRow - 1][col] === type) startRow--;
+    return startRow < row && (row - startRow) % 2 === 1;
+  }
+
+  refreshRailVehicleNeighbors(row, col) {
+    if (!this.state) return;
+    for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+      const r = row + dr;
+      const c = col + dc;
+      if (r < 0 || r >= this.state.size || c < 0 || c >= this.state.size) continue;
+      const type = this.state.objectGrid[r][c];
+      if (type === TileType.RAIL_CAR || type === TileType.LOCOMOTIVE) this.updateCell(r, c, false);
     }
   }
 
@@ -706,7 +877,7 @@ export class Viewport3D {
       };
       try {
         this.urbanGroundTexture = createUrbanGroundTexture(sectorProxy, {
-          maxTextureSize: this.renderer.capabilities.maxTextureSize,
+          maxTextureSize: Math.min(1024, this.renderer.capabilities.maxTextureSize),
         });
       } catch (err) {
         console.warn('Editor ground decoration texture failed:', err);
@@ -742,9 +913,10 @@ export class Viewport3D {
       return;
     }
     const size = this.state?.size || GRID_SIZE;
-    const offset = ((this.brushSize - 1) * TILE_SIZE) / 2;
+    const offsetX = ((this.brushFootprint.width - 1) * TILE_SIZE) / 2;
+    const offsetZ = ((this.brushFootprint.height - 1) * TILE_SIZE) / 2;
     const pos = gridToWorld(cell.row, cell.col, size);
-    this.cursorMesh.position.set(pos.x + offset, 0.05, pos.z + offset);
+    this.cursorMesh.position.set(pos.x + offsetX, 0.05, pos.z + offsetZ);
     this.cursorMesh.visible = true;
   }
 
@@ -782,6 +954,7 @@ export class Viewport3D {
       if (e.button === 0) {
         this.dragMode = 'paint';
         const cell = this._pickCell(e.clientX, e.clientY);
+        this._lastDragKey = cell ? `${cell.row},${cell.col}` : null;
         if (cell) this.callbacks.onPointerDownCell?.(cell, e);
       }
     });
@@ -812,9 +985,14 @@ export class Viewport3D {
       }
 
       const cell = this._pickCell(e.clientX, e.clientY);
-      this._updateCursor(cell);
-      this.callbacks.onHoverCell?.(cell);
-      if (this.dragMode === 'paint' && cell) {
+      const cellKey = cell ? `${cell.row},${cell.col}` : null;
+      if (cellKey !== this._lastHoverKey) {
+        this._lastHoverKey = cellKey;
+        this._updateCursor(cell);
+        this.callbacks.onHoverCell?.(cell);
+      }
+      if (this.dragMode === 'paint' && cell && cellKey !== this._lastDragKey) {
+        this._lastDragKey = cellKey;
         this.callbacks.onPointerDragCell?.(cell, e);
       }
     });
@@ -828,6 +1006,7 @@ export class Viewport3D {
         this.callbacks.onPointerUpCell?.(cell, e);
       }
       this.dragMode = null;
+      this._lastDragKey = null;
     });
 
     el.addEventListener(

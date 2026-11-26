@@ -11,6 +11,7 @@ const RAIL_CAR_BODY_HEXES = Object.freeze([0xb43c28, 0x2563eb, 0x2e6f40, 0xca8a0
 export class TacticalModels {
   constructor(renderer = null) {
     this.url = new URL('../../../models/terrain/tactical.glb', import.meta.url).href;
+    this.railBridgeUrl = new URL('../../../models/terrain/railway_bridge.glb', import.meta.url).href;
     this.prefix = 'TACTICAL';
     this.renderer = renderer;
     this.templates = new Map();
@@ -19,24 +20,42 @@ export class TacticalModels {
     this.disposed = false;
   }
 
-  async load() {
-    const gltf = await getSharedGltfLoader(this.renderer).loadAsync(this.url);
-    gltf.scene.updateMatrixWorld(true);
-    gltf.scene.traverse((node) => {
-      if (!node.isMesh || !node.name) return;
-      const geo = node.geometry.clone();
-      geo.applyMatrix4(node.matrixWorld);
-      const mats = Array.isArray(node.material) ? node.material : [node.material];
-      for (const m of mats) {
-        if (m) m.userData.batchKey ||= `tactical-${m.name || 'mat'}`;
+  loadFromScene(scene) {
+    if (!scene) return false;
+    scene.updateMatrixWorld(true);
+    for (const root of scene.children || []) {
+      if (!root.name) continue;
+      const parts = [];
+      root.traverse((node) => {
+        if (!node.isMesh || !node.geometry) return;
+        const geo = node.geometry.clone();
+        geo.applyMatrix4(node.matrixWorld);
+        const mats = Array.isArray(node.material) ? node.material : [node.material];
+        for (const m of mats) {
+          if (m) m.userData.batchKey ||= `tactical-${m.name || 'mat'}`;
+        }
+        parts.push({ geometry: geo, material: node.material });
+      });
+      if (parts.length > 0) {
+        this.templates.set(root.name, parts);
       }
-      this.templates.set(node.name, { geometry: geo, material: node.material });
-    });
+    }
+    this.ready = this.templates.size > 0;
+    return this.ready;
+  }
+
+  async load() {
+    const loader = getSharedGltfLoader(this.renderer);
+    const [gltf, bridgeGltf] = await Promise.all([
+      loader.loadAsync(this.url),
+      loader.loadAsync(this.railBridgeUrl).catch(() => null),
+    ]);
+    this.loadFromScene(gltf.scene);
+    if (bridgeGltf) this.loadFromScene(bridgeGltf.scene);
     if (this.disposed) {
       this.dispose();
       return false;
     }
-    this.ready = this.templates.size > 0;
     return this.ready;
   }
 
@@ -74,25 +93,29 @@ export class TacticalModels {
   }
 
   apply(group, name, { castShadow = true, receiveShadow = true, paintHex = null, glowHex = null } = {}) {
-    const tpl = this.templates.get(name);
-    if (!tpl) return false;
+    const parts = this.templates.get(name);
+    if (!parts?.length) return false;
     group.clear();
-    const mat = this.resolveMaterial(tpl.material, { paintHex, glowHex });
-    const mesh = new THREE.Mesh(tpl.geometry, mat);
-    mesh.castShadow = castShadow;
-    mesh.receiveShadow = receiveShadow;
-    group.add(mesh);
+    const liveParts = [];
+    for (const part of parts) {
+      const mat = this.resolveMaterial(part.material, { paintHex, glowHex });
+      const mesh = new THREE.Mesh(part.geometry, mat);
+      mesh.castShadow = castShadow;
+      mesh.receiveShadow = receiveShadow;
+      group.add(mesh);
+      liveParts.push({ mesh, baseMaterial: part.material });
+    }
     group.userData.tacticalGlbKey = name;
-    group.userData.tacticalMesh = mesh;
+    group.userData.tacticalParts = liveParts;
     return true;
   }
 
   recolor(group, { paintHex = null, glowHex = null } = {}) {
-    const name = group?.userData?.tacticalGlbKey;
-    const mesh = group?.userData?.tacticalMesh;
-    const tpl = name ? this.templates.get(name) : null;
-    if (!mesh || !tpl) return false;
-    mesh.material = this.resolveMaterial(tpl.material, { paintHex, glowHex });
+    const liveParts = group?.userData?.tacticalParts;
+    if (!liveParts?.length) return false;
+    for (const { mesh, baseMaterial } of liveParts) {
+      mesh.material = this.resolveMaterial(baseMaterial, { paintHex, glowHex });
+    }
     return true;
   }
 
@@ -107,13 +130,15 @@ export class TacticalModels {
       }
     }
     this.tintedMaterials.clear();
-    for (const tpl of this.templates.values()) {
-      tpl.geometry?.dispose?.();
-      const mats = Array.isArray(tpl.material) ? tpl.material : [tpl.material];
-      for (const m of mats) {
-        if (m && !disposedMats.has(m)) {
-          disposedMats.add(m);
-          m.dispose?.();
+    for (const parts of this.templates.values()) {
+      for (const part of parts) {
+        part.geometry?.dispose?.();
+        const mats = Array.isArray(part.material) ? part.material : [part.material];
+        for (const m of mats) {
+          if (m && !disposedMats.has(m)) {
+            disposedMats.add(m);
+            m.dispose?.();
+          }
         }
       }
     }
@@ -246,6 +271,71 @@ export function createRailBlock(factory, x = 0, z = 0, neighborMask = 5) {
   return markOwned(group, { geometries: false, materials: false });
 }
 
+/** Steel truss railway bridge segment; local track runs north-south and joins on tile edges. */
+export function createRailBridgeBlock(factory, x = 0, z = 0, neighborMask = 5) {
+  const hasNS = Boolean(neighborMask & 5) || !(neighborMask & 10);
+  const alongEW = !hasNS;
+  const group = new THREE.Group();
+  if (factory.useBlenderTactical && factory.tacticalModels?.ready && factory.tacticalModels.apply(group, 'RAIL_BRIDGE_SEGMENT')) {
+    if (alongEW) group.rotation.y = Math.PI / 2;
+    group.position.set(x, 0, z);
+    group.userData.batchTile = true;
+    return markOwned(group, { geometries: false, materials: false });
+  }
+
+  factory._railBridgeMats ||= {
+    steel: new THREE.MeshStandardMaterial({ color: 0x46515b, roughness: 0.72, metalness: 0.72 }),
+    deck: new THREE.MeshStandardMaterial({ color: 0x343b40, roughness: 0.93, metalness: 0.08 }),
+    ballast: new THREE.MeshStandardMaterial({ color: 0x5a554d, roughness: 0.98, metalness: 0.02 }),
+    rail: new THREE.MeshStandardMaterial({ color: 0x9aa2a8, roughness: 0.38, metalness: 0.86 }),
+    timber: new THREE.MeshStandardMaterial({ color: 0x49372b, roughness: 0.92, metalness: 0.04 }),
+  };
+  const { steel, deck, ballast, rail, timber } = factory._railBridgeMats;
+  const addBox = (w, h, d, mat, px, py, pz, yaw = 0) => {
+    const mesh = new THREE.Mesh(factory.sharedGeometry('BoxGeometry', w, h, d), mat);
+    mesh.position.set(px, py, pz);
+    mesh.rotation.y = yaw;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    group.add(mesh);
+    return mesh;
+  };
+  const addBeam = (a, b, thickness, mat) => {
+    const start = new THREE.Vector3(...a);
+    const end = new THREE.Vector3(...b);
+    const delta = end.clone().sub(start);
+    const mesh = new THREE.Mesh(factory.sharedGeometry('BoxGeometry', thickness, delta.length(), thickness), mat);
+    mesh.position.copy(start.add(end).multiplyScalar(0.5));
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), delta.normalize());
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    group.add(mesh);
+  };
+  addBox(1.96, 0.20, 2.0, deck, 0, -0.02, 0);
+  addBox(1.82, 0.08, 1.94, ballast, 0, 0.12, 0);
+  for (const xOffset of [-0.46, 0.46]) addBox(0.085, 0.055, 2.02, rail, xOffset, 0.20, 0);
+  for (let i = -2; i <= 2; i++) addBox(1.48, 0.05, 0.12, timber, 0, 0.17, i * 0.38);
+  for (const side of [-1, 1]) {
+    const xSide = side * 0.88;
+    addBox(0.10, 0.12, 2.0, steel, xSide, -0.23, 0);
+    addBox(0.10, 0.12, 2.0, steel, xSide, 1.28, 0);
+    for (let i = -1; i <= 1; i++) {
+      const zSide = i * 0.66;
+      addBox(0.09, 1.48, 0.09, steel, xSide, 0.51, zSide);
+    }
+    for (const [aZ, bZ] of [[-1, -0.33], [-0.33, 0.33], [0.33, 1]]) {
+      addBeam([xSide, -0.25, aZ], [xSide, 1.25, bZ], 0.075, steel);
+    }
+    addBox(0.12, 0.16, 0.18, steel, xSide, 0.00, -0.93);
+    addBox(0.12, 0.16, 0.18, steel, xSide, 0.00, 0.93);
+  }
+  if (alongEW) group.rotation.y = Math.PI / 2;
+  group.position.set(x, 0, z);
+  group.userData.batchTile = true;
+  group.userData.railBridge = true;
+  return markOwned(group, { geometries: false, materials: false });
+}
+
 /** Gentle 3x3 90-degree railway curve (`0° = S->E`, `90° = E->N`, `180° = N->W`, `270° = W->S`). */
 export function createRailCurveBlock(factory, x = 0, z = 0, rotationDeg = 0) {
   const rotRad = (rotationDeg * Math.PI) / 180;
@@ -307,8 +397,8 @@ export function createRailCurveBlock(factory, x = 0, z = 0, rotationDeg = 0) {
   return markOwned(group, { geometries: false, materials: false });
 }
 
-/** Corrugated steel shipping container (8 HP), spanning 1 or 2 cells (`spanCells`). */
-export function createContainerBlock(factory, colorIndex = 0, orientation = 'ns', spanCells = 1) {
+/** Corrugated steel shipping container (8 HP), authored as a fixed two-cell object. */
+export function createContainerBlock(factory, colorIndex = 0, orientation = 'ns', spanCells = 2) {
   const isPair = spanCells >= 2;
   const paintHex = CONTAINER_COLORS[Math.abs(colorIndex) % CONTAINER_COLORS.length];
   if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
@@ -605,8 +695,8 @@ export function updateRailCarDamage(factory, mesh, hp, maxHp = 10) {
   body.material = hp <= maxHp * 0.5 ? mats.railCarDamaged : (mesh.userData.railCarHullMat || mats.railCarBody);
 }
 
-/** Heavy diesel-electric railway locomotive sitting on bogies (16 HP, 1 or 2 cells). */
-export function createLocomotiveBlock(factory, orientation = 'ns', spanCells = 1) {
+/** Heavy diesel-electric railway locomotive sitting on bogies (16 HP, fixed two-cell footprint). */
+export function createLocomotiveBlock(factory, orientation = 'ns', spanCells = 2) {
   const isPair = spanCells >= 2;
   if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
     const group = new THREE.Group();

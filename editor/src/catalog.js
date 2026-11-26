@@ -17,6 +17,7 @@ export const SURFACES = [
   { tile: TileType.SWAMP, char: 'M', name: 'Swamp / Mud', color: '#4d7c0f' },
   { tile: TileType.OIL_SLICK, char: 'L', name: 'Oil Slick', color: '#1e1b4b' },
   { tile: TileType.RAIL, char: '#', name: 'Railroad Track', color: '#52525b' },
+  { tile: 'railCurve', char: 'C3', name: 'Rail Curve (3×3)', sub: 'Gentle 90° track turn (Space to rotate)', color: '#71717a' },
 ];
 
 export const OBJECTS = [
@@ -30,6 +31,7 @@ export const OBJECTS = [
   { tile: TileType.CRATER, char: 'K', name: 'Shell Crater', color: '#57534e' },
   { tile: TileType.WATER_TOWER, char: 'T', name: 'Water Tower', color: '#0ea5e9' },
   { tile: TileType.BRIDGE, char: '=', name: 'Bridge', color: '#a16207' },
+  { tile: TileType.RAIL_BRIDGE, char: 'RB', name: 'Railroad Bridge', sub: 'Steel through-truss railway deck', color: '#64748b' },
   { tile: TileType.RUBBLE, char: 'U', name: 'Rubble', color: '#71717a' },
   { tile: TileType.HOUSE_1, char: 'A', name: 'Building Type 1', color: '#b45309' },
   { tile: TileType.HOUSE_2, char: 'P', name: 'Building Type 2', color: '#9a3412' },
@@ -52,7 +54,6 @@ export const PROPS = [
 export const MARKERS = [
   { id: 'playerSpawn', name: 'Player Spawn', sub: 'Sets playerSpawnCell', color: '#22c55e' },
   { id: 'baseCell', name: 'Allied HQ (2×1)', sub: 'Sets baseCell anchor', color: '#3b82f6' },
-  { id: 'railCurve', name: 'Rail Curve (3×3)', sub: 'Gentle 90° track turn (Space to rotate)', color: '#71717a' },
   { id: `powerup:${POWERUP.REPAIR}`, powerupType: 'REPAIR', name: 'Crate: Repair', sub: 'Field Repair Kit', color: '#22c55e' },
   { id: `powerup:${POWERUP.EMP}`, powerupType: 'EMP', name: 'Crate: EMP', sub: 'EMP Blast (10s)', color: '#06b6d4' },
   { id: `powerup:${POWERUP.BASE_RESTORE}`, powerupType: 'BASE_RESTORE', name: 'Crate: Base Restore', sub: 'Fortify HQ', color: '#60a5fa' },
