@@ -109,7 +109,6 @@ function ensureTacticalMaterials(factory) {
     }),
     burlap: new THREE.MeshStandardMaterial({ color: 0xc2a67d, roughness: 0.92, metalness: 0.02 }),
     burlapDark: new THREE.MeshStandardMaterial({ color: 0xa3855c, roughness: 0.94, metalness: 0.02 }),
-    woodStake: new THREE.MeshStandardMaterial({ color: 0x5c3a21, roughness: 0.88, metalness: 0.05 }),
     railCarBody: new THREE.MeshStandardMaterial({ color: 0x7c2d12, roughness: 0.72, metalness: 0.25 }),
     railCarDamaged: new THREE.MeshStandardMaterial({ color: 0x44403c, roughness: 0.85, metalness: 0.3 }),
     railCarRoof: new THREE.MeshStandardMaterial({ color: 0x52525b, roughness: 0.65, metalness: 0.45 }),
@@ -381,7 +380,6 @@ export function createSandbagsBlock(factory, neighborMask = 0) {
   const mats = ensureTacticalMaterials(factory);
   const group = new THREE.Group();
   const bagGeo = factory.sharedGeometry('BoxGeometry', 0.56, 0.2, 0.34);
-  const stakeGeo = factory.sharedGeometry('CylinderGeometry', 0.04, 0.04, 0.68, 6);
 
   for (let row = 0; row < 3; row++) {
     const count = row === 2 ? 2 : 3;
@@ -394,12 +392,6 @@ export function createSandbagsBlock(factory, neighborMask = 0) {
       bag.receiveShadow = true;
       group.add(bag);
     }
-  }
-
-  for (const sx of [-0.72, 0.72]) {
-    const stake = new THREE.Mesh(stakeGeo, mats.woodStake);
-    stake.position.set(sx, 0.34, -0.2);
-    group.add(stake);
   }
 
   if (alongZ) group.rotation.y = Math.PI / 2;
