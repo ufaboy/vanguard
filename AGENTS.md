@@ -59,6 +59,10 @@
    - Always edit files using dedicated file-editing tools (`edit_file` / `write_file`) or Node.js (`fs.readFileSync(..., 'utf8')` / `fs.writeFileSync(..., 'utf8')`).
    - When running inline Node.js scripts or passing multi-line text to CLI tools (e.g., `gh`) from PowerShell, always pipe a single-quoted here-string (`@' ... '@ | node --input-type=module -`) and use separate lines instead of `&&` (unsupported in PowerShell 5.1).
    - After any bulk edit across multiple files, verify `git diff --stat` and inspect a sample `git diff` to ensure no unrelated characters or encodings were altered.
+11. **Single-Mesh 3D Assets with Runtime Color Tinting (Default Rule)**:
+   - By default, **do not** create multiple duplicate 3D models or meshes that differ only by color.
+   - Build **one** base model with a dedicated neutral-white/light-grey paintable material slot (keeping structural steel, matte, and accent parts on separate non-tinted material slots) and apply color variants at runtime in Three.js via a cached material map with deterministic `userData.batchKey` for instanced batching.
+   - Only export separate mesh variants when the physical geometry differs (e.g., closed vs. open rail car, or breached walls).
 
 ---
 

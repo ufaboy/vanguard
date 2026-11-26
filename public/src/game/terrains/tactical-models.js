@@ -5,36 +5,16 @@ import { TILE_SIZE } from '../levels.js';
 import { markOwned } from '../render/dispose.js';
 import { getSharedGltfLoader } from '../render/gltf-loader.js';
 
-const TACTICAL_CONTAINER_KEYS = Object.freeze([
-  'CONTAINER_BLUE',
-  'CONTAINER_RED',
-  'CONTAINER_GREEN',
-  'CONTAINER_OCHRE',
-]);
-
-const TACTICAL_RAIL_CLOSED_KEYS = Object.freeze([
-  'RAIL_CAR_CLOSED_0',
-  'RAIL_CAR_CLOSED_1',
-  'RAIL_CAR_CLOSED_2',
-  'RAIL_CAR_CLOSED_3',
-]);
-
-const TACTICAL_RAIL_OPEN_KEYS = Object.freeze([
-  'RAIL_CAR_OPEN_0',
-  'RAIL_CAR_OPEN_1',
-  'RAIL_CAR_OPEN_2',
-  'RAIL_CAR_OPEN_3',
-]);
-
 const RAIL_CAR_BODY_HEXES = Object.freeze([0xb43c28, 0x2563eb, 0x2e6f40, 0xca8a04]);
 
-/** Blender tactical terrain GLB pack loader (RAIL, CONTAINER, TRANSFORMER, SANDBAGS, RAIL_CAR). */
+/** Blender tactical terrain GLB pack loader (single mesh per geometry + cached Three.js color materials). */
 export class TacticalModels {
   constructor(renderer = null) {
     this.url = new URL('../../../models/terrain/tactical.glb', import.meta.url).href;
     this.prefix = 'TACTICAL';
     this.renderer = renderer;
     this.templates = new Map();
+    this.tintedMaterials = new Map();
     this.ready = false;
     this.disposed = false;
   }
@@ -60,15 +40,59 @@ export class TacticalModels {
     return this.ready;
   }
 
-  apply(group, name, { castShadow = true, receiveShadow = true } = {}) {
+  /** Returns a cached tinted clone for `Tactical_Painted` / `Tactical_Glow`, or the shared base material. */
+  resolveMaterial(baseMaterial, { paintHex = null, glowHex = null } = {}) {
+    if (Array.isArray(baseMaterial)) {
+      return baseMaterial.map((m) => this.resolveMaterial(m, { paintHex, glowHex }));
+    }
+    if (!baseMaterial) return baseMaterial;
+    const matName = baseMaterial.name || '';
+    if (paintHex != null && matName.startsWith('Tactical_Painted')) {
+      const key = `paint:${paintHex}`;
+      let mat = this.tintedMaterials.get(key);
+      if (!mat) {
+        mat = baseMaterial.clone();
+        mat.color.setHex(paintHex);
+        mat.userData.batchKey = `tactical-paint-${paintHex.toString(16)}`;
+        this.tintedMaterials.set(key, mat);
+      }
+      return mat;
+    }
+    if (glowHex != null && matName.startsWith('Tactical_Glow')) {
+      const key = `glow:${glowHex}`;
+      let mat = this.tintedMaterials.get(key);
+      if (!mat) {
+        mat = baseMaterial.clone();
+        mat.color.setHex(glowHex);
+        if (mat.emissive) mat.emissive.setHex(glowHex);
+        mat.userData.batchKey = `tactical-glow-${glowHex.toString(16)}`;
+        this.tintedMaterials.set(key, mat);
+      }
+      return mat;
+    }
+    return baseMaterial;
+  }
+
+  apply(group, name, { castShadow = true, receiveShadow = true, paintHex = null, glowHex = null } = {}) {
     const tpl = this.templates.get(name);
     if (!tpl) return false;
     group.clear();
-    const mesh = new THREE.Mesh(tpl.geometry, tpl.material);
+    const mat = this.resolveMaterial(tpl.material, { paintHex, glowHex });
+    const mesh = new THREE.Mesh(tpl.geometry, mat);
     mesh.castShadow = castShadow;
     mesh.receiveShadow = receiveShadow;
     group.add(mesh);
     group.userData.tacticalGlbKey = name;
+    group.userData.tacticalMesh = mesh;
+    return true;
+  }
+
+  recolor(group, { paintHex = null, glowHex = null } = {}) {
+    const name = group?.userData?.tacticalGlbKey;
+    const mesh = group?.userData?.tacticalMesh;
+    const tpl = name ? this.templates.get(name) : null;
+    if (!mesh || !tpl) return false;
+    mesh.material = this.resolveMaterial(tpl.material, { paintHex, glowHex });
     return true;
   }
 
@@ -76,6 +100,13 @@ export class TacticalModels {
     this.disposed = true;
     this.ready = false;
     const disposedMats = new Set();
+    for (const mat of this.tintedMaterials.values()) {
+      if (mat && !disposedMats.has(mat)) {
+        disposedMats.add(mat);
+        mat.dispose?.();
+      }
+    }
+    this.tintedMaterials.clear();
     for (const tpl of this.templates.values()) {
       tpl.geometry?.dispose?.();
       const mats = Array.isArray(tpl.material) ? tpl.material : [tpl.material];
@@ -90,7 +121,7 @@ export class TacticalModels {
   }
 }
 
-const CONTAINER_COLORS = Object.freeze([0x1d4ed8, 0xb91c1c, 0x15803d, 0xb45309]);
+const CONTAINER_COLORS = Object.freeze([0x1d4ed8, 0xb91c1c, 0x15803d, 0xeab308]);
 
 function ensureTacticalMaterials(factory) {
   if (factory._tacticalMats) return factory._tacticalMats;
@@ -218,13 +249,13 @@ export function createRailBlock(factory, x = 0, z = 0, neighborMask = 5) {
 /** Corrugated steel shipping container (8 HP), spanning 1 or 2 cells (`spanCells`). */
 export function createContainerBlock(factory, colorIndex = 0, orientation = 'ns', spanCells = 1) {
   const isPair = spanCells >= 2;
+  const paintHex = CONTAINER_COLORS[Math.abs(colorIndex) % CONTAINER_COLORS.length];
   if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
     const group = new THREE.Group();
-    const colorKey = TACTICAL_CONTAINER_KEYS[Math.abs(colorIndex) % TACTICAL_CONTAINER_KEYS.length];
-    if (factory.tacticalModels.apply(group, colorKey, { castShadow: true, receiveShadow: true })) {
+    if (factory.tacticalModels.apply(group, 'CONTAINER', { castShadow: true, receiveShadow: true, paintHex })) {
       if (!isPair) group.scale.z = 0.5;
       if (orientation === 'ew') group.rotation.y = Math.PI / 2;
-      group.userData.containerColorKey = colorKey;
+      group.userData.containerPaintHex = paintHex;
       group.userData.batchTile = true;
       return markOwned(group, { geometries: false, materials: false });
     }
@@ -277,11 +308,9 @@ export function createContainerBlock(factory, colorIndex = 0, orientation = 'ns'
 
 export function updateContainerDamage(factory, mesh, hp, maxHp = 8) {
   if (!mesh) return;
-  if (mesh.userData?.containerColorKey && factory.tacticalModels?.ready) {
-    const target = hp <= maxHp * 0.5 ? 'CONTAINER_DAMAGED' : mesh.userData.containerColorKey;
-    if (mesh.userData.tacticalGlbKey !== target) {
-      factory.tacticalModels.apply(mesh, target, { castShadow: true, receiveShadow: true });
-    }
+  if (mesh.userData?.tacticalGlbKey && factory.tacticalModels?.ready) {
+    const paintHex = hp <= maxHp * 0.5 ? 0x334155 : (mesh.userData.containerPaintHex ?? CONTAINER_COLORS[0]);
+    factory.tacticalModels.recolor(mesh, { paintHex });
     return;
   }
   const body = mesh.userData?.containerBody;
@@ -294,7 +323,7 @@ export function updateContainerDamage(factory, mesh, hp, maxHp = 8) {
 export function createTransformerBlock(factory) {
   if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
     const group = new THREE.Group();
-    if (factory.tacticalModels.apply(group, 'TRANSFORMER_INTACT', { castShadow: true, receiveShadow: true })) {
+    if (factory.tacticalModels.apply(group, 'TRANSFORMER', { castShadow: true, receiveShadow: true, paintHex: 0x334155, glowHex: 0x38bdf8 })) {
       group.userData.batchTile = true;
       return markOwned(group, { geometries: false, materials: false });
     }
@@ -367,10 +396,10 @@ export function createTransformerBlock(factory) {
 export function updateTransformerDamage(factory, mesh, hp) {
   if (!mesh) return;
   if (mesh.userData?.tacticalGlbKey && factory.tacticalModels?.ready) {
-    const target = hp <= 1 ? 'TRANSFORMER_DAMAGED' : 'TRANSFORMER_INTACT';
-    if (mesh.userData.tacticalGlbKey !== target) {
-      factory.tacticalModels.apply(mesh, target, { castShadow: true, receiveShadow: true });
-    }
+    factory.tacticalModels.recolor(
+      mesh,
+      hp <= 1 ? { paintHex: 0x1e293b, glowHex: 0xf97316 } : { paintHex: 0x334155, glowHex: 0x38bdf8 }
+    );
     return;
   }
   const ind = mesh.userData?.transformerIndicator;
@@ -422,15 +451,15 @@ export function createSandbagsBlock(factory, neighborMask = 0) {
 export function createRailCarBlock(factory, orientation = 'ns', variant = 'closed', spanCells = 1, colorIndex = 0) {
   const isOpen = variant === 'open';
   const isPair = spanCells >= 2;
-  const cIdx = Math.abs(colorIndex) % TACTICAL_RAIL_CLOSED_KEYS.length;
+  const cIdx = Math.abs(colorIndex) % RAIL_CAR_BODY_HEXES.length;
+  const paintHex = RAIL_CAR_BODY_HEXES[cIdx];
   if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
     const group = new THREE.Group();
-    const key = isOpen ? TACTICAL_RAIL_OPEN_KEYS[cIdx] : TACTICAL_RAIL_CLOSED_KEYS[cIdx];
-    if (factory.tacticalModels.apply(group, key, { castShadow: true, receiveShadow: true })) {
+    const key = isOpen ? 'RAIL_CAR_OPEN' : 'RAIL_CAR_CLOSED';
+    if (factory.tacticalModels.apply(group, key, { castShadow: true, receiveShadow: true, paintHex })) {
       if (!isPair) group.scale.z = 0.5;
       if (orientation === 'ew') group.rotation.y = Math.PI / 2;
-      group.userData.railCarVariant = isOpen ? 'open' : 'closed';
-      group.userData.railCarColorKey = key;
+      group.userData.railCarPaintHex = paintHex;
       group.userData.batchTile = true;
       return markOwned(group, { geometries: false, materials: false });
     }
@@ -505,14 +534,8 @@ export function createRailCarBlock(factory, orientation = 'ns', variant = 'close
 export function updateRailCarDamage(factory, mesh, hp, maxHp = 10) {
   if (!mesh) return;
   if (mesh.userData?.tacticalGlbKey && factory.tacticalModels?.ready) {
-    const isOpen = mesh.userData.railCarVariant === 'open';
-    const intactKey = mesh.userData.railCarColorKey || (isOpen ? 'RAIL_CAR_OPEN_0' : 'RAIL_CAR_CLOSED_0');
-    const target = hp <= maxHp * 0.5
-      ? (isOpen ? 'RAIL_CAR_OPEN_DAMAGED' : 'RAIL_CAR_CLOSED_DAMAGED')
-      : intactKey;
-    if (mesh.userData.tacticalGlbKey !== target) {
-      factory.tacticalModels.apply(mesh, target, { castShadow: true, receiveShadow: true });
-    }
+    const paintHex = hp <= maxHp * 0.5 ? 0x44403c : (mesh.userData.railCarPaintHex ?? RAIL_CAR_BODY_HEXES[0]);
+    factory.tacticalModels.recolor(mesh, { paintHex });
     return;
   }
   const body = mesh.userData?.railCarBody;
@@ -526,7 +549,7 @@ export function createLocomotiveBlock(factory, orientation = 'ns', spanCells = 1
   const isPair = spanCells >= 2;
   if (factory.useBlenderTactical && factory.tacticalModels?.ready) {
     const group = new THREE.Group();
-    if (factory.tacticalModels.apply(group, 'LOCOMOTIVE_INTACT', { castShadow: true, receiveShadow: true })) {
+    if (factory.tacticalModels.apply(group, 'LOCOMOTIVE', { castShadow: true, receiveShadow: true, paintHex: 0x2563eb, glowHex: 0xfef08a })) {
       if (!isPair) group.scale.z = 0.5;
       if (orientation === 'ew') group.rotation.y = Math.PI / 2;
       group.userData.batchTile = true;
@@ -571,10 +594,10 @@ export function createLocomotiveBlock(factory, orientation = 'ns', spanCells = 1
 export function updateLocomotiveDamage(factory, mesh, hp, maxHp = 16) {
   if (!mesh) return;
   if (mesh.userData?.tacticalGlbKey && factory.tacticalModels?.ready) {
-    const target = hp <= maxHp * 0.5 ? 'LOCOMOTIVE_DAMAGED' : 'LOCOMOTIVE_INTACT';
-    if (mesh.userData.tacticalGlbKey !== target) {
-      factory.tacticalModels.apply(mesh, target, { castShadow: true, receiveShadow: true });
-    }
+    factory.tacticalModels.recolor(
+      mesh,
+      hp <= maxHp * 0.5 ? { paintHex: 0x334155, glowHex: 0xf97316 } : { paintHex: 0x2563eb, glowHex: 0xfef08a }
+    );
     return;
   }
   const body = mesh.userData?.locomotiveBody;
