@@ -61,6 +61,10 @@ export const TRAIN_UNIT_CONFIGS = Object.freeze({
 export const TRAIN_DEFAULTS = Object.freeze({
   speed: 5.2,
   transitRespawnSec: 14.0,
+  /** Seconds a train waits at the buffer end of a spur (one-edge dead end) before backing out. */
+  spurDwellSec: 10.0,
+  /** Gap between the leading unit's front and the end of the spur's last rail cell. */
+  spurBufferGap: 0.3,
   unitGap: 0.16,
   offscreenMargin: 4.5,
   hornAheadDist: 12.0,

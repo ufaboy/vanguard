@@ -56,12 +56,19 @@ function projectOntoTrack(track, px, pz) {
   return { dist: bestDist, err: bestErr, tx: bestTangentX, tz: bestTangentZ };
 }
 
+/** Tracks that carry moving trains (everything except interior dead ends). */
+function isMovingTrack(track) {
+  return track.mode === 'loop' || track.mode === 'transit' || track.mode === 'spur';
+}
+
 export class TrainController {
   constructor(engine) {
     this.engine = engine;
     this.trains = [];
     this.tracks = [];
     this.movingTrackCellSet = new Set();
+    /** Trains on map-edge tracks (transit / spur) that take turns: only one is on the map at a time. */
+    this._dispatchOrder = [];
     this._ramCooldowns = new Map();
   }
 
@@ -76,6 +83,7 @@ export class TrainController {
     this.trains = [];
     this.tracks = [];
     this.movingTrackCellSet.clear();
+    this._dispatchOrder = [];
     this._ramCooldowns.clear();
   }
 
@@ -95,7 +103,7 @@ export class TrainController {
       tileSize: TILE_SIZE,
     });
     for (const track of this.tracks) {
-      if (track.mode === 'loop' || track.mode === 'transit') {
+      if (isMovingTrack(track)) {
         for (const k of track.cellSet) {
           this.movingTrackCellSet.add(k);
         }
@@ -104,9 +112,9 @@ export class TrainController {
     return this.movingTrackCellSet;
   }
 
-  /** Spawns moving trains on all `loop` and `transit` tracks after `engine.grid` is built. */
+  /** Spawns moving trains on all `loop`, `transit` and `spur` tracks after `engine.grid` is built. */
   setup(sector) {
-    const movingTracks = this.tracks.filter((t) => t.mode === 'loop' || t.mode === 'transit');
+    const movingTracks = this.tracks.filter(isMovingTrack);
     if (movingTracks.length === 0) return;
 
     const overrides = Array.isArray(sector.trains) ? sector.trains : [];
@@ -132,15 +140,18 @@ export class TrainController {
       const respawnSec =
         Number(override?.respawnSec) >= 0 ? Number(override.respawnSec) : TRAIN_DEFAULTS.transitRespawnSec;
 
-      let direction = override?.direction === -1 ? -1 : 1;
+      // Spur trains always enter locomotive-first from the map edge (track distance 0)
+      let direction = track.mode !== 'spur' && override?.direction === -1 ? -1 : 1;
       let startHeadDist =
-        track.mode === 'transit'
+        track.mode === 'transit' || track.mode === 'spur'
           ? direction < 0
             ? track.totalLength + TRAIN_DEFAULTS.offscreenMargin
             : -TRAIN_DEFAULTS.offscreenMargin
           : 0;
+      let parked = false;
 
       if (placed && placed.locoPos) {
+        parked = track.mode === 'spur';
         const proj = projectOntoTrack(track, placed.locoPos.x, placed.locoPos.z);
         startHeadDist = proj.dist;
         // Align travel direction with the locomotive's authored facing (-Z local = forward)
@@ -160,8 +171,50 @@ export class TrainController {
         headDist: startHeadDist,
         consistSpecs,
       });
+      if (parked) {
+        // Authored rolling stock on a spur waits where it was placed, then backs out to the edge
+        train.motion = 0;
+        train.dwellTimer = TRAIN_DEFAULTS.spurDwellSec;
+      }
       this.trains.push(train);
       this._syncTrainVisuals(train, 0);
+    }
+
+    // Several edge railroads share one schedule: the first train runs, the rest wait their turn offscreen
+    this._dispatchOrder = this.trains.filter((t) => t.track.mode !== 'loop');
+    if (this._dispatchOrder.length > 1) {
+      const onMap = (t) => t.headDist >= 0 && t.headDist <= t.track.totalLength;
+      const first = this._dispatchOrder.find(onMap) || this._dispatchOrder[0];
+      for (const t of this._dispatchOrder) {
+        if (t !== first) this._holdOffscreen(t);
+      }
+    }
+  }
+
+  /** Hides a train offscreen until the dispatcher gives it the next turn. */
+  _holdOffscreen(train) {
+    train.offscreen = true;
+    train.motion = 0;
+    train.dwellTimer = 0;
+    train.respawnTimer = Infinity;
+    this._setTrainVisibility(train, false);
+  }
+
+  /**
+   * Called when a dispatched train leaves the map or is wrecked: the next live train in the
+   * rotation (possibly the same one) enters after the leaving train's `respawnSec` pause.
+   */
+  _dispatchNext(train) {
+    const order = this._dispatchOrder;
+    const idx = order.indexOf(train);
+    if (idx < 0) return;
+    for (let step = 1; step <= order.length; step++) {
+      const next = order[(idx + step) % order.length];
+      if (next.destroyed) continue;
+      if (next !== train && !next.offscreen) return; // another train is already on the map
+      if (next !== train) train.respawnTimer = Infinity;
+      next.respawnTimer = train.respawnSec;
+      return;
     }
   }
 
@@ -259,7 +312,11 @@ export class TrainController {
     return {
       id,
       track,
+      /** Which way the locomotive faces along the track (+1 toward the track end); cars trail behind it. */
       direction,
+      /** Travel sign along the track: equals `direction` when driving forward, 0 while stopped. */
+      motion: direction,
+      dwellTimer: 0,
       speed,
       respawnSec,
       headDist,
@@ -318,6 +375,8 @@ export class TrainController {
         train.respawnTimer -= dt;
         if (train.respawnTimer <= 0) {
           train.offscreen = false;
+          if (train.track.mode === 'spur') train.direction = 1;
+          train.motion = train.direction;
           train.headDist =
             train.direction > 0
               ? -TRAIN_DEFAULTS.offscreenMargin
@@ -328,9 +387,19 @@ export class TrainController {
         }
       }
 
-      train.headDist += train.direction * train.speed * dt;
+      if (train.dwellTimer > 0) {
+        train.dwellTimer -= dt;
+        if (train.dwellTimer <= 0) {
+          train.dwellTimer = 0;
+          train.motion = -1; // back out towards the map edge
+        }
+      }
 
-      if (train.track.mode === 'loop') {
+      train.headDist += train.motion * train.speed * dt;
+
+      if (train.track.mode === 'spur') {
+        if (this._updateSpur(train)) continue;
+      } else if (train.track.mode === 'loop') {
         const total = train.track.totalLength;
         if (total > 0) {
           train.headDist = ((train.headDist % total) + total) % total;
@@ -342,6 +411,7 @@ export class TrainController {
         if (exitedForward || exitedBackward) {
           train.offscreen = true;
           train.respawnTimer = train.respawnSec;
+          this._dispatchNext(train);
           this._setTrainVisibility(train, false);
           continue;
         }
@@ -351,6 +421,43 @@ export class TrainController {
       this._checkHornWarning(train);
       this._checkTankCollisions(train);
     }
+  }
+
+  /** Track distance of the consist's far end (the end nearest the spur's buffer). */
+  _spurFarEnd(train) {
+    const units = train.units;
+    const last = units[units.length - 1];
+    const tailDist = train.headDist - train.direction * last.offset;
+    return train.direction > 0
+      ? train.headDist + units[0].cfg.length * 0.5
+      : tailDist + last.cfg.length * 0.5;
+  }
+
+  /**
+   * Spur cycle: drive in from the edge, stop at the buffer end, dwell, back out past the edge.
+   * Returns true when the train has left the map and is now waiting offscreen.
+   */
+  _updateSpur(train) {
+    const farEnd = this._spurFarEnd(train);
+    if (train.motion > 0) {
+      const stopDist = train.track.totalLength + TILE_SIZE * 0.5 - TRAIN_DEFAULTS.spurBufferGap;
+      if (farEnd >= stopDist) {
+        train.headDist -= farEnd - stopDist;
+        train.motion = 0;
+        train.dwellTimer = TRAIN_DEFAULTS.spurDwellSec;
+      }
+    } else if (train.motion < 0) {
+      const exitDist = -TRAIN_DEFAULTS.offscreenMargin + train.units[0].cfg.length * 0.5;
+      if (farEnd < exitDist) {
+        train.motion = 0;
+        train.offscreen = true;
+        train.respawnTimer = train.respawnSec;
+        this._setTrainVisibility(train, false);
+        this._dispatchNext(train);
+        return true;
+      }
+    }
+    return false;
   }
 
   _setTrainVisibility(train, visible) {
@@ -396,17 +503,21 @@ export class TrainController {
   }
 
   _checkHornWarning(train) {
-    if (train.hornTimer > 0) return;
+    if (train.hornTimer > 0 || train.motion === 0) return;
     const loco = train.units[0];
     if (!loco || !loco.alive) return;
 
-    const fwdX = -Math.sin(loco.yaw);
-    const fwdZ = -Math.cos(loco.yaw);
+    // The leading unit is the locomotive when driving forward and the last car when backing out
+    const reversing = train.motion !== train.direction;
+    const lead = reversing ? train.units[train.units.length - 1] : loco;
+    const sign = reversing ? -1 : 1;
+    const fwdX = -Math.sin(lead.yaw) * sign;
+    const fwdZ = -Math.cos(lead.yaw) * sign;
     const ahead = TRAIN_DEFAULTS.hornAheadDist;
 
     const isInCorridor = (tx, tz) => {
-      const dx = tx - loco.x;
-      const dz = tz - loco.z;
+      const dx = tx - lead.x;
+      const dz = tz - lead.z;
       const along = dx * fwdX + dz * fwdZ;
       if (along < 1.5 || along > ahead) return false;
       const perp = Math.abs(dx * -fwdZ + dz * fwdX);
@@ -448,8 +559,14 @@ export class TrainController {
       const lateral = dx * sideX + dz * sideZ;
       if (Math.abs(lateral) > halfWid + tankRadius) return;
 
-      this._ramCooldowns.set(key, TRAIN_DEFAULTS.ramCooldownSec);
       const pushSign = lateral >= 0 ? 1 : -1;
+      if (train.motion === 0) {
+        // A stopped train is a solid obstacle: slide the tank clear of it without ramming damage
+        const pushDist = halfWid + tankRadius - Math.abs(lateral) + 0.02;
+        onHit(sideX * pushSign * pushDist, sideZ * pushSign * pushDist, 0);
+        return;
+      }
+      this._ramCooldowns.set(key, TRAIN_DEFAULTS.ramCooldownSec);
       const pushDist = unit.cfg.ramKnockback;
       onHit(sideX * pushSign * pushDist, sideZ * pushSign * pushDist, unit.cfg.ramDamage);
     };
@@ -500,6 +617,7 @@ export class TrainController {
           );
           engine.playerX = pTarget.x;
           engine.playerZ = pTarget.z;
+          if (dmg <= 0) return;
           engine.damagePlayer(dmg, { zone: 'hull', aspect: 'side' }, 'TRAIN_RAM');
           engine.fx?.armorHit?.(engine.playerX, 0.85, engine.playerZ, { scale: 1.1, colorHex: 0xf97316 });
           sound.playSteelHit?.({ x: unit.x, z: unit.z });
@@ -517,6 +635,7 @@ export class TrainController {
             Boolean(enemy.stats?.canCrossWater),
             Boolean(enemy.stats?.canCrushSandbags)
           );
+          if (dmg <= 0) return;
           if (typeof engine.damageEnemy === 'function') {
             engine.damageEnemy(enemy, dmg, { fromPlayer: false, aspect: 'side', hitX: enemy.x, hitZ: enemy.z });
           } else {
@@ -572,6 +691,7 @@ export class TrainController {
     const engine = this.engine;
     destroyedUnit.alive = false;
     train.destroyed = true;
+    this._dispatchNext(train);
 
     engine.fx?.explosion?.(destroyedUnit.x, 0.9, destroyedUnit.z, { scale: 1.8 });
     sound.playExplosion?.(1.6, { x: destroyedUnit.x, z: destroyedUnit.z });
