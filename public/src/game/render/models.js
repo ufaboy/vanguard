@@ -392,11 +392,15 @@ function getTankGltfLoader(renderer) {
  * @param {number} c
  * @returns {{ roadMask: number, doubleLaneMask: number, wideTurn: boolean }}
  */
-export function computeRoadCellMasks(isRoad, r, c) {
-  const n = isRoad(r - 1, c);
-  const e = isRoad(r, c + 1);
-  const s = isRoad(r + 1, c);
-  const w = isRoad(r, c - 1);
+export function computeRoadCellMasks(isRoad, r, c, gridSize = 40) {
+  const rawN = isRoad(r - 1, c);
+  const rawE = isRoad(r, c + 1);
+  const rawS = isRoad(r + 1, c);
+  const rawW = isRoad(r, c - 1);
+  const n = r === 0 ? rawN || rawS : rawN;
+  const s = r === gridSize - 1 ? rawS || rawN : rawS;
+  const w = c === 0 ? rawW || rawE : rawW;
+  const e = c === gridSize - 1 ? rawE || rawW : rawE;
   const roadMask = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
   const doubleLaneMask =
     (n && e && w && !s && (isRoad(r - 1, c + 1) || isRoad(r - 1, c - 1)) ? 1 : 0) |

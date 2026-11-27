@@ -548,7 +548,7 @@ export class Viewport3D {
         if (rr < 0 || rr >= size || cc < 0 || cc >= size) return false;
         return this.state.surfaceGrid[rr][cc] === TileType.ROAD || this.state.objectGrid[rr][cc] === TileType.BRIDGE;
       };
-      const { roadMask, doubleLaneMask, wideTurn } = computeRoadCellMasks(isRoad, r, c);
+      const { roadMask, doubleLaneMask, wideTurn } = computeRoadCellMasks(isRoad, r, c, size);
       sMesh = this.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask, wideTurn);
     } else if (surface === TileType.WATER) {
       sMesh = new THREE.Mesh(this.waterGeo, this.waterMat);

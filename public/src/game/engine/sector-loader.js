@@ -312,7 +312,7 @@ export class SectorLoaderController {
             const o = sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
             return s === TileType.ROAD || o === TileType.BRIDGE;
           };
-          const { roadMask, doubleLaneMask, wideTurn } = computeRoadCellMasks(isRoad, r, c);
+          const { roadMask, doubleLaneMask, wideTurn } = computeRoadCellMasks(isRoad, r, c, GRID_SIZE);
           surfaceMesh = engine.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask, wideTurn);
           engine.mapGroup.add(surfaceMesh);
         } else if (surface === TileType.SAND && engine.modelFactory.createSandBlock) {
