@@ -489,8 +489,9 @@ function collectWorldGlbs() {
     }
   }
   for (const f of fs.readdirSync(OUT_DIR)) {
-    // Air support models and the player Radar R1-R5 attachment (exported straight from build_radars.py)
-    if ((f.startsWith('air_') || f === 'player_radar.glb') && f.endsWith('.glb')) {
+    // Air support models, defense turrets and the player Radar R1-R5 attachment (exported
+    // straight from their build scripts, never through the tank pipeline)
+    if ((f.startsWith('air_') || f.startsWith('turret_') || f === 'player_radar.glb') && f.endsWith('.glb')) {
       targets.push(path.join(OUT_DIR, f));
     }
   }
