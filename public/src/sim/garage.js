@@ -21,6 +21,7 @@ export function createInitialPlayerSave() {
     completedMissions: {},
     achievements: {},
     medals: {},
+    medalProgress: {},
     serviceXp: 0,
     stats: {
       totalKills: 0,
@@ -315,6 +316,8 @@ export function mountPartInGarage(
   return { success: true, reason: t('Mounted {definitionId}', { definitionId: part.definitionId.toUpperCase() }) };
 }
 
+const HARD_MODE_VICTORY_CREDIT_BONUS_PCT = 0.25;
+
 export function settleMission({
   playerSave,
   missionRun,
@@ -324,6 +327,8 @@ export function settleMission({
     return {
       outcome,
       creditsGained: 0,
+      hardMode: false,
+      hardModeBonus: 0,
       autoCollectedCount: 0,
       lostCount: 0,
     };
@@ -338,6 +343,8 @@ export function settleMission({
       missionRun.lastSettlement || {
         outcome: missionRun.status || outcome,
         creditsGained: missionRun.committedCreditsGained || 0,
+        hardMode: Boolean(missionRun.hardMode),
+        hardModeBonus: missionRun.committedHardModeBonus || 0,
         bossReward: missionRun.bossReward || null,
         autoCollectedCount: 0,
         lostCount: 0,
@@ -346,18 +353,24 @@ export function settleMission({
   }
 
   let creditsGained = 0;
+  let hardModeBonus = 0;
   if (outcome === 'victory' && missionRun.completionReward) {
-    creditsGained += missionRun.completionReward.credits || 400;
+    const baseCredits = missionRun.completionReward.credits || 400;
+    hardModeBonus = missionRun.hardMode ? Math.round(baseCredits * HARD_MODE_VICTORY_CREDIT_BONUS_PCT) : 0;
+    creditsGained += baseCredits + hardModeBonus;
   }
 
   playerSave.credits = (playerSave.credits || 0) + creditsGained;
   missionRun.status = outcome;
   missionRun.rewardsCommitted = true;
   missionRun.committedCreditsGained = creditsGained;
+  missionRun.committedHardModeBonus = hardModeBonus;
 
   const summary = {
     outcome,
     creditsGained,
+    hardMode: Boolean(missionRun.hardMode),
+    hardModeBonus,
     bossReward: missionRun.bossReward || null,
     autoCollectedCount: 0,
     lostCount: 0,
@@ -439,6 +452,9 @@ export class SaveRepository {
           }
           if (!parsed.achievements || typeof parsed.achievements !== 'object' || Array.isArray(parsed.achievements)) {
             parsed.achievements = {};
+          }
+          if (!parsed.medalProgress || typeof parsed.medalProgress !== 'object' || Array.isArray(parsed.medalProgress)) {
+            parsed.medalProgress = {};
           }
           if (!parsed.stats || typeof parsed.stats !== 'object' || Array.isArray(parsed.stats)) {
             parsed.stats = {

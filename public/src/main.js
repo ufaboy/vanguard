@@ -53,6 +53,7 @@ import {
 import {
   evaluateMissionMedals,
   getRankProgress,
+  isCampaignHardModeComplete,
   recordMedalsAndRank,
 } from './sim/medals.js';
 import { getLocale, t } from './i18n/index.js';
@@ -329,12 +330,26 @@ function initApp() {
         state.achievementBonusCredits = totalBonusCredits;
         state.shareFeedback = '';
 
+        const isHardModeRun = Boolean(
+          snapshot.lastSettlementSummary?.hardMode ??
+            engine?.activeMissionRun?.hardMode ??
+            state.hardMode
+        );
+        const isCampaignMission = CAMPAIGN_MISSIONS.some((m) => m.id === currentSector?.mapId);
+        const campaignHardModeComplete =
+          isCampaignMission &&
+          isCampaignHardModeComplete(playerSave?.completedMissions, CAMPAIGN_MISSIONS);
+
         const medalEval = evaluateMissionMedals({
           trackerState: snapshot.medalTrackerState,
           hud: snapshot,
           upgrades: state.upgrades,
           isVictory,
+          isSurvival: snapshot.gameMode === 'survival',
           existingMedals: playerSave?.medals || {},
+          existingProgress: playerSave?.medalProgress || {},
+          hardMode: isHardModeRun,
+          campaignHardModeComplete,
         });
         state.battleMedals = medalEval.earnedMedals;
         state.battleServiceXp = medalEval;

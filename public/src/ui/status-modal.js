@@ -113,7 +113,7 @@ function renderBattleMedalsAndRankSection(state) {
             <div class="battle-medal-chip" style="--medal-color: ${m.color};">
               <div class="battle-medal-chip-top">
                 <span class="battle-medal-grade">${t(m.gradeLabel).toUpperCase()}</span>
-                <span class="battle-medal-xp">${m.isNew ? `${t('NEW')} ` : ''}+${m.xpAwarded} XP</span>
+                <span class="battle-medal-xp">${m.isNew ? `${t('NEW')} ` : m.tierUp ? `${t('TIER UP')} ` : ''}+${m.xpAwarded} XP</span>
               </div>
               <strong class="battle-medal-name">${t(m.name)}</strong>
               <span class="battle-medal-desc">${t(m.description)}</span>
@@ -316,7 +316,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
             <span class="text-lg font-bold text-amber-300 tabular-nums">+$ ${s?.thirdCargoBonus ?? 0}</span>
           </div>
           <div>
-            <span class="battle-stat-label">${t('TOTAL CREDITS')}</span>
+            <span class="battle-stat-label">${t('TOTAL CREDITS')}${s?.hardModeBonus > 0 ? ` · ${t('HARD MODE +{pct}%', { pct: 25 })}` : ''}</span>
             <span class="text-lg font-bold text-emerald-300 tabular-nums">+$ ${s?.totalObjectiveCredits ?? 0}</span>
           </div>
         </div>
@@ -364,7 +364,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
 
       <div class="grid grid-cols-3 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-4 font-mono">
         <div>
-          <span class="battle-stat-label">${t('CREDITS')}</span>
+          <span class="battle-stat-label">${t('CREDITS')}${s?.hardModeBonus > 0 ? ` · ${t('HARD MODE +{pct}%', { pct: 25 })}` : ''}</span>
           <span class="text-lg font-bold text-emerald-400 tabular-nums">+$ ${s?.creditsGained ?? 400}</span>
         </div>
         <div>

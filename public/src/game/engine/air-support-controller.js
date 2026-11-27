@@ -613,6 +613,7 @@ export class AirSupportController {
     engine.airSupportMissions ||= [];
     const launch = this.getAlliedSideLaunchPos(targetX, targetZ);
     const hq = engine.getHqBonuses?.();
+    const airStrikeId = `air_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
     if (variant === 'STRIKE_BOMBS') {
       const cfg = AIR_SUPPORT.STRIKE_BOMBS;
@@ -631,6 +632,7 @@ export class AirSupportController {
         engine.airSupportMissions.push({
           kind: 'AIR_ORDNANCE',
           ordnanceType: 'BOMB',
+          airStrikeId,
           startX: releaseX,
           startY: flyby.altitude - 0.5,
           startZ: releaseZ,
@@ -657,6 +659,7 @@ export class AirSupportController {
       engine.airSupportMissions.push({
         kind: 'AIR_ORDNANCE',
         ordnanceType: 'THERMO',
+        airStrikeId,
         startX: launch.x,
         startY: thermoCfg.launchAltitude,
         startZ: launch.z,
@@ -693,6 +696,7 @@ export class AirSupportController {
       }
       engine.airSupportMissions.push({
         kind: 'AC130',
+        airStrikeId,
         phase: 'approach',
         x: targetX,
         z: targetZ,
@@ -1041,7 +1045,7 @@ export class AirSupportController {
 
     if (m.timer <= 0) {
       if (m.ordnanceType === 'THERMO') {
-        engine.explosions?.detonateThermobaricAt(m.targetX, m.targetZ, m.radius, m.damage, true);
+        engine.explosions?.detonateThermobaricAt(m.targetX, m.targetZ, m.radius, m.damage, true, m.airStrikeId || null);
         this.applyFriendlyFireBlast(m.targetX, m.targetZ, m.radius, m.damage, 25, INFERNO.EDGE_DAMAGE_RATIO);
       } else {
         engine.detonateExplosionAt(
@@ -1053,7 +1057,8 @@ export class AirSupportController {
           null,
           false,
           m.penetration,
-          'AIR_BOMB'
+          'AIR_BOMB',
+          m.airStrikeId || null
         );
         this.applyFriendlyFireBlast(
           m.targetX,
@@ -1172,7 +1177,7 @@ export class AirSupportController {
         m.fireTimer = m.fireInterval;
         const target = this.pickAc130Target(m.x, m.z, m.radius);
         if (target) {
-          this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z, orbitH);
+          this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z, orbitH, m.airStrikeId || null);
         }
       }
     }
@@ -1240,7 +1245,7 @@ export class AirSupportController {
     return null;
   }
 
-  fireAc130Shell(startX, startZ, targetX, targetZ, startHeight = 24) {
+  fireAc130Shell(startX, startZ, targetX, targetZ, startHeight = 24, airStrikeId = null) {
     const { engine } = this;
     const weaponId = AIRCRAFT_CONFIGS.AC130_SPOOKY.weaponId;
     const gun = CANNONS[weaponId];
@@ -1280,6 +1285,8 @@ export class AirSupportController {
         targetFlightY: 0.2,
         flightDist: dist,
         canHitPlayer: true,
+        isAirSupport: true,
+        airStrikeId,
       }
     );
   }
@@ -1377,7 +1384,7 @@ export class AirSupportController {
       !occupiedByMine;
 
     if (isEmptyCell) {
-      engine.explosions?.plantMineAt(x, z, { neutral: true, armTimer: 0.4, discovered: true });
+      engine.explosions?.plantMineAt(x, z, { neutral: true, armTimer: 0.4, discovered: true, isAirSupport: true, airStrikeId: m.airStrikeId || null });
     } else {
       const blastRadius = LAND_MINE.BLAST_RADIUS_CELLS * TILE_SIZE;
       engine.fx?.shockwave?.(x, 0.1, z, 0.35, blastRadius, 0xff5a14, 0.48);
@@ -1389,7 +1396,9 @@ export class AirSupportController {
         true,
         null,
         true,
-        LAND_MINE.PENETRATION
+        LAND_MINE.PENETRATION,
+        'AIR_MINE',
+        m.airStrikeId || null
       );
       this.applyFriendlyFireBlast(
         x,

@@ -665,6 +665,9 @@ export class TankGameEngine {
 
   setHardMode(enabled) {
     this.hardMode = Boolean(enabled);
+    if (!this.hardMode && this.status === GameStatus.PLAYING && this.activeMissionRun) {
+      this.activeMissionRun.hardMode = false;
+    }
   }
 
   getActivePlayerMissile() {
@@ -1724,8 +1727,8 @@ export class TankGameEngine {
     this.explosions.detonateThermobaricAt(x, z, radius, damage, fromPlayer);
   }
 
-  detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit = null, isEnvironmental = false, penetration = 0, sourceWeapon = null) {
-    this.explosions.detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit, isEnvironmental, penetration, sourceWeapon);
+  detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit = null, isEnvironmental = false, penetration = 0, sourceWeapon = null, airStrikeId = null) {
+    this.explosions.detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit, isEnvironmental, penetration, sourceWeapon, airStrikeId);
   }
 
   /** Armour of the hull side facing a blast centre (armour always works per side). */
@@ -1761,7 +1764,13 @@ export class TankGameEngine {
       });
       this.syncTemporaryCredits();
       this.playerSave.completedMissions ||= {};
-      this.playerSave.completedMissions[this.activeMissionRun.missionId] = { completedAt: Date.now() };
+      const prevCompletion = this.playerSave.completedMissions[this.activeMissionRun.missionId];
+      const prevHardMode = Boolean(prevCompletion?.hardMode);
+      this.playerSave.completedMissions[this.activeMissionRun.missionId] = {
+        ...(prevCompletion && typeof prevCompletion === 'object' ? prevCompletion : {}),
+        completedAt: Date.now(),
+        hardMode: prevHardMode || Boolean(this.activeMissionRun.hardMode),
+      };
       this.cannonAmmo = this.getPlayerMaxCannonAmmo();
       this.missileAmmo = this.atgmOwned ? this.getPlayerMaxMissileAmmo() : 0;
       if (this.apsOwned) {

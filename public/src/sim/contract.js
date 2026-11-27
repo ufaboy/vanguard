@@ -1241,18 +1241,23 @@ export function settleContractMission({
   const extractionBonus = isSuccess ? CONTRACT_PAYOUTS.EXTRACTION_BASE : 0;
   const thirdCargoBonus =
     isSuccess && deliveredCount >= 3 ? CONTRACT_PAYOUTS.THIRD_CARGO_BONUS : 0;
-  const settlementAddition = extractionBonus + thirdCargoBonus;
+  const baseSettlement = extractionBonus + thirdCargoBonus;
+  const hardModeBonus = missionRun.hardMode ? Math.round(baseSettlement * 0.25) : 0;
+  const settlementAddition = baseSettlement + hardModeBonus;
 
   playerSave.credits = (playerSave.credits || 0) + settlementAddition;
   missionRun.status = outcome;
   missionRun.rewardsCommitted = true;
   missionRun.extractionBonusPaid = extractionBonus;
   missionRun.thirdCargoBonusPaid = thirdCargoBonus;
+  missionRun.hardModeBonusPaid = hardModeBonus;
 
   const totalObjectiveCredits = cargoCreditsSecured + settlementAddition;
   const summary = {
     isContract: true,
     outcome,
+    hardMode: Boolean(missionRun.hardMode),
+    hardModeBonus,
     deliveredCount,
     cargoCreditsSecured,
     extractionBonus,

@@ -1094,6 +1094,8 @@ export class ProjectilesController {
               engine.damageEnemy(enemy, legacyScaleDmg * aspectBonus, {
                 aspect: aspectStr,
                 salvoId: p.salvoId ?? null,
+                isAirSupport: Boolean(p.isAirSupport),
+                airStrikeId: p.airStrikeId ?? null,
               });
               if (p.isMissile) {
                 engine.detonateMissile(p);

@@ -8,13 +8,14 @@ import {
   MEDAL_CATALOG,
   MEDAL_GRADES,
   RANK_LADDER,
+  getMedalCurrentState,
   getRankAirSupportUnlocks,
   getRankProgress,
 } from '../sim/medals.js';
 import { N_, formatNumber, t } from '../i18n/index.js';
 
 const GRADE_FILTERS = Object.freeze([
-  { id: 'all', label: N_('All (20)') },
+  { id: 'all', label: N_('All ({n})') },
   { id: 'vanguard', label: N_('Vanguard') },
   { id: 'gold', label: N_('Gold') },
   { id: 'silver', label: N_('Silver') },
@@ -67,10 +68,29 @@ function renderRankHeader(progress) {
   `;
 }
 
-function renderMedalCard(medal, entry) {
-  const grade = MEDAL_GRADES[medal.grade];
-  const count = entry?.count || 0;
-  const unlocked = count > 0;
+function renderMedalCard(medal, entry, medalProgress) {
+  const state = getMedalCurrentState(medal, entry, medalProgress);
+  const grade = MEDAL_GRADES[state.grade];
+  const unlocked = state.unlocked;
+  const count = state.count;
+
+  let progressHtml = '';
+  if (state.isTiered) {
+    const target = state.nextThreshold ?? state.maxThreshold ?? 1;
+    const clamped = Math.min(target, state.progress || 0);
+    const pct = Math.min(100, Math.round((clamped / Math.max(1, target)) * 100));
+    const label = state.isMaxTier
+      ? t('MAX TIER · {n}', { n: formatNumber(state.progress || 0) })
+      : `${formatNumber(state.progress || 0)} / ${formatNumber(target)}`;
+    progressHtml = `
+      <div class="medal-progress-wrap">
+        <div class="medal-progress-track">
+          <div class="medal-progress-fill" style="width: ${pct}%;"></div>
+        </div>
+        <span class="medal-progress-label">${label}</span>
+      </div>
+    `;
+  }
 
   return `
     <article
@@ -79,10 +99,19 @@ function renderMedalCard(medal, entry) {
     >
       <div class="medal-case-top">
         <span class="medal-grade-badge">${t(grade.label).toUpperCase()}</span>
-        ${unlocked ? `<span class="medal-count-badge">×${count}</span>` : `<span class="medal-xp-hint">+${grade.firstXp} XP</span>`}
+        ${
+          state.isTiered
+            ? state.isMaxTier
+              ? `<span class="medal-count-badge">${t('GOLD')}</span>`
+              : `<span class="medal-xp-hint">+${MEDAL_GRADES[state.nextGrade || state.grade].firstXp} XP</span>`
+            : unlocked
+            ? `<span class="medal-count-badge">×${count}</span>`
+            : `<span class="medal-xp-hint">+${grade.firstXp} XP</span>`
+        }
       </div>
       <h4 class="medal-case-name">${t(medal.name)}</h4>
       <p class="medal-case-desc">${t(medal.description)}</p>
+      ${progressHtml}
       <span class="medal-case-cat">${t(medal.category)}</span>
     </article>
   `;
@@ -109,9 +138,10 @@ export function attachMedalsModal(root) {
     const save = loadPlayerSave();
     const progress = getRankProgress(save);
     const medalsMap = save?.medals || {};
+    const medalProgress = save?.medalProgress || {};
     const filtered = activeFilter === 'all'
       ? MEDAL_CATALOG
-      : MEDAL_CATALOG.filter((m) => m.grade === activeFilter);
+      : MEDAL_CATALOG.filter((m) => getMedalCurrentState(m, medalsMap[m.id], medalProgress).grade === activeFilter);
 
     modal.innerHTML = `
       <div class="settings-modal-panel medals-modal-panel">
@@ -137,11 +167,11 @@ export function attachMedalsModal(root) {
                 class="medal-filter-btn ${activeFilter === f.id ? 'is-active' : ''}"
                 data-action="filter-medals"
                 data-grade="${f.id}"
-              >${t(f.label)}</button>
+              >${f.id === 'all' ? t(f.label, { n: MEDAL_CATALOG.length }) : t(f.label)}</button>
             `).join('')}
           </div>
           <div class="medal-case-grid">
-            ${filtered.map((m) => renderMedalCard(m, medalsMap[m.id])).join('')}
+            ${filtered.map((m) => renderMedalCard(m, medalsMap[m.id], medalProgress)).join('')}
           </div>
         </div>
       </div>

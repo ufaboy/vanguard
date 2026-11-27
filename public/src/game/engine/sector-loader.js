@@ -828,6 +828,7 @@ export class SectorLoaderController {
       missionId: authoredMission.id,
       isContract: isCargoContract,
       isSurvival: isSurvivalSector,
+      hardMode: Boolean(engine.hardMode),
       contractId: sector.contractId || (isCargoContract ? sector.mapId : null),
       status: 'in_progress',
       rewardsCommitted: false,

@@ -86,6 +86,8 @@ export class ExplosionsController {
       damage: opts.damage ?? LAND_MINE.DAMAGE,
       neutral: Boolean(opts.neutral),
       mapMine: Boolean(opts.mapMine),
+      isAirSupport: Boolean(opts.isAirSupport),
+      airStrikeId: opts.airStrikeId ?? null,
       discovered,
       revealAlpha,
       _materials: collectMineMaterials(mesh),
@@ -191,6 +193,8 @@ export class ExplosionsController {
           );
           engine.damageEnemy(e, eff, {
             aspect: determineHitAspect(e.x, e.z, e.hullAngle, m.x, m.z),
+            isAirSupport: Boolean(m.isAirSupport),
+            airStrikeId: m.airStrikeId ?? null,
           });
         }
       }
@@ -330,7 +334,7 @@ export class ExplosionsController {
     }
   }
 
-  detonateThermobaricAt(x, z, radius, damage, fromPlayer = false) {
+  detonateThermobaricAt(x, z, radius, damage, fromPlayer = false, airStrikeId = null) {
     const { engine } = this;
     sound.playExplosion(1.9, { x, z });
     engine.screenShake = Math.max(engine.screenShake || 0, 0.85);
@@ -443,6 +447,8 @@ export class ExplosionsController {
           );
           engine.damageEnemy(e, eff, {
             aspect: determineHitAspect(e.x, e.z, e.hullAngle, x, z),
+            isAirSupport: Boolean(airStrikeId || sourceWeapon === 'AIR_BOMB' || sourceWeapon === 'AIR_MINE'),
+            airStrikeId,
           });
         }
       }
@@ -476,7 +482,8 @@ export class ExplosionsController {
     componentHit = null,
     isEnvironmental = false,
     penetration = 0,
-    sourceWeapon = null
+    sourceWeapon = null,
+    airStrikeId = null
   ) {
     const { engine } = this;
     if (isEnvironmental) {
@@ -581,6 +588,8 @@ export class ExplosionsController {
           );
           engine.damageEnemy(e, eff, {
             aspect: determineHitAspect(e.x, e.z, e.hullAngle, x, z),
+            isAirSupport: Boolean(airStrikeId || sourceWeapon === 'AIR_BOMB' || sourceWeapon === 'AIR_MINE'),
+            airStrikeId,
           });
         }
       }

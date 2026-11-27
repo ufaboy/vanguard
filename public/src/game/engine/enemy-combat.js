@@ -868,6 +868,8 @@ export class EnemyCombatController {
         playerHpRatio,
         playerInWater,
         salvoId: hitMeta?.salvoId ?? null,
+        isAirSupport: Boolean(hitMeta?.isAirSupport),
+        airStrikeId: hitMeta?.airStrikeId ?? null,
         minesPlaced: enemy.minesPlaced || 0,
         engineerActing: Boolean((enemy.specialCooldown || 0) > 0),
         kamikazeChargingClose: enemy.enemyClass === EnemyClass.KAMIKAZE && distToPlayer <= TILE_SIZE * 5.5,

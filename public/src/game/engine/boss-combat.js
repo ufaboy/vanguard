@@ -123,7 +123,7 @@ export class BossCombat {
           e.z
         );
         const dmg = computeEffectiveDamage(INFERNO.DASH_RAM_DAMAGE, 35, aspect);
-        engine.damagePlayer(dmg, { zone: 'hull', aspect: 'front' });
+        engine.damagePlayer(dmg, { zone: 'hull', aspect: 'front', sourceWeapon: 'INFERNO_RAM' });
         engine.fx.explosion(engine.playerX, 0.7, engine.playerZ, { scale: 1.35, tint: 0xff4500 });
         sound.playExplosion(1.3, { x: engine.playerX, z: engine.playerZ });
         engine.screenShake = Math.max(engine.screenShake || 0, 0.85);
