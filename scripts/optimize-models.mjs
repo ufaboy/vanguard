@@ -16,8 +16,6 @@
 // Usage: pnpm run optimize-models [-- tank_player tank_scout ...]   (default: every tank)
 //        --no-ktx2 keeps PNG textures, --no-draco keeps raw geometry and --no-simplify keeps
 //        the full Blender geometry (debugging); MODELS_OUT_DIR overrides the output directory.
-//        --simplify-existing tank_player only simplifies the already optimized GLB in place
-//        (its Blender source has untextured materials the atlas step rejects).
 import fs from 'node:fs';
 import path from 'node:path';
 import { NodeIO, TextureInfo } from '@gltf-transform/core';
@@ -281,7 +279,8 @@ async function simplifyTank(doc) {
     unindexPrimitive(doc, prim);
     rebuildCreaseNormals(doc, prim);
   }
-  await doc.transform(weld(), prune());
+  // Keep single-colour textures: the atlas step needs every material's texture slots
+  await doc.transform(weld(), prune({ keepSolidTextures: true }));
   return { before, after, error };
 }
 
@@ -475,31 +474,9 @@ const NO_KTX2 = args.includes('--no-ktx2');
 const NO_DRACO = args.includes('--no-draco');
 const NO_SIMPLIFY = args.includes('--no-simplify');
 const WORLD_MODE = args.includes('--world');
-const SIMPLIFY_EXISTING = args.includes('--simplify-existing');
 const requested = args.filter((a) => !a.startsWith('--'));
 
-/**
- * Simplifies an already optimized public/models/<name>.glb in place (textures untouched).
- * For models whose Blender source no longer passes the full pipeline (tank_player).
- */
-async function simplifyExisting(name) {
-  const file = path.join(OUT_DIR, `${name}.glb`);
-  const doc = await io.read(file);
-  const before = fs.statSync(file).size;
-  const simplified = await simplifyTank(doc);
-  await doc.transform(
-    draco({ quantizePosition: 14, quantizeNormal: 10, quantizeTexcoord: 15, quantizeGeneric: 14 })
-  );
-  await io.write(file, doc);
-  console.log(
-    `${name}: ${(before / 1e6).toFixed(2)} MB -> ${(fs.statSync(file).size / 1e6).toFixed(2)} MB, ` +
-      `${simplified.before} -> ${simplified.after} triangles (error ${simplified.error})`
-  );
-}
-
-if (SIMPLIFY_EXISTING) {
-  for (const name of requested) await simplifyExisting(name);
-} else if (WORLD_MODE) {
+if (WORLD_MODE) {
   const files = requested.length ? requested : collectWorldGlbs();
   let totalBefore = 0;
   let totalAfter = 0;
