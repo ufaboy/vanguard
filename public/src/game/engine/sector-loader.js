@@ -20,6 +20,7 @@ import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
 import { BUILDING_MAX_HP } from '../terrains/building-models.js';
 import { landmarkFootprintCenter } from '../terrains/landmarks.js';
 import { railCurveCells, resolveBuildingCell } from '../terrains/terrain-format.js';
+import { computeRoadCellMasks } from '../render/models.js';
 import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { isSurfaceType, setCellObject } from '../terrains/layers.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
@@ -311,17 +312,8 @@ export class SectorLoaderController {
             const o = sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
             return s === TileType.ROAD || o === TileType.BRIDGE;
           };
-          const n = isRoad(r - 1, c);
-          const e = isRoad(r, c + 1);
-          const s = isRoad(r + 1, c);
-          const w = isRoad(r, c - 1);
-          const roadMask = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
-          const doubleLaneMask =
-            (n && e && w && !s && (isRoad(r - 1, c + 1) || isRoad(r - 1, c - 1)) ? 1 : 0) |
-            (e && n && s && !w && (isRoad(r - 1, c + 1) || isRoad(r + 1, c + 1)) ? 2 : 0) |
-            (s && e && w && !n && (isRoad(r + 1, c + 1) || isRoad(r + 1, c - 1)) ? 4 : 0) |
-            (w && n && s && !e && (isRoad(r - 1, c - 1) || isRoad(r + 1, c - 1)) ? 8 : 0);
-          surfaceMesh = engine.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask);
+          const { roadMask, doubleLaneMask, wideTurn } = computeRoadCellMasks(isRoad, r, c);
+          surfaceMesh = engine.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask, wideTurn);
           engine.mapGroup.add(surfaceMesh);
         } else if (surface === TileType.SAND && engine.modelFactory.createSandBlock) {
           surfaceMesh = engine.modelFactory.createSandBlock(x, z);

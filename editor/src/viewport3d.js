@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { TileType } from '/public/src/game/terrains/surfaces.js';
 import { railCurveCells } from '/public/src/game/terrains/terrain-format.js';
-import { ModelFactory } from '/public/src/game/render/models.js';
+import { ModelFactory, computeRoadCellMasks } from '/public/src/game/render/models.js';
 import { landmarkFootprintCenter } from '/public/src/game/terrains/landmarks.js';
 import { computeBuildingLayout } from './building-layout.js';
 import { computeBridgeLayout } from './bridge-layout.js';
@@ -488,6 +488,14 @@ export class Viewport3D {
         this.updateCell(nr, nc, false);
       }
     }
+    for (const [dr, dc] of [[-1, -1], [-1, 1], [1, -1], [1, 1]]) {
+      const nr = r + dr;
+      const nc = c + dc;
+      if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
+      if (this.state.surfaceGrid[nr][nc] === TileType.ROAD) {
+        this.updateCell(nr, nc, false);
+      }
+    }
   }
 
   syncBuildings() {
@@ -540,12 +548,8 @@ export class Viewport3D {
         if (rr < 0 || rr >= size || cc < 0 || cc >= size) return false;
         return this.state.surfaceGrid[rr][cc] === TileType.ROAD || this.state.objectGrid[rr][cc] === TileType.BRIDGE;
       };
-      const n = isRoad(r - 1, c);
-      const e = isRoad(r, c + 1);
-      const s = isRoad(r + 1, c);
-      const w = isRoad(r, c - 1);
-      const roadMask = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
-      sMesh = this.modelFactory.createRoadBlock(x, z, roadMask, 0);
+      const { roadMask, doubleLaneMask, wideTurn } = computeRoadCellMasks(isRoad, r, c);
+      sMesh = this.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask, wideTurn);
     } else if (surface === TileType.WATER) {
       sMesh = new THREE.Mesh(this.waterGeo, this.waterMat);
       sMesh.position.set(x, 0.01, z);
@@ -683,11 +687,9 @@ export class Viewport3D {
         oMesh.position.set(x + (modelOrientation === 'ew' ? TILE_SIZE / 2 : 0), onBridge ? 0.20 : 0, z + (modelOrientation === 'ns' ? TILE_SIZE / 2 : 0));
         if (rotDeg === 180 || rotDeg === 270) oMesh.rotation.y += Math.PI;
       }
-    } else if (object === TileType.RUBBLE) {
-      this._rubbleGeo ||= new THREE.BoxGeometry(1.5, 0.45, 1.5);
-      this._rubbleMat ||= new THREE.MeshStandardMaterial({ color: 0x71717a, roughness: 0.9 });
-      oMesh = new THREE.Mesh(this._rubbleGeo, this._rubbleMat);
-      oMesh.position.set(x, 0.225, z);
+    } else if (object === TileType.RUBBLE && this.modelFactory.createRubbleBlock) {
+      oMesh = this.modelFactory.createRubbleBlock('house1');
+      oMesh.position.set(x, 0, z);
       if (rotDeg) oMesh.rotation.y = rotRad;
     } else if (object === TileType.HOUSE_1 || object === TileType.HOUSE_2) {
       const b = this.buildingLayout.get(`${r},${c}`) || {
