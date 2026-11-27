@@ -2,6 +2,7 @@
 
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { mergeStaticMeshes } from './static-merge.js';
 import { APS, POWERUP, POWERUP_TYPES } from '../constants.js';
 import { disposeOwned, markMaterialOwned, markOwned } from './dispose.js';
 import { getSharedGltfLoader, resolvePublicUrl } from './gltf-loader.js';
@@ -1992,6 +1993,9 @@ export class ModelFactory extends TextureGenerator {
     box(0.36, 0.318, 0.42, m.crate, crateX, 0.241, 0.26);
     box(0.26, 0.218, 0.26, m.crate, crateX + 0.02, 0.191, -0.3).rotation.y = 0.25;
     box(0.22, 0.16, 0.24, m.crate, crateX - 0.01, 0.48, 0.24).rotation.y = -0.15;
+
+    // ~90 static garage parts -> one draw per material (the repair disc below stays separate)
+    mergeStaticMeshes(group);
 
     const repairGeo = new THREE.CircleGeometry(7.0, 64);
     repairGeo.rotateX(-Math.PI / 2);
