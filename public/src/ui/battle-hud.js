@@ -3,7 +3,7 @@ import { isAirStrikeVariantUnlocked } from '../sim/medals.js';
 import { DRONE_CONFIGS } from '../game/vehicles/drones.js';
 import { renderPowerUpBadgeSvg } from '../game/icons.js';
 import { GameStatus } from '../game/types.js';
-import { N_, formatNumber, t } from '../i18n/index.js';
+import { formatNumber, t } from '../i18n/index.js';
 import { setHidden, setHtml } from './dom-helpers.js';
 import { renderTankSilhouette } from './tank-silhouette.js';
 

@@ -4,8 +4,7 @@ import { getSafeStorage } from '../../sim/garage.js';
 import { createDefaultHqTree, normalizeHqTree } from '../../sim/hq-tree.js';
 import { createRepairKitState } from '../../sim/subsystems.js';
 import { SURVIVAL_CONFIG } from '../../sim/survival.js';
-import { APS, MISSILE, UPGRADE_MAX_LEVEL, getMaxApsAmmo, getMaxCannonAmmo, getMaxRepairKitCharges } from '../constants.js';
-import { distributeApsRounds } from './player-controller.js';
+import { MISSILE, UPGRADE_MAX_LEVEL, getMaxCannonAmmo, getMaxRepairKitCharges } from '../constants.js';
 
 /** Manages player profile persistence, mode saves, upgrades, and credit grants. */
 export class ProfileSaveController {

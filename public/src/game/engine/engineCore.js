@@ -37,7 +37,6 @@ import {
 } from './victory-cinematics.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import {
-  APS,
   TITAN,
   CANNON_AMMO,
   MISSILE,
