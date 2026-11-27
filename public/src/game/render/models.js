@@ -154,6 +154,7 @@ const ENEMY_BARREL_BASE_Z = 0.46;
 
 const PLAYER_GLB_MODEL = Object.freeze({
   url: './models/tank_player.glb',
+  radarUrl: './models/player_radar.glb',
   scale: 0.26,
   turretY: 1.55,
   gunY: 1.94,
@@ -161,6 +162,34 @@ const PLAYER_GLB_MODEL = Object.freeze({
   glow: { sat: 0.76 },
 });
 const PLAYER_BARREL_BASE_Z = 0.46;
+
+/** Removes the legacy commander optics mast and center-rear antenna from Turret_Base so Radar R1-R5 mount cleanly while keeping the left-rear antenna. */
+function stripTurretMastAndAntennas(geometry) {
+  const pos = geometry?.attributes?.position;
+  const idx = geometry?.index;
+  if (!pos || !idx) return geometry;
+  const isCleared = (vi) => {
+    const x = pos.getX(vi);
+    const y = pos.getY(vi);
+    const z = pos.getZ(vi);
+    if (y <= 2.265) return false;
+    const inMast = x >= -1.36 && x <= -0.94 && z >= 0.34 && z <= 0.76;
+    const inAnt2 = x >= -1.72 && x <= -1.48 && z >= 0.08 && z <= 0.32;
+    return inMast || inAnt2;
+  };
+  const next = [];
+  for (let i = 0; i < idx.count; i += 3) {
+    const a = idx.getX(i);
+    const b = idx.getX(i + 1);
+    const c = idx.getX(i + 2);
+    if (!isCleared(a) && !isCleared(b) && !isCleared(c)) {
+      next.push(a, b, c);
+    }
+  }
+  const cloned = geometry.clone();
+  cloned.setIndex(next);
+  return cloned;
+}
 
 const GLB_DEFENSE_TURRETS = Object.freeze({
   CANNON: Object.freeze({ url: './models/turret_cannon.glb', scale: 1.0, turretY: 0.62, muzzleDist: 1.6 }),
@@ -453,8 +482,13 @@ export class ModelFactory extends TextureGenerator {
     this.glbTurretParts = new Map();
     this.pendingTurretRigs = new Map();
     this.glbTurretRequestedUrls = new Set();
+    this.playerRadarGlbParts = null;
+    this.pendingPlayerRadarRigs = [];
     this.playerGlbPromise = options.playerGlbPromise ?? (
       !headless && !isSoftwareGl ? this.loadPlayerGlbModel() : Promise.resolve()
+    );
+    this.playerRadarGlbPromise = options.playerRadarGlbPromise ?? (
+      !headless && !isSoftwareGl ? this.loadPlayerRadarGlbModel() : Promise.resolve()
     );
     if (options.loadGlbTankModel) {
       this.loadGlbTankModel = options.loadGlbTankModel;
@@ -568,6 +602,7 @@ export class ModelFactory extends TextureGenerator {
     if (this.isSoftwareGl) return Promise.resolve();
     const tasks = [
       this.playerGlbPromise,
+      this.playerRadarGlbPromise,
       this.brickModelsPromise,
       this.concreteModelsPromise,
       this.buildingModelsPromise,
@@ -592,6 +627,9 @@ export class ModelFactory extends TextureGenerator {
           gltf.scene.traverse((node) => {
             if (!node.isMesh) return;
             const mesh = node.clone();
+            if (node.name === 'Turret_Base') {
+              mesh.geometry = stripTurretMastAndAntennas(mesh.geometry);
+            }
             node.matrixWorld.decompose(mesh.position, mesh.quaternion, mesh.scale);
             mesh.castShadow = true;
             mesh.receiveShadow = true;
@@ -621,6 +659,63 @@ export class ModelFactory extends TextureGenerator {
           resolve();
         }
       );
+    });
+  }
+
+  loadPlayerRadarGlbModel() {
+    return new Promise((resolve) => {
+      getTankGltfLoader(this.renderer).load(
+        resolvePublicUrl(PLAYER_GLB_MODEL.radarUrl),
+        (gltf) => {
+          gltf.scene.updateMatrixWorld(true);
+          const parts = new Map();
+          for (let i = 1; i <= 5; i += 1) {
+            const key = `R${i}`;
+            const node = gltf.scene.getObjectByName(key);
+            if (!node) continue;
+            const clone = node.clone(true);
+            clone.traverse((child) => {
+              if (!child.isMesh) return;
+              child.castShadow = true;
+              child.receiveShadow = true;
+              addBakedGlow(child.material, PLAYER_GLB_MODEL.glow);
+            });
+            parts.set(key, clone);
+          }
+          this.playerRadarGlbParts = parts;
+          this.pendingPlayerRadarRigs.forEach((rig) => this.applyPlayerRadarGlb(rig));
+          this.pendingPlayerRadarRigs = [];
+          this.onModelReady?.('player_radar');
+          resolve();
+        },
+        undefined,
+        (err) => {
+          this.pendingPlayerRadarRigs = [];
+          console.warn('Player radar GLB unavailable.', err);
+          resolve();
+        }
+      );
+    });
+  }
+
+  applyPlayerRadarGlb(rig) {
+    if (!rig?.radarGroups || !this.playerRadarGlbParts) return;
+    const cfg = PLAYER_GLB_MODEL;
+    const s = cfg.scale;
+    const turretY = cfg.turretY * s;
+    rig.radarGroups.forEach((g, i) => {
+      g.children.slice().forEach((c) => {
+        disposeOwned(c);
+        g.remove(c);
+      });
+      const obj = this.playerRadarGlbParts.get(`R${i + 1}`)?.clone(true);
+      if (!obj) return;
+      const group = new THREE.Group();
+      group.rotation.y = -Math.PI / 2;
+      group.scale.setScalar(s);
+      group.position.set(0, -turretY, 0);
+      group.add(obj);
+      g.add(group);
     });
   }
 
@@ -680,7 +775,7 @@ export class ModelFactory extends TextureGenerator {
     rig.apsPods = [...apsWrap.children];
     rig.engineFan = rig.engineGroups[3].children[0].children.find((m) => m.name === 'E4_Rotor') || null;
 
-    const turretKeep = new Set([...rig.turretArmorGroups, rig.barrelPivot]);
+    const turretKeep = new Set([...rig.turretArmorGroups, ...(rig.radarGroups || []), rig.barrelPivot]);
     rig.turret.children.filter((c) => !turretKeep.has(c)).forEach((c) => drop(rig.turret, c));
     rig.turret.position.set(0, turretY, 0);
     const turretWrap = wrap(['Turret_Base', 'Missile_Pod', 'Missile_Warhead_0', 'Missile_Warhead_1'], -turretY);
@@ -1525,6 +1620,7 @@ export class ModelFactory extends TextureGenerator {
     const engineGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
     const hullArmorGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
     const turretArmorGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
+    const radarGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
     const cannonGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
 
     if (isPlayer) {
@@ -1533,6 +1629,7 @@ export class ModelFactory extends TextureGenerator {
       engineGroups.forEach((g) => hull.add(g));
       hullArmorGroups.forEach((g) => hull.add(g));
       turretArmorGroups.forEach((g) => turret.add(g));
+      radarGroups.forEach((g) => turret.add(g));
       cannonGroups.forEach((g) => barrelPivot.add(g));
     }
 
@@ -1558,6 +1655,7 @@ export class ModelFactory extends TextureGenerator {
       engineGroups,
       hullArmorGroups,
       turretArmorGroups,
+      radarGroups,
       cannonGroups,
       c5Barrels: null,
       engineFan: null,
@@ -1581,10 +1679,15 @@ export class ModelFactory extends TextureGenerator {
     } else if (!this.isSoftwareGl) {
       this.pendingPlayerRigs.push(rig);
     }
+    if (this.playerRadarGlbParts) {
+      this.applyPlayerRadarGlb(rig);
+    } else if (!this.isSoftwareGl) {
+      this.pendingPlayerRadarRigs.push(rig);
+    }
 
     this.updatePlayerTankVisuals(
       rig,
-      { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 },
+      { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1, radar: 1 },
       false,
       2,
       [1, 0, 0, 1],
@@ -1616,6 +1719,7 @@ export class ModelFactory extends TextureGenerator {
     const frameIdx = Math.max(0, Math.min(4, rawFrameLvl - 1));
     const engineIdx = Math.max(0, Math.min(4, (upgrades?.engine || 1) - 1));
     const armorIdx = Math.max(0, Math.min(4, (upgrades?.armor || 1) - 1));
+    const radarIdx = Math.max(0, Math.min(4, (upgrades?.radar || 1) - 1));
 
     if (rig.cannonGroups) {
       rig.cannonGroups.forEach((g, idx) => {
@@ -1652,6 +1756,12 @@ export class ModelFactory extends TextureGenerator {
     if (rig.turretArmorGroups) {
       rig.turretArmorGroups.forEach((g, idx) => {
         setPartActive(g, idx === armorIdx);
+      });
+    }
+
+    if (rig.radarGroups) {
+      rig.radarGroups.forEach((g, idx) => {
+        setPartActive(g, idx === radarIdx);
       });
     }
 
@@ -2868,6 +2978,13 @@ export class ModelFactory extends TextureGenerator {
       disposeMeshList(this.glbAirDropParts.crate);
       disposeMeshList(this.glbAirDropParts.chute);
       this.glbAirDropParts = null;
+    }
+    if (this.playerRadarGlbParts) {
+      for (const obj of this.playerRadarGlbParts.values()) {
+        disposeOwned(obj);
+      }
+      this.playerRadarGlbParts.clear();
+      this.playerRadarGlbParts = null;
     }
 
     disposeBag(this.craterMats);

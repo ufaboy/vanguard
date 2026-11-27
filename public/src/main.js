@@ -440,6 +440,7 @@ function initApp() {
   // Warm up critical GLB files in parallel while texture-worker generates procedural maps.
   for (const href of [
     './models/tank_player.glb',
+    './models/player_radar.glb',
     './models/terrain/brick.glb',
     './models/terrain/concrete.glb',
     './models/terrain/buildings.glb',
