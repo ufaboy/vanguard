@@ -19,7 +19,7 @@ Follow the repository's AGENTS.md. Treat current code as the runtime contract; d
 
 ### 1. Load the vocabulary
 
-Read [catalog.md](references/catalog.md) (tile characters, what may stand on what, buildings, landmarks, map JSON fields), [realism.md](references/realism.md) (realism rules, scale, theme palettes) and [decoration.md](references/decoration.md) (the 2D `decoration` contract). Open one recent map of the same mode in `public/maps/` as a format example — copy its structure, not its layout. Before using a field or token, confirm it still exists in `public/src/game/levels.js` / `terrains/layers.js`; never invent keys.
+Read [catalog.md](references/catalog.md) (tile characters, what may stand on what, buildings, landmarks, map JSON fields), [realism.md](references/realism.md) (realism rules, scale, theme palettes), [buildings.md](references/buildings.md) (approved building footprint templates) and [decoration.md](references/decoration.md) (the 2D `decoration` contract). Open one recent map of the same mode in `public/maps/` as a format example — copy its structure, not its layout. Before using a field or token, confirm it still exists in `public/src/game/levels.js` / `terrains/layers.js`; never invent keys.
 
 ### 2. Research the place
 
@@ -47,7 +47,7 @@ Write `surfaceLayout` and `objectLayout` directly (40 strings of 40 characters e
 1. Base ground and natural terrain (grass, sand, stone, swamp, snow-type ice areas).
 2. Water bodies with natural banks.
 3. Road network (and bridges where roads cross water).
-4. Building blocks fronting the roads; yards; industrial plots.
+4. Building blocks fronting the roads; yards; industrial plots (avoid enclosed interior `core` cells on non-industrial `A`/`P` buildings — use courtyards or L/U/T/cross shapes; see `realism.md` and `buildings.md`).
 5. Vegetation masses, tree lines, parks.
 6. Context objects (barrels, oil, crates, water tower) and the **war layer** (defence lines, hedgehogs, craters, rubble, damaged blocks).
 7. Player base, player spawn, enemy entrances, enemy base (stronghold mode), BOX caches.

@@ -10,8 +10,9 @@ A 40×40 arena cannot hold a real place at true scale. Keep the place's recognis
 | --- | --- |
 | Main road / avenue | 2 cells wide |
 | Street, country road, service lane | 1 cell |
-| House, shed | 2×2 to 3×4 cells (`A`) |
-| Apartment block, office, factory hall | 3×4 to 4×8 cells (`P`), L-shapes and courtyards allowed |
+| House, shed | 2×2 to 2×4 cells (`A`), or L-/T-/cross-/courtyard shapes without enclosed interior cells |
+| Apartment block, office | L-, U-, T-, H-, cross-, or courtyard-ring shapes (`P`, 3–8 cells per side, no enclosed interior cells) |
+| Factory hall, warehouse | 3×4 to 4×8 cells (`P`); the only building type allowed to have enclosed interior (`core`) cells |
 | Urban block (buildings + yards) | 6–10 cells per side |
 | River | 2–5 cells wide; sea or lake may fill a whole edge strip |
 | Forest mass | 15+ cells, irregular outline |
@@ -25,6 +26,9 @@ The grid is small, so pick the 3–5 most characteristic elements of the place a
 1. **Function first.** Decide what the place is for (port, factory, village, rail junction, mountain pass, capital district) before drawing. Zones follow from the function: housing near roads and services, industry next to rail or water, fields around villages, forest on the rough ground.
 2. **Roads form a network.** A connected hierarchy: main road → streets → lanes. Roads continue off the map edges, because real places connect to the outside. Junctions are T or X shaped. Dead ends exist only as driveways into a yard, depot or farm. Never leave isolated 1–2 cell road stubs, and never put walls, crates, barrels or hedgehogs in the middle of a road unless they form a deliberate war-layer road block.
 3. **Buildings face the street.** They stand along roads with a setback and a yard behind. Blocks vary in size and shape (no grid of identical squares). A lone wall segment in an open field is allowed only as a ruin, with rubble and craters around it.
+   - **No enclosed interior (`core`) cells on residential or regular buildings.** For `A` and non-industrial `P` buildings, never create cells surrounded on all 4 orthogonal sides by the same building type (no solid `3×3`, `4×4`, or `3×4` blocks). Enclosed `core` cells are allowed **only** for large industrial factory halls and warehouses (`P`).
+   - **Use complex footprints and courtyards.** Shape larger buildings as L-shapes, U-shapes, T-shapes, H-shapes, crosses, stepped blocks, or courtyard rings (see [buildings.md](buildings.md) for the approved footprint templates). Thin 1-cell-wide wings and rings (e.g., a `3×3` ring with a `1×1` yard, a `4×4` ring with a `2×2` yard, or thin cross arms) are allowed.
+   - **Open vs. enclosed courtyards.** Prefer open courtyards (U-/C-shaped with a 1–2 cell entrance/driveway) so the yard participates in gameplay; fully enclosed O-shaped courtyards are also allowed as decorative yards containing grass (`V`), a tree (`F`), crates (`Q`), or ground (`.`).
 4. **Water behaves like water.**
    - Rivers enter and leave across map edges, and lakes have irregular outlines.
    - A bridge (`=`) sits exactly where a road meets water.
@@ -74,6 +78,7 @@ Use `decoration.zones` surfaces (`asphalt`, `pavers`, `concrete`, `dirt`, `grave
 - Can you name each zone's function?
 - Does every road lead somewhere, and does the network reach the edges?
 - Would a real builder put this building here, facing this way?
+- Are all residential and regular `A`/`P` buildings free of enclosed interior (`core`) cells (using courtyards or L/U/T/H/cross footprints instead)?
 - Does the water flow, and do roads cross it on bridges?
 - Do forests and tree lines look grown, not stamped?
 - Is there one dominant landmark?

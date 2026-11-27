@@ -1789,12 +1789,16 @@ class MapEditorApp {
 
   _clearDecorationsAt(r, c) {
     if (!this.state.decoration) return false;
+    let removed = false;
     const decals = this.state.decoration.landmarks;
     if (Array.isArray(decals)) {
-      const idx = decals.findIndex((d) => Math.round(d.row) === r && Math.round(d.col) === c);
-      if (idx >= 0) {
-        decals.splice(idx, 1);
-        return true;
+      for (let i = decals.length - 1; i >= 0; i--) {
+        const d = decals[i];
+        const half = Math.max(0, ((d.size || 1) - 1) * 0.5);
+        if (Math.abs(r - d.row) <= half + 0.5 && Math.abs(c - d.col) <= half + 0.5) {
+          decals.splice(i, 1);
+          removed = true;
+        }
       }
     }
     const zones = this.state.decoration.zones;
@@ -1803,11 +1807,45 @@ class MapEditorApp {
         const b = zones[i].bounds;
         if (b && r >= b[0] && r <= b[2] && c >= b[1] && c <= b[3]) {
           zones.splice(i, 1);
-          return true;
+          removed = true;
         }
       }
     }
-    return false;
+    const paths = this.state.decoration.paths;
+    if (Array.isArray(paths)) {
+      for (let i = paths.length - 1; i >= 0; i--) {
+        const pts = paths[i].points || [];
+        const halfW = Math.max(0.6, (paths[i].width || 1) * 0.5);
+        let hit = false;
+        for (let j = 1; j < pts.length; j++) {
+          const [r0, c0] = pts[j - 1];
+          const [r1, c1] = pts[j];
+          const dr = r1 - r0;
+          const dc = c1 - c0;
+          const len2 = dr * dr + dc * dc;
+          const t = len2 ? Math.max(0, Math.min(1, ((r - r0) * dr + (c - c0) * dc) / len2)) : 0;
+          if (Math.hypot(r - r0 - t * dr, c - c0 - t * dc) <= halfW) {
+            hit = true;
+            break;
+          }
+        }
+        if (hit) {
+          paths.splice(i, 1);
+          removed = true;
+        }
+      }
+    }
+    const exclusions = this.state.decoration.exclusions;
+    if (Array.isArray(exclusions)) {
+      for (let i = exclusions.length - 1; i >= 0; i--) {
+        const b = exclusions[i].bounds;
+        if (b && r >= b[0] && r <= b[2] && c >= b[1] && c <= b[3]) {
+          exclusions.splice(i, 1);
+          removed = true;
+        }
+      }
+    }
+    return removed;
   }
 
   _getCellDecorations(row, col) {

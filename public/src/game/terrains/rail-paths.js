@@ -30,6 +30,8 @@ function isBoundaryCell(r, c, gridSize) {
  * Extracts connected rail components and classifies each as:
  * - 'loop': closed ring (trains run continuously)
  * - 'transit': open path whose both endpoints touch the map edge (trains pass through and return)
+ * - 'spur': open path with exactly one endpoint on the map edge; `orderedKeys` starts at that edge
+ *   (trains enter from the edge, stop at the buffer end, then back out)
  * - 'static': dead-end interior track (placed rolling stock stays parked)
  */
 export function extractRailTracks({
@@ -142,10 +144,11 @@ export function extractRailTracks({
       const [e0, e1] = endpoints;
       const [r0, c0] = e0.split(',').map(Number);
       const [r1, c1] = e1.split(',').map(Number);
-      if (isBoundaryCell(r0, c0, gridSize) && isBoundaryCell(r1, c1, gridSize)) {
-        mode = 'transit';
-      }
-      orderedKeys = walkOrderedPath(e0, adj, false);
+      const edge0 = isBoundaryCell(r0, c0, gridSize);
+      const edge1 = isBoundaryCell(r1, c1, gridSize);
+      if (edge0 && edge1) mode = 'transit';
+      else if (edge0 || edge1) mode = 'spur';
+      orderedKeys = walkOrderedPath(edge0 || !edge1 ? e0 : e1, adj, false);
     }
 
     const cellSet = new Set(comp);

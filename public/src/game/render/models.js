@@ -385,6 +385,36 @@ function getTankGltfLoader(renderer) {
   return getSharedGltfLoader(renderer);
 }
 
+/**
+ * Computes road connectivity, 2-lane divider mask, and wide-turn flag for a road cell.
+ * @param {(r: number, c: number) => boolean} isRoad
+ * @param {number} r
+ * @param {number} c
+ * @returns {{ roadMask: number, doubleLaneMask: number, wideTurn: boolean }}
+ */
+export function computeRoadCellMasks(isRoad, r, c, gridSize = 40) {
+  const rawN = isRoad(r - 1, c);
+  const rawE = isRoad(r, c + 1);
+  const rawS = isRoad(r + 1, c);
+  const rawW = isRoad(r, c - 1);
+  const n = r === 0 ? rawN || rawS : rawN;
+  const s = r === gridSize - 1 ? rawS || rawN : rawS;
+  const w = c === 0 ? rawW || rawE : rawW;
+  const e = c === gridSize - 1 ? rawE || rawW : rawE;
+  const roadMask = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
+  const doubleLaneMask =
+    (n && e && w && !s && (isRoad(r - 1, c + 1) || isRoad(r - 1, c - 1)) ? 1 : 0) |
+    (e && n && s && !w && (isRoad(r - 1, c + 1) || isRoad(r + 1, c + 1)) ? 2 : 0) |
+    (s && e && w && !n && (isRoad(r + 1, c + 1) || isRoad(r + 1, c - 1)) ? 4 : 0) |
+    (w && n && s && !e && (isRoad(r - 1, c - 1) || isRoad(r + 1, c - 1)) ? 8 : 0);
+  const wideTurn =
+    (n && e && !s && !w && isRoad(r - 1, c + 1)) ||
+    (n && w && !s && !e && isRoad(r - 1, c - 1)) ||
+    (s && e && !n && !w && isRoad(r + 1, c + 1)) ||
+    (s && w && !n && !e && isRoad(r + 1, c - 1));
+  return { roadMask, doubleLaneMask, wideTurn };
+}
+
 export class ModelFactory extends TextureGenerator {
   /** @param {object} [pregenerated] results of texture-worker.js keyed by generator name;. */
   constructor(renderer, isSoftwareGl, pregenerated = null, options = {}) {
@@ -3562,8 +3592,9 @@ export class ModelFactory extends TextureGenerator {
    * @param {number} z
    * @param {number} neighborMask Bitmask of adjacent ROAD tiles (N=1, E=2, S=4, W=8).
    * @param {number} doubleLaneMask Bitmask indicating parallel second-lane direction (N=1, E=2, S=4, W=8).
+   * @param {boolean} wideTurn True when this 90-degree outer corner is part of a 2-lane turn.
    */
-  createRoadBlock(x = 0, z = 0, neighborMask = 5, doubleLaneMask = 0) {
+  createRoadBlock(x = 0, z = 0, neighborMask = 5, doubleLaneMask = 0, wideTurn = false) {
     if (!this.roadMats) {
       // Ground layers stack by height plus a tiny polygonOffsetUnits tie-break. Never use
       // polygonOffsetFactor here: it scales with the steep isometric depth slope and pulls the
@@ -3596,17 +3627,95 @@ export class ModelFactory extends TextureGenerator {
     const group = new THREE.Group();
     group.position.set(x, 0, z);
 
-    const slab = new THREE.Mesh(this.sharedGeometry('PlaneGeometry', TILE_SIZE, TILE_SIZE), asphalt);
-    slab.rotation.x = -Math.PI / 2;
-    slab.position.y = 0.01;
-    slab.receiveShadow = true;
-    group.add(slab);
-
     const hasN = (neighborMask & 1) !== 0;
     const hasE = (neighborMask & 2) !== 0;
     const hasS = (neighborMask & 4) !== 0;
     const hasW = (neighborMask & 8) !== 0;
     const count = (hasN ? 1 : 0) + (hasE ? 1 : 0) + (hasS ? 1 : 0) + (hasW ? 1 : 0);
+    const isCornerTurn = count === 2 && !(hasN && hasS) && !(hasE && hasW);
+
+    const dashVGeo = this.sharedGeometry('PlaneGeometry', 0.1, 0.52);
+    const dashHGeo = this.sharedGeometry('PlaneGeometry', 0.52, 0.1);
+    const addDash = (geo, dx, dz, ry = 0, parent = group) => {
+      const dash = new THREE.Mesh(geo, stripe);
+      dash.rotation.order = 'YXZ';
+      dash.rotation.x = -Math.PI / 2;
+      dash.rotation.y = ry;
+      dash.position.set(dx, 0.015, dz);
+      parent.add(dash);
+    };
+
+    if (isCornerTurn) {
+      const cornerKey = wideTurn ? 'wide' : 'std';
+      this.roadCornerGeos ||= {};
+      if (!this.roadCornerGeos[cornerKey]) {
+        const half = TILE_SIZE * 0.5;
+        const r = wideTurn ? 1.85 : 0.9;
+        const cw = 0.1;
+        const curveSegs = wideTurn ? 16 : 10;
+
+        // Canonical SW outer corner (hasN && hasE): arc at (-half + r, -half + r) in 2D Shape space.
+        const slabShape = new THREE.Shape();
+        slabShape.moveTo(-half, half);
+        slabShape.lineTo(-half, -half + r);
+        slabShape.absarc(-half + r, -half + r, r, Math.PI, Math.PI * 1.5, false);
+        slabShape.lineTo(half, -half);
+        slabShape.lineTo(half, half);
+        slabShape.closePath();
+
+        const curbShape = new THREE.Shape();
+        curbShape.moveTo(-half, half);
+        curbShape.lineTo(-half, -half + r);
+        curbShape.absarc(-half + r, -half + r, r, Math.PI, Math.PI * 1.5, false);
+        curbShape.lineTo(half, -half);
+        curbShape.lineTo(half, -half + cw);
+        curbShape.lineTo(-half + r, -half + cw);
+        curbShape.absarc(-half + r, -half + r, r - cw, Math.PI * 1.5, Math.PI, true);
+        curbShape.lineTo(-half + cw, half);
+        curbShape.closePath();
+
+        this.roadCornerGeos[cornerKey] = {
+          slab: new THREE.ShapeGeometry(slabShape, curveSegs),
+          curb: new THREE.ShapeGeometry(curbShape, curveSegs),
+        };
+      }
+      const { slab: slabGeo, curb: curbGeo } = this.roadCornerGeos[cornerKey];
+      const cornerYaw =
+        hasN && hasE ? 0 : hasN && hasW ? Math.PI / 2 : hasS && hasW ? Math.PI : -Math.PI / 2;
+
+      const cornerGroup = new THREE.Group();
+      cornerGroup.rotation.y = cornerYaw;
+
+      const slab = new THREE.Mesh(slabGeo, asphalt);
+      slab.rotation.x = -Math.PI / 2;
+      slab.position.y = 0.01;
+      slab.receiveShadow = true;
+      cornerGroup.add(slab);
+
+      const curb = new THREE.Mesh(curbGeo, shoulder);
+      curb.rotation.x = -Math.PI / 2;
+      curb.position.y = 0.013;
+      curb.receiveShadow = true;
+      cornerGroup.add(curb);
+
+      if (!wideTurn) {
+        // Curved centerline dashes for 1-lane 90-degree turn (centered at inner corner (1, -1)).
+        for (const frac of [0.24, 0.76]) {
+          const t = frac * (Math.PI / 2);
+          addDash(dashVGeo, 1 - Math.cos(t), -1 + Math.sin(t), t, cornerGroup);
+        }
+      }
+
+      group.add(cornerGroup);
+      group.userData.batchTile = true;
+      return markOwned(group, { geometries: false, materials: false });
+    }
+
+    const slab = new THREE.Mesh(this.sharedGeometry('PlaneGeometry', TILE_SIZE, TILE_SIZE), asphalt);
+    slab.rotation.x = -Math.PI / 2;
+    slab.position.y = 0.01;
+    slab.receiveShadow = true;
+    group.add(slab);
 
     // Draw curbs only along edges without an adjacent road tile.
     const curbHGeo = this.sharedGeometry('PlaneGeometry', TILE_SIZE, 0.1);
@@ -3641,15 +3750,6 @@ export class ModelFactory extends TextureGenerator {
     }
 
     // Centerline / divider markings aligned to actual road width and connectivity.
-    const dashVGeo = this.sharedGeometry('PlaneGeometry', 0.1, 0.52);
-    const dashHGeo = this.sharedGeometry('PlaneGeometry', 0.52, 0.1);
-    const addDash = (geo, dx, dz) => {
-      const dash = new THREE.Mesh(geo, stripe);
-      dash.rotation.x = -Math.PI / 2;
-      dash.position.set(dx, 0.015, dz);
-      group.add(dash);
-    };
-
     if (doubleLaneMask !== 0) {
       // Wide 2-lane avenue: place dashed divider along the shared seam between lanes.
       if ((doubleLaneMask & 4) !== 0 && !hasN) {
@@ -3679,12 +3779,6 @@ export class ModelFactory extends TextureGenerator {
     } else if (count === 2 && hasE && hasW) {
       addDash(dashHGeo, -0.52, 0);
       addDash(dashHGeo, 0.52, 0);
-    } else if (count === 2) {
-      // 90-degree corner turn: guide dashes toward both connected arms.
-      if (hasN) addDash(dashVGeo, 0, -0.52);
-      if (hasS) addDash(dashVGeo, 0, 0.52);
-      if (hasW) addDash(dashHGeo, -0.52, 0);
-      if (hasE) addDash(dashHGeo, 0.52, 0);
     }
     // T- and X-junctions (count >= 3, non-double-lane) stay clean inside the intersection box.
     group.userData.batchTile = true;
