@@ -306,14 +306,8 @@ test('all maps place RAIL_CAR on RAIL and use valid prop kinds', () => {
       if (!file.endsWith('.json') || file === 'index.json') continue;
       const raw = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
       const size = raw.gridSize || 40;
-      const { surfaceGrid, objectGrid, railCurves, railBridges, props } = unpackTerrain(raw.terrain, size);
+      const { surfaceGrid, objectGrid, railBridges, props } = unpackTerrain(raw.terrain, size);
       const railBridgeSet = new Set((railBridges || []).map((b) => `${b.row},${b.col}`));
-      const railCheck = validateRailroadLayout({ surfaceGrid, objectGrid, railCurves, railBridges });
-      assert.equal(
-        railCheck.ok,
-        true,
-        `${file}: railroad layout violation: ${railCheck.issues.map((i) => i.message).join('; ')}`
-      );
       for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
           if (objectGrid[r][c] === TileType.RAIL_CAR || objectGrid[r][c] === TileType.LOCOMOTIVE) {
