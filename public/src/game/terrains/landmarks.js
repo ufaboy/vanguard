@@ -17,6 +17,7 @@
 import * as THREE from 'three';
 import { getSharedGltfLoader } from '../render/gltf-loader.js';
 import { autoDisposeOwned, disposeOwned, markOwned } from '../render/dispose.js';
+import { mergeStaticMeshes } from '../render/static-merge.js';
 
 const ALL = (cols, rows) => {
   const cells = [];
@@ -494,7 +495,8 @@ export class LandmarkModels {
     for (const sz of [-1, 1]) {
       box(width + 0.5, 0.59, 0.45, m.stone, 0, -0.225, sz * (halfL - 0.05));
     }
-    return markOwned(group, { geometries: true, materials: false });
+    // One draw per material instead of one per baluster / pier (~65 meshes per bridge)
+    return markOwned(mergeStaticMeshes(group, { disposeSources: true }), { geometries: true, materials: false });
   }
 
   /** Swaps an existing landmark group (e.g. ELYSEE -> ELYSEE_RUINED when HQ falls). */
