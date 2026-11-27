@@ -374,6 +374,30 @@ async function optimize(name) {
   );
 }
 
+/**
+ * Per-file texture caps (px, longest side) for world GLBs, applied before KTX2 encoding.
+ * Small attachments seen at tank scale do not need 1024 px maps; a 512 px KTX2 map takes
+ * a quarter of the VRAM. Files not listed keep their exported texture size.
+ */
+const WORLD_TEXTURE_CAP = { 'player_radar.glb': MAX_TEXTURE };
+
+/** Shrinks PNG/JPEG textures larger than `cap` (KTX2 textures cannot be resized here). */
+async function capTextures(doc, cap) {
+  let resized = 0;
+  for (const texture of doc.getRoot().listTextures()) {
+    if (texture.getMimeType() === 'image/ktx2') continue;
+    const meta = await sharp(texture.getImage()).metadata();
+    if (Math.max(meta.width, meta.height) <= cap) continue;
+    const png = await sharp(texture.getImage())
+      .resize(cap, cap, { fit: 'inside', kernel: 'lanczos3' })
+      .png()
+      .toBuffer();
+    texture.setImage(new Uint8Array(png)).setMimeType('image/png');
+    resized++;
+  }
+  return resized;
+}
+
 async function optimizeWorldGlb(filePath) {
   const doc = await io.read(filePath);
   const before = fs.statSync(filePath).size;
@@ -382,6 +406,8 @@ async function optimizeWorldGlb(filePath) {
     .listTextures()
     .some((t) => t.getMimeType() !== 'image/ktx2');
   const encodeTextures = !NO_KTX2 && hasUncompressedTextures;
+  const cap = WORLD_TEXTURE_CAP[path.basename(filePath)];
+  const capped = cap ? await capTextures(doc, cap) : 0;
 
   await doc.transform(
     dedup(),
@@ -447,7 +473,8 @@ async function optimizeWorldGlb(filePath) {
   const root = doc.getRoot();
   console.log(
     `${path.relative(process.cwd(), filePath)}: ${(before / 1e6).toFixed(2)} MB -> ${(after / 1e6).toFixed(2)} MB, ` +
-      `${root.listMaterials().length} material(s), ${root.listTextures().length} texture(s)`
+      `${root.listMaterials().length} material(s), ${root.listTextures().length} texture(s)` +
+      (capped ? `, ${capped} texture(s) capped at ${cap} px` : '')
   );
   return { before, after };
 }
@@ -462,7 +489,8 @@ function collectWorldGlbs() {
     }
   }
   for (const f of fs.readdirSync(OUT_DIR)) {
-    if (f.startsWith('air_') && f.endsWith('.glb')) {
+    // Air support models and the player Radar R1-R5 attachment (exported straight from build_radars.py)
+    if ((f.startsWith('air_') || f === 'player_radar.glb') && f.endsWith('.glb')) {
       targets.push(path.join(OUT_DIR, f));
     }
   }
