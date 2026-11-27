@@ -67,16 +67,18 @@ export class TileBatcher {
 
   /** Drop every batch (call after the source group was cleared for a new sector). */
   reset() {
-    for (const batch of this.batches.values()) {
-      this.root.remove(batch.mesh);
-      batch.mesh.dispose();
-      batch.geometry.dispose();
-      const mats = Array.isArray(batch.material) ? batch.material : [batch.material];
-      mats.forEach((m) => m.dispose());
-    }
+    for (const batch of this.batches.values()) this.disposeBatch(batch);
     this.batches.clear();
     this.records.clear();
     this.dirty.clear();
+  }
+
+  disposeBatch(batch) {
+    this.root.remove(batch.mesh);
+    batch.mesh.dispose();
+    batch.geometry.dispose();
+    const mats = Array.isArray(batch.material) ? batch.material : [batch.material];
+    mats.forEach((m) => m.dispose());
   }
 
   sync() {
@@ -111,17 +113,19 @@ export class TileBatcher {
 
     for (const [key, batch] of this.batches) {
       if (!batch.needsUpload) continue;
-      if (batch.used === 0) {
-        this.root.remove(batch.mesh);
-        batch.mesh.dispose();
-        batch.geometry.dispose();
-        const mats = Array.isArray(batch.material) ? batch.material : [batch.material];
-        mats.forEach((m) => m.dispose());
+      // An emptied batch keeps its cloned material (and so its compiled GL program) until
+      // reset(): the same tile kind often comes back (a crater, a damage stage), and disposing
+      // would release the program and recompile it mid-fight. Batches keyed by a per-tile
+      // (owned) geometry or material can never be reused, so those are still dropped.
+      if (batch.used === 0 && batch.transient) {
+        this.disposeBatch(batch);
         this.batches.delete(key);
         continue;
       }
       batch.needsUpload = false;
       batch.mesh.count = batch.used;
+      // Hidden while empty so the render and shadow passes skip it entirely.
+      batch.mesh.visible = batch.used > 0;
       batch.mesh.instanceMatrix.needsUpdate = true;
       batch.mesh.instanceColor.needsUpdate = true;
     }
@@ -196,6 +200,9 @@ export class TileBatcher {
       used: 0,
       entries: [],
       needsUpload: true,
+      // Per-tile resources give the batch a unique key; see sync().
+      transient: Boolean(mesh.geometry.userData.owned && !mesh.geometry.parameters) ||
+        mats.some((m) => m.userData.owned && !m.userData.batchKey),
     };
     this.createInstancedMesh(batch, MIN_CAPACITY);
     this.batches.set(key, batch);

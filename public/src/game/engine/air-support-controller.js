@@ -21,6 +21,7 @@ import {
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { disposeOwned, markOwned } from '../render/dispose.js';
 import { getSharedGltfLoader } from '../render/gltf-loader.js';
+import { warmupObject } from './gpu-warmup.js';
 import { sound } from '../sound.js';
 import { GameStatus, TileType } from '../types.js';
 import { AIRCRAFT_CONFIGS } from '../vehicles/aircraft.js';
@@ -66,6 +67,10 @@ const AIR_GLB_URLS = Object.freeze({
   repairDrone: DRONE_CONFIGS.REPAIR_DRONE.modelUrl,
 });
 
+/** Longest the preload waits for the model factory's air drop crate GLB (ms). */
+const AIR_DROP_MODEL_WAIT_MS = 15000;
+const AIR_DROP_MODEL_POLL_MS = 100;
+
 /**
  * Manages tactical Air Support calls (Air Strike, Air Repair, Air Mines, Air Drop),
  * paused map-targeting UI state, and active airborne entities.
@@ -74,34 +79,106 @@ export class AirSupportController {
   constructor(engine) {
     this.engine = engine;
     this.glbCache = new Map();
-    this.glbRequested = new Set();
+    /** Shared Promise of the running / finished preload (see preloadGlbModels). */
+    this.preloadPromise = null;
+    /** Identifies the current preload so a dispose() mid-load drops its late results. */
+    this.preloadToken = null;
+    /** Off-scene ordnance meshes whose materials keep the warmed shader programs alive. */
+    this.warmupGroup = null;
   }
 
+  /**
+   * Loads the aircraft / drone GLBs and the air drop crate, then compiles their shaders
+   * and uploads their textures off-screen (with bombs, missiles and target rings), so the
+   * first air support call does not stall the fight. Returns a Promise that resolves
+   * (never rejects) once everything is warm; repeated calls share the same Promise.
+   */
   preloadGlbModels() {
+    if (this.preloadPromise) return this.preloadPromise;
     if (
       typeof window === 'undefined' ||
       typeof document === 'undefined' ||
       this.engine?.isSoftwareGl ||
+      this.engine?.isDisposed ||
       !this.engine?.fxGroup
     ) {
-      return;
+      return Promise.resolve();
     }
+    const token = {};
+    this.preloadToken = token;
     const loader = getSharedGltfLoader(this.engine?.renderer);
-    for (const [key, relPath] of Object.entries(AIR_GLB_URLS)) {
-      if (this.glbRequested.has(key) || this.glbCache.has(key)) continue;
-      this.glbRequested.add(key);
+    const loads = Object.entries(AIR_GLB_URLS).map(([key, relPath]) => {
+      if (this.glbCache.has(key)) return Promise.resolve();
       const url = document.baseURI ? new URL(relPath, document.baseURI).href : relPath;
-      loader.load(
-        url,
-        (gltf) => {
-          if (gltf?.scene) {
-            this.glbCache.set(key, gltf.scene);
-          }
-        },
-        undefined,
-        () => {}
-      );
+      return new Promise((resolve) => {
+        loader.load(
+          url,
+          (gltf) => {
+            if (gltf?.scene && token === this.preloadToken) {
+              this.glbCache.set(key, gltf.scene);
+            }
+            resolve();
+          },
+          undefined,
+          () => resolve()
+        );
+      });
+    });
+    loads.push(this.waitForAirDropModel());
+    this.preloadPromise = Promise.all(loads)
+      .then(() => this.warmupVisuals(token))
+      .catch(() => {});
+    return this.preloadPromise;
+  }
+
+  /** Starts the model factory's air drop crate GLB load and resolves once it is parsed (or gives up). */
+  waitForAirDropModel() {
+    const factory = this.engine?.modelFactory;
+    if (!factory?.loadAirDropGlbModel) return Promise.resolve();
+    factory.loadAirDropGlbModel();
+    return new Promise((resolve) => {
+      const startedAt = Date.now();
+      const poll = () => {
+        if (
+          factory.glbAirDropParts ||
+          this.engine?.isDisposed ||
+          Date.now() - startedAt >= AIR_DROP_MODEL_WAIT_MS
+        ) {
+          resolve();
+          return;
+        }
+        setTimeout(poll, AIR_DROP_MODEL_POLL_MS);
+      };
+      poll();
+    });
+  }
+
+  /** Compiles and uploads every air support visual off-screen; keeps the meshes for their programs. */
+  warmupVisuals(token) {
+    const { engine } = this;
+    if (token !== this.preloadToken || engine.isDisposed) return Promise.resolve();
+    const group = new THREE.Group();
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.8, 1, 28),
+      new THREE.MeshBasicMaterial({ color: 0xef4444, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+    );
+    markOwned(ring);
+    const factory = engine.modelFactory;
+    const airDropRig = factory?.glbAirDropParts ? factory.createAirDropRig?.() : null;
+    for (const mesh of [
+      this.createBomberMesh(),
+      this.createAc130Mesh(),
+      this.createRepairDroneMesh(),
+      this.createBombMesh(),
+      this.createThermobaricMissileMesh(),
+      ring,
+      airDropRig?.root,
+    ]) {
+      if (mesh) group.add(mesh);
     }
+    if (this.warmupGroup) disposeOwned(this.warmupGroup);
+    this.warmupGroup = group;
+    return warmupObject(engine, group);
   }
 
   cloneGlbRig(key) {
@@ -1483,6 +1560,12 @@ export class AirSupportController {
 
   dispose() {
     this.clear();
+    this.preloadToken = null;
+    this.preloadPromise = null;
+    if (this.warmupGroup) {
+      disposeOwned(this.warmupGroup);
+      this.warmupGroup = null;
+    }
     const disposedMats = new Set();
     const disposedTex = new Set();
     for (const scene of this.glbCache.values()) {
@@ -1504,6 +1587,5 @@ export class AirSupportController {
       });
     }
     this.glbCache.clear();
-    this.glbRequested.clear();
   }
 }

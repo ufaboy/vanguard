@@ -1,7 +1,7 @@
 /** Survival wave director and Contract mission director (cargo, sabotage, extraction). */
 
-import { DURABILITY } from '../constants.js';
-import { GameStatus, TileType } from '../types.js';
+import { DURABILITY, HYDRA, INFERNO, MAMMOTH, TITAN } from '../constants.js';
+import { EnemyClass, GameStatus, TileType } from '../types.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { sound } from '../sound.js';
 import { breachPointToward } from '../terrains/breach-models.js';
@@ -26,9 +26,101 @@ import {
 } from '../../sim/survival.js';
 import { t } from '../../i18n/index.js';
 
+/** Escorts a Sector Boss may call mid-fight; preloaded with Survival boss waves. */
+const SURVIVAL_BOSS_ESCORT_CLASSES = Object.freeze({
+  [EnemyClass.BOSS_MAMMOTH]: MAMMOTH.ESCORT_CLASSES,
+  [EnemyClass.BOSS_HYDRA]: HYDRA.ESCORT_CLASSES,
+  [EnemyClass.BOSS_INFERNO]: INFERNO.ESCORT_CLASSES,
+  [EnemyClass.BOSS_TITAN]: TITAN.ESCORT_CLASSES,
+});
+
+/** Longest a due wave waits for its tank models to finish loading and shader warmup (seconds). */
+const WAVE_MODEL_MAX_WAIT_SEC = 4;
+
+/** Every enemy class a Survival wave can put on the field (roster, boss and the boss's escorts). */
+function survivalWaveEnemyClasses(spec) {
+  if (!spec) return [];
+  const classes = new Set(spec.roster || []);
+  if (spec.bossClass) {
+    classes.add(spec.bossClass);
+    for (const escort of SURVIVAL_BOSS_ESCORT_CLASSES[spec.bossClass] || []) classes.add(escort);
+  }
+  return [...classes];
+}
+
 export class SurvivalDirector {
   constructor(engine) {
     this.engine = engine;
+    /** { state, wave, ready } for the wave whose models are loading / loaded. */
+    this.wavePreload = null;
+    /** { state, waveNumber, isEarlyCall, waitSec } while a due wave waits for its models. */
+    this.pendingWave = null;
+  }
+
+  /**
+   * Loads the GLBs of the given wave and waits for their shader / texture warmup
+   * (engine.warmupTankShaders via onModelReady). Runs during the intermission so
+   * no model is parsed or compiled in the middle of combat. Returns true once ready.
+   */
+  preloadWave(waveNumber) {
+    const e = this.engine;
+    const state = e.survivalState;
+    if (!state) return true;
+    const wave = Math.max(1, Math.floor(waveNumber));
+    const current = this.wavePreload;
+    if (current && current.state === state && current.wave === wave) return current.ready;
+
+    const entry = { state, wave, ready: false };
+    this.wavePreload = entry;
+    const classes = survivalWaveEnemyClasses(buildSurvivalWaveSpec(wave));
+    const loading = e.modelFactory?.ensureEnemyModels?.(classes);
+    if (!loading || e.isSoftwareGl) {
+      entry.ready = true;
+      return true;
+    }
+    Promise.resolve(loading)
+      .then(() => Promise.all(
+        classes.map((enemyClass) => e._tankWarmupPromises?.get(enemyClass)).filter(Boolean)
+      ))
+      .catch(() => {})
+      .finally(() => {
+        entry.ready = true;
+      });
+    return false;
+  }
+
+  /**
+   * Starts a wave once its models are ready; otherwise holds it for at most
+   * WAVE_MODEL_MAX_WAIT_SEC (see stepPendingWave) instead of spawning
+   * placeholder rigs that hot-swap their model mid-fight.
+   */
+  requestWave(waveNumber, isEarlyCall = false) {
+    const e = this.engine;
+    if (!e.survivalState) return;
+    if (this.preloadWave(waveNumber)) {
+      this.pendingWave = null;
+      this.startWave(waveNumber, isEarlyCall);
+      return;
+    }
+    this.pendingWave = { state: e.survivalState, waveNumber, isEarlyCall, waitSec: 0 };
+  }
+
+  /** Advances a held wave start. Returns true while the wave is still waiting for its models. */
+  stepPendingWave(dt) {
+    const e = this.engine;
+    const pending = this.pendingWave;
+    if (!pending) return false;
+    if (pending.state !== e.survivalState) {
+      this.pendingWave = null;
+      return false;
+    }
+    pending.waitSec += dt;
+    if (!this.preloadWave(pending.waveNumber) && pending.waitSec < WAVE_MODEL_MAX_WAIT_SEC) {
+      return true;
+    }
+    this.pendingWave = null;
+    this.startWave(pending.waveNumber, pending.isEarlyCall);
+    return false;
   }
 
   startWave(waveNumber = 1, isEarlyCall = false) {
@@ -60,13 +152,9 @@ export class SurvivalDirector {
     e.survivalState.intermissionTimer = 0;
     e.survivalState.waveSpec = spec;
     e.survivalState.nextWaveSpec = buildSurvivalWaveSpec(spec.wave + 1);
-
-    e.modelFactory?.ensureEnemyModels?.([
-      ...spec.roster,
-      ...(spec.bossClass ? [spec.bossClass] : []),
-      ...(e.survivalState.nextWaveSpec?.roster || []),
-      ...(e.survivalState.nextWaveSpec?.bossClass ? [e.survivalState.nextWaveSpec.bossClass] : []),
-    ]);
+    this.pendingWave = null;
+    // Normally loaded during the intermission; this only catches waves started without one.
+    this.preloadWave(spec.wave);
 
     e.enemySpawnQueue =
       spec.wave === 1
@@ -185,6 +273,8 @@ export class SurvivalDirector {
       1,
       e.survivalState.intermissionTimer
     );
+    // Load and warm the next wave's tank models while the field is quiet.
+    this.preloadWave(e.survivalState.wave + 1);
     sound.playPowerUp();
     e.setStatusBanner(
       t('WAVE {wave} CLEARED! +${reward} CREDITS · NEXT WAVE IN {waveTimer}s ([N] CALL NOW +${EARLY_CALL_BONUS})', { wave: e.survivalState.wave, reward, waveTimer: Math.ceil(
@@ -199,6 +289,7 @@ export class SurvivalDirector {
     const e = this.engine;
     if (
       !e.survivalState ||
+      this.pendingWave?.state === e.survivalState ||
       e.status !== GameStatus.PLAYING ||
       (e.survivalState.phase !== 'intermission' && e.enemiesRemainingToSpawn > 0)
     ) {
@@ -215,7 +306,7 @@ export class SurvivalDirector {
     }
     e.survivalState.earlyWaveCalls = (e.survivalState.earlyWaveCalls || 0) + 1;
     sound.playPowerUp();
-    this.startWave(e.survivalState.wave + 1, true);
+    this.requestWave(e.survivalState.wave + 1, true);
     return true;
   }
 
@@ -249,7 +340,7 @@ export class SurvivalDirector {
     e.survivalState.victoryAchieved = true;
     e.status = GameStatus.PLAYING;
     if (e.survivalState.wave < 8 && e.enemies.length === 0 && e.enemiesRemainingToSpawn === 0) {
-      this.startWave(8, false);
+      this.requestWave(8, false);
     } else {
       e.setStatusBanner(
         t('OVERTIME ENGAGED! HOLD THE ÉLYSÉE PALACE FOR A NEW SURVIVAL RECORD!'),

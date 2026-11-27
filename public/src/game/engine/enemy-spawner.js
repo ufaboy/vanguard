@@ -703,8 +703,11 @@ export class EnemySpawnerController {
         return;
       }
 
+      // A due wave may briefly wait for its tank models (see SurvivalDirector.requestWave).
+      if (engine.survivalDirector.stepPendingWave(dt)) return;
+
       if (engine.survivalState.waveTimer <= 0) {
-        engine.survivalDirector.startWave(engine.survivalState.wave + 1, false);
+        engine.survivalDirector.requestWave(engine.survivalState.wave + 1, false);
         return;
       }
 

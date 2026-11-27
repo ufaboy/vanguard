@@ -63,6 +63,9 @@ import { getSafeStorage, resolveAssembledTank, SaveRepository, settleMission } f
 import { recordSurvivalRun } from '../../sim/survival.js';
 import { t } from '../../i18n/index.js';
 
+/** Upper bound for the loading-screen shader warmup; past it the mission starts anyway. */
+const SCENE_PREWARM_TIMEOUT_MS = 12000;
+
 /** Graphics quality presets. Pixel ratio, shadows, IBL and particle budget apply immediately. */
 export const QUALITY_PRESETS = Object.freeze({
   low: { label: 'Low', pixelRatio: 1, shadows: false, fx: 0.45, antialias: false, physicalWater: false, envLighting: false },
@@ -416,6 +419,53 @@ export class TankGameEngine {
     this.profileSave.startSector(sectorIdx);
   }
 
+  /**
+   * Starts a sector behind the loading screen: the simulation and rendering stay on hold
+   * (`isWarmingUp`, also reported to the HUD so the loader stays up) until every shader of
+   * the freshly built map is compiled and its textures are on the GPU. Without this the
+   * first combat frame compiles the whole map synchronously (seconds on ANGLE / D3D).
+   */
+  async startSectorWarm(sectorIdx) {
+    if (this.isSoftwareGl) {
+      this.startSector(sectorIdx);
+      return;
+    }
+    this.isWarmingUp = true;
+    try {
+      this.startSector(sectorIdx);
+      await this.prewarmScene();
+    } finally {
+      this.isWarmingUp = false;
+      this.emitHudUpdate();
+    }
+  }
+
+  /** Compiles every scene program (including instanced tiles and shadow depth) and uploads scene textures. */
+  async prewarmScene() {
+    if (this.isDisposed) return;
+    // Tiles reach the scene as InstancedMeshes only after the batcher syncs.
+    this.tileBatcher.sync();
+    const camera = this.getActiveCamera();
+    const timeout = new Promise((resolve) => setTimeout(resolve, SCENE_PREWARM_TIMEOUT_MS));
+    await Promise.race([this.renderer.compileAsync(this.scene, camera).catch(() => {}), timeout]);
+    if (this.isDisposed) return;
+
+    const seen = new Set();
+    this.scene.traverse((node) => {
+      if (!node.material) return;
+      for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
+        for (const value of Object.values(material)) {
+          if (value?.isTexture && !seen.has(value)) {
+            seen.add(value);
+            this.renderer.initTexture(value);
+          }
+        }
+      }
+    });
+    // One hidden frame compiles the shadow-depth programs, which compile() skips.
+    this.renderer.render(this.scene, camera);
+  }
+
   /** Average frame rate during combat since the mission started, or undefined below 1 s of data. */
   getAverageFps() {
     if (this.fpsSampleSec < 1) return undefined;
@@ -479,31 +529,130 @@ export class TankGameEngine {
     this.modelFactory?.setQuality({ physicalWater: preset.physicalWater });
   }
 
-  /** Compiles the shaders of objects that only appear mid-fight (shells, mines, power-ups). */
+  /**
+   * Compiles the shaders of objects that only appear mid-fight: shells, missiles, howitzer
+   * shells, mines, power-ups, craters, rubble, scorched sand, mud, every brick damage stage,
+   * burning oil and the per-use telegraph / shield / smoke materials.
+   * Everything built here stays referenced in `this.shaderWarmup` and is never added to the
+   * scene: disposing a material releases its GL program as soon as no other material shares it,
+   * so a throwaway warmup would be undone before the first crater or shell needs the program.
+   */
   warmupEffectShaders() {
-    const group = new THREE.Group();
-    group.add(this.modelFactory.createLandMineMesh());
-    for (const type of Object.keys(POWERUP_TYPES)) group.add(this.modelFactory.createPowerUpMesh(type));
-    group.add(createProjectileVisual(0xffb030, {}));
-    Promise.all([
-      this.renderer.compileAsync(group, this.camera, this.scene),
-      this.renderer.compileAsync(this.fx.root, this.camera, this.scene),
-    ])
-      .catch(() => {})
-      .finally(() => disposeOwned(group));
+    const mf = this.modelFactory;
+    const warm = (this.shaderWarmup ||= { meshes: new THREE.Group(), tiles: new THREE.Group() });
+    // Map tiles render through TileBatcher clones on InstancedMeshes (USE_INSTANCING + instance
+    // colour), a different program from a plain Mesh, so batched tiles warm up through a private
+    // batcher of their own. Its emptied batches are kept, so the programs stay referenced.
+    warm.batcher ||= new TileBatcher(warm.tiles);
+    const compile = (root) => this.renderer.compileAsync(root, this.camera, this.scene).catch(() => {});
+    const addTile = (tile) => {
+      // Batched tiles go to the batcher source; plain ones (burning oil rig) compile as is.
+      if (tile) (tile.userData.batchTile ? warm.tiles : warm.meshes).add(tile);
+    };
+
+    const { meshes } = warm;
+    meshes.add(mf.createLandMineMesh());
+    for (const type of Object.keys(POWERUP_TYPES)) meshes.add(mf.createPowerUpMesh(type));
+    meshes.add(createProjectileVisual(0xffb030, {}));
+
+    // Effect materials created and disposed per use (artillery target ring / fill and the
+    // inferno ram beam, the boss phase shield, smoke puffs, cook-off glow). These templates
+    // share their program parameters and keep those programs alive between uses.
+    const quad = new THREE.PlaneGeometry(1, 1);
+    for (const material of [
+      new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide, depthWrite: false }),
+      new THREE.MeshBasicMaterial({ transparent: true, wireframe: true, depthWrite: false }),
+      new THREE.MeshStandardMaterial({ transparent: true, depthWrite: false }),
+      new THREE.MeshStandardMaterial({ emissive: 0xff3300 }),
+    ]) {
+      meshes.add(new THREE.Mesh(quad, material));
+    }
+
+    // Destruction tiles (shared cached materials owned by the model factory).
+    mf.prewarmCombatAssets?.();
+    addTile(mf.createCraterBlock?.(0, 0));
+    addTile(mf.createSandBlock?.(0, 0));
+    addTile(mf.createSwampBlock?.(0, 0));
+    addTile(mf.createRubbleBlock?.('house1'));
+    addTile(mf.createRubbleBlock?.('house2'));
+    if (mf.oilFireBedMat && mf.oilFlameSheetMat && mf.oilBoilRingMat) {
+      const oil = new THREE.Group();
+      mf.attachOilBurnRig(oil);
+      meshes.add(oil);
+    }
+    warm.batcher.sync();
+
+    // Missile and howitzer shell visuals use cached shared resources (dynamic import keeps this
+    // warmup self-contained; the module is already loaded, so it resolves immediately).
+    const visuals = import('../effects/index.js').then((fxModule) => {
+      for (const style of ['player', 'enemy']) {
+        meshes.add(fxModule.createMissileVisual(style));
+        meshes.add(fxModule.createArtilleryShellVisual(style));
+      }
+    }).catch(() => {});
+
+    visuals.then(() => {
+      if (this.isDisposed) return;
+      compile(meshes);
+      compile(warm.batcher.root);
+      compile(this.fx.root);
+    });
+
+    // Every brick damage stage has its own program (`brick-finish-v4-<damage>`). The Blender
+    // bricks load asynchronously, so the stages are built once the real brick path is known.
+    Promise.resolve(mf.brickModelsPromise)
+      .catch(() => false)
+      .then(() => {
+        if (this.isDisposed || warm.bricksWarmed) return;
+        warm.bricksWarmed = true;
+        for (let hp = 0; hp <= 4; hp++) {
+          const brick = mf.createBrickBlock?.();
+          if (!brick?.group) continue;
+          mf.updateBrickBlockDamage(brick.group, hp);
+          addTile(brick.group);
+        }
+        warm.batcher.sync();
+        compile(warm.batcher.root);
+      });
   }
 
   /** Compiles a freshly loaded tank model's shaders on a throwaway rig (see onModelReady). */
   warmupTankShaders(model) {
-    if (this.isDisposed) return;
-    const rig = model === 'player' ? this.playerRig : this.modelFactory.createEnemyTank(model);
-    if (!rig) return;
-    this.renderer
+    if (this.isDisposed) return Promise.resolve();
+    // The radar GLB is a player attachment, not an enemy class: warm the player rig for it.
+    const isPlayerModel = model === 'player' || model === 'player_radar';
+    const rig = isPlayerModel ? this.playerRig : this.modelFactory.createEnemyTank(model);
+    if (!rig) return Promise.resolve();
+    const warmup = this.renderer
       .compileAsync(rig.root, this.camera, this.scene)
-      .catch(() => {})
-      .finally(() => {
-        if (model !== 'player') disposeOwned(rig.root);
-      });
+      .then(() => {
+        if (this.isDisposed) return;
+        // Upload the rig's textures now so its first on-screen frame does not.
+        const textures = new Set();
+        rig.root.traverse((node) => {
+          const mats = Array.isArray(node.material) ? node.material : [node.material];
+          for (const mat of mats) {
+            if (!mat) continue;
+            for (const tex of [mat.map, mat.normalMap, mat.roughnessMap, mat.metalnessMap, mat.emissiveMap]) {
+              if (tex?.isTexture) textures.add(tex);
+            }
+          }
+        });
+        textures.forEach((tex) => this.renderer.initTexture(tex));
+      })
+      .catch(() => {});
+    if (!isPlayerModel) {
+      // Keep the warm rig (off-scene) until this class is warmed again: disposing its
+      // per-rig materials would release the freshly compiled programs (three.js frees a
+      // program once no material uses it) and the first real spawn would recompile.
+      const keepAlive = (this._tankWarmupRigs ||= new Map());
+      const previous = keepAlive.get(model);
+      if (previous && previous !== rig.root) disposeOwned(previous);
+      keepAlive.set(model, rig.root);
+    }
+    // Read by SurvivalDirector.preloadWave to hold a wave until its models are warm.
+    (this._tankWarmupPromises ||= new Map()).set(model, warmup);
+    return warmup;
   }
 
   setMissileFpvEnabled(enabled) {
@@ -1125,7 +1274,7 @@ export class TankGameEngine {
       const rawDelta = this.clock.getDelta();
       const dt = Math.min(rawDelta, 0.05);
 
-      if (!this.sceneOccluded) {
+      if (!this.sceneOccluded && !this.isWarmingUp) {
         const perf = this.perfMonitor.enabled ? this.perfMonitor : null;
         if (perf) perf.startFrame(rawDelta);
 
@@ -1758,6 +1907,15 @@ export class TankGameEngine {
     this.isDisposed = true;
     this.saveRepo?.flushPendingSave?.();
     this.perfMonitor?.dispose();
+    // Off-scene objects kept alive only so their shader programs stay compiled.
+    if (this.shaderWarmup) {
+      this.shaderWarmup.batcher?.reset();
+      disposeOwned(this.shaderWarmup.meshes);
+      disposeOwned(this.shaderWarmup.tiles);
+      this.shaderWarmup = null;
+    }
+    this._tankWarmupRigs?.forEach((root) => disposeOwned(root));
+    this._tankWarmupRigs = null;
     this.garageStage?.dispose();
     this.modelFactory.brickModels.dispose();
     this.modelFactory.concreteModels?.dispose?.();
