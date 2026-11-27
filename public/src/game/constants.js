@@ -518,6 +518,10 @@ export const ARTILLERY = Object.freeze({
 
 export const GRID_SIZE = 40; // Battlefield grid dimension (40x40 tiles per sector)
 export const TILE_SIZE = 2.0; // World size of one terrain tile in Three.js units (meters)
+// Render-only height of a tracked tank's root above y = 0. Flat ground layers (roads, sand,
+// mud, decals) stack up to ~0.015 above the ground plane; without this the lower track run
+// sinks into them. Below one pixel at every camera zoom, so tanks never look like they float.
+export const TANK_RIDE_HEIGHT = 0.025;
 
 export const DEFENSE_TURRET_TYPES = Object.freeze({
   CANNON: 'CANNON', // High-velocity direct-fire anti-tank bastion turret

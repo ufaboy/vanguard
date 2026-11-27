@@ -5,6 +5,7 @@ import {
   ENEMY_VISIBILITY,
   HYDRA,
   PLAYER_UPGRADES,
+  TANK_RIDE_HEIGHT,
   TITAN,
   UPGRADE,
 } from '../constants.js';
@@ -1375,7 +1376,7 @@ export class EnemyAiController {
 
       const enemyHoverY = e.stats.canHover
         ? 0.05 + Math.sin(elapsed * 4.0 + e.id) * 0.012
-        : 0;
+        : TANK_RIDE_HEIGHT;
       e.rig.root.position.set(e.x, enemyHoverY, e.z);
       e.rig.hull.rotation.y = e.hullAngle;
       engine.driveGear?.(e.rig, e, e.x, e.z, e.hullAngle);

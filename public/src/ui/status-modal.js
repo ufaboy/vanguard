@@ -518,6 +518,12 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
 
 export function renderStatusModal({ statusModal, state, hud, currentSector, accuracy }) {
   if (!statusModal) return;
+  // Keep the deployment loader up while the engine compiles the new map's shaders.
+  if (hud.warmingUp) {
+    setHidden(statusModal, false);
+    if (!statusModal.querySelector('.battlefield-loader')) setHtml(statusModal, renderBattlefieldLoaderHtml());
+    return;
+  }
   if (
     hud.status === GameStatus.PLAYING ||
     hud.status === GameStatus.BOSS_INTRO ||

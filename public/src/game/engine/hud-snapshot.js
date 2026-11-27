@@ -90,6 +90,7 @@ export function buildHudSnapshot(engine) {
 
   return {
     status: engine.status,
+    warmingUp: Boolean(engine.isWarmingUp),
     defeatCinematicsActive: (engine.defeatCinematicsTimer || 0) > 0,
     victoryCinematicsActive: (engine.victoryCinematicsTimer || 0) > 0,
     sectorId: engine.currentSectorIndex,

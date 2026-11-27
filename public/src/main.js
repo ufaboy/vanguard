@@ -683,7 +683,7 @@ async function startSector(sectorIndex) {
     state.showUpgradeDrawer = false;
     engine?.setInspectMode(false);
     await engine?.waitForSectorModels?.(sectorIndex);
-    engine?.startSector(sectorIndex);
+    await engine?.startSectorWarm(sectorIndex);
     const preloadAirAndDrone = () => {
       engine?.airSupportController?.preloadGlbModels?.();
       engine?.reconDroneController?.preloadGlbModel?.();

@@ -10,6 +10,7 @@ import {
   INFERNO,
   MAMMOTH,
   TITAN,
+  TANK_RIDE_HEIGHT,
 } from '../constants.js';
 import { createEncounterState, remainingEncounterEnemies } from '../encounters.js';
 import { DEFAULT_CAMERA_AZIMUTH } from './input-camera.js';
@@ -876,7 +877,7 @@ export class SectorLoaderController {
     engine.preBattleReconDroneOwned = engine.reconDroneOwned;
     engine.repairKitCount = engine.getPlayerMaxRepairKitCharges();
 
-    engine.playerRig.root.position.set(engine.playerX, 0, engine.playerZ);
+    engine.playerRig.root.position.set(engine.playerX, TANK_RIDE_HEIGHT, engine.playerZ);
     engine.playerController.syncPlayerVisuals(0, 0);
     engine.entityGroup.add(engine.playerRig.root);
 
