@@ -4931,15 +4931,30 @@ html.campaign-hydrating .campaign-recon-square > * {
 
 .garage-row-btn {
   flex-shrink: 0;
-  padding: 6px 10px;
+  width: 116px;
+  height: 34px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
   border-radius: 4px;
   border: 1px solid rgba(251, 191, 36, 0.75);
   background: rgba(120, 53, 15, 0.55);
   color: #fef3c7;
   font-family: var(--font-mono, monospace);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+.garage-row-plus {
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fbbf24;
 }
 
 .garage-row-btn:hover:not(:disabled) {
@@ -4962,14 +4977,43 @@ html.campaign-hydrating .campaign-recon-square > * {
 
 .garage-row-max {
   flex-shrink: 0;
+  width: 116px;
+  height: 34px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   font-family: var(--font-mono, monospace);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   color: #34d399;
-  padding: 4px 8px;
+  padding: 0 8px;
   border: 1px solid rgba(52, 211, 153, 0.45);
   border-radius: 4px;
   background: rgba(6, 78, 59, 0.35);
+}
+
+.garage-supply-btn {
+  width: 108px;
+  height: 32px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.garage-supply-plus {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.garage-supply-actions .garage-row-max {
+  width: 108px;
+  height: 32px;
 }
 
 .garage-callout-card {
@@ -4985,6 +5029,7 @@ html.campaign-hydrating .campaign-recon-square > * {
 }
 
 .garage-callout-card.pos-cannon { top: 82px; }
+.garage-callout-card.pos-radar { top: 68px; }
 .garage-callout-card.pos-armor { top: 140px; }
 .garage-callout-card.pos-engine { top: 200px; }
 .garage-callout-card.pos-frame { bottom: 84px; }

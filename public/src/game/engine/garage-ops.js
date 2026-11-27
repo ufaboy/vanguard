@@ -38,6 +38,7 @@ const TRACK_LABELS = Object.freeze({
   frame: N_('Frame'),
   engine: N_('Engine'),
   armor: N_('Armor'),
+  radar: N_('Radar'),
 });
 const trackLabel = (track) => t(TRACK_LABELS[track] || track).toUpperCase();
 
@@ -486,7 +487,7 @@ export class GarageOps {
       e.syncCampaignCredits?.();
       e.saveRepo?.savePlayerSave?.(e.playerSave);
     }
-    e.profileSaveController.saveProgress();
+    e.saveProgress?.();
 
     if (nodeId === 'HQ_FORTIFICATION' && e.baseAlive && e.baseMaxHp > 0) {
       const nextBaseMult = getHqBonuses(e.hqTree).baseHpMultiplier;

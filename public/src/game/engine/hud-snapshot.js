@@ -76,7 +76,8 @@ export function buildHudSnapshot(engine) {
       JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
     );
   const hqBonuses = engine.getHqBonuses?.();
-  const radarRangeCells = RADAR_RANGE_CELLS + (hqBonuses?.radarBonusCells || 0);
+  const radarSpec = PLAYER_UPGRADES[UPGRADE.RADAR][(engine.effectiveUpgrades?.radar || 1) - 1];
+  const radarRangeCells = (radarSpec?.radarRangeCells ?? RADAR_RANGE_CELLS) + (hqBonuses?.radarBonusCells || 0);
   const sensorContactsList = radarJammed
     ? applyRadarJamming(rawSensorContacts, {
         playerX: engine.playerX,

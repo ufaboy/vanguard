@@ -52,9 +52,10 @@ export class ProfileSaveController {
           ),
           engine: Math.min(UPGRADE_MAX_LEVEL.engine, Math.max(1, parsed.engine || 1)),
           armor: Math.min(UPGRADE_MAX_LEVEL.armor, Math.max(1, parsed.armor || 1)),
+          radar: Math.min(UPGRADE_MAX_LEVEL.radar, Math.max(1, parsed.radar || 1)),
         };
       } else {
-        engine.upgrades = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 };
+        engine.upgrades = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1, radar: 1 };
       }
       if (engine.profileMode === 'campaign') {
         engine.hqTree = normalizeHqTree(engine.playerSave?.hqTree);
@@ -99,7 +100,7 @@ export class ProfileSaveController {
 
   resetToStockTank() {
     const { engine } = this;
-    engine.upgrades = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 };
+    engine.upgrades = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1, radar: 1 };
     if (engine.profileMode !== 'campaign') {
       engine.hqTree = createDefaultHqTree();
     }

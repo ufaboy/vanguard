@@ -5,6 +5,7 @@ import {
   HQ_TREE_NODES,
   canUpgradeHqNode,
   createDefaultHqTree,
+  getHqBonuses,
   getHqNodeLevel,
 } from './sim/hq-tree.js';
 import { PLAYER_UPGRADES } from './game/components/index.js';
@@ -19,7 +20,6 @@ import {
   getMaxMissileAmmo,
 } from './game/constants.js';
 import { DRONE_CONFIGS } from './game/vehicles/drones.js';
-import { renderTrackBadgeSvg } from './game/icons.js';
 import { PLAYER_TANK_CONFIG } from './game/vehicles/tanks.js';
 import { N_, formatNumber, t } from './i18n/index.js';
 
@@ -29,6 +29,7 @@ export const GARAGE_TRACKS = [
   { key: 'frame', label: N_('Frame'), role: N_('Structure'), summary: N_('Strengthen the foundation of your tank.') },
   { key: 'engine', label: N_('Engine'), role: N_('Powerplant'), summary: N_('Move heavy armor with greater power.') },
   { key: 'armor', label: N_('Armor'), role: N_('Protection'), summary: N_('Reduce incoming damage and survive longer.') },
+  { key: 'radar', label: N_('Radar'), role: N_('Sensors'), summary: N_('Detect enemies at longer range, even behind obstacles.') },
 ];
 
 const money = value => formatNumber(Math.round(value));
@@ -87,6 +88,15 @@ export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front',
 
   const bars = level => `<span class="garage-tier-bars" aria-label="${t('Tier {n} of 5', { n: level })}">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= level ? 'filled' : ''}"></i>`).join('')}</span>`;
   const hqTree = hud.hqTree || createDefaultHqTree();
+  const hqBonuses = getHqBonuses(hqTree);
+  const effUpgradesBefore = effectiveUpgradeTiers(upgrades, faults);
+  const effUpgradesAfter = effectiveUpgradeTiers({ ...upgrades, [track.key]: Math.min(5, tier + 1) }, faults);
+  const radarBeforeSpec = PLAYER_UPGRADES.radar[(effUpgradesBefore.radar || 1) - 1];
+  const radarAfterSpec = PLAYER_UPGRADES.radar[(effUpgradesAfter.radar || 1) - 1];
+  const radarRangeBefore = (radarBeforeSpec?.radarRangeCells ?? RADAR_RANGE_CELLS) + (hqBonuses.radarBonusCells || 0);
+  const radarRangeAfter = (radarAfterSpec?.radarRangeCells ?? RADAR_RANGE_CELLS) + (hqBonuses.radarBonusCells || 0);
+  const throughCoverBefore = radarBeforeSpec?.throughObstacleCells || 0;
+  const throughCoverAfter = radarAfterSpec?.throughObstacleCells || 0;
   const hqTotalLevels = HQ_TREE_NODES.reduce((sum, n) => sum + getHqNodeLevel(hqTree, n.id), 0);
   const hqMaxLevels = HQ_TREE_NODES.length * HQ_TREE_MAX_LEVEL;
   const profileMode = hud.profileMode || 'campaign';
@@ -124,7 +134,7 @@ export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front',
               data-action="${modAction}"
               ${modOwned || !modAffordable ? 'disabled' : ''}
             >
-              ${modOwned ? t('INSTALLED') : `${t('BUY')} · $${money(modPrice)}`}
+              ${modOwned ? t('INSTALLED') : `<span class="garage-supply-plus" aria-hidden="true">+</span><span>$${money(modPrice)}</span>`}
             </button>
           </div>
         </div>
@@ -197,7 +207,7 @@ export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front',
           ? `<button type="button" class="garage-row-btn is-repair" data-action="repair-component" data-track="${item.key}" ${canRepair ? '' : 'disabled'}>${t('Repair')} · $${money(itemRepairCost)}</button>`
           : itemMaxed
           ? `<span class="garage-row-max">✓ ${t('MAX')}</span>`
-          : `<button type="button" class="garage-row-btn" data-action="upgrade-track" data-track="${item.key}" ${canBuy ? '' : 'disabled'}>${t('UPGRADE')} · $${money(itemCost)}</button>`;
+          : `<button type="button" class="garage-row-btn" data-action="upgrade-track" data-track="${item.key}" ${canBuy ? '' : 'disabled'} aria-label="${t('UPGRADE')} · $${money(itemCost)}"><span class="garage-row-plus" aria-hidden="true">+</span><span>$${money(itemCost)}</span></button>`;
 
         return `
           <div
@@ -208,11 +218,9 @@ export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front',
             tabindex="0"
             aria-pressed="${item.key === track.key}"
           >
-            ${renderTrackBadgeSvg(item.key, 26)}
             <div class="garage-tab-info">
               <div class="garage-tab-top">
                 <span class="garage-tab-name">${t(item.label)}</span>
-                <span class="garage-tab-tier">${level}/5</span>
               </div>
               ${bars(level)}
             </div>
@@ -399,12 +407,8 @@ export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front',
           ${statItem(N_('Shells capacity'), before.cannonMaxAmmo, after.cannonMaxAmmo, '')}
           ${statItem(N_('APS capacity'), before.apsMaxAmmo, after.apsMaxAmmo, '')}
           ${statItem(N_('Missile capacity'), before.missileMaxAmmo, after.missileMaxAmmo, '')}
-          <div class="garage-tele-row">
-            <span class="garage-tele-label">${t('Radar range')}</span>
-            <div class="garage-tele-vals">
-              <strong class="garage-tele-cur">${radarRangeCells} c</strong>
-            </div>
-          </div>
+          ${statItem(N_('Radar range'), radarRangeBefore, radarRangeAfter, ' c')}
+          ${statItem(N_('Through-cover'), throughCoverBefore, throughCoverAfter, ' c')}
         </div>
       </aside>
 

@@ -202,6 +202,7 @@ export class GarageStage {
       engine: [0, 0.74, -0.95],
       frame: [-0.55, 0.52, 0.25],
       chassis: [0.78, 0.26, 0.35],
+      radar: [-0.35, 1.38, -0.35],
     };
     const pt = anchors[track] || anchors.cannon;
     const vec = (this._projVec ||= new THREE.Vector3()).set(pt[0], pt[1], pt[2]);
