@@ -696,20 +696,21 @@ export class AirSupportController {
       }
     }
     const hq = engine.getHqBonuses?.();
-    const drop = ctrl?.spawnAirDrop({
+    const launch = this.getAlliedSideLaunchPos(dropPos.x, dropPos.z);
+    engine.airSupportMissions ||= [];
+    const flyby = this.spawnStrategicBomberFlyby(launch, dropPos.x, dropPos.z, 0.25);
+    const { releaseDelay } = this.computeBomberRelease(flyby, dropPos.x, dropPos.z);
+    engine.airSupportMissions.push({
+      kind: 'BOMBER_AIRDROP',
+      delay: releaseDelay,
+      dropPos,
+      gridPos,
+      altitude: flyby.altitude,
       shells: hq?.airdropShells ?? cfg.shells,
       aps: hq?.airdropAps ?? cfg.aps,
       missiles: hq?.airdropMissiles ?? cfg.missiles,
       repairKits: hq?.airdropRepairKits ?? cfg.repairKits,
-      spawnCell: gridPos,
     });
-    if (drop) {
-      drop.x = dropPos.x;
-      drop.z = dropPos.z;
-      drop.targetX = dropPos.x;
-      drop.targetZ = dropPos.z;
-      drop.rig?.root?.position?.set?.(dropPos.x, 0, dropPos.z);
-    }
   }
 
   update(dt, elapsed) {
@@ -737,6 +738,28 @@ export class AirSupportController {
       } else if (m.kind === 'AIR_MINE') {
         if (this.updateAirMine(m, dt)) {
           this.disposeMissionVisuals(m);
+          missions.splice(i, 1);
+        }
+      } else if (m.kind === 'BOMBER_AIRDROP') {
+        m.delay -= dt;
+        if (m.delay <= 0) {
+          const drop = engine.powerupsController?.spawnAirDrop({
+            shells: m.shells,
+            aps: m.aps,
+            missiles: m.missiles,
+            repairKits: m.repairKits,
+            spawnCell: m.gridPos,
+          });
+          if (drop) {
+            drop.x = m.dropPos.x;
+            drop.z = m.dropPos.z;
+            drop.targetX = m.dropPos.x;
+            drop.targetZ = m.dropPos.z;
+            drop.rig?.root?.position?.set?.(m.dropPos.x, 0, m.dropPos.z);
+            if (drop.rig?.crateGroup) {
+              drop.rig.crateGroup.position.y = Math.max(8, (m.altitude || 18) - 1);
+            }
+          }
           missions.splice(i, 1);
         }
       } else if (m.kind === 'BOMBER_FLYBY') {
