@@ -30,6 +30,7 @@ const VENDOR_RUNTIME_ASSETS = Object.freeze([
 ]);
 
 const PLAYER_MODEL_ASSET = './models/tank_player.glb';
+const PLAYER_RADAR_MODEL_ASSET = './models/player_radar.glb';
 
 const TERRAIN_MODEL_ASSETS = Object.freeze([
   './models/terrain/brick.glb',
@@ -254,6 +255,7 @@ export function getCoreAssets({ includeTerrain = true, includeAudio = includeTer
   return [
     ...VENDOR_RUNTIME_ASSETS,
     PLAYER_MODEL_ASSET,
+    PLAYER_RADAR_MODEL_ASSET,
     ...(includeTerrain ? TERRAIN_MODEL_ASSETS : []),
     ...(includeAudio ? PRIORITY_AUDIO_ASSETS : []),
   ];
