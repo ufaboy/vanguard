@@ -60,6 +60,64 @@ export const RANK_LADDER = Object.freeze([
   Object.freeze({ id: 'vanguard_marshal', title: N_('Vanguard Marshal'), insignia: 'X', minXp: 9000, minGoldPlus: 4, minVanguard: 1 }),
 ]);
 
+export const AIR_STRIKE_RANK_REQUIREMENTS = Object.freeze({
+  STRIKE_BOMBS: Object.freeze({ rankId: 'recruit', label: N_('3× Light Bombs') }),
+  STRIKE_MINES: Object.freeze({ rankId: 'corporal', label: N_('Carpet Air Mines') }),
+  STRIKE_THERMO: Object.freeze({ rankId: 'lieutenant', label: N_('Thermobaric Missile') }),
+  STRIKE_AC130: Object.freeze({ rankId: 'major', label: N_('AC-130 Spooky (15s)') }),
+});
+
+const RANK_INDEX_BY_ID = Object.freeze(
+  Object.fromEntries(RANK_LADDER.map((rank, index) => [rank.id, index]))
+);
+
+function normalizeStrikeVariantId(variantId) {
+  if (variantId === 'MINES') return 'STRIKE_MINES';
+  return variantId;
+}
+
+/** Returns the RANK_LADDER entry required to unlock a strike variant. */
+export function getAirStrikeRequiredRank(variantId) {
+  const key = normalizeStrikeVariantId(variantId);
+  const req = AIR_STRIKE_RANK_REQUIREMENTS[key];
+  if (!req) return RANK_LADDER[0];
+  const idx = RANK_INDEX_BY_ID[req.rankId] ?? 0;
+  return RANK_LADDER[idx] || RANK_LADDER[0];
+}
+
+/**
+ * Returns true if the given strike variant is unlocked for the player's rank and mode.
+ * Rank gating applies only in Campaign; Survival and Contracts unlock all variants.
+ */
+export function isAirStrikeVariantUnlocked(variantId, rankOrId = 'recruit', profileMode = 'campaign') {
+  if (profileMode && profileMode !== 'campaign') return true;
+  const rankId = typeof rankOrId === 'string' ? rankOrId : rankOrId?.id || 'recruit';
+  const currentIdx = RANK_INDEX_BY_ID[rankId] ?? 0;
+  const reqRank = getAirStrikeRequiredRank(variantId);
+  const reqIdx = RANK_INDEX_BY_ID[reqRank.id] ?? 0;
+  return currentIdx >= reqIdx;
+}
+
+/** Returns air support strike variants unlocked specifically at the given rankId. */
+export function getRankAirSupportUnlocks(rankId) {
+  return Object.entries(AIR_STRIKE_RANK_REQUIREMENTS)
+    .filter(([, meta]) => meta.rankId === rankId)
+    .map(([id, meta]) => ({ id, label: meta.label }));
+}
+
+/** Returns air support strike variants newly unlocked when advancing from previousRankId to currentRankId. */
+export function getNewlyUnlockedAirSupport(previousRankId, currentRankId) {
+  const prevIdx = RANK_INDEX_BY_ID[previousRankId] ?? 0;
+  const currIdx = RANK_INDEX_BY_ID[currentRankId] ?? 0;
+  if (currIdx <= prevIdx) return [];
+  const unlocked = [];
+  for (let i = prevIdx + 1; i <= currIdx; i += 1) {
+    const rank = RANK_LADDER[i];
+    if (rank) unlocked.push(...getRankAirSupportUnlocks(rank.id));
+  }
+  return unlocked;
+}
+
 const BOSS_CLASSES = new Set(['BOSS_MAMMOTH', 'BOSS_HYDRA', 'BOSS_INFERNO', 'BOSS_TITAN']);
 
 const ENEMY_CLASS_CANONICAL = Object.freeze({

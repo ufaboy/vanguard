@@ -8,6 +8,7 @@ import {
   MEDAL_CATALOG,
   MEDAL_GRADES,
   RANK_LADDER,
+  getRankAirSupportUnlocks,
   getRankProgress,
 } from '../sim/medals.js';
 import { N_, formatNumber, t } from '../i18n/index.js';
@@ -50,7 +51,17 @@ function renderRankHeader(progress) {
       ${RANK_LADDER.map((r) => {
         const reached = serviceXp >= r.minXp && goldPlus >= r.minGoldPlus && vanguard >= r.minVanguard;
         const active = r.id === currentRank.id;
-        return `<span class="medal-ladder-node ${active ? 'is-current' : reached ? 'is-reached' : ''}" title="${t(r.title)} (${r.minXp} XP)">${r.insignia}</span>`;
+        const unlocks = getRankAirSupportUnlocks(r.id);
+        const unlockNames = unlocks.map((u) => t(u.label)).join(', ');
+        const tooltip = unlocks.length > 0
+          ? `${t(r.title)} (${r.minXp} XP) — ${t('Air Support: {items}', { items: unlockNames })}`
+          : `${t(r.title)} (${r.minXp} XP)`;
+        return `
+          <span class="medal-ladder-node ${active ? 'is-current' : reached ? 'is-reached' : ''}" title="${tooltip}">
+            <span>${r.insignia}</span>
+            ${unlocks.length > 0 ? `<span class="medal-ladder-unlock" aria-hidden="true">✈</span>` : ''}
+          </span>
+        `;
       }).join('')}
     </div>
   `;

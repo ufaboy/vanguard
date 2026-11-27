@@ -16,6 +16,7 @@ import {
   isPointWithinJammerRadius,
 } from '../../sim/jammer.js';
 import { buildSurvivalHudSnapshot } from '../../sim/survival.js';
+import { getRankProgress } from '../../sim/medals.js';
 import { N_ } from '../../i18n/index.js';
 import { isActiveAirStrikeMission } from './air-support-controller.js';
 
@@ -74,12 +75,15 @@ export function buildHudSnapshot(engine) {
       engine.enemies,
       JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
     );
+  const hqBonuses = engine.getHqBonuses?.();
+  const radarSpec = PLAYER_UPGRADES[UPGRADE.RADAR][(engine.effectiveUpgrades?.radar || 1) - 1];
+  const radarRangeCells = (radarSpec?.radarRangeCells ?? RADAR_RANGE_CELLS) + (hqBonuses?.radarBonusCells || 0);
   const sensorContactsList = radarJammed
     ? applyRadarJamming(rawSensorContacts, {
         playerX: engine.playerX,
         playerZ: engine.playerZ,
         elapsed: engine.clock?.elapsedTime ?? (typeof performance !== 'undefined' ? performance.now() * 0.001 : 0),
-        radarRange: RADAR_RANGE_CELLS * TILE_SIZE,
+        radarRange: radarRangeCells * TILE_SIZE,
         halfArena: (GRID_SIZE * TILE_SIZE) / 2,
       })
     : rawSensorContacts;
@@ -154,6 +158,8 @@ export function buildHudSnapshot(engine) {
     cannonAmmo: engine.cannonAmmo,
     cannonMaxAmmo: engine.getPlayerMaxCannonAmmo(),
     missileCooldown: engine.missileCooldown,
+    apsOwned: Boolean(engine.apsOwned),
+    atgmOwned: Boolean(engine.atgmOwned),
     reconDroneOwned: Boolean(engine.reconDroneOwned),
     reconDroneCooldown: Math.max(0, engine.reconDroneCooldown || 0),
     reconDroneActiveTimer: Math.max(0, engine.reconDroneActiveTimer || 0),
@@ -238,6 +244,12 @@ export function buildHudSnapshot(engine) {
     medalTrackerState: engine.medalTracker?.snapshot() || null,
     statusMessage: engine.statusMessage,
     airSupportTargeting: engine.airSupportTargeting ? { ...engine.airSupportTargeting } : null,
+    profileMode: engine.profileMode || 'campaign',
+    playerRankId:
+      engine.airSupportController?.getPlayerRankId?.() ||
+      getRankProgress(engine.campaignSaveRepo?.loadPlayerSave?.()).currentRank.id,
+    hqTree: engine.getHqTree?.() || null,
+    radarRangeCells,
     terrainGrid: engine.grid,
   };
 }

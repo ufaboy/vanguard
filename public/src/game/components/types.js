@@ -17,5 +17,6 @@ export const UPGRADE = Object.freeze({
   FRAME: 'frame',
   ENGINE: 'engine',
   ARMOR: 'armor',
+  RADAR: 'radar',
 });
 

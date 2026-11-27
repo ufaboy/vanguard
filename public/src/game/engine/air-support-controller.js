@@ -2,6 +2,11 @@ import * as THREE from 'three';
 import { t } from '../../i18n/index.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { determineHitAspect } from '../../sim/ballistics.js';
+import {
+  getAirStrikeRequiredRank,
+  getRankProgress,
+  isAirStrikeVariantUnlocked,
+} from '../../sim/medals.js';
 import { AIR_ORDNANCE, CANNONS } from '../components/ordnance.js';
 import {
   AIR_SUPPORT,
@@ -130,11 +135,16 @@ export class AirSupportController {
   }
 
   getTargetingRadiusWorld(type, strikeVariant) {
+    const hq = this.engine.getHqBonuses?.();
     if (type === 'STRIKE') {
+      if (strikeVariant === 'STRIKE_BOMBS' && hq) return hq.bombRadiusCells * TILE_SIZE;
+      if (strikeVariant === 'STRIKE_THERMO' && hq) return hq.thermoRadiusCells * TILE_SIZE;
+      if (strikeVariant === 'STRIKE_AC130' && hq) return hq.ac130RadiusCells * TILE_SIZE;
+      if (strikeVariant === 'STRIKE_MINES' && hq) return hq.mineZoneHalfCells * TILE_SIZE;
       const cfg = this.getTargetingConfig('STRIKE', strikeVariant);
       return (cfg.radiusCells || 2) * TILE_SIZE;
     }
-    if (type === 'MINES') return AIR_SUPPORT.MINES.zoneHalfCells * TILE_SIZE;
+    if (type === 'MINES') return (hq ? hq.mineZoneHalfCells : AIR_SUPPORT.MINES.zoneHalfCells) * TILE_SIZE;
     return 1.3 * TILE_SIZE;
   }
 
@@ -175,6 +185,19 @@ export class AirSupportController {
     return (this.engine.airSupportMissions || []).some(isActiveAirStrikeMission);
   }
 
+  getPlayerRankId() {
+    const save = this.engine.campaignSaveRepo?.loadPlayerSave?.();
+    return getRankProgress(save).currentRank.id;
+  }
+
+  isStrikeVariantUnlocked(variant) {
+    return isAirStrikeVariantUnlocked(
+      variant,
+      this.getPlayerRankId(),
+      this.engine.profileMode || 'campaign'
+    );
+  }
+
   startTargeting(type, strikeVariant = 'STRIKE_BOMBS') {
     const { engine } = this;
     if (engine.status !== GameStatus.PLAYING && !engine.airSupportTargeting) return false;
@@ -184,6 +207,12 @@ export class AirSupportController {
 
     const cfg = this.getTargetingConfig(type, strikeVariant);
     if (!cfg) return false;
+
+    if (type === 'STRIKE' && !this.isStrikeVariantUnlocked(strikeVariant)) {
+      const reqRank = getAirStrikeRequiredRank(strikeVariant);
+      engine.setStatusBanner(t('REQUIRES RANK: {rank}', { rank: t(reqRank.title) }), 2.0);
+      return false;
+    }
 
     if ((type === 'STRIKE' || type === 'MINES') && this.hasActiveStrike()) {
       engine.setStatusBanner(t('AIR STRIKE ALREADY IN PROGRESS'), 2.0);
@@ -195,12 +224,12 @@ export class AirSupportController {
       return false;
     }
     if (type === 'STRIKE') {
-      const minStrikeCost = Math.min(
-        AIR_SUPPORT.STRIKE_BOMBS.cost,
-        AIR_SUPPORT.STRIKE_THERMO.cost,
-        AIR_SUPPORT.STRIKE_AC130.cost,
-        AIR_SUPPORT.MINES.cost
-      );
+      const unlockedCosts = Object.entries(STRIKE_VARIANTS)
+        .filter(([variantId]) => this.isStrikeVariantUnlocked(variantId))
+        .map(([, variantCfg]) => variantCfg.cost);
+      const minStrikeCost = unlockedCosts.length > 0
+        ? Math.min(...unlockedCosts)
+        : AIR_SUPPORT.STRIKE_BOMBS.cost;
       if (!this.canAfford(minStrikeCost)) {
         engine.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost: minStrikeCost }), 2.0);
         return false;
@@ -232,6 +261,11 @@ export class AirSupportController {
     const { engine } = this;
     if (!engine.airSupportTargeting || engine.airSupportTargeting.type !== 'STRIKE') return false;
     if (!STRIKE_VARIANTS[variant]) return false;
+    if (!this.isStrikeVariantUnlocked(variant)) {
+      const reqRank = getAirStrikeRequiredRank(variant);
+      engine.setStatusBanner(t('REQUIRES RANK: {rank}', { rank: t(reqRank.title) }), 2.0);
+      return false;
+    }
     engine.airSupportTargeting.strikeVariant = variant;
     this.createOrUpdateReticle(engine.aimWorld?.x ?? engine.playerX, engine.aimWorld?.z ?? engine.playerZ);
     engine.emitHudUpdate?.();
@@ -259,6 +293,12 @@ export class AirSupportController {
     if (!targeting) return false;
     const cfg = this.getTargetingConfig(targeting.type, targeting.strikeVariant);
     if (!cfg) return false;
+
+    if (targeting.type === 'STRIKE' && !this.isStrikeVariantUnlocked(targeting.strikeVariant)) {
+      const reqRank = getAirStrikeRequiredRank(targeting.strikeVariant);
+      engine.setStatusBanner(t('REQUIRES RANK: {rank}', { rank: t(reqRank.title) }), 2.0);
+      return false;
+    }
 
     if ((targeting.type === 'STRIKE' || targeting.type === 'MINES') && this.hasActiveStrike()) {
       engine.setStatusBanner(t('AIR STRIKE ALREADY IN PROGRESS'), 2.0);
@@ -380,6 +420,9 @@ export class AirSupportController {
     }
     const cfg = AIR_SUPPORT.REPAIR;
     const droneCfg = DRONE_CONFIGS.REPAIR_DRONE;
+    const hq = engine.getHqBonuses?.();
+    const healAmount = hq?.repairHealAmount ?? droneCfg.healAmount;
+    const durationSec = hq?.repairDurationSec ?? droneCfg.durationSec;
     if (!this.canAfford(cfg.cost)) {
       engine.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost: cfg.cost }), 2.0);
       return false;
@@ -403,8 +446,8 @@ export class AirSupportController {
       exitZ: launch.z,
       phase: 'approach',
       timer: 0,
-      duration: droneCfg.durationSec,
-      healRemaining: droneCfg.healAmount,
+      duration: durationSec,
+      healRemaining: healAmount,
       subsystemsRepaired: false,
       sparkAcc: 0,
       mesh: droneRig,
@@ -492,13 +535,17 @@ export class AirSupportController {
     const { engine } = this;
     engine.airSupportMissions ||= [];
     const launch = this.getAlliedSideLaunchPos(targetX, targetZ);
+    const hq = engine.getHqBonuses?.();
 
     if (variant === 'STRIKE_BOMBS') {
       const cfg = AIR_SUPPORT.STRIKE_BOMBS;
+      const bombCount = hq?.bombCount ?? cfg.bombCount;
+      const radiusCells = hq?.bombRadiusCells ?? cfg.radiusCells;
+      const damage = hq?.bombDamage ?? cfg.damage;
       const flyby = this.spawnStrategicBomberFlyby(launch, targetX, targetZ, cfg.flightSec);
 
-      for (let i = 0; i < cfg.bombCount; i++) {
-        const dropOffset = (i - 1) * cfg.scatterCells * TILE_SIZE * 0.85;
+      for (let i = 0; i < bombCount; i++) {
+        const dropOffset = (i - (bombCount - 1) * 0.5) * cfg.scatterCells * TILE_SIZE * 0.85;
         const lateral = (Math.random() - 0.5) * cfg.scatterCells * TILE_SIZE * 0.7;
         const bx = targetX + flyby.dirX * dropOffset - flyby.dirZ * lateral;
         const bz = targetZ + flyby.dirZ * dropOffset + flyby.dirX * lateral;
@@ -512,8 +559,8 @@ export class AirSupportController {
           startZ: releaseZ,
           targetX: bx,
           targetZ: bz,
-          radius: cfg.radiusCells * TILE_SIZE,
-          damage: cfg.damage,
+          radius: radiusCells * TILE_SIZE,
+          damage,
           penetration: cfg.penetration,
           delay: releaseDelay,
           timer: cfg.flightSec,
@@ -523,10 +570,13 @@ export class AirSupportController {
           ringMesh: null,
         });
       }
-      engine.setStatusBanner(t('AIR STRIKE INBOUND — 3× BOMBS ON TARGET'), 2.8);
+      engine.setStatusBanner(t('AIR STRIKE INBOUND — {n}× BOMBS ON TARGET', { n: bombCount }), 2.8);
     } else if (variant === 'STRIKE_THERMO') {
       const cfg = AIR_SUPPORT.STRIKE_THERMO;
       const thermoCfg = AIR_ORDNANCE.THERMOBARIC_MISSILE;
+      const radiusCells = hq?.thermoRadiusCells ?? cfg.radiusCells;
+      const damage = hq?.thermoDamage ?? cfg.damage;
+      const penetration = hq?.thermoPenetration ?? thermoCfg.penetration;
       engine.airSupportMissions.push({
         kind: 'AIR_ORDNANCE',
         ordnanceType: 'THERMO',
@@ -535,9 +585,9 @@ export class AirSupportController {
         startZ: launch.z,
         targetX,
         targetZ,
-        radius: cfg.radiusCells * TILE_SIZE,
-        damage: cfg.damage,
-        penetration: thermoCfg.penetration,
+        radius: radiusCells * TILE_SIZE,
+        damage,
+        penetration,
         delay: 0,
         timer: cfg.flightSec,
         maxTimer: cfg.flightSec,
@@ -549,7 +599,10 @@ export class AirSupportController {
     } else if (variant === 'STRIKE_AC130') {
       const cfg = AIR_SUPPORT.STRIKE_AC130;
       const acCfg = AIRCRAFT_CONFIGS.AC130_SPOOKY;
-      const zoneMesh = this.createAc130ZoneRing(targetX, targetZ, cfg.radiusCells * TILE_SIZE);
+      const radiusCells = hq?.ac130RadiusCells ?? cfg.radiusCells;
+      const durationSec = hq?.ac130DurationSec ?? acCfg.durationSec;
+      const fireIntervalSec = hq?.ac130FireIntervalSec ?? acCfg.fireIntervalSec;
+      const zoneMesh = this.createAc130ZoneRing(targetX, targetZ, radiusCells * TILE_SIZE);
       const orbitRadius = (GRID_SIZE * TILE_SIZE) * acCfg.orbitRadiusRatio;
       const orbitHeight = acCfg.orbitHeight;
       const startX = launch.x;
@@ -570,31 +623,32 @@ export class AirSupportController {
         gunshipZ: startZ,
         exitX: startX,
         exitZ: startZ,
-        radius: cfg.radiusCells * TILE_SIZE,
+        radius: radiusCells * TILE_SIZE,
         orbitRadius,
         orbitHeight,
-        duration: acCfg.durationSec,
+        duration: durationSec,
         elapsed: 0,
         fireTimer: 0.25,
-        fireInterval: acCfg.fireIntervalSec,
+        fireInterval: fireIntervalSec,
         orbitAngle,
         zoneMesh,
         mesh: gunshipMesh,
       });
-      engine.setStatusBanner(t('AC-130 SPOOKY ON STATION — 15s FIRE SUPPORT'), 3.0);
+      engine.setStatusBanner(t('AC-130 SPOOKY ON STATION — {sec}s FIRE SUPPORT', { sec: durationSec }), 3.0);
     }
   }
 
   launchAirMines(targetX, targetZ) {
     const { engine } = this;
     const cfg = AIR_SUPPORT.MINES;
+    const hq = engine.getHqBonuses?.();
     const launch = this.getAlliedSideLaunchPos(targetX, targetZ);
-    const half = cfg.zoneHalfCells * TILE_SIZE;
+    const half = (hq?.mineZoneHalfCells ?? cfg.zoneHalfCells) * TILE_SIZE;
     engine.airSupportMissions ||= [];
     const flyby = this.spawnStrategicBomberFlyby(launch, targetX, targetZ, cfg.flightSec);
 
-    // Center mine + hex ring across the 8x8 cell zone so mines stay outside chain-detonation range
-    const count = Math.max(1, cfg.mineCount || 7);
+    // Center mine + hex ring across the zone so mines stay outside chain-detonation range
+    const count = Math.max(1, hq?.mineCount ?? cfg.mineCount ?? 7);
     const ringCount = count - 1;
     const ringRadius = half * 0.78;
     const baseAngle = Math.random() * Math.PI * 2;
@@ -641,11 +695,12 @@ export class AirSupportController {
         gridPos = engine.worldToGrid ? engine.worldToGrid(shifted.x, shifted.z) : gridPos;
       }
     }
+    const hq = engine.getHqBonuses?.();
     const drop = ctrl?.spawnAirDrop({
-      shells: cfg.shells,
-      aps: cfg.aps,
-      missiles: cfg.missiles,
-      repairKits: cfg.repairKits,
+      shells: hq?.airdropShells ?? cfg.shells,
+      aps: hq?.airdropAps ?? cfg.aps,
+      missiles: hq?.airdropMissiles ?? cfg.missiles,
+      repairKits: hq?.airdropRepairKits ?? cfg.repairKits,
       spawnCell: gridPos,
     });
     if (drop) {

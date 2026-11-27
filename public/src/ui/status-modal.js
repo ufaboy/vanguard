@@ -5,6 +5,7 @@ import { buildBattleSharePayload, buildSocialShareLinks, getPartCatalogEntry } f
 import { formatSurvivalDuration } from './contract-hud.js';
 import { setHidden, setHtml } from './dom-helpers.js';
 import { t } from '../i18n/index.js';
+import { getNewlyUnlockedAirSupport } from '../sim/medals.js';
 
 export function renderBattlefieldLoaderHtml() {
   return `
@@ -71,6 +72,11 @@ function renderBattleMedalsAndRankSection(state) {
     </button>
   `;
 
+  const newlyUnlockedAir =
+    rank?.promoted && rank?.previousRank
+      ? getNewlyUnlockedAirSupport(rank.previousRank.id, rank.currentRank.id)
+      : [];
+
   const rankHtml = rank
     ? `
       <div class="battle-rank-row">
@@ -85,6 +91,9 @@ function renderBattleMedalsAndRankSection(state) {
               ${xpInfo ? t('+{xp} Service XP', { xp: xpInfo.totalXp }) : `${rank.serviceXp} XP`}
               ${rank.nextRank ? ` • ${t('{xp} / {next} XP to {rank}', { xp: rank.serviceXp, next: rank.nextRank.minXp, rank: t(rank.nextRank.title) })}` : ` • ${t('MAX RANK')}`}
             </span>
+            ${newlyUnlockedAir.length > 0
+              ? `<div class="battle-air-unlock-banner">${t('Air Support Unlocked: {items}', { items: newlyUnlockedAir.map((u) => t(u.label)).join(', ') })}</div>`
+              : ''}
           </div>
         </div>
         <div class="battle-rank-bar-track">

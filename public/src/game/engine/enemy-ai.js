@@ -4,7 +4,9 @@ import {
   DURABILITY,
   ENEMY_VISIBILITY,
   HYDRA,
+  PLAYER_UPGRADES,
   TITAN,
+  UPGRADE,
 } from '../constants.js';
 import { EnemyClass, TileType } from '../types.js';
 import { SECTOR_BOSS_CONFIGS } from '../vehicles/tanks.js';
@@ -879,11 +881,14 @@ export class EnemyAiController {
    */
   syncEnemyVisibility(e, dt, distToPlayer) {
     const engine = this.engine;
+    const radarSpec = PLAYER_UPGRADES[UPGRADE.RADAR][(engine.effectiveUpgrades?.radar || 1) - 1];
+    const radarRevealWorld = (radarSpec?.throughObstacleCells || 0) * TILE_SIZE;
+    const revealedByRadar = !engine.jammerActive && radarRevealWorld > 0 && distToPlayer <= radarRevealWorld;
     if (e.enemyClass === EnemyClass.STEALTH && e.rig.stealthMaterials) {
       const spottedByDrone = Boolean(engine.isPointRevealedByReconDrone?.(e.x, e.z));
       const spottedByHq = this.isPointRevealedByPlayerBase(e.x, e.z);
-      const hasLos = !engine.hardMode || this.hasPlayerLineOfSight(e);
-      const revealed = spottedByDrone || spottedByHq || (hasLos && (distToPlayer < 6.2 || e.stealthRevealTimer > 0));
+      const hasLos = !engine.hardMode || this.hasPlayerLineOfSight(e) || revealedByRadar;
+      const revealed = spottedByDrone || spottedByHq || revealedByRadar || (hasLos && (distToPlayer < 6.2 || e.stealthRevealTimer > 0));
       const moving = Math.hypot(e.targetDirX, e.targetDirZ) > 0.05;
       const targetOpacity = !hasLos && !spottedByDrone && !spottedByHq ? 0.0 : revealed ? 0.96 : moving ? 0.3 : 0.12;
       let currentOpacity = 0;
@@ -898,7 +903,7 @@ export class EnemyAiController {
         e.rig.hpBarFill.visible = engine.aiDebugMode;
       }
     } else if (e.rig?.fadeMaterials?.length) {
-      const visibleToPlayer = !engine.hardMode || this.hasPlayerLineOfSight(e);
+      const visibleToPlayer = !engine.hardMode || this.hasPlayerLineOfSight(e) || revealedByRadar;
       const targetOpacity = visibleToPlayer ? 1.0 : 0.0;
       const prevOpacity = e.visibilityOpacity ?? 1.0;
       const nextOpacity = engine.hardMode

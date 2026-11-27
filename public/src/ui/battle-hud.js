@@ -1,4 +1,5 @@
 import { AIR_SUPPORT, POWERUP, getMaxMissileAmmo } from '../game/constants.js';
+import { isAirStrikeVariantUnlocked } from '../sim/medals.js';
 import { DRONE_CONFIGS } from '../game/vehicles/drones.js';
 import { renderPowerUpBadgeSvg } from '../game/icons.js';
 import { GameStatus } from '../game/types.js';
@@ -130,6 +131,19 @@ export function renderBattlefieldHud({
         >
           <span>⚙</span>
           <span class="hidden sm:inline">${t('GARAGE [U]')}</span>
+        </button>
+
+        <button
+          data-action="open-hq-garage"
+          class="flex items-center gap-1.5 bg-[#0B0F17]/95 hover:bg-slate-800 border ${
+            hud.inBaseRepairZone
+              ? 'border-sky-400 text-sky-300'
+              : 'border-sky-500/50 text-sky-300'
+          } px-2.5 py-1.5 rounded text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+          title="${t('HQ Command Skill Tree')}"
+        >
+          <span>★</span>
+          <span class="hidden sm:inline">${t('HQ')}</span>
         </button>
 
         <button
@@ -307,65 +321,10 @@ export function renderBattlefieldHud({
     }
   }
 
-  // 5. Active Modifiers Strip & Air Support Targeting Banner
+  // 5. Active Modifiers Strip
   if (modifiersStrip) {
     const items = [];
-    if (hud.airSupportTargeting) {
-      const targeting = hud.airSupportTargeting;
-      const credits = hud.credits ?? 0;
-      const title =
-        targeting.type === 'STRIKE'
-          ? t('AIR STRIKE TARGETING — CLICK MAP TO STRIKE [RMB / ESC TO CANCEL]')
-          : targeting.type === 'MINES'
-          ? t('AIR MINES TARGETING — CLICK MAP TO DEPLOY [RMB / ESC TO CANCEL]')
-          : t('AIR DROP TARGETING — CLICK MAP TO DROP [RMB / ESC TO CANCEL]');
-
-      let variantHtml = '';
-      if (targeting.type === 'STRIKE') {
-        const variants = [
-          AIR_SUPPORT.STRIKE_BOMBS,
-          AIR_SUPPORT.STRIKE_THERMO,
-          AIR_SUPPORT.STRIKE_AC130,
-          { ...AIR_SUPPORT.MINES, id: 'STRIKE_MINES', label: N_('Air Mines') },
-        ];
-        variantHtml = `
-          <div class="hud-air-variants">
-            ${variants
-              .map((v, idx) => {
-                const active = targeting.strikeVariant === v.id;
-                const affordable = credits >= v.cost;
-                return `
-                  <button
-                    data-action="air-strike-variant"
-                    data-variant="${v.id}"
-                    ${affordable ? '' : 'disabled'}
-                    class="hud-air-variant-btn${active ? ' is-active' : ''}${affordable ? '' : ' is-poor'}"
-                  >
-                    <span class="hud-mod-key">${idx + 1}</span>
-                    <span>${t(v.label)}</span>
-                    <strong>$${v.cost}</strong>
-                  </button>
-                `;
-              })
-              .join('')}
-          </div>
-        `;
-      }
-
-      const stripKey = `air|${targeting.type}|${targeting.strikeVariant}|${credits}`;
-      if (modifiersStrip.__stripKey !== stripKey) {
-        modifiersStrip.__stripKey = stripKey;
-        setHtml(modifiersStrip, `
-          <div class="hud-air-targeting-bar pointer-events-auto">
-            <div class="hud-air-targeting-head">
-              <span>${title}</span>
-              <button data-action="air-support-cancel" class="hud-air-cancel-btn">${t('CANCEL')}</button>
-            </div>
-            ${variantHtml}
-          </div>
-        `);
-      }
-    } else if (hud.status === GameStatus.PLAYING) {
+    if (hud.status === GameStatus.PLAYING) {
       if (hud.apsJammed) {
         items.push(`
           <div class="bg-purple-950/95 border border-purple-500/80 px-3.5 py-1.5 rounded flex items-center gap-2 text-xs font-mono text-purple-200 shadow-lg">
@@ -469,7 +428,8 @@ export function renderBattlefieldHud({
         : 'is-empty';
       const smokeIconColor = smokeOnCd ? '#fbbf24' : smokeCharges > 0 ? '#38bdf8' : '#64748b';
 
-      const canFireMissile = hud.missileAmmo > 0 && hud.missileCooldown <= 0;
+      const atgmOwned = Boolean(hud.atgmOwned);
+      const canFireMissile = atgmOwned && hud.missileAmmo > 0 && hud.missileCooldown <= 0;
       const missileMax = hud.missileMaxAmmo ?? getMaxMissileAmmo(upgrades.frame);
       const missileStateClass = canFireMissile ? 'tone-amber is-ready' : 'is-empty';
 
@@ -664,16 +624,21 @@ export function renderBattlefieldHud({
       }
 
       const airTargetingType = hud.airSupportTargeting?.type || '';
-      const minStrikeCost = Math.min(
-        AIR_SUPPORT.STRIKE_BOMBS.cost,
-        AIR_SUPPORT.STRIKE_THERMO.cost,
-        AIR_SUPPORT.STRIKE_AC130.cost,
-        AIR_SUPPORT.MINES.cost
-      );
+      const profileMode = hud.profileMode || 'campaign';
+      const playerRankId = hud.playerRankId || 'recruit';
+      const strikeEntries = [
+        ['STRIKE_BOMBS', AIR_SUPPORT.STRIKE_BOMBS.cost],
+        ['STRIKE_THERMO', AIR_SUPPORT.STRIKE_THERMO.cost],
+        ['STRIKE_AC130', AIR_SUPPORT.STRIKE_AC130.cost],
+        ['STRIKE_MINES', AIR_SUPPORT.MINES.cost],
+      ].filter(([id]) => isAirStrikeVariantUnlocked(id, playerRankId, profileMode));
+      const minStrikeCost = strikeEntries.length > 0
+        ? Math.min(...strikeEntries.map(([, cost]) => cost))
+        : AIR_SUPPORT.STRIKE_BOMBS.cost;
       const strikeBusy = Boolean(hud.airStrikeActive);
       const canStrike = !strikeBusy && credits >= minStrikeCost;
       const canDrop = credits >= AIR_SUPPORT.AIRDROP.cost;
-      const staticKey = `${rkValue}|${rkStateClass}|${rkTitle}|${smokeValue}|${smokeStateClass}|${reconValue}|${reconStateClass}|${reconReady}|${canStrike}|${strikeBusy}|${canDrop}|${airTargetingType}`;
+      const staticKey = `${rkValue}|${rkStateClass}|${rkTitle}|${smokeValue}|${smokeStateClass}|${reconValue}|${reconStateClass}|${reconReady}|${canStrike}|${strikeBusy}|${canDrop}|${airTargetingType}|${profileMode}|${playerRankId}`;
 
       if (centerSection.__staticKey === staticKey) {
         return;

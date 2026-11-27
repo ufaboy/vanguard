@@ -8,6 +8,7 @@ import { isCampaignMissionUnlocked } from '../campaign.js';
 import * as THREE from 'three';
 import { SurvivalDirector, ContractDirector } from './mode-directors.js';
 import { AiDebugOverlay } from './ai-debug-overlay.js';
+import { getHqBonuses, normalizeHqTree } from '../../sim/hq-tree.js';
 import { GarageOps } from './garage-ops.js';
 import { PerfMonitor } from './perfMonitor.js';
 import { BossCombat } from './boss-combat.js';
@@ -179,12 +180,14 @@ export class TankGameEngine {
     this.playerSalvoResetTimer = 0;
     this.playerFlashTimer = 0;
 
-    this.apsAmmo = Array.isArray(this.playerSave?.apsAmmo)
+    this.apsOwned = Boolean(this.playerSave?.apsOwned);
+    this.atgmOwned = Boolean(this.playerSave?.atgmOwned);
+    this.apsAmmo = this.apsOwned && Array.isArray(this.playerSave?.apsAmmo)
       ? [...this.playerSave.apsAmmo]
-      : [...APS.INITIAL_PER_LAUNCHER];
+      : [0, 0, 0, 0];
     this.apsRearmTimer = 0;
-    this.missileAmmo = Number.isInteger(this.playerSave.missileAmmo)
-      ? Math.max(0, Math.min(MISSILE.MAX_AMMO, this.playerSave.missileAmmo)) : 2;
+    this.missileAmmo = this.atgmOwned && Number.isInteger(this.playerSave?.missileAmmo)
+      ? Math.max(0, Math.min(MISSILE.MAX_AMMO, this.playerSave.missileAmmo)) : 0;
     this.cannonAmmo = CANNON_AMMO.START_ROUNDS;
     this.cannonBaseRearmTimer = 0;
     this.missileCooldown = 0;
@@ -202,6 +205,7 @@ export class TankGameEngine {
     this.creditsEarnedThisMission = 0;
     this.temporaryCredits = 0;
     this.preBattleUpgrades = null;
+    this.preBattleHqTree = null;
     this.preBattleReconDroneOwned = false;
     this.baseAlive = true;
     this.baseHp = 1;
@@ -782,6 +786,17 @@ export class TankGameEngine {
   restoreAllComponents() { this.garageOps.restoreAllComponents(); }
 
   upgradeTrackInGarage(track) { return this.garageOps.upgradeTrack(track); }
+  getHqTree() {
+    if (this.profileMode === 'campaign' && !this.isBattleActive?.()) {
+      return normalizeHqTree(this.playerSave?.hqTree || this.hqTree);
+    }
+    return normalizeHqTree(this.hqTree || this.playerSave?.hqTree);
+  }
+  getHqBonuses() { return getHqBonuses(this.getHqTree()); }
+  upgradeHqNodeInGarage(nodeId) { return this.garageOps.upgradeHqNode(nodeId); }
+  buyMaxSupplyInGarage(kind) { return this.garageOps.buyMaxSupply(kind); }
+  buyApsModuleInGarage() { return this.garageOps.buyApsModule(); }
+  buyAtgmModuleInGarage() { return this.garageOps.buyAtgmModule(); }
 
   buyCannonAmmoInGarage() { return this.garageOps.buyCannonAmmo(); }
 
@@ -957,7 +972,10 @@ export class TankGameEngine {
       this.playerSave.credits = Math.max(0, Math.floor(this.temporaryCredits ?? 0));
     }
     this.preBattleUpgrades = null;
+    this.preBattleHqTree = null;
     this.preBattleReconDroneOwned = Boolean(this.reconDroneOwned);
+    this.preBattleApsOwned = Boolean(this.apsOwned);
+    this.preBattleAtgmOwned = Boolean(this.atgmOwned);
   }
 
   /** Restores temporaryCredits from persistent playerSave.credits and reverts mid-battle permanent purchases. */
@@ -967,9 +985,22 @@ export class TankGameEngine {
       this.upgrades = { ...this.preBattleUpgrades };
       this.preBattleUpgrades = null;
     }
+    if (this.preBattleHqTree) {
+      this.hqTree = normalizeHqTree(this.preBattleHqTree);
+      this.preBattleHqTree = null;
+    }
     this.reconDroneOwned = Boolean(this.preBattleReconDroneOwned);
+    this.apsOwned = Boolean(this.preBattleApsOwned);
+    this.atgmOwned = Boolean(this.preBattleAtgmOwned);
+    if (!this.apsOwned) this.apsAmmo = [0, 0, 0, 0];
+    if (!this.atgmOwned) this.missileAmmo = 0;
     if (this.playerSave) {
       this.playerSave.reconDroneOwned = Boolean(this.preBattleReconDroneOwned);
+      this.playerSave.apsOwned = Boolean(this.preBattleApsOwned);
+      this.playerSave.atgmOwned = Boolean(this.preBattleAtgmOwned);
+      if (this.profileMode === 'campaign') {
+        this.playerSave.hqTree = normalizeHqTree(this.hqTree);
+      }
     }
     this.recomputePlayerStats?.(true);
   }
@@ -1569,6 +1600,11 @@ export class TankGameEngine {
     if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
       this.commitBattleCredits();
       this.playerSave.reconDroneOwned = Boolean(this.reconDroneOwned);
+      this.playerSave.apsOwned = Boolean(this.apsOwned);
+      this.playerSave.atgmOwned = Boolean(this.atgmOwned);
+      if (this.profileMode === 'campaign') {
+        this.playerSave.hqTree = normalizeHqTree(this.hqTree);
+      }
       this.lastSettlementSummary = settleMission({
         playerSave: this.playerSave,
         missionRun: this.activeMissionRun,
@@ -1578,8 +1614,12 @@ export class TankGameEngine {
       this.playerSave.completedMissions ||= {};
       this.playerSave.completedMissions[this.activeMissionRun.missionId] = { completedAt: Date.now() };
       this.cannonAmmo = this.getPlayerMaxCannonAmmo();
-      this.missileAmmo = this.getPlayerMaxMissileAmmo();
-      this.playerController.initApsLaunchers(this.getPlayerMaxApsAmmo());
+      this.missileAmmo = this.atgmOwned ? this.getPlayerMaxMissileAmmo() : 0;
+      if (this.apsOwned) {
+        this.playerController.initApsLaunchers(this.getPlayerMaxApsAmmo());
+      } else {
+        this.apsAmmo = [0, 0, 0, 0];
+      }
       this.garageOps.restoreAllComponents();
       this.playerHp = this.playerMaxHp;
       this.playerSave.apsAmmo = [...this.apsAmmo];

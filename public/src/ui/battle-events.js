@@ -234,6 +234,9 @@ export function setupDelegatedEvents(
           const ok = engine ? engine.setGarageOpen(true) : false;
           if (ok) {
             state.showUpgradeDrawer = true;
+            if (state.garageTrack === 'hq' || state.garageTrack === 'supplies') {
+              state.garageTrack = 'cannon';
+            }
             analyticsManager.trackEvent('garage_open', {
               source: state.hud.status === GameStatus.PLAYING ? 'battle_hud' : 'menu',
             });
@@ -242,6 +245,17 @@ export function setupDelegatedEvents(
         } else {
           state.showUpgradeDrawer = false;
           engine?.setGarageOpen(false);
+          renderUI(true);
+        }
+        break;
+      }
+      case 'open-hq-garage': {
+        if (state.hud.status === GameStatus.MENU) break;
+        const ok = engine ? engine.setGarageOpen(true) : false;
+        if (ok) {
+          state.showUpgradeDrawer = true;
+          state.garageTrack = 'hq';
+          state.garageFeedback = '';
           renderUI(true);
         }
         break;
@@ -259,6 +273,18 @@ export function setupDelegatedEvents(
           state.garageFeedback = res.success
             ? t('{system} upgraded. Ready for deployment.', { system: t(GARAGE_TRACKS.find((item) => item.key === track)?.label || 'System') })
             : res.reason;
+          if (!res.success && res.reason) {
+            engine.setStatusBanner(t('UPGRADE BLOCKED: {reason}', { reason: res.reason.toUpperCase() }), 2.4);
+          }
+          renderUI(true);
+        }
+        break;
+      }
+      case 'upgrade-hq-node': {
+        const nodeId = btn.getAttribute('data-node');
+        if (nodeId && engine) {
+          const res = engine.upgradeHqNodeInGarage(nodeId);
+          state.garageFeedback = res.success ? '' : res.reason;
           if (!res.success && res.reason) {
             engine.setStatusBanner(t('UPGRADE BLOCKED: {reason}', { reason: res.reason.toUpperCase() }), 2.4);
           }
@@ -318,17 +344,54 @@ export function setupDelegatedEvents(
           renderUI(true);
         }
         break;
+      case 'buy-aps-module':
+        if (engine) {
+          const res = engine.buyApsModuleInGarage();
+          if (res.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: 'aps_module' });
+          }
+          state.garageFeedback = res.reason;
+          renderUI(true);
+        }
+        break;
+      case 'buy-atgm-module':
+        if (engine) {
+          const res = engine.buyAtgmModuleInGarage();
+          if (res.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: 'atgm_module' });
+          }
+          state.garageFeedback = res.reason;
+          renderUI(true);
+        }
+        break;
+      case 'buy-max-supply': {
+        const kind = btn.getAttribute('data-kind');
+        if (kind && engine) {
+          const res = engine.buyMaxSupplyInGarage(kind);
+          if (res?.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: `${kind}_max` });
+          }
+          if (res?.reason) state.garageFeedback = res.reason;
+          renderUI(true);
+        }
+        break;
+      }
       case 'launch-recon-drone':
         engine?.activateReconDroneAction();
         break;
-      case 'garage-select':
-        if (GARAGE_TRACKS.some((item) => item.key === btn.dataset.track)) {
-          state.garageTrack = btn.dataset.track;
+      case 'garage-select': {
+        const nextTrack = btn.dataset.track;
+        if (
+          nextTrack === 'hq' ||
+          GARAGE_TRACKS.some((item) => item.key === nextTrack)
+        ) {
+          state.garageTrack = nextTrack;
           state.garageFeedback = '';
           renderUI(true);
           document.querySelector(`.garage-system[data-track="${state.garageTrack}"]`)?.focus({ preventScroll: true });
         }
         break;
+      }
       case 'garage-view':
         state.garageView = btn.dataset.view;
         engine?.garageStage?.setView(state.garageView);

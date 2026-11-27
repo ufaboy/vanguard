@@ -98,10 +98,14 @@ export class PlayerController {
     const frame = PLAYER_UPGRADES[UPGRADE.FRAME][(engine.effectiveUpgrades.frame || 1) - 1];
     const engineComp = PLAYER_UPGRADES[UPGRADE.ENGINE][(engine.effectiveUpgrades.engine || 1) - 1];
     const armor = PLAYER_UPGRADES[UPGRADE.ARMOR][(engine.effectiveUpgrades.armor || 1) - 1];
+    const radar = PLAYER_UPGRADES[UPGRADE.RADAR][(engine.effectiveUpgrades.radar || 1) - 1];
 
     const optEquip = [];
-    if (engine.missileAmmo > 0) {
+    if (engine.atgmOwned) {
       optEquip.push('ROCKET_LAUNCHER');
+    }
+    if (engine.apsOwned) {
+      optEquip.push('APS_MODULE');
     }
     if (engine.reconDroneOwned) {
       optEquip.push('RECON_DRONE');
@@ -113,8 +117,16 @@ export class PlayerController {
       frame,
       engine: engineComp,
       armor,
+      radar,
       optionalEquipment: optEquip,
     }, PLAYER_TANK_CONFIG.base);
+    const sightBonusCells = engine.getHqBonuses?.().sightBonusCells || 0;
+    if (sightBonusCells > 0) {
+      engine.playerStats = {
+        ...engine.playerStats,
+        sightRadius: (engine.playerStats.sightRadius || 0) + sightBonusCells * TILE_SIZE,
+      };
+    }
 
     engine.playerMaxHp = engine.playerStats.maxHP;
     if (preserveRatio) {
@@ -383,6 +395,10 @@ export class PlayerController {
   firePlayerHomingMissile() {
     const engine = this.engine;
     if (engine.status !== GameStatus.PLAYING) return;
+    if (!engine.atgmOwned) {
+      engine.setStatusBanner(t('ATGM POD NOT INSTALLED — BUY IN GARAGE'), 2.0);
+      return;
+    }
     if (engine.missileAmmo <= 0 || engine.missileCooldown > 0) return;
     if (this.isInsideJammerSystemRadius()) {
       // A missile launched inside the ECM bubble would lose lock at the muzzle; keep it.
@@ -918,7 +934,7 @@ export class PlayerController {
 
   updateApsInterception() {
     const engine = this.engine;
-    if (engine.apsRearmTimer > 0 || this.isInsideJammerSystemRadius()) return;
+    if (!engine.apsOwned || engine.apsRearmTimer > 0 || this.isInsideJammerSystemRadius()) return;
     const totalAmmo = engine.apsAmmo.reduce((a, b) => a + b, 0);
     if (totalAmmo <= 0) return;
 

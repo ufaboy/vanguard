@@ -4,6 +4,7 @@ import { CHASSIS } from './chassis.js';
 import { FRAMES } from './frames.js';
 import { ENGINES } from './engines.js';
 import { ARMORS } from './armors.js';
+import { RADARS } from './radars.js';
 
 export const PLAYER_ENGINE_POWER_MULT = 1.1;
 
@@ -46,6 +47,13 @@ export const PLAYER_UPGRADES = Object.freeze({
     ARMORS.A4,
     ARMORS.A5,
   ]),
+  [UPGRADE.RADAR]: Object.freeze([
+    RADARS.R1,
+    RADARS.R2,
+    RADARS.R3,
+    RADARS.R4,
+    RADARS.R5,
+  ]),
 });
 
 export const UPGRADE_MAX_LEVEL = Object.freeze({
@@ -54,5 +62,6 @@ export const UPGRADE_MAX_LEVEL = Object.freeze({
   [UPGRADE.FRAME]: 5,
   [UPGRADE.ENGINE]: 5,
   [UPGRADE.ARMOR]: 5,
+  [UPGRADE.RADAR]: 5,
 });
 

@@ -108,6 +108,7 @@ export class ReconDroneController {
       engine.fxGroup.add(droneRig);
     }
 
+    const hq = engine.getHqBonuses?.();
     engine.reconDroneActiveTimer = 0;
     engine.reconDroneMission = {
       x: startX,
@@ -115,10 +116,10 @@ export class ReconDroneController {
       z: startZ,
       targetX: tx,
       targetZ: tz,
-      revealRadius: droneCfg.revealRadiusCells * TILE_SIZE,
+      revealRadius: (droneCfg.revealRadiusCells + (hq?.reconRadiusBonusCells || 0)) * TILE_SIZE,
       phase: 'approach',
       timer: 0,
-      duration: droneCfg.durationSec,
+      duration: droneCfg.durationSec + (hq?.reconDurationBonusSec || 0),
       mesh: droneRig,
     };
     engine.setStatusBanner(t('RECON DRONE DISPATCHED — SCANNING TARGET ZONE'), 2.4);

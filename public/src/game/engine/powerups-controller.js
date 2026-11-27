@@ -387,7 +387,7 @@ export class PowerupsController {
     }
 
     const maxAps = engine.getPlayerMaxApsAmmo ? engine.getPlayerMaxApsAmmo() : getMaxApsAmmo(engine.upgrades?.frame || 1);
-    const addAps = resolvePctAmount(maxAps, config.aps);
+    const addAps = engine.apsOwned ? resolvePctAmount(maxAps, config.aps) : 0;
     if (addAps > 0) {
       if (engine.addApsRounds) {
         engine.addApsRounds(addAps);
@@ -399,7 +399,7 @@ export class PowerupsController {
     }
 
     const maxMissiles = engine.getPlayerMaxMissileAmmo ? engine.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(engine.upgrades?.frame || 1);
-    const addMissiles = resolvePctAmount(maxMissiles, config.missiles);
+    const addMissiles = engine.atgmOwned ? resolvePctAmount(maxMissiles, config.missiles) : 0;
     if (addMissiles > 0) {
       engine.missileAmmo = Math.min(maxMissiles, engine.missileAmmo + addMissiles);
       parts.push(`ATGM ${engine.missileAmmo}/${maxMissiles}`);
