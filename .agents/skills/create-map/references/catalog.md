@@ -45,7 +45,7 @@ Snapshot of the runtime contract. Before relying on a value, confirm it in `publ
 Each connected cluster of `A` (or of `P`) becomes one modular building with outward-facing walls and one style. The style mix comes from `environment.theme` (`THEME_ITERATION2_SHARE` in `building-layout.js`): `urban` is all residential; `industrial` and `desert` are mostly warehouses / factories / offices; `coast` and `capital` are mostly residential. So:
 
 - One cluster = one building. Separate neighbouring houses with at least one cell (a yard, a lane) or by alternating `A` and `P`.
-- The cluster's shape is the building's footprint: use rectangles, L-shapes and courtyard blocks of real-looking proportions, not single cells.
+- The cluster's shape is the building's footprint: use `2×N` footprints, L-/U-/T-/H-/cross-shapes, or courtyard rings of real-looking proportions, not single cells. Residential and regular `A`/`P` buildings must not have enclosed interior (`core`) cells (only large `P` industrial halls/warehouses may). Thin 1-cell wings/rings are allowed; prefer open courtyards with a 1–2 cell driveway, while closed decorative courtyards holding grass (`V`), trees (`F`), crates (`Q`), or ground (`.`) are also allowed.
 - `B` and `C` always render as plain wall blocks, not buildings.
 
 ## What may stand on what (`canPlaceOnSurface`)
