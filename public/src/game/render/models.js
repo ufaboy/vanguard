@@ -1278,7 +1278,6 @@ export class ModelFactory extends TextureGenerator {
         roughness: 0.9,
         metalness: 0,
         polygonOffset: true,
-        polygonOffsetFactor: -0.5,
         polygonOffsetUnits: -0.5,
       })
     );
@@ -2288,7 +2287,6 @@ export class ModelFactory extends TextureGenerator {
         roughness: 0.98,
         metalness: 0.02,
         polygonOffset: true,
-        polygonOffsetFactor: -1,
         polygonOffsetUnits: -1,
       }),
       stoneLight: makeBatchMat('rubble-stone-light', {
@@ -3065,7 +3063,6 @@ export class ModelFactory extends TextureGenerator {
         transparent: true,
         depthWrite: false,
         polygonOffset: true,
-        polygonOffsetFactor: -1,
         polygonOffsetUnits: -1,
       }),
     };
@@ -3191,7 +3188,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.92,
           metalness: 0.02,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         }));
       });
@@ -3340,7 +3336,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.9,
           metalness: 0.05,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         }));
       });
@@ -3367,7 +3362,6 @@ export class ModelFactory extends TextureGenerator {
         roughness: 0.85,
         metalness: 0.1,
         polygonOffset: true,
-        polygonOffsetFactor: -1,
         polygonOffsetUnits: -1,
       }));
     });
@@ -3402,7 +3396,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.18,
           metalness: 0.1,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         },
         {
@@ -3431,7 +3424,6 @@ export class ModelFactory extends TextureGenerator {
           color: 0xffffff,
           metalness: 0.05,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         },
         { clearcoat: 0.7, clearcoatRoughness: 0.08 }
@@ -3569,13 +3561,15 @@ export class ModelFactory extends TextureGenerator {
    */
   createRoadBlock(x = 0, z = 0, neighborMask = 5, doubleLaneMask = 0) {
     if (!this.roadMats) {
+      // Ground layers stack by height plus a tiny polygonOffsetUnits tie-break. Never use
+      // polygonOffsetFactor here: it scales with the steep isometric depth slope and pulls the
+      // layer over anything standing just above it (tank tracks sank into the asphalt).
       this.roadMats = {
         asphalt: new THREE.MeshStandardMaterial({
           color: 0x2a313c,
           roughness: 0.78,
           metalness: 0.08,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         }),
         shoulder: new THREE.MeshStandardMaterial({
@@ -3583,7 +3577,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.85,
           metalness: 0.05,
           polygonOffset: true,
-          polygonOffsetFactor: -2,
           polygonOffsetUnits: -2,
         }),
         stripe: new THREE.MeshStandardMaterial({
@@ -3591,7 +3584,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.65,
           metalness: 0.05,
           polygonOffset: true,
-          polygonOffsetFactor: -3,
           polygonOffsetUnits: -3,
         }),
       };
@@ -3751,7 +3743,6 @@ export class ModelFactory extends TextureGenerator {
         roughness: 0.28,
         metalness: 0.25,
         polygonOffset: true,
-        polygonOffsetFactor: -1,
         polygonOffsetUnits: -1,
       }));
     });
@@ -3826,7 +3817,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.08,
           metalness: 0.82,
           polygonOffset: true,
-          polygonOffsetFactor: -2,
           polygonOffsetUnits: -2,
         }));
       });
@@ -3886,7 +3876,6 @@ export class ModelFactory extends TextureGenerator {
         blending: THREE.AdditiveBlending,
         toneMapped: false,
         polygonOffset: true,
-        polygonOffsetFactor: -3,
         polygonOffsetUnits: -3,
       });
 
@@ -4191,7 +4180,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.96,
           metalness: 0.02,
           polygonOffset: true,
-          polygonOffsetFactor: -2,
           polygonOffsetUnits: -2,
         }),
         earth: new THREE.MeshStandardMaterial({

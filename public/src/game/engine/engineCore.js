@@ -41,6 +41,7 @@ import {
   CANNON_AMMO,
   MISSILE,
   POWERUP_TYPES,
+  TANK_RIDE_HEIGHT,
 } from '../constants.js';
 import { GameStatus } from '../types.js';
 import { PLAYER_TANK_CONFIG } from '../vehicles/tanks.js';
@@ -1435,7 +1436,7 @@ export class TankGameEngine {
         this.forestFire.update(dt, elapsed);
         if (this.playerRig && !this.playerDeathState) {
           const canHover = Boolean(this.playerStats?.canHover);
-          const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
+          const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : TANK_RIDE_HEIGHT;
           this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
           this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
         }
@@ -1462,7 +1463,7 @@ export class TankGameEngine {
         }
       } else if (this.playerRig && !this.playerDeathState) {
         const canHover = Boolean(this.playerStats?.canHover);
-        const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
+        const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : TANK_RIDE_HEIGHT;
         this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
         if (this.inspectMode) {
           this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;

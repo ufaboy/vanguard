@@ -16,6 +16,7 @@ import {
   BOSS_APS,
   TANK_HIT_RADIUS,
   computeTankStats,
+  TANK_RIDE_HEIGHT,
 } from '../constants.js';
 import { remainingEncounterEnemies, updateEncounters } from '../encounters.js';
 import { GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
@@ -471,7 +472,7 @@ export class EnemySpawnerController {
   createEnemyAt(enemyClass, x, z, isBoss, entryTarget = null) {
     const { engine } = this;
     const rig = engine.modelFactory.createEnemyTank(enemyClass);
-    rig.root.position.set(x, 0, z);
+    rig.root.position.set(x, TANK_RIDE_HEIGHT, z);
     if (rig.hpBarBg) rig.hpBarBg.visible = engine.aiDebugMode;
     if (rig.hpBarFill) rig.hpBarFill.visible = engine.aiDebugMode;
     engine.entityGroup.add(rig.root);

@@ -147,7 +147,6 @@ export class FxSystem {
         transparent: true,
         depthWrite: false,
         polygonOffset: true,
-        polygonOffsetFactor: -2,
         polygonOffsetUnits: -2,
       });
       const mesh = new THREE.Mesh(decalGeo, mat);

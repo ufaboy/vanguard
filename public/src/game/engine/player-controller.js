@@ -17,6 +17,7 @@ import {
   getMaxCannonAmmo,
   getMaxMissileAmmo,
   getMaxRepairKitCharges,
+  TANK_RIDE_HEIGHT,
 } from '../constants.js';
 import { PLAYER_TANK_CONFIG } from '../vehicles/tanks.js';
 import { GameStatus, TileType } from '../types.js';
@@ -806,7 +807,7 @@ export class PlayerController {
       engine.playerRig.muzzleFlash.material.opacity = 0;
     }
 
-    const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
+    const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : TANK_RIDE_HEIGHT;
     engine.playerRig.root.position.set(engine.playerX, hoverY, engine.playerZ);
     engine.playerRig.hull.rotation.y = engine.playerHullAngle;
     engine.playerGearState = engine.playerGearState || {};

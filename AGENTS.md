@@ -17,6 +17,7 @@
 3. **Visual & Performance Discipline**:
    - **No CSS `backdrop-filter` / `backdrop-blur`** over the WebGL canvas, as it triggers expensive per-frame framebuffer readbacks. Use high-opacity solid surfaces (e.g., `bg-[#0B0F17]/95`) with crisp borders instead.
    - Maintain support for both hardware-accelerated WebGL and software WebGL fallback (`isSoftwareGl` detection in `TankGameEngine`).
+   - **Flat ground layers** (roads, markings, sand / mud patches, water, ice, decals, scorch marks) separate by height plus at most a small `polygonOffsetUnits` tie-break. **Never use `polygonOffsetFactor`**: it scales with the steep isometric depth slope and pulls the layer over anything standing just above it (tank tracks sank into the asphalt). Tracked tanks render at `TANK_RIDE_HEIGHT` (`constants.js`), which must stay above the highest flat ground layer.
 4. **5-Track × 5-Level Player Component System & Standalone Modules**:
    - **Player Tank Components MUST have 5 levels of development (Tiers 1–5)** across all 5 core tracks:
      - **Cannon**: `CANNON_Mk1` to `CANNON_Mk5` (`Cannon Mk1` to `Cannon Mk5`, short Roman `I` to `V`)
