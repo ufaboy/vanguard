@@ -486,8 +486,8 @@ export class GarageOps {
     if (!inBattle) {
       e.syncCampaignCredits?.();
       e.saveRepo?.savePlayerSave?.(e.playerSave);
+      e.saveProgress?.();
     }
-    e.saveProgress?.();
 
     if (nodeId === 'HQ_FORTIFICATION' && e.baseAlive && e.baseMaxHp > 0) {
       const nextBaseMult = getHqBonuses(e.hqTree).baseHpMultiplier;

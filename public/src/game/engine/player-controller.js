@@ -98,6 +98,7 @@ export class PlayerController {
     const frame = PLAYER_UPGRADES[UPGRADE.FRAME][(engine.effectiveUpgrades.frame || 1) - 1];
     const engineComp = PLAYER_UPGRADES[UPGRADE.ENGINE][(engine.effectiveUpgrades.engine || 1) - 1];
     const armor = PLAYER_UPGRADES[UPGRADE.ARMOR][(engine.effectiveUpgrades.armor || 1) - 1];
+    const radar = PLAYER_UPGRADES[UPGRADE.RADAR][(engine.effectiveUpgrades.radar || 1) - 1];
 
     const optEquip = [];
     if (engine.atgmOwned) {
@@ -116,6 +117,7 @@ export class PlayerController {
       frame,
       engine: engineComp,
       armor,
+      radar,
       optionalEquipment: optEquip,
     }, PLAYER_TANK_CONFIG.base);
     const sightBonusCells = engine.getHqBonuses?.().sightBonusCells || 0;

@@ -205,6 +205,7 @@ export class TankGameEngine {
     this.creditsEarnedThisMission = 0;
     this.temporaryCredits = 0;
     this.preBattleUpgrades = null;
+    this.preBattleHqTree = null;
     this.preBattleReconDroneOwned = false;
     this.baseAlive = true;
     this.baseHp = 1;
@@ -786,10 +787,10 @@ export class TankGameEngine {
 
   upgradeTrackInGarage(track) { return this.garageOps.upgradeTrack(track); }
   getHqTree() {
-    if (this.profileMode === 'campaign') {
+    if (this.profileMode === 'campaign' && !this.isBattleActive?.()) {
       return normalizeHqTree(this.playerSave?.hqTree || this.hqTree);
     }
-    return normalizeHqTree(this.hqTree);
+    return normalizeHqTree(this.hqTree || this.playerSave?.hqTree);
   }
   getHqBonuses() { return getHqBonuses(this.getHqTree()); }
   upgradeHqNodeInGarage(nodeId) { return this.garageOps.upgradeHqNode(nodeId); }
@@ -971,6 +972,7 @@ export class TankGameEngine {
       this.playerSave.credits = Math.max(0, Math.floor(this.temporaryCredits ?? 0));
     }
     this.preBattleUpgrades = null;
+    this.preBattleHqTree = null;
     this.preBattleReconDroneOwned = Boolean(this.reconDroneOwned);
     this.preBattleApsOwned = Boolean(this.apsOwned);
     this.preBattleAtgmOwned = Boolean(this.atgmOwned);
@@ -983,6 +985,10 @@ export class TankGameEngine {
       this.upgrades = { ...this.preBattleUpgrades };
       this.preBattleUpgrades = null;
     }
+    if (this.preBattleHqTree) {
+      this.hqTree = normalizeHqTree(this.preBattleHqTree);
+      this.preBattleHqTree = null;
+    }
     this.reconDroneOwned = Boolean(this.preBattleReconDroneOwned);
     this.apsOwned = Boolean(this.preBattleApsOwned);
     this.atgmOwned = Boolean(this.preBattleAtgmOwned);
@@ -992,6 +998,9 @@ export class TankGameEngine {
       this.playerSave.reconDroneOwned = Boolean(this.preBattleReconDroneOwned);
       this.playerSave.apsOwned = Boolean(this.preBattleApsOwned);
       this.playerSave.atgmOwned = Boolean(this.preBattleAtgmOwned);
+      if (this.profileMode === 'campaign') {
+        this.playerSave.hqTree = normalizeHqTree(this.hqTree);
+      }
     }
     this.recomputePlayerStats?.(true);
   }
@@ -1593,6 +1602,9 @@ export class TankGameEngine {
       this.playerSave.reconDroneOwned = Boolean(this.reconDroneOwned);
       this.playerSave.apsOwned = Boolean(this.apsOwned);
       this.playerSave.atgmOwned = Boolean(this.atgmOwned);
+      if (this.profileMode === 'campaign') {
+        this.playerSave.hqTree = normalizeHqTree(this.hqTree);
+      }
       this.lastSettlementSummary = settleMission({
         playerSave: this.playerSave,
         missionRun: this.activeMissionRun,

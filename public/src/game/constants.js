@@ -18,6 +18,7 @@ import {
   FRAMES,
   ENGINES,
   ARMORS,
+  RADARS,
   OPTIONAL_EQUIPMENT,
   PLAYER_ENGINE_POWER_MULT,
   PLAYER_UPGRADES,
@@ -41,6 +42,7 @@ export {
   FRAMES,
   ENGINES,
   ARMORS,
+  RADARS,
   OPTIONAL_EQUIPMENT,
   PLAYER_ENGINE_POWER_MULT,
   PLAYER_UPGRADES,
@@ -201,6 +203,11 @@ export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
   const armor =
     (typeof armorKey === 'object' ? armorKey : ARMORS[armorKey]) || ARMORS.A1;
 
+  const radarKey = loadout.radar || null;
+  const radar = radarKey
+    ? (typeof radarKey === 'object' ? radarKey : RADARS[radarKey]) || null
+    : null;
+
   const optionalEquipment = (loadout.optionalEquipment || [])
     .map((opt) =>
       typeof opt === 'object' ? opt : OPTIONAL_EQUIPMENT[opt] || null
@@ -208,7 +215,7 @@ export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
     .filter(Boolean);
 
   const hull = { ...DEFAULT_TANK_BASE, ...base };
-  const components = [gun, chassis, frame, engine, armor];
+  const components = radar ? [gun, chassis, frame, engine, armor, radar] : [gun, chassis, frame, engine, armor];
   const sum = (items, key) => items.reduce((total, item) => total + (Number(item?.[key]) || 0), 0);
 
   // 1. HP adds up: base + every component + every module.

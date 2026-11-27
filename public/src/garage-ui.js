@@ -36,15 +36,20 @@ const money = value => formatNumber(Math.round(value));
 const number = value => Number(value.toFixed(2)).toString();
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 
-function garageStats(upgrades, missileAmmo = 0) {
+function garageStats(upgrades, hud = {}) {
   const part = key => PLAYER_UPGRADES[key][(upgrades[key] || 1) - 1];
+  const optEquip = [];
+  if (hud.atgmOwned) optEquip.push('ROCKET_LAUNCHER');
+  if (hud.apsOwned) optEquip.push('APS_MODULE');
+  if (hud.reconDroneOwned) optEquip.push('RECON_DRONE');
   return computeTankStats({
     gun: part('cannon'),
     chassis: part('chassis'),
     frame: part('frame'),
     engine: part('engine'),
     armor: part('armor'),
-    optionalEquipment: missileAmmo > 0 ? ['ROCKET_LAUNCHER'] : [],
+    radar: part('radar'),
+    optionalEquipment: optEquip,
   }, PLAYER_TANK_CONFIG.base);
 }
 
@@ -77,8 +82,8 @@ export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front',
   const faults = hud.componentDamage || {};
   const damaged = Boolean(faults[track.key]);
   const repairCost = componentRepairCost(tier);
-  const before = garageStats(effectiveUpgradeTiers(upgrades, faults), hud.missileAmmo);
-  const after = garageStats(effectiveUpgradeTiers({ ...upgrades, [track.key]: Math.min(5, tier + 1) }, faults), hud.missileAmmo);
+  const before = garageStats(effectiveUpgradeTiers(upgrades, faults), hud);
+  const after = garageStats(effectiveUpgradeTiers({ ...upgrades, [track.key]: Math.min(5, tier + 1) }, faults), hud);
   before.apsMaxAmmo = getMaxApsAmmo(purchasedFrame);
   after.apsMaxAmmo = getMaxApsAmmo(Math.min(5, purchasedFrame + 1));
   before.missileMaxAmmo = getMaxMissileAmmo(purchasedFrame);

@@ -106,9 +106,9 @@ export const HQ_TREE_NODES = Object.freeze([
     summary: N_('Expands enemy detection radius on the tactical radar.'),
     costs: Object.freeze([0, 1600, 3600]),
     levels: Object.freeze([
-      Object.freeze({ radarBonusCells: 0, label: N_('+0 cells (16c base)') }),
-      Object.freeze({ radarBonusCells: 4, label: N_('+4 cells (20c range)') }),
-      Object.freeze({ radarBonusCells: 8, label: N_('+8 cells (24c range)') }),
+      Object.freeze({ radarBonusCells: 0, label: N_('+0 cells (radar base)') }),
+      Object.freeze({ radarBonusCells: 4, label: N_('+4 cells radar range') }),
+      Object.freeze({ radarBonusCells: 8, label: N_('+8 cells radar range') }),
     ]),
   }),
   Object.freeze({

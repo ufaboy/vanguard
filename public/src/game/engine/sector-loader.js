@@ -821,6 +821,7 @@ export class SectorLoaderController {
     engine.creditsEarnedThisMission = 0;
     engine.syncTemporaryCredits();
     engine.preBattleUpgrades = { ...engine.upgrades };
+    engine.preBattleHqTree = { ...engine.getHqTree() };
 
     const authoredMission = {
       id: sector.mapId,

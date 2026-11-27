@@ -76,10 +76,15 @@ export class ProfileSaveController {
         engine.isBattleActive?.() && engine.preBattleUpgrades
           ? engine.preBattleUpgrades
           : engine.upgrades;
+      const hqTreeToSave = normalizeHqTree(
+        engine.isBattleActive?.() && engine.preBattleHqTree
+          ? engine.preBattleHqTree
+          : engine.hqTree
+      );
       if (engine.profileMode === 'campaign') {
         storage?.setItem(key, JSON.stringify(upgradesToSave));
         if (engine.playerSave) {
-          engine.playerSave.hqTree = normalizeHqTree(engine.hqTree);
+          engine.playerSave.hqTree = hqTreeToSave;
           engine.saveRepo?.savePlayerSave?.(engine.playerSave);
         }
       } else {
@@ -87,7 +92,7 @@ export class ProfileSaveController {
           key,
           JSON.stringify({
             ...upgradesToSave,
-            hqTree: normalizeHqTree(engine.hqTree),
+            hqTree: hqTreeToSave,
           })
         );
       }
