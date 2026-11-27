@@ -4770,6 +4770,7 @@ html.campaign-hydrating .campaign-recon-square > * {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-height: 40px;
 }
 
 .garage-supply-title-wrap {
@@ -4786,16 +4787,41 @@ html.campaign-hydrating .campaign-recon-square > * {
   color: #f8fafc;
 }
 
+.garage-supply-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.garage-supply-unit {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.garage-supply-full-tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 0.04em;
+}
+
 .garage-supply-count {
   font-family: var(--font-mono, monospace);
   font-size: 14px;
   font-weight: 800;
+  line-height: 18px;
   color: var(--supply-color);
 }
 
 .garage-supply-count small,
 .garage-supply-sub {
   font-size: 12px;
+  line-height: 18px;
   color: #94a3b8;
   font-weight: 600;
 }
@@ -4995,7 +5021,9 @@ html.campaign-hydrating .campaign-recon-square > * {
 }
 
 .garage-supply-btn {
-  width: 108px;
+  width: auto;
+  min-width: 108px;
+  padding: 0 12px;
   height: 32px;
   box-sizing: border-box;
   display: inline-flex;
@@ -5003,6 +5031,16 @@ html.campaign-hydrating .campaign-recon-square > * {
   justify-content: center;
   gap: 5px;
   white-space: nowrap;
+}
+
+.garage-supply-actions .garage-supply-btn {
+  min-width: 52px;
+  padding: 0 10px;
+}
+
+.garage-supply-actions .garage-supply-btn.is-max {
+  min-width: 48px;
+  padding: 0 9px;
 }
 
 .garage-supply-plus {

@@ -131,7 +131,9 @@ export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front',
           <div class="garage-supply-card-top">
             <span class="garage-supply-icon">${glyph}</span>
             <div class="garage-supply-title-wrap">
-              <strong>${label}</strong>
+              <div class="garage-supply-title-row">
+                <strong>${label}</strong>
+              </div>
               <span class="garage-supply-sub">${modOwned ? t('INSTALLED') : t('NOT INSTALLED')}</span>
             </div>
             <button
@@ -142,6 +144,7 @@ export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front',
               ${modOwned ? t('INSTALLED') : `<span class="garage-supply-plus" aria-hidden="true">+</span><span>$${money(modPrice)}</span>`}
             </button>
           </div>
+          <div class="garage-supply-bar" aria-hidden="true"><i style="width:${modOwned ? 100 : 0}%"></i></div>
         </div>
       `;
     }
@@ -151,45 +154,46 @@ export function renderGarage(hud, upgrades, selected = 'cannon', view = 'front',
     const affordablePacks = Math.floor(credits / unitPrice);
     const maxPacks = Math.min(neededPacks, affordablePacks);
     const maxCost = maxPacks * unitPrice;
+    const primaryTitle = full
+      ? t('Magazine is full')
+      : !affordable
+      ? t('Insufficient credits (${cost})', { cost: money(unitPrice) })
+      : t('Buy {amount} for ${cost}', { amount: amountLabel, cost: money(unitPrice) });
+    const maxTitle = full
+      ? t('Magazine is full')
+      : maxPacks <= 0
+      ? t('Insufficient credits (${cost})', { cost: money(unitPrice) })
+      : t('Fill to max (${cost})', { cost: money(maxCost) });
 
     return `
       <div class="garage-supply-card supply-${kind} ${full ? 'is-full' : ''}">
         <div class="garage-supply-card-top">
           <span class="garage-supply-icon">${glyph}</span>
           <div class="garage-supply-title-wrap">
-            <strong>${label}</strong>
-            <span class="garage-supply-count">${count} <small>/ ${max}</small></span>
+            <div class="garage-supply-title-row">
+              <strong>${label}</strong>
+              <span class="garage-supply-unit">${amountLabel} · $${money(unitPrice)}</span>
+            </div>
+            <span class="garage-supply-count">${count} <small>/ ${max}</small>${full ? ` <span class="garage-supply-full-tag">· ${t('FULL')}</span>` : ''}</span>
           </div>
           <div class="garage-supply-actions">
-            ${full
-              ? `<span class="garage-row-max">✓ ${t('FULL')}</span>`
-              : neededPacks <= 1
-              ? `
-                <button
-                  class="garage-supply-btn"
-                  data-action="${action}"
-                  ${!affordable ? 'disabled' : ''}
-                >
-                  ${amountLabel} · $${money(unitPrice)}
-                </button>
-              `
-              : `
-                <button
-                  class="garage-supply-btn"
-                  data-action="${action}"
-                  ${!affordable ? 'disabled' : ''}
-                >
-                  ${amountLabel} · $${money(unitPrice)}
-                </button>
-                <button
-                  class="garage-supply-btn is-max"
-                  data-action="buy-max-supply"
-                  data-kind="${kind}"
-                  ${maxPacks <= 0 ? 'disabled' : ''}
-                >
-                  ${t('BUY MAX')} · $${money(maxCost)}
-                </button>
-              `}
+            <button
+              class="garage-supply-btn"
+              data-action="${action}"
+              title="${escape(primaryTitle)}"
+              ${full || !affordable ? 'disabled' : ''}
+            >
+              ${amountLabel}
+            </button>
+            <button
+              class="garage-supply-btn is-max"
+              data-action="buy-max-supply"
+              data-kind="${kind}"
+              title="${escape(maxTitle)}"
+              ${full || maxPacks <= 0 ? 'disabled' : ''}
+            >
+              ${t('MAX')}
+            </button>
           </div>
         </div>
         <div class="garage-supply-bar" aria-hidden="true"><i style="width:${pct}%"></i></div>

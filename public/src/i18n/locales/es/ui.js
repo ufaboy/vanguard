@@ -508,4 +508,7 @@ export default {
   "Sensors": "Sensores",
   "Detect enemies at longer range, even behind obstacles.": "Detecta enemigos a mayor distancia, incluso tras obstáculos.",
   "Through-cover": "Tras cobertura",
+  "Magazine is full": "Cargador lleno",
+  "Buy {amount} for ${cost}": "Comprar {amount} por ${cost}",
+  "Fill to max (${cost})": "Llenar al máximo (${cost})",
 };
