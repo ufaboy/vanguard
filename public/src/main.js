@@ -16,7 +16,6 @@ import { SECTORS, isContractMap } from './game/levels.js';
 import { GameStatus } from './game/types.js';
 import { PLAYER_TANK_CONFIG } from './game/vehicles/tanks.js';
 import {
-  APS,
   computeTankStats,
   CANNON_AMMO,
   getMaxApsAmmo,
@@ -134,10 +133,12 @@ const state = {
     playerHullAngle: 0,
     playerTurretAngle: 0,
     cameraAzimuth: Math.PI * 0.25,
-    apsAmmo: [...APS.INITIAL_PER_LAUNCHER],
-    apsTotal: 2,
+    apsOwned: false,
+    atgmOwned: false,
+    apsAmmo: [0, 0, 0, 0],
+    apsTotal: 0,
     apsMaxAmmo: getMaxApsAmmo(1),
-    missileAmmo: 2,
+    missileAmmo: 0,
     missileMaxAmmo: getMaxMissileAmmo(1),
     cannonAmmo: CANNON_AMMO.START_ROUNDS,
     cannonMaxAmmo: getMaxCannonAmmo(1),

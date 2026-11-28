@@ -472,16 +472,21 @@ export function renderBattlefieldHud({
         ? t('Launch Tactical Recon Drone to cursor [Key 3 / R]')
         : t('Buy & Install Tactical Recon Drone (${cost}) [Key 3 / R]', { cost: reconPrice });
 
-      const apsTotal = hud.apsTotal ?? 0;
-      const apsMax = hud.apsMaxAmmo ?? 0;
-      const apsJammed = Boolean(hud.apsJammed);
-      const apsReady = apsTotal > 0 && !apsJammed;
-      const apsValueText = apsJammed
+      const apsOwned = Boolean(hud.apsOwned);
+      const apsTotal = apsOwned ? (hud.apsTotal ?? 0) : 0;
+      const apsMax = apsOwned ? (hud.apsMaxAmmo ?? 0) : 0;
+      const apsJammed = apsOwned && Boolean(hud.apsJammed);
+      const apsReady = apsOwned && apsTotal > 0 && !apsJammed;
+      const apsValueText = !apsOwned
+        ? t('OFF')
+        : apsJammed
         ? t('JAM')
         : apsMax <= 0
         ? t('OFF')
         : `${apsTotal}<small>/${apsMax}</small>`;
-      const apsStateClass = apsJammed
+      const apsStateClass = !apsOwned
+        ? 'is-empty'
+        : apsJammed
         ? 'is-jammed'
         : apsReady
         ? 'tone-emerald is-ready'
@@ -582,7 +587,7 @@ export function renderBattlefieldHud({
         `);
       }
 
-      const defenseKey = `${canFireMissile}|${hud.missileAmmo}|${missileMax}|${apsValueText}|${apsStateClass}`;
+      const defenseKey = `${canFireMissile}|${hud.missileAmmo}|${missileMax}|${apsOwned}|${apsValueText}|${apsStateClass}`;
       if (defenseSlot.__defenseKey !== defenseKey) {
         defenseSlot.__defenseKey = defenseKey;
         setHtml(defenseSlot, `

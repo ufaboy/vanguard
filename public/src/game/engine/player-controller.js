@@ -186,6 +186,7 @@ export class PlayerController {
 
   addApsRounds(count) {
     const engine = this.engine;
+    if (!engine.apsOwned) return;
     const maxTotal = engine.getPlayerMaxApsAmmo ? engine.getPlayerMaxApsAmmo() : this.getPlayerMaxApsAmmo();
     distributeApsRounds(engine.apsAmmo, count, maxTotal);
     engine.syncApsVisuals?.();

@@ -361,8 +361,8 @@ export class PowerupsController {
       ?? (engine.getPlayerMaxRepairKitCharges ? engine.getPlayerMaxRepairKitCharges() : getMaxRepairKitCharges(engine.upgrades?.frame || 1));
     const needsShells = (Number(config.shells) || 0) > 0 && engine.cannonAmmo < maxCannon;
     const curAps = engine.apsAmmo.reduce((sum, r) => sum + r, 0);
-    const needsAps = (Number(config.aps) || 0) > 0 && curAps < maxAps;
-    const needsMissiles = (Number(config.missiles) || 0) > 0 && engine.missileAmmo < maxMissiles;
+    const needsAps = Boolean(engine.apsOwned) && (Number(config.aps) || 0) > 0 && curAps < maxAps;
+    const needsMissiles = Boolean(engine.atgmOwned) && (Number(config.missiles) || 0) > 0 && engine.missileAmmo < maxMissiles;
     const needsRepairKits =
       (Number(config.repairKits) || 0) > 0 && (engine.repairKitState?.charges ?? 0) < maxRepairKits;
     return needsShells || needsAps || needsMissiles || needsRepairKits;
@@ -503,6 +503,7 @@ export class PowerupsController {
         break;
 
       case POWERUP.APS:
+        if (!engine.apsOwned) break;
         if (engine.addApsRounds) {
           engine.addApsRounds(APS.PICKUP_ROUNDS);
         } else {
@@ -528,6 +529,7 @@ export class PowerupsController {
       }
 
       case POWERUP.MISSILE: {
+        if (!engine.atgmOwned) break;
         const maxMissiles = engine.getPlayerMaxMissileAmmo ? engine.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(engine.upgrades?.frame || 1);
         engine.missileAmmo = Math.min(
           maxMissiles,
