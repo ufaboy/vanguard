@@ -8,7 +8,7 @@ import { DURABILITY } from '../constants.js';
 import { markMaterialOwned } from '../render/dispose.js';
 import { FxTex, RAMP_FIRE, RAMP_HOT_SMOKE, RAMP_SMOKE, rand } from './atlas.js';
 
-export const DAMAGE_TIER = Object.freeze({
+const DAMAGE_TIER = Object.freeze({
   INTACT: 0, // 100% HP
   SCRATCHED: 1, // > 75% and < 100%
   DAMAGED: 2, // <= 75% and > 50%
