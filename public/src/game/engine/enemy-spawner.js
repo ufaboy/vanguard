@@ -683,6 +683,9 @@ export class EnemySpawnerController {
 
   updateSpawnerLogic(dt) {
     const { engine } = this;
+    if (engine.scriptedMode) {
+      return;
+    }
     if (engine.contractState) {
       return;
     }
