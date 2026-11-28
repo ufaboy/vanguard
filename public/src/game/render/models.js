@@ -386,11 +386,12 @@ function getTankGltfLoader(renderer) {
 }
 
 /**
- * Computes road connectivity, 2-lane divider mask, and wide-turn flag for a road cell.
+ * Computes road connectivity, 2-lane divider mask, and corner rounding type for a road cell.
  * @param {(r: number, c: number) => boolean} isRoad
  * @param {number} r
  * @param {number} c
- * @returns {{ roadMask: number, doubleLaneMask: number, wideTurn: boolean }}
+ * @param {number} [gridSize=40]
+ * @returns {{ roadMask: number, doubleLaneMask: number, cornerType: 'none'|'std'|'wide' }}
  */
 export function computeRoadCellMasks(isRoad, r, c, gridSize = 40) {
   const rawN = isRoad(r - 1, c);
@@ -407,12 +408,26 @@ export function computeRoadCellMasks(isRoad, r, c, gridSize = 40) {
     (e && n && s && !w && (isRoad(r - 1, c + 1) || isRoad(r + 1, c + 1)) ? 2 : 0) |
     (s && e && w && !n && (isRoad(r + 1, c + 1) || isRoad(r + 1, c - 1)) ? 4 : 0) |
     (w && n && s && !e && (isRoad(r - 1, c - 1) || isRoad(r + 1, c - 1)) ? 8 : 0);
-  const wideTurn =
-    (n && e && !s && !w && isRoad(r - 1, c + 1)) ||
-    (n && w && !s && !e && isRoad(r - 1, c - 1)) ||
-    (s && e && !n && !w && isRoad(r + 1, c + 1)) ||
-    (s && w && !n && !e && isRoad(r + 1, c - 1));
-  return { roadMask, doubleLaneMask, wideTurn };
+
+  let cornerType = 'none';
+  const isCorner =
+    (n && e && !s && !w) ||
+    (n && w && !s && !e) ||
+    (s && e && !n && !w) ||
+    (s && w && !n && !e);
+  if (isCorner) {
+    const dr = n ? -1 : 1;
+    const dc = e ? 1 : -1;
+    const diag = isRoad(r + dr, c + dc);
+    if (!diag) {
+      cornerType = 'std';
+    } else {
+      const armV = (r + dr * 2 < 0 || r + dr * 2 >= gridSize) || isRoad(r + dr * 2, c) || isRoad(r + dr * 2, c + dc);
+      const armH = (c + dc * 2 < 0 || c + dc * 2 >= gridSize) || isRoad(r, c + dc * 2) || isRoad(r + dr, c + dc * 2);
+      if (armV && armH) cornerType = 'wide';
+    }
+  }
+  return { roadMask, doubleLaneMask, cornerType };
 }
 
 export class ModelFactory extends TextureGenerator {
@@ -3592,9 +3607,9 @@ export class ModelFactory extends TextureGenerator {
    * @param {number} z
    * @param {number} neighborMask Bitmask of adjacent ROAD tiles (N=1, E=2, S=4, W=8).
    * @param {number} doubleLaneMask Bitmask indicating parallel second-lane direction (N=1, E=2, S=4, W=8).
-   * @param {boolean} wideTurn True when this 90-degree outer corner is part of a 2-lane turn.
+   * @param {'none'|'std'|'wide'} cornerType Corner rounding mode for 90-degree turns.
    */
-  createRoadBlock(x = 0, z = 0, neighborMask = 5, doubleLaneMask = 0, wideTurn = false) {
+  createRoadBlock(x = 0, z = 0, neighborMask = 5, doubleLaneMask = 0, cornerType = 'std') {
     if (!this.roadMats) {
       // Ground layers stack by height plus a tiny polygonOffsetUnits tie-break. Never use
       // polygonOffsetFactor here: it scales with the steep isometric depth slope and pulls the
@@ -3633,6 +3648,7 @@ export class ModelFactory extends TextureGenerator {
     const hasW = (neighborMask & 8) !== 0;
     const count = (hasN ? 1 : 0) + (hasE ? 1 : 0) + (hasS ? 1 : 0) + (hasW ? 1 : 0);
     const isCornerTurn = count === 2 && !(hasN && hasS) && !(hasE && hasW);
+    const wideTurn = cornerType === 'wide';
 
     const dashVGeo = this.sharedGeometry('PlaneGeometry', 0.1, 0.52);
     const dashHGeo = this.sharedGeometry('PlaneGeometry', 0.52, 0.1);
@@ -3645,7 +3661,7 @@ export class ModelFactory extends TextureGenerator {
       parent.add(dash);
     };
 
-    if (isCornerTurn) {
+    if (isCornerTurn && cornerType !== 'none') {
       const cornerKey = wideTurn ? 'wide' : 'std';
       this.roadCornerGeos ||= {};
       if (!this.roadCornerGeos[cornerKey]) {

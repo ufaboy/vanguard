@@ -480,20 +480,16 @@ export class Viewport3D {
   refreshRoadNeighbors(r, c) {
     if (!this.state) return;
     const size = this.state.size;
-    for (const [dr, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
-      const nr = r + dr;
-      const nc = c + dc;
-      if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
-      if (this.state.surfaceGrid[nr][nc] === TileType.ROAD || this.isRailCell(nr, nc)) {
-        this.updateCell(nr, nc, false);
-      }
-    }
-    for (const [dr, dc] of [[-1, -1], [-1, 1], [1, -1], [1, 1]]) {
-      const nr = r + dr;
-      const nc = c + dc;
-      if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
-      if (this.state.surfaceGrid[nr][nc] === TileType.ROAD) {
-        this.updateCell(nr, nc, false);
+    for (let dr = -2; dr <= 2; dr++) {
+      for (let dc = -2; dc <= 2; dc++) {
+        if (dr === 0 && dc === 0) continue;
+        const nr = r + dr;
+        const nc = c + dc;
+        if (nr < 0 || nr >= size || nc < 0 || nc >= size) continue;
+        const isOrtho = Math.abs(dr) + Math.abs(dc) === 1;
+        if (this.state.surfaceGrid[nr][nc] === TileType.ROAD || (isOrtho && this.isRailCell(nr, nc))) {
+          this.updateCell(nr, nc, false);
+        }
       }
     }
   }
@@ -548,8 +544,8 @@ export class Viewport3D {
         if (rr < 0 || rr >= size || cc < 0 || cc >= size) return false;
         return this.state.surfaceGrid[rr][cc] === TileType.ROAD || this.state.objectGrid[rr][cc] === TileType.BRIDGE;
       };
-      const { roadMask, doubleLaneMask, wideTurn } = computeRoadCellMasks(isRoad, r, c, size);
-      sMesh = this.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask, wideTurn);
+      const { roadMask, doubleLaneMask, cornerType } = computeRoadCellMasks(isRoad, r, c, size);
+      sMesh = this.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask, cornerType);
     } else if (surface === TileType.WATER) {
       sMesh = new THREE.Mesh(this.waterGeo, this.waterMat);
       sMesh.position.set(x, 0.01, z);
