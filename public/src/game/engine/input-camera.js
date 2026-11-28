@@ -8,12 +8,47 @@ import { t } from '../../i18n/index.js';
 const _plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const _intersectPoint = new THREE.Vector3();
 
-/** Manages DOM input bindings, camera presets, and camera tracking/shake. */
+export const DEFAULT_CAMERA_AZIMUTH = Math.PI * 0.25;
+const CAMERA_STEP_RAD = Math.PI * 0.5;
+const CAMERA_AZIMUTH_DAMP = 14.0;
+
+/** Manages DOM input bindings, camera presets, discrete 4-corner rotation, and camera tracking/shake. */
 export class InputCameraController {
   constructor(engine) {
     this.engine = engine;
     this.activeCanvasTouches = new Map();
     this.pinchPrevDist = null;
+    this._canvasRect = null;
+    this._pointerAimDirty = false;
+  }
+
+  refreshCanvasRect() {
+    const el = this.engine.renderer?.domElement;
+    this._canvasRect = el ? el.getBoundingClientRect() : null;
+  }
+
+  flushPointerAim() {
+    if (!this._pointerAimDirty || !this.hasPointerPos) return;
+    this._pointerAimDirty = false;
+    this.updateAimFromPointer({ clientX: this.pointerClientX, clientY: this.pointerClientY });
+    if (this.engine.airSupportTargeting) {
+      this.engine.airSupportController?.updateReticlePosition?.(this.engine.aimWorld.x, this.engine.aimWorld.z);
+    }
+  }
+
+  rotateCameraStep(steps = 1) {
+    const { engine } = this;
+    if (engine.isGarageOpen || engine.isAdPaused || engine.inspectMode) return engine.cameraAzimuth;
+    const baseTarget = Number.isFinite(engine.targetCameraAzimuth)
+      ? engine.targetCameraAzimuth
+      : engine.cameraAzimuth;
+    const currentIdx = Math.round((baseTarget - DEFAULT_CAMERA_AZIMUTH) / CAMERA_STEP_RAD);
+    const nextIdx = currentIdx + Math.sign(steps || 1);
+    engine.targetCameraAzimuth = normalizeAngleSigned(
+      DEFAULT_CAMERA_AZIMUTH + nextIdx * CAMERA_STEP_RAD
+    );
+    engine.emitHudUpdate?.();
+    return engine.targetCameraAzimuth;
   }
 
   getPinchDistance() {
@@ -25,7 +60,10 @@ export class InputCameraController {
   updateAimFromPointer(e) {
     const { engine } = this;
     if (engine.isMissileFpvActive?.()) return;
-    const rect = engine.renderer.domElement.getBoundingClientRect();
+    const rect =
+      this._canvasRect && this._canvasRect.width && this._canvasRect.height
+        ? this._canvasRect
+        : engine.renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     engine.mouseNdc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     engine.mouseNdc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -58,6 +96,15 @@ export class InputCameraController {
         return;
       }
       if (engine.status !== GameStatus.PLAYING && !engine.airSupportTargeting) return;
+      if (e.code === 'KeyQ') {
+        e.preventDefault();
+        this.rotateCameraStep(-1);
+        return;
+      } else if (e.code === 'KeyE') {
+        e.preventDefault();
+        this.rotateCameraStep(1);
+        return;
+      }
       if (engine.airSupportTargeting?.type === 'STRIKE') {
         if (e.code === 'Digit1') {
           e.preventDefault();
@@ -94,12 +141,10 @@ export class InputCameraController {
       } else if (e.code === 'Digit3' || e.code === 'KeyR') {
         e.preventDefault();
         engine.activateReconDroneAction();
-      } else if (e.code === 'KeyE') {
-        e.preventDefault();
+      } else if (e.code === 'KeyF') {
         if (engine.contractState) {
+          e.preventDefault();
           engine.contractDirector.interactObjective();
-        } else {
-          engine.firePlayerHomingMissile();
         }
       } else if (e.code === 'KeyN') {
         if (engine.survivalState) {
@@ -134,24 +179,14 @@ export class InputCameraController {
         }
       }
 
-      if (engine.cameraRotating) {
-        const dx = e.clientX - engine.cameraDragPrevX;
-        engine.cameraDragPrevX = e.clientX;
-        engine.cameraAzimuth = normalizeAngleSigned(engine.cameraAzimuth - dx * 0.0085);
-        return;
-      }
-
       if (e.pointerType === 'touch' && engine.activeAimPointerId !== e.pointerId) {
         return;
       }
 
-      this.updateAimFromPointer(e);
       this.pointerClientX = e.clientX;
       this.pointerClientY = e.clientY;
       this.hasPointerPos = true;
-      if (engine.airSupportTargeting) {
-        engine.airSupportController.updateReticlePosition(engine.aimWorld.x, engine.aimWorld.z);
-      }
+      this._pointerAimDirty = true;
     };
 
     engine.handlePointerDown = (e) => {
@@ -165,13 +200,6 @@ export class InputCameraController {
           engine.activeAimPointerId = null;
           return;
         }
-      }
-
-      if (e.button === 1 || (e.button === 0 && e.altKey)) {
-        e.preventDefault();
-        engine.cameraRotating = true;
-        engine.cameraDragPrevX = e.clientX;
-        return;
       }
 
       this.updateAimFromPointer(e);
@@ -230,10 +258,7 @@ export class InputCameraController {
         if (e.pointerId === engine.activeAimPointerId || e.pointerType !== 'touch') {
           engine.isMouseDown = false;
           engine.activeAimPointerId = null;
-          engine.cameraRotating = false;
         }
-      } else if (e.button === 1) {
-        engine.cameraRotating = false;
       }
     };
 
@@ -269,6 +294,7 @@ export class InputCameraController {
       engine.updateCameraProjection();
 
       engine.renderer.setSize(width, height, false);
+      this.refreshCanvasRect();
     };
 
     window.addEventListener('keydown', engine.handleKeyDown);
@@ -288,11 +314,21 @@ export class InputCameraController {
     window.addEventListener('pointercancel', engine.handlePointerUp);
     engine.handleContextMenu = (e) => e.preventDefault();
     canvas.addEventListener('contextmenu', engine.handleContextMenu);
+    engine.handlePageHide = () => engine.saveRepo?.flushPendingSave?.();
+    engine.handleVisibilityChange = () => {
+      if (typeof document !== 'undefined' && document.hidden) {
+        engine.saveRepo?.flushPendingSave?.();
+      }
+    };
+    window.addEventListener('pagehide', engine.handlePageHide);
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', engine.handleVisibilityChange);
+    }
+    this.refreshCanvasRect();
   }
 
   cycleCameraPreset(preset) {
     const { engine } = this;
-    engine.cameraAzimuth = Math.PI * 0.25;
     if (preset) {
       engine.cameraPreset = preset;
     } else {
@@ -412,6 +448,19 @@ export class InputCameraController {
       engine.status === GameStatus.VICTORY &&
       engine.victoryCinematicsTimer > 0 &&
       Boolean(engine.victoryCinematics);
+
+    let azimuthRotated = false;
+    if (!isVictoryOrbit && Number.isFinite(engine.targetCameraAzimuth)) {
+      const diff = normalizeAngleSigned(engine.targetCameraAzimuth - engine.cameraAzimuth);
+      if (Math.abs(diff) > 1e-4) {
+        const nextDiff = THREE.MathUtils.damp(0, diff, CAMERA_AZIMUTH_DAMP, dt);
+        engine.cameraAzimuth = normalizeAngleSigned(engine.cameraAzimuth + nextDiff);
+        azimuthRotated = true;
+      } else if (engine.cameraAzimuth !== engine.targetCameraAzimuth) {
+        engine.cameraAzimuth = engine.targetCameraAzimuth;
+        azimuthRotated = true;
+      }
+    }
 
     const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
     let targetX;
@@ -546,6 +595,13 @@ export class InputCameraController {
       engine.camCurrentLook.z + offsetZ + shakeZ
     );
     engine.camera.lookAt(engine.camCurrentLook.x, 0, engine.camCurrentLook.z);
+
+    if (azimuthRotated && this.hasPointerPos) {
+      this.updateAimFromPointer({ clientX: this.pointerClientX, clientY: this.pointerClientY });
+      if (engine.airSupportTargeting) {
+        engine.airSupportController?.updateReticlePosition?.(engine.aimWorld.x, engine.aimWorld.z);
+      }
+    }
   }
 }
 

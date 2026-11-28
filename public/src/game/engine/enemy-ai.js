@@ -4,7 +4,10 @@ import {
   DURABILITY,
   ENEMY_VISIBILITY,
   HYDRA,
+  PLAYER_UPGRADES,
+  TANK_RIDE_HEIGHT,
   TITAN,
+  UPGRADE,
 } from '../constants.js';
 import { EnemyClass, TileType } from '../types.js';
 import { SECTOR_BOSS_CONFIGS } from '../vehicles/tanks.js';
@@ -12,6 +15,12 @@ import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { deckClearance } from '../render/models.js';
 import { cellMovement, doesTileBlockLineOfSight } from '../terrains/layers.js';
 import { inContactRange, updateAbilities } from '../abilities/index.js';
+import {
+  getTankDamageTier,
+  stepTankDamageParticles,
+  syncTankDamageMaterials,
+} from '../effects/tank-damage-fx.js';
+import { computeSubsystemModifiers } from '../../sim/subsystems.js';
 import { normalizeAngleSigned, stepAngleTowards } from '../../sim/ai.js';
 import {
   ACTION_KIND,
@@ -75,6 +84,7 @@ export class EnemyAiController {
     if (dist <= 0.5) return true;
 
     if (engine.isSegmentInSmoke(x0, z0, x1, z1)) return false;
+    if (engine.trainController?.blocksLineOfSight?.(x0, z0, x1, z1)) return false;
 
     const half = (GRID_SIZE * TILE_SIZE) / 2;
     const targetCol = Math.floor((x1 + half) / TILE_SIZE);
@@ -102,27 +112,11 @@ export class EnemyAiController {
   hasEnemyBaseLineOfSight(x0, z0) {
     const engine = this.engine;
     if (!engine.enemyBaseAlive) return false;
-    let foundCell = false;
-    if (engine.grid && engine.grid.length > 0) {
-      for (let r = 0; r < engine.grid.length; r++) {
-        const rowCells = engine.grid[r];
-        if (!rowCells) continue;
-        for (let c = 0; c < rowCells.length; c++) {
-          const cell = rowCells[c];
-          if (cell?.type === TileType.ENEMY_BASE && cell.hp > 0) {
-            foundCell = true;
-            const pos = engine.gridToWorld(r, c);
-            if (engine.isPointRevealedByReconDrone?.(pos.x, pos.z)) return true;
-            if (this.hasLineOfSight(x0, z0, pos.x, pos.z, TileType.ENEMY_BASE)) return true;
-          }
-        }
-      }
-    }
-    if (foundCell) return false;
-    const center = this.getEnemyBaseCenter();
-    if (!center) return false;
-    if (engine.isPointRevealedByReconDrone?.(center.x, center.z)) return true;
-    return this.hasLineOfSight(x0, z0, center.x, center.z, TileType.ENEMY_BASE);
+    const baseCell = this.enemyBaseCell();
+    if (!baseCell) return false;
+    const pos = engine.gridToWorld(baseCell.row, baseCell.col);
+    if (engine.isPointRevealedByReconDrone?.(pos.x, pos.z)) return true;
+    return this.hasLineOfSight(x0, z0, pos.x, pos.z, TileType.ENEMY_BASE);
   }
 
   isPointRevealedByPlayerBase(x, z) {
@@ -170,6 +164,7 @@ export class EnemyAiController {
       spotter.radioAlertRadius ?? ENEMY_VISIBILITY.RADIO_ALERT_RADIUS;
     spotter.radioCooldown = ENEMY_VISIBILITY.RADIO_BROADCAST_COOLDOWN_SEC;
 
+    let staggerIdx = 0;
     for (const ally of engine.enemies) {
       if (ally === spotter) continue;
       const distToAlly = Math.hypot(ally.x - spotter.x, ally.z - spotter.z);
@@ -184,7 +179,7 @@ export class EnemyAiController {
             z: targetZ + Math.sin(scatterAngle) * scatterDist,
           };
           ally.alertTimer = ENEMY_VISIBILITY.ALERT_PURSUIT_DURATION_SEC;
-          ally.aiTimer = 0;
+          ally.aiTimer = staggerIdx++ * 0.035;
           if (ally.ai) {
             ally.ai.state = 'alert_move';
             ally.ai.lastKnownTargetPos = { x: targetX, z: targetZ };
@@ -502,7 +497,7 @@ export class EnemyAiController {
       e.targetDirZ = 0;
       return;
     }
-    if (e.aiTimer <= 0 || plan.pathIdx >= plan.path.length) {
+    if (e.aiTimer <= 0 || !plan.path || (plan.path.length > 0 && plan.pathIdx >= plan.path.length)) {
       e.aiTimer = 1.0;
       const from = { row: Math.floor(fz), col: Math.floor(fx) };
       const occupiedCells = this.getOccupiedCellsExcluding(e);
@@ -628,7 +623,18 @@ export class EnemyAiController {
     if (out.direct) {
       let ang = Math.atan2(engine.playerX - e.x, engine.playerZ - e.z);
       if (brain.role === 'hunter') {
-        ang += Math.sin(elapsed * Math.PI * 2.5 + e.id) * HUNTER_ZIGZAG_RAD;
+        const zigzagAng = ang + Math.sin(elapsed * Math.PI * 2.5 + e.id) * HUNTER_ZIGZAG_RAD;
+        const probeDist = 1.6;
+        const probeBlocked = engine.checkTankWallCollision?.(
+          e.x + Math.sin(zigzagAng) * probeDist,
+          e.z + Math.cos(zigzagAng) * probeDist,
+          0.72,
+          Boolean(e.stats?.canCrossWater),
+          false
+        );
+        if (canSeePlayer && !probeBlocked) {
+          ang = zigzagAng;
+        }
         if (Math.floor(elapsed * 6) !== e.chargeBlinkTick) {
           e.chargeBlinkTick = Math.floor(elapsed * 6);
           if (e.chargeBlinkTick % 2 === 0) engine.spawnSparks(e.x, 1.2, e.z, 0xef4444, 4);
@@ -893,11 +899,14 @@ export class EnemyAiController {
    */
   syncEnemyVisibility(e, dt, distToPlayer) {
     const engine = this.engine;
+    const radarSpec = PLAYER_UPGRADES[UPGRADE.RADAR][(engine.effectiveUpgrades?.radar || 1) - 1];
+    const radarRevealWorld = (radarSpec?.throughObstacleCells || 0) * TILE_SIZE;
+    const revealedByRadar = !engine.jammerActive && radarRevealWorld > 0 && distToPlayer <= radarRevealWorld;
     if (e.enemyClass === EnemyClass.STEALTH && e.rig.stealthMaterials) {
       const spottedByDrone = Boolean(engine.isPointRevealedByReconDrone?.(e.x, e.z));
       const spottedByHq = this.isPointRevealedByPlayerBase(e.x, e.z);
-      const hasLos = !engine.hardMode || this.hasPlayerLineOfSight(e);
-      const revealed = spottedByDrone || spottedByHq || (hasLos && (distToPlayer < 6.2 || e.stealthRevealTimer > 0));
+      const hasLos = !engine.hardMode || this.hasPlayerLineOfSight(e) || revealedByRadar;
+      const revealed = spottedByDrone || spottedByHq || revealedByRadar || (hasLos && (distToPlayer < 6.2 || e.stealthRevealTimer > 0));
       const moving = Math.hypot(e.targetDirX, e.targetDirZ) > 0.05;
       const targetOpacity = !hasLos && !spottedByDrone && !spottedByHq ? 0.0 : revealed ? 0.96 : moving ? 0.3 : 0.12;
       let currentOpacity = 0;
@@ -912,7 +921,7 @@ export class EnemyAiController {
         e.rig.hpBarFill.visible = engine.aiDebugMode;
       }
     } else if (e.rig?.fadeMaterials?.length) {
-      const visibleToPlayer = !engine.hardMode || this.hasPlayerLineOfSight(e);
+      const visibleToPlayer = !engine.hardMode || this.hasPlayerLineOfSight(e) || revealedByRadar;
       const targetOpacity = visibleToPlayer ? 1.0 : 0.0;
       const prevOpacity = e.visibilityOpacity ?? 1.0;
       const nextOpacity = engine.hardMode
@@ -966,7 +975,11 @@ export class EnemyAiController {
         e.phaseShieldMesh.visible = false;
       }
 
-      if (empStunned) {
+      if (e.empTimer > 0) {
+        e.empTimer = Math.max(0, e.empTimer - dt);
+      }
+
+      if (empStunned || (e.empTimer || 0) > 0) {
         // Keep fog-of-war / stealth / recon drone visibility responsive while stunned.
         const distToPlayer = Math.hypot(engine.playerX - e.x, engine.playerZ - e.z);
         this.syncEnemyVisibility(e, dt, distToPlayer);
@@ -1171,11 +1184,18 @@ export class EnemyAiController {
 
         const hpRatio = e.hp / e.maxHp;
         const lowSpeedMult =
-          !e.isBoss && hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
+          !e.isBoss && hpRatio <= DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
+        const subMods = !e.isBoss && e.subsystems ? computeSubsystemModifiers(e.subsystems) : null;
         const { row: eRow, col: eCol } = engine.worldToGrid?.(e.x, e.z) ?? { row: 0, col: 0 };
         const eCell = engine.grid?.[eRow]?.[eCol];
+        const canCrushSandbags = Boolean(
+          e.isBoss || e.loadout?.optionalEquipment?.includes('DOZER_BLADE')
+        );
         if (eCell?.type === TileType.RUBBLE && e.loadout?.optionalEquipment?.includes('DOZER_BLADE')) {
           engine.terrainDestruction?.clearRubbleCell?.(eCell);
+        }
+        if (eCell?.type === TileType.SANDBAGS && canCrushSandbags) {
+          engine.terrainDestruction?.crushSandbagsCell?.(eCell);
         }
         const eAllTerrain = Boolean(e.stats.canHover || e.stats.allTerrain);
         const tileMove = cellMovement(eCell, { allTerrain: eAllTerrain, isBoss: e.isBoss, isEnemy: true });
@@ -1183,10 +1203,17 @@ export class EnemyAiController {
           eCell?.type === TileType.WATER && !e.stats.canHover
             ? e.stats.waterSpeedMultiplier || 0.6
             : tileMove?.speedMultiplier ?? 1.0;
+        const chargeSpeedMult = e.brainCharging ? 1.25 : 1.0;
         // Rough ground (STONE) caps the top speed in cells per second instead of scaling it.
         const worldSpeed = Math.min(
           (tileMove?.maxSpeedCells ?? Infinity) * TILE_SIZE,
-          e.stats.moveSpeed * TILE_SIZE * lowSpeedMult * terrainSpeedMult * dashSpeedMult
+          e.stats.moveSpeed *
+            TILE_SIZE *
+            lowSpeedMult *
+            (subMods ? subMods.speedMultiplier : 1.0) *
+            terrainSpeedMult *
+            dashSpeedMult *
+            chargeSpeedMult
         );
 
         if (e.yieldTimer > 0) {
@@ -1197,6 +1224,14 @@ export class EnemyAiController {
           }
         }
 
+        // HOWITZER holds position while aiming an indirect-fire shot.
+        if (e.indirectAim) {
+          e.targetDirX = 0;
+          e.targetDirZ = 0;
+          e.brainHolding = true;
+        }
+
+        const hullTurnRate = getEnemyHullTurnRate(e) * (subMods ? subMods.turnMultiplier : 1.0);
         if (e.enemyClass === EnemyClass.BOSS_TITAN && canSeePlayer) {
           const turnRate = e.titanOverload ? TITAN.HULL_TURN_RATE_OVERLOAD : TITAN.HULL_TURN_RATE;
           const bearingToPlayer = Math.atan2(toPlayerX, toPlayerZ);
@@ -1207,7 +1242,7 @@ export class EnemyAiController {
         } else if (Math.hypot(e.targetDirX, e.targetDirZ) > 0.05) {
           e.hullHoldReactTimer = null;
           const desiredHull = Math.atan2(e.targetDirX, e.targetDirZ);
-          e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+          e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, hullTurnRate * dt);
         } else if (e.brainHolding && canSeePlayer) {
           const desiredHull = Math.atan2(toPlayerX, toPlayerZ);
           const angleDiff = Math.abs(normalizeAngleSigned(desiredHull - e.hullAngle));
@@ -1218,11 +1253,11 @@ export class EnemyAiController {
             if (e.hullHoldReactTimer > 0) {
               e.hullHoldReactTimer = Math.max(0, e.hullHoldReactTimer - dt);
             } else {
-              e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+              e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, hullTurnRate * dt);
             }
           } else {
             e.hullHoldReactTimer = null;
-            e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+            e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, hullTurnRate * dt);
           }
         } else {
           e.hullHoldReactTimer = null;
@@ -1254,7 +1289,7 @@ export class EnemyAiController {
         }
         let blocked = false;
         if (
-          !engine.checkTankWallCollision?.(nextX, e.z, radius, e.stats.canCrossWater) &&
+          !engine.checkTankWallCollision?.(nextX, e.z, radius, e.stats.canCrossWater, canCrushSandbags) &&
           !engine.checkTankEnemyCollision?.(e, nextX, e.z, radius) &&
           Math.hypot(nextX - engine.playerX, e.z - engine.playerZ) > radius + 0.72
         ) {
@@ -1269,13 +1304,16 @@ export class EnemyAiController {
           if (e.isBoss) engine.crushBossObstacles?.(e.x, nextZ, radius);
         }
         if (
-          !engine.checkTankWallCollision?.(e.x, nextZ, radius, e.stats.canCrossWater) &&
+          !engine.checkTankWallCollision?.(e.x, nextZ, radius, e.stats.canCrossWater, canCrushSandbags) &&
           !engine.checkTankEnemyCollision?.(e, e.x, nextZ, radius) &&
           Math.hypot(e.x - engine.playerX, nextZ - engine.playerZ) > radius + 0.72
         ) {
           e.z = nextZ;
         } else {
           blocked = true;
+        }
+        if (isTryingToMove) {
+          engine.terrainDestruction?.crushPropsNear?.(e.x, e.z, radius + 0.25);
         }
 
         const distMoved = Math.hypot(e.x - startX, e.z - startZ);
@@ -1286,13 +1324,10 @@ export class EnemyAiController {
             e.aiTimer = 0;
           }
           e.stuckTimer = (e.stuckTimer || 0) + dt;
-          // An unarmed rammer that sees the player keeps its charge heading instead of re-planning.
-          if (e.armed !== false || !canSeePlayer) {
-            e.aiTimer = 0;
-          }
+          e.aiTimer = 0;
 
-          // 1. Check if blocked by a destructible wall directly ahead:
-          if (e.stuckTimer > 0.35 && !e.breachTarget) {
+          // 1. Check if blocked by a destructible wall directly ahead (armed tanks only):
+          if (e.armed !== false && e.stuckTimer > 0.35 && !e.breachTarget) {
             const checkDist = radius + 0.85;
             const aheadX = e.x + (e.targetDirX || Math.sin(e.hullAngle)) * checkDist;
             const aheadZ = e.z + (e.targetDirZ || Math.cos(e.hullAngle)) * checkDist;
@@ -1380,11 +1415,25 @@ export class EnemyAiController {
 
       const enemyHoverY = e.stats.canHover
         ? 0.05 + Math.sin(elapsed * 4.0 + e.id) * 0.012
-        : 0;
+        : TANK_RIDE_HEIGHT;
       e.rig.root.position.set(e.x, enemyHoverY, e.z);
       e.rig.hull.rotation.y = e.hullAngle;
       engine.driveGear?.(e.rig, e, e.x, e.z, e.hullAngle);
       engine.syncEnemyTurretVisuals?.(e, dt);
+
+      const enemyDmgTier = getTankDamageTier(e.hp, e.maxHp);
+      syncTankDamageMaterials(e.rig, enemyDmgTier);
+      if (e.rig.root.visible !== false) {
+        stepTankDamageParticles(engine.fx, e, dt, {
+          x: e.x,
+          y: enemyHoverY,
+          z: e.z,
+          hullAngle: e.hullAngle,
+          tier: enemyDmgTier,
+          scale: e.isBoss ? 1.45 : 1.0,
+          subsystems: e.subsystems,
+        });
+      }
 
       if (e.rig.hpBarFill) {
         const ratio = Math.max(0.01, e.hp / e.maxHp);

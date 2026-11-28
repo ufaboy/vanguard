@@ -8,91 +8,34 @@
   "gameMode": "extermination",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 20
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": true
-  },
-  "completionReward": {
-    "credits": 1350
-  },
-  "environment": {
-    "theme": "urban",
-    "tint": "#f5e2c4",
-    "fogColor": "#7d7668",
-    "groundColor": "#8f8674"
-  },
+  "playerSpawnCell": {"row":35,"col":20},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":true},
+  "completionReward": {"credits":1350},
+  "environment": {"theme":"urban","tint":"#f5e2c4","fogColor":"#7d7668","groundColor":"#8f8674"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Asymmetric urban battleground contrasting the tight medieval alleys of the Gothic Quarter and tree-lined La Rambla in the west against the chamfered octagonal Eixample blocks in the east, anchored by the Sagrada Familia basilica complex in the center.",
     "breaches": [
       {
         "name": "Gothic Quarter Cloister Wall",
-        "cells": [
-          {
-            "row": 18,
-            "col": 6
-          },
-          {
-            "row": 18,
-            "col": 7
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 6
-        },
-        "end": {
-          "row": 19,
-          "col": 6
-        },
+        "cells": [{"row":18,"col":6},{"row":18,"col":7}],
+        "start": {"row":17,"col":6},
+        "end": {"row":19,"col":6},
         "purpose": "Blast through the cloister brick wall to link Placa del Rei directly to the southern Gothic alleys."
       },
       {
         "name": "Eixample Courtyard Passage",
-        "cells": [
-          {
-            "row": 21,
-            "col": 29
-          }
-        ],
-        "start": {
-          "row": 20,
-          "col": 29
-        },
-        "end": {
-          "row": 22,
-          "col": 29
-        },
+        "cells": [{"row":21,"col":29}],
+        "start": {"row":20,"col":29},
+        "end": {"row":22,"col":29},
         "purpose": "Open the northern wall of the Eixample octagonal block to access its interior garden cache and bypass the avenue corner."
       },
       {
         "name": "Ciutadella Gate",
-        "cells": [
-          {
-            "row": 30,
-            "col": 25
-          },
-          {
-            "row": 30,
-            "col": 26
-          }
-        ],
-        "start": {
-          "row": 29,
-          "col": 25
-        },
-        "end": {
-          "row": 31,
-          "col": 25
-        },
+        "cells": [{"row":30,"col":25},{"row":30,"col":26}],
+        "start": {"row":29,"col":25},
+        "end": {"row":31,"col":25},
         "purpose": "Clear the brick barricade east of the central boulevard to open a direct flank toward Ciutadella Park."
       }
     ],
@@ -113,442 +56,74 @@
       ]
     }
   },
-  "landmarks3d": [
-    {
-      "kind": "SAGRADA_FAMILIA",
-      "row": 14,
-      "col": 19
-    },
-    {
-      "kind": "BARCELONA_CATHEDRAL",
-      "row": 11,
-      "col": 8
-    }
-  ],
   "decoration": {
     "version": 1,
     "seed": 360198,
     "theme": "urban",
     "zones": [
-      {
-        "id": "gothic-quarter",
-        "bounds": [
-          1,
-          0,
-          27,
-          12
-        ],
-        "surface": "pavers",
-        "density": 0.3,
-        "details": [
-          "cracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "sagrada-plaza",
-        "bounds": [
-          11,
-          16,
-          24,
-          25
-        ],
-        "surface": "pavers",
-        "density": 0.2,
-        "details": [
-          "cracks",
-          "leaves"
-        ]
-      },
-      {
-        "id": "eixample-grid",
-        "bounds": [
-          1,
-          26,
-          27,
-          39
-        ],
-        "surface": "asphalt",
-        "density": 0.2,
-        "details": [
-          "patches",
-          "tracks"
-        ]
-      },
-      {
-        "id": "hq-plaza",
-        "bounds": [
-          35,
-          17,
-          39,
-          22
-        ],
-        "surface": "concrete",
-        "density": 0.15,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      }
+      {"id":"gothic-quarter","bounds":[1,0,27,12],"surface":"pavers","density":0.3,"details":["cracks","rubble"]},
+      {"id":"sagrada-plaza","bounds":[11,16,24,25],"surface":"pavers","density":0.2,"details":["cracks","leaves"]},
+      {"id":"eixample-grid","bounds":[1,26,27,39],"surface":"asphalt","density":0.2,"details":["patches","tracks"]},
+      {"id":"hq-plaza","bounds":[35,17,39,22],"surface":"concrete","density":0.15,"details":["cracks","tracks"]}
     ],
-    "paths": [
-      {
-        "id": "rambla-promenade",
-        "points": [
-          [
-            1,
-            14
-          ],
-          [
-            33,
-            14
-          ]
-        ],
-        "width": 2,
-        "surface": "pavers",
-        "marking": "none"
-      }
-    ],
-    "landmarks": [
-      {
-        "id": "label-gothic",
-        "kind": "label",
-        "row": 17,
-        "col": 7,
-        "size": 1.4,
-        "text": "GOTHIC QUARTER"
-      },
-      {
-        "id": "label-rambla",
-        "kind": "label",
-        "row": 25,
-        "col": 14,
-        "size": 1.4,
-        "text": "LA RAMBLA"
-      },
-      {
-        "id": "label-sagrada",
-        "kind": "label",
-        "row": 23,
-        "col": 20,
-        "size": 1.5,
-        "text": "SAGRADA FAMILIA"
-      },
-      {
-        "id": "label-eixample",
-        "kind": "label",
-        "row": 19,
-        "col": 32,
-        "size": 1.4,
-        "text": "EIXAMPLE"
-      },
-      {
-        "id": "crosswalk-rambla",
-        "kind": "crosswalk",
-        "row": 9,
-        "col": 14,
-        "size": 2,
-        "rotation": 90
-      },
-      {
-        "id": "crosswalk-eixample",
-        "kind": "crosswalk",
-        "row": 19,
-        "col": 32,
-        "size": 2,
-        "rotation": 90
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "hq-clear-lane",
-        "bounds": [
-          36,
-          17,
-          39,
-          22
-        ]
-      }
-    ]
+    "paths": [{"id":"rambla-promenade","points":[[1,14],[33,14]],"width":2,"surface":"pavers","marking":"none"}],
+    "exclusions": [{"id":"hq-clear-lane","bounds":[36,17,39,22]}]
   },
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
     "entrances": [
-      {
-        "id": "gothic-north-rambla",
-        "row": 1,
-        "col": 14
-      },
-      {
-        "id": "sagrada-north-avenue",
-        "row": 1,
-        "col": 21
-      },
-      {
-        "id": "eixample-diagonal",
-        "row": 1,
-        "col": 32
-      }
+      {"id":"gothic-north-rambla","row":1,"col":14},
+      {"id":"sagrada-north-avenue","row":1,"col":21},
+      {"id":"eixample-diagonal","row":1,"col":32}
     ],
     "encounters": [
       {
         "id": "gothic-vanguard",
         "label": "GOTHIC VANGUARD: Consortium scouts and flamethrower units are pushing down La Rambla and the Gothic Quarter alleys.",
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "FLAMETHROWER",
-          "SAPPER",
-          "STANDARD",
-          "STEALTH",
-          "SCOUT"
-        ],
-        "initialCells": [
-          {
-            "row": 1,
-            "col": 14
-          },
-          {
-            "row": 1,
-            "col": 21
-          },
-          {
-            "row": 1,
-            "col": 32
-          },
-          {
-            "row": 7,
-            "col": 15
-          }
-        ],
-        "entrances": [
-          "gothic-north-rambla",
-          "sagrada-north-avenue"
-        ],
-        "patrolRoute": [
-          {
-            "row": 9,
-            "col": 14
-          },
-          {
-            "row": 16,
-            "col": 14
-          },
-          {
-            "row": 21,
-            "col": 14
-          },
-          {
-            "row": 28,
-            "col": 15
-          },
-          {
-            "row": 33,
-            "col": 20
-          }
-        ],
+        "enemies": ["SCOUT","STANDARD","SCOUT","STANDARD","FLAMETHROWER","SAPPER","STANDARD","STEALTH","SCOUT"],
+        "initialCells": [{"row":1,"col":14},{"row":1,"col":21},{"row":1,"col":32},{"row":7,"col":15}],
+        "entrances": ["gothic-north-rambla","sagrada-north-avenue"],
+        "patrolRoute": [{"row":9,"col":14},{"row":16,"col":14},{"row":21,"col":14},{"row":28,"col":15},{"row":33,"col":20}],
         "recoverySec": 4
       },
       {
         "id": "eixample-assault",
         "label": "EIXAMPLE ASSAULT: Heavy armor, artillery, and ECM jammers are advancing through the chamfered Eixample blocks.",
-        "enemies": [
-          "STANDARD",
-          "ARMOR",
-          "HOWITZER",
-          "ENGINEER",
-          "STRIKER",
-          "STANDARD",
-          "JAMMER",
-          "ARMOR",
-          "FLAMETHROWER"
-        ],
-        "entrances": [
-          "sagrada-north-avenue",
-          "eixample-diagonal"
-        ],
-        "patrolRoute": [
-          {
-            "row": 9,
-            "col": 32
-          },
-          {
-            "row": 19,
-            "col": 32
-          },
-          {
-            "row": 27,
-            "col": 32
-          },
-          {
-            "row": 33,
-            "col": 25
-          },
-          {
-            "row": 33,
-            "col": 20
-          }
-        ],
+        "enemies": ["STANDARD","ARMOR","HOWITZER","ENGINEER","STRIKER","STANDARD","JAMMER","ARMOR","FLAMETHROWER"],
+        "entrances": ["sagrada-north-avenue","eixample-diagonal"],
+        "patrolRoute": [{"row":9,"col":32},{"row":19,"col":32},{"row":27,"col":32},{"row":33,"col":25},{"row":33,"col":20}],
         "recoverySec": 5
       },
       {
         "id": "basilica-finale",
         "label": "BASILICA FINALE: Coordinated Consortium strike teams are converging on Sagrada Familia from all northern avenues.",
-        "enemies": [
-          "ARMOR",
-          "STRIKER",
-          "HOWITZER",
-          "STEALTH",
-          "ARMOR",
-          "SAPPER",
-          "FLAMETHROWER",
-          "STRIKER"
-        ],
-        "entrances": [
-          "gothic-north-rambla",
-          "sagrada-north-avenue",
-          "eixample-diagonal"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 21
-          },
-          {
-            "row": 16,
-            "col": 25
-          },
-          {
-            "row": 24,
-            "col": 20
-          },
-          {
-            "row": 28,
-            "col": 20
-          },
-          {
-            "row": 33,
-            "col": 20
-          }
-        ],
+        "enemies": ["ARMOR","STRIKER","HOWITZER","STEALTH","ARMOR","SAPPER","FLAMETHROWER","STRIKER"],
+        "entrances": ["gothic-north-rambla","sagrada-north-avenue","eixample-diagonal"],
+        "patrolRoute": [{"row":10,"col":21},{"row":16,"col":25},{"row":24,"col":20},{"row":28,"col":20},{"row":33,"col":20}],
         "recoverySec": 0
       }
     ]
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "FLAMETHROWER",
-    "SAPPER",
-    "STANDARD",
-    "STEALTH",
-    "SCOUT",
-    "STANDARD",
-    "ARMOR",
-    "HOWITZER",
-    "ENGINEER",
-    "STRIKER",
-    "STANDARD",
-    "JAMMER",
-    "ARMOR",
-    "FLAMETHROWER",
-    "ARMOR",
-    "STRIKER",
-    "HOWITZER",
-    "STEALTH",
-    "ARMOR",
-    "SAPPER",
-    "FLAMETHROWER",
-    "STRIKER"
-  ],
-  "surfaceLayout": [
-    ".....R........RR.....RR.........RR......",
-    ".....R.......VRR.....RR.........RR......",
-    ".....R.......VRR.....RRVV..VVV..RR.VVVV.",
-    ".....R.......VRR.....RRVV..VVV..RR.VVVV.",
-    ".....R.......VRR.....RRVV..VVV..RR.VVVV.",
-    ".....R.......VRR.....RRVV..VVV..RR.VVVV.",
-    ".....R.......VRR.....RRVV..VVV..RR.VVVV.",
-    ".....R.......VRR.....RRVV.......RR......",
-    ".....R.......VRR.....RR.........RR......",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    ".....R........RRR........RR.....RR......",
-    ".....R.......VRRR........RR.....RR......",
-    ".....R.......VRRR........RR.VVV.RR.VVVV.",
-    ".....R.......VRRR.......WRR.VVV.RR.VVVV.",
-    "RRRRRRRRRRRRRVRRR.......WRR.VVV.RR.VVVV.",
-    ".....RV......VRRR........RR.VVV.RR.VVVV.",
-    ".....RV......VRRR........RR.....RR......",
-    ".....R.......VRRR........RR.....RR......",
-    ".....R.......VRRR........RRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRR........RRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRVVVVVVVVRR.....RR......",
-    ".....R.......VRRRVVVVVVVVRR.VVV.RR.VVVV.",
-    ".....R..VVV..VRRRVVVVVVVVRR.VVV.RR.VVVV.",
-    ".....R..VVV..VRRR..RR....RR.VVV.RR.VVVV.",
-    ".....R.......VRR...RR.......VVV.RR.VVVV.",
-    ".....R.......VRR...RR...........RR......",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "......R.......RR...RR...........RR......",
-    "......R.......RR...RR...........RR.VVV..",
-    "..LL..R.......RR...RR...........RR.VVV..",
-    "......R.......RR...RR...........RR......",
-    "......RRRRRRRRRRRRRRRRRRRRRRRRRRRR......",
-    "......RRRRRRRRRRRRRRRRRRRRRRRRRRRR......",
-    ".VVVVVVVVVVVV.VVV..RR....VVVVVVVVVVVVVV.",
-    ".VVVVVVVVVVVV.VVV........VVVVVVVVVVVVVV.",
-    ".VVVVVVVVVVVV.VVV........VVVVVVVVVVVVVV.",
-    ".VVVVVVVVVVVV............VVVVVVVVVVVVVV.",
-    "........................................"
-  ],
-  "objectLayout": [
-    "........................................",
-    ".AAA...PPPP.......Q........PPP.....AAQA.",
-    ".AAA...PPPP..F...PPP...F..P...P...A....A",
-    ".AAA...PPPP......PPP....F.P.F.P...A.F..A",
-    ".............F...PPP........F.P......F.A",
-    ".PPP...AAAAA.....PPP...F..P..FP...A.F..A",
-    ".PPP...AAAAA.F....B.....F.P...P...A....A",
-    ".PPP...AAAAA.F....B........P.P.....AAAA.",
-    "........................................",
-    "........................................",
-    "........................................",
-    ".PPP...A...A............................",
-    ".PPP...A...A.F..............PPP....AAAA.",
-    ".PPP...AAAAA......T....T...P...P..A....A",
-    ".............F....C....C.....F.P....F..A",
-    "..................C....C...P.F.P..A..F.A",
-    ".AAA...Q.PPP.F.............P...P..A....A",
-    ".AAA..F..PPP......C....C....P.P....A.AA.",
-    ".AAA..BB.PPP.F....CPPPPC................",
-    "..................T....T................",
-    "........................................",
-    ".................F..Q..F....PBP....AAAA.",
-    ".AAA...PPPPP.F....F.KK..F..P...P..A....A",
-    ".AAA...P.F.P...............PQF.P....FQ.A",
-    ".AAA.....F.P.F.............P.F.P..A..F.A",
-    ".......PPPPP...............P...P..A....A",
-    ".............F..............P.P....AA.A.",
-    "........................................",
-    "........................................",
-    ".PPPP.......X...BBX..XBB...AAAA...PPPPP.",
-    ".PPPP...AAAAX............BBAAAA.....F.P.",
-    ".PDPP...AAAA....K......K...AAAA...P.F.P.",
-    "........AAAA.....U....U...........PPPPP.",
-    "..Q.....................................",
-    "........................................",
-    "..F........F....F.......D.F......F......",
-    "...FF...F......F...........F.F..K.F..F..",
-    "..F..F...FF.......CCCC....F...F....F....",
-    ".......................Q................",
-    "...................HH..................."
-  ]
+  "terrain": {
+    "road": [[0,5,29,1],[0,14,35,2],[0,21,11,2],[0,32,35,2],[9,0,2,5],[9,6,2,8],[9,16,2,5],[9,23,2,9],[9,34,2,6],[11,16,14,1],[11,25,14,2],[15,0,1,5],[15,6,1,7],[19,27,2,5],[19,34,2,6],[20,0,2,5],[20,6,2,8],[24,19,12,2],[27,0,2,5],[27,6,2,8],[27,16,2,3],[27,21,2,11],[27,34,2,6],[29,6,6,1],[33,7,2,7],[33,16,2,3],[33,21,2,11]],
+    "grass": [[1,13,8,1],[2,23,6,2],[2,27,5,3],[2,35,5,4],[12,13,8,1],[13,28,4,3],[13,35,4,4],[16,6,2,1],[21,17,3,8],[22,13,5,1],[22,28,4,3],[22,35,4,4],[23,8,2,3],[30,35,2,3],[35,1,4,12],[35,14,3,3],[35,25,4,14]],
+    "water": [[14,24,2,1]],
+    "oil": [[31,2]],
+    "boxes": [[1,18],[1,37],[3,18],[3,27,2,1],[3,35],[5,35],[6,2],[13,28],[13,30],[13,35,1,2],[16,7],[21,20],[22,12,2,1],[23,28],[23,37],[31,9,1,2],[33,2],[38,23]],
+    "forest": [[2,13],[2,23],[3,24],[3,28,2,1],[3,36],[4,13],[4,37],[5,23],[5,29],[5,36],[6,13,2,1],[6,24],[12,13],[14,13],[14,29,2,1],[14,36],[15,37],[16,13],[17,6],[18,13],[21,17],[21,23],[22,13],[22,18],[22,24],[23,9,2,1],[23,29,2,1],[23,36],[24,13],[24,37],[26,13],[30,36,2,1],[35,2],[35,11],[35,16],[35,26],[35,33],[36,3,1,2],[36,8],[36,15],[36,27],[36,29],[36,34],[36,37],[37,2],[37,5],[37,9,1,2],[37,26],[37,30],[37,35]],
+    "brick": [[6,18,2,1],[18,6,1,2],[21,29],[29,16,1,2],[29,22,1,2],[30,25,1,2]],
+    "sandbags": [[9,11,3,1],[12,32,1,2],[14,5],[24,25,1,2],[24,32,1,2],[25,14,1,2]],
+    "water_tower": [[13,18],[13,23],[19,18],[19,23]],
+    "concrete": [[14,18,2,1],[14,23,2,1],[17,18,2,1],[17,23,2,1],[37,18,1,4]],
+    "crater": [[22,20,1,2],[31,16],[31,23],[36,32]],
+    "hedgehog": [[29,12,2,1],[29,18],[29,21]],
+    "barrel": [[31,2],[35,24]],
+    "rubble": [[32,17],[32,22]],
+    "house1": [[1,1,1,3,3],[1,35,1,2,0],[1,38,1,1,0],[2,1,2,1,3],[2,3,2,1,3],[2,34,2,1,7],[2,39,5,1,1],[3,2,1,1,3],[5,7,3,5,0],[5,34,2,1,1],[7,35,1,4,7],[11,7,3,1,1],[12,11,2,1,1],[12,35,1,4,6],[13,8,1,3,1],[13,34,1,1,3],[13,39,4,1,5],[15,34,2,1,4],[16,1,3,3,7],[17,35,1,1,4],[17,37,1,2,7],[21,35,1,4,5],[22,1,3,3,3],[22,34,1,1,4],[22,39,4,1,6],[24,34,2,1,4],[26,35,1,2,2],[26,38,1,1,2],[29,27,1,4,2],[30,8,1,4,4],[30,27,2,1,2],[30,30,2,1,2],[31,8,2,1,4],[31,11,2,1,4],[31,28,1,2,2],[32,9,1,2,4]],
+    "house2": [[1,7,1,4,5],[1,27,1,3,2],[2,7,2,1,5],[2,10,2,1,5],[2,17,1,3,2],[2,26,2,1,0],[2,30,5,1,5],[3,8,1,2,5],[3,17,3,1,2],[3,19,3,1,2],[5,1,1,3,4],[5,18,1,1,2],[5,26,2,1,3],[6,1,2,1,4],[6,3,2,1,4],[7,2,1,1,4],[7,27,1,1,0],[7,29,1,1,3],[11,1,1,3,5],[12,1,2,1,5],[12,3,2,1,5],[12,28,1,3,5],[13,2,1,1,5],[13,27,1,1,1],[13,31,4,1,6],[15,27,2,1,3],[16,9,1,3,3],[17,9,2,1,3],[17,11,2,1,3],[17,28,1,1,2],[17,30,1,1,5],[18,10,1,1,3],[18,19,1,4,0],[21,28,1,1,3],[21,30,1,1,6],[22,7,1,5,5],[22,27,4,1,2],[22,31,4,1,7],[23,7,1,1,5],[23,11,3,1,5],[25,7,1,4,5],[26,28,1,1,0],[26,30,1,1,3],[29,2,2,1,7],[29,34,1,5,1],[30,1,2,1,7],[30,3,2,2,7],[30,38,3,1,1],[31,34,2,1,1],[32,35,1,3,1]],
+    "landmark": [["SAGRADA_FAMILIA",14,19],["BARCELONA_CATHEDRAL",11,8]],
+    "decal": [["label",17,7,1.4,"GOTHIC QUARTER"],["label",25,14,1.4,"LA RAMBLA"],["label",23,20,1.5,"SAGRADA FAMILIA"],["label",19,32,1.4,"EIXAMPLE"],["crosswalk",9,14,2],["crosswalk",19,32,2]]
+  }
 }

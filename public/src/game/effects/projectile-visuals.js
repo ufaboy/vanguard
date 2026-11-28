@@ -1,18 +1,77 @@
 import * as THREE from 'three';
 import { glowSpriteTexture } from './atlas.js';
 
-/** Shared projectile visuals (core + additive halo), cached per colour. */
+/** Shared realistic armor-piercing tank shell visuals (PBR body + copper driving band + rear tracer), cached per variant. */
 const projectileCache = new Map();
 
 export function createProjectileVisual(colorHex, { radius = 0.14, length = 0.55, glow = 1.0 } = {}) {
   const key = `${colorHex}:${radius}:${length}:${glow}`;
   let entry = projectileCache.get(key);
   if (!entry) {
-    const coreGeo = new THREE.CapsuleGeometry(radius * 0.42, length, 3, 8);
-    coreGeo.rotateX(Math.PI / 2);
+    const r = radius * 0.52;
+    const bodyLen = length * 0.62;
+    const ogiveLen = length * 0.34;
+    const tipLen = length * 0.2;
+    const tailLen = length * 0.16;
+
+    const bodyGeo = new THREE.CylinderGeometry(r * 0.96, r, bodyLen, 12);
+    bodyGeo.rotateX(Math.PI / 2);
+
+    const ogiveGeo = new THREE.CylinderGeometry(r * 0.52, r * 0.96, ogiveLen, 12);
+    ogiveGeo.rotateX(Math.PI / 2);
+
+    const tipGeo = new THREE.ConeGeometry(r * 0.52, tipLen, 10);
+    tipGeo.rotateX(Math.PI / 2);
+
+    const copperBandGeo = new THREE.CylinderGeometry(r * 1.05, r * 1.05, Math.max(0.032, length * 0.08), 12);
+    copperBandGeo.rotateX(Math.PI / 2);
+
+    const accentBandGeo = new THREE.CylinderGeometry(r * 1.02, r * 1.02, Math.max(0.035, length * 0.09), 12);
+    accentBandGeo.rotateX(Math.PI / 2);
+
+    const boatTailGeo = new THREE.CylinderGeometry(r, r * 0.72, tailLen, 12);
+    boatTailGeo.rotateX(Math.PI / 2);
+
+    const tracerGeo = new THREE.ConeGeometry(r * 0.72, Math.max(0.24, length * 0.68), 10, 1, true);
+    tracerGeo.rotateX(-Math.PI / 2);
+    tracerGeo.translate(0, 0, -Math.max(0.12, length * 0.34));
+
     const c = new THREE.Color(colorHex);
-    const hot = c.clone().lerp(new THREE.Color(0xffffff), 0.65);
-    const coreMat = new THREE.MeshBasicMaterial({ color: hot, toneMapped: false });
+    const hot = c.clone().lerp(new THREE.Color(0xffffff), 0.45);
+    const bodyMat = new THREE.MeshStandardMaterial({
+      color: 0x3b424d,
+      metalness: 0.78,
+      roughness: 0.28,
+    });
+    const ogiveMat = new THREE.MeshStandardMaterial({
+      color: 0x222730,
+      metalness: 0.82,
+      roughness: 0.24,
+    });
+    const tipMat = new THREE.MeshStandardMaterial({
+      color: 0xd4a448,
+      metalness: 0.8,
+      roughness: 0.26,
+    });
+    const copperBandMat = new THREE.MeshStandardMaterial({
+      color: 0xc26d38,
+      metalness: 0.82,
+      roughness: 0.28,
+    });
+    const accentBandMat = new THREE.MeshStandardMaterial({
+      color: c,
+      metalness: 0.35,
+      roughness: 0.4,
+    });
+    const tracerMat = new THREE.MeshBasicMaterial({
+      color: hot,
+      transparent: true,
+      opacity: 0.88,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      toneMapped: false,
+    });
     const haloMat = new THREE.SpriteMaterial({
       map: glowSpriteTexture(),
       color: c,
@@ -20,19 +79,55 @@ export function createProjectileVisual(colorHex, { radius = 0.14, length = 0.55,
       transparent: true,
       depthWrite: false,
       toneMapped: false,
-      opacity: 0.85,
+      opacity: 0.42,
     });
-    entry = { coreGeo, coreMat, haloMat };
+    entry = {
+      dims: { bodyLen, ogiveLen, tipLen, tailLen },
+      geo: { bodyGeo, ogiveGeo, tipGeo, copperBandGeo, accentBandGeo, boatTailGeo, tracerGeo },
+      mat: { bodyMat, ogiveMat, tipMat, copperBandMat, accentBandMat, tracerMat, haloMat },
+    };
     projectileCache.set(key, entry);
   }
+
+  const { dims, geo, mat } = entry;
   const group = new THREE.Group();
-  const core = new THREE.Mesh(entry.coreGeo, entry.coreMat);
-  group.add(core);
-  const halo = new THREE.Sprite(entry.haloMat);
-  const hs = (radius * 6 + length * 0.9) * glow;
+
+  const body = new THREE.Mesh(geo.bodyGeo, mat.bodyMat);
+  group.add(body);
+
+  const ogive = new THREE.Mesh(geo.ogiveGeo, mat.ogiveMat);
+  ogive.position.z = dims.bodyLen * 0.5 + dims.ogiveLen * 0.5;
+  group.add(ogive);
+
+  const tip = new THREE.Mesh(geo.tipGeo, mat.tipMat);
+  tip.position.z = dims.bodyLen * 0.5 + dims.ogiveLen + dims.tipLen * 0.5;
+  group.add(tip);
+
+  const accentBand = new THREE.Mesh(geo.accentBandGeo, mat.accentBandMat);
+  accentBand.position.z = dims.bodyLen * 0.32;
+  group.add(accentBand);
+
+  const copperBand = new THREE.Mesh(geo.copperBandGeo, mat.copperBandMat);
+  copperBand.position.z = -dims.bodyLen * 0.32;
+  group.add(copperBand);
+
+  const boatTail = new THREE.Mesh(geo.boatTailGeo, mat.bodyMat);
+  boatTail.position.z = -dims.bodyLen * 0.5 - dims.tailLen * 0.5;
+  group.add(boatTail);
+
+  const tailZ = -dims.bodyLen * 0.5 - dims.tailLen;
+  const tracer = new THREE.Mesh(geo.tracerGeo, mat.tracerMat);
+  tracer.position.z = tailZ;
+  tracer.renderOrder = 12;
+  group.add(tracer);
+
+  const halo = new THREE.Sprite(mat.haloMat);
+  halo.position.z = tailZ - 0.08;
+  const hs = (radius * 2.2 + length * 0.28) * Math.min(1.25, glow);
   halo.scale.set(hs, hs, 1);
   halo.renderOrder = 11;
   group.add(halo);
+
   return group;
 }
 

@@ -7,126 +7,42 @@
   "gameMode": "extermination",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "spawnSectorBossOnClear": true,
-    "defeatOnBaseLoss": false
-  },
-  "boss": {
-    "enemyClass": "BOSS_INFERNO",
-    "name": "CERBERUS-T",
-    "title": "Thermobaric Siege Leviathan",
-    "spawnCell": {
-      "row": 3,
-      "col": 19
-    }
-  },
-  "completionReward": {
-    "credits": 900
-  },
-  "environment": {
-    "theme": "industrial",
-    "tint": "#d89a76",
-    "fogColor": "#3b3532",
-    "groundColor": "#575552"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"spawnSectorBossOnClear":true,"defeatOnBaseLoss":false},
+  "boss": {"enemyClass":"BOSS_INFERNO","name":"CERBERUS-T","title":"Thermobaric Siege Leviathan","spawnCell":{"row":3,"col":19}},
+  "completionReward": {"credits":900},
+  "environment": {"theme":"industrial","tint":"#d89a76","fogColor":"#3b3532","groundColor":"#575552"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Fight through a fortified Ruhr steelworks with a central blast-furnace spine, western coal yard, and eastern barge-canal bridge, then use brick partitions, concrete furnace piers, and outer birch scrub to kite Cerberus-T's 2.5-cell thermobaric blasts and overdrive rams.",
     "breaches": [
       {
         "name": "South foundry loading gate",
-        "cells": [
-          {
-            "row": 27,
-            "col": 19
-          },
-          {
-            "row": 27,
-            "col": 20
-          }
-        ],
-        "start": {
-          "row": 29,
-          "col": 19
-        },
-        "end": {
-          "row": 25,
-          "col": 19
-        },
+        "cells": [{"row":27,"col":19},{"row":27,"col":20}],
+        "start": {"row":29,"col":19},
+        "end": {"row":25,"col":19},
         "purpose": "Blast the southern brick loading gate to open a direct central firing lane from the marshaling road into the furnace yard."
       },
       {
         "name": "West coal-tip partition",
-        "cells": [
-          {
-            "row": 17,
-            "col": 10
-          },
-          {
-            "row": 18,
-            "col": 10
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 8
-        },
-        "end": {
-          "row": 17,
-          "col": 12
-        },
+        "cells": [{"row":17,"col":10},{"row":18,"col":10}],
+        "start": {"row":17,"col":8},
+        "end": {"row":17,"col":12},
         "purpose": "Breach the western brick partition to cut directly between the West Coal-Yard Haul Road and the central rolling mill."
       },
       {
         "name": "East rolling-mill siding wall",
-        "cells": [
-          {
-            "row": 17,
-            "col": 25
-          },
-          {
-            "row": 18,
-            "col": 25
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 27
-        },
-        "end": {
-          "row": 17,
-          "col": 23
-        },
+        "cells": [{"row":17,"col":25},{"row":18,"col":25}],
+        "start": {"row":17,"col":27},
+        "end": {"row":17,"col":23},
         "purpose": "Punch through the eastern mill wall to flank defenders guarding the central furnace plaza from the barge-canal approach."
       },
       {
         "name": "North coking-yard gate",
-        "cells": [
-          {
-            "row": 9,
-            "col": 19
-          },
-          {
-            "row": 9,
-            "col": 20
-          }
-        ],
-        "start": {
-          "row": 11,
-          "col": 19
-        },
-        "end": {
-          "row": 7,
-          "col": 19
-        },
+        "cells": [{"row":9,"col":19},{"row":9,"col":20}],
+        "start": {"row":11,"col":19},
+        "end": {"row":7,"col":19},
         "purpose": "Shatter the northern brick coking-yard gate to complete a 360-degree kiting loop around the blast furnaces against Cerberus-T."
       }
     ],
@@ -151,426 +67,96 @@
     "seed": 21212026,
     "theme": "industrial",
     "zones": [
-      {
-        "id": "west-coal-yard",
-        "bounds": [
-          3,
-          2,
-          28,
-          12
-        ],
-        "surface": "dirt",
-        "density": 0.3,
-        "details": [
-          "tracks",
-          "cracks",
-          "oil"
-        ]
-      },
+      {"id":"west-coal-yard","bounds":[3,2,28,12],"surface":"dirt","density":0.3,"details":["tracks","cracks","oil"]},
       {
         "id": "central-furnace-plaza",
-        "bounds": [
-          3,
-          13,
-          27,
-          26
-        ],
+        "bounds": [3,13,27,26],
         "surface": "concrete",
         "density": 0.28,
-        "details": [
-          "cracks",
-          "oil",
-          "rubble",
-          "tracks"
-        ]
+        "details": ["cracks","oil","rubble","tracks"]
       },
       {
         "id": "east-slag-and-quay",
-        "bounds": [
-          3,
-          27,
-          28,
-          37
-        ],
+        "bounds": [3,27,28,37],
         "surface": "gravel",
         "density": 0.28,
-        "details": [
-          "rubble",
-          "tracks",
-          "cracks"
-        ]
+        "details": ["rubble","tracks","cracks"]
       },
       {
         "id": "south-marshaling-apron",
-        "bounds": [
-          28,
-          8,
-          38,
-          31
-        ],
+        "bounds": [28,8,38,31],
         "surface": "asphalt",
         "density": 0.24,
-        "details": [
-          "cracks",
-          "tracks",
-          "oil"
-        ]
+        "details": ["cracks","tracks","oil"]
       }
     ],
-    "paths": [
-      {
-        "id": "works-rail-siding",
-        "points": [
-          [
-            2,
-            12
-          ],
-          [
-            28,
-            12
-          ],
-          [
-            28,
-            27
-          ],
-          [
-            2,
-            27
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "edges"
-      }
-    ],
-    "landmarks": [
-      {
-        "id": "label-furnace",
-        "kind": "label",
-        "row": 16,
-        "col": 19,
-        "text": "BLAST FURNACE"
-      },
-      {
-        "id": "label-coal-yard",
-        "kind": "label",
-        "row": 12,
-        "col": 8,
-        "text": "COAL YARD"
-      },
-      {
-        "id": "label-barge-slip",
-        "kind": "label",
-        "row": 13,
-        "col": 32,
-        "text": "BARGE SLIP"
-      },
-      {
-        "id": "loading-south",
-        "kind": "loading",
-        "row": 25,
-        "col": 19,
-        "size": 2,
-        "rotation": 0
-      },
-      {
-        "id": "hazard-west-oil",
-        "kind": "hazard_zone",
-        "row": 13,
-        "col": 5,
-        "size": 2,
-        "rotation": 0
-      },
-      {
-        "id": "hazard-east-slag",
-        "kind": "hazard_zone",
-        "row": 6,
-        "col": 26,
-        "size": 2,
-        "rotation": 0
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "hq-clear-lane",
-        "bounds": [
-          37,
-          17,
-          39,
-          22
-        ]
-      }
-    ]
+    "paths": [{"id":"works-rail-siding","points":[[2,12],[28,12],[28,27],[2,27]],"width":2,"surface":"gravel","marking":"edges"}],
+    "exclusions": [{"id":"hq-clear-lane","bounds":[37,17,39,22]}]
   },
-  "landmarks3d": [
-    {
-      "kind": "ZOLLVEREIN_TOWER",
-      "row": 4,
-      "col": 14
-    }
-  ],
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
     "entrances": [
-      {
-        "id": "west-coal-gate",
-        "row": 0,
-        "col": 6
-      },
-      {
-        "id": "north-furnace-west",
-        "row": 0,
-        "col": 19
-      },
-      {
-        "id": "north-furnace-east",
-        "row": 0,
-        "col": 20
-      },
-      {
-        "id": "east-slag-gate",
-        "row": 0,
-        "col": 29
-      }
+      {"id":"west-coal-gate","row":0,"col":6},
+      {"id":"north-furnace-west","row":0,"col":19},
+      {"id":"north-furnace-east","row":0,"col":20},
+      {"id":"east-slag-gate","row":0,"col":29}
     ],
     "encounters": [
       {
         "id": "opening-coking-garrison",
         "label": "STEELWORKS PERIMETER GARRISON ENGAGED",
         "recoverySec": 0,
-        "entrances": [
-          "west-coal-gate",
-          "north-furnace-west",
-          "north-furnace-east",
-          "east-slag-gate"
-        ],
-        "initialCells": [
-          {
-            "row": 3,
-            "col": 6
-          },
-          {
-            "row": 3,
-            "col": 19
-          },
-          {
-            "row": 4,
-            "col": 20
-          },
-          {
-            "row": 3,
-            "col": 29
-          }
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 19
-          },
-          {
-            "row": 18,
-            "col": 19
-          },
-          {
-            "row": 29,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "ENGINEER",
-          "FLAMETHROWER",
-          "STANDARD",
-          "ARMOR"
-        ]
+        "entrances": ["west-coal-gate","north-furnace-west","north-furnace-east","east-slag-gate"],
+        "initialCells": [{"row":3,"col":6},{"row":3,"col":19},{"row":4,"col":20},{"row":3,"col":29}],
+        "patrolRoute": [{"row":10,"col":19},{"row":18,"col":19},{"row":29,"col":19}],
+        "enemies": ["SCOUT","STANDARD","SCOUT","STANDARD","ENGINEER","FLAMETHROWER","STANDARD","ARMOR"]
       },
       {
         "id": "slag-yard-flank-assault",
         "label": "COAL YARD & BARGE SLIP FLANKING ASSAULT",
         "recoverySec": 8,
-        "entrances": [
-          "west-coal-gate",
-          "east-slag-gate"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 7
-          },
-          {
-            "row": 20,
-            "col": 7
-          },
-          {
-            "row": 29,
-            "col": 13
-          }
-        ],
-        "enemies": [
-          "FLAMETHROWER",
-          "HOWITZER",
-          "STANDARD",
-          "ARMOR",
-          "SAPPER",
-          "STEALTH",
-          "STRIKER",
-          "STANDARD",
-          "ENGINEER"
-        ]
+        "entrances": ["west-coal-gate","east-slag-gate"],
+        "patrolRoute": [{"row":12,"col":7},{"row":20,"col":7},{"row":29,"col":13}],
+        "enemies": ["FLAMETHROWER","HOWITZER","STANDARD","ARMOR","SAPPER","STEALTH","STRIKER","STANDARD","ENGINEER"]
       },
       {
         "id": "furnace-guard-counterattack",
         "label": "FURNACE GUARD — CERBERUS-T INBOUND ON CLEAR",
         "recoverySec": 9,
-        "entrances": [
-          "west-coal-gate",
-          "north-furnace-west",
-          "north-furnace-east",
-          "east-slag-gate"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 29
-          },
-          {
-            "row": 19,
-            "col": 34
-          },
-          {
-            "row": 29,
-            "col": 25
-          }
-        ],
-        "enemies": [
-          "ARMOR",
-          "STRIKER",
-          "HOWITZER",
-          "FLAMETHROWER",
-          "STANDARD",
-          "ARMOR",
-          "STRIKER",
-          "STEALTH",
-          "STANDARD"
-        ]
+        "entrances": ["west-coal-gate","north-furnace-west","north-furnace-east","east-slag-gate"],
+        "patrolRoute": [{"row":10,"col":29},{"row":19,"col":34},{"row":29,"col":25}],
+        "enemies": ["ARMOR","STRIKER","HOWITZER","FLAMETHROWER","STANDARD","ARMOR","STRIKER","STEALTH","STANDARD"]
       }
     ]
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "ENGINEER",
-    "FLAMETHROWER",
-    "STANDARD",
-    "ARMOR",
-    "FLAMETHROWER",
-    "HOWITZER",
-    "STANDARD",
-    "ARMOR",
-    "SAPPER",
-    "STEALTH",
-    "STRIKER",
-    "STANDARD",
-    "ENGINEER",
-    "ARMOR",
-    "STRIKER",
-    "HOWITZER",
-    "FLAMETHROWER",
-    "STANDARD",
-    "ARMOR",
-    "STRIKER",
-    "STEALTH",
-    "STANDARD"
-  ],
-  "surfaceLayout": [
-    "VVVV..RR....VV.....RR........RR....VVVVV",
-    "VVV...RR....VV.....RR........RR....^VVVV",
-    "VV....RR...........RR........RR....^^VVV",
-    "......RR...........RR........RR.....^VVV",
-    "......RR...L.......RR........RR......VV.",
-    "VV....RR...........RR........RR.........",
-    "VVV...RR...........RR...L....RR....^^...",
-    "VV....RR...........RR........RR....^^^..",
-    "......RR...^^......RR........RR.....^...",
-    "......RR...^^......RR........RR.........",
-    "......RR...........RR........RR...VV....",
-    "VV....RR...........RR........RR...VVV...",
-    "VVV...RR...........RR........RR...VV....",
-    "VV....RR.....L.....RR........RR.........",
-    "......RR...........RR........RR..WWWW...",
-    "......RR..^^.......RR........RR..WWWW...",
-    "......RR..^^.......RR........RR..WWWW...",
-    "VV....RR...........RR........RR..WWWW...",
-    "VVV...RR...........RR........RR..WWWW...",
-    "VV....RR...........RR........RRRRWWWW...",
-    "......RR...........RR........RRRRWWWW...",
-    "......RR...........RR........RR..WWWW...",
-    "......RR....L......RR........RR..WWWW...",
-    "VV....RR...........RR........RR..WWWW...",
-    "VVV...RR...........RR........RR..WWWW...",
-    "VV....RR...........RR........RR.........",
-    "......RR...........RR........RR...VV....",
-    "......RR...........RR........RR...VVV...",
-    "......RR...........RR........RR...VV....",
-    "VV....RRRRRRRRRRRRRRRRRRRRRRRRR.........",
-    "VVV...RR...........RR........RR.........",
-    "VV....RR.....L.....RR........RR....^^...",
-    "......RR...........RR........RR....^^...",
-    "......RR...........RR........RR.........",
-    "......RR...........RR........RR...VV....",
-    "VV....RR...........RR........RR...VVV...",
-    "VVV...RR.....................RR...VV....",
-    "VV....RR.....................RR.........",
-    "......RR.....................RR.........",
-    "......RR.....................RR....VV..."
-  ],
-  "objectLayout": [
-    "FFF.........FF..............B.......FFFF",
-    "FF..........FF........T.....B........FFF",
-    "F....B............B.........B.........FF",
-    ".....B............B..................FFF",
-    "..AA.......D.........PPP..D....AA.......",
-    "..AA.................PPP.......AA.......",
-    "..........Q...PPP....PPP..Q.............",
-    "....C.....B...............B.....C....F..",
-    "....C.....B...............B.....C....FF.",
-    "..........CC.C..BBBBBB..CCC.............",
-    "FF............K......K..................",
-    "FFF..K........C......C.......K.......FF.",
-    "FF............C......C...............FFF",
-    ".....D..AA....C..UU..C....AA........FF..",
-    "........AA................AA....C....C..",
-    "..B.......C...C......C...C......C....C..",
-    "..B.....Q.C...C......C...C..Q...C....C..",
-    "..B.......B...P......P...B......C....C..",
-    "FF........B...P......P...B......C....C..",
-    "FFF.......C...P......P...C.......====...",
-    "FF........C...P......P...C.......====...",
-    "....C.....C..............C......C....C..",
-    "....C......D.....KK.....D.......C....C..",
-    "FF........B..............B......C....C..",
-    "FFF..AA.......C......C......AA..C....C..",
-    "FF...AA..Q....C......C......AA..........",
-    "..............B......B...............FF.",
-    "....CC..BBB...CCCCCBBCCCCC......CC...FFF",
-    "....CC.........................QCC...FF.",
-    "FF......................................",
-    "FFF..K......X..........X......K.........",
-    "..AA.........D........D..........AA.....",
-    "..AA.............................AA..F..",
-    ".........B.....BB....BB.....B........FF.",
-    "....FF...B..................B..FF....F..",
-    "FFF.FF.........................FF.......",
-    "FF.......Q..K..........K..........FF....",
-    ".....B............CCCC............FF....",
-    ".....B.................Q..........F.....",
-    "...................HH...............FF.."
-  ]
+  "code": "",
+  "terrain": {
+    "grass": [[0,0,1,4],[0,12,2,2],[0,35,1,5],[1,0,1,3],[1,36,1,4],[2,0,1,2],[2,37,2,3],[4,37,1,2],[5,0,3,2],[6,2],[11,0,3,2],[12,2],[17,0,3,2],[18,2],[23,0,3,2],[24,2],[29,0,3,2],[30,2],[34,34,3,2],[35,0,3,2],[35,36],[36,2],[39,35,1,2]],
+    "road": [[0,6,10,2],[0,19,10,2],[0,29,10,2],[3,4,4,1],[5,22,3,1],[5,33,2,1],[5,35,1,5],[6,3],[6,5],[6,31,1,2],[7,21],[7,23,3,1],[11,6,1,6],[11,13,8,1],[11,19,25,2],[11,23,11,1],[11,29,29,2],[12,6,28,2],[12,24,1,5],[14,14,1,5],[15,0,1,6],[18,15,1,4],[19,31,2,2],[19,37,2,3],[20,8,1,2],[20,11,1,3],[20,15,1,4],[21,13,2,1],[21,15,2,1],[21,21,1,2],[22,14],[26,2,1,4],[27,0,1,3],[29,8,1,11],[29,21,1,8],[30,9,2,1],[30,32,1,8],[31,32,3,1],[33,0,1,6],[33,31]],
+    "rail": [[0,34,8,1],[10,0,1,32]],
+    "stone": [[1,35,2,1],[2,36,2,1],[6,35,2,2],[7,37],[8,11,2,2],[8,36],[12,39,7,1],[15,10,2,2],[18,38],[21,38,1,2],[22,39],[31,35,2,2]],
+    "oil": [[4,11],[4,24,1,3],[5,24,1,2],[6,24],[13,5],[22,10,1,3],[23,11],[31,12,1,2],[31,22,1,2],[32,23]],
+    "sand": [[6,38,1,2],[7,38],[9,35],[10,39,2,1],[11,38,7,1],[12,32],[12,37,2,1],[17,37,2,1],[21,37,2,1],[22,38,2,1],[23,39,2,1],[25,32,2,1],[25,37],[27,33],[28,34],[29,35,1,5]],
+    "water": [[7,39,3,1],[8,37,3,2],[9,36,20,1],[10,35,19,1],[11,37],[12,33,15,2],[14,37,3,1],[23,37,2,1],[24,38,5,1],[25,39,4,1],[26,37,3,1],[27,34]],
+    "forest": [[0,0,1,3],[0,12,2,2],[0,36,1,4],[1,0,1,2],[1,37,1,3],[2,0],[2,38,2,2],[3,37],[11,0,1,3],[12,0,1,2],[16,5],[18,0,3,2],[18,5],[19,2],[23,0,3,2],[24,2],[29,0,2,2],[30,2],[32,37,3,1],[33,38],[34,4,2,2],[34,31,2,2],[35,0,1,3],[36,0,1,2],[36,34,2,2],[38,34],[39,36,1,2]],
+    "brick": [[0,28,3,1],[2,5,2,1],[2,18,2,1],[7,10,2,1],[7,26,2,1],[9,16,1,6],[15,2,3,1],[17,10,2,1],[17,25,2,1],[23,10],[23,25],[26,14],[26,21],[27,8,1,3],[27,19,1,2],[33,9,2,1],[33,15,1,2],[33,21,1,2],[33,28,2,1],[37,5,2,1]],
+    "water_tower": [[1,22]],
+    "barrel": [[4,11],[4,26],[13,5],[22,11],[22,24],[31,13],[31,22]],
+    "boxes": [[6,10],[6,26],[16,8],[16,28],[25,9],[28,31],[36,9],[38,23]],
+    "concrete": [[7,4,2,1],[7,32,2,1],[9,10,1,2],[9,13],[9,24,1,3],[11,14,3,1],[11,21,3,1],[14,32,5,1],[15,10,2,1],[15,14,2,1],[15,21,2,1],[15,25,2,1],[19,10,3,1],[19,25,3,1],[21,4,2,1],[21,32,4,1],[24,14,2,1],[24,21,2,1],[27,4,2,2],[27,14,1,5],[27,21,1,5],[37,18,1,4]],
+    "rail_car": [[10,8,1,2,1],[10,11,1,2,0],[10,28,1,2,1]],
+    "crater": [[11,5],[11,29],[22,17,1,2],[30,5],[30,30],[36,12],[36,23]],
+    "rubble": [[13,17,1,2]],
+    "hedgehog": [[30,12],[30,23]],
+    "bridge": [[19,33,2,4,"ew"]],
+    "house1": [[4,2,2,2,9],[4,31,2,2,8],[13,8,2,2,9],[13,26,2,2,8],[24,4,2,2,9],[24,27,2,2,9],[31,2,2,2,4],[31,33,2,2,10]],
+    "house2": [[4,21,1,3,8],[5,21,2,1,8],[5,23,2,1,8],[6,14,1,3,2],[17,14,5,1,8],[17,21,4,1,3],[18,22,2,1,3],[19,12,1,2,8],[19,15,1,2,8],[30,8,3,1,8],[30,10,3,1,8],[32,9,1,1,8]],
+    "rail_curve": [[8,32,180]],
+    "fixed_object": [["locomotive",10,6,"ew"],["container",16,9,"ns",0]],
+    "landmark": [["ZOLLVEREIN_TOWER",4,14]],
+    "decal": [["label",16,19,1,"BLAST FURNACE"],["label",12,8,1,"COAL YARD"],["label",13,32,1,"BARGE SLIP"],["loading",25,19,2],["hazard_zone",13,5,2],["hazard_zone",6,26,2]],
+    "prop": [["fence",18,19],["barricade",25,19]]
+  }
 }

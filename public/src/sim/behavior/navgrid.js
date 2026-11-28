@@ -126,6 +126,35 @@ const DIRS = [
   [0, -1],
 ];
 
+let navCap = 0;
+let seenGen = new Uint32Array(0);
+let closedGen = new Uint32Array(0);
+let gScore = new Float32Array(0);
+let parentArr = new Int32Array(0);
+let searchGen = 0;
+
+let heapF = new Float32Array(256);
+let heapKey = new Int32Array(256);
+
+function ensureNavBuffers(size) {
+  if (size <= navCap) return;
+  navCap = Math.max(size, 1600);
+  seenGen = new Uint32Array(navCap);
+  closedGen = new Uint32Array(navCap);
+  gScore = new Float32Array(navCap);
+  parentArr = new Int32Array(navCap);
+}
+
+function growHeap() {
+  const nextCap = heapF.length * 2;
+  const nextF = new Float32Array(nextCap);
+  const nextKey = new Int32Array(nextCap);
+  nextF.set(heapF);
+  nextKey.set(heapKey);
+  heapF = nextF;
+  heapKey = nextKey;
+}
+
 /**
  * Cardinal A* (cardinal moves avoid clipping building corners with a tank footprint).
  * Returns the cell list from start (exclusive) to goal (inclusive), [] when already
@@ -155,63 +184,62 @@ export function findPath(
     (allowBreach && isBreachableTile(goalType));
   if (!goalValid) return null;
 
-  const key = (r, c) => r * cols + c;
-  const goalKey = key(goal.row, goal.col);
-  const startKey = key(start.row, start.col);
-  const g = new Map([[startKey, 0]]);
-  const parent = new Map([[startKey, -1]]);
-  const closed = new Set();
-  const h = (r, c) => Math.abs(r - goal.row) + Math.abs(c - goal.col);
+  ensureNavBuffers(rows * cols);
+  if (++searchGen >= 0xffffffff) {
+    seenGen.fill(0);
+    closedGen.fill(0);
+    searchGen = 1;
+  }
+  const gen = searchGen;
 
-  // Binary min-heap of [f, key]
-  const heap = [[h(start.row, start.col), startKey]];
-  const push = (item) => {
-    heap.push(item);
-    let i = heap.length - 1;
-    while (i > 0) {
-      const p = (i - 1) >> 1;
-      if (heap[p][0] <= heap[i][0]) break;
-      [heap[p], heap[i]] = [heap[i], heap[p]];
-      i = p;
-    }
-  };
-  const pop = () => {
-    const top = heap[0];
-    const last = heap.pop();
-    if (heap.length) {
-      heap[0] = last;
+  const goalKey = goal.row * cols + goal.col;
+  const startKey = start.row * cols + start.col;
+  seenGen[startKey] = gen;
+  gScore[startKey] = 0;
+  parentArr[startKey] = -1;
+
+  let heapSize = 1;
+  heapF[0] = Math.abs(start.row - goal.row) + Math.abs(start.col - goal.col);
+  heapKey[0] = startKey;
+
+  let expanded = 0;
+  while (heapSize > 0 && expanded < maxNodes) {
+    const cur = heapKey[0];
+    heapSize--;
+    if (heapSize > 0) {
+      const lastF = heapF[heapSize];
+      const lastKey = heapKey[heapSize];
       let i = 0;
       for (;;) {
         const l = i * 2 + 1;
+        if (l >= heapSize) break;
         const r = l + 1;
-        let m = i;
-        if (l < heap.length && heap[l][0] < heap[m][0]) m = l;
-        if (r < heap.length && heap[r][0] < heap[m][0]) m = r;
-        if (m === i) break;
-        [heap[m], heap[i]] = [heap[i], heap[m]];
+        const m = r < heapSize && heapF[r] < heapF[l] ? r : l;
+        if (lastF <= heapF[m]) break;
+        heapF[i] = heapF[m];
+        heapKey[i] = heapKey[m];
         i = m;
       }
+      heapF[i] = lastF;
+      heapKey[i] = lastKey;
     }
-    return top;
-  };
 
-  let expanded = 0;
-  while (heap.length && expanded < maxNodes) {
-    const [, cur] = pop();
-    if (closed.has(cur)) continue;
+    if (closedGen[cur] === gen) continue;
     if (cur === goalKey) {
       const path = [];
-      for (let k = cur; k !== startKey; k = parent.get(k)) {
-        path.push({ row: Math.floor(k / cols), col: k % cols });
+      for (let k = cur; k !== startKey; k = parentArr[k]) {
+        path.push({ row: (k / cols) | 0, col: k % cols });
       }
       return path.reverse();
     }
-    closed.add(cur);
+    closedGen[cur] = gen;
     expanded++;
-    const r = Math.floor(cur / cols);
+    const r = (cur / cols) | 0;
     const c = cur % cols;
-    const base = g.get(cur);
-    for (const [dr, dc] of DIRS) {
+    const base = gScore[cur];
+    for (let dIdx = 0; dIdx < 4; dIdx++) {
+      const dr = DIRS[dIdx][0];
+      const dc = DIRS[dIdx][1];
       const nr = r + dr;
       const nc = c + dc;
       if (nr < 0 || nc < 0 || nr >= rows || nc >= cols) continue;
@@ -227,8 +255,8 @@ export function findPath(
       ) {
         continue;
       }
-      const nk = key(nr, nc);
-      if (closed.has(nk)) continue;
+      const nk = nr * cols + nc;
+      if (closedGen[nk] === gen) continue;
       const stepCost = isPass
         ? 1
         : isCrush
@@ -248,10 +276,22 @@ export function findPath(
           : 0;
       const occCost = occupiedCells && occupiedCells.has(nk) ? 10 : 0;
       const cost = base + stepCost + wallHugCost + occCost;
-      if (cost < (g.get(nk) ?? Infinity)) {
-        g.set(nk, cost);
-        parent.set(nk, cur);
-        push([cost + h(nr, nc), nk]);
+      if (seenGen[nk] !== gen || cost < gScore[nk]) {
+        seenGen[nk] = gen;
+        gScore[nk] = cost;
+        parentArr[nk] = cur;
+        const f = cost + Math.abs(nr - goal.row) + Math.abs(nc - goal.col);
+        if (heapSize >= heapF.length) growHeap();
+        let i = heapSize++;
+        while (i > 0) {
+          const p = (i - 1) >> 1;
+          if (heapF[p] <= f) break;
+          heapF[i] = heapF[p];
+          heapKey[i] = heapKey[p];
+          i = p;
+        }
+        heapF[i] = f;
+        heapKey[i] = nk;
       }
     }
   }

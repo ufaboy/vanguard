@@ -8,16 +8,19 @@ import { isCampaignMissionUnlocked } from '../campaign.js';
 import * as THREE from 'three';
 import { SurvivalDirector, ContractDirector } from './mode-directors.js';
 import { AiDebugOverlay } from './ai-debug-overlay.js';
+import { getHqBonuses, normalizeHqTree } from '../../sim/hq-tree.js';
 import { GarageOps } from './garage-ops.js';
+import { PerfMonitor } from './perfMonitor.js';
 import { BossCombat } from './boss-combat.js';
 import { DefenseTurretsController } from './defense-turrets.js';
+import { TrainController } from './trains-controller.js';
 import { buildHudSnapshot } from './hud-snapshot.js';
 import { ForestFireController } from '../terrains/forest-fire.js';
 import { ProfileSaveController } from './profile-save.js';
 import { PowerupsController } from './powerups-controller.js';
 import { AirSupportController } from './air-support-controller.js';
 import { ReconDroneController } from './recon-drone-controller.js';
-import { InputCameraController } from './input-camera.js';
+import { DEFAULT_CAMERA_AZIMUTH, InputCameraController } from './input-camera.js';
 import { PhysicsController } from './physics.js';
 import { ExplosionsController } from './explosions.js';
 import { TerrainDestructionController } from './terrain-destruction.js';
@@ -34,11 +37,11 @@ import {
 } from './victory-cinematics.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import {
-  APS,
   TITAN,
   CANNON_AMMO,
   MISSILE,
   POWERUP_TYPES,
+  TANK_RIDE_HEIGHT,
 } from '../constants.js';
 import { GameStatus } from '../types.js';
 import { PLAYER_TANK_CONFIG } from '../vehicles/tanks.js';
@@ -58,7 +61,11 @@ import { analyticsManager } from '../../app/analyticsManager.js';
 import { ARMOR_PANEL_CATALOG, TERRAIN_SURFACES } from '../../sim/catalog.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
 import { getSafeStorage, resolveAssembledTank, SaveRepository, settleMission } from '../../sim/garage.js';
+import { recordSurvivalRun } from '../../sim/survival.js';
 import { t } from '../../i18n/index.js';
+
+/** Upper bound for the loading-screen shader warmup; past it the mission starts anyway. */
+const SCENE_PREWARM_TIMEOUT_MS = 12000;
 
 /** Graphics quality presets. Pixel ratio, shadows, IBL and particle budget apply immediately. */
 export const QUALITY_PRESETS = Object.freeze({
@@ -78,14 +85,14 @@ export class TankGameEngine {
     this.onBeforeStep = typeof options.onBeforeStep === 'function' ? options.onBeforeStep : null;
     this.frameId = 0;
     this.isDisposed = false;
+    this.perfMonitor = new PerfMonitor(options);
 
     this.cameraPreset = 'ISOMETRIC';
-    this.cameraAzimuth = Math.PI * 0.25;
+    this.cameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
+    this.targetCameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
     this.missileFpvEnabled = false;
     this.missileFpvHoldTimer = 0;
     this.hardMode = false;
-    this.cameraRotating = false;
-    this.cameraDragPrevX = 0;
     this.aiDebugMode = false;
     this.inspectMode = false;
 
@@ -117,33 +124,30 @@ export class TankGameEngine {
     };
 
     this.campaignSaveRepo = new SaveRepository(
-      'battle_tank_player_save_v1',
+      'battle_tank_player_save',
       getSafeStorage('local')
     );
     this.survivalSaveRepo = new SaveRepository(
-      'battle_tank_survival_save_v1',
+      'battle_tank_survival_save',
       getSafeStorage('session')
     );
     this.contractSaveRepo = new SaveRepository(
-      'battle_tank_contract_save_v1',
+      'battle_tank_contract_save',
       getSafeStorage('session')
     );
     this.profileMode = 'campaign';
     this.saveRepo = this.campaignSaveRepo;
     this.playerSave = this.saveRepo.loadPlayerSave();
-    this.componentDamage = normalizeComponentDamage(this.playerSave.componentDamage);
-    this.componentDamageCooldown = Math.max(0, Math.min(8, Number(this.playerSave.componentDamageCooldown) || 0));
+    this.componentDamage = normalizeComponentDamage();
+    this.componentDamageCooldown = 0;
     this.wasDefeated = false;
     this.defeatCinematicsTimer = 0;
     this.victoryCinematicsTimer = 0;
     this.victoryCinematics = null;
     this.playerDeathState = null;
-    this.assembledTank = resolveAssembledTank(this.playerSave);
+    this.assembledTank = resolveAssembledTank();
     this.subsystems = createTankSubsystems();
-    const savedRepairCharges = Number.isInteger(this.playerSave?.repairKitCharges)
-      ? this.playerSave.repairKitCharges
-      : 0;
-    this.repairKitState = createRepairKitState(savedRepairCharges, this.getPlayerMaxRepairKitCharges());
+    this.repairKitState = createRepairKitState(0, this.getPlayerMaxRepairKitCharges());
     this.playerArmorPanels = {
       SOCKET_ARMOR_FRONT: { ...ARMOR_PANEL_CATALOG.sb_40, integrity: 100, destroyed: false },
       SOCKET_ARMOR_LEFT: { ...ARMOR_PANEL_CATALOG.ekran_b25_left, integrity: 70, destroyed: false },
@@ -178,16 +182,15 @@ export class TankGameEngine {
     this.playerSalvoResetTimer = 0;
     this.playerFlashTimer = 0;
 
-    this.apsAmmo = Array.isArray(this.playerSave?.apsAmmo)
-      ? [...this.playerSave.apsAmmo]
-      : [...APS.INITIAL_PER_LAUNCHER];
+    this.apsOwned = false;
+    this.atgmOwned = false;
+    this.apsAmmo = [0, 0, 0, 0];
     this.apsRearmTimer = 0;
-    this.missileAmmo = Number.isInteger(this.playerSave.missileAmmo)
-      ? Math.max(0, Math.min(MISSILE.MAX_AMMO, this.playerSave.missileAmmo)) : 2;
+    this.missileAmmo = 0;
     this.cannonAmmo = CANNON_AMMO.START_ROUNDS;
     this.cannonBaseRearmTimer = 0;
     this.missileCooldown = 0;
-    this.reconDroneOwned = Boolean(this.playerSave?.reconDroneOwned);
+    this.reconDroneOwned = false;
     this.reconDroneCooldown = 0;
     this.reconDroneActiveTimer = 0;
     this.reconDroneMission = null;
@@ -199,6 +202,10 @@ export class TankGameEngine {
     this.isGaragePaused = false;
     this.isAdPaused = false;
     this.creditsEarnedThisMission = 0;
+    this.temporaryCredits = 0;
+    this.preBattleUpgrades = null;
+    this.preBattleHqTree = null;
+    this.preBattleReconDroneOwned = false;
     this.baseAlive = true;
     this.baseHp = 1;
     this.baseMaxHp = 1;
@@ -239,7 +246,9 @@ export class TankGameEngine {
     this.boxPowerUpPool = new BoxPowerUpPool();
 
     this.nextEnemyId = 1;
-    this.vanguardRemainingToSpawn = 0;
+    this.enemiesRemainingToSpawn = 0;
+    this._inUpdateStep = false;
+    this._hudDirty = false;
     this.spawnPoolCursor = 0;
     this.spawnTimer = 0;
     this.bossSpawned = false;
@@ -407,6 +416,53 @@ export class TankGameEngine {
     this.profileSave.startSector(sectorIdx);
   }
 
+  /**
+   * Starts a sector behind the loading screen: the simulation and rendering stay on hold
+   * (`isWarmingUp`, also reported to the HUD so the loader stays up) until every shader of
+   * the freshly built map is compiled and its textures are on the GPU. Without this the
+   * first combat frame compiles the whole map synchronously (seconds on ANGLE / D3D).
+   */
+  async startSectorWarm(sectorIdx) {
+    if (this.isSoftwareGl) {
+      this.startSector(sectorIdx);
+      return;
+    }
+    this.isWarmingUp = true;
+    try {
+      this.startSector(sectorIdx);
+      await this.prewarmScene();
+    } finally {
+      this.isWarmingUp = false;
+      this.emitHudUpdate();
+    }
+  }
+
+  /** Compiles every scene program (including instanced tiles and shadow depth) and uploads scene textures. */
+  async prewarmScene() {
+    if (this.isDisposed) return;
+    // Tiles reach the scene as InstancedMeshes only after the batcher syncs.
+    this.tileBatcher.sync();
+    const camera = this.getActiveCamera();
+    const timeout = new Promise((resolve) => setTimeout(resolve, SCENE_PREWARM_TIMEOUT_MS));
+    await Promise.race([this.renderer.compileAsync(this.scene, camera).catch(() => {}), timeout]);
+    if (this.isDisposed) return;
+
+    const seen = new Set();
+    this.scene.traverse((node) => {
+      if (!node.material) return;
+      for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
+        for (const value of Object.values(material)) {
+          if (value?.isTexture && !seen.has(value)) {
+            seen.add(value);
+            this.renderer.initTexture(value);
+          }
+        }
+      }
+    });
+    // One hidden frame compiles the shadow-depth programs, which compile() skips.
+    this.renderer.render(this.scene, camera);
+  }
+
   /** Average frame rate during combat since the mission started, or undefined below 1 s of data. */
   getAverageFps() {
     if (this.fpsSampleSec < 1) return undefined;
@@ -470,31 +526,130 @@ export class TankGameEngine {
     this.modelFactory?.setQuality({ physicalWater: preset.physicalWater });
   }
 
-  /** Compiles the shaders of objects that only appear mid-fight (shells, mines, power-ups). */
+  /**
+   * Compiles the shaders of objects that only appear mid-fight: shells, missiles, howitzer
+   * shells, mines, power-ups, craters, rubble, scorched sand, mud, every brick damage stage,
+   * burning oil and the per-use telegraph / shield / smoke materials.
+   * Everything built here stays referenced in `this.shaderWarmup` and is never added to the
+   * scene: disposing a material releases its GL program as soon as no other material shares it,
+   * so a throwaway warmup would be undone before the first crater or shell needs the program.
+   */
   warmupEffectShaders() {
-    const group = new THREE.Group();
-    group.add(this.modelFactory.createLandMineMesh());
-    for (const type of Object.keys(POWERUP_TYPES)) group.add(this.modelFactory.createPowerUpMesh(type));
-    group.add(createProjectileVisual(0xffb030, {}));
-    Promise.all([
-      this.renderer.compileAsync(group, this.camera, this.scene),
-      this.renderer.compileAsync(this.fx.root, this.camera, this.scene),
-    ])
-      .catch(() => {})
-      .finally(() => disposeOwned(group));
+    const mf = this.modelFactory;
+    const warm = (this.shaderWarmup ||= { meshes: new THREE.Group(), tiles: new THREE.Group() });
+    // Map tiles render through TileBatcher clones on InstancedMeshes (USE_INSTANCING + instance
+    // colour), a different program from a plain Mesh, so batched tiles warm up through a private
+    // batcher of their own. Its emptied batches are kept, so the programs stay referenced.
+    warm.batcher ||= new TileBatcher(warm.tiles);
+    const compile = (root) => this.renderer.compileAsync(root, this.camera, this.scene).catch(() => {});
+    const addTile = (tile) => {
+      // Batched tiles go to the batcher source; plain ones (burning oil rig) compile as is.
+      if (tile) (tile.userData.batchTile ? warm.tiles : warm.meshes).add(tile);
+    };
+
+    const { meshes } = warm;
+    meshes.add(mf.createLandMineMesh());
+    for (const type of Object.keys(POWERUP_TYPES)) meshes.add(mf.createPowerUpMesh(type));
+    meshes.add(createProjectileVisual(0xffb030, {}));
+
+    // Effect materials created and disposed per use (artillery target ring / fill and the
+    // inferno ram beam, the boss phase shield, smoke puffs, cook-off glow). These templates
+    // share their program parameters and keep those programs alive between uses.
+    const quad = new THREE.PlaneGeometry(1, 1);
+    for (const material of [
+      new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide, depthWrite: false }),
+      new THREE.MeshBasicMaterial({ transparent: true, wireframe: true, depthWrite: false }),
+      new THREE.MeshStandardMaterial({ transparent: true, depthWrite: false }),
+      new THREE.MeshStandardMaterial({ emissive: 0xff3300 }),
+    ]) {
+      meshes.add(new THREE.Mesh(quad, material));
+    }
+
+    // Destruction tiles (shared cached materials owned by the model factory).
+    mf.prewarmCombatAssets?.();
+    addTile(mf.createCraterBlock?.(0, 0));
+    addTile(mf.createSandBlock?.(0, 0));
+    addTile(mf.createSwampBlock?.(0, 0));
+    addTile(mf.createRubbleBlock?.('house1'));
+    addTile(mf.createRubbleBlock?.('house2'));
+    if (mf.oilFireBedMat && mf.oilFlameSheetMat && mf.oilBoilRingMat) {
+      const oil = new THREE.Group();
+      mf.attachOilBurnRig(oil);
+      meshes.add(oil);
+    }
+    warm.batcher.sync();
+
+    // Missile and howitzer shell visuals use cached shared resources (dynamic import keeps this
+    // warmup self-contained; the module is already loaded, so it resolves immediately).
+    const visuals = import('../effects/index.js').then((fxModule) => {
+      for (const style of ['player', 'enemy']) {
+        meshes.add(fxModule.createMissileVisual(style));
+        meshes.add(fxModule.createArtilleryShellVisual(style));
+      }
+    }).catch(() => {});
+
+    visuals.then(() => {
+      if (this.isDisposed) return;
+      compile(meshes);
+      compile(warm.batcher.root);
+      compile(this.fx.root);
+    });
+
+    // Every brick damage stage has its own program (`brick-finish-v4-<damage>`). The Blender
+    // bricks load asynchronously, so the stages are built once the real brick path is known.
+    Promise.resolve(mf.brickModelsPromise)
+      .catch(() => false)
+      .then(() => {
+        if (this.isDisposed || warm.bricksWarmed) return;
+        warm.bricksWarmed = true;
+        for (let hp = 0; hp <= 4; hp++) {
+          const brick = mf.createBrickBlock?.();
+          if (!brick?.group) continue;
+          mf.updateBrickBlockDamage(brick.group, hp);
+          addTile(brick.group);
+        }
+        warm.batcher.sync();
+        compile(warm.batcher.root);
+      });
   }
 
   /** Compiles a freshly loaded tank model's shaders on a throwaway rig (see onModelReady). */
   warmupTankShaders(model) {
-    if (this.isDisposed) return;
-    const rig = model === 'player' ? this.playerRig : this.modelFactory.createEnemyTank(model);
-    if (!rig) return;
-    this.renderer
+    if (this.isDisposed) return Promise.resolve();
+    // The radar GLB is a player attachment, not an enemy class: warm the player rig for it.
+    const isPlayerModel = model === 'player' || model === 'player_radar';
+    const rig = isPlayerModel ? this.playerRig : this.modelFactory.createEnemyTank(model);
+    if (!rig) return Promise.resolve();
+    const warmup = this.renderer
       .compileAsync(rig.root, this.camera, this.scene)
-      .catch(() => {})
-      .finally(() => {
-        if (model !== 'player') disposeOwned(rig.root);
-      });
+      .then(() => {
+        if (this.isDisposed) return;
+        // Upload the rig's textures now so its first on-screen frame does not.
+        const textures = new Set();
+        rig.root.traverse((node) => {
+          const mats = Array.isArray(node.material) ? node.material : [node.material];
+          for (const mat of mats) {
+            if (!mat) continue;
+            for (const tex of [mat.map, mat.normalMap, mat.roughnessMap, mat.metalnessMap, mat.emissiveMap]) {
+              if (tex?.isTexture) textures.add(tex);
+            }
+          }
+        });
+        textures.forEach((tex) => this.renderer.initTexture(tex));
+      })
+      .catch(() => {});
+    if (!isPlayerModel) {
+      // Keep the warm rig (off-scene) until this class is warmed again: disposing its
+      // per-rig materials would release the freshly compiled programs (three.js frees a
+      // program once no material uses it) and the first real spawn would recompile.
+      const keepAlive = (this._tankWarmupRigs ||= new Map());
+      const previous = keepAlive.get(model);
+      if (previous && previous !== rig.root) disposeOwned(previous);
+      keepAlive.set(model, rig.root);
+    }
+    // Read by SurvivalDirector.preloadWave to hold a wave until its models are warm.
+    (this._tankWarmupPromises ||= new Map()).set(model, warmup);
+    return warmup;
   }
 
   setMissileFpvEnabled(enabled) {
@@ -506,13 +661,16 @@ export class TankGameEngine {
 
   setHardMode(enabled) {
     this.hardMode = Boolean(enabled);
+    if (!this.hardMode && this.status === GameStatus.PLAYING && this.activeMissionRun) {
+      this.activeMissionRun.hardMode = false;
+    }
   }
 
   getActivePlayerMissile() {
     if (!Array.isArray(this.projectiles)) return null;
     for (let i = this.projectiles.length - 1; i >= 0; i -= 1) {
       const p = this.projectiles[i];
-      if (p?.fromPlayer && p?.isMissile) return p;
+      if (p?.fromPlayer && (p?.isMissile || p?.isVictoryFpvShot)) return p;
     }
     return null;
   }
@@ -532,9 +690,14 @@ export class TankGameEngine {
     return this.isMissileFpvActive() && this.fpvCamera ? this.fpvCamera : this.camera;
   }
 
-  /** Slow-motion time scale while riding a player missile in FPV chase cam. */
+  /** Slow-motion time scale while riding a player missile or final victory shell in FPV chase cam. */
   getTimeScale() {
-    return this.isMissileFpvActive() ? MISSILE.FPV_TIME_SCALE : 1;
+    if (!this.isMissileFpvActive()) return 1;
+    const activeProj = this.getActivePlayerMissile();
+    if (activeProj && activeProj.isVictoryFpvShot && !activeProj.isMissile) {
+      return MISSILE.FPV_VICTORY_SHELL_TIME_SCALE;
+    }
+    return MISSILE.FPV_TIME_SCALE;
   }
 
   /** Frame-rate cap in fps (0 = unlimited, follow the display refresh rate). */
@@ -642,6 +805,7 @@ export class TankGameEngine {
   get garageOps() { return (this._garageOps ||= new GarageOps(this)); }
   get bossCombat() { return (this._bossCombat ||= new BossCombat(this)); }
   get defenseTurretsCtrl() { return (this._defenseTurretsCtrl ||= new DefenseTurretsController(this)); }
+  get trainController() { return (this._trainController ||= new TrainController(this)); }
   get forestFire() { return (this._forestFire ||= new ForestFireController(this)); }
 
   setupAimReticle() {
@@ -720,8 +884,8 @@ export class TankGameEngine {
     return this.enemySpawner.resolveBorderSpawn(targetCell, opts);
   }
 
-  spawnVanguardEnemy() {
-    return this.enemySpawner.spawnVanguardEnemy();
+  spawnEnemy() {
+    return this.enemySpawner.spawnEnemy();
   }
 
   callNextSurvivalWave() { return this.survivalDirector.callNextWave(); }
@@ -757,8 +921,6 @@ export class TankGameEngine {
 
   isSegmentInSmoke(x0, z0, x1, z1) { return this.playerController.isSegmentInSmoke(x0, z0, x1, z1); }
 
-  mountGaragePart(instanceId, socketId = null) { return this.garageOps.mountPart(instanceId, socketId); }
-
   setGarageOpen(open) { return this.garageOps.setOpen(open); }
 
   persistComponentDamage() { this.garageOps.persistComponentDamage(); }
@@ -770,6 +932,17 @@ export class TankGameEngine {
   restoreAllComponents() { this.garageOps.restoreAllComponents(); }
 
   upgradeTrackInGarage(track) { return this.garageOps.upgradeTrack(track); }
+  getHqTree() {
+    if (this.profileMode === 'campaign' && !this.isBattleActive?.()) {
+      return normalizeHqTree(this.playerSave?.hqTree || this.hqTree);
+    }
+    return normalizeHqTree(this.hqTree || this.playerSave?.hqTree);
+  }
+  getHqBonuses() { return getHqBonuses(this.getHqTree()); }
+  upgradeHqNodeInGarage(nodeId) { return this.garageOps.upgradeHqNode(nodeId); }
+  buyMaxSupplyInGarage(kind) { return this.garageOps.buyMaxSupply(kind); }
+  buyApsModuleInGarage() { return this.garageOps.buyApsModule(); }
+  buyAtgmModuleInGarage() { return this.garageOps.buyAtgmModule(); }
 
   buyCannonAmmoInGarage() { return this.garageOps.buyCannonAmmo(); }
 
@@ -786,9 +959,56 @@ export class TankGameEngine {
     return this.launchReconDrone(this.aimWorld.x, this.aimWorld.z);
   }
 
-  toggleFavoritePart(instanceId) { this.garageOps.toggleFavoritePart(instanceId); }
-
-  abortMissionToGarage() { this.garageOps.abortMissionToGarage(); }
+  abortMission() {
+    // Players usually quit from the pause menu, so a paused mission counts as an abort too.
+    if (this.status === GameStatus.PLAYING || this.status === GameStatus.PAUSED) {
+      analyticsManager.trackEvent('mission_abort', {
+        mode: this.survivalState ? 'survival' : (this.activeMissionRun?.mode || 'campaign'),
+        sector_id: this.currentSectorIndex,
+        fps_avg: this.getAverageFps(),
+        fps_cap: this.fpsCap,
+      });
+    }
+    if (this.survivalState) {
+      this.rollbackBattlePurchases();
+      const campaignSave = this.campaignSaveRepo?.loadPlayerSave();
+      if (campaignSave && !this.survivalState.recordSummary) {
+        this.survivalState.recordSummary = recordSurvivalRun(
+          campaignSave,
+          this.survivalState,
+          this.kills
+        );
+        this.campaignSaveRepo.savePlayerSave(campaignSave);
+      }
+      this.survivalState = null;
+      this.setProfileMode('campaign');
+      this.status = GameStatus.MENU;
+      sound.stopEngineLoop();
+      this.syncAudioPauseState();
+      this.emitHudUpdate();
+      return;
+    }
+    this.rollbackBattlePurchases();
+    if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
+      const summary = settleMission({
+        playerSave: this.playerSave,
+        missionRun: this.activeMissionRun,
+        outcome: 'defeat',
+      });
+      this.lastSettlementSummary = summary;
+      this.saveRepo.savePlayerSave(this.playerSave);
+      this.saveRepo.recordMissionRun(this.activeMissionRun);
+      this.syncCampaignCredits();
+      this.saveProgress();
+    }
+    if (this.profileMode !== 'campaign') {
+      this.setProfileMode('campaign');
+    }
+    this.status = GameStatus.MENU;
+    sound.stopEngineLoop();
+    this.syncAudioPauseState();
+    this.emitHudUpdate();
+  }
 
   get inputCamera() {
     return (this._inputCamera ||= new InputCameraController(this));
@@ -836,7 +1056,6 @@ export class TankGameEngine {
     this.isAdPaused = next;
     this.keys = {};
     this.isMouseDown = false;
-    this.cameraRotating = false;
     this.syncAudioPauseState();
     if (!next && this.status === GameStatus.PLAYING) {
       this.renderer?.domElement?.focus?.({ preventScroll: true });
@@ -847,6 +1066,82 @@ export class TankGameEngine {
   /** Grants bonus credits (e.g. from voluntary rewarded ads) and persists to save. */
   grantCredits(amount) {
     return this.profileSave.grantCredits(amount);
+  }
+
+  /** Returns true while a mission/battle is active (not in main menu or already settled). */
+  isBattleActive() {
+    return (
+      this.status !== GameStatus.MENU &&
+      this.status !== GameStatus.VICTORY &&
+      this.status !== GameStatus.GAME_OVER
+    );
+  }
+
+  /** Syncs temporaryCredits from the persistent playerSave.credits balance. */
+  syncTemporaryCredits() {
+    this.temporaryCredits = Math.max(0, Math.floor(this.playerSave?.credits ?? 0));
+    return this.temporaryCredits;
+  }
+
+  /** Returns spendable credits (temporaryCredits during battle, persistent credits in menu). */
+  getAvailableCredits() {
+    if (this.isBattleActive()) {
+      return Math.max(0, Math.floor(this.temporaryCredits ?? 0));
+    }
+    return Math.max(0, Math.floor(this.playerSave?.credits ?? 0));
+  }
+
+  /** Adds earned battle credits to temporaryCredits without touching persistent credits until victory. */
+  addBattleCredits(amount) {
+    const delta = Math.max(0, Math.floor(Number(amount) || 0));
+    if (!delta) return 0;
+    this.temporaryCredits = Math.max(0, Math.floor(this.temporaryCredits ?? 0)) + delta;
+    this.creditsEarnedThisMission = (this.creditsEarnedThisMission || 0) + delta;
+    return delta;
+  }
+
+  /** Deducts an in-battle credit expense from temporaryCredits without touching persistent credits. */
+  spendBattleCredits(cost) {
+    const amount = Math.max(0, Math.floor(Number(cost) || 0));
+    if (this.getAvailableCredits() < amount) return false;
+    this.temporaryCredits = Math.max(0, Math.floor(this.temporaryCredits ?? 0) - amount);
+    return true;
+  }
+
+  /** Copies temporaryCredits into persistent playerSave.credits on victory. */
+  commitBattleCredits() {
+    if (this.playerSave) {
+      this.playerSave.credits = Math.max(0, Math.floor(this.temporaryCredits ?? 0));
+    }
+    this.preBattleUpgrades = null;
+    this.preBattleHqTree = null;
+    this.preBattleReconDroneOwned = Boolean(this.reconDroneOwned);
+    this.preBattleApsOwned = Boolean(this.apsOwned);
+    this.preBattleAtgmOwned = Boolean(this.atgmOwned);
+  }
+
+  /** Restores temporaryCredits from persistent playerSave.credits and reverts mid-battle permanent purchases. */
+  rollbackBattlePurchases() {
+    this.syncTemporaryCredits();
+    if (this.preBattleUpgrades) {
+      this.upgrades = { ...this.preBattleUpgrades };
+      this.preBattleUpgrades = null;
+    }
+    if (this.preBattleHqTree) {
+      this.hqTree = normalizeHqTree(this.preBattleHqTree);
+      this.preBattleHqTree = null;
+    }
+    this.reconDroneOwned = Boolean(this.preBattleReconDroneOwned);
+    this.apsOwned = Boolean(this.preBattleApsOwned);
+    this.atgmOwned = Boolean(this.preBattleAtgmOwned);
+    if (!this.apsOwned) this.apsAmmo = [0, 0, 0, 0];
+    if (!this.atgmOwned) this.missileAmmo = 0;
+    if (this.playerSave) {
+      if (this.profileMode === 'campaign') {
+        this.playerSave.hqTree = normalizeHqTree(this.hqTree);
+      }
+    }
+    this.recomputePlayerStats?.(true);
   }
 
   togglePause() {
@@ -908,6 +1203,10 @@ export class TankGameEngine {
     return this.inputCamera.cycleCameraPreset(preset);
   }
 
+  rotateCameraStep(steps = 1) {
+    return this.inputCamera.rotateCameraStep(steps);
+  }
+
   get powerupsController() {
     return (this._powerupsController ||= new PowerupsController(this));
   }
@@ -966,10 +1265,19 @@ export class TankGameEngine {
       const rawDelta = this.clock.getDelta();
       const dt = Math.min(rawDelta, 0.05);
 
-      if (!this.sceneOccluded) {
+      if (!this.sceneOccluded && !this.isWarmingUp) {
+        const perf = this.perfMonitor.enabled ? this.perfMonitor : null;
+        if (perf) perf.startFrame(rawDelta);
+
         const simDt = dt * this.getTimeScale();
+        let t0 = perf ? performance.now() : 0;
         this.update(simDt);
+        if (perf) perf.recordPhase('update', performance.now() - t0);
+
+        t0 = perf ? performance.now() : 0;
         this.modelFactory?.updateAnimatedTextures(simDt);
+        if (perf) perf.recordPhase('textures', performance.now() - t0);
+
         if (this.isGarageOpen) {
           if (!this._garageWindowEl?.isConnected) {
             this._garageWindowEl = document.querySelector('.garage-stage-window');
@@ -986,15 +1294,30 @@ export class TankGameEngine {
           if (!this._garageWindowRect && this._garageWindowEl) {
             this._garageWindowRect = this._garageWindowEl.getBoundingClientRect();
           }
+          t0 = perf ? performance.now() : 0;
           this.garageStage.render(this.renderer, this._garageWindowRect);
+          if (perf) perf.recordPhase('render', performance.now() - t0);
         } else {
+          t0 = perf ? performance.now() : 0;
           this.tileBatcher.sync();
+          if (perf) perf.recordPhase('tileBatcher', performance.now() - t0);
+
+          t0 = perf ? performance.now() : 0;
           this.renderer.render(this.scene, this.getActiveCamera());
+          if (perf) perf.recordPhase('render', performance.now() - t0);
+
           // Skip long gaps (hidden tab, debugger) so they don't drag the average down.
           if (this.status === GameStatus.PLAYING && rawDelta > 0 && rawDelta < 1) {
             this.fpsSampleFrames += 1;
             this.fpsSampleSec += rawDelta;
           }
+        }
+
+        if (perf) {
+          perf.endFrame(this.renderer, {
+            enemies: this.enemies?.length ?? 0,
+            projectiles: this.projectiles?.length ?? 0,
+          });
         }
       }
 
@@ -1016,6 +1339,7 @@ export class TankGameEngine {
 
     sound.setListener(this.playerX, this.playerZ, this.playerStats?.sightRadius || 28.0);
 
+    this.inputCamera.flushPointerAim();
     this.aimReticle.position.set(this.aimWorld.x, 0, this.aimWorld.z);
     this.aimReticle.rotation.y = elapsed * 2.2;
 
@@ -1048,89 +1372,117 @@ export class TankGameEngine {
       return;
     }
 
-    if (this.status === GameStatus.PLAYING) {
-      this.onBeforeStep?.(dt, elapsed);
-      this.componentDamageCooldown = Math.max(0, this.componentDamageCooldown - dt);
-      this.updatePlayer(dt, elapsed);
-      this.playerController.updateBaseMaintenance(dt);
-      this.updateApsInterception(dt);
-      this.updateSpawnerLogic(dt);
-      if (this.contractState) {
-        this.contractDirector.update(dt, elapsed);
-      }
-      this.updateEnemies(dt, elapsed);
-      this.defenseTurretsCtrl.update(dt, elapsed);
-      this.updateProjectiles(dt);
-      this.updateMines(dt, elapsed);
-      this.updateLasers(dt);
-      this.explosions.updateHazardZones(dt, elapsed);
-      this.updatePowerUps(dt, elapsed);
-      this.powerupsController.updateAirDrops(dt, elapsed);
-      this.airSupportController.update(dt, elapsed);
-      this.reconDroneController.update(dt, elapsed);
-      this.playerController.updateSmokeAndLoot(dt);
-      this.updateBarrelExplosions(dt);
-      this.terrainDestruction.updateBurningOil(dt);
-      this.updateBrickRubble(dt);
-      this.forestFire.update(dt, elapsed);
-    } else if (this.status === GameStatus.VICTORY && this.victoryCinematicsTimer > 0) {
-      const { finished, restoredFrustum } = stepVictoryCinematics(this.victoryCinematics, dt, {
-        onSpark: (x, z) => this.spawnSparks?.(x, 0.7, z, 0xff8833, 2),
-      });
-      this.victoryCinematicsTimer = this.victoryCinematics?.remaining ?? 0;
-      this.updateProjectiles(dt);
-      this.explosions.updateHazardZones(dt, elapsed);
-      this.updateBarrelExplosions(dt);
-      this.terrainDestruction.updateBurningOil(dt);
-      this.updateBrickRubble(dt);
-      this.forestFire.update(dt, elapsed);
-      if (this.playerRig && !this.playerDeathState) {
+    const perf = this.perfMonitor.enabled ? this.perfMonitor : null;
+    this._inUpdateStep = true;
+    try {
+      if (this.status === GameStatus.PLAYING) {
+        let t = perf ? performance.now() : 0;
+        this.onBeforeStep?.(dt, elapsed);
+        this.componentDamageCooldown = Math.max(0, this.componentDamageCooldown - dt);
+        this.updatePlayer(dt, elapsed);
+        this.playerController.updateBaseMaintenance(dt);
+        this.updateApsInterception(dt);
+        if (perf) perf.recordUpdatePhase('player', performance.now() - t);
+
+        t = perf ? performance.now() : 0;
+        this.updateSpawnerLogic(dt);
+        if (this.contractState) {
+          this.contractDirector.update(dt, elapsed);
+        }
+        this.updateEnemies(dt, elapsed);
+        this.defenseTurretsCtrl.update(dt, elapsed);
+        this.trainController.update(dt, elapsed);
+        if (perf) perf.recordUpdatePhase('enemies', performance.now() - t);
+
+        t = perf ? performance.now() : 0;
+        this.updateProjectiles(dt);
+        this.updateMines(dt, elapsed);
+        this.updateLasers(dt);
+        if (perf) perf.recordUpdatePhase('projectiles', performance.now() - t);
+
+        t = perf ? performance.now() : 0;
+        this.explosions.updateHazardZones(dt, elapsed);
+        this.updatePowerUps(dt, elapsed);
+        this.powerupsController.updateAirDrops(dt, elapsed);
+        this.airSupportController.update(dt, elapsed);
+        this.reconDroneController.update(dt, elapsed);
+        this.playerController.updateSmokeAndLoot(dt);
+        this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateTransformerPulses(dt);
+        this.terrainDestruction.updateBurningOil(dt);
+        this.updateBrickRubble(dt);
+        this.forestFire.update(dt, elapsed);
+        if (perf) perf.recordUpdatePhase('world', performance.now() - t);
+      } else if (this.status === GameStatus.VICTORY && this.victoryCinematicsTimer > 0) {
+        const { finished, restoredFrustum } = stepVictoryCinematics(this.victoryCinematics, dt, {
+          onSpark: (x, z) => this.spawnSparks?.(x, 0.7, z, 0xff8833, 2),
+        });
+        this.victoryCinematicsTimer = this.victoryCinematics?.remaining ?? 0;
+        this.updateProjectiles(dt);
+        this.explosions.updateHazardZones(dt, elapsed);
+        this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateTransformerPulses(dt);
+        this.terrainDestruction.updateBurningOil(dt);
+        this.updateBrickRubble(dt);
+        this.forestFire.update(dt, elapsed);
+        if (this.playerRig && !this.playerDeathState) {
+          const canHover = Boolean(this.playerStats?.canHover);
+          const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : TANK_RIDE_HEIGHT;
+          this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
+          this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
+        }
+        if (finished) {
+          if (restoredFrustum) {
+            this.frustumSize = restoredFrustum;
+            this.updateCameraProjection?.();
+          }
+          this.victoryCinematics = null;
+          this.emitHudUpdate();
+        }
+      } else if (this.status === GameStatus.GAME_OVER && this.defeatCinematicsTimer > 0) {
+        this.defeatCinematicsTimer = Math.max(0, this.defeatCinematicsTimer - dt);
+        this.playerController.updatePlayerDeathSequence(dt);
+        this.updateProjectiles(dt);
+        this.explosions.updateHazardZones(dt, elapsed);
+        this.updateBarrelExplosions(dt);
+        this.terrainDestruction.updateTransformerPulses(dt);
+        this.terrainDestruction.updateBurningOil(dt);
+        this.updateBrickRubble(dt);
+        this.forestFire.update(dt, elapsed);
+        if (this.defeatCinematicsTimer <= 0) {
+          this.emitHudUpdate();
+        }
+      } else if (this.playerRig && !this.playerDeathState) {
         const canHover = Boolean(this.playerStats?.canHover);
-        const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
+        const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : TANK_RIDE_HEIGHT;
         this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
+        if (this.inspectMode) {
+          this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;
+        }
         this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
       }
-      if (finished) {
-        if (restoredFrustum) {
-          this.frustumSize = restoredFrustum;
-          this.updateCameraProjection?.();
-        }
-        this.victoryCinematics = null;
-        this.emitHudUpdate();
-      }
-    } else if (this.status === GameStatus.GAME_OVER && this.defeatCinematicsTimer > 0) {
-      this.defeatCinematicsTimer = Math.max(0, this.defeatCinematicsTimer - dt);
-      this.playerController.updatePlayerDeathSequence(dt);
-      this.updateProjectiles(dt);
-      this.explosions.updateHazardZones(dt, elapsed);
-      this.updateBarrelExplosions(dt);
-      this.terrainDestruction.updateBurningOil(dt);
-      this.updateBrickRubble(dt);
-      this.forestFire.update(dt, elapsed);
-      if (this.defeatCinematicsTimer <= 0) {
-        this.emitHudUpdate();
-      }
-    } else if (this.playerRig && !this.playerDeathState) {
-      const canHover = Boolean(this.playerStats?.canHover);
-      const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
-      this.playerRig.root.position.set(this.playerX, hoverY, this.playerZ);
-      if (this.inspectMode) {
-        this.playerRig.turret.rotation.y = this.playerHullAngle + Math.sin(elapsed * 0.85) * 0.55;
-      }
-      this.playerController.syncPlayerVisuals(dt * 1.2, elapsed);
-    }
 
-    this.updateParticles(dt);
-    this.inputCamera.updateCamera(dt, elapsed);
-    this.fx.update(dt, this.getActiveCamera(), this.renderer);
+      const fxStart = perf ? performance.now() : 0;
+      this.updateParticles(dt);
+      this.inputCamera.updateCamera(dt, elapsed);
+      this.fx.update(dt, this.getActiveCamera(), this.renderer);
+      if (perf) perf.recordUpdatePhase('fx', performance.now() - fxStart);
+    } finally {
+      this._inUpdateStep = false;
+    }
 
     if (!(this.status === GameStatus.PAUSED && this.airSupportTargeting)) {
       this.hudSyncAccumulator += dt;
       const hudInterval = this.status === GameStatus.PLAYING ? (this.quality === 'low' ? 0.2 : 0.12) : 0.5;
-      if (this.hudSyncAccumulator >= hudInterval) {
+      if (this._hudDirty || this.hudSyncAccumulator >= hudInterval) {
         this.hudSyncAccumulator = 0;
+        this._hudDirty = false;
+        const hudStart = perf ? performance.now() : 0;
         this.emitHudUpdate();
+        if (perf) perf.recordUpdatePhase('hud', performance.now() - hudStart);
       }
+    } else if (this._hudDirty) {
+      this.emitHudUpdate();
     }
   }
 
@@ -1363,8 +1715,8 @@ export class TankGameEngine {
     this.explosions.detonateThermobaricAt(x, z, radius, damage, fromPlayer);
   }
 
-  detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit = null, isEnvironmental = false, penetration = 0, sourceWeapon = null) {
-    this.explosions.detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit, isEnvironmental, penetration, sourceWeapon);
+  detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit = null, isEnvironmental = false, penetration = 0, sourceWeapon = null, airStrikeId = null) {
+    this.explosions.detonateExplosionAt(x, z, radius, damage, fromPlayer, componentHit, isEnvironmental, penetration, sourceWeapon, airStrikeId);
   }
 
   /** Armour of the hull side facing a blast centre (armour always works per side). */
@@ -1386,21 +1738,33 @@ export class TankGameEngine {
     this.victoryCinematicsTimer = this.victoryCinematics.remaining;
     sound.stopEngineLoop();
     if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
+      this.commitBattleCredits();
+      if (this.profileMode === 'campaign') {
+        this.playerSave.hqTree = normalizeHqTree(this.hqTree);
+      }
       this.lastSettlementSummary = settleMission({
         playerSave: this.playerSave,
         missionRun: this.activeMissionRun,
         outcome: 'victory',
       });
+      this.syncTemporaryCredits();
       this.playerSave.completedMissions ||= {};
-      this.playerSave.completedMissions[this.activeMissionRun.missionId] = { completedAt: Date.now() };
+      const prevCompletion = this.playerSave.completedMissions[this.activeMissionRun.missionId];
+      const prevHardMode = Boolean(prevCompletion?.hardMode);
+      this.playerSave.completedMissions[this.activeMissionRun.missionId] = {
+        ...(prevCompletion && typeof prevCompletion === 'object' ? prevCompletion : {}),
+        completedAt: Date.now(),
+        hardMode: prevHardMode || Boolean(this.activeMissionRun.hardMode),
+      };
       this.cannonAmmo = this.getPlayerMaxCannonAmmo();
-      this.missileAmmo = this.getPlayerMaxMissileAmmo();
-      this.playerController.initApsLaunchers(this.getPlayerMaxApsAmmo());
+      this.missileAmmo = this.atgmOwned ? this.getPlayerMaxMissileAmmo() : 0;
+      if (this.apsOwned) {
+        this.playerController.initApsLaunchers(this.getPlayerMaxApsAmmo());
+      } else {
+        this.apsAmmo = [0, 0, 0, 0];
+      }
       this.garageOps.restoreAllComponents();
       this.playerHp = this.playerMaxHp;
-      this.playerSave.apsAmmo = [...this.apsAmmo];
-      this.playerSave.missileAmmo = this.missileAmmo;
-      this.playerSave.repairKitCharges = this.repairKitState?.charges ?? 0;
       this.saveRepo.savePlayerSave(this.playerSave);
       this.saveRepo.recordMissionRun(this.activeMissionRun);
     }
@@ -1486,7 +1850,9 @@ export class TankGameEngine {
       pt.life -= dt;
       if (pt.life <= 0) {
         this.fxGroup.remove(pt.mesh);
-        this.particles.splice(i, 1);
+        const last = this.particles.length - 1;
+        if (i !== last) this.particles[i] = this.particles[last];
+        this.particles.pop();
         continue;
       }
 
@@ -1510,8 +1876,8 @@ export class TankGameEngine {
     this.physics.resolveEnemyCollisions();
   }
 
-  checkTankWallCollision(x, z, radius, canCrossWater = false) {
-    return this.physics.checkTankWallCollision(x, z, radius, canCrossWater);
+  checkTankWallCollision(x, z, radius, canCrossWater = false, canCrushSandbags = false) {
+    return this.physics.checkTankWallCollision(x, z, radius, canCrossWater, canCrushSandbags);
   }
 
   lerpAngle(current, target, alpha) {
@@ -1519,6 +1885,11 @@ export class TankGameEngine {
   }
 
   emitHudUpdate() {
+    if (this._inUpdateStep && this.status === GameStatus.PLAYING) {
+      this._hudDirty = true;
+      return;
+    }
+    this._hudDirty = false;
     this.onHudUpdate?.(buildHudSnapshot(this), { ...this.upgrades });
   }
 
@@ -1526,6 +1897,17 @@ export class TankGameEngine {
 
   dispose() {
     this.isDisposed = true;
+    this.saveRepo?.flushPendingSave?.();
+    this.perfMonitor?.dispose();
+    // Off-scene objects kept alive only so their shader programs stay compiled.
+    if (this.shaderWarmup) {
+      this.shaderWarmup.batcher?.reset();
+      disposeOwned(this.shaderWarmup.meshes);
+      disposeOwned(this.shaderWarmup.tiles);
+      this.shaderWarmup = null;
+    }
+    this._tankWarmupRigs?.forEach((root) => disposeOwned(root));
+    this._tankWarmupRigs = null;
     this.garageStage?.dispose();
     this.modelFactory.brickModels.dispose();
     this.modelFactory.concreteModels?.dispose?.();
@@ -1552,6 +1934,12 @@ export class TankGameEngine {
     this._garageWindowRect = null;
     window.removeEventListener('pointerup', this.handlePointerUp);
     window.removeEventListener('pointercancel', this.handlePointerUp);
+    if (this.handlePageHide) {
+      window.removeEventListener('pagehide', this.handlePageHide);
+    }
+    if (this.handleVisibilityChange && typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    }
 
     const canvas = this.renderer.domElement;
     canvas.removeEventListener('pointermove', this.handlePointerMove);

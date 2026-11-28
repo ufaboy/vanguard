@@ -73,7 +73,7 @@ const game = {
   screenshot: [
     'https://battletank.online/images/home-hero.webp',
     'https://battletank.online/images/home-battle.webp',
-    'https://battletank.online/images/campaign-map-clean.webp',
+    'https://battletank.online/images/campaign/mission-01.webp',
     'https://battletank.online/images/survival-hero.webp',
   ],
   description: 'Free 3D isometric tactical tank game for the web browser, inspired by the classic Battle City, with 38 campaign missions, Command Base defense, destructible 40x40 arenas, 5-tier modular tank upgrades, directional armor, 4-Corner APS, homing ATGM missiles, 12 enemy classes and 4 Sector Bosses.',
@@ -146,11 +146,17 @@ const faqPage = {
         </p>
 
         <div class="hero-tactical-actions">
-          <a class="armored-action-btn primary" href={href('campaign')}>
+          <a class="armored-action-btn primary desktop-edition-cta" href={href('campaign')}>
             <span aria-hidden="true"></span>
             <span class="btn-body">
               <small>{t('PRIMARY CAMPAIGN')}</small>
               <strong>{t('DEPLOY TO THE FRONT')} <span class="action-arrow" aria-hidden="true">»</span></strong>
+            </span>
+          </a>
+          <a class="armored-action-btn secondary mobile-edition-cta" href="https://mobile.battletank.online/">
+            <span class="btn-body">
+              <small>{t('PLAYING ON A PHONE?')}</small>
+              <strong>{t('OPEN MOBILE VERSION')}</strong>
             </span>
           </a>
         </div>

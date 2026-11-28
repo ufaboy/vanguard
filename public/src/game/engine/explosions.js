@@ -31,6 +31,39 @@ function computeThermobaricDamage(damage, dist, radius) {
   return base * 0.75 * (1 - t) + minDmg * t;
 }
 
+function collectMineMaterials(mesh) {
+  const materials = [];
+  if (typeof mesh?.traverse === 'function') {
+    mesh.traverse((child) => {
+      if (!child?.material) return;
+      const mats = Array.isArray(child.material) ? child.material : [child.material];
+      for (const mat of mats) {
+        if (!mat) continue;
+        materials.push({
+          mat,
+          baseOpacity: mat.opacity ?? 1,
+          baseTransparent: Boolean(mat.transparent),
+        });
+      }
+    });
+  }
+  return materials;
+}
+
+function applyMineRevealAlpha(mine, alpha) {
+  if (!mine?._materials?.length) return;
+  const clamped = Math.max(0, Math.min(1, alpha));
+  for (const entry of mine._materials) {
+    const { mat, baseOpacity, baseTransparent } = entry;
+    const nextTransparent = clamped < 1 || baseTransparent;
+    if (mat.transparent !== nextTransparent) {
+      mat.transparent = nextTransparent;
+      mat.needsUpdate = true;
+    }
+    mat.opacity = baseOpacity * clamped;
+  }
+}
+
 /** Manages land mines, artillery hazard zones, and area-of-effect explosions. */
 export class ExplosionsController {
   constructor(engine) {
@@ -41,10 +74,10 @@ export class ExplosionsController {
     const { engine } = this;
     const mesh = engine.modelFactory.createLandMineMesh();
     mesh.position.set(x, 0, z);
-    engine.entityGroup.add(mesh);
-    if (!opts.silent) sound.playMinePlant();
-
-    engine.mines.push({
+    const discovered = Boolean(opts.discovered);
+    const revealAlpha = discovered ? 1 : 0;
+    mesh.visible = discovered;
+    const mine = {
       id: engine.nextEnemyId++,
       x,
       z,
@@ -53,19 +86,50 @@ export class ExplosionsController {
       damage: opts.damage ?? LAND_MINE.DAMAGE,
       neutral: Boolean(opts.neutral),
       mapMine: Boolean(opts.mapMine),
+      isAirSupport: Boolean(opts.isAirSupport),
+      airStrikeId: opts.airStrikeId ?? null,
+      discovered,
+      revealAlpha,
+      _materials: collectMineMaterials(mesh),
       mesh,
-    });
+    };
+    if (!discovered) {
+      applyMineRevealAlpha(mine, 0);
+    }
+    engine.entityGroup.add(mesh);
+    if (!opts.silent) sound.playMinePlant();
+
+    engine.mines.push(mine);
   }
 
   updateMines(dt, elapsed) {
     const { engine } = this;
+    const detectRadius = LAND_MINE.DETECT_RADIUS_CELLS * TILE_SIZE;
+    const fadeSec = Math.max(0.01, LAND_MINE.REVEAL_FADE_SEC || 0.25);
+
     for (let i = engine.mines.length - 1; i >= 0; i--) {
       const m = engine.mines[i];
       if (!m) continue;
       if (m.armTimer > 0) m.armTimer -= dt;
       if (Number.isFinite(m.life)) m.life -= dt;
 
-      m.mesh.rotation.y = elapsed * 1.5;
+      if (!m.discovered) {
+        const playerNear = Math.hypot(engine.playerX - m.x, engine.playerZ - m.z) <= detectRadius;
+        const reconRevealed = Boolean(engine.isPointRevealedByReconDrone?.(m.x, m.z));
+        if (playerNear || reconRevealed) {
+          m.discovered = true;
+          if (m.mesh) m.mesh.visible = true;
+          sound.playMineDetect();
+        }
+      }
+
+      if (m.discovered) {
+        if (m.mesh) m.mesh.rotation.y = elapsed * 1.5;
+        if (m.revealAlpha < 1) {
+          m.revealAlpha = Math.min(1, m.revealAlpha + dt / fadeSec);
+          applyMineRevealAlpha(m, m.revealAlpha);
+        }
+      }
 
       if (m.life <= 0) {
         engine.entityGroup.remove(m.mesh);
@@ -129,6 +193,8 @@ export class ExplosionsController {
           );
           engine.damageEnemy(e, eff, {
             aspect: determineHitAspect(e.x, e.z, e.hullAngle, m.x, m.z),
+            isAirSupport: Boolean(m.isAirSupport),
+            airStrikeId: m.airStrikeId ?? null,
           });
         }
       }
@@ -268,7 +334,7 @@ export class ExplosionsController {
     }
   }
 
-  detonateThermobaricAt(x, z, radius, damage, fromPlayer = false) {
+  detonateThermobaricAt(x, z, radius, damage, fromPlayer = false, airStrikeId = null) {
     const { engine } = this;
     sound.playExplosion(1.9, { x, z });
     engine.screenShake = Math.max(engine.screenShake || 0, 0.85);
@@ -289,6 +355,7 @@ export class ExplosionsController {
     const minRow = Math.max(0, minG.row - 1);
     const maxRow = Math.min(engine.grid.length - 1, maxG.row + 1);
     const minCol = Math.max(0, minG.col - 1);
+    const damagedPairs = new Set();
     for (let r = minRow; r <= maxRow; r++) {
       const row = engine.grid[r];
       if (!row) continue;
@@ -312,6 +379,14 @@ export class ExplosionsController {
           rebuildIce = true;
         } else if (cell.type === TileType.BOXES || cell.type === TileType.WATER_TOWER || cell.type === TileType.BRICK) {
           engine.damageTileCell(cell, tileDmg, pos.x, pos.z, fromPlayer);
+        } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR || cell.type === TileType.LOCOMOTIVE) {
+          if (!damagedPairs.has(cell)) {
+            damagedPairs.add(cell);
+            if (cell.pairPartner) damagedPairs.add(cell.pairPartner);
+            engine.damageTileCell(cell, Math.max(4, tileDmg), pos.x, pos.z, fromPlayer);
+          }
+        } else if (cell.type === TileType.TRANSFORMER || cell.type === TileType.SANDBAGS) {
+          engine.damageTileCell(cell, Math.max(2, tileDmg), pos.x, pos.z, fromPlayer);
         } else if (cell.type === TileType.BARREL) {
           engine.explodeBarrel(cell, fromPlayer);
         } else if (cell.type === TileType.OIL_SLICK) {
@@ -325,6 +400,18 @@ export class ExplosionsController {
           baseHitDmg = Math.max(baseHitDmg, tileDmg);
         } else if (cell.type === TileType.ENEMY_BASE && fromPlayer) {
           engine.damageEnemyBase(cell, tileDmg, pos.x, pos.z);
+        }
+      }
+    }
+    if (engine.trainController) {
+      for (const train of engine.trainController.trains || []) {
+        if (train.offscreen || train.destroyed) continue;
+        for (const unit of train.units) {
+          if (!unit.alive) continue;
+          const d = Math.hypot(unit.x - x, unit.z - z);
+          if (d <= radius + unit.hitRadius) {
+            engine.trainController.damageUnit(train, unit, unit.cfg.artilleryDamage, unit.x, unit.z);
+          }
         }
       }
     }
@@ -343,6 +430,7 @@ export class ExplosionsController {
     if (impactCell && impactCell.type !== TileType.RUBBLE && radius >= TILE_SIZE * 1.1) {
       engine.terrainDestruction?.convertCellToCrater?.(impactCell);
     }
+    engine.terrainDestruction?.crushPropsNear?.(x, z, searchSpan);
 
     if (fromPlayer) {
       const targets = [...engine.enemies];
@@ -359,6 +447,8 @@ export class ExplosionsController {
           );
           engine.damageEnemy(e, eff, {
             aspect: determineHitAspect(e.x, e.z, e.hullAngle, x, z),
+            isAirSupport: Boolean(airStrikeId || sourceWeapon === 'AIR_BOMB' || sourceWeapon === 'AIR_MINE'),
+            airStrikeId,
           });
         }
       }
@@ -392,7 +482,8 @@ export class ExplosionsController {
     componentHit = null,
     isEnvironmental = false,
     penetration = 0,
-    sourceWeapon = null
+    sourceWeapon = null,
+    airStrikeId = null
   ) {
     const { engine } = this;
     if (isEnvironmental) {
@@ -413,6 +504,7 @@ export class ExplosionsController {
     const maxRow = Math.min(GRID_SIZE - 1, maxG.row + 1);
     const minCol = Math.max(0, minG.col - 1);
     const maxCol = Math.min(GRID_SIZE - 1, maxG.col + 1);
+    const damagedPairs = new Set();
     for (let r = minRow; r <= maxRow; r++) {
       for (let c = minCol; c <= maxCol; c++) {
         const cell = engine.grid[r]?.[c];
@@ -428,6 +520,14 @@ export class ExplosionsController {
           } else if (cell.type === TileType.BARREL) {
             engine.explodeBarrel(cell, fromPlayer);
           } else if (cell.type === TileType.WATER_TOWER) {
+            engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
+          } else if (cell.type === TileType.CONTAINER || cell.type === TileType.RAIL_CAR || cell.type === TileType.LOCOMOTIVE) {
+            if (!damagedPairs.has(cell)) {
+              damagedPairs.add(cell);
+              if (cell.pairPartner) damagedPairs.add(cell.pairPartner);
+              engine.damageTileCell(cell, 4, pos.x, pos.z, fromPlayer);
+            }
+          } else if (cell.type === TileType.TRANSFORMER || cell.type === TileType.SANDBAGS) {
             engine.damageTileCell(cell, 2, pos.x, pos.z, fromPlayer);
           } else if (cell.type === TileType.OIL_SLICK) {
             engine.terrainDestruction?.igniteOilSlick?.(cell);
@@ -447,6 +547,18 @@ export class ExplosionsController {
         }
       }
     }
+    if (engine.trainController) {
+      for (const train of engine.trainController.trains || []) {
+        if (train.offscreen || train.destroyed) continue;
+        for (const unit of train.units) {
+          if (!unit.alive) continue;
+          const d = Math.hypot(unit.x - x, unit.z - z);
+          if (d <= radius + unit.hitRadius) {
+            engine.trainController.damageUnit(train, unit, unit.cfg.artilleryDamage, unit.x, unit.z);
+          }
+        }
+      }
+    }
     if (hitCommandBase) {
       engine.terrainDestruction.damageCommandBase(Math.min(damage || 18, 22), x, z);
     }
@@ -456,6 +568,7 @@ export class ExplosionsController {
     if (impactCell && impactCell.type !== TileType.RUBBLE && radius >= TILE_SIZE * 1.1) {
       engine.terrainDestruction?.convertCellToCrater?.(impactCell);
     }
+    engine.terrainDestruction?.crushPropsNear?.(x, z, searchSpan);
 
     if (fromPlayer) {
       const targets = [...engine.enemies];
@@ -475,6 +588,8 @@ export class ExplosionsController {
           );
           engine.damageEnemy(e, eff, {
             aspect: determineHitAspect(e.x, e.z, e.hullAngle, x, z),
+            isAirSupport: Boolean(airStrikeId || sourceWeapon === 'AIR_BOMB' || sourceWeapon === 'AIR_MINE'),
+            airStrikeId,
           });
         }
       }

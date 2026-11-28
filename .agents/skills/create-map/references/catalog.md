@@ -45,7 +45,7 @@ Snapshot of the runtime contract. Before relying on a value, confirm it in `publ
 Each connected cluster of `A` (or of `P`) becomes one modular building with outward-facing walls and one style. The style mix comes from `environment.theme` (`THEME_ITERATION2_SHARE` in `building-layout.js`): `urban` is all residential; `industrial` and `desert` are mostly warehouses / factories / offices; `coast` and `capital` are mostly residential. So:
 
 - One cluster = one building. Separate neighbouring houses with at least one cell (a yard, a lane) or by alternating `A` and `P`.
-- The cluster's shape is the building's footprint: use rectangles, L-shapes and courtyard blocks of real-looking proportions, not single cells.
+- The cluster's shape is the building's footprint: use `2×N` footprints, L-/U-/T-/H-/cross-shapes, or courtyard rings of real-looking proportions, not single cells. Residential and regular `A`/`P` buildings must not have enclosed interior (`core`) cells (only large `P` industrial halls/warehouses may). Thin 1-cell wings/rings are allowed; prefer open courtyards with a 1–2 cell driveway, while closed decorative courtyards holding grass (`V`), trees (`F`), crates (`Q`), or ground (`.`) are also allowed.
 - `B` and `C` always render as plain wall blocks, not buildings.
 
 ## What may stand on what (`canPlaceOnSurface`)
@@ -91,7 +91,7 @@ Use a recent map of the same mode as the template. Typical top-level keys:
 - `environment` (`theme`, `tint`, `fogColor`, `groundColor`)
 - `design` (`enemySide`, `tacticalIdentity`, `breaches[]`, `reference`)
 - `decoration` (see decoration.md), `landmarks3d`, optional `mines`, `mineSigns`
-- `enemies` (`initialSpawnCount`, `maxConcurrent`, `spawnIntervalSec`, `entrances[{id,row,col}]`, `encounters[{id,label,enemies[],initialCells?,entrances[],patrolRoute[],recoverySec}]`, optional `nextWave: { when: "cleared", delaySec }` to start each group exactly `delaySec` after the previous one is fully destroyed; without it the next group starts when at most one tank is left and `recoverySec` is halved) and `enemyPool`
+- `enemies` (`initialSpawnCount`, `maxConcurrent`, `spawnIntervalSec`, `entrances[{id,row,col}]`, `encounters[{id,label,enemies[],initialCells?,entrances[],patrolRoute[],recoverySec}]`, optional `nextWave: { when: "cleared", delaySec }` to start each group exactly `delaySec` after the previous one is fully destroyed; without it the next group starts when at most one tank is left and `recoverySec` is halved)
 - `surfaceLayout`, `objectLayout`
 
 Map text (`name`, `subtitle`, `objective`, encounter labels, decoration labels) is English. The skill does not add i18n entries; that happens when the map is integrated.

@@ -10,10 +10,12 @@ export function isUsefulPowerUp(type, state, pending = []) {
       return (state.cannonAmmo ?? 0) + count * CANNON_AMMO.PICKUP_AMMO < maxAmmo;
     }
     case POWERUP.MISSILE: {
+      if (!state.atgmOwned) return false;
       const maxMissiles = state.missileMaxAmmo ?? getMaxMissileAmmo(state.upgrades?.frame || 1);
       return state.missileAmmo + count * MISSILE.PICKUP_AMMO < maxMissiles;
     }
     case POWERUP.APS: {
+      if (!state.apsOwned) return false;
       const maxAps = state.apsMaxAmmo ?? getMaxApsAmmo(state.upgrades?.frame || 1);
       return state.apsAmmo.reduce((sum, n) => sum + n, 0) + count * APS.PICKUP_ROUNDS < maxAps;
     }

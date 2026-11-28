@@ -14,8 +14,8 @@ export const CAMERA_LABELS = Object.freeze({
 export const FPS_CAP_OPTIONS = Object.freeze([60, 30, 0]);
 export const TOUCH_CONTROLS_MODES = Object.freeze(['auto', 'on', 'off']);
 
-const UPGRADES_KEY = 'battle_tank_upgrades_v3';
-const SETTINGS_KEY = 'battle_tank_settings_v1';
+const UPGRADES_KEY = 'battle_tank_tank_config';
+const SETTINGS_KEY = 'battle_tank_settings';
 
 function clampTier(val, fallback = 1) {
   const num = Number(val);
@@ -32,8 +32,8 @@ export function loadUpgrades() {
     if (parsed && typeof parsed.cannon === 'number') {
       return {
         cannon: clampTier(parsed.cannon, 1),
-        chassis: clampTier(parsed.chassis ?? parsed.vehicleFrame, 1),
-        frame: clampTier(parsed.frame ?? parsed.vehicleFrame, 1),
+        chassis: clampTier(parsed.chassis, 1),
+        frame: clampTier(parsed.frame, 1),
         engine: clampTier(parsed.engine, 1),
         armor: clampTier(parsed.armor, 1),
       };
@@ -109,13 +109,12 @@ export function loadPlayerSave() {
 }
 
 const PROGRESS_STORAGE_KEYS = Object.freeze([
-  'battle_tank_player_save_v1',
-  'battle_tank_survival_save_v1',
-  'battle_tank_contract_save_v1',
-  'battle_tank_upgrades_v3',
-  'battle_tank_survival_upgrades_v1',
-  'battle_tank_contract_upgrades_v1',
-  'battle_tank_highscore',
+  'battle_tank_player_save',
+  'battle_tank_survival_save',
+  'battle_tank_contract_save',
+  'battle_tank_tank_config',
+  'battle_tank_survival_tank_config',
+  'battle_tank_contract_tank_config',
 ]);
 
 /** Clears all campaign, survival, contract, upgrade, and medal progress while preserving user preferences. */

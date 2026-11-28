@@ -10,4 +10,19 @@ export default defineConfig({
   build: { format: 'preserve' },
   compressHTML: false,
   devToolbar: { enabled: false },
+  vite: {
+    plugins: [
+      {
+        name: 'battlefield-clean-url-dev',
+        configureServer(server) {
+          server.middlewares.use((req, _res, next) => {
+            if (req.url && /^\/battlefield(?:\?|$)/.test(req.url)) {
+              req.url = req.url.replace(/^\/battlefield/, '/battlefield.html');
+            }
+            next();
+          });
+        },
+      },
+    ],
+  },
 });

@@ -653,6 +653,16 @@ body[data-page="contract"] .menu-page {
   max-width: 320px;
 }
 
+.mobile-edition-cta {
+  display: none;
+}
+
+@media (max-width: 768px), (pointer: coarse) and (orientation: portrait) {
+  .mobile-edition-cta {
+    display: flex;
+  }
+}
+
 /* Primary Chamfered Action Button */
 .armored-action-btn {
   position: relative;
@@ -1011,33 +1021,10 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   color: #e2e8f0;
 }
 
-.campaign-goal-progress {
-  flex-shrink: 0;
-  padding: 6px 14px;
-  background: #111827;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  color: #bef264;
-  font-family: var(--font-mono, monospace);
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-}
-
 .campaign-brief-block {
   display: flex;
   flex-direction: column;
   gap: 5px;
-}
-
-.campaign-brief-section-label {
-  font-family: var(--font-mono, monospace);
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #64748b;
 }
 
 .campaign-nav {
@@ -1279,8 +1266,17 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   min-width: 270px;
   max-width: 604px;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.campaign-region-map-panel .campaign-brief-actions {
+  margin-top: 0;
+}
+
+.campaign-region-map-panel .brief-start-btn {
+  width: 100%;
 }
 
 .campaign-region-map-card {
@@ -1600,6 +1596,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   .campaign-workspace {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    align-items: start;
   }
   .campaign-region-map-panel,
   .campaign-recon-panel {
@@ -1618,8 +1615,9 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   min-width: 270px;
   max-width: 604px;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
 }
 
 .campaign-recon-square {
@@ -1904,7 +1902,7 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   -webkit-user-select: text;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 18px;
   padding: 28px 32px;
   background: linear-gradient(180deg, #101723 0%, #0a0f17 100%);
@@ -1913,22 +1911,6 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   border-radius: 10px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
 }
-
-.campaign-brief-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.campaign-brief-sector {
-  font-family: var(--font-mono, monospace);
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: var(--region-accent, #fbbf24);
-}
-
 
 .campaign-brief-title {
   margin: 0;
@@ -1952,6 +1934,11 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   gap: 14px;
 }
 
+.campaign-brief-details[hidden],
+.campaign-brief-block[hidden] {
+  display: none;
+}
+
 .campaign-brief-text {
   margin: 0;
   font-size: 16.5px;
@@ -1971,21 +1958,98 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
 }
 
 .campaign-roster-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 7px 10px;
   margin-top: 4px;
 }
 
 .campaign-roster-chip {
-  padding: 6px 12px;
-  background: #131b26;
-  border: 1px solid #2b3849;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 11px;
+  background: rgba(19, 27, 38, 0.85);
+  border: 1px solid #243142;
+  border-left: 2px solid #3b4d63;
   border-radius: 5px;
-  color: #e2e8f0;
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.campaign-roster-chip[data-boss="true"] {
+  border-left-color: #ef4444;
+  background: rgba(45, 18, 24, 0.55);
+}
+
+.campaign-roster-name {
+  min-width: 0;
+}
+
+.campaign-roster-count {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid #2b3849;
+  color: #fbbf24;
   font-family: var(--font-mono, monospace);
-  font-size: 13.5px;
+  font-size: 12px;
   font-weight: 700;
+}
+
+a.campaign-roster-chip:hover,
+a.campaign-roster-chip:focus-visible {
+  background: #1a2636;
+  border-color: #f59e0b;
+  border-left-color: #f59e0b;
+  color: #f8fafc;
+  outline: none;
+}
+
+a.campaign-roster-chip:hover .campaign-roster-count,
+a.campaign-roster-chip:focus-visible .campaign-roster-count {
+  border-color: rgba(245, 158, 11, 0.55);
+  color: #fde68a;
+}
+
+@keyframes campaign-skeleton-pulse {
+  0%, 100% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+}
+
+html.campaign-hydrating .campaign-nav-current,
+html.campaign-hydrating .campaign-brief-title,
+html.campaign-hydrating .campaign-brief-objective,
+html.campaign-hydrating .campaign-brief-text,
+html.campaign-hydrating .campaign-brief-layout,
+html.campaign-hydrating .campaign-roster-chip,
+html.campaign-hydrating .campaign-brief-actions,
+html.campaign-hydrating .campaign-recon-square {
+  color: transparent !important;
+  border-color: transparent !important;
+  background: linear-gradient(90deg, #121a26 25%, #1b2738 50%, #121a26 75%);
+  background-size: 200% 100%;
+  animation: campaign-skeleton-pulse 1.2s ease-in-out infinite;
+  border-radius: 5px;
+  pointer-events: none;
+  user-select: none;
+}
+
+html.campaign-hydrating .campaign-roster-chip *,
+html.campaign-hydrating .campaign-brief-actions *,
+html.campaign-hydrating .campaign-recon-square > * {
+  opacity: 0 !important;
 }
 
 .campaign-brief-classified {
@@ -4233,6 +4297,851 @@ body.scrollable-page .menu-content { flex: 1; width: 100%; }
   cursor: not-allowed;
 }
 
+.hud-air-variant-btn.is-locked {
+  opacity: 0.5;
+  border-style: dashed;
+  border-color: rgba(100, 116, 139, 0.7);
+  cursor: not-allowed;
+}
+
+.hud-air-req {
+  color: #f59e0b;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* --- Air Support Recon Targeting HUD --- */
+.air-recon-frame {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.25), inset 0 0 90px rgba(2, 6, 23, 0.65);
+}
+
+.air-recon-corner {
+  position: fixed;
+  width: 28px;
+  height: 28px;
+  border-color: rgba(56, 189, 248, 0.78);
+  border-style: solid;
+  border-width: 0;
+}
+.air-recon-corner.top-left { top: 14px; left: 14px; border-top-width: 2px; border-left-width: 2px; }
+.air-recon-corner.top-right { top: 14px; right: 14px; border-top-width: 2px; border-right-width: 2px; }
+.air-recon-corner.bottom-left { bottom: 14px; left: 14px; border-bottom-width: 2px; border-left-width: 2px; }
+.air-recon-corner.bottom-right { bottom: 14px; right: 14px; border-bottom-width: 2px; border-right-width: 2px; }
+
+.air-recon-crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 140px;
+  transform: translate(-50%, -50%);
+  border: 1px dashed rgba(56, 189, 248, 0.28);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.air-recon-topbar {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1040px, 94vw);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 16px;
+  background: rgba(11, 15, 23, 0.94);
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  border-radius: 4px;
+  font-family: var(--font-mono, monospace);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.air-recon-top-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.air-recon-rec-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.air-recon-callsign {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #38bdf8;
+}
+
+.air-recon-credits {
+  font-size: 12px;
+  font-weight: 800;
+  color: #34d399;
+  padding-left: 8px;
+  border-left: 1px solid rgba(71, 85, 105, 0.7);
+}
+
+.air-recon-top-hint {
+  font-size: 11px;
+  color: #fde68a;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.air-recon-abort-btn {
+  padding: 5px 12px;
+  border-radius: 3px;
+  background: rgba(127, 29, 29, 0.85);
+  border: 1px solid rgba(248, 113, 113, 0.8);
+  color: #fecaca;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+.air-recon-abort-btn:hover {
+  background: rgba(153, 27, 27, 0.95);
+}
+
+.air-recon-dock {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 12px;
+  max-width: 95vw;
+}
+
+.air-recon-card {
+  width: 186px;
+  min-height: 138px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(11, 15, 23, 0.94);
+  border: 1px solid rgba(71, 85, 105, 0.85);
+  border-radius: 6px;
+  color: #cbd5e1;
+  font-family: var(--font-mono, monospace);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+  transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.air-recon-card:hover:not(:disabled) {
+  transform: translateY(-3px);
+  border-color: rgba(56, 189, 248, 0.85);
+}
+
+.air-recon-card.is-active {
+  border-color: #fbbf24;
+  background: rgba(30, 27, 18, 0.96);
+  color: #fef3c7;
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.6), 0 14px 32px rgba(0, 0, 0, 0.75);
+}
+
+.air-recon-card.is-active.is-drop {
+  border-color: #34d399;
+  background: rgba(10, 28, 24, 0.96);
+}
+
+.air-recon-card.is-poor {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.air-recon-card.is-locked {
+  opacity: 0.55;
+  border-style: dashed;
+  border-color: rgba(100, 116, 139, 0.75);
+  cursor: not-allowed;
+}
+
+.air-recon-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.air-recon-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(100, 116, 139, 0.7);
+  font-size: 11px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.air-recon-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+}
+.air-recon-card.is-active .air-recon-badge {
+  color: #fbbf24;
+}
+.air-recon-card.is-active.is-drop .air-recon-badge {
+  color: #34d399;
+}
+.air-recon-card.is-locked .air-recon-badge {
+  color: #f59e0b;
+}
+
+.air-recon-figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.air-recon-svg {
+  width: 112px;
+  height: 66px;
+}
+
+.air-recon-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  border-top: 1px solid rgba(51, 65, 85, 0.65);
+  padding-top: 6px;
+}
+
+.air-recon-card-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.air-recon-card-cost {
+  font-size: 11px;
+  font-weight: 800;
+  color: #34d399;
+}
+
+.air-recon-card-req {
+  font-size: 10px;
+  font-weight: 700;
+  color: #f59e0b;
+  white-space: nowrap;
+}
+
+/* --- Garage HQ Command Skill Tree --- */
+.garage-hq-icon {
+  font-size: 16px;
+  line-height: 1;
+  color: #fbbf24;
+}
+
+.garage-hq-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.garage-hq-branches {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.garage-hq-branch {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.garage-hq-branch-title {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #38bdf8;
+}
+
+.garage-hq-nodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 8px;
+}
+
+.garage-hq-node {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px 10px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(71, 85, 105, 0.75);
+}
+
+.garage-hq-node.is-maxed {
+  border-color: rgba(52, 211, 153, 0.6);
+}
+
+.garage-hq-node-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 12px;
+  color: #f8fafc;
+}
+
+.garage-hq-lvl {
+  font-size: 10px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.garage-hq-pips {
+  display: flex;
+  gap: 4px;
+}
+
+.garage-hq-pips i {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(51, 65, 85, 0.9);
+}
+
+.garage-hq-pips i.filled {
+  background: #fbbf24;
+}
+
+.garage-hq-effect {
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.garage-hq-next {
+  font-size: 10px;
+  color: #34d399;
+}
+
+.garage-hq-btn {
+  margin-top: auto;
+  padding: 5px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(251, 191, 36, 0.7);
+  background: rgba(120, 53, 15, 0.45);
+  color: #fef3c7;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.garage-hq-btn:disabled {
+  opacity: 0.48;
+  border-color: rgba(71, 85, 105, 0.7);
+  background: rgba(15, 23, 42, 0.85);
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* --- Redesigned Garage Layout, Larger Typography & Right Telemetry --- */
+.garage-shell {
+  grid-template-columns: 460px minmax(0, 1fr);
+}
+
+.garage-tab-name {
+  font-size: 15px;
+}
+
+.garage-tab-tier {
+  font-size: 12.5px;
+}
+
+.garage-component-head h2 {
+  font-size: 24px;
+}
+
+.garage-next-title {
+  font-size: 12px;
+}
+
+.garage-next-desc {
+  font-size: 13.5px;
+  line-height: 1.48;
+}
+
+.garage-buy {
+  font-size: 14px;
+  padding: 12px 14px;
+}
+
+.garage-mode-switcher {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.garage-mode-switcher.is-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.garage-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 4px;
+  border: 1px solid #2e3d3c;
+  background: #141f23;
+  color: #9eb0a6;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.garage-mode-btn:hover {
+  background: #1b2a2f;
+  color: #f8fafc;
+}
+
+.garage-mode-btn.is-active {
+  border-color: #fbbf24;
+  background: rgba(120, 53, 15, 0.52);
+  color: #fef3c7;
+}
+
+.garage-mode-btn small {
+  font-size: 10px;
+  color: #38bdf8;
+}
+
+.garage-supplies-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #2b3837;
+}
+
+.garage-supply-card {
+  --supply-color: #7dd3fc;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 11px;
+  border-radius: 6px;
+  background: #152125;
+  border: 1px solid #2b3a3e;
+}
+
+.garage-supply-card.supply-cannon { --supply-color: #38bdf8; }
+.garage-supply-card.supply-aps { --supply-color: #7dd3fc; }
+.garage-supply-card.supply-missile { --supply-color: #fbbf75; }
+.garage-supply-card.supply-recon { --supply-color: #34d399; }
+
+.garage-supply-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+}
+
+.garage-supply-title-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.garage-supply-title-wrap strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.garage-supply-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.garage-supply-unit {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.garage-supply-full-tag {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 800;
+  color: #34d399;
+  letter-spacing: 0.04em;
+}
+
+.garage-supply-count {
+  font-family: var(--font-mono, monospace);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 18px;
+  color: var(--supply-color);
+}
+
+.garage-supply-count small,
+.garage-supply-sub {
+  font-size: 12px;
+  line-height: 18px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.garage-supply-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.garage-supply-btn.is-max {
+  background: transparent;
+  color: var(--supply-color);
+}
+
+.garage-supply-btn.is-max:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.14);
+}
+
+.garage-supply-bar {
+  height: 6px;
+}
+
+/* Right-side Tank Telemetry Card */
+.garage-telemetry-card {
+  position: absolute;
+  top: 76px;
+  right: 20px;
+  width: min(330px, 34vw);
+  padding: 14px 16px;
+  border-radius: 6px;
+  background: rgba(11, 15, 23, 0.92);
+  border: 1px solid rgba(71, 85, 105, 0.8);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.65);
+  pointer-events: auto;
+}
+
+.garage-tele-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.75);
+  font-family: var(--font-mono, monospace);
+}
+
+.garage-tele-head span {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #fbbf24;
+}
+
+.garage-tele-head small {
+  font-size: 10.5px;
+  color: #94a3b8;
+  letter-spacing: 0.08em;
+}
+
+.garage-tele-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.garage-tele-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.7);
+}
+
+.garage-tele-row:last-child {
+  border-bottom: 0;
+}
+
+.garage-tele-label {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.garage-tele-vals {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.garage-tele-cur {
+  font-size: 15px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.garage-tele-next {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.garage-tele-next.is-good {
+  color: #34d399;
+}
+
+.garage-tele-next.is-warn {
+  color: #f59e0b;
+}
+
+/* Inline Component Upgrade Row & Stage Callout */
+.garage-system {
+  cursor: pointer;
+  padding: 9px 11px;
+}
+
+.garage-tab-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.garage-tab-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.garage-row-btn {
+  flex-shrink: 0;
+  width: 116px;
+  height: 34px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(251, 191, 36, 0.75);
+  background: rgba(120, 53, 15, 0.55);
+  color: #fef3c7;
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.garage-row-plus {
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fbbf24;
+}
+
+.garage-row-btn:hover:not(:disabled) {
+  background: rgba(146, 64, 14, 0.8);
+}
+
+.garage-row-btn:disabled {
+  opacity: 0.45;
+  border-color: rgba(71, 85, 105, 0.7);
+  background: rgba(15, 23, 42, 0.85);
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.garage-row-btn.is-repair {
+  border-color: rgba(248, 113, 113, 0.8);
+  background: rgba(127, 29, 29, 0.65);
+  color: #fecaca;
+}
+
+.garage-row-max {
+  flex-shrink: 0;
+  width: 116px;
+  height: 34px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  font-weight: 800;
+  color: #34d399;
+  padding: 0 8px;
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  border-radius: 4px;
+  background: rgba(6, 78, 59, 0.35);
+}
+
+.garage-supply-btn {
+  width: auto;
+  min-width: 108px;
+  padding: 0 12px;
+  height: 32px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.garage-supply-actions .garage-supply-btn {
+  min-width: 52px;
+  padding: 0 10px;
+}
+
+.garage-supply-actions .garage-supply-btn.is-max {
+  min-width: 48px;
+  padding: 0 9px;
+}
+
+.garage-supply-plus {
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.garage-supply-actions .garage-row-max {
+  width: 108px;
+  height: 32px;
+}
+
+.garage-callout-card {
+  position: absolute;
+  left: 24px;
+  width: min(320px, 32vw);
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: rgba(11, 15, 23, 0.92);
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+  pointer-events: auto;
+}
+
+.garage-callout-card.pos-cannon { top: 82px; }
+.garage-callout-card.pos-radar { top: 68px; }
+.garage-callout-card.pos-armor { top: 140px; }
+.garage-callout-card.pos-engine { top: 200px; }
+.garage-callout-card.pos-frame { bottom: 84px; }
+.garage-callout-card.pos-chassis { bottom: 72px; }
+
+.garage-callout-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.garage-callout-head strong {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.garage-callout-desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+.garage-callout-next {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(51, 65, 85, 0.75);
+}
+
+.garage-callout-next span {
+  display: block;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 800;
+  color: #fbbf24;
+  margin-bottom: 3px;
+}
+
+.garage-callout-next p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #94a3b8;
+}
+
+.garage-callout-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.garage-callout-line {
+  fill: none;
+  stroke: #fbbf24;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+
+.garage-callout-ring {
+  fill: rgba(251, 191, 36, 0.14);
+  stroke: #fbbf24;
+  stroke-width: 1.5;
+}
+
+.garage-callout-dot {
+  fill: #fbbf24;
+}
+
 .hud-mod-top {
   display: flex;
   align-items: center;
@@ -5277,27 +6186,47 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
 
 /* --- Service Medals & Rank Progression --- */
 .medals-modal-panel {
-  max-width: 920px;
-  width: min(920px, 94vw);
+  max-width: 960px;
+  width: min(960px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.medals-modal-panel .settings-modal-header {
+  flex-shrink: 0;
 }
 
 .medals-modal-body {
-  max-height: 76vh;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  padding-right: 4px;
+}
+
+.medals-modal-body > * {
+  flex-shrink: 0;
 }
 
 .medal-rank-banner {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
   padding: 14px 16px;
   background: #0d131f;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
+}
+
+.medal-rank-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .medal-rank-left {
@@ -5371,7 +6300,6 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
   color: #f8fafc;
 }
 
-.medal-xp-bar-track,
 .battle-rank-bar-track {
   width: 100%;
   height: 7px;
@@ -5381,7 +6309,6 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.medal-xp-bar-fill,
 .battle-rank-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, #f59e0b, #38bdf8);
@@ -5396,6 +6323,10 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
 
 .medal-ladder-node {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
   text-align: center;
   padding: 4px 0;
   font-size: 11px;
@@ -5404,6 +6335,11 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
   color: #64748b;
   background: #0d131f;
   border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.medal-ladder-unlock {
+  font-size: 9px;
+  opacity: 0.85;
 }
 
 .medal-ladder-node.is-reached {
@@ -5442,51 +6378,97 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
 
 .medal-case-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 10px;
 }
 
 .medal-case-card {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
   padding: 12px;
   border-radius: 8px;
   background: var(--medal-bg, rgba(255, 255, 255, 0.04));
   border: 1px solid var(--medal-border, rgba(255, 255, 255, 0.12));
 }
 
+.medal-case-card.medal-grade-bronze {
+  --medal-color: #cd7f32;
+  --medal-bg: rgba(205, 127, 50, 0.12);
+  --medal-border: rgba(205, 127, 50, 0.48);
+  --medal-glow: rgba(205, 127, 50, 0.25);
+}
+
+.medal-case-card.medal-grade-silver {
+  --medal-color: #cbd5e1;
+  --medal-bg: rgba(203, 213, 225, 0.12);
+  --medal-border: rgba(203, 213, 225, 0.48);
+  --medal-glow: rgba(203, 213, 225, 0.22);
+}
+
+.medal-case-card.medal-grade-gold {
+  --medal-color: #f59e0b;
+  --medal-bg: rgba(245, 158, 11, 0.14);
+  --medal-border: rgba(245, 158, 11, 0.58);
+  --medal-glow: rgba(245, 158, 11, 0.28);
+}
+
+.medal-case-card.medal-grade-vanguard {
+  --medal-color: #38bdf8;
+  --medal-bg: rgba(56, 189, 248, 0.15);
+  --medal-border: rgba(56, 189, 248, 0.65);
+  --medal-glow: rgba(56, 189, 248, 0.32);
+}
+
 .medal-case-card.is-locked {
-  opacity: 0.56;
+  opacity: 0.58;
   background: #0d131f;
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-.medal-case-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.medal-emblem-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
 }
 
-.medal-grade-badge {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+.medal-emblem-svg {
+  width: 52px;
+  height: 52px;
   color: var(--medal-color, #cbd5e1);
+  filter: drop-shadow(0 2px 6px var(--medal-glow, rgba(0, 0, 0, 0.35)));
+}
+
+.medal-case-card.is-locked .medal-emblem-svg {
+  color: #475569;
+  filter: grayscale(0.75);
 }
 
 .medal-count-badge {
-  font-size: 11px;
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  font-size: 10px;
   font-weight: 700;
+  line-height: 1;
   color: #f8fafc;
-  background: rgba(255, 255, 255, 0.12);
-  padding: 2px 6px;
+  background: #131b2b;
+  border: 1px solid var(--medal-border, rgba(255, 255, 255, 0.2));
+  padding: 2px 5px;
   border-radius: 4px;
 }
 
-.medal-xp-hint {
-  font-size: 10px;
-  color: #94a3b8;
+.medal-case-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: 100%;
 }
 
 .medal-case-name {
@@ -5502,12 +6484,32 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
   color: #cbd5e1;
 }
 
-.medal-case-cat {
-  margin-top: auto;
+.medal-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.medal-progress-track {
+  flex: 1;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+  overflow: hidden;
+}
+
+.medal-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--medal-color, #cbd5e1);
+}
+
+.medal-progress-label {
   font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #94a3b8;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #cbd5e1;
 }
 
 .battle-medals-box {
@@ -5564,6 +6566,13 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
 .battle-rank-xp {
   font-size: 11px;
   color: #94a3b8;
+}
+
+.battle-air-unlock-banner {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fbbf24;
 }
 
 .battle-medals-grid {
@@ -5636,6 +6645,12 @@ body.scrollable-page[data-page="campaign"] .menu-page > .campaign-content {
   padding: 12px 28px 0;
 }
 
+body.scrollable-page[data-page="campaign"] .menu-page > .page-briefing {
+  max-width: 100%;
+  margin: 0;
+  padding: 32px 28px 52px;
+}
+
 .page-briefing h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 8px 0 0; }
 .page-briefing h3 { font-size: 17px; font-weight: 800; margin: 0; color: #e3f7ad; }
 .page-briefing .menu-guide { margin-top: 8px; }
@@ -5650,3 +6665,89 @@ body.scrollable-page[data-page="campaign"] .menu-page > .campaign-content {
 .home-about > h2 { margin: 0 0 6px; }
 .home-faq p a, .menu-lead a { color: #e3f7ad; text-decoration: underline; text-underline-offset: 2px; transition: color 0.15s ease; }
 .home-faq p a:hover, .menu-lead a:hover { color: #f59e0b; }
+
+@media (max-width: 768px) {
+  .command-home-view {
+    height: auto;
+    min-height: 0;
+  }
+  .armored-hero-board {
+    min-height: 360px;
+    flex: none;
+  }
+  .armored-hero-atmosphere {
+    background: linear-gradient(180deg, rgba(8, 14, 22, 0.84) 0%, rgba(8, 14, 22, 0.94) 100%);
+  }
+  .hero-command-flank {
+    width: 100%;
+    padding: 32px 20px;
+    align-items: center;
+    text-align: center;
+  }
+  .tactical-kicker {
+    justify-content: center;
+  }
+  .hero-tactical-title {
+    font-size: 38px;
+    margin-bottom: 10px;
+  }
+  .hero-tactical-tagline {
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+  .hero-tactical-desc,
+  .desktop-edition-cta,
+  .command-modes-deck {
+    display: none;
+  }
+  .hero-tactical-actions {
+    max-width: 300px;
+  }
+  .mobile-edition-cta {
+    display: flex;
+    justify-content: center;
+    padding: 14px 22px;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 55%, #d97706 100%);
+    border: none;
+    border-radius: 12px;
+    color: #0b1118;
+    clip-path: none;
+    box-shadow: 0 10px 24px rgba(245, 158, 11, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  }
+  .mobile-edition-cta .btn-body {
+    align-items: center;
+    text-align: center;
+    gap: 3px;
+  }
+  .mobile-edition-cta small {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    opacity: 0.78;
+    margin-bottom: 0;
+  }
+  .mobile-edition-cta strong {
+    justify-content: center;
+    gap: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+  }
+  .mobile-edition-cta:hover,
+  .mobile-edition-cta:active {
+    background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 55%, #ea580c 100%);
+    color: #0b1118;
+    filter: none;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(245, 158, 11, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  }
+  .home-briefing-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .home-briefing-strip {
+    padding: 20px 4px 14px;
+  }
+}

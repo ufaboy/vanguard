@@ -2,6 +2,7 @@
 
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { mergeStaticMeshes } from './static-merge.js';
 import { APS, POWERUP, POWERUP_TYPES } from '../constants.js';
 import { disposeOwned, markMaterialOwned, markOwned } from './dispose.js';
 import { getSharedGltfLoader, resolvePublicUrl } from './gltf-loader.js';
@@ -25,6 +26,22 @@ import {
 } from '../terrains/perimeter-buildings.js';
 import { buildEnemyStronghold } from '../terrains/enemy-stronghold.js';
 import { createSandCanvas, createSandPatchMask } from '../terrains/sand.js';
+import {
+  TacticalModels,
+  createContainerBlock as buildContainerBlock,
+  createCrushableProp as buildCrushableProp,
+  createLocomotiveBlock as buildLocomotiveBlock,
+  createRailBlock as buildRailBlock,
+  createRailBridgeBlock as buildRailBridgeBlock,
+  createRailCarBlock as buildRailCarBlock,
+  createRailCurveBlock as buildRailCurveBlock,
+  createSandbagsBlock as buildSandbagsBlock,
+  createTransformerBlock as buildTransformerBlock,
+  updateContainerDamage as refreshContainerDamage,
+  updateLocomotiveDamage as refreshLocomotiveDamage,
+  updateRailCarDamage as refreshRailCarDamage,
+  updateTransformerDamage as refreshTransformerDamage,
+} from '../terrains/tactical-models.js';
 
 /** Runtime sand patches: rim variants, share of the patch the cell occupies, and pattern repeat in cells. */
 const SAND_PATCH_VARIANTS = 6;
@@ -109,7 +126,7 @@ const INFERNO_GLB_MODEL = Object.freeze({
   muzzleX: 6.33,
   barrelBaseZ: 0.66,
 });
-export const GLB_TANK_MODELS = Object.freeze({
+const GLB_TANK_MODELS = Object.freeze({
   [EnemyClass.STANDARD]: { url: './models/tank_standard.glb', scale: 0.26, turretY: 1.55, gunY: 1.94, muzzleX: 7.25 },
   [EnemyClass.SCOUT]: { url: './models/tank_scout.glb', scale: 0.29, turretY: 1.36, gunY: 1.68, muzzleX: 5.18 },
   [EnemyClass.HOWITZER]: { url: './models/tank_howitzer.glb', scale: 0.26, turretY: 1.55, gunY: 2.2, muzzleX: 6.91, muzzleY: 4.84 },
@@ -138,6 +155,7 @@ const ENEMY_BARREL_BASE_Z = 0.46;
 
 const PLAYER_GLB_MODEL = Object.freeze({
   url: './models/tank_player.glb',
+  radarUrl: './models/player_radar.glb',
   scale: 0.26,
   turretY: 1.55,
   gunY: 1.94,
@@ -145,6 +163,34 @@ const PLAYER_GLB_MODEL = Object.freeze({
   glow: { sat: 0.76 },
 });
 const PLAYER_BARREL_BASE_Z = 0.46;
+
+/** Removes the legacy commander optics mast and center-rear antenna from Turret_Base so Radar R1-R5 mount cleanly while keeping the left-rear antenna. */
+function stripTurretMastAndAntennas(geometry) {
+  const pos = geometry?.attributes?.position;
+  const idx = geometry?.index;
+  if (!pos || !idx) return geometry;
+  const isCleared = (vi) => {
+    const x = pos.getX(vi);
+    const y = pos.getY(vi);
+    const z = pos.getZ(vi);
+    if (y <= 2.265) return false;
+    const inMast = x >= -1.36 && x <= -0.94 && z >= 0.34 && z <= 0.76;
+    const inAnt2 = x >= -1.72 && x <= -1.48 && z >= 0.08 && z <= 0.32;
+    return inMast || inAnt2;
+  };
+  const next = [];
+  for (let i = 0; i < idx.count; i += 3) {
+    const a = idx.getX(i);
+    const b = idx.getX(i + 1);
+    const c = idx.getX(i + 2);
+    if (!isCleared(a) && !isCleared(b) && !isCleared(c)) {
+      next.push(a, b, c);
+    }
+  }
+  const cloned = geometry.clone();
+  cloned.setIndex(next);
+  return cloned;
+}
 
 const GLB_DEFENSE_TURRETS = Object.freeze({
   CANNON: Object.freeze({ url: './models/turret_cannon.glb', scale: 1.0, turretY: 0.62, muzzleDist: 1.6 }),
@@ -339,6 +385,51 @@ function getTankGltfLoader(renderer) {
   return getSharedGltfLoader(renderer);
 }
 
+/**
+ * Computes road connectivity, 2-lane divider mask, and corner rounding type for a road cell.
+ * @param {(r: number, c: number) => boolean} isRoad
+ * @param {number} r
+ * @param {number} c
+ * @param {number} [gridSize=40]
+ * @returns {{ roadMask: number, doubleLaneMask: number, cornerType: 'none'|'std'|'wide' }}
+ */
+export function computeRoadCellMasks(isRoad, r, c, gridSize = 40) {
+  const rawN = isRoad(r - 1, c);
+  const rawE = isRoad(r, c + 1);
+  const rawS = isRoad(r + 1, c);
+  const rawW = isRoad(r, c - 1);
+  const n = r === 0 ? rawN || rawS : rawN;
+  const s = r === gridSize - 1 ? rawS || rawN : rawS;
+  const w = c === 0 ? rawW || rawE : rawW;
+  const e = c === gridSize - 1 ? rawE || rawW : rawE;
+  const roadMask = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
+  const doubleLaneMask =
+    (n && e && w && !s && (isRoad(r - 1, c + 1) || isRoad(r - 1, c - 1)) ? 1 : 0) |
+    (e && n && s && !w && (isRoad(r - 1, c + 1) || isRoad(r + 1, c + 1)) ? 2 : 0) |
+    (s && e && w && !n && (isRoad(r + 1, c + 1) || isRoad(r + 1, c - 1)) ? 4 : 0) |
+    (w && n && s && !e && (isRoad(r - 1, c - 1) || isRoad(r + 1, c - 1)) ? 8 : 0);
+
+  let cornerType = 'none';
+  const isCorner =
+    (n && e && !s && !w) ||
+    (n && w && !s && !e) ||
+    (s && e && !n && !w) ||
+    (s && w && !n && !e);
+  if (isCorner) {
+    const dr = n ? -1 : 1;
+    const dc = e ? 1 : -1;
+    const diag = isRoad(r + dr, c + dc);
+    if (!diag) {
+      cornerType = 'std';
+    } else {
+      const armV = (r + dr * 2 < 0 || r + dr * 2 >= gridSize) || isRoad(r + dr * 2, c) || isRoad(r + dr * 2, c + dc);
+      const armH = (c + dc * 2 < 0 || c + dc * 2 >= gridSize) || isRoad(r, c + dc * 2) || isRoad(r + dr, c + dc * 2);
+      if (armV && armH) cornerType = 'wide';
+    }
+  }
+  return { roadMask, doubleLaneMask, cornerType };
+}
+
 export class ModelFactory extends TextureGenerator {
   /** @param {object} [pregenerated] results of texture-worker.js keyed by generator name;. */
   constructor(renderer, isSoftwareGl, pregenerated = null, options = {}) {
@@ -400,6 +491,13 @@ export class ModelFactory extends TextureGenerator {
         ? this.loadTileModels(this.buildingModels, () => this.onBuildingModelsReady?.())
         : Promise.resolve(false)
     );
+    this.tacticalModels = options.tacticalModels || new TacticalModels(renderer);
+    this.useBlenderTactical = options.useBlenderTactical ?? !isSoftwareGl;
+    this.tacticalModelsPromise = options.tacticalModelsPromise ?? (
+      !headless && this.useBlenderTactical
+        ? this.loadTileModels(this.tacticalModels, () => this.onTacticalModelsReady?.())
+        : Promise.resolve(false)
+    );
     if (!headless) {
       this.concreteTex = this.generated('createConcreteTextures');
       this.groundTex = this.generated('createGroundTexture');
@@ -430,8 +528,13 @@ export class ModelFactory extends TextureGenerator {
     this.glbTurretParts = new Map();
     this.pendingTurretRigs = new Map();
     this.glbTurretRequestedUrls = new Set();
+    this.playerRadarGlbParts = null;
+    this.pendingPlayerRadarRigs = [];
     this.playerGlbPromise = options.playerGlbPromise ?? (
       !headless && !isSoftwareGl ? this.loadPlayerGlbModel() : Promise.resolve()
+    );
+    this.playerRadarGlbPromise = options.playerRadarGlbPromise ?? (
+      !headless && !isSoftwareGl ? this.loadPlayerRadarGlbModel() : Promise.resolve()
     );
     if (options.loadGlbTankModel) {
       this.loadGlbTankModel = options.loadGlbTankModel;
@@ -457,16 +560,6 @@ export class ModelFactory extends TextureGenerator {
     this.physicalWater = physicalWater;
     this.waterMat = null;
     this.iceMat = null;
-  }
-
-  /** Returns true when GLB tank parts for `enemyClass` are currently cached. */
-  hasEnemyModel(enemyClass) {
-    return this.glbTankParts.has(enemyClass);
-  }
-
-  /** Registers loaded GLB parts for `enemyClass` (used by loader and tests). */
-  registerEnemyModelParts(enemyClass, parts) {
-    this.glbTankParts.set(enemyClass, parts);
   }
 
   /** Starts loading the GLBs of the given enemy classes (no-op for loaded or loading ones). */
@@ -555,9 +648,11 @@ export class ModelFactory extends TextureGenerator {
     if (this.isSoftwareGl) return Promise.resolve();
     const tasks = [
       this.playerGlbPromise,
+      this.playerRadarGlbPromise,
       this.brickModelsPromise,
       this.concreteModelsPromise,
       this.buildingModelsPromise,
+      this.tacticalModelsPromise,
       this.ensureEnemyModels(enemyClasses),
     ];
     // `options.landmarks`: the sector's landmark kinds (only their GLB packs load), or true for every pack.
@@ -578,6 +673,9 @@ export class ModelFactory extends TextureGenerator {
           gltf.scene.traverse((node) => {
             if (!node.isMesh) return;
             const mesh = node.clone();
+            if (node.name === 'Turret_Base') {
+              mesh.geometry = stripTurretMastAndAntennas(mesh.geometry);
+            }
             node.matrixWorld.decompose(mesh.position, mesh.quaternion, mesh.scale);
             mesh.castShadow = true;
             mesh.receiveShadow = true;
@@ -607,6 +705,63 @@ export class ModelFactory extends TextureGenerator {
           resolve();
         }
       );
+    });
+  }
+
+  loadPlayerRadarGlbModel() {
+    return new Promise((resolve) => {
+      getTankGltfLoader(this.renderer).load(
+        resolvePublicUrl(PLAYER_GLB_MODEL.radarUrl),
+        (gltf) => {
+          gltf.scene.updateMatrixWorld(true);
+          const parts = new Map();
+          for (let i = 1; i <= 5; i += 1) {
+            const key = `R${i}`;
+            const node = gltf.scene.getObjectByName(key);
+            if (!node) continue;
+            const clone = node.clone(true);
+            clone.traverse((child) => {
+              if (!child.isMesh) return;
+              child.castShadow = true;
+              child.receiveShadow = true;
+              addBakedGlow(child.material, PLAYER_GLB_MODEL.glow);
+            });
+            parts.set(key, clone);
+          }
+          this.playerRadarGlbParts = parts;
+          this.pendingPlayerRadarRigs.forEach((rig) => this.applyPlayerRadarGlb(rig));
+          this.pendingPlayerRadarRigs = [];
+          this.onModelReady?.('player_radar');
+          resolve();
+        },
+        undefined,
+        (err) => {
+          this.pendingPlayerRadarRigs = [];
+          console.warn('Player radar GLB unavailable.', err);
+          resolve();
+        }
+      );
+    });
+  }
+
+  applyPlayerRadarGlb(rig) {
+    if (!rig?.radarGroups || !this.playerRadarGlbParts) return;
+    const cfg = PLAYER_GLB_MODEL;
+    const s = cfg.scale;
+    const turretY = cfg.turretY * s;
+    rig.radarGroups.forEach((g, i) => {
+      g.children.slice().forEach((c) => {
+        disposeOwned(c);
+        g.remove(c);
+      });
+      const obj = this.playerRadarGlbParts.get(`R${i + 1}`)?.clone(true);
+      if (!obj) return;
+      const group = new THREE.Group();
+      group.rotation.y = -Math.PI / 2;
+      group.scale.setScalar(s);
+      group.position.set(0, -turretY, 0);
+      group.add(obj);
+      g.add(group);
     });
   }
 
@@ -666,7 +821,7 @@ export class ModelFactory extends TextureGenerator {
     rig.apsPods = [...apsWrap.children];
     rig.engineFan = rig.engineGroups[3].children[0].children.find((m) => m.name === 'E4_Rotor') || null;
 
-    const turretKeep = new Set([...rig.turretArmorGroups, rig.barrelPivot]);
+    const turretKeep = new Set([...rig.turretArmorGroups, ...(rig.radarGroups || []), rig.barrelPivot]);
     rig.turret.children.filter((c) => !turretKeep.has(c)).forEach((c) => drop(rig.turret, c));
     rig.turret.position.set(0, turretY, 0);
     const turretWrap = wrap(['Turret_Base', 'Missile_Pod', 'Missile_Warhead_0', 'Missile_Warhead_1'], -turretY);
@@ -1169,7 +1324,6 @@ export class ModelFactory extends TextureGenerator {
         roughness: 0.9,
         metalness: 0,
         polygonOffset: true,
-        polygonOffsetFactor: -0.5,
         polygonOffsetUnits: -0.5,
       })
     );
@@ -1511,6 +1665,7 @@ export class ModelFactory extends TextureGenerator {
     const engineGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
     const hullArmorGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
     const turretArmorGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
+    const radarGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
     const cannonGroups = isPlayer ? Array.from({ length: 5 }, () => new THREE.Group()) : null;
 
     if (isPlayer) {
@@ -1519,6 +1674,7 @@ export class ModelFactory extends TextureGenerator {
       engineGroups.forEach((g) => hull.add(g));
       hullArmorGroups.forEach((g) => hull.add(g));
       turretArmorGroups.forEach((g) => turret.add(g));
+      radarGroups.forEach((g) => turret.add(g));
       cannonGroups.forEach((g) => barrelPivot.add(g));
     }
 
@@ -1544,6 +1700,7 @@ export class ModelFactory extends TextureGenerator {
       engineGroups,
       hullArmorGroups,
       turretArmorGroups,
+      radarGroups,
       cannonGroups,
       c5Barrels: null,
       engineFan: null,
@@ -1567,10 +1724,15 @@ export class ModelFactory extends TextureGenerator {
     } else if (!this.isSoftwareGl) {
       this.pendingPlayerRigs.push(rig);
     }
+    if (this.playerRadarGlbParts) {
+      this.applyPlayerRadarGlb(rig);
+    } else if (!this.isSoftwareGl) {
+      this.pendingPlayerRadarRigs.push(rig);
+    }
 
     this.updatePlayerTankVisuals(
       rig,
-      { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 },
+      { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1, radar: 1 },
       false,
       2,
       [1, 0, 0, 1],
@@ -1596,12 +1758,13 @@ export class ModelFactory extends TextureGenerator {
     void wheelDelta;
 
     const cannonIdx = Math.max(0, Math.min(4, (upgrades?.cannon || 1) - 1));
-    const rawChassisLvl = upgrades?.chassis || upgrades?.vehicleFrame || 1;
+    const rawChassisLvl = upgrades?.chassis || 1;
     const chassisIdx = Math.max(0, Math.min(4, rawChassisLvl - 1));
-    const rawFrameLvl = upgrades?.frame || upgrades?.vehicleFrame || 1;
+    const rawFrameLvl = upgrades?.frame || 1;
     const frameIdx = Math.max(0, Math.min(4, rawFrameLvl - 1));
     const engineIdx = Math.max(0, Math.min(4, (upgrades?.engine || 1) - 1));
     const armorIdx = Math.max(0, Math.min(4, (upgrades?.armor || 1) - 1));
+    const radarIdx = Math.max(0, Math.min(4, (upgrades?.radar || 1) - 1));
 
     if (rig.cannonGroups) {
       rig.cannonGroups.forEach((g, idx) => {
@@ -1638,6 +1801,12 @@ export class ModelFactory extends TextureGenerator {
     if (rig.turretArmorGroups) {
       rig.turretArmorGroups.forEach((g, idx) => {
         setPartActive(g, idx === armorIdx);
+      });
+    }
+
+    if (rig.radarGroups) {
+      rig.radarGroups.forEach((g, idx) => {
+        setPartActive(g, idx === radarIdx);
       });
     }
 
@@ -1869,6 +2038,9 @@ export class ModelFactory extends TextureGenerator {
     box(0.36, 0.318, 0.42, m.crate, crateX, 0.241, 0.26);
     box(0.26, 0.218, 0.26, m.crate, crateX + 0.02, 0.191, -0.3).rotation.y = 0.25;
     box(0.22, 0.16, 0.24, m.crate, crateX - 0.01, 0.48, 0.24).rotation.y = -0.15;
+
+    // ~90 static garage parts -> one draw per material (the repair disc below stays separate)
+    mergeStaticMeshes(group);
 
     const repairGeo = new THREE.CircleGeometry(7.0, 64);
     repairGeo.rotateX(-Math.PI / 2);
@@ -2164,7 +2336,6 @@ export class ModelFactory extends TextureGenerator {
         roughness: 0.98,
         metalness: 0.02,
         polygonOffset: true,
-        polygonOffsetFactor: -1,
         polygonOffsetUnits: -1,
       }),
       stoneLight: makeBatchMat('rubble-stone-light', {
@@ -2221,8 +2392,8 @@ export class ModelFactory extends TextureGenerator {
         const yFactor = vy < 0 ? factor * 0.55 : factor;
         pos.setXYZ(i, vx * factor * sx, vy * yFactor * sy, vz * factor * sz);
       }
-      const faceted = base.toNonIndexed();
-      base.dispose();
+      const faceted = base.index ? base.toNonIndexed() : base;
+      if (faceted !== base) base.dispose();
       faceted.computeVertexNormals();
       faceted.userData.batchGeometryKey = key;
       return faceted;
@@ -2249,8 +2420,8 @@ export class ModelFactory extends TextureGenerator {
         }
         pos.setXYZ(i, vx + off[0], vy + off[1], vz + off[2]);
       }
-      const faceted = base.toNonIndexed();
-      base.dispose();
+      const faceted = base.index ? base.toNonIndexed() : base;
+      if (faceted !== base) base.dispose();
       faceted.computeVertexNormals();
       faceted.userData.batchGeometryKey = key;
       return faceted;
@@ -2653,9 +2824,13 @@ export class ModelFactory extends TextureGenerator {
         data.slabMesh = data.capMesh = data.crackGroup = data.rebarGroup = data.concreteMat = null;
       }
       // The block darkens with every hit; model states only change a few times.
-      if (ratio < 1) data.modelMaterial ||= markMaterialOwned(this.concreteModels.material.clone());
-      data.modelMaterial?.color.setRGB(shade / 255, (shade + 10) / 255, (shade + 23) / 255, THREE.SRGBColorSpace);
-      this.concreteModels.apply(blockGroup, state, data.breach?.variant, data.modelMaterial);
+      if (ratio < 1) {
+        blockGroup.userData.instanceColor ||= new THREE.Color();
+        blockGroup.userData.instanceColor.setRGB(shade / 255, (shade + 10) / 255, (shade + 23) / 255, THREE.SRGBColorSpace);
+      } else {
+        blockGroup.userData.instanceColor = null;
+      }
+      this.concreteModels.apply(blockGroup, state, data.breach?.variant);
       return;
     }
 
@@ -2851,6 +3026,13 @@ export class ModelFactory extends TextureGenerator {
       disposeMeshList(this.glbAirDropParts.chute);
       this.glbAirDropParts = null;
     }
+    if (this.playerRadarGlbParts) {
+      for (const obj of this.playerRadarGlbParts.values()) {
+        disposeOwned(obj);
+      }
+      this.playerRadarGlbParts.clear();
+      this.playerRadarGlbParts = null;
+    }
 
     disposeBag(this.craterMats);
     disposeBag(this.rubbleMats);
@@ -2871,6 +3053,9 @@ export class ModelFactory extends TextureGenerator {
     disposeBag(this.barrelMats);
     disposeBag(this.waterTowerMats);
     disposeBag(this.themePropMats);
+    disposeBag(this._railBridgeMats);
+    disposeBag(this._tacticalMats);
+    this._tacticalMats = null;
     disposeBag(this.perimeterBuildingCatalog);
     disposeBag(this.powerUpMatCache);
     disposeBag(this.powerUpSpriteMatCache);
@@ -2881,6 +3066,7 @@ export class ModelFactory extends TextureGenerator {
     disposeTex(this.powerUpBeamTex);
     this.powerUpBeamTex = null;
 
+    this.tacticalModels?.dispose?.();
     disposeBag(this.brickTex);
     disposeBag(this.concreteTex);
     disposeBag(this.groundTex);
@@ -2926,7 +3112,6 @@ export class ModelFactory extends TextureGenerator {
         transparent: true,
         depthWrite: false,
         polygonOffset: true,
-        polygonOffsetFactor: -1,
         polygonOffsetUnits: -1,
       }),
     };
@@ -3052,7 +3237,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.92,
           metalness: 0.02,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         }));
       });
@@ -3201,12 +3385,35 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.9,
           metalness: 0.05,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         }));
       });
     }
     return this.createSeamlessSurfacePatch(x, z, this.stonePatchMats, 0.011);
+  }
+
+  /** Pre-builds shared sand patch textures and materials. */
+  ensureSandPatchMats() {
+    if (this.sandPatchMats) return;
+    // sRGB colour space like every other colour map; without it the sand washes out to white.
+    const sandTex = this.configureColorTexture(new THREE.CanvasTexture(createSandCanvas(256, SAND_PATTERN_CELLS, 42)));
+    sandTex.wrapS = THREE.RepeatWrapping;
+    sandTex.wrapT = THREE.RepeatWrapping;
+    this.sandPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
+      const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
+      mask.channel = 1;
+      return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
+        map: sandTex,
+        alphaMap: mask,
+        transparent: true,
+        depthWrite: false,
+        // Same response as the ground plane, so a patch matches sand painted into the map ground.
+        roughness: 0.85,
+        metalness: 0.1,
+        polygonOffset: true,
+        polygonOffsetUnits: -1,
+      }));
+    });
   }
 
   /**
@@ -3215,28 +3422,7 @@ export class ModelFactory extends TextureGenerator {
    * world-aligned (uv) so neighbouring patches merge into one continuous sand field.
    */
   createSandBlock(x = 0, z = 0) {
-    if (!this.sandPatchMats) {
-      // sRGB colour space like every other colour map; without it the sand washes out to white.
-      const sandTex = this.configureColorTexture(new THREE.CanvasTexture(createSandCanvas(256, SAND_PATTERN_CELLS, 42)));
-      sandTex.wrapS = THREE.RepeatWrapping;
-      sandTex.wrapT = THREE.RepeatWrapping;
-      this.sandPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
-        const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
-        mask.channel = 1;
-        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
-          map: sandTex,
-          alphaMap: mask,
-          transparent: true,
-          depthWrite: false,
-          // Same response as the ground plane, so a patch matches sand painted into the map ground.
-          roughness: 0.85,
-          metalness: 0.1,
-          polygonOffset: true,
-          polygonOffsetFactor: -1,
-          polygonOffsetUnits: -1,
-        }));
-      });
-    }
+    this.ensureSandPatchMats();
     return this.createSeamlessSurfacePatch(x, z, this.sandPatchMats, 0.012);
   }
 
@@ -3259,7 +3445,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.18,
           metalness: 0.1,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         },
         {
@@ -3288,7 +3473,6 @@ export class ModelFactory extends TextureGenerator {
           color: 0xffffff,
           metalness: 0.05,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         },
         { clearcoat: 0.7, clearcoatRoughness: 0.08 }
@@ -3423,16 +3607,19 @@ export class ModelFactory extends TextureGenerator {
    * @param {number} z
    * @param {number} neighborMask Bitmask of adjacent ROAD tiles (N=1, E=2, S=4, W=8).
    * @param {number} doubleLaneMask Bitmask indicating parallel second-lane direction (N=1, E=2, S=4, W=8).
+   * @param {'none'|'std'|'wide'} cornerType Corner rounding mode for 90-degree turns.
    */
-  createRoadBlock(x = 0, z = 0, neighborMask = 5, doubleLaneMask = 0) {
+  createRoadBlock(x = 0, z = 0, neighborMask = 5, doubleLaneMask = 0, cornerType = 'std') {
     if (!this.roadMats) {
+      // Ground layers stack by height plus a tiny polygonOffsetUnits tie-break. Never use
+      // polygonOffsetFactor here: it scales with the steep isometric depth slope and pulls the
+      // layer over anything standing just above it (tank tracks sank into the asphalt).
       this.roadMats = {
         asphalt: new THREE.MeshStandardMaterial({
           color: 0x2a313c,
           roughness: 0.78,
           metalness: 0.08,
           polygonOffset: true,
-          polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
         }),
         shoulder: new THREE.MeshStandardMaterial({
@@ -3440,7 +3627,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.85,
           metalness: 0.05,
           polygonOffset: true,
-          polygonOffsetFactor: -2,
           polygonOffsetUnits: -2,
         }),
         stripe: new THREE.MeshStandardMaterial({
@@ -3448,7 +3634,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.65,
           metalness: 0.05,
           polygonOffset: true,
-          polygonOffsetFactor: -3,
           polygonOffsetUnits: -3,
         }),
       };
@@ -3457,17 +3642,96 @@ export class ModelFactory extends TextureGenerator {
     const group = new THREE.Group();
     group.position.set(x, 0, z);
 
-    const slab = new THREE.Mesh(this.sharedGeometry('PlaneGeometry', TILE_SIZE, TILE_SIZE), asphalt);
-    slab.rotation.x = -Math.PI / 2;
-    slab.position.y = 0.01;
-    slab.receiveShadow = true;
-    group.add(slab);
-
     const hasN = (neighborMask & 1) !== 0;
     const hasE = (neighborMask & 2) !== 0;
     const hasS = (neighborMask & 4) !== 0;
     const hasW = (neighborMask & 8) !== 0;
     const count = (hasN ? 1 : 0) + (hasE ? 1 : 0) + (hasS ? 1 : 0) + (hasW ? 1 : 0);
+    const isCornerTurn = count === 2 && !(hasN && hasS) && !(hasE && hasW);
+    const wideTurn = cornerType === 'wide';
+
+    const dashVGeo = this.sharedGeometry('PlaneGeometry', 0.1, 0.52);
+    const dashHGeo = this.sharedGeometry('PlaneGeometry', 0.52, 0.1);
+    const addDash = (geo, dx, dz, ry = 0, parent = group) => {
+      const dash = new THREE.Mesh(geo, stripe);
+      dash.rotation.order = 'YXZ';
+      dash.rotation.x = -Math.PI / 2;
+      dash.rotation.y = ry;
+      dash.position.set(dx, 0.015, dz);
+      parent.add(dash);
+    };
+
+    if (isCornerTurn && cornerType !== 'none') {
+      const cornerKey = wideTurn ? 'wide' : 'std';
+      this.roadCornerGeos ||= {};
+      if (!this.roadCornerGeos[cornerKey]) {
+        const half = TILE_SIZE * 0.5;
+        const r = wideTurn ? 1.85 : 0.9;
+        const cw = 0.1;
+        const curveSegs = wideTurn ? 16 : 10;
+
+        // Canonical SW outer corner (hasN && hasE): arc at (-half + r, -half + r) in 2D Shape space.
+        const slabShape = new THREE.Shape();
+        slabShape.moveTo(-half, half);
+        slabShape.lineTo(-half, -half + r);
+        slabShape.absarc(-half + r, -half + r, r, Math.PI, Math.PI * 1.5, false);
+        slabShape.lineTo(half, -half);
+        slabShape.lineTo(half, half);
+        slabShape.closePath();
+
+        const curbShape = new THREE.Shape();
+        curbShape.moveTo(-half, half);
+        curbShape.lineTo(-half, -half + r);
+        curbShape.absarc(-half + r, -half + r, r, Math.PI, Math.PI * 1.5, false);
+        curbShape.lineTo(half, -half);
+        curbShape.lineTo(half, -half + cw);
+        curbShape.lineTo(-half + r, -half + cw);
+        curbShape.absarc(-half + r, -half + r, r - cw, Math.PI * 1.5, Math.PI, true);
+        curbShape.lineTo(-half + cw, half);
+        curbShape.closePath();
+
+        this.roadCornerGeos[cornerKey] = {
+          slab: new THREE.ShapeGeometry(slabShape, curveSegs),
+          curb: new THREE.ShapeGeometry(curbShape, curveSegs),
+        };
+      }
+      const { slab: slabGeo, curb: curbGeo } = this.roadCornerGeos[cornerKey];
+      const cornerYaw =
+        hasN && hasE ? 0 : hasN && hasW ? Math.PI / 2 : hasS && hasW ? Math.PI : -Math.PI / 2;
+
+      const cornerGroup = new THREE.Group();
+      cornerGroup.rotation.y = cornerYaw;
+
+      const slab = new THREE.Mesh(slabGeo, asphalt);
+      slab.rotation.x = -Math.PI / 2;
+      slab.position.y = 0.01;
+      slab.receiveShadow = true;
+      cornerGroup.add(slab);
+
+      const curb = new THREE.Mesh(curbGeo, shoulder);
+      curb.rotation.x = -Math.PI / 2;
+      curb.position.y = 0.013;
+      curb.receiveShadow = true;
+      cornerGroup.add(curb);
+
+      if (!wideTurn) {
+        // Curved centerline dashes for 1-lane 90-degree turn (centered at inner corner (1, -1)).
+        for (const frac of [0.24, 0.76]) {
+          const t = frac * (Math.PI / 2);
+          addDash(dashVGeo, 1 - Math.cos(t), -1 + Math.sin(t), t, cornerGroup);
+        }
+      }
+
+      group.add(cornerGroup);
+      group.userData.batchTile = true;
+      return markOwned(group, { geometries: false, materials: false });
+    }
+
+    const slab = new THREE.Mesh(this.sharedGeometry('PlaneGeometry', TILE_SIZE, TILE_SIZE), asphalt);
+    slab.rotation.x = -Math.PI / 2;
+    slab.position.y = 0.01;
+    slab.receiveShadow = true;
+    group.add(slab);
 
     // Draw curbs only along edges without an adjacent road tile.
     const curbHGeo = this.sharedGeometry('PlaneGeometry', TILE_SIZE, 0.1);
@@ -3502,15 +3766,6 @@ export class ModelFactory extends TextureGenerator {
     }
 
     // Centerline / divider markings aligned to actual road width and connectivity.
-    const dashVGeo = this.sharedGeometry('PlaneGeometry', 0.1, 0.52);
-    const dashHGeo = this.sharedGeometry('PlaneGeometry', 0.52, 0.1);
-    const addDash = (geo, dx, dz) => {
-      const dash = new THREE.Mesh(geo, stripe);
-      dash.rotation.x = -Math.PI / 2;
-      dash.position.set(dx, 0.015, dz);
-      group.add(dash);
-    };
-
     if (doubleLaneMask !== 0) {
       // Wide 2-lane avenue: place dashed divider along the shared seam between lanes.
       if ((doubleLaneMask & 4) !== 0 && !hasN) {
@@ -3540,79 +3795,76 @@ export class ModelFactory extends TextureGenerator {
     } else if (count === 2 && hasE && hasW) {
       addDash(dashHGeo, -0.52, 0);
       addDash(dashHGeo, 0.52, 0);
-    } else if (count === 2) {
-      // 90-degree corner turn: guide dashes toward both connected arms.
-      if (hasN) addDash(dashVGeo, 0, -0.52);
-      if (hasS) addDash(dashVGeo, 0, 0.52);
-      if (hasW) addDash(dashHGeo, -0.52, 0);
-      if (hasE) addDash(dashHGeo, 0.52, 0);
     }
     // T- and X-junctions (count >= 3, non-double-lane) stay clean inside the intersection box.
     group.userData.batchTile = true;
     return markOwned(group, { geometries: false, materials: false });
   }
 
+  /** Pre-builds shared swamp patch textures and materials. */
+  ensureSwampPatchMats() {
+    if (this.swampPatchMats) return;
+    const c = document.createElement('canvas');
+    c.width = 256;
+    c.height = 256;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#33291d';
+    ctx.fillRect(0, 0, 256, 256);
+
+    // Organic wet mud mottling + standing water pools + ripple highlights
+    let seed = 1337;
+    const rand = () => {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      return seed / 4294967296;
+    };
+    for (let i = 0; i < 65; i++) {
+      const px = rand() * 256;
+      const py = rand() * 256;
+      const r = 14 + rand() * 28;
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(35, 27, 18, 0.45)' : 'rgba(62, 50, 34, 0.35)';
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    for (let i = 0; i < 18; i++) {
+      const px = rand() * 256;
+      const py = rand() * 256;
+      const rx = 18 + rand() * 34;
+      const ry = 12 + rand() * 24;
+      ctx.fillStyle = 'rgba(26, 62, 74, 0.72)';
+      ctx.beginPath();
+      ctx.ellipse(px, py, rx, ry, rand() * Math.PI, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(105, 165, 182, 0.28)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.ellipse(px - 2, py - 2, rx * 0.72, ry * 0.65, 0, 0.2, Math.PI * 1.1);
+      ctx.stroke();
+    }
+
+    const swampTex = this.configureColorTexture(new THREE.CanvasTexture(c));
+    swampTex.wrapS = THREE.RepeatWrapping;
+    swampTex.wrapT = THREE.RepeatWrapping;
+
+    this.swampPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
+      const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
+      mask.channel = 1;
+      return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
+        map: swampTex,
+        alphaMap: mask,
+        transparent: true,
+        depthWrite: false,
+        roughness: 0.28,
+        metalness: 0.25,
+        polygonOffset: true,
+        polygonOffsetUnits: -1,
+      }));
+    });
+  }
+
   /** Seamless wet mud & flooded puddle patch at world (x, z). */
   createSwampBlock(x = 0, z = 0) {
-    if (!this.swampPatchMats) {
-      const c = document.createElement('canvas');
-      c.width = 256;
-      c.height = 256;
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = '#33291d';
-      ctx.fillRect(0, 0, 256, 256);
-
-      // Organic wet mud mottling + standing water pools + ripple highlights
-      let seed = 1337;
-      const rand = () => {
-        seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
-        return seed / 4294967296;
-      };
-      for (let i = 0; i < 65; i++) {
-        const px = rand() * 256;
-        const py = rand() * 256;
-        const r = 14 + rand() * 28;
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(35, 27, 18, 0.45)' : 'rgba(62, 50, 34, 0.35)';
-        ctx.beginPath();
-        ctx.arc(px, py, r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      for (let i = 0; i < 18; i++) {
-        const px = rand() * 256;
-        const py = rand() * 256;
-        const rx = 18 + rand() * 34;
-        const ry = 12 + rand() * 24;
-        ctx.fillStyle = 'rgba(26, 62, 74, 0.72)';
-        ctx.beginPath();
-        ctx.ellipse(px, py, rx, ry, rand() * Math.PI, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(105, 165, 182, 0.28)';
-        ctx.lineWidth = 1.6;
-        ctx.beginPath();
-        ctx.ellipse(px - 2, py - 2, rx * 0.72, ry * 0.65, 0, 0.2, Math.PI * 1.1);
-        ctx.stroke();
-      }
-
-      const swampTex = this.configureColorTexture(new THREE.CanvasTexture(c));
-      swampTex.wrapS = THREE.RepeatWrapping;
-      swampTex.wrapT = THREE.RepeatWrapping;
-
-      this.swampPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
-        const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
-        mask.channel = 1;
-        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
-          map: swampTex,
-          alphaMap: mask,
-          transparent: true,
-          depthWrite: false,
-          roughness: 0.28,
-          metalness: 0.25,
-          polygonOffset: true,
-          polygonOffsetFactor: -1,
-          polygonOffsetUnits: -1,
-        }));
-      });
-    }
+    this.ensureSwampPatchMats();
     return this.createSeamlessSurfacePatch(x, z, this.swampPatchMats, 0.013);
   }
 
@@ -3671,7 +3923,7 @@ export class ModelFactory extends TextureGenerator {
       this.oilPatchMats = Array.from({ length: SAND_PATCH_VARIANTS }, (_, variant) => {
         const mask = new THREE.CanvasTexture(createSandPatchMask(128, variant, SAND_PATCH_CELL_FRACTION));
         mask.channel = 1;
-        return new THREE.MeshStandardMaterial({
+        return applyWorldSurfaceUv(new THREE.MeshStandardMaterial({
           map: oilTex,
           alphaMap: mask,
           transparent: true,
@@ -3679,9 +3931,8 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.08,
           metalness: 0.82,
           polygonOffset: true,
-          polygonOffsetFactor: -2,
           polygonOffsetUnits: -2,
-        });
+        }));
       });
     }
 
@@ -3739,7 +3990,6 @@ export class ModelFactory extends TextureGenerator {
         blending: THREE.AdditiveBlending,
         toneMapped: false,
         polygonOffset: true,
-        polygonOffsetFactor: -3,
         polygonOffsetUnits: -3,
       });
 
@@ -3832,33 +4082,36 @@ export class ModelFactory extends TextureGenerator {
       });
     }
 
-    const span = TILE_SIZE / SAND_PATCH_CELL_FRACTION;
-    const geometry = new THREE.PlaneGeometry(span, span);
-    geometry.setAttribute('uv1', geometry.attributes.uv.clone());
-    const pos = geometry.attributes.position;
-    const uv = geometry.attributes.uv;
-    const patternSpan = TILE_SIZE * SAND_PATTERN_CELLS;
-    for (let i = 0; i < pos.count; i++) {
-      uv.setXY(i, (x + pos.getX(i)) / patternSpan, (z - pos.getY(i)) / patternSpan);
-    }
+    const group = this.createSeamlessSurfacePatch(x, z, this.oilPatchMats, 0.015);
+    group.userData.oilCellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
+    return group;
+  }
 
-    const cellHash = Math.abs(Math.round(x / TILE_SIZE) * 73856093 ^ Math.round(z / TILE_SIZE) * 19349663);
-    const floor = new THREE.Mesh(geometry, this.oilPatchMats[cellHash % SAND_PATCH_VARIANTS]);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = 0.015;
-    floor.receiveShadow = true;
+  /** Lazily creates and caches shared geometries for burning oil slick rigs. */
+  ensureOilBurnGeometries() {
+    if (this.oilFireBedGeo) return;
+    const bedSpan = TILE_SIZE * 1.18;
+    this.oilFireBedGeo = new THREE.PlaneGeometry(bedSpan, bedSpan);
+    this.oilFireWaveGeo = new THREE.PlaneGeometry(bedSpan * 0.84, bedSpan * 0.84);
+    this.oilFlameTongueGeo = new THREE.PlaneGeometry(1, 1);
+    this.oilFlameTongueGeo.translate(0, 0.48, 0);
+    this.oilBoilRingGeo = new THREE.PlaneGeometry(0.75, 0.75);
+  }
 
-    // 3D Burning Inferno Rig (activated when the oil slick ignites)
+  /** Lazily attaches a 3D burning inferno rig when an oil slick tile ignites. */
+  attachOilBurnRig(group) {
+    if (group.userData.burnRig) return group.userData.burnRig;
+    this.ensureOilBurnGeometries();
+
     const burnGroup = new THREE.Group();
     burnGroup.visible = false;
 
-    const bedSpan = TILE_SIZE * 1.18;
-    const fireBed = new THREE.Mesh(new THREE.PlaneGeometry(bedSpan, bedSpan), this.oilFireBedMat);
+    const fireBed = new THREE.Mesh(this.oilFireBedGeo, this.oilFireBedMat);
     fireBed.rotation.x = -Math.PI / 2;
     fireBed.position.y = 0.024;
     burnGroup.add(fireBed);
 
-    const fireWave = new THREE.Mesh(new THREE.PlaneGeometry(bedSpan * 0.84, bedSpan * 0.84), this.oilFireBedMat);
+    const fireWave = new THREE.Mesh(this.oilFireWaveGeo, this.oilFireBedMat);
     fireWave.rotation.x = -Math.PI / 2;
     fireWave.rotation.z = 1.1;
     fireWave.position.y = 0.03;
@@ -3873,9 +4126,7 @@ export class ModelFactory extends TextureGenerator {
       { x: 0.36, z: 0.34, yaw: 2.72, w: 1.0, h: 0.82, phase: 5.7 },
     ];
     const flameTongues = tongueSpecs.map((spec) => {
-      const tGeo = new THREE.PlaneGeometry(1, 1);
-      tGeo.translate(0, 0.48, 0);
-      const mesh = new THREE.Mesh(tGeo, this.oilFlameSheetMat);
+      const mesh = new THREE.Mesh(this.oilFlameTongueGeo, this.oilFlameSheetMat);
       mesh.position.set(spec.x, 0.02, spec.z);
       mesh.rotation.y = spec.yaw;
       mesh.scale.set(spec.w, spec.h, 1);
@@ -3889,36 +4140,40 @@ export class ModelFactory extends TextureGenerator {
       { x: 0.05, z: 0.34, phase: 0.68 },
     ];
     const boilRings = boilSpecs.map((spec) => {
-      const rMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 0.75), this.oilBoilRingMat);
+      const rMesh = new THREE.Mesh(this.oilBoilRingGeo, this.oilBoilRingMat);
       rMesh.rotation.x = -Math.PI / 2;
       rMesh.position.set(spec.x, 0.034, spec.z);
       burnGroup.add(rMesh);
       return { mesh: rMesh, ...spec };
     });
 
-    const group = new THREE.Group();
-    group.position.set(x, 0, z);
-    group.add(floor);
+    markOwned(burnGroup, { geometries: false, materials: false });
+    group.userData.batchTile = false;
+    delete group.updateMatrixWorld;
     group.add(burnGroup);
-    group.userData.burnRig = {
+    group.updateMatrixWorld(true);
+    const rig = {
       burnGroup,
       fireBed,
       fireWave,
       flameTongues,
       boilRings,
-      phaseOffset: (cellHash % 100) * 0.0628,
+      phaseOffset: ((group.userData.oilCellHash ?? 0) % 100) * 0.0628,
     };
-    return markOwned(group, { materials: false });
+    group.userData.burnRig = rig;
+    return rig;
   }
 
   /** Dynamically animates the 3D burning oil slick fire-bed, boiling rings, and flame crown. */
   updateOilSlickBurn(mesh, isBurning, intensity = 1, time = 0) {
-    const rig = mesh?.userData?.burnRig;
-    if (!rig) return;
     if (!isBurning || intensity <= 0.01) {
-      rig.burnGroup.visible = false;
+      if (mesh?.userData?.burnRig) {
+        mesh.userData.burnRig.burnGroup.visible = false;
+      }
       return;
     }
+    const rig = mesh?.userData?.burnRig || (mesh ? this.attachOilBurnRig(mesh) : null);
+    if (!rig) return;
     rig.burnGroup.visible = true;
     const s = Math.max(0.25, Math.min(1.15, intensity));
     const t = time + rig.phaseOffset;
@@ -3951,8 +4206,9 @@ export class ModelFactory extends TextureGenerator {
     }
   }
 
-  /** Naturalistic blast crater with scorch rays, radial cracks, and jagged dirt rim. */
-  createCraterBlock(x = 0, z = 0) {
+  /** Pre-builds shared crater decal textures, materials, and sculpted rim geometry. */
+  ensureCraterAssets() {
+    if (this.craterMats && this.craterRimGeo) return;
     if (!this.craterMats) {
       const c = document.createElement('canvas');
       c.width = 256;
@@ -4038,7 +4294,6 @@ export class ModelFactory extends TextureGenerator {
           roughness: 0.96,
           metalness: 0.02,
           polygonOffset: true,
-          polygonOffsetFactor: -2,
           polygonOffsetUnits: -2,
         }),
         earth: new THREE.MeshStandardMaterial({
@@ -4112,6 +4367,20 @@ export class ModelFactory extends TextureGenerator {
       rimGeo.userData.batchGeometryKey = 'crater-rim';
       this.craterRimGeo = rimGeo;
     }
+  }
+
+  /** Pre-warms lazy procedural combat/destruction assets during sector load. */
+  prewarmCombatAssets() {
+    if (typeof document === 'undefined') return;
+    this.ensureRubbleAssets();
+    this.ensureSandPatchMats();
+    this.ensureSwampPatchMats();
+    this.ensureCraterAssets();
+  }
+
+  /** Naturalistic blast crater with scorch rays, radial cracks, and jagged dirt rim. */
+  createCraterBlock(x = 0, z = 0) {
+    this.ensureCraterAssets();
 
     const { decal, earth, rubble, rubbleDark } = this.craterMats;
     const group = new THREE.Group();
@@ -4232,6 +4501,58 @@ export class ModelFactory extends TextureGenerator {
 
     group.userData.batchTile = true;
     return markOwned(group, { geometries: false, materials: false });
+  }
+
+  createRailBlock(x = 0, z = 0, neighborMask = 5) {
+    return buildRailBlock(this, x, z, neighborMask);
+  }
+
+  createRailBridgeBlock(x = 0, z = 0, neighborMask = 5) {
+    return buildRailBridgeBlock(this, x, z, neighborMask);
+  }
+
+  createRailCurveBlock(x = 0, z = 0, rotationDeg = 0) {
+    return buildRailCurveBlock(this, x, z, rotationDeg);
+  }
+
+  createContainerBlock(colorIndex = 0, orientation = 'ns', spanCells = 1) {
+    return buildContainerBlock(this, colorIndex, orientation, spanCells);
+  }
+
+  updateContainerDamage(mesh, hp, maxHp = 8) {
+    refreshContainerDamage(this, mesh, hp, maxHp);
+  }
+
+  createTransformerBlock() {
+    return buildTransformerBlock(this);
+  }
+
+  updateTransformerDamage(mesh, hp) {
+    refreshTransformerDamage(this, mesh, hp);
+  }
+
+  createSandbagsBlock(neighborMask = 0) {
+    return buildSandbagsBlock(this, neighborMask);
+  }
+
+  createRailCarBlock(orientation = 'ns', variant = 'closed', spanCells = 1, colorIndex = 0) {
+    return buildRailCarBlock(this, orientation, variant, spanCells, colorIndex);
+  }
+
+  updateRailCarDamage(mesh, hp, maxHp = 10) {
+    refreshRailCarDamage(this, mesh, hp, maxHp);
+  }
+
+  createLocomotiveBlock(orientation = 'ns', spanCells = 1) {
+    return buildLocomotiveBlock(this, orientation, spanCells);
+  }
+
+  updateLocomotiveDamage(mesh, hp, maxHp = 16) {
+    refreshLocomotiveDamage(this, mesh, hp, maxHp);
+  }
+
+  createCrushableProp(kind, theme = 'urban', seed = 0) {
+    return buildCrushableProp(this, kind, theme, seed);
   }
 
   getPowerUpEmblemTexture(type) {

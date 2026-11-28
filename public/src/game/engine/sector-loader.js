@@ -5,19 +5,21 @@ import { resolveAssembledTank } from '../../sim/garage.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
 import { buildSurvivalWaveSpec, createSurvivalState } from '../../sim/survival.js';
 import {
-  APS,
   HYDRA,
   INFERNO,
   MAMMOTH,
   TITAN,
+  TANK_RIDE_HEIGHT,
 } from '../constants.js';
 import { createEncounterState, remainingEncounterEnemies } from '../encounters.js';
+import { DEFAULT_CAMERA_AZIMUTH } from './input-camera.js';
 import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE, getBaseLayout, isContractMap } from '../levels.js';
 import { sound } from '../sound.js';
 import { BoxPowerUpPool } from '../terrains/boxes-loot.js';
-import { computeBuildingLayout } from '../terrains/building-layout.js';
 import { BUILDING_MAX_HP } from '../terrains/building-models.js';
 import { landmarkFootprintCenter } from '../terrains/landmarks.js';
+import { railCurveCells, resolveBuildingCell } from '../terrains/terrain-format.js';
+import { computeRoadCellMasks } from '../render/models.js';
 import { updateGroundSurfaceFinish } from '../terrains/ground-finish.js';
 import { isSurfaceType, setCellObject } from '../terrains/layers.js';
 import { createUrbanGroundTexture } from '../terrains/urban-ground.js';
@@ -71,13 +73,13 @@ export function sectorLandmarkKinds(sector) {
   return [...new Set(kinds)];
 }
 
-export function sectorUsesLandmarks(sector) {
+function sectorUsesLandmarks(sector) {
   if (!sector) return false;
   return Boolean(
     sector.baseModel ||
       sector.landmarks3d?.length ||
-      sector.mineSigns?.length ||
-      sector.grid?.some((row) => row.includes(TileType.BRIDGE))
+      sector.bridges?.length ||
+      sector.mineSigns?.length
   );
 }
 
@@ -200,6 +202,9 @@ export class SectorLoaderController {
     engine.enemySpawner.clearPendingTimeouts();
     engine.modelFactory?.clearPendingRigs?.();
     engine.pendingBarrelExplosions = [];
+    engine.pendingTransformerPulses = [];
+    engine.playerEmpDisruptTimer = 0;
+    engine.crushableProps = [];
     engine.enemies = [];
     engine.brickRubble = [];
     if (engine.projectiles) {
@@ -225,7 +230,8 @@ export class SectorLoaderController {
     }
     engine.defenseTurrets = [];
     engine.baseAlive = true;
-    engine.baseMaxHp = sector.baseMaxHp || 1;
+    const baseHpMult = engine.getHqBonuses?.().baseHpMultiplier || 1;
+    engine.baseMaxHp = Math.max(1, Math.round((sector.baseMaxHp || 1) * baseHpMult));
     engine.baseHp = engine.baseMaxHp;
     engine.baseLandmarkMesh = null;
     if (sectorUsesLandmarks(sector)) {
@@ -245,24 +251,57 @@ export class SectorLoaderController {
 
     engine.grid = [];
     engine.componentWaterEgress = false;
+    const pairedCells = new Set();
+    const pairLinks = [];
+    const fixedObjectByAnchor = new Map();
+    const fixedObjectTailSet = new Set();
+    const movingTrackCells = engine.trainController?.prepareTracks?.(sector) || new Set();
+    for (const instance of sector.fixedObjects || []) {
+      const tail = instance.orientation === 'ew'
+        ? { row: instance.row, col: instance.col + 1 }
+        : { row: instance.row + 1, col: instance.col };
+      const isMovingLoco =
+        instance.kind === 'locomotive' &&
+        (movingTrackCells.has(`${instance.row},${instance.col}`) ||
+          movingTrackCells.has(`${tail.row},${tail.col}`));
+      if (isMovingLoco) continue;
+      fixedObjectByAnchor.set(`${instance.row},${instance.col}`, instance);
+      fixedObjectTailSet.add(`${tail.row},${tail.col}`);
+      pairLinks.push([instance.row, instance.col, tail.row, tail.col]);
+    }
+    const railCurveCellSet = new Set();
+    const railBridgeCellSet = new Set((sector.railBridges || []).map(({ row, col }) => `${row},${col}`));
+    for (const rc of sector.railCurves || []) {
+      for (const cell of railCurveCells(rc.row, rc.col, rc.rotation || 0)) {
+        railCurveCellSet.add(`${cell.row},${cell.col}`);
+      }
+    }
 
-    const buildingLayout = computeBuildingLayout(sector.grid, sector.theme);
     for (let r = 0; r < GRID_SIZE; r++) {
       const rowCells = [];
       for (let c = 0; c < GRID_SIZE; c++) {
         const supply = sector.powerups?.find((item) => item.row === r && item.col === c);
         const rawCell = sector.grid[r][c];
         const surface = sector.surfaceGrid?.[r]?.[c] ?? (isSurfaceType(rawCell) ? rawCell : TileType.EMPTY);
-        const object = supply
+        const rawObject = supply
           ? TileType.BOXES
           : sector.objectGrid?.[r]?.[c] ?? (!isSurfaceType(rawCell) && rawCell !== TileType.EMPTY ? rawCell : null);
+        const isMovingStock =
+          movingTrackCells.has(`${r},${c}`) &&
+          (rawObject === TileType.LOCOMOTIVE || rawObject === TileType.RAIL_CAR);
+        const object = isMovingStock
+          ? (railBridgeCellSet.has(`${r},${c}`) ? TileType.RAIL_BRIDGE : null)
+          : rawObject;
         const type = object ?? surface;
         const { x, z } = this.gridToWorld(r, c);
         let mesh = null;
         let surfaceMesh = null;
         let subMeshes;
         let hp = 1;
-        const building = !supply ? buildingLayout.get(`${r},${c}`) || null : null;
+        const building =
+          !supply && (type === TileType.HOUSE_1 || type === TileType.HOUSE_2)
+            ? resolveBuildingCell(sector.objectGrid, sector.buildingStyles, r, c)
+            : null;
 
         // Render flat surface layer underneath any placed object
         if (surface === TileType.ROAD && engine.modelFactory.createRoadBlock) {
@@ -272,17 +311,8 @@ export class SectorLoaderController {
             const o = sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
             return s === TileType.ROAD || o === TileType.BRIDGE;
           };
-          const n = isRoad(r - 1, c);
-          const e = isRoad(r, c + 1);
-          const s = isRoad(r + 1, c);
-          const w = isRoad(r, c - 1);
-          const roadMask = (n ? 1 : 0) | (e ? 2 : 0) | (s ? 4 : 0) | (w ? 8 : 0);
-          const doubleLaneMask =
-            (n && e && w && !s && (isRoad(r - 1, c + 1) || isRoad(r - 1, c - 1)) ? 1 : 0) |
-            (e && n && s && !w && (isRoad(r - 1, c + 1) || isRoad(r + 1, c + 1)) ? 2 : 0) |
-            (s && e && w && !n && (isRoad(r + 1, c + 1) || isRoad(r + 1, c - 1)) ? 4 : 0) |
-            (w && n && s && !e && (isRoad(r - 1, c - 1) || isRoad(r + 1, c - 1)) ? 8 : 0);
-          surfaceMesh = engine.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask);
+          const { roadMask, doubleLaneMask, cornerType } = computeRoadCellMasks(isRoad, r, c, GRID_SIZE);
+          surfaceMesh = engine.modelFactory.createRoadBlock(x, z, roadMask, doubleLaneMask, cornerType);
           engine.mapGroup.add(surfaceMesh);
         } else if (surface === TileType.SAND && engine.modelFactory.createSandBlock) {
           surfaceMesh = engine.modelFactory.createSandBlock(x, z);
@@ -299,12 +329,29 @@ export class SectorLoaderController {
         } else if (surface === TileType.OIL_SLICK && engine.modelFactory.createOilSlickBlock) {
           surfaceMesh = engine.modelFactory.createOilSlickBlock(x, z);
           engine.mapGroup.add(surfaceMesh);
+        } else if (surface === TileType.RAIL && !railCurveCellSet.has(`${r},${c}`)) {
+          const isRail = (rr, cc) => {
+            if (rr < 0 || rr >= GRID_SIZE || cc < 0 || cc >= GRID_SIZE) return false;
+            const s = sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc];
+            return s === TileType.RAIL || railBridgeCellSet.has(`${rr},${cc}`);
+          };
+          const railMask =
+            (isRail(r - 1, c) ? 1 : 0) |
+            (isRail(r, c + 1) ? 2 : 0) |
+            (isRail(r + 1, c) ? 4 : 0) |
+            (isRail(r, c - 1) ? 8 : 0);
+          surfaceMesh = engine.modelFactory.createRailBlock(x, z, railMask);
+          engine.mapGroup.add(surfaceMesh);
         }
+
+        const rotDeg = sector.objectRotations?.[r]?.[c] || 0;
+        const rotRad = (rotDeg * Math.PI) / 180;
 
         if (type === TileType.BRICK) {
           hp = 4;
           const brick = engine.modelFactory.createBrickBlock();
           brick.group.position.set(x, 0, z);
+          if (rotDeg) brick.group.rotation.y = rotRad;
           engine.mapGroup.add(brick.group);
           mesh = brick.group;
           subMeshes = brick.subMeshes;
@@ -312,13 +359,14 @@ export class SectorLoaderController {
           hp = 16;
           const concrete = engine.modelFactory.createConcreteBlock();
           concrete.position.set(x, 0, z);
+          if (rotDeg) concrete.rotation.y = rotRad;
           engine.mapGroup.add(concrete);
           mesh = concrete;
         } else if (type === TileType.HOUSE_1 || type === TileType.HOUSE_2) {
           if (building) {
             hp = BUILDING_MAX_HP[building.kind];
             const built = engine.modelFactory.createBuildingBlock(
-              building.kind, building.part, building.yaw, hp, hp, building.style
+              building.kind, building.part, building.yaw + rotRad, hp, hp, building.style
             );
             built.group.position.set(x, 0, z);
             engine.mapGroup.add(built.group);
@@ -328,6 +376,7 @@ export class SectorLoaderController {
         } else if (type === TileType.FOREST) {
           const forest = engine.modelFactory.createForestBlock();
           forest.position.set(x, 0, z);
+          if (rotDeg) forest.rotation.y = rotRad;
           engine.mapGroup.add(forest);
           mesh = forest;
         } else if (type === TileType.WATER) {
@@ -355,39 +404,10 @@ export class SectorLoaderController {
             }
           }
           hp = engine.baseMaxHp || 1;
-        } else if (type === TileType.BRIDGE && engine.modelFactory.landmarkModels) {
-          const isBridge = (rr, cc) =>
-            rr >= 0 &&
-            rr < GRID_SIZE &&
-            cc >= 0 &&
-            cc < GRID_SIZE &&
-            sector.grid[rr][cc] === TileType.BRIDGE;
-          // One bridge per rectangular run of bridge cells, anchored on its top-left cell.
-          if (!isBridge(r, c - 1) && !isBridge(r - 1, c)) {
-            let cols = 1;
-            while (isBridge(r, c + cols)) cols++;
-            let rows = 1;
-            while (isBridge(r + rows, c)) rows++;
-            // The bridge spans across the water: water flanking the east / west
-            // edges means a north-south crossing, and vice versa.
-            const isWater = (rr, cc) =>
-              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE && sector.grid[rr][cc] === TileType.WATER;
-            let waterEW = 0;
-            for (let dr = 0; dr < rows; dr++) waterEW += isWater(r + dr, c - 1) + isWater(r + dr, c + cols);
-            let waterNS = 0;
-            for (let dc = 0; dc < cols; dc++) waterNS += isWater(r - 1, c + dc) + isWater(r + rows, c + dc);
-            const spanNS = waterEW > waterNS || (waterEW === waterNS && rows >= cols);
-            const bridgeMesh = spanNS
-              ? engine.modelFactory.landmarkModels.createBridge(rows, cols)
-              : engine.modelFactory.landmarkModels.createBridge(cols, rows);
-            if (!spanNS) bridgeMesh.rotation.y = Math.PI / 2;
-            bridgeMesh.position.set(x + ((cols - 1) * TILE_SIZE) / 2, 0, z + ((rows - 1) * TILE_SIZE) / 2);
-            engine.mapGroup.add(bridgeMesh);
-            mesh = bridgeMesh;
-          }
         } else if (type === TileType.ENEMY_BASE) {
           const enemyBaseBlock = engine.modelFactory.createEnemyBaseBlock();
           enemyBaseBlock.position.set(x, 0, z);
+          if (rotDeg) enemyBaseBlock.rotation.y = rotRad;
           engine.mapGroup.add(enemyBaseBlock);
           mesh = enemyBaseBlock;
           hp = engine.enemyBaseMaxHp;
@@ -397,34 +417,140 @@ export class SectorLoaderController {
         } else if (type === TileType.HEDGEHOG) {
           const hedgehog = engine.modelFactory.createHedgehogBlock();
           hedgehog.position.set(x, 0, z);
+          if (rotDeg) hedgehog.rotation.y = rotRad;
           engine.mapGroup.add(hedgehog);
           mesh = hedgehog;
           hp = 1;
         } else if (type === TileType.BOXES) {
           mesh = engine.modelFactory.createBoxesBlock();
           mesh.position.set(x, 0, z);
+          if (rotDeg) mesh.rotation.y = rotRad;
           engine.mapGroup.add(mesh);
           hp = 2;
         } else if (type === TileType.BARREL) {
           const barrel = engine.modelFactory.createBarrelBlock();
           barrel.position.set(x, 0, z);
+          if (rotDeg) barrel.rotation.y = rotRad;
           engine.mapGroup.add(barrel);
           mesh = barrel;
           hp = 1;
         } else if (type === TileType.CRATER && engine.modelFactory.createCraterBlock) {
           mesh = engine.modelFactory.createCraterBlock(x, z);
+          if (rotDeg) mesh.rotation.y = rotRad;
           engine.mapGroup.add(mesh);
         } else if (type === TileType.RUBBLE && engine.modelFactory.createRubbleBlock) {
           mesh = engine.modelFactory.createRubbleBlock('house2');
           mesh.position.set(x, 0, z);
-          mesh.rotation.y = ((r * 7 + c * 13) % 4) * (Math.PI / 2);
+          mesh.rotation.y = rotDeg ? rotRad : ((r * 7 + c * 13) % 4) * (Math.PI / 2);
           engine.mapGroup.add(mesh);
           hp = 1;
         } else if (type === TileType.WATER_TOWER && engine.modelFactory.createWaterTowerBlock) {
           mesh = engine.modelFactory.createWaterTowerBlock();
           mesh.position.set(x, 0, z);
+          if (rotDeg) mesh.rotation.y = rotRad;
           engine.mapGroup.add(mesh);
           hp = 2;
+        } else if (type === TileType.CONTAINER && engine.modelFactory.createContainerBlock) {
+          hp = 8;
+          if (!fixedObjectTailSet.has(`${r},${c}`)) {
+            const fixed = fixedObjectByAnchor.get(`${r},${c}`);
+            const orientation = fixed?.orientation || 'ns';
+            const bakedColor = sector.tacticalStyles?.[r]?.[c];
+            const colorIdx = bakedColor >= 0 ? bakedColor : (r * 3 + c * 7) % 4;
+            mesh = engine.modelFactory.createContainerBlock(colorIdx, orientation, 2);
+            mesh.position.set(
+              x + (orientation === 'ew' ? TILE_SIZE * 0.5 : 0),
+              0,
+              z + (orientation === 'ns' ? TILE_SIZE * 0.5 : 0)
+            );
+            if (rotDeg === 180 || rotDeg === 270) mesh.rotation.y += Math.PI;
+            engine.mapGroup.add(mesh);
+          }
+        } else if (type === TileType.TRANSFORMER && engine.modelFactory.createTransformerBlock) {
+          mesh = engine.modelFactory.createTransformerBlock();
+          mesh.position.set(x, 0, z);
+          if (rotDeg) mesh.rotation.y = rotRad;
+          engine.mapGroup.add(mesh);
+          hp = 2;
+        } else if (type === TileType.SANDBAGS && engine.modelFactory.createSandbagsBlock) {
+          const isBags = (rr, cc) =>
+            rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+            (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.SANDBAGS;
+          const bagMask =
+            (isBags(r - 1, c) ? 1 : 0) |
+            (isBags(r, c + 1) ? 2 : 0) |
+            (isBags(r + 1, c) ? 4 : 0) |
+            (isBags(r, c - 1) ? 8 : 0);
+          mesh = engine.modelFactory.createSandbagsBlock(bagMask);
+          mesh.position.set(x, 0, z);
+          if (rotDeg) mesh.rotation.y += rotRad;
+          engine.mapGroup.add(mesh);
+          hp = 3;
+        } else if (type === TileType.RAIL_CAR && engine.modelFactory.createRailCarBlock) {
+          hp = 10;
+          if (!pairedCells.has(`${r},${c}`)) {
+            const sameCar = (rr, cc) =>
+              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+              !pairedCells.has(`${rr},${cc}`) &&
+              (sector.objectGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL_CAR;
+            const pairE = sameCar(r, c + 1);
+            const pairS = !pairE && sameCar(r + 1, c);
+            const isRailAxis = (rr, cc) =>
+              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+              ((sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL || railBridgeCellSet.has(`${rr},${cc}`));
+            const orientation = pairE
+              ? 'ew'
+              : pairS
+              ? 'ns'
+              : (isRailAxis(r, c - 1) || isRailAxis(r, c + 1)) && !(isRailAxis(r - 1, c) || isRailAxis(r + 1, c))
+              ? 'ew'
+              : 'ns';
+            if (pairE) {
+              pairedCells.add(`${r},${c}`);
+              pairedCells.add(`${r},${c + 1}`);
+              pairLinks.push([r, c, r, c + 1]);
+            } else if (pairS) {
+              pairedCells.add(`${r},${c}`);
+              pairedCells.add(`${r + 1},${c}`);
+              pairLinks.push([r, c, r + 1, c]);
+            }
+            const variant = (r + c) % 2 === 0 ? 'closed' : 'open';
+            const bakedColor = sector.tacticalStyles?.[r]?.[c];
+            const colorIdx = bakedColor >= 0 ? bakedColor : (r * 5 + c * 11) % 4;
+            const spanCells = pairE || pairS ? 2 : 1;
+            mesh = engine.modelFactory.createRailCarBlock(spanCells === 1 && rotDeg ? 'ns' : orientation, variant, spanCells, colorIdx);
+            mesh.position.set(
+              x + (pairE ? TILE_SIZE * 0.5 : 0),
+              railBridgeCellSet.has(`${r},${c}`) || (pairE && railBridgeCellSet.has(`${r},${c + 1}`)) || (pairS && railBridgeCellSet.has(`${r + 1},${c}`)) ? 0.20 : 0,
+              z + (pairS ? TILE_SIZE * 0.5 : 0)
+            );
+            if (spanCells === 1 && rotDeg) mesh.rotation.y = rotRad;
+            else if (spanCells === 2 && (rotDeg === 180 || rotDeg === 270)) mesh.rotation.y += Math.PI;
+            engine.mapGroup.add(mesh);
+          }
+        } else if (type === TileType.LOCOMOTIVE && engine.modelFactory.createLocomotiveBlock) {
+          hp = 16;
+          if (!fixedObjectTailSet.has(`${r},${c}`)) {
+            const fixed = fixedObjectByAnchor.get(`${r},${c}`);
+            const isRailAxis = (rr, cc) =>
+              rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+              ((sector.surfaceGrid?.[rr]?.[cc] ?? sector.grid[rr][cc]) === TileType.RAIL || railBridgeCellSet.has(`${rr},${cc}`));
+            const railOrientation =
+              (isRailAxis(r, c - 1) || isRailAxis(r, c + 1)) && !(isRailAxis(r - 1, c) || isRailAxis(r + 1, c))
+              ? 'ew'
+              : 'ns';
+            const orientation = fixed?.orientation || railOrientation;
+            mesh = engine.modelFactory.createLocomotiveBlock(orientation, 2);
+            mesh.position.set(
+              x + (orientation === 'ew' ? TILE_SIZE * 0.5 : 0),
+              railBridgeCellSet.has(`${r},${c}`) ||
+                (orientation === 'ew' && railBridgeCellSet.has(`${r},${c + 1}`)) ||
+                (orientation === 'ns' && railBridgeCellSet.has(`${r + 1},${c}`)) ? 0.20 : 0,
+              z + (orientation === 'ns' ? TILE_SIZE * 0.5 : 0)
+            );
+            if (rotDeg === 180 || rotDeg === 270) mesh.rotation.y += Math.PI;
+            engine.mapGroup.add(mesh);
+          }
         }
 
         if (!mesh && surfaceMesh) {
@@ -442,9 +568,20 @@ export class SectorLoaderController {
           mesh,
           surfaceMesh,
           subMeshes,
+          railBridge: railBridgeCellSet.has(`${r},${c}`),
         });
       }
       engine.grid.push(rowCells);
+    }
+
+    for (const [r1, c1, r2, c2] of pairLinks) {
+      const a = engine.grid[r1]?.[c1];
+      const b = engine.grid[r2]?.[c2];
+      if (a && b && a.object && a.object === b.object) {
+        a.pairPartner = b;
+        b.pairPartner = a;
+        b.mesh = a.mesh;
+      }
     }
 
     if (engine.activeMapRules.hasEnemyFortifiedBase && !engine.enemyBaseAlive) {
@@ -467,15 +604,46 @@ export class SectorLoaderController {
       }
     }
     engine.setupDefenseTurrets();
+    engine.trainController?.setup?.(sector);
 
     if (sector.landmarks3d?.length && engine.modelFactory.landmarkModels) {
       for (const entry of sector.landmarks3d) {
-        const lmPos = landmarkFootprintCenter(entry.kind, entry.row, entry.col, (rr, cc) =>
-          this.gridToWorld(rr, cc)
+        const lmPos = landmarkFootprintCenter(
+          entry.kind,
+          entry.row,
+          entry.col,
+          (rr, cc) => this.gridToWorld(rr, cc),
+          entry.rotation || 0
         );
         const lmMesh = engine.modelFactory.landmarkModels.create(entry.kind);
         lmMesh.position.set(lmPos.x, 0, lmPos.z);
+        if (entry.rotation) lmMesh.rotation.y = (entry.rotation * Math.PI) / 180;
         engine.mapGroup.add(lmMesh);
+      }
+    }
+
+    if (sector.railCurves?.length && engine.modelFactory.createRailCurveBlock) {
+      for (const rc of sector.railCurves) {
+        const center = this.gridToWorld(rc.row + 1, rc.col + 1);
+        const curveMesh = engine.modelFactory.createRailCurveBlock(center.x, center.z, rc.rotation || 0);
+        engine.mapGroup.add(curveMesh);
+      }
+    }
+
+    if (sector.bridges?.length && engine.modelFactory.landmarkModels) {
+      for (const b of sector.bridges) {
+        const spanNS = b.orientation !== 'ew';
+        const bridgeMesh = spanNS
+          ? engine.modelFactory.landmarkModels.createBridge(b.rows, b.cols)
+          : engine.modelFactory.landmarkModels.createBridge(b.cols, b.rows);
+        if (!spanNS) bridgeMesh.rotation.y = Math.PI / 2;
+        const origin = this.gridToWorld(b.row, b.col);
+        bridgeMesh.position.set(
+          origin.x + ((b.cols - 1) * TILE_SIZE) / 2,
+          0,
+          origin.z + ((b.rows - 1) * TILE_SIZE) / 2
+        );
+        engine.mapGroup.add(bridgeMesh);
       }
     }
 
@@ -502,13 +670,49 @@ export class SectorLoaderController {
       }
     }
 
+    if (sector.props?.length && engine.modelFactory.createCrushableProp) {
+      const propTheme =
+        sector.mapId?.includes('provence') || sector.name?.toLowerCase().includes('provence')
+          ? 'provence'
+          : sector.decoration?.theme || sector.theme || 'urban';
+      for (let idx = 0; idx < sector.props.length; idx++) {
+        const p = sector.props[idx];
+        const cell = engine.grid[p.row]?.[p.col];
+        if (!cell || cell.object != null || cell.surface === TileType.WATER) continue;
+        const propPos = this.gridToWorld(p.row, p.col);
+        const propMesh = engine.modelFactory.createCrushableProp(p.kind, propTheme, p.row * 31 + p.col * 17 + idx);
+        propMesh.position.set(propPos.x, 0, propPos.z);
+        if (p.rotation) propMesh.rotation.y = (p.rotation * Math.PI) / 180;
+        engine.mapGroup.add(propMesh);
+        engine.crushableProps.push({
+          kind: p.kind,
+          row: p.row,
+          col: p.col,
+          x: propPos.x,
+          z: propPos.z,
+          alive: true,
+          mesh: propMesh,
+        });
+      }
+    }
+
     engine.waterSurfaceMesh = engine.modelFactory.createWaterBlock(
-      engine.grid.map((row) =>
-        row.map((cell) => (cell.type === TileType.BRIDGE ? TileType.WATER : cell.type))
-      ),
+      engine.grid.map((row) => row.map((cell) => cell.surface)),
       TileType.WATER
     );
     engine.mapGroup.add(engine.waterSurfaceMesh);
+    for (const { row, col } of sector.railBridges || []) {
+      const { x, z } = this.gridToWorld(row, col);
+      const isRail = (rr, cc) =>
+        rr >= 0 && rr < GRID_SIZE && cc >= 0 && cc < GRID_SIZE &&
+        ((sector.surfaceGrid?.[rr]?.[cc] ?? TileType.EMPTY) === TileType.RAIL || railBridgeCellSet.has(`${rr},${cc}`));
+      const mask =
+        (isRail(row - 1, col) ? 1 : 0) |
+        (isRail(row, col + 1) ? 2 : 0) |
+        (isRail(row + 1, col) ? 4 : 0) |
+        (isRail(row, col - 1) ? 8 : 0);
+      engine.mapGroup.add(engine.modelFactory.createRailBridgeBlock(x, z, mask));
+    }
     engine.iceSurfaceMesh = engine.modelFactory.createIceBlock(
       engine.grid.map((row) => row.map((cell) => cell.type)),
       TileType.ICE
@@ -528,6 +732,8 @@ export class SectorLoaderController {
     engine.defeatCinematicsTimer = 0;
     engine.victoryCinematicsTimer = 0;
     engine.missileFpvHoldTimer = 0;
+    engine.cameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
+    engine.targetCameraAzimuth = DEFAULT_CAMERA_AZIMUTH;
     if (engine.victoryCinematics?.baseFrustum) {
       engine.frustumSize = engine.victoryCinematics.baseFrustum;
       engine.updateCameraProjection?.();
@@ -560,16 +766,15 @@ export class SectorLoaderController {
       engine.setProfileMode('campaign');
     }
 
+    engine.componentDamage = Object.fromEntries(Object.keys(engine.componentDamage || { cannon: false, chassis: false, frame: false, engine: false, armor: false }).map((k) => [k, false]));
+    engine.componentDamageCooldown = 0;
+    engine.componentWaterEgress = false;
     engine.recomputePlayerStats(false);
 
-    engine.assembledTank = resolveAssembledTank(engine.playerSave);
+    engine.assembledTank = resolveAssembledTank();
     engine.subsystems = createTankSubsystems();
-    const savedRepairCharges = isIsolatedSector
-      ? 0
-      : Number.isInteger(engine.playerSave?.repairKitCharges)
-      ? engine.playerSave.repairKitCharges
-      : 0;
-    engine.repairKitState = createRepairKitState(savedRepairCharges, engine.getPlayerMaxRepairKitCharges());
+    const maxRepairCharges = engine.getPlayerMaxRepairKitCharges();
+    engine.repairKitState = createRepairKitState(maxRepairCharges, maxRepairCharges);
     engine.playerArmorPanels = {
       SOCKET_ARMOR_FRONT: {
         ...ARMOR_PANEL_CATALOG.sb_40,
@@ -605,6 +810,9 @@ export class SectorLoaderController {
     engine.lootContainers = [];
     engine.lastSettlementSummary = null;
     engine.creditsEarnedThisMission = 0;
+    engine.syncTemporaryCredits();
+    engine.preBattleUpgrades = { ...engine.upgrades };
+    engine.preBattleHqTree = { ...engine.getHqTree() };
 
     const authoredMission = {
       id: sector.mapId,
@@ -618,6 +826,7 @@ export class SectorLoaderController {
       missionId: authoredMission.id,
       isContract: isCargoContract,
       isSurvival: isSurvivalSector,
+      hardMode: Boolean(engine.hardMode),
       contractId: sector.contractId || (isCargoContract ? sector.mapId : null),
       status: 'in_progress',
       rewardsCommitted: false,
@@ -629,31 +838,31 @@ export class SectorLoaderController {
 
     engine.playerHp = engine.playerMaxHp;
 
-    if (isIsolatedSector) {
-      engine.playerController.initApsLaunchers(APS.START_ROUNDS);
-      engine.missileAmmo = 2;
-    } else if (Array.isArray(engine.playerSave?.apsAmmo)) {
-      engine.apsAmmo = [...engine.playerSave.apsAmmo];
-      const total = engine.apsAmmo.reduce((a, b) => a + b, 0);
-      if (total < APS.START_ROUNDS) {
-        engine.addApsRounds(APS.START_ROUNDS - total);
-      }
+    engine.apsOwned = isIsolatedSector ? false : Boolean(engine.apsOwned);
+    engine.atgmOwned = isIsolatedSector ? false : Boolean(engine.atgmOwned);
+    engine.preBattleApsOwned = engine.apsOwned;
+    engine.preBattleAtgmOwned = engine.atgmOwned;
+    if (!engine.apsOwned) {
+      engine.apsAmmo = [0, 0, 0, 0];
     } else {
-      engine.playerController.initApsLaunchers(APS.START_ROUNDS);
+      engine.playerController.initApsLaunchers(engine.getPlayerMaxApsAmmo());
     }
     engine.apsRearmTimer = 0;
-    if (!isIsolatedSector) {
-      engine.missileAmmo = Math.max(engine.missileAmmo, 2);
+    if (!engine.atgmOwned) {
+      engine.missileAmmo = 0;
+    } else {
+      engine.missileAmmo = engine.getPlayerMaxMissileAmmo();
     }
     engine.cannonAmmo = engine.getPlayerMaxCannonAmmo();
     engine.cannonBaseRearmTimer = 0;
     engine.missileCooldown = 0;
     engine.reconDroneCooldown = 0;
     engine.reconDroneActiveTimer = 0;
-    engine.reconDroneOwned = isIsolatedSector ? false : Boolean(engine.playerSave?.reconDroneOwned);
+    engine.reconDroneOwned = isIsolatedSector ? false : Boolean(engine.reconDroneOwned);
+    engine.preBattleReconDroneOwned = engine.reconDroneOwned;
     engine.repairKitCount = engine.getPlayerMaxRepairKitCharges();
 
-    engine.playerRig.root.position.set(engine.playerX, 0, engine.playerZ);
+    engine.playerRig.root.position.set(engine.playerX, TANK_RIDE_HEIGHT, engine.playerZ);
     engine.playerController.syncPlayerVisuals(0, 0);
     engine.entityGroup.add(engine.playerRig.root);
 
@@ -671,8 +880,8 @@ export class SectorLoaderController {
     engine.enemySpawnQueue = Array.isArray(sector.enemyPool)
       ? [...sector.enemyPool]
       : [];
-    engine.vanguardRemainingToSpawn = engine.enemySpawnQueue.length;
-    engine.initialVanguardCount = engine.vanguardRemainingToSpawn;
+    engine.enemiesRemainingToSpawn = engine.enemySpawnQueue.length;
+    engine.initialEnemyCount = engine.enemiesRemainingToSpawn;
     engine.airDrops = [];
     engine.airDropQueue = Array.isArray(sector.airDrop)
       ? sector.airDrop.map((entry) => ({ ...entry, triggered: false }))
@@ -735,7 +944,7 @@ export class SectorLoaderController {
         (unitType, assignment, groupEntry) =>
           engine.contractDirector.spawnEnemy(unitType, assignment, groupEntry)
       );
-      engine.vanguardRemainingToSpawn =
+      engine.enemiesRemainingToSpawn =
         engine.contractState.scheduler.totalBudget - engine.contractState.scheduler.totalSpawned;
       engine.enemySpawnQueue = [];
     } else if (sector.encounters?.length) {
@@ -750,8 +959,8 @@ export class SectorLoaderController {
         engine.enemies.at(-1).campaignPatrolRoute = opening.patrolRoute;
       }
       engine.encounterState = createEncounterState(sector.encounters, count, sector.nextWave);
-      engine.vanguardRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
-      engine.initialVanguardCount = engine.vanguardRemainingToSpawn + count;
+      engine.enemiesRemainingToSpawn = remainingEncounterEnemies(engine.encounterState);
+      engine.initialEnemyCount = engine.enemiesRemainingToSpawn + count;
       engine.enemySpawnQueue = [];
     } else {
       if (Array.isArray(sector.fixedSpawns)) {
@@ -772,11 +981,11 @@ export class SectorLoaderController {
       const initialCount = Math.min(
         sector.initialSpawnCount ?? 4,
         maxConcurrent,
-        engine.vanguardRemainingToSpawn
+        engine.enemiesRemainingToSpawn
       );
       for (let i = 0; i < initialCount; i++) {
         if (engine.enemies.length >= maxConcurrent) break;
-        engine.spawnVanguardEnemy();
+        engine.spawnEnemy();
       }
     }
 
@@ -793,6 +1002,7 @@ export class SectorLoaderController {
       engine.syncAudioPauseState();
     }
 
+    engine.modelFactory?.prewarmCombatAssets?.();
     engine.emitHudUpdate();
   }
 }

@@ -2,6 +2,11 @@ import * as THREE from 'three';
 import { t } from '../../i18n/index.js';
 import { apsInterceptCost } from '../../sim/aps.js';
 import { determineHitAspect } from '../../sim/ballistics.js';
+import {
+  getAirStrikeRequiredRank,
+  getRankProgress,
+  isAirStrikeVariantUnlocked,
+} from '../../sim/medals.js';
 import { AIR_ORDNANCE, CANNONS } from '../components/ordnance.js';
 import {
   AIR_SUPPORT,
@@ -16,6 +21,7 @@ import {
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { disposeOwned, markOwned } from '../render/dispose.js';
 import { getSharedGltfLoader } from '../render/gltf-loader.js';
+import { warmupObject } from './gpu-warmup.js';
 import { sound } from '../sound.js';
 import { GameStatus, TileType } from '../types.js';
 import { AIRCRAFT_CONFIGS } from '../vehicles/aircraft.js';
@@ -61,6 +67,10 @@ const AIR_GLB_URLS = Object.freeze({
   repairDrone: DRONE_CONFIGS.REPAIR_DRONE.modelUrl,
 });
 
+/** Longest the preload waits for the model factory's air drop crate GLB (ms). */
+const AIR_DROP_MODEL_WAIT_MS = 15000;
+const AIR_DROP_MODEL_POLL_MS = 100;
+
 /**
  * Manages tactical Air Support calls (Air Strike, Air Repair, Air Mines, Air Drop),
  * paused map-targeting UI state, and active airborne entities.
@@ -69,34 +79,106 @@ export class AirSupportController {
   constructor(engine) {
     this.engine = engine;
     this.glbCache = new Map();
-    this.glbRequested = new Set();
+    /** Shared Promise of the running / finished preload (see preloadGlbModels). */
+    this.preloadPromise = null;
+    /** Identifies the current preload so a dispose() mid-load drops its late results. */
+    this.preloadToken = null;
+    /** Off-scene ordnance meshes whose materials keep the warmed shader programs alive. */
+    this.warmupGroup = null;
   }
 
+  /**
+   * Loads the aircraft / drone GLBs and the air drop crate, then compiles their shaders
+   * and uploads their textures off-screen (with bombs, missiles and target rings), so the
+   * first air support call does not stall the fight. Returns a Promise that resolves
+   * (never rejects) once everything is warm; repeated calls share the same Promise.
+   */
   preloadGlbModels() {
+    if (this.preloadPromise) return this.preloadPromise;
     if (
       typeof window === 'undefined' ||
       typeof document === 'undefined' ||
       this.engine?.isSoftwareGl ||
+      this.engine?.isDisposed ||
       !this.engine?.fxGroup
     ) {
-      return;
+      return Promise.resolve();
     }
+    const token = {};
+    this.preloadToken = token;
     const loader = getSharedGltfLoader(this.engine?.renderer);
-    for (const [key, relPath] of Object.entries(AIR_GLB_URLS)) {
-      if (this.glbRequested.has(key) || this.glbCache.has(key)) continue;
-      this.glbRequested.add(key);
+    const loads = Object.entries(AIR_GLB_URLS).map(([key, relPath]) => {
+      if (this.glbCache.has(key)) return Promise.resolve();
       const url = document.baseURI ? new URL(relPath, document.baseURI).href : relPath;
-      loader.load(
-        url,
-        (gltf) => {
-          if (gltf?.scene) {
-            this.glbCache.set(key, gltf.scene);
-          }
-        },
-        undefined,
-        () => {}
-      );
+      return new Promise((resolve) => {
+        loader.load(
+          url,
+          (gltf) => {
+            if (gltf?.scene && token === this.preloadToken) {
+              this.glbCache.set(key, gltf.scene);
+            }
+            resolve();
+          },
+          undefined,
+          () => resolve()
+        );
+      });
+    });
+    loads.push(this.waitForAirDropModel());
+    this.preloadPromise = Promise.all(loads)
+      .then(() => this.warmupVisuals(token))
+      .catch(() => {});
+    return this.preloadPromise;
+  }
+
+  /** Starts the model factory's air drop crate GLB load and resolves once it is parsed (or gives up). */
+  waitForAirDropModel() {
+    const factory = this.engine?.modelFactory;
+    if (!factory?.loadAirDropGlbModel) return Promise.resolve();
+    factory.loadAirDropGlbModel();
+    return new Promise((resolve) => {
+      const startedAt = Date.now();
+      const poll = () => {
+        if (
+          factory.glbAirDropParts ||
+          this.engine?.isDisposed ||
+          Date.now() - startedAt >= AIR_DROP_MODEL_WAIT_MS
+        ) {
+          resolve();
+          return;
+        }
+        setTimeout(poll, AIR_DROP_MODEL_POLL_MS);
+      };
+      poll();
+    });
+  }
+
+  /** Compiles and uploads every air support visual off-screen; keeps the meshes for their programs. */
+  warmupVisuals(token) {
+    const { engine } = this;
+    if (token !== this.preloadToken || engine.isDisposed) return Promise.resolve();
+    const group = new THREE.Group();
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.8, 1, 28),
+      new THREE.MeshBasicMaterial({ color: 0xef4444, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+    );
+    markOwned(ring);
+    const factory = engine.modelFactory;
+    const airDropRig = factory?.glbAirDropParts ? factory.createAirDropRig?.() : null;
+    for (const mesh of [
+      this.createBomberMesh(),
+      this.createAc130Mesh(),
+      this.createRepairDroneMesh(),
+      this.createBombMesh(),
+      this.createThermobaricMissileMesh(),
+      ring,
+      airDropRig?.root,
+    ]) {
+      if (mesh) group.add(mesh);
     }
+    if (this.warmupGroup) disposeOwned(this.warmupGroup);
+    this.warmupGroup = group;
+    return warmupObject(engine, group);
   }
 
   cloneGlbRig(key) {
@@ -130,20 +212,33 @@ export class AirSupportController {
   }
 
   getTargetingRadiusWorld(type, strikeVariant) {
+    const hq = this.engine.getHqBonuses?.();
     if (type === 'STRIKE') {
+      if (strikeVariant === 'STRIKE_BOMBS' && hq) return hq.bombRadiusCells * TILE_SIZE;
+      if (strikeVariant === 'STRIKE_THERMO' && hq) return hq.thermoRadiusCells * TILE_SIZE;
+      if (strikeVariant === 'STRIKE_AC130' && hq) return hq.ac130RadiusCells * TILE_SIZE;
+      if (strikeVariant === 'STRIKE_MINES' && hq) return hq.mineZoneHalfCells * TILE_SIZE;
       const cfg = this.getTargetingConfig('STRIKE', strikeVariant);
       return (cfg.radiusCells || 2) * TILE_SIZE;
     }
-    if (type === 'MINES') return AIR_SUPPORT.MINES.zoneHalfCells * TILE_SIZE;
+    if (type === 'MINES') return (hq ? hq.mineZoneHalfCells : AIR_SUPPORT.MINES.zoneHalfCells) * TILE_SIZE;
     return 1.3 * TILE_SIZE;
   }
 
   canAfford(cost) {
-    return (this.engine.playerSave?.credits ?? 0) >= cost;
+    const available = this.engine.getAvailableCredits
+      ? this.engine.getAvailableCredits()
+      : (this.engine.playerSave?.credits ?? 0);
+    return available >= cost;
   }
 
   spendCredits(cost) {
     const { engine } = this;
+    if (engine.spendBattleCredits) {
+      const ok = engine.spendBattleCredits(cost);
+      if (ok) engine.emitHudUpdate?.();
+      return ok;
+    }
     if (!engine.playerSave || (engine.playerSave.credits ?? 0) < cost) return false;
     engine.playerSave.credits -= cost;
     engine.saveRepo?.savePlayerSave?.(engine.playerSave);
@@ -167,6 +262,19 @@ export class AirSupportController {
     return (this.engine.airSupportMissions || []).some(isActiveAirStrikeMission);
   }
 
+  getPlayerRankId() {
+    const save = this.engine.campaignSaveRepo?.loadPlayerSave?.();
+    return getRankProgress(save).currentRank.id;
+  }
+
+  isStrikeVariantUnlocked(variant) {
+    return isAirStrikeVariantUnlocked(
+      variant,
+      this.getPlayerRankId(),
+      this.engine.profileMode || 'campaign'
+    );
+  }
+
   startTargeting(type, strikeVariant = 'STRIKE_BOMBS') {
     const { engine } = this;
     if (engine.status !== GameStatus.PLAYING && !engine.airSupportTargeting) return false;
@@ -176,6 +284,12 @@ export class AirSupportController {
 
     const cfg = this.getTargetingConfig(type, strikeVariant);
     if (!cfg) return false;
+
+    if (type === 'STRIKE' && !this.isStrikeVariantUnlocked(strikeVariant)) {
+      const reqRank = getAirStrikeRequiredRank(strikeVariant);
+      engine.setStatusBanner(t('REQUIRES RANK: {rank}', { rank: t(reqRank.title) }), 2.0);
+      return false;
+    }
 
     if ((type === 'STRIKE' || type === 'MINES') && this.hasActiveStrike()) {
       engine.setStatusBanner(t('AIR STRIKE ALREADY IN PROGRESS'), 2.0);
@@ -187,12 +301,12 @@ export class AirSupportController {
       return false;
     }
     if (type === 'STRIKE') {
-      const minStrikeCost = Math.min(
-        AIR_SUPPORT.STRIKE_BOMBS.cost,
-        AIR_SUPPORT.STRIKE_THERMO.cost,
-        AIR_SUPPORT.STRIKE_AC130.cost,
-        AIR_SUPPORT.MINES.cost
-      );
+      const unlockedCosts = Object.entries(STRIKE_VARIANTS)
+        .filter(([variantId]) => this.isStrikeVariantUnlocked(variantId))
+        .map(([, variantCfg]) => variantCfg.cost);
+      const minStrikeCost = unlockedCosts.length > 0
+        ? Math.min(...unlockedCosts)
+        : AIR_SUPPORT.STRIKE_BOMBS.cost;
       if (!this.canAfford(minStrikeCost)) {
         engine.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost: minStrikeCost }), 2.0);
         return false;
@@ -224,6 +338,11 @@ export class AirSupportController {
     const { engine } = this;
     if (!engine.airSupportTargeting || engine.airSupportTargeting.type !== 'STRIKE') return false;
     if (!STRIKE_VARIANTS[variant]) return false;
+    if (!this.isStrikeVariantUnlocked(variant)) {
+      const reqRank = getAirStrikeRequiredRank(variant);
+      engine.setStatusBanner(t('REQUIRES RANK: {rank}', { rank: t(reqRank.title) }), 2.0);
+      return false;
+    }
     engine.airSupportTargeting.strikeVariant = variant;
     this.createOrUpdateReticle(engine.aimWorld?.x ?? engine.playerX, engine.aimWorld?.z ?? engine.playerZ);
     engine.emitHudUpdate?.();
@@ -251,6 +370,12 @@ export class AirSupportController {
     if (!targeting) return false;
     const cfg = this.getTargetingConfig(targeting.type, targeting.strikeVariant);
     if (!cfg) return false;
+
+    if (targeting.type === 'STRIKE' && !this.isStrikeVariantUnlocked(targeting.strikeVariant)) {
+      const reqRank = getAirStrikeRequiredRank(targeting.strikeVariant);
+      engine.setStatusBanner(t('REQUIRES RANK: {rank}', { rank: t(reqRank.title) }), 2.0);
+      return false;
+    }
 
     if ((targeting.type === 'STRIKE' || targeting.type === 'MINES') && this.hasActiveStrike()) {
       engine.setStatusBanner(t('AIR STRIKE ALREADY IN PROGRESS'), 2.0);
@@ -372,6 +497,9 @@ export class AirSupportController {
     }
     const cfg = AIR_SUPPORT.REPAIR;
     const droneCfg = DRONE_CONFIGS.REPAIR_DRONE;
+    const hq = engine.getHqBonuses?.();
+    const healAmount = hq?.repairHealAmount ?? droneCfg.healAmount;
+    const durationSec = hq?.repairDurationSec ?? droneCfg.durationSec;
     if (!this.canAfford(cfg.cost)) {
       engine.setStatusBanner(t('INSUFFICIENT CREDITS (${cost})', { cost: cfg.cost }), 2.0);
       return false;
@@ -395,8 +523,8 @@ export class AirSupportController {
       exitZ: launch.z,
       phase: 'approach',
       timer: 0,
-      duration: droneCfg.durationSec,
-      healRemaining: droneCfg.healAmount,
+      duration: durationSec,
+      healRemaining: healAmount,
       subsystemsRepaired: false,
       sparkAcc: 0,
       mesh: droneRig,
@@ -484,13 +612,18 @@ export class AirSupportController {
     const { engine } = this;
     engine.airSupportMissions ||= [];
     const launch = this.getAlliedSideLaunchPos(targetX, targetZ);
+    const hq = engine.getHqBonuses?.();
+    const airStrikeId = `air_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
     if (variant === 'STRIKE_BOMBS') {
       const cfg = AIR_SUPPORT.STRIKE_BOMBS;
+      const bombCount = hq?.bombCount ?? cfg.bombCount;
+      const radiusCells = hq?.bombRadiusCells ?? cfg.radiusCells;
+      const damage = hq?.bombDamage ?? cfg.damage;
       const flyby = this.spawnStrategicBomberFlyby(launch, targetX, targetZ, cfg.flightSec);
 
-      for (let i = 0; i < cfg.bombCount; i++) {
-        const dropOffset = (i - 1) * cfg.scatterCells * TILE_SIZE * 0.85;
+      for (let i = 0; i < bombCount; i++) {
+        const dropOffset = (i - (bombCount - 1) * 0.5) * cfg.scatterCells * TILE_SIZE * 0.85;
         const lateral = (Math.random() - 0.5) * cfg.scatterCells * TILE_SIZE * 0.7;
         const bx = targetX + flyby.dirX * dropOffset - flyby.dirZ * lateral;
         const bz = targetZ + flyby.dirZ * dropOffset + flyby.dirX * lateral;
@@ -499,13 +632,14 @@ export class AirSupportController {
         engine.airSupportMissions.push({
           kind: 'AIR_ORDNANCE',
           ordnanceType: 'BOMB',
+          airStrikeId,
           startX: releaseX,
           startY: flyby.altitude - 0.5,
           startZ: releaseZ,
           targetX: bx,
           targetZ: bz,
-          radius: cfg.radiusCells * TILE_SIZE,
-          damage: cfg.damage,
+          radius: radiusCells * TILE_SIZE,
+          damage,
           penetration: cfg.penetration,
           delay: releaseDelay,
           timer: cfg.flightSec,
@@ -515,21 +649,25 @@ export class AirSupportController {
           ringMesh: null,
         });
       }
-      engine.setStatusBanner(t('AIR STRIKE INBOUND — 3× BOMBS ON TARGET'), 2.8);
+      engine.setStatusBanner(t('AIR STRIKE INBOUND — {n}× BOMBS ON TARGET', { n: bombCount }), 2.8);
     } else if (variant === 'STRIKE_THERMO') {
       const cfg = AIR_SUPPORT.STRIKE_THERMO;
       const thermoCfg = AIR_ORDNANCE.THERMOBARIC_MISSILE;
+      const radiusCells = hq?.thermoRadiusCells ?? cfg.radiusCells;
+      const damage = hq?.thermoDamage ?? cfg.damage;
+      const penetration = hq?.thermoPenetration ?? thermoCfg.penetration;
       engine.airSupportMissions.push({
         kind: 'AIR_ORDNANCE',
         ordnanceType: 'THERMO',
+        airStrikeId,
         startX: launch.x,
         startY: thermoCfg.launchAltitude,
         startZ: launch.z,
         targetX,
         targetZ,
-        radius: cfg.radiusCells * TILE_SIZE,
-        damage: cfg.damage,
-        penetration: thermoCfg.penetration,
+        radius: radiusCells * TILE_SIZE,
+        damage,
+        penetration,
         delay: 0,
         timer: cfg.flightSec,
         maxTimer: cfg.flightSec,
@@ -541,7 +679,10 @@ export class AirSupportController {
     } else if (variant === 'STRIKE_AC130') {
       const cfg = AIR_SUPPORT.STRIKE_AC130;
       const acCfg = AIRCRAFT_CONFIGS.AC130_SPOOKY;
-      const zoneMesh = this.createAc130ZoneRing(targetX, targetZ, cfg.radiusCells * TILE_SIZE);
+      const radiusCells = hq?.ac130RadiusCells ?? cfg.radiusCells;
+      const durationSec = hq?.ac130DurationSec ?? acCfg.durationSec;
+      const fireIntervalSec = hq?.ac130FireIntervalSec ?? acCfg.fireIntervalSec;
+      const zoneMesh = this.createAc130ZoneRing(targetX, targetZ, radiusCells * TILE_SIZE);
       const orbitRadius = (GRID_SIZE * TILE_SIZE) * acCfg.orbitRadiusRatio;
       const orbitHeight = acCfg.orbitHeight;
       const startX = launch.x;
@@ -555,6 +696,7 @@ export class AirSupportController {
       }
       engine.airSupportMissions.push({
         kind: 'AC130',
+        airStrikeId,
         phase: 'approach',
         x: targetX,
         z: targetZ,
@@ -562,31 +704,32 @@ export class AirSupportController {
         gunshipZ: startZ,
         exitX: startX,
         exitZ: startZ,
-        radius: cfg.radiusCells * TILE_SIZE,
+        radius: radiusCells * TILE_SIZE,
         orbitRadius,
         orbitHeight,
-        duration: acCfg.durationSec,
+        duration: durationSec,
         elapsed: 0,
         fireTimer: 0.25,
-        fireInterval: acCfg.fireIntervalSec,
+        fireInterval: fireIntervalSec,
         orbitAngle,
         zoneMesh,
         mesh: gunshipMesh,
       });
-      engine.setStatusBanner(t('AC-130 SPOOKY ON STATION — 15s FIRE SUPPORT'), 3.0);
+      engine.setStatusBanner(t('AC-130 SPOOKY ON STATION — {sec}s FIRE SUPPORT', { sec: durationSec }), 3.0);
     }
   }
 
   launchAirMines(targetX, targetZ) {
     const { engine } = this;
     const cfg = AIR_SUPPORT.MINES;
+    const hq = engine.getHqBonuses?.();
     const launch = this.getAlliedSideLaunchPos(targetX, targetZ);
-    const half = cfg.zoneHalfCells * TILE_SIZE;
+    const half = (hq?.mineZoneHalfCells ?? cfg.zoneHalfCells) * TILE_SIZE;
     engine.airSupportMissions ||= [];
     const flyby = this.spawnStrategicBomberFlyby(launch, targetX, targetZ, cfg.flightSec);
 
-    // Center mine + hex ring across the 8x8 cell zone so mines stay outside chain-detonation range
-    const count = Math.max(1, cfg.mineCount || 7);
+    // Center mine + hex ring across the zone so mines stay outside chain-detonation range
+    const count = Math.max(1, hq?.mineCount ?? cfg.mineCount ?? 7);
     const ringCount = count - 1;
     const ringRadius = half * 0.78;
     const baseAngle = Math.random() * Math.PI * 2;
@@ -633,20 +776,22 @@ export class AirSupportController {
         gridPos = engine.worldToGrid ? engine.worldToGrid(shifted.x, shifted.z) : gridPos;
       }
     }
-    const drop = ctrl?.spawnAirDrop({
-      shells: cfg.shells,
-      aps: cfg.aps,
-      missiles: cfg.missiles,
-      repairKits: cfg.repairKits,
-      spawnCell: gridPos,
+    const hq = engine.getHqBonuses?.();
+    const launch = this.getAlliedSideLaunchPos(dropPos.x, dropPos.z);
+    engine.airSupportMissions ||= [];
+    const flyby = this.spawnStrategicBomberFlyby(launch, dropPos.x, dropPos.z, 0.25);
+    const { releaseDelay } = this.computeBomberRelease(flyby, dropPos.x, dropPos.z);
+    engine.airSupportMissions.push({
+      kind: 'BOMBER_AIRDROP',
+      delay: releaseDelay,
+      dropPos,
+      gridPos,
+      altitude: flyby.altitude,
+      shells: hq?.airdropShells ?? cfg.shells,
+      aps: hq?.airdropAps ?? cfg.aps,
+      missiles: hq?.airdropMissiles ?? cfg.missiles,
+      repairKits: hq?.airdropRepairKits ?? cfg.repairKits,
     });
-    if (drop) {
-      drop.x = dropPos.x;
-      drop.z = dropPos.z;
-      drop.targetX = dropPos.x;
-      drop.targetZ = dropPos.z;
-      drop.rig?.root?.position?.set?.(dropPos.x, 0, dropPos.z);
-    }
   }
 
   update(dt, elapsed) {
@@ -674,6 +819,28 @@ export class AirSupportController {
       } else if (m.kind === 'AIR_MINE') {
         if (this.updateAirMine(m, dt)) {
           this.disposeMissionVisuals(m);
+          missions.splice(i, 1);
+        }
+      } else if (m.kind === 'BOMBER_AIRDROP') {
+        m.delay -= dt;
+        if (m.delay <= 0) {
+          const drop = engine.powerupsController?.spawnAirDrop({
+            shells: m.shells,
+            aps: m.aps,
+            missiles: m.missiles,
+            repairKits: m.repairKits,
+            spawnCell: m.gridPos,
+          });
+          if (drop) {
+            drop.x = m.dropPos.x;
+            drop.z = m.dropPos.z;
+            drop.targetX = m.dropPos.x;
+            drop.targetZ = m.dropPos.z;
+            drop.rig?.root?.position?.set?.(m.dropPos.x, 0, m.dropPos.z);
+            if (drop.rig?.crateGroup) {
+              drop.rig.crateGroup.position.y = Math.max(8, (m.altitude || 18) - 1);
+            }
+          }
           missions.splice(i, 1);
         }
       } else if (m.kind === 'BOMBER_FLYBY') {
@@ -878,7 +1045,7 @@ export class AirSupportController {
 
     if (m.timer <= 0) {
       if (m.ordnanceType === 'THERMO') {
-        engine.explosions?.detonateThermobaricAt(m.targetX, m.targetZ, m.radius, m.damage, true);
+        engine.explosions?.detonateThermobaricAt(m.targetX, m.targetZ, m.radius, m.damage, true, m.airStrikeId || null);
         this.applyFriendlyFireBlast(m.targetX, m.targetZ, m.radius, m.damage, 25, INFERNO.EDGE_DAMAGE_RATIO);
       } else {
         engine.detonateExplosionAt(
@@ -890,7 +1057,8 @@ export class AirSupportController {
           null,
           false,
           m.penetration,
-          'AIR_BOMB'
+          'AIR_BOMB',
+          m.airStrikeId || null
         );
         this.applyFriendlyFireBlast(
           m.targetX,
@@ -1009,7 +1177,7 @@ export class AirSupportController {
         m.fireTimer = m.fireInterval;
         const target = this.pickAc130Target(m.x, m.z, m.radius);
         if (target) {
-          this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z, orbitH);
+          this.fireAc130Shell(gunshipX, gunshipZ, target.x, target.z, orbitH, m.airStrikeId || null);
         }
       }
     }
@@ -1077,7 +1245,7 @@ export class AirSupportController {
     return null;
   }
 
-  fireAc130Shell(startX, startZ, targetX, targetZ, startHeight = 24) {
+  fireAc130Shell(startX, startZ, targetX, targetZ, startHeight = 24, airStrikeId = null) {
     const { engine } = this;
     const weaponId = AIRCRAFT_CONFIGS.AC130_SPOOKY.weaponId;
     const gun = CANNONS[weaponId];
@@ -1117,6 +1285,8 @@ export class AirSupportController {
         targetFlightY: 0.2,
         flightDist: dist,
         canHitPlayer: true,
+        isAirSupport: true,
+        airStrikeId,
       }
     );
   }
@@ -1214,7 +1384,7 @@ export class AirSupportController {
       !occupiedByMine;
 
     if (isEmptyCell) {
-      engine.explosions?.plantMineAt(x, z, { neutral: true, armTimer: 0.4 });
+      engine.explosions?.plantMineAt(x, z, { neutral: true, armTimer: 0.4, discovered: true, isAirSupport: true, airStrikeId: m.airStrikeId || null });
     } else {
       const blastRadius = LAND_MINE.BLAST_RADIUS_CELLS * TILE_SIZE;
       engine.fx?.shockwave?.(x, 0.1, z, 0.35, blastRadius, 0xff5a14, 0.48);
@@ -1226,7 +1396,9 @@ export class AirSupportController {
         true,
         null,
         true,
-        LAND_MINE.PENETRATION
+        LAND_MINE.PENETRATION,
+        'AIR_MINE',
+        m.airStrikeId || null
       );
       this.applyFriendlyFireBlast(
         x,
@@ -1397,6 +1569,12 @@ export class AirSupportController {
 
   dispose() {
     this.clear();
+    this.preloadToken = null;
+    this.preloadPromise = null;
+    if (this.warmupGroup) {
+      disposeOwned(this.warmupGroup);
+      this.warmupGroup = null;
+    }
     const disposedMats = new Set();
     const disposedTex = new Set();
     for (const scene of this.glbCache.values()) {
@@ -1418,6 +1596,5 @@ export class AirSupportController {
       });
     }
     this.glbCache.clear();
-    this.glbRequested.clear();
   }
 }

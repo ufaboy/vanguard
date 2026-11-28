@@ -5,9 +5,9 @@
 
 import { KAMIKAZE_BLAST } from '../constants.js';
 
-export const CONTACT_WARHEAD = Object.freeze({
-  /** World distance to the player that sets the warhead off. */
-  TRIGGER_RANGE: 1.65,
+const CONTACT_WARHEAD = Object.freeze({
+  /** World distance to the player that sets the warhead off (proximity trigger inside blast radius). */
+  TRIGGER_RANGE: 2.2,
 });
 
 export const contactWarhead = Object.freeze({

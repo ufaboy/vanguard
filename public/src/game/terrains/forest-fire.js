@@ -76,9 +76,6 @@ export class ForestFireController {
     if (cell.mesh) {
       cell.mesh.userData.batchTile = false;
     }
-    if (e.tileBatcher) {
-      e.tileBatcher.sync();
-    }
 
     e.burningForests.push({
       cell,
@@ -190,9 +187,9 @@ export class ForestFireController {
           e.spawnSparks(e.playerX, 0.8, e.playerZ, 0xff7700, 3);
         }
       }
-      const targets = [...e.enemies];
-      for (let ei = targets.length - 1; ei >= 0; ei--) {
-        const enemy = targets[ei];
+      for (let ei = e.enemies.length - 1; ei >= 0; ei--) {
+        if (ei >= e.enemies.length) continue;
+        const enemy = e.enemies[ei];
         if (!enemy || enemy.hp <= 0) continue;
         const distE = Math.hypot(enemy.x - bf.x, enemy.z - bf.z);
         if (distE < 1.15) {
@@ -224,11 +221,9 @@ export class ForestFireController {
         e.fx.blockDestroyed(bf.x, bf.z, 'forest');
         e.fx.flash(bf.x, 0.4, bf.z, 0xffaa44, 2.0);
 
-        if (e.tileBatcher) {
-          e.tileBatcher.sync();
-        }
-
-        e.burningForests.splice(i, 1);
+        const last = e.burningForests.length - 1;
+        if (i !== last) e.burningForests[i] = e.burningForests[last];
+        e.burningForests.pop();
       }
     }
   }

@@ -18,11 +18,13 @@ const SURFACE_TILE_SET = new Set([
   TileType.GRASS,
   TileType.SWAMP,
   TileType.OIL_SLICK,
+  TileType.RAIL,
 ]);
 
 const WALL_TILE_SET = new Set([
   TileType.BRICK,
   TileType.CONCRETE,
+  TileType.CONTAINER,
 ]);
 
 const FACILITY_TILE_SET = new Set([
@@ -34,6 +36,9 @@ const FACILITY_TILE_SET = new Set([
   TileType.LANDMARK,
   TileType.BASE,
   TileType.ENEMY_BASE,
+  TileType.RAIL_CAR,
+  TileType.LOCOMOTIVE,
+  TileType.RAIL_BRIDGE,
 ]);
 
 const DECORATION_TILE_SET = new Set([
@@ -42,6 +47,8 @@ const DECORATION_TILE_SET = new Set([
   TileType.HEDGEHOG,
   TileType.BARREL,
   TileType.BOXES,
+  TileType.TRANSFORMER,
+  TileType.SANDBAGS,
 ]);
 
 const DRY_SOLID_SURFACES = new Set([
@@ -50,6 +57,7 @@ const DRY_SOLID_SURFACES = new Set([
   TileType.STONE,
   TileType.GRASS,
   TileType.ROAD,
+  TileType.RAIL,
 ]);
 
 const FACILITY_SURFACES = new Set([
@@ -72,6 +80,14 @@ const BARREL_SURFACES = new Set([
   TileType.OIL_SLICK,
 ]);
 
+const BRIDGE_SURFACES = new Set([
+  TileType.WATER,
+  TileType.ICE,
+  TileType.STONE,
+  TileType.SWAMP,
+  TileType.RUBBLE,
+]);
+
 export function isSurfaceType(tileType) {
   return SURFACE_TILE_SET.has(tileType);
 }
@@ -91,7 +107,11 @@ function isDecorationType(tileType) {
 /** Hard compatibility check: can `objectType` be placed on `surfaceType`? */
 export function canPlaceOnSurface(objectType, surfaceType) {
   if (objectType == null || objectType === TileType.EMPTY) return true;
-  if (objectType === TileType.BRIDGE) return surfaceType === TileType.WATER;
+  if (objectType === TileType.RAIL_BRIDGE) return true;
+  if (objectType === TileType.BRIDGE) return BRIDGE_SURFACES.has(surfaceType);
+  if (objectType === TileType.RAIL_CAR || objectType === TileType.LOCOMOTIVE) {
+    return surfaceType === TileType.RAIL || surfaceType === TileType.RAIL_BRIDGE;
+  }
   if (isFacilityType(objectType)) return FACILITY_SURFACES.has(surfaceType);
   if (objectType === TileType.FOREST) return FOREST_SURFACES.has(surfaceType);
   if (objectType === TileType.BARREL) return BARREL_SURFACES.has(surfaceType);
@@ -160,6 +180,13 @@ const TILE_TYPE_TO_CONFIG = Object.freeze({
   [TileType.HOUSE_2]: SURFACE_CONFIGS[SURFACE_TYPES.HOUSE_2],
   [TileType.STONE]: SURFACE_CONFIGS[SURFACE_TYPES.STONE],
   [TileType.GRASS]: SURFACE_CONFIGS[SURFACE_TYPES.GRASS],
+  [TileType.RAIL]: SURFACE_CONFIGS[SURFACE_TYPES.RAIL],
+  [TileType.RAIL_BRIDGE]: SURFACE_CONFIGS[SURFACE_TYPES.RAIL_BRIDGE],
+  [TileType.CONTAINER]: SURFACE_CONFIGS[SURFACE_TYPES.CONTAINER],
+  [TileType.TRANSFORMER]: SURFACE_CONFIGS[SURFACE_TYPES.TRANSFORMER],
+  [TileType.SANDBAGS]: SURFACE_CONFIGS[SURFACE_TYPES.SANDBAGS],
+  [TileType.RAIL_CAR]: SURFACE_CONFIGS[SURFACE_TYPES.RAIL_CAR],
+  [TileType.LOCOMOTIVE]: SURFACE_CONFIGS[SURFACE_TYPES.LOCOMOTIVE],
 });
 
 /** Catalog config for a numeric TileType, or null for unknown types. */
@@ -169,12 +196,14 @@ function tileConfig(tileType) {
 
 /**
  * True when tracked tanks can drive onto a tile of this top-layer type (`cell.type`).
- * WATER also counts when `canCrossWater` (CH4 / CH5 / amphibious hulls). Unknown types block.
+ * WATER also counts when `canCrossWater` (CH4 / CH5 / amphibious hulls).
+ * SANDBAGS also counts when `canCrushSandbags` (Dozer Blade / Frame F5 / bosses). Unknown types block.
  */
-export function isTilePassable(tileType, canCrossWater = false) {
+export function isTilePassable(tileType, canCrossWater = false, canCrushSandbags = false) {
   const cfg = tileConfig(tileType);
   if (!cfg) return false;
   if (cfg.passableByTracks) return true;
+  if (canCrushSandbags && tileType === TileType.SANDBAGS) return true;
   return canCrossWater && tileType === TileType.WATER;
 }
 
@@ -218,7 +247,7 @@ const movementCache = new Map();
  * road bonus; `maxSpeedCells` (STONE) caps the top speed in cells per second, the lowest cap wins.
  * `chassis`: { allTerrain, canHover, isBoss, isEnemy }. Results are cached and frozen.
  */
-export function combineCellMovement(surfaceType = TileType.EMPTY, objectType = null, chassis = {}) {
+function combineCellMovement(surfaceType = TileType.EMPTY, objectType = null, chassis = {}) {
   const flags =
     (chassis.allTerrain ? 1 : 0) | (chassis.canHover ? 2 : 0) | (chassis.isBoss ? 4 : 0) | (chassis.isEnemy ? 8 : 0);
   const key = `${surfaceType}|${objectType ?? ''}|${flags}`;

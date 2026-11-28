@@ -119,7 +119,7 @@ function waterNeighbours(grid, r, c) {
  * Corridor / chokepoint cell: passable with exactly two passable cardinal neighbours
  * on opposite sides (a one-tile-wide lane a tank has to drive through).
  */
-export function isChokeCell(grid, r, c, canCrossWater = false) {
+function isChokeCell(grid, r, c, canCrossWater = false) {
   if (!isPassableCell(grid, r, c, canCrossWater)) return false;
   const n = isPassableCell(grid, r - 1, c, canCrossWater);
   const s = isPassableCell(grid, r + 1, c, canCrossWater);

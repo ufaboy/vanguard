@@ -1,6 +1,6 @@
 import { adManager } from '../app/ads.js';
 import { analyticsManager } from '../app/analyticsManager.js';
-import { PAGE_PATHS } from '../app/routes.js';
+import { pageUrl } from '../app/routes.js';
 import { FPS_CAP_OPTIONS } from '../app/state.js';
 import { CAMPAIGN_MISSIONS } from '../game/campaign.js';
 import { QUALITY_PRESETS } from '../game/engine/engineCore.js';
@@ -84,7 +84,7 @@ export function setupDelegatedEvents(
 
     switch (action) {
       case 'menu-page':
-        location.href = PAGE_PATHS[btn.dataset.page] || PAGE_PATHS.index;
+        location.href = pageUrl(btn.dataset.page);
         break;
       case 'select-campaign-mission': {
         const missionId = btn.dataset.mission;
@@ -169,9 +169,9 @@ export function setupDelegatedEvents(
         break;
       case 'return-survival':
         // Settle first (saves the survival record and reports mission_abort), then leave.
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.survival;
+          location.href = pageUrl('survival');
           break;
         }
         state.menuPage = 'survival';
@@ -182,9 +182,9 @@ export function setupDelegatedEvents(
         renderUI(false);
         break;
       case 'return-contracts':
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.contracts;
+          location.href = pageUrl('contracts');
           break;
         }
         state.menuPage = 'contracts';
@@ -199,18 +199,18 @@ export function setupDelegatedEvents(
         renderUI(false);
         break;
       case 'return-campaign':
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.campaign;
+          location.href = pageUrl('campaign');
           break;
         }
         state.menuPage = 'campaign';
         renderUI(true);
         break;
       case 'main-menu':
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.index;
+          location.href = pageUrl('index');
           break;
         }
         state.menuPage = 'home';
@@ -219,6 +219,11 @@ export function setupDelegatedEvents(
       case 'cycle-camera':
         cycleCameraPreset();
         break;
+      case 'rotate-camera': {
+        const dir = Number(btn.getAttribute('data-dir')) || 1;
+        engine?.rotateCameraStep(dir);
+        break;
+      }
       case 'toggle-missile-fpv':
         toggleMissileFpv();
         break;
@@ -229,6 +234,9 @@ export function setupDelegatedEvents(
           const ok = engine ? engine.setGarageOpen(true) : false;
           if (ok) {
             state.showUpgradeDrawer = true;
+            if (state.garageTrack === 'hq' || state.garageTrack === 'supplies') {
+              state.garageTrack = 'cannon';
+            }
             analyticsManager.trackEvent('garage_open', {
               source: state.hud.status === GameStatus.PLAYING ? 'battle_hud' : 'menu',
             });
@@ -237,6 +245,17 @@ export function setupDelegatedEvents(
         } else {
           state.showUpgradeDrawer = false;
           engine?.setGarageOpen(false);
+          renderUI(true);
+        }
+        break;
+      }
+      case 'open-hq-garage': {
+        if (state.hud.status === GameStatus.MENU) break;
+        const ok = engine ? engine.setGarageOpen(true) : false;
+        if (ok) {
+          state.showUpgradeDrawer = true;
+          state.garageTrack = 'hq';
+          state.garageFeedback = '';
           renderUI(true);
         }
         break;
@@ -254,6 +273,18 @@ export function setupDelegatedEvents(
           state.garageFeedback = res.success
             ? t('{system} upgraded. Ready for deployment.', { system: t(GARAGE_TRACKS.find((item) => item.key === track)?.label || 'System') })
             : res.reason;
+          if (!res.success && res.reason) {
+            engine.setStatusBanner(t('UPGRADE BLOCKED: {reason}', { reason: res.reason.toUpperCase() }), 2.4);
+          }
+          renderUI(true);
+        }
+        break;
+      }
+      case 'upgrade-hq-node': {
+        const nodeId = btn.getAttribute('data-node');
+        if (nodeId && engine) {
+          const res = engine.upgradeHqNodeInGarage(nodeId);
+          state.garageFeedback = res.success ? '' : res.reason;
           if (!res.success && res.reason) {
             engine.setStatusBanner(t('UPGRADE BLOCKED: {reason}', { reason: res.reason.toUpperCase() }), 2.4);
           }
@@ -313,17 +344,54 @@ export function setupDelegatedEvents(
           renderUI(true);
         }
         break;
+      case 'buy-aps-module':
+        if (engine) {
+          const res = engine.buyApsModuleInGarage();
+          if (res.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: 'aps_module' });
+          }
+          state.garageFeedback = res.reason;
+          renderUI(true);
+        }
+        break;
+      case 'buy-atgm-module':
+        if (engine) {
+          const res = engine.buyAtgmModuleInGarage();
+          if (res.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: 'atgm_module' });
+          }
+          state.garageFeedback = res.reason;
+          renderUI(true);
+        }
+        break;
+      case 'buy-max-supply': {
+        const kind = btn.getAttribute('data-kind');
+        if (kind && engine) {
+          const res = engine.buyMaxSupplyInGarage(kind);
+          if (res?.success) {
+            analyticsManager.trackEvent('supply_purchase', { item: `${kind}_max` });
+          }
+          if (res?.reason) state.garageFeedback = res.reason;
+          renderUI(true);
+        }
+        break;
+      }
       case 'launch-recon-drone':
         engine?.activateReconDroneAction();
         break;
-      case 'garage-select':
-        if (GARAGE_TRACKS.some((item) => item.key === btn.dataset.track)) {
-          state.garageTrack = btn.dataset.track;
+      case 'garage-select': {
+        const nextTrack = btn.dataset.track;
+        if (
+          nextTrack === 'hq' ||
+          GARAGE_TRACKS.some((item) => item.key === nextTrack)
+        ) {
+          state.garageTrack = nextTrack;
           state.garageFeedback = '';
           renderUI(true);
           document.querySelector(`.garage-system[data-track="${state.garageTrack}"]`)?.focus({ preventScroll: true });
         }
         break;
+      }
       case 'garage-view':
         state.garageView = btn.dataset.view;
         engine?.garageStage?.setView(state.garageView);
@@ -348,14 +416,6 @@ export function setupDelegatedEvents(
         }
         break;
       }
-      case 'toggle-favorite-part': {
-        const instanceId = btn.getAttribute('data-instance');
-        if (instanceId && engine) {
-          engine.toggleFavoritePart(instanceId);
-          renderUI(true);
-        }
-        break;
-      }
       case 'activate-module-slot': {
         const slot = Number(btn.getAttribute('data-slot'));
         if (slot && engine) {
@@ -365,9 +425,9 @@ export function setupDelegatedEvents(
         break;
       }
       case 'abort-mission':
-        engine?.abortMissionToGarage();
+        engine?.abortMission();
         if (document.body?.dataset?.page && document.body.dataset.page !== 'home') {
-          location.href = PAGE_PATHS.index;
+          location.href = pageUrl('index');
           break;
         }
         state.menuPage = 'home';

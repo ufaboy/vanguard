@@ -5,6 +5,7 @@ import { buildBattleSharePayload, buildSocialShareLinks, getPartCatalogEntry } f
 import { formatSurvivalDuration } from './contract-hud.js';
 import { setHidden, setHtml } from './dom-helpers.js';
 import { t } from '../i18n/index.js';
+import { getNewlyUnlockedAirSupport } from '../sim/medals.js';
 
 export function renderBattlefieldLoaderHtml() {
   return `
@@ -71,6 +72,11 @@ function renderBattleMedalsAndRankSection(state) {
     </button>
   `;
 
+  const newlyUnlockedAir =
+    rank?.promoted && rank?.previousRank
+      ? getNewlyUnlockedAirSupport(rank.previousRank.id, rank.currentRank.id)
+      : [];
+
   const rankHtml = rank
     ? `
       <div class="battle-rank-row">
@@ -85,6 +91,9 @@ function renderBattleMedalsAndRankSection(state) {
               ${xpInfo ? t('+{xp} Service XP', { xp: xpInfo.totalXp }) : `${rank.serviceXp} XP`}
               ${rank.nextRank ? ` • ${t('{xp} / {next} XP to {rank}', { xp: rank.serviceXp, next: rank.nextRank.minXp, rank: t(rank.nextRank.title) })}` : ` • ${t('MAX RANK')}`}
             </span>
+            ${newlyUnlockedAir.length > 0
+              ? `<div class="battle-air-unlock-banner">${t('Air Support Unlocked: {items}', { items: newlyUnlockedAir.map((u) => t(u.label)).join(', ') })}</div>`
+              : ''}
           </div>
         </div>
         <div class="battle-rank-bar-track">
@@ -104,7 +113,7 @@ function renderBattleMedalsAndRankSection(state) {
             <div class="battle-medal-chip" style="--medal-color: ${m.color};">
               <div class="battle-medal-chip-top">
                 <span class="battle-medal-grade">${t(m.gradeLabel).toUpperCase()}</span>
-                <span class="battle-medal-xp">${m.isNew ? `${t('NEW')} ` : ''}+${m.xpAwarded} XP</span>
+                <span class="battle-medal-xp">${m.isNew ? `${t('NEW')} ` : m.tierUp ? `${t('TIER UP')} ` : ''}+${m.xpAwarded} XP</span>
               </div>
               <strong class="battle-medal-name">${t(m.name)}</strong>
               <span class="battle-medal-desc">${t(m.description)}</span>
@@ -307,7 +316,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
             <span class="text-lg font-bold text-amber-300 tabular-nums">+$ ${s?.thirdCargoBonus ?? 0}</span>
           </div>
           <div>
-            <span class="battle-stat-label">${t('TOTAL CREDITS')}</span>
+            <span class="battle-stat-label">${t('TOTAL CREDITS')}${s?.hardModeBonus > 0 ? ` · ${t('HARD MODE +{pct}%', { pct: 25 })}` : ''}</span>
             <span class="text-lg font-bold text-emerald-300 tabular-nums">+$ ${s?.totalObjectiveCredits ?? 0}</span>
           </div>
         </div>
@@ -355,7 +364,7 @@ function renderVictoryModal(state, hud, currentSector, accuracy) {
 
       <div class="grid grid-cols-3 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded mb-4 font-mono">
         <div>
-          <span class="battle-stat-label">${t('CREDITS')}</span>
+          <span class="battle-stat-label">${t('CREDITS')}${s?.hardModeBonus > 0 ? ` · ${t('HARD MODE +{pct}%', { pct: 25 })}` : ''}</span>
           <span class="text-lg font-bold text-emerald-400 tabular-nums">+$ ${s?.creditsGained ?? 400}</span>
         </div>
         <div>
@@ -465,13 +474,13 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
         ${defeatReason} // ${t('DEFEAT')}
       </div>
       <h2 class="text-2xl sm:text-3xl font-bold uppercase tracking-wider text-white mb-2">
-        ${isContract ? t('CONTRACT FAILED — DELIVERED CARGO PRESERVED') : t('MISSION FAILED — COLLECTED LOOT PRESERVED')}
+        ${isContract ? t('CONTRACT FAILED — DELIVERED CARGO PRESERVED') : t('MISSION FAILED — PRE-BATTLE BALANCE RESTORED')}
       </h2>
       <p class="text-xs font-mono text-slate-400 mb-4">
         ${
           isContract
-            ? t('Delivered cargo (+${amount}) &amp; bounties preserved.', { amount: s?.cargoCreditsSecured ?? 0 })
-            : t('Loadout intact · +${amount} preserved · {lost} uncollected drops lost.', { amount: s?.creditsGained ?? 0, lost: s?.lostCount ?? 0 })
+            ? t('Delivered cargo (+${amount}) preserved · Pre-battle balance &amp; loadout restored.', { amount: s?.cargoCreditsSecured ?? 0 })
+            : t('Loadout &amp; pre-battle credits restored · In-battle earnings and purchases reverted.')
         }
       </p>
 
@@ -509,6 +518,12 @@ function renderGameOverModal(state, hud, currentSector, accuracy) {
 
 export function renderStatusModal({ statusModal, state, hud, currentSector, accuracy }) {
   if (!statusModal) return;
+  // Keep the deployment loader up while the engine compiles the new map's shaders.
+  if (hud.warmingUp) {
+    setHidden(statusModal, false);
+    if (!statusModal.querySelector('.battlefield-loader')) setHtml(statusModal, renderBattlefieldLoaderHtml());
+    return;
+  }
   if (
     hud.status === GameStatus.PLAYING ||
     hud.status === GameStatus.BOSS_INTRO ||

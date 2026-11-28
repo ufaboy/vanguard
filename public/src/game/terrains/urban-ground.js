@@ -424,6 +424,29 @@ function drawLandmark(ctx, landmark, unit, accent) {
   ctx.restore();
 }
 
+function pathOverlapsRoad(road, sector) {
+  const pts = road?.points;
+  if (!Array.isArray(pts) || pts.length < 2) return false;
+  const rows = sector.grid?.length || 0;
+  const cols = sector.grid?.[0]?.length || 0;
+  let total = 0;
+  let onRoad = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const [r0, c0] = pts[i - 1];
+    const [r1, c1] = pts[i];
+    const steps = Math.max(1, Math.ceil(Math.hypot(r1 - r0, c1 - c0)));
+    for (let s = 0; s <= steps; s++) {
+      const r = Math.round(r0 + ((r1 - r0) * s) / steps);
+      const c = Math.round(c0 + ((c1 - c0) * s) / steps);
+      if (r < 0 || r >= rows || c < 0 || c >= cols) continue;
+      total++;
+      const surf = sector.surfaceGrid?.[r]?.[c] ?? sector.grid[r][c];
+      if (surf === TileType.ROAD) onRoad++;
+    }
+  }
+  return total > 0 && onRoad >= total * 0.5;
+}
+
 export function paintDecoration(ctx, sector, options = {}, size = 1024) {
   const gridSize = sector.grid.length;
   const unit = size / gridSize;
@@ -474,6 +497,10 @@ export function paintDecoration(ctx, sector, options = {}, size = 1024) {
     }
   }
 
+  ctx.restore();
+  ctx.save();
+  clipCells(true);
+
   const paths = plan
     ? plan.config.paths
     : (sector.urbanRoads || []).map((road) => ({
@@ -492,14 +519,16 @@ export function paintDecoration(ctx, sector, options = {}, size = 1024) {
         else ctx.lineTo((col + 0.5) * unit, (row + 0.5) * unit);
       });
     };
-    const roadWidth = road.width * unit;
-    if (road.marking === 'edges') {
+    const overlapsRoad = road.marking !== 'railway' && pathOverlapsRoad(road, sector);
+    const effectiveWidth = overlapsRoad ? Math.min(road.width, 1.0) : road.width;
+    const roadWidth = effectiveWidth * unit;
+    if (!overlapsRoad && road.marking === 'edges') {
       trace();
       ctx.strokeStyle = theme.accent || '#929184';
       ctx.lineWidth = roadWidth + Math.max(3, unit * 0.12);
       ctx.setLineDash([]);
       ctx.stroke();
-    } else if (road.surface !== 'sand') {
+    } else if (!overlapsRoad && road.surface !== 'sand') {
       // Soft shoulder shadow for grounded road edges
       trace();
       ctx.strokeStyle = 'rgba(14, 18, 20, 0.22)';

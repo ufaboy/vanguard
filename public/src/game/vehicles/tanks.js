@@ -140,7 +140,7 @@ export const TANK_CONFIGS = Object.freeze({
       { id: 'shoot_obstacle', luck: 0.75 },
       { id: 'shoot_random', luck: 1.00 },
     ]),
-    name: N_('Line Battle Tank "Lancet"'),
+    name: N_('Standard Battle Tank "Lancet"'),
     role: N_('Standard Combat Tank'),
     base: tankBase({ sightRadius: 18.0, radioAlertRadius: 22.0 }),
     description:
@@ -172,7 +172,7 @@ export const TANK_CONFIGS = Object.freeze({
       { id: 'shoot_random', luck: 1.00 },
     ]),
     artillery: Object.freeze({ aimSec: 1.75, flightSec: 1.75 }),
-    name: N_('SPG Howitzer "Grad"'),
+    name: N_('Howitzer Artillery Tank "Grad"'),
     role: N_('Indirect Artillery Platform'),
     base: tankBase({ sightRadius: 20.0, radioAlertRadius: 20.0 }),
     description:
@@ -203,7 +203,7 @@ export const TANK_CONFIGS = Object.freeze({
       { id: 'shoot_obstacle', luck: 0.80 },
       { id: 'shoot_random', luck: 1.00 },
     ]),
-    name: N_('Heavy Breakthrough Tank "Bulwark"'),
+    name: N_('Heavy Armored Tank "Bulwark"'),
     role: N_('Heavy Assault Armor'),
     base: tankBase({ hp: 50, armor: { front: 40, left: 20, right: 20, rear: 5 }, sightRadius: 16.0, radioAlertRadius: 20.0 }),
     description:
@@ -233,7 +233,7 @@ export const TANK_CONFIGS = Object.freeze({
       { id: 'set_mine', luck: 1.00 },
     ]),
     abilities: Object.freeze(['mineLayer']),
-    name: N_('Combat Sapper "Mole"'),
+    name: N_('Sapper Minelayer Tank "Mole"'),
     role: N_('Tactical Minelayer'),
     base: tankBase({ sightRadius: 17.0, radioAlertRadius: 20.0, hp: 20 }),
     description:
@@ -284,14 +284,14 @@ export const TANK_CONFIGS = Object.freeze({
     id: TANK_TYPES.KAMIKAZE,
     code: 'KAMIKAZE',
     behavior: defineBehavior('hunter', [
-      { id: 'ambush', luck: 0.70 },
-      { id: 'move_to_player', luck: 0.70 },
-      { id: 'follow_route', luck: 0.75 },
-      { id: 'move_to_player_base', luck: 0.50 },
+      { id: 'move_to_player', luck: 1.00 },
+      { id: 'ambush', luck: 0.95 },
+      { id: 'follow_route', luck: 0.90 },
+      { id: 'move_to_player_base', luck: 0.75 },
       { id: 'patrol_zone', luck: 1.00 },
     ]),
     abilities: Object.freeze(['contactWarhead']),
-    name: N_('Demolition Breacher "Storm"'),
+    name: N_('Kamikaze Demolition Tank "Storm"'),
     role: N_('Explosive Rammer'),
     base: tankBase({ sightRadius: 16.0, radioAlertRadius: 18.0 }),
     description:
@@ -322,7 +322,7 @@ export const TANK_CONFIGS = Object.freeze({
       { id: 'shoot_random', luck: 1.00 },
     ]),
     abilities: Object.freeze(['flameStream']),
-    name: N_('Thermal Assault "Hephaestus"'),
+    name: N_('Flamethrower Tank "Hephaestus"'),
     role: N_('Close-Range Incendiary'),
     base: tankBase({ sightRadius: 15.0, radioAlertRadius: 18.0 }),
     description:
@@ -351,7 +351,7 @@ export const TANK_CONFIGS = Object.freeze({
       { id: 'shoot_obstacle', luck: 0.75 },
       { id: 'shoot_random', luck: 1.00 },
     ]),
-    name: N_('ECM Warfare Tank "Veil"'),
+    name: N_('ECM Jammer Tank "Veil"'),
     role: N_('Electronic Warfare Support'),
     base: tankBase({ sightRadius: 21.0, radioAlertRadius: 26.0 }),
     description:
@@ -385,7 +385,7 @@ export const TANK_CONFIGS = Object.freeze({
       { id: 'build_brick', luck: 1.00 },
     ]),
     abilities: Object.freeze(['engineerSupport']),
-    name: N_('Combat Engineer "Bastion"'),
+    name: N_('Engineer Repair Tank "Bastion"'),
     role: N_('Field Builder & Repair'),
     base: tankBase({ sightRadius: 17.0, radioAlertRadius: 20.0 }),
     description:
@@ -418,7 +418,7 @@ export const TANK_CONFIGS = Object.freeze({
       { id: 'shoot_random', luck: 1.00 },
     ]),
     missile: Object.freeze({ homing: true }),
-    name: N_('ATGM Striker "Vortex"'),
+    name: N_('Missile Striker Tank "Vortex"'),
     role: N_('Guided Missile Carrier'),
     base: tankBase({ sightRadius: 22.0, radioAlertRadius: 22.0 }),
     description:
@@ -448,7 +448,7 @@ export const TANK_CONFIGS = Object.freeze({
       { id: 'shoot_obstacle', luck: 0.75 },
       { id: 'shoot_random', luck: 1.00 },
     ]),
-    name: N_('Stealth Hunter "Phantom"'),
+    name: N_('Stealth Sniper Tank "Phantom"'),
     role: N_('Optical Camouflage Sniper'),
     base: tankBase({ sightRadius: 23.0, radioAlertRadius: 22.0 }),
     description:
@@ -486,7 +486,7 @@ export const SECTOR_BOSS_CONFIGS = Object.freeze({
     ]),
     artillery: Object.freeze({ aimSec: 0, flightSec: 1.75 }),
     missile: Object.freeze({ homing: true }),
-    name: N_('MAMMOTH MK-V'),
+    name: N_('Mammoth Mk-V Dreadnought Boss'),
     role: N_('Sector 01 Dreadnought Boss'),
     accentHex: '#F59E0B',
     base: tankBase({ hp: 276, sightRadius: 28.0, radioAlertRadius: 32.0 }),
@@ -520,7 +520,7 @@ export const SECTOR_BOSS_CONFIGS = Object.freeze({
       { id: 'shoot_random', luck: 1.00 },
     ]),
     missile: Object.freeze({ homing: true }),
-    name: N_('HYDRA MLRS-9'),
+    name: N_('Hydra MLRS-9 Artillery Boss'),
     role: N_('Sector 02 Artillery Cruiser Boss'),
     accentHex: '#06B6D4',
     base: tankBase({ hp: 260, sightRadius: 28.0, radioAlertRadius: 32.0 }),
@@ -558,7 +558,7 @@ export const SECTOR_BOSS_CONFIGS = Object.freeze({
     ]),
     abilities: Object.freeze(['mineLayer']),
     missile: Object.freeze({ homing: true }),
-    name: N_('CERBERUS-T'),
+    name: N_('Cerberus-T Inferno Boss'),
     role: N_('Thermobaric Siege Leviathan'),
     accentHex: '#FF4500',
     base: tankBase({ hp: 292, sightRadius: 28.0, radioAlertRadius: 32.0 }),
@@ -593,7 +593,7 @@ export const SECTOR_BOSS_CONFIGS = Object.freeze({
       { id: 'shoot_obstacle', luck: 0.90 },
       { id: 'shoot_random', luck: 1.00 },
     ]),
-    name: N_('SUPREME DREADNOUGHT'),
+    name: N_('Titan Supreme Dreadnought Boss'),
     role: N_('Sector 03 Supreme Dreadnought'),
     accentHex: '#2563EB',
     base: tankBase({ hp: 362, sightRadius: 28.0, radioAlertRadius: 32.0 }),
@@ -625,3 +625,17 @@ export const SPECIAL_ENEMY_CATALOG = Object.freeze([
   TANK_CONFIGS[TANK_TYPES.STRIKER],
   TANK_CONFIGS[TANK_TYPES.STEALTH],
 ]);
+
+/**
+ * Resolves an enemy class/boss type key to its localized-ready display name
+ * and its anchor id on the Enemy Tanks & Boss Fights guide page.
+ */
+export function getEnemyDisplayInfo(type) {
+  const raw = String(type || '');
+  const key = EnemyClass[raw.toUpperCase()] || raw;
+  const cfg = TANK_CONFIGS[key] || TANK_CONFIGS[raw.toLowerCase()] || SECTOR_BOSS_CONFIGS[key];
+  return {
+    name: cfg?.name || raw,
+    anchor: raw.toLowerCase().replace(/_/g, '-'),
+  };
+}

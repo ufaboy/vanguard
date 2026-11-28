@@ -7,130 +7,42 @@
   "gameMode": "stronghold_assault",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "enemyBase": {
-    "cell": {
-      "row": 4,
-      "col": 19
-    },
-    "name": "Consortium Observation Post",
-    "maxHp": 48,
-    "fortifyPerimeter": true
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 1200
-  },
-  "environment": {
-    "theme": "alpine",
-    "tint": "#d9cfb8",
-    "fogColor": "#6b6558",
-    "groundColor": "#8b816e"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "enemyBase": {"cell":{"row":4,"col":19},"name":"Consortium Observation Post","maxHp":48,"fortifyPerimeter":true},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":1200},
+  "environment": {"theme":"alpine","tint":"#d9cfb8","fogColor":"#6b6558","groundColor":"#8b816e"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Ascend the serrated limestone massif of Montserrat via the western crag gorge, the central mountain switchback, or the eastern monastery terraces and funicular spine to breach the Consortium observation post.",
     "breaches": [
       {
         "name": "Observation Post South Sally Wall",
-        "cells": [
-          {
-            "row": 7,
-            "col": 18
-          },
-          {
-            "row": 7,
-            "col": 19
-          },
-          {
-            "row": 7,
-            "col": 20
-          }
-        ],
-        "start": {
-          "row": 9,
-          "col": 19
-        },
-        "end": {
-          "row": 6,
-          "col": 19
-        },
+        "cells": [{"row":7,"col":18},{"row":7,"col":19},{"row":7,"col":20}],
+        "start": {"row":9,"col":19},
+        "end": {"row":6,"col":19},
         "purpose": "Blast through the outer brick sally gate in the concrete curtain wall to enter the observation post bailey."
       },
       {
         "name": "West Crag Slide",
-        "cells": [
-          {
-            "row": 16,
-            "col": 4
-          },
-          {
-            "row": 16,
-            "col": 5
-          }
-        ],
-        "start": {
-          "row": 18,
-          "col": 4
-        },
-        "end": {
-          "row": 14,
-          "col": 4
-        },
+        "cells": [{"row":16,"col":4},{"row":16,"col":5}],
+        "start": {"row":18,"col":4},
+        "end": {"row":14,"col":4},
         "purpose": "Clear the collapsed limestone barrier to open a direct flanking corridor up the western gorge."
       },
       {
         "name": "Monastery Terrace Gate",
-        "cells": [
-          {
-            "row": 19,
-            "col": 33
-          },
-          {
-            "row": 19,
-            "col": 34
-          }
-        ],
-        "start": {
-          "row": 21,
-          "col": 33
-        },
-        "end": {
-          "row": 17,
-          "col": 33
-        },
+        "cells": [{"row":19,"col":33},{"row":19,"col":34}],
+        "start": {"row":21,"col":33},
+        "end": {"row":17,"col":33},
         "purpose": "Breach the upper monastery retaining wall to link the cloister terraces with the northeast ridge."
       },
       {
         "name": "Pilgrim Switchback Barricade",
-        "cells": [
-          {
-            "row": 24,
-            "col": 15
-          },
-          {
-            "row": 24,
-            "col": 16
-          }
-        ],
-        "start": {
-          "row": 26,
-          "col": 15
-        },
-        "end": {
-          "row": 22,
-          "col": 15
-        },
+        "cells": [{"row":24,"col":15},{"row":24,"col":16}],
+        "start": {"row":26,"col":15},
+        "end": {"row":22,"col":15},
         "purpose": "Shatter the retaining barricade between the lower valley switchback and the central mountain cut."
       }
     ],
@@ -154,460 +66,77 @@
     "seed": 352026,
     "theme": "alpine",
     "zones": [
-      {
-        "id": "limestone-plateau",
-        "bounds": [
-          0,
-          0,
-          39,
-          39
-        ],
-        "surface": "gravel",
-        "density": 0.22,
-        "details": [
-          "cracks",
-          "patches"
-        ]
-      },
-      {
-        "id": "observation-apron",
-        "bounds": [
-          2,
-          16,
-          6,
-          22
-        ],
-        "surface": "concrete",
-        "density": 0.3,
-        "details": [
-          "cracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "monastery-pavers",
-        "bounds": [
-          20,
-          25,
-          28,
-          37
-        ],
-        "surface": "pavers",
-        "density": 0.35,
-        "details": [
-          "cracks",
-          "leaves"
-        ]
-      },
-      {
-        "id": "valley-station-yard",
-        "bounds": [
-          32,
-          27,
-          36,
-          34
-        ],
-        "surface": "asphalt",
-        "density": 0.25,
-        "details": [
-          "tracks",
-          "oil"
-        ]
-      }
+      {"id":"limestone-plateau","bounds":[0,0,39,39],"surface":"gravel","density":0.22,"details":["cracks","patches"]},
+      {"id":"observation-apron","bounds":[2,16,6,22],"surface":"concrete","density":0.3,"details":["cracks","rubble"]},
+      {"id":"monastery-pavers","bounds":[20,25,28,37],"surface":"pavers","density":0.35,"details":["cracks","leaves"]},
+      {"id":"valley-station-yard","bounds":[32,27,36,34],"surface":"asphalt","density":0.25,"details":["tracks","oil"]}
     ],
     "paths": [
-      {
-        "id": "montserrat-funicular",
-        "points": [
-          [
-            33,
-            29
-          ],
-          [
-            27,
-            29
-          ],
-          [
-            20,
-            29
-          ],
-          [
-            14,
-            29
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "edges"
-      }
+      {"id":"montserrat-funicular","points":[[33,29],[27,29],[20,29],[14,29]],"width":2,"surface":"gravel","marking":"edges"}
     ],
-    "landmarks": [
-      {
-        "id": "obs-post-label",
-        "kind": "label",
-        "row": 8,
-        "col": 19,
-        "size": 3,
-        "text": "SANT JERONI POST"
-      },
-      {
-        "id": "monastery-label",
-        "kind": "label",
-        "row": 24,
-        "col": 32,
-        "size": 3,
-        "text": "SANTA MARIA ABBEY"
-      },
-      {
-        "id": "funicular-label",
-        "kind": "label",
-        "row": 15,
-        "col": 28,
-        "size": 2,
-        "text": "FUNICULAR"
-      },
-      {
-        "id": "hq-helipad",
-        "kind": "helipad",
-        "row": 36,
-        "col": 15,
-        "size": 1.8
-      },
-      {
-        "id": "station-hazard",
-        "kind": "hazard_zone",
-        "row": 33,
-        "col": 29,
-        "size": 1.4
-      },
-      {
-        "id": "pylon-hazard",
-        "kind": "hazard_zone",
-        "row": 13,
-        "col": 29,
-        "size": 1.4
-      },
-      {
-        "id": "switchback-chevron",
-        "kind": "chevron",
-        "row": 20,
-        "col": 19,
-        "size": 1.2,
-        "rotation": 0
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "sally-gate-clear",
-        "bounds": [
-          8,
-          17,
-          10,
-          21
-        ]
-      }
-    ]
+    "exclusions": [{"id":"sally-gate-clear","bounds":[8,17,10,21]}]
   },
-  "landmarks3d": [
-    {
-      "kind": "MONTSERRAT_MONASTERY",
-      "row": 21,
-      "col": 31
-    }
-  ],
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
     "entrances": [
-      {
-        "id": "north-west-col",
-        "row": 1,
-        "col": 5
-      },
-      {
-        "id": "north-post-west",
-        "row": 1,
-        "col": 13
-      },
-      {
-        "id": "north-post-east",
-        "row": 1,
-        "col": 25
-      },
-      {
-        "id": "north-east-ridge",
-        "row": 1,
-        "col": 33
-      },
-      {
-        "id": "upper-west-ledge",
-        "row": 7,
-        "col": 3
-      },
-      {
-        "id": "upper-east-crag",
-        "row": 7,
-        "col": 35
-      }
+      {"id":"north-west-col","row":1,"col":5},
+      {"id":"north-post-west","row":1,"col":13},
+      {"id":"north-post-east","row":1,"col":25},
+      {"id":"north-east-ridge","row":1,"col":33},
+      {"id":"upper-west-ledge","row":7,"col":3},
+      {"id":"upper-east-crag","row":7,"col":35}
     ],
     "encounters": [
       {
         "id": "ridge-pickets",
         "label": "RIDGE PICKETS: Recon and fire-support units holding the serrated approaches.",
         "recoverySec": 0,
-        "entrances": [
-          "north-west-col",
-          "north-post-west",
-          "north-post-east",
-          "north-east-ridge"
-        ],
-        "initialCells": [
-          {
-            "row": 4,
-            "col": 5
-          },
-          {
-            "row": 4,
-            "col": 13
-          },
-          {
-            "row": 4,
-            "col": 25
-          },
-          {
-            "row": 4,
-            "col": 33
-          }
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 13
-          },
-          {
-            "row": 18,
-            "col": 13
-          },
-          {
-            "row": 22,
-            "col": 22
-          },
-          {
-            "row": 29,
-            "col": 22
-          },
-          {
-            "row": 32,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "STEALTH",
-          "STANDARD",
-          "HOWITZER",
-          "ARMOR"
-        ]
+        "entrances": ["north-west-col","north-post-west","north-post-east","north-east-ridge"],
+        "initialCells": [{"row":4,"col":5},{"row":4,"col":13},{"row":4,"col":25},{"row":4,"col":33}],
+        "patrolRoute": [{"row":10,"col":13},{"row":18,"col":13},{"row":22,"col":22},{"row":29,"col":22},{"row":32,"col":19}],
+        "enemies": ["SCOUT","STANDARD","SCOUT","STANDARD","STEALTH","STANDARD","HOWITZER","ARMOR"]
       },
       {
         "id": "monastery-counterattack",
         "label": "ABBEY COUNTERATTACK: Assault columns sweeping the west gorge and monastery terraces.",
         "recoverySec": 8,
-        "entrances": [
-          "north-west-col",
-          "north-east-ridge",
-          "upper-west-ledge",
-          "upper-east-crag"
-        ],
-        "patrolRoute": [
-          {
-            "row": 13,
-            "col": 32
-          },
-          {
-            "row": 24,
-            "col": 32
-          },
-          {
-            "row": 30,
-            "col": 29
-          },
-          {
-            "row": 34,
-            "col": 20
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "ARMOR",
-          "FLAMETHROWER",
-          "STANDARD",
-          "STRIKER",
-          "SAPPER",
-          "STEALTH",
-          "HOWITZER",
-          "ENGINEER"
-        ]
+        "entrances": ["north-west-col","north-east-ridge","upper-west-ledge","upper-east-crag"],
+        "patrolRoute": [{"row":13,"col":32},{"row":24,"col":32},{"row":30,"col":29},{"row":34,"col":20}],
+        "enemies": ["SCOUT","ARMOR","FLAMETHROWER","STANDARD","STRIKER","SAPPER","STEALTH","HOWITZER","ENGINEER"]
       },
       {
         "id": "summit-garrison",
         "label": "SANT JERONI GARRISON: Heavy Consortium reserve defending the observation post.",
         "recoverySec": 9,
-        "entrances": [
-          "north-post-west",
-          "north-post-east",
-          "upper-west-ledge",
-          "upper-east-crag"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 6
-          },
-          {
-            "row": 22,
-            "col": 6
-          },
-          {
-            "row": 30,
-            "col": 10
-          },
-          {
-            "row": 34,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "ARMOR",
-          "STANDARD",
-          "STRIKER",
-          "JAMMER",
-          "HOWITZER",
-          "FLAMETHROWER",
-          "ARMOR",
-          "STANDARD",
-          "STRIKER"
-        ]
+        "entrances": ["north-post-west","north-post-east","upper-west-ledge","upper-east-crag"],
+        "patrolRoute": [{"row":12,"col":6},{"row":22,"col":6},{"row":30,"col":10},{"row":34,"col":19}],
+        "enemies": ["ARMOR","STANDARD","STRIKER","JAMMER","HOWITZER","FLAMETHROWER","ARMOR","STANDARD","STRIKER"]
       }
     ],
-    "boss": {
-      "enabled": false
-    }
+    "boss": {"enabled":false}
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "STEALTH",
-    "STANDARD",
-    "HOWITZER",
-    "ARMOR",
-    "SCOUT",
-    "ARMOR",
-    "FLAMETHROWER",
-    "STANDARD",
-    "STRIKER",
-    "SAPPER",
-    "STEALTH",
-    "HOWITZER",
-    "ENGINEER",
-    "ARMOR",
-    "STANDARD",
-    "STRIKER",
-    "JAMMER",
-    "HOWITZER",
-    "FLAMETHROWER",
-    "ARMOR",
-    "STANDARD",
-    "STRIKER"
-  ],
-  "surfaceLayout": [
-    "VVVVRRVVVV^^RR^^^^^^^^^^RR^^^^^^RRVVVVVV",
-    "VVVVRRVVVV^^RR^^^^^^^^^^RR^^^^^^RRVVVVVV",
-    "VVVVRRVV^^^^RR^^^^^^^^^^RR^^^^^^RRVVVVVV",
-    "VVVVRRVV^^^^^^^^^^^^^^^^^^^^^^^^RRVVVVVV",
-    "VVVVRRVV^^^^^^^^^^^^^^^^^^^^^^^^RRVVVVVV",
-    "VVVVVVVV^^^^^^^^^^^^^^^^^^^^^^^^VVVVVVVV",
-    "VVVVVVVV^^^^^............^^^^^^^VVVVVVVV",
-    "VVVVVVVV^^^^^............^^^^^^^VVVVVVVV",
-    "VVVVVVVV^^^^^.....RR.....^^^^^^^VVVVVVVV",
-    "VVVVVV^^..........RR........^^^^VVVVVVVV",
-    "VVVVVV^^.....RRRRRRRR.......^^^^VVVVVVVV",
-    "VVVVVV^^.....RR.............^^^^VVVVVVVV",
-    "VVVVVV.......RR................^VVVVVVVV",
-    "VVVVVV.......RR.........................",
-    "VV^^^^.......RR.........................",
-    "VV^^^^.......RR.........................",
-    "VV^^^^.......RR.........................",
-    "VV^^^^.......RR.........................",
-    "VVVVVV.......RRRRRRRRRRR................",
-    "VVVVVV.......RRRRRRRRRRR................",
-    "VVVVVV................RR................",
-    "VVVVVV................RR................",
-    "VVVVVV................RR................",
-    "VVVVVV................RR................",
-    "VVVVVV................RR................",
-    "VVVVVV.........RRRRRRRRR................",
-    "VVVVVV.........RRRRRRRRR................",
-    "VVVVVV.........RR.......................",
-    "VVVVVV.........RR.......................",
-    "VVVVVV.........RR.......................",
-    "VVVVVV.........RR.......................",
-    "VVVVVV.........RR.......................",
-    "VVVVVV.........RRRRRRRR.................",
-    "VVVVVV.........RRRRRRRR.................",
-    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVVVV",
-    "VVVVVV............RR..............VVVVVV",
-    "VVVVVV............RR..............VVVVVV",
-    "VVVVVV............................VVVVVV",
-    "VVVVVV............................VVVVVV",
-    "VVVVVV............................VVVVVV"
-  ],
-  "objectLayout": [
-    ".FF..................................FF.",
-    ".FF..................................FF.",
-    ".FF......C...................CC......FF.",
-    "..FF.....C..X....CCCCC....X..C.......FF.",
-    "........CC.......CCECC.......CC.........",
-    "........C........CBBBC........C.........",
-    "...FF.........................K..FF.....",
-    "........Q......CCCBBBCCC.....Q...FFF....",
-    "..FF....C....................C...FF.....",
-    "..FFF...C..AA................C..........",
-    "...........AA..K.....K..AA..............",
-    "..FF...U................AA..U...........",
-    "..FFF.......X...............T.....Q.....",
-    ".....C..........AA.........K............",
-    "..C.............AA..D.............FF....",
-    "..C.......FF.............FF.......FFF...",
-    "..CCBBCC..FFF.....K......FFF............",
-    "..........FF.......U......FF............",
-    "........................................",
-    "....AA....U....................CCBBCC...",
-    "....AA..D.........K.Q...................",
-    "...........FF............AA.........AA..",
-    "..FF.......FFF...........AA.........AA..",
-    "..FFF.....FF.......K...........PPPP.Q...",
-    ".....Q.......CCBBCC.....D..B............",
-    ".....B......X............AAB......PPP...",
-    ".....B...................AA.......PPP...",
-    "..........FF.............K........PPP...",
-    "..FF......FFF......U..............U.....",
-    "..FFF............X......................",
-    ".......AA.................FF............",
-    ".......AA...K......K......FFF......Q....",
-    ".............U.............FF...........",
-    "..FF....................X...T...........",
-    "..FFF...........................AA......",
-    "...FF......FF...........D.......AA......",
-    "..........FX..............X.............",
-    "..FF..............CCCC...........FF.....",
-    "..FFF.......AA..Q................FFF....",
-    "...................HH..................."
-  ]
+  "terrain": {
+    "grass": [[0,0,14,4],[0,6,2,4],[0,34,13,6],[2,6,7,2],[13,37,1,3],[14,0,26,2],[14,8,1,5],[14,38,1,2],[15,10,1,3],[15,25,3,2],[15,39,5,1],[16,10,2,1],[16,12,2,1],[16,27,2,1],[17,9,2,1],[17,11,2,1],[18,2,16,4],[18,8],[18,38],[20,21,5,1],[21,10,2,7],[22,6,2,1],[22,39],[23,7],[23,10,1,2],[23,13,1,4],[24,39],[25,7,1,2],[26,8],[26,10,3,1],[26,39,3,1],[27,7,2,1],[27,11,2,2],[28,6,2,1],[29,13],[29,24,1,4],[30,25,1,3],[31,27],[31,39,2,1],[32,38,8,1],[33,37,7,1],[34,2,6,2],[34,35,6,2],[34,39,6,1],[35,4,5,2],[36,6,4,1],[37,7,3,1],[37,34,3,1]],
+    "road": [[0,4,14,2],[0,12,3,2],[0,24,3,2],[0,32,6,2],[6,32,14,1],[8,18,3,2],[9,33,11,1],[10,13,1,5],[10,20],[11,13,9,2],[12,6,2,7],[18,15,2,17],[20,22,7,2],[25,15,2,7],[27,15,8,2],[32,17,3,6],[34,5,1,10],[34,23,1,9],[35,18,2,2]],
+    "stone": [[0,10,9,2],[0,14,6,10],[0,26,9,6],[2,8,7,2],[3,12,3,2],[3,24,3,2],[6,12,3,1],[6,25,3,1],[9,6,3,2],[9,28,3,4],[12,31],[14,2,4,4]],
+    "oil": [[20,8],[24,24,1,2],[35,24]],
+    "forest": [[0,1,3,2],[0,37,4,2],[3,2,1,2],[6,3],[6,33,3,2],[7,35],[8,2,2,2],[11,2,2,2],[14,34,2,2],[15,10,3,2],[15,25,2,2],[15,36],[16,12],[16,27,2,1],[17,26],[20,21],[21,11,2,2],[22,2,2,2],[22,13],[22,21],[23,4],[23,10,1,2],[24,21],[27,10,2,2],[28,2,2,2],[28,12],[29,4],[29,13],[29,24],[30,26,2,2],[33,2,2,2],[34,4,2,1],[35,3],[35,11,1,2],[36,10],[37,2,2,2],[37,33,2,2],[38,4],[38,35]],
+    "concrete": [[2,9,3,1],[2,29,1,2],[3,17,1,5],[3,29,2,1],[4,8,2,1],[4,17,1,2],[4,20,1,2],[4,30,2,1],[5,17],[5,21],[7,15,1,3],[7,21,1,3],[8,8,2,1],[8,29,2,1],[13,7],[14,2,3,1],[16,3],[16,6,1,2],[19,31,1,2],[19,35,1,2],[24,13,1,2],[24,17,1,2],[37,18,1,4]],
+    "hedgehog": [[3,12],[3,26],[12,7],[12,12],[25,12],[29,17],[33,24],[36,11],[36,26]],
+    "enemy_base": [[4,19]],
+    "brick": [[5,18,1,3],[7,18,1,3],[16,4,1,2],[19,33,1,2],[24,15,1,2],[24,27,2,1],[25,5,2,1]],
+    "transformer": [[6,16],[6,22]],
+    "crater": [[6,30],[10,15],[10,21],[13,27],[16,18],[20,18],[23,19],[27,25],[31,12],[31,19]],
+    "boxes": [[7,8],[7,29],[12,34],[20,20],[23,36],[24,5],[31,35],[38,16]],
+    "rubble": [[11,7],[11,28],[17,19],[19,10],[28,19],[28,34],[32,13]],
+    "water_tower": [[12,28],[33,28]],
+    "barrel": [[14,20],[20,8],[24,24],[35,24]],
+    "house1": [[9,11,2,2,5],[10,24,2,2,9],[13,16,2,2,3],[19,4,2,2,9],[21,25,2,2,9],[21,36,2,2,1],[25,25,2,2,10],[30,7,2,2,8],[34,32,2,2,2],[38,12,1,2,10]],
+    "house2": [[20,14,1,4,6],[21,17,3,1,6],[25,34,1,3,7],[26,34,2,1,7],[26,36,2,1,7],[27,35,1,1,7]],
+    "landmark": [["MONTSERRAT_MONASTERY",21,31]],
+    "decal": [["label",8,19,3,"SANT JERONI POST"],["label",24,32,3,"SANTA MARIA ABBEY"],["label",15,28,2,"FUNICULAR"],["helipad",36,15,1.8],["hazard_zone",33,29,1.4],["hazard_zone",13,29,1.4],["chevron",20,19,1.2]]
+  },
+  "code": ""
 }

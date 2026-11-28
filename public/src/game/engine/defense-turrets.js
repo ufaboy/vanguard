@@ -106,8 +106,9 @@ export class DefenseTurretsController {
 
     for (const t of engine.defenseTurrets) {
       if (!t.alive) continue;
+      if (t.empTimer > 0) t.empTimer = Math.max(0, t.empTimer - dt);
 
-      if (empStunned) {
+      if (empStunned || (t.empTimer || 0) > 0) {
         if (Math.random() < 0.12) engine.spawnSparks(t.x, 0.9, t.z, 0x06b6d4, 2);
         continue;
       }
@@ -258,9 +259,13 @@ export class DefenseTurretsController {
     engine.detonateExplosionAt(turret.x, turret.z, 2.2, 25, false);
     engine.screenShake = Math.max(engine.screenShake, 0.45);
     const bounty = 300;
-    engine.playerSave.credits = (engine.playerSave.credits || 0) + bounty;
-    engine.creditsEarnedThisMission = (engine.creditsEarnedThisMission || 0) + bounty;
-    engine.saveRepo.savePlayerSave(engine.playerSave);
+    if (engine.addBattleCredits) {
+      engine.addBattleCredits(bounty);
+    } else {
+      engine.playerSave.credits = (engine.playerSave.credits || 0) + bounty;
+      engine.creditsEarnedThisMission = (engine.creditsEarnedThisMission || 0) + bounty;
+      engine.saveRepo.savePlayerSave(engine.playerSave);
+    }
     engine.emitHudUpdate();
     sound.playExplosionLarge();
     engine.setStatusBanner(t('{name} DESTROYED! +300 CREDITS', { name: t(turret.name).toUpperCase() }), 2.5);

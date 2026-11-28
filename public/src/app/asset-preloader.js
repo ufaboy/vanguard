@@ -11,7 +11,7 @@ function resolveAssetUrl(relPath) {
   return new URL(relPath, PUBLIC_ROOT_URL).href;
 }
 
-export const VENDOR_RUNTIME_ASSETS = Object.freeze([
+const VENDOR_RUNTIME_ASSETS = Object.freeze([
   './vendor/three/build/three.module.js',
   './vendor/three/examples/jsm/loaders/GLTFLoader.js',
   './vendor/three/examples/jsm/loaders/DRACOLoader.js',
@@ -29,15 +29,16 @@ export const VENDOR_RUNTIME_ASSETS = Object.freeze([
   './vendor/three/examples/jsm/libs/basis/basis_transcoder.wasm',
 ]);
 
-export const PLAYER_MODEL_ASSET = './models/tank_player.glb';
+const PLAYER_MODEL_ASSET = './models/tank_player.glb';
+const PLAYER_RADAR_MODEL_ASSET = './models/player_radar.glb';
 
-export const TERRAIN_MODEL_ASSETS = Object.freeze([
+const TERRAIN_MODEL_ASSETS = Object.freeze([
   './models/terrain/brick.glb',
   './models/terrain/concrete.glb',
   './models/terrain/buildings.glb',
 ]);
 
-export const PRIORITY_AUDIO_ASSETS = Object.freeze([
+const PRIORITY_AUDIO_ASSETS = Object.freeze([
   './audio/cannon_shot.ogg',
   './audio/heavy_howitzer_fire.ogg',
   './audio/cannon_impact.ogg',
@@ -49,13 +50,13 @@ export const PRIORITY_AUDIO_ASSETS = Object.freeze([
   './audio/tank_heavy_diesel_idle_loop_compact.ogg',
 ]);
 
-export const DEFENSE_TURRET_ASSETS = Object.freeze({
+const DEFENSE_TURRET_ASSETS = Object.freeze({
   CANNON: './models/turret_cannon.glb',
   HOWITZER: './models/turret_howitzer.glb',
   MLRS: './models/turret_mlrs.glb',
 });
 
-export const MAP_JSON_ASSETS = Object.freeze({
+const MAP_JSON_ASSETS = Object.freeze({
   'campaign-01': './maps/campaign/mission-01-rome-forum-colosseum.json',
   'campaign-02': './maps/campaign/mission-02-apennine-gorge.json',
   'campaign-03': './maps/campaign/mission-03-milan-industrial.json',
@@ -105,7 +106,7 @@ export const MAP_JSON_ASSETS = Object.freeze({
 });
 
 /** Campaign mission IDs with fortified enemy bases and their defense turret types. */
-export const CAMPAIGN_DEFENSE_TURRETS = Object.freeze({
+const CAMPAIGN_DEFENSE_TURRETS = Object.freeze({
   'campaign-03': Object.freeze(['CANNON', 'HOWITZER']),
   'campaign-05': Object.freeze(['CANNON', 'HOWITZER']),
   'campaign-06': Object.freeze(['CANNON', 'HOWITZER']),
@@ -121,7 +122,7 @@ export const CAMPAIGN_DEFENSE_TURRETS = Object.freeze({
   'campaign-37': Object.freeze(['CANNON', 'HOWITZER']),
 });
 
-export const ENEMY_MODEL_ASSETS = Object.freeze({
+const ENEMY_MODEL_ASSETS = Object.freeze({
   STANDARD: './models/tank_standard.glb',
   SCOUT: './models/tank_scout.glb',
   HOWITZER: './models/tank_howitzer.glb',
@@ -140,7 +141,7 @@ export const ENEMY_MODEL_ASSETS = Object.freeze({
   BOSS_TITAN: './models/tank_boss_titan.glb',
 });
 
-export const LANDMARK_PACK_ASSETS = Object.freeze({
+const LANDMARK_PACK_ASSETS = Object.freeze({
   paris: './models/landmarks/paris_landmarks.glb',
   berlin: './models/landmarks/berlin_landmarks.glb',
   versailles: './models/landmarks/versailles_landmarks.glb',
@@ -156,7 +157,7 @@ export const LANDMARK_PACK_ASSETS = Object.freeze({
 });
 
 /** Campaign mission IDs that load 3D landmark GLB packs. */
-export const CAMPAIGN_LANDMARK_PACKS = Object.freeze({
+const CAMPAIGN_LANDMARK_PACKS = Object.freeze({
   'campaign-01': Object.freeze(['italy', 'rome']),
   'campaign-03': Object.freeze(['italy']),
   'campaign-04': Object.freeze(['italy']),
@@ -179,7 +180,7 @@ export const CAMPAIGN_LANDMARK_PACKS = Object.freeze({
 });
 
 /** Contract IDs mapped to their enemy rosters and 3D landmark packs. */
-export const CONTRACT_ASSETS = Object.freeze({
+const CONTRACT_ASSETS = Object.freeze({
   'contract-last-cargo': Object.freeze({
     enemies: Object.freeze([
       'ARMOR',
@@ -254,6 +255,7 @@ export function getCoreAssets({ includeTerrain = true, includeAudio = includeTer
   return [
     ...VENDOR_RUNTIME_ASSETS,
     PLAYER_MODEL_ASSET,
+    PLAYER_RADAR_MODEL_ASSET,
     ...(includeTerrain ? TERRAIN_MODEL_ASSETS : []),
     ...(includeAudio ? PRIORITY_AUDIO_ASSETS : []),
   ];
@@ -337,14 +339,14 @@ export function getSurvivalAssets(wave1Classes = []) {
   ];
 }
 
-export function shouldSkipPreload(nav = globalThis.navigator) {
+function shouldSkipPreload(nav = globalThis.navigator) {
   const conn = nav?.connection || nav?.mozConnection || nav?.webkitConnection;
   if (!conn) return false;
   if (conn.saveData) return true;
   return conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g';
 }
 
-export function createAssetPreloader({
+function createAssetPreloader({
   concurrency = 2,
   fetchImpl = globalThis.fetch?.bind(globalThis),
   win = globalThis.window,

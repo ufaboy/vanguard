@@ -288,6 +288,54 @@ export class CodexStage {
         } else if (item.surfaceType === 'ROAD') {
           const roadMasks = [6, 12, 3, 9];
           block = e.modelFactory.createRoadBlock(pos.x, pos.z, roadMasks[idx], 0);
+        } else if (item.surfaceType === 'RAIL') {
+          const railMasks = [6, 12, 3, 9];
+          block = e.modelFactory.createRailBlock(pos.x, pos.z, railMasks[idx]);
+        } else if (item.surfaceType === 'CONTAINER') {
+          if (idx === 0 || idx === 1) {
+            const cont = e.modelFactory.createContainerBlock(idx, 'ns', 2);
+            cont.position.set(idx === 0 ? -1.4 : 1.4, 0, 0);
+            cont.scale.setScalar(0.85);
+            e.codexStageGroup.add(cont);
+          }
+          return;
+        } else if (item.surfaceType === 'TRANSFORMER') {
+          if (idx === 0) {
+            const tr = e.modelFactory.createTransformerBlock();
+            tr.position.set(0, 0, 0);
+            tr.scale.setScalar(1.35);
+            e.codexStageGroup.add(tr);
+          }
+          return;
+        } else if (item.surfaceType === 'SANDBAGS') {
+          block = e.modelFactory.createSandbagsBlock(idx % 2 === 0 ? 10 : 5);
+        } else if (item.surfaceType === 'RAIL_CAR') {
+          if (idx === 0 || idx === 1) {
+            const xOff = idx === 0 ? -1.4 : 1.4;
+            for (const zOff of [-0.85, 0.85]) {
+              const rail = e.modelFactory.createRailBlock(xOff, zOff, 5);
+              rail.scale.setScalar(0.85);
+              e.codexStageGroup.add(rail);
+            }
+            const car = e.modelFactory.createRailCarBlock('ns', idx === 0 ? 'closed' : 'open', 2, idx);
+            car.position.set(xOff, 0, 0);
+            car.scale.setScalar(0.85);
+            e.codexStageGroup.add(car);
+          }
+          return;
+        } else if (item.surfaceType === 'LOCOMOTIVE') {
+          if (idx === 0) {
+            for (const zOff of [-0.95, 0.95]) {
+              const rail = e.modelFactory.createRailBlock(0, zOff, 5);
+              rail.scale.setScalar(0.95);
+              e.codexStageGroup.add(rail);
+            }
+            const loco = e.modelFactory.createLocomotiveBlock('ns', 2);
+            loco.position.set(0, 0, 0);
+            loco.scale.setScalar(0.95);
+            e.codexStageGroup.add(loco);
+          }
+          return;
         } else if (item.surfaceType === 'GRASS') {
           block = e.modelFactory.createGrassBlock(pos.x, pos.z);
         } else if (item.surfaceType === 'STONE') {
@@ -339,6 +387,13 @@ export class CodexStage {
       crate.position.set(0, 0.35, 0);
       e.codexStageGroup.add(crate);
       e.codexTankRig = { root: crate, isCrate: true };
+    } else if (item.category === 'OBJECTS' && item.objectType === 'RAIL_BRIDGE') {
+      const bridge = new THREE.Group();
+      for (let segment = -2; segment <= 2; segment++) {
+        bridge.add(e.modelFactory.createRailBridgeBlock(0, segment * 1.9, 5));
+      }
+      e.codexStageGroup.add(bridge);
+      this.fitLandmarkOnPedestal(bridge);
     } else if (item.category === 'LANDMARKS' && item.landmarkKind) {
       const kind = item.landmarkKind;
       const landmark = e.modelFactory.landmarkModels.create(kind);

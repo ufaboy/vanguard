@@ -10,11 +10,11 @@ const h = (href) => localHref(href, locale);
 
 // Operation contracts: former campaign maps that keep their own win rules. Their story is a placeholder for now.
 const operations = [
-  { id: "contract-charles-bridge", code: "CONTRACT-03 // OPERATION", title: "Charles Bridge", sub: "PRAGUE", thumb: "region-thumb-urban.jpg", reward: "$250" },
-  { id: "contract-brandenburg-gate", code: "CONTRACT-04 // OPERATION", title: "Brandenburg Gate", sub: "BERLIN", thumb: "region-thumb-capital.jpg", reward: "$260" },
-  { id: "contract-versailles", code: "CONTRACT-05 // OPERATION", title: "Versailles", sub: "VERSAILLES", thumb: "region-thumb-forest.jpg", reward: "$350" },
-  { id: "contract-brussels", code: "CONTRACT-06 // OPERATION", title: "Brussels", sub: "BRUSSELS", thumb: "region-thumb-urban.jpg", reward: "$450" },
-  { id: "contract-remagen-bridgehead", code: "CONTRACT-07 // OPERATION", title: "Remagen Bridgehead", sub: "REMAGEN", thumb: "region-thumb-coast.jpg", reward: "$450" },
+  { id: "contract-charles-bridge", code: "CONTRACT-03 // OPERATION", title: "Charles Bridge", sub: "PRAGUE", thumb: "campaign/mission-13.webp", reward: "$250" },
+  { id: "contract-brandenburg-gate", code: "CONTRACT-04 // OPERATION", title: "Brandenburg Gate", sub: "BERLIN", thumb: "campaign/mission-16.webp", reward: "$260" },
+  { id: "contract-versailles", code: "CONTRACT-05 // OPERATION", title: "Versailles", sub: "VERSAILLES", thumb: "campaign/mission-28.webp", reward: "$350" },
+  { id: "contract-brussels", code: "CONTRACT-06 // OPERATION", title: "Brussels", sub: "BRUSSELS", thumb: "campaign/mission-24.webp", reward: "$450" },
+  { id: "contract-remagen-bridgehead", code: "CONTRACT-07 // OPERATION", title: "Remagen Bridgehead", sub: "REMAGEN", thumb: "campaign/mission-20.webp", reward: "$450" },
 ];
 
 const jsonLd = [
@@ -112,7 +112,7 @@ const jsonLd = [
           </div>
 
           <div class="contract-thumb-wrap" aria-hidden="true">
-            <img src={h("./images/region-thumb-industrial.jpg")} alt="" loading="lazy">
+            <img src={h("./images/campaign/mission-23.webp")} alt="" loading="lazy">
             <div class="contract-thumb-fade"></div>
           </div>
 
@@ -177,7 +177,7 @@ const jsonLd = [
           </div>
 
           <div class="contract-thumb-wrap" aria-hidden="true">
-            <img src={h("./images/region-thumb-alpine.jpg")} alt="" loading="lazy">
+            <img src={h("./images/campaign/mission-30.webp")} alt="" loading="lazy">
             <div class="contract-thumb-fade"></div>
           </div>
 
@@ -190,7 +190,7 @@ const jsonLd = [
               <strong class="contract-banner-title">{t("Blackout Protocol")}</strong>
               <span class="contract-banner-sub">{t("RADAR & ECM RELAY DEMOLITION")}</span>
             </div>
-            <p class="contract-banner-summary">{t("Infiltrate the northern communications array, plant timed demolition charges [E] on at least two of three armored radar/ECM relays, clear the 3-cell blast zone before the 8-second fuse detonates, and extract from the southern pad.")}</p>
+            <p class="contract-banner-summary">{t("Infiltrate the northern communications array, plant timed demolition charges [F] on at least two of three armored radar/ECM relays, clear the 3-cell blast zone before the 8-second fuse detonates, and extract from the southern pad.")}</p>
             <div class="contract-progress-row" aria-hidden="true">
               <div class="contract-progress-track">
                 <span class="seg is-ready"></span>
@@ -274,9 +274,9 @@ const jsonLd = [
         <div class="menu-guide">
           <section>
             <h3>{t("Contract 01 — Last Cargo")}</h3>
-            <p>{t("A logistics raid on an industrial river terminal. Drive up to a sealed data container, stop within range and hold")} <strong>E</strong> {t("for two seconds to load it, then haul it back to the southern delivery pad and sit still while it unloads. Two of the three containers are required; the third sits deeper in enemy lines and is an optional high-risk run. Expect 8–12 minutes with no global timer.")}</p>
+            <p>{t("A logistics raid on an industrial river terminal. Drive up to a sealed data container, stop within range and press")} <strong>F</strong> {t("to load it for two seconds, then haul it back to the southern delivery pad and sit still while it unloads. Two of the three containers are required; the third sits deeper in enemy lines and is an optional high-risk run. Expect 8–12 minutes with no global timer.")}</p>
             <h3>{t("Contract 02 — Blackout Protocol")}</h3>
-            <p>{t("A sabotage raid on an armored communications and ECM array. Plant timed demolition charges with")} <strong>E</strong> {t("on at least two of three radar relays, then get out of the three-cell blast zone before the eight-second fuse goes off. The garrison includes stealth tanks, jammers and a quick-reaction breacher force, which makes it the hardest operation in the game. Expect 7–11 minutes.")}</p>
+            <p>{t("A sabotage raid on an armored communications and ECM array. Plant timed demolition charges with")} <strong>F</strong> {t("on at least two of three radar relays, then get out of the three-cell blast zone before the eight-second fuse goes off. The garrison includes stealth tanks, jammers and a quick-reaction breacher force, which makes it the hardest operation in the game. Expect 7–11 minutes.")}</p>
           </section>
           <section>
             <h3>{t("How contract payouts work")}</h3>

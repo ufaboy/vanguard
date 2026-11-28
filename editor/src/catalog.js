@@ -16,6 +16,8 @@ export const SURFACES = [
   { tile: TileType.GRASS, char: 'V', name: 'Grassland', color: '#16a34a' },
   { tile: TileType.SWAMP, char: 'M', name: 'Swamp / Mud', color: '#4d7c0f' },
   { tile: TileType.OIL_SLICK, char: 'L', name: 'Oil Slick', color: '#1e1b4b' },
+  { tile: TileType.RAIL, char: '#', name: 'Railroad Track', color: '#52525b' },
+  { tile: 'railCurve', char: 'C3', name: 'Rail Curve (3×3)', sub: 'Gentle 90° track turn (Space to rotate)', color: '#71717a' },
 ];
 
 export const OBJECTS = [
@@ -29,10 +31,24 @@ export const OBJECTS = [
   { tile: TileType.CRATER, char: 'K', name: 'Shell Crater', color: '#57534e' },
   { tile: TileType.WATER_TOWER, char: 'T', name: 'Water Tower', color: '#0ea5e9' },
   { tile: TileType.BRIDGE, char: '=', name: 'Bridge', color: '#a16207' },
+  { tile: TileType.RAIL_BRIDGE, char: 'RB', name: 'Railroad Bridge', sub: 'Steel through-truss railway deck', color: '#64748b' },
   { tile: TileType.RUBBLE, char: 'U', name: 'Rubble', color: '#71717a' },
   { tile: TileType.HOUSE_1, char: 'A', name: 'Building Type 1', color: '#b45309' },
   { tile: TileType.HOUSE_2, char: 'P', name: 'Building Type 2', color: '#9a3412' },
+  { tile: TileType.CONTAINER, char: 'J', name: 'Shipping Container (8 HP)', color: '#2563eb' },
+  { tile: TileType.TRANSFORMER, char: 'Y', name: 'EMP Transformer (2 HP)', color: '#38bdf8' },
+  { tile: TileType.SANDBAGS, char: 'S', name: 'Sandbags (3 HP)', color: '#c2a67d' },
+  { tile: TileType.RAIL_CAR, char: 'V', name: 'Freight Rail Car (10 HP)', color: '#7c2d12' },
+  { tile: TileType.LOCOMOTIVE, char: 'M', name: 'Diesel Locomotive (16 HP)', color: '#1e3a5f' },
   { tile: TileType.ENEMY_BASE, char: 'E', name: 'Enemy Stronghold', color: '#ef4444' },
+];
+
+export const PROPS = [
+  { kind: 'lamp', name: 'Prop: Streetlamp', color: '#fde047' },
+  { kind: 'fence', name: 'Prop: Fence', color: '#a16207' },
+  { kind: 'car', name: 'Prop: Abandoned Car', color: '#64748b' },
+  { kind: 'shrub', name: 'Prop: Shrub / Lavender', color: '#4ade80' },
+  { kind: 'barricade', name: 'Prop: Road Barricade', color: '#ef4444' },
 ];
 
 export const MARKERS = [
@@ -44,6 +60,11 @@ export const MARKERS = [
   { id: `powerup:${POWERUP.APS}`, powerupType: 'APS', name: 'Crate: APS', sub: 'Active Protection', color: '#a855f7' },
   { id: `powerup:${POWERUP.MISSILE}`, powerupType: 'MISSILE', name: 'Crate: ATGM', sub: 'Guided Missiles', color: '#f97316' },
   { id: `powerup:${POWERUP.AMMO}`, powerupType: 'AMMO', name: 'Crate: Ammo', sub: 'Shell Resupply', color: '#eab308' },
+  { id: 'prop:lamp', propKind: 'lamp', name: 'Prop: Streetlamp', sub: 'Crushable 3D Prop', color: '#fde047' },
+  { id: 'prop:fence', propKind: 'fence', name: 'Prop: Fence', sub: 'Crushable 3D Prop', color: '#a16207' },
+  { id: 'prop:car', propKind: 'car', name: 'Prop: Abandoned Car', sub: 'Crushable 3D Prop', color: '#64748b' },
+  { id: 'prop:shrub', propKind: 'shrub', name: 'Prop: Shrub / Lavender', sub: 'Crushable 3D Prop', color: '#4ade80' },
+  { id: 'prop:barricade', propKind: 'barricade', name: 'Prop: Barricade', sub: 'Crushable 3D Prop', color: '#ef4444' },
 ];
 
 export const LANDMARKS = PLACEABLE_LANDMARKS.map((kind) => ({
@@ -53,15 +74,23 @@ export const LANDMARKS = PLACEABLE_LANDMARKS.map((kind) => ({
 }));
 
 export const DECORATIONS = [
-  { kind: 'crosswalk', name: 'Crosswalk', color: '#e2e8f0' },
-  { kind: 'parking', name: 'Parking Bay', color: '#94a3b8' },
-  { kind: 'manhole', name: 'Manhole', color: '#475569' },
-  { kind: 'loading', name: 'Loading Zone', color: '#f59e0b' },
-  { kind: 'helipad', name: 'Helipad', color: '#38bdf8' },
-  { kind: 'hazard_zone', name: 'Hazard Zone', color: '#eab308' },
-  { kind: 'chevron', name: 'Chevron', color: '#fb923c' },
-  { kind: 'drain_grate', name: 'Drain Grate', color: '#64748b' },
-  { kind: 'label', name: 'District Label', color: '#a855f7' },
+  { kind: null, group: 'clear', name: 'Empty (Clear Deco)', sub: 'Clear decal / zone on cell', color: '#1e293b' },
+  { kind: 'crosswalk', group: 'decal', name: 'Crosswalk', color: '#e2e8f0' },
+  { kind: 'parking', group: 'decal', name: 'Parking Bay', color: '#94a3b8' },
+  { kind: 'manhole', group: 'decal', name: 'Manhole', color: '#475569' },
+  { kind: 'loading', group: 'decal', name: 'Loading Zone', color: '#f59e0b' },
+  { kind: 'helipad', group: 'decal', name: 'Helipad', color: '#38bdf8' },
+  { kind: 'hazard_zone', group: 'decal', name: 'Hazard Zone', color: '#eab308' },
+  { kind: 'chevron', group: 'decal', name: 'Chevron', color: '#fb923c' },
+  { kind: 'drain_grate', group: 'decal', name: 'Drain Grate', color: '#64748b' },
+  { kind: 'label', group: 'decal', name: 'District Label', color: '#a855f7' },
+  { kind: 'zone:asphalt', group: 'zone', surface: 'asphalt', name: 'Zone: Asphalt', color: '#343e44' },
+  { kind: 'zone:pavers', group: 'zone', surface: 'pavers', name: 'Zone: Pavers', color: '#696b61' },
+  { kind: 'zone:concrete', group: 'zone', surface: 'concrete', name: 'Zone: Concrete', color: '#72766e' },
+  { kind: 'zone:dirt', group: 'zone', surface: 'dirt', name: 'Zone: Dirt', color: '#695a43' },
+  { kind: 'zone:gravel', group: 'zone', surface: 'gravel', name: 'Zone: Gravel', color: '#66665b' },
+  { kind: 'zone:sand', group: 'zone', surface: 'sand', name: 'Zone: Sand', color: '#ae956c' },
+  { kind: 'zone:snow', group: 'zone', surface: 'snow', name: 'Zone: Snow', color: '#b5bfbd' },
 ];
 
 export const SURFACE_CHAR_TO_TILE = {
@@ -78,6 +107,7 @@ export const SURFACE_CHAR_TO_TILE = {
   V: TileType.GRASS,
   M: TileType.SWAMP,
   L: TileType.OIL_SLICK,
+  '#': TileType.RAIL,
 };
 
 export const OBJECT_CHAR_TO_TILE = {
@@ -98,6 +128,11 @@ export const OBJECT_CHAR_TO_TILE = {
   U: TileType.RUBBLE,
   A: TileType.HOUSE_1,
   P: TileType.HOUSE_2,
+  J: TileType.CONTAINER,
+  Y: TileType.TRANSFORMER,
+  S: TileType.SANDBAGS,
+  V: TileType.RAIL_CAR,
+  M: TileType.LOCOMOTIVE,
   H: TileType.BASE,
   E: TileType.ENEMY_BASE,
 };

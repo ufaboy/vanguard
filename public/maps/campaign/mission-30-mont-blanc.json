@@ -7,130 +7,42 @@
   "gameMode": "stronghold_assault",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "enemyBase": {
-    "cell": {
-      "row": 4,
-      "col": 20
-    },
-    "name": "Consortium High Col Radar",
-    "maxHp": 48,
-    "fortifyPerimeter": true
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 1200
-  },
-  "environment": {
-    "theme": "alpine",
-    "tint": "#c5dcf2",
-    "fogColor": "#435366",
-    "groundColor": "#7d8891"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "enemyBase": {"cell":{"row":4,"col":20},"name":"Consortium High Col Radar","maxHp":48,"fortifyPerimeter":true},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":1200},
+  "environment": {"theme":"alpine","tint":"#c5dcf2","fogColor":"#435366","groundColor":"#7d8891"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Ascend the glaciated Mont Blanc approaches across bridged crevasses and stone moraines, using conifer ambush pockets and breachable avalanche barriers to storm the fortified radar station on the high col.",
     "breaches": [
       {
         "name": "Radar Station South Wall",
-        "cells": [
-          {
-            "row": 5,
-            "col": 19
-          },
-          {
-            "row": 5,
-            "col": 20
-          },
-          {
-            "row": 5,
-            "col": 21
-          }
-        ],
-        "start": {
-          "row": 7,
-          "col": 20
-        },
-        "end": {
-          "row": 4,
-          "col": 19
-        },
+        "cells": [{"row":5,"col":19},{"row":5,"col":20},{"row":5,"col":21}],
+        "start": {"row":7,"col":20},
+        "end": {"row":4,"col":19},
         "purpose": "Breach the southern brick sally wall of the fortified high col radar station for direct fire on the command core."
       },
       {
         "name": "West Moraine Retaining Wall",
-        "cells": [
-          {
-            "row": 18,
-            "col": 9
-          },
-          {
-            "row": 19,
-            "col": 9
-          }
-        ],
-        "start": {
-          "row": 18,
-          "col": 7
-        },
-        "end": {
-          "row": 18,
-          "col": 11
-        },
+        "cells": [{"row":18,"col":9},{"row":19,"col":9}],
+        "start": {"row":18,"col":7},
+        "end": {"row":18,"col":11},
         "purpose": "Blast through the moraine retaining wall to cut between the west cable-car road and the central glacier valley."
       },
       {
         "name": "East Avalanche Barrier",
-        "cells": [
-          {
-            "row": 23,
-            "col": 29
-          },
-          {
-            "row": 23,
-            "col": 30
-          }
-        ],
-        "start": {
-          "row": 25,
-          "col": 29
-        },
-        "end": {
-          "row": 22,
-          "col": 29
-        },
+        "cells": [{"row":23,"col":29},{"row":23,"col":30}],
+        "start": {"row":25,"col":29},
+        "end": {"row":22,"col":29},
         "purpose": "Clear the brick avalanche barrier to link the eastern glacier flank directly to the mid-mountain plateau."
       },
       {
         "name": "Lower Valley Checkpoint Wall",
-        "cells": [
-          {
-            "row": 29,
-            "col": 22
-          },
-          {
-            "row": 29,
-            "col": 23
-          }
-        ],
-        "start": {
-          "row": 31,
-          "col": 22
-        },
-        "end": {
-          "row": 28,
-          "col": 22
-        },
+        "cells": [{"row":29,"col":22},{"row":29,"col":23}],
+        "start": {"row":31,"col":22},
+        "end": {"row":28,"col":22},
         "purpose": "Punch through the lower valley checkpoint wall to bypass the main road choke."
       }
     ],
@@ -155,434 +67,77 @@
     "seed": 30202601,
     "theme": "alpine",
     "zones": [
-      {
-        "id": "mont-blanc-snow",
-        "bounds": [
-          0,
-          0,
-          39,
-          39
-        ],
-        "surface": "snow",
-        "density": 0.22,
-        "details": [
-          "patches",
-          "cracks"
-        ]
-      },
-      {
-        "id": "radar-col-apron",
-        "bounds": [
-          2,
-          16,
-          8,
-          25
-        ],
-        "surface": "concrete",
-        "density": 0.35,
-        "details": [
-          "cracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "cable-terminal-yard",
-        "bounds": [
-          25,
-          10,
-          29,
-          15
-        ],
-        "surface": "gravel",
-        "density": 0.3,
-        "details": [
-          "tracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "valley-depot-pad",
-        "bounds": [
-          30,
-          26,
-          34,
-          31
-        ],
-        "surface": "asphalt",
-        "density": 0.28,
-        "details": [
-          "tracks",
-          "patches"
-        ]
-      }
+      {"id":"mont-blanc-snow","bounds":[0,0,39,39],"surface":"snow","density":0.22,"details":["patches","cracks"]},
+      {"id":"radar-col-apron","bounds":[2,16,8,25],"surface":"concrete","density":0.35,"details":["cracks","rubble"]},
+      {"id":"cable-terminal-yard","bounds":[25,10,29,15],"surface":"gravel","density":0.3,"details":["tracks","rubble"]},
+      {"id":"valley-depot-pad","bounds":[30,26,34,31],"surface":"asphalt","density":0.28,"details":["tracks","patches"]}
     ],
     "paths": [],
-    "landmarks": [
-      {
-        "id": "radar-col-label",
-        "kind": "label",
-        "row": 9,
-        "col": 20,
-        "size": 3,
-        "text": "HIGH COL RADAR"
-      },
-      {
-        "id": "glacier-label",
-        "kind": "label",
-        "row": 15,
-        "col": 27,
-        "size": 3,
-        "text": "VALLEE BLANCHE"
-      },
-      {
-        "id": "terminal-label",
-        "kind": "label",
-        "row": 29,
-        "col": 12,
-        "size": 3,
-        "text": "CABLE TERMINAL"
-      },
-      {
-        "id": "base-helipad",
-        "kind": "helipad",
-        "row": 35,
-        "col": 13,
-        "size": 1.8
-      },
-      {
-        "id": "terminal-loading",
-        "kind": "loading",
-        "row": 26,
-        "col": 15,
-        "size": 1.6,
-        "rotation": 0
-      },
-      {
-        "id": "col-chevron",
-        "kind": "chevron",
-        "row": 14,
-        "col": 19,
-        "size": 1.2,
-        "rotation": 0
-      },
-      {
-        "id": "pylon-hazard",
-        "kind": "hazard_zone",
-        "row": 19,
-        "col": 16,
-        "size": 1.2
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "radar-gate-clear",
-        "bounds": [
-          6,
-          18,
-          8,
-          22
-        ]
-      }
-    ]
+    "exclusions": [{"id":"radar-gate-clear","bounds":[6,18,8,22]}]
   },
-  "landmarks3d": [],
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.2,
     "entrances": [
-      {
-        "id": "north-west-col",
-        "row": 1,
-        "col": 5
-      },
-      {
-        "id": "north-radar-west",
-        "row": 1,
-        "col": 13
-      },
-      {
-        "id": "north-radar-east",
-        "row": 1,
-        "col": 26
-      },
-      {
-        "id": "north-east-glacier",
-        "row": 1,
-        "col": 34
-      },
-      {
-        "id": "upper-west-shelf",
-        "row": 6,
-        "col": 3
-      },
-      {
-        "id": "upper-east-shelf",
-        "row": 6,
-        "col": 36
-      }
+      {"id":"north-west-col","row":1,"col":5},
+      {"id":"north-radar-west","row":1,"col":13},
+      {"id":"north-radar-east","row":1,"col":26},
+      {"id":"north-east-glacier","row":1,"col":34},
+      {"id":"upper-west-shelf","row":6,"col":3},
+      {"id":"upper-east-shelf","row":6,"col":36}
     ],
     "encounters": [
       {
         "id": "col-picket",
         "label": "HIGH COL PICKET: Forward scouts and patrols descending the glacier passes.",
         "recoverySec": 0,
-        "entrances": [
-          "north-west-col",
-          "north-radar-west",
-          "north-radar-east",
-          "north-east-glacier"
-        ],
-        "initialCells": [
-          {
-            "row": 3,
-            "col": 5
-          },
-          {
-            "row": 3,
-            "col": 14
-          },
-          {
-            "row": 3,
-            "col": 26
-          },
-          {
-            "row": 3,
-            "col": 34
-          }
-        ],
-        "patrolRoute": [
-          {
-            "row": 11,
-            "col": 12
-          },
-          {
-            "row": 16,
-            "col": 17
-          },
-          {
-            "row": 24,
-            "col": 22
-          },
-          {
-            "row": 32,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "HOWITZER",
-          "SCOUT",
-          "STANDARD",
-          "STEALTH",
-          "STANDARD",
-          "ARMOR"
-        ]
+        "entrances": ["north-west-col","north-radar-west","north-radar-east","north-east-glacier"],
+        "initialCells": [{"row":3,"col":5},{"row":3,"col":14},{"row":3,"col":26},{"row":3,"col":34}],
+        "patrolRoute": [{"row":11,"col":12},{"row":16,"col":17},{"row":24,"col":22},{"row":32,"col":19}],
+        "enemies": ["SCOUT","STANDARD","HOWITZER","SCOUT","STANDARD","STEALTH","STANDARD","ARMOR"]
       },
       {
         "id": "glacier-flankers",
         "label": "GLACIER STRIKE GROUP: Hover and stealth units sweeping the crevasse bridges.",
         "recoverySec": 8,
-        "entrances": [
-          "north-west-col",
-          "north-east-glacier",
-          "upper-west-shelf",
-          "upper-east-shelf"
-        ],
-        "patrolRoute": [
-          {
-            "row": 14,
-            "col": 5
-          },
-          {
-            "row": 20,
-            "col": 5
-          },
-          {
-            "row": 27,
-            "col": 16
-          },
-          {
-            "row": 27,
-            "col": 30
-          },
-          {
-            "row": 33,
-            "col": 27
-          }
-        ],
-        "enemies": [
-          "HOVER",
-          "STEALTH",
-          "STRIKER",
-          "STANDARD",
-          "SAPPER",
-          "HOVER",
-          "ARMOR",
-          "FLAMETHROWER",
-          "STANDARD"
-        ]
+        "entrances": ["north-west-col","north-east-glacier","upper-west-shelf","upper-east-shelf"],
+        "patrolRoute": [{"row":14,"col":5},{"row":20,"col":5},{"row":27,"col":16},{"row":27,"col":30},{"row":33,"col":27}],
+        "enemies": ["HOVER","STEALTH","STRIKER","STANDARD","SAPPER","HOVER","ARMOR","FLAMETHROWER","STANDARD"]
       },
       {
         "id": "radar-garrison",
         "label": "RADAR GARRISON: Heavy armor, ECM jammers, and artillery defending the summit col.",
         "recoverySec": 9,
-        "entrances": [
-          "north-radar-west",
-          "north-radar-east",
-          "upper-west-shelf",
-          "upper-east-shelf"
-        ],
-        "patrolRoute": [
-          {
-            "row": 9,
-            "col": 20
-          },
-          {
-            "row": 11,
-            "col": 25
-          },
-          {
-            "row": 20,
-            "col": 32
-          },
-          {
-            "row": 28,
-            "col": 26
-          },
-          {
-            "row": 32,
-            "col": 19
-          }
-        ],
-        "enemies": [
-          "ARMOR",
-          "HOWITZER",
-          "JAMMER",
-          "STRIKER",
-          "ENGINEER",
-          "STANDARD",
-          "ARMOR",
-          "FLAMETHROWER",
-          "STANDARD"
-        ]
+        "entrances": ["north-radar-west","north-radar-east","upper-west-shelf","upper-east-shelf"],
+        "patrolRoute": [{"row":9,"col":20},{"row":11,"col":25},{"row":20,"col":32},{"row":28,"col":26},{"row":32,"col":19}],
+        "enemies": ["ARMOR","HOWITZER","JAMMER","STRIKER","ENGINEER","STANDARD","ARMOR","FLAMETHROWER","STANDARD"]
       }
     ],
-    "boss": {
-      "enabled": false
-    }
+    "boss": {"enabled":false}
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "HOWITZER",
-    "SCOUT",
-    "STANDARD",
-    "STEALTH",
-    "STANDARD",
-    "ARMOR",
-    "HOVER",
-    "STEALTH",
-    "STRIKER",
-    "STANDARD",
-    "SAPPER",
-    "HOVER",
-    "ARMOR",
-    "FLAMETHROWER",
-    "STANDARD",
-    "ARMOR",
-    "HOWITZER",
-    "JAMMER",
-    "STRIKER",
-    "ENGINEER",
-    "STANDARD",
-    "ARMOR",
-    "FLAMETHROWER",
-    "STANDARD"
-  ],
-  "surfaceLayout": [
-    "VVVVRRVVVV..RR..........RR..VVVVRRVVVVVV",
-    "VVVVRRVVVV..RR..........RR..VVVVRRVVVVVV",
-    "VVVVRRVVVV^^RR^^^^^^^^^^RR^^VVVVRRVVVVVV",
-    "VVVVRRVVVV^^^^^^^^^^^^^^^^^^VVVVRRVVVVVV",
-    "VVVVRRVVVV^^^^^^^^^^^^^^^^^^VVVVRRVVVVVV",
-    "VVVVVVVVVV^^^^^^^^^^^^^^^^^^VVVVRRVVVVVV",
-    "VVIIIIVVVV^^^^^^^^^^^^^^^^^^VVVVRRVVVVVV",
-    "VVIIIIVVVV..^^^^^....^^^^^..VVVVRRVVVVVV",
-    "VVIIIIVVVV..^^^^^....^^^^^..VVIIIIIVVVVV",
-    "VVVVRRVVVV..RR..........RR..VVIIIIIVVVVV",
-    "VVVVRRVVVV..RR..........RR..VVIIIIIVVVVV",
-    "VVVVRRVVWWWWWWWWW....WWWWWWWWWVVRRVVVVVV",
-    "VVVVRRVVWWWWWWWWW....WWWWWWWWWVVRRVVVVVV",
-    "VVVVRRVVVV..RR...RRRR...RR..VVVVRRVVVVVV",
-    "VVVVRRVVVV..RR...RRRR...RR..VVVVRRVVVVVV",
-    "VVVVRRVVVV.......RR.........VVIIIIIVVVVV",
-    "VVVVRRVVVV.......RR...IIIIIIVVIIIIIVVVVV",
-    "VVVVRRVVVV^^^^...RR...IIIIIIVVVVRRVVVVVV",
-    "VVVVRRVVVV^^^^...RR.........VVVVRRVVVVVV",
-    "VVVVRRVVVV.......RR...^^^^^^VVVVRRVVVVVV",
-    "VWWWWWWVVV.......RR...^^^^^^WWWWWWWWWWVV",
-    "VWWWWWWVVV.......RR.........WWWWWWWWWWVV",
-    "VVVVRRVVVV.......RRRRRRR........RRVVVVVV",
-    "VVVVRRVVVV............RR........RRVVVVVV",
-    "VVVVRRVVVV............RR........RRVVVVVV",
-    "VVVVRRVVVV............RR........RRVVVVVV",
-    "VVVVRRVVVV............RR........RRVVVVVV",
-    "VVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVVVV",
-    "VVVVVVVVVV............RR........VVVVVVVV",
-    "VVVVVVVVVV............RR........VVVVVVVV",
-    "VVVVVVVVVV............RR........VVVVVVVV",
-    "VVVVVVVVVV............RR........VVVVVVVV",
-    "VVVVVVVVVV......RRRRRRRR........VVVVVVVV",
-    "VVVVVVVVVV......RR..............VVVVVVVV",
-    "VVVVVVVVVV......RRRRRR..........VVVVVVVV",
-    "VVVVVVVVVV..........RR..........VVVVVVVV",
-    "VVVVVVVVVV..........RR..........VVVVVVVV",
-    "VVVVVVVVVV......................VVVVVVVV",
-    "VVVVVVVVVV......................VVVVVVVV",
-    "VVVVVVVVVV......................VVVVVVVV"
-  ],
-  "objectLayout": [
-    ".FF.................C..................F",
-    ".FF....................................F",
-    "..FF......FF........................FF.F",
-    "........CCFFF......CCC......PP.........F",
-    "....Q...CC.......C..E..C....PP......Q..F",
-    ".................CCBBBCC...............F",
-    "........AA......................AA.....F",
-    "..FF....AA.....T................AA..FF..",
-    "..FFF......K.........K......K.......FFF.",
-    ".......FF......................FF.......",
-    "..FF...FFF....X..........X.....FFF..FF..",
-    "............==.....Q....==..............",
-    "............==..........==..............",
-    "..FF...FF.......C....C..........FF..FF..",
-    ".......FFF......C....C..........FFF.....",
-    "..FF.........K..........K...............",
-    "........AA.........CC........FF....Q....",
-    "........AA...X.....CC...K....FFF........",
-    "..FF.....B....................FF........",
-    ".........B.....TD.....CCC..........FF...",
-    "....==..........................==......",
-    "....==..........................==......",
-    "..FF.....C.....K..FF............FF......",
-    ".........C........FFF......CCBBCC.FFF...",
-    "..FF........K......C....K...............",
-    "..FFF...AA.........C..............FF....",
-    "........AAQPPP....X......X..Q.....FFF...",
-    "...........PPP....K.............AA......",
-    "..............T........FF.......AA......",
-    "..FF................CCBBCC..FF..........",
-    "..FFF.........X.............FFF...PP....",
-    "..FF....AA......CC..............K.PP.FF.",
-    "........AA...K..CC........X..........FF.",
-    "....Q.......................AA..........",
-    "..FF.....FF............FF...AA.....FF...",
-    "..FFF....FFF....X......FFF.........FFF..",
-    "................K.......................",
-    "..................CCCC..................",
-    "......................................Q.",
-    "...................HH..................."
-  ]
+  "code": "",
+  "terrain": {
+    "grass": [[0,0,6,4],[0,6,11,4],[0,28,8,4],[0,34,8,6],[6,0,14,2],[8,28,2,2],[8,35,12,5],[9,2,11,2],[11,31,2,1],[11,34,4,1],[13,8,5,2],[15,28,5,2],[17,30,3,2],[17,34,3,1],[18,6,2,1],[18,9,2,1],[22,0,4,4],[22,6,5,4],[22,34,2,4],[22,39,18,1],[23,18,1,3],[25,34,15,5],[28,0,4,4],[28,6,3,4],[28,29,3,1],[28,32,12,2],[29,28,2,1],[29,30,2,1],[32,0,4,2],[32,6,8,4],[34,4,6,2],[34,23,2,3],[38,0,2,4]],
+    "road": [[0,4,6,2],[0,12,3,2],[0,24,3,2],[0,32,8,2],[9,4,11,2],[9,12,2,2],[9,24,2,2],[11,32,4,2],[13,12,4,2],[13,17,2,4],[13,22,2,10],[15,14,2,5],[17,17,6,2],[17,32,3,2],[22,4,12,2],[22,19,1,5],[22,32,6,2],[23,22,10,2],[23,38,2,1],[24,34,1,4],[26,0,2,4],[27,6,1,5],[27,14,1,8],[27,24,1,8],[31,6,1,12],[32,2,6,2],[32,16,1,6],[33,16,7,2],[34,18,3,4],[35,22,5,1],[36,0,2,2],[36,23,4,1],[38,18,1,4],[39,18],[39,21]],
+    "stone": [[2,14,5,10],[2,26,5,2],[3,13,6,1],[3,24,6,2],[4,10,3,3],[7,12,2,1],[7,14,2,3],[7,21,2,3],[11,6],[17,10,2,4],[19,22,2,6]],
+    "ice": [[6,2,3,4],[8,30,2,5],[10,30,1,4],[15,30,1,5],[16,22,1,6],[16,31,1,4],[17,22,1,2],[17,25,1,3]],
+    "sand": [[10,28,1,2],[11,29,1,2],[12,30]],
+    "water": [[11,7,2,22],[12,6,6,1],[12,29],[13,7,9,1],[18,8,4,1],[20,0,2,7],[20,9,2,1],[20,28,2,12]],
+    "oil": [[18,16,2,1]],
+    "forest": [[0,1,1,3],[0,39,7,1],[1,2,2,1],[2,3],[2,10,2,2],[2,35,1,3],[3,12],[4,3,2,1],[5,31],[6,6,4,1],[7,31],[7,35,1,3],[8,36,1,3],[9,7,2,2],[9,35,1,3],[10,2,1,2],[10,9],[10,34,5,1],[10,36,1,2],[11,3,5,1],[12,31],[13,8,2,1],[13,36,1,2],[14,9],[15,28],[16,29,2,2],[17,31,3,1],[18,3,2,1],[18,6,2,1],[18,30],[19,35,1,2],[22,2,1,2],[22,6],[23,18,1,3],[23,34,1,2],[24,2,2,2],[25,34,2,2],[26,36],[28,6,1,4],[29,2,3,2],[29,29,2,1],[30,6,1,2],[30,28],[30,30],[31,37,2,2],[32,6,1,2],[34,23,2,2],[34,35,2,2],[35,4],[35,25],[35,37]],
+    "concrete": [[0,20],[3,8,2,2],[3,19,1,3],[4,17,2,1],[4,23,2,1],[5,18],[5,22],[13,16,2,1],[13,21,4,1],[16,19,1,2],[18,23],[18,25],[19,24],[22,9,2,1],[22,30,1,2],[23,29,1,2],[24,19,2,1],[29,20,1,2],[29,24,1,2],[30,16,1,2],[31,15],[31,18],[37,18,1,4]],
+    "enemy_base": [[4,20]],
+    "brick": [[5,19,1,3],[18,9,2,1],[22,32,1,2],[29,22,1,2]],
+    "transformer": [[6,17],[6,23]],
+    "water_tower": [[7,15],[19,15],[28,14]],
+    "crater": [[8,11],[8,21],[8,28],[15,13],[15,24],[17,24],[22,15],[24,12],[24,24],[27,18],[31,32],[32,13],[36,16]],
+    "hedgehog": [[10,14],[10,25],[17,13],[26,18],[26,25],[30,14],[32,26],[35,16]],
+    "boxes": [[15,20],[16,35],[19,28],[25,10,2,1],[26,28],[33,4],[33,33]],
+    "barrel": [[18,16]],
+    "bridge": [[11,12,2,2,"ns"],[11,24,2,2,"ns"],[20,4,2,2,"ns"],[20,32,2,2,"ns"]],
+    "house2": [[3,28,2,2,3],[22,36,2,2,2],[26,11,2,3,2],[33,8,2,2,9]],
+    "house1": [[6,8,2,2,9],[11,35,2,2,4],[16,8,2,2,8],[25,8,2,2,8],[28,32,2,2,10],[29,8,2,2,6],[33,28,2,2,7]],
+    "decal": [["label",9,20,3,"HIGH COL RADAR"],["label",15,27,3,"VALLEE BLANCHE"],["label",29,12,3,"CABLE TERMINAL"],["helipad",35,13,1.8],["loading",26,15,1.6],["chevron",14,19,1.2],["hazard_zone",19,16,1.2],["parking",22,38]]
+  }
 }

@@ -1,9 +1,10 @@
 import { COMPONENT_TRACKS, normalizeComponentDamage } from '../../sim/component-damage.js';
 import { CONTRACT_CONFIG } from '../../sim/contract.js';
 import { getSafeStorage } from '../../sim/garage.js';
+import { createDefaultHqTree, normalizeHqTree } from '../../sim/hq-tree.js';
 import { createRepairKitState } from '../../sim/subsystems.js';
 import { SURVIVAL_CONFIG } from '../../sim/survival.js';
-import { APS, MISSILE, UPGRADE_MAX_LEVEL, getMaxApsAmmo, getMaxCannonAmmo, getMaxRepairKitCharges } from '../constants.js';
+import { getMaxApsAmmo, getMaxCannonAmmo, getMaxMissileAmmo, getMaxRepairKitCharges, UPGRADE_MAX_LEVEL } from '../constants.js';
 import { distributeApsRounds } from './player-controller.js';
 
 /** Manages player profile persistence, mode saves, upgrades, and credit grants. */
@@ -17,48 +18,74 @@ export class ProfileSaveController {
     if (engine.profileMode === 'survival') {
       return {
         storage: getSafeStorage('session'),
-        key: 'battle_tank_survival_upgrades_v1',
+        key: 'battle_tank_survival_tank_config',
       };
     }
     if (engine.profileMode === 'contract') {
       return {
         storage: getSafeStorage('session'),
-        key: 'battle_tank_contract_upgrades_v1',
+        key: 'battle_tank_contract_tank_config',
       };
     }
     return {
       storage: getSafeStorage('local'),
-      key: 'battle_tank_upgrades_v3',
+      key: 'battle_tank_tank_config',
     };
   }
 
   loadSavedProgress() {
     const { engine } = this;
     try {
-      if (engine.profileMode === 'campaign') {
-        getSafeStorage('local')?.removeItem('battle_tank_highscore');
-      }
       const { storage, key } = this.getUpgradesStorage();
-      const savedUpgrades = storage?.getItem(key);
-      if (savedUpgrades) {
-        const parsed = JSON.parse(savedUpgrades);
+      const saved = storage?.getItem(key);
+      const parsed = saved ? JSON.parse(saved) : null;
+      if (parsed) {
         engine.upgrades = {
           cannon: Math.min(UPGRADE_MAX_LEVEL.cannon, Math.max(1, parsed.cannon || 1)),
           chassis: Math.min(
             UPGRADE_MAX_LEVEL.chassis,
-            Math.max(1, parsed.chassis || parsed.vehicleFrame || 1)
+            Math.max(1, parsed.chassis || 1)
           ),
           frame: Math.min(
             UPGRADE_MAX_LEVEL.frame,
-            Math.max(1, parsed.frame || parsed.vehicleFrame || 1)
+            Math.max(1, parsed.frame || 1)
           ),
           engine: Math.min(UPGRADE_MAX_LEVEL.engine, Math.max(1, parsed.engine || 1)),
           armor: Math.min(UPGRADE_MAX_LEVEL.armor, Math.max(1, parsed.armor || 1)),
+          radar: Math.min(UPGRADE_MAX_LEVEL.radar, Math.max(1, parsed.radar || 1)),
         };
       } else {
-        engine.upgrades = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 };
+        engine.upgrades = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1, radar: 1 };
+      }
+      const frameTier = engine.upgrades?.frame || 1;
+      engine.componentDamage = normalizeComponentDamage();
+      engine.componentDamageCooldown = 0;
+      engine.apsOwned = Boolean(parsed?.apsOwned);
+      engine.atgmOwned = Boolean(parsed?.atgmOwned);
+      engine.reconDroneOwned = Boolean(parsed?.reconDroneOwned);
+      if (engine.apsOwned) {
+        const maxAps = engine.getPlayerMaxApsAmmo ? engine.getPlayerMaxApsAmmo() : getMaxApsAmmo(frameTier);
+        engine.apsAmmo = [0, 0, 0, 0];
+        distributeApsRounds(engine.apsAmmo, maxAps, maxAps);
+      } else {
+        engine.apsAmmo = [0, 0, 0, 0];
+      }
+      engine.missileAmmo = engine.atgmOwned
+        ? (engine.getPlayerMaxMissileAmmo ? engine.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(frameTier))
+        : 0;
+      const maxRepair = engine.getPlayerMaxRepairKitCharges ? engine.getPlayerMaxRepairKitCharges() : getMaxRepairKitCharges(frameTier);
+      engine.repairKitState = createRepairKitState(maxRepair, maxRepair);
+      engine.cannonAmmo = engine.getPlayerMaxCannonAmmo
+        ? engine.getPlayerMaxCannonAmmo()
+        : getMaxCannonAmmo(frameTier);
+      if (engine.profileMode === 'campaign') {
+        engine.hqTree = normalizeHqTree(engine.playerSave?.hqTree);
+      } else {
+        const parsedHq = parsed?.hqTree;
+        engine.hqTree = parsedHq ? normalizeHqTree(parsedHq) : createDefaultHqTree();
       }
     } catch {
+      engine.hqTree = createDefaultHqTree();
     }
   }
 
@@ -66,7 +93,37 @@ export class ProfileSaveController {
     const { engine } = this;
     try {
       const { storage, key } = this.getUpgradesStorage();
-      storage?.setItem(key, JSON.stringify(engine.upgrades));
+      const inBattle = Boolean(engine.isBattleActive?.());
+      const upgradesToSave =
+        inBattle && engine.preBattleUpgrades
+          ? engine.preBattleUpgrades
+          : engine.upgrades;
+      const hqTreeToSave = normalizeHqTree(
+        inBattle && engine.preBattleHqTree
+          ? engine.preBattleHqTree
+          : engine.hqTree
+      );
+      const tankState = {
+        ...upgradesToSave,
+        apsOwned: Boolean(inBattle ? engine.preBattleApsOwned : engine.apsOwned),
+        atgmOwned: Boolean(inBattle ? engine.preBattleAtgmOwned : engine.atgmOwned),
+        reconDroneOwned: Boolean(inBattle ? engine.preBattleReconDroneOwned : engine.reconDroneOwned),
+      };
+      if (engine.profileMode === 'campaign') {
+        storage?.setItem(key, JSON.stringify(tankState));
+        if (engine.playerSave) {
+          engine.playerSave.hqTree = hqTreeToSave;
+          engine.saveRepo?.savePlayerSave?.(engine.playerSave);
+        }
+      } else {
+        storage?.setItem(
+          key,
+          JSON.stringify({
+            ...tankState,
+            hqTree: hqTreeToSave,
+          })
+        );
+      }
     } catch {
     }
   }
@@ -76,17 +133,18 @@ export class ProfileSaveController {
 
   resetToStockTank() {
     const { engine } = this;
-    engine.upgrades = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1 };
+    engine.upgrades = { cannon: 1, chassis: 1, frame: 1, engine: 1, armor: 1, radar: 1 };
+    if (engine.profileMode !== 'campaign') {
+      engine.hqTree = createDefaultHqTree();
+    }
     engine.componentDamage = Object.fromEntries(COMPONENT_TRACKS.map((t) => [t, false]));
     engine.componentDamageCooldown = 0;
     engine.componentWaterEgress = false;
-    if (engine.playerController?.initApsLaunchers) {
-      engine.playerController.initApsLaunchers(APS.START_ROUNDS);
-    } else {
-      engine.apsAmmo = [0, 0, 0, 0];
-      distributeApsRounds(engine.apsAmmo, APS.START_ROUNDS, getMaxApsAmmo(1));
-    }
-    engine.missileAmmo = 2;
+    engine.apsOwned = false;
+    engine.atgmOwned = false;
+    engine.reconDroneOwned = false;
+    engine.apsAmmo = [0, 0, 0, 0];
+    engine.missileAmmo = 0;
     engine.cannonAmmo = getMaxCannonAmmo(1);
     engine.repairKitState = createRepairKitState(0, getMaxRepairKitCharges(1));
   }
@@ -110,37 +168,15 @@ export class ProfileSaveController {
           mode === 'survival'
             ? SURVIVAL_CONFIG.STARTING_CREDITS
             : CONTRACT_CONFIG.STARTING_CREDITS;
-        engine.playerSave.apsAmmo = [...engine.apsAmmo];
-        engine.playerSave.missileAmmo = engine.missileAmmo;
-        engine.playerSave.repairKitCharges = 0;
-        engine.playerSave.componentDamage = { ...engine.componentDamage };
-        engine.playerSave.componentDamageCooldown = 0;
         engine.saveRepo.savePlayerSave(engine.playerSave);
       }
       this.saveProgress();
     } else {
       this.loadSavedProgress();
-      engine.componentDamage = normalizeComponentDamage(engine.playerSave?.componentDamage);
-      engine.componentDamageCooldown = Math.max(
-        0,
-        Math.min(8, Number(engine.playerSave?.componentDamageCooldown) || 0)
-      );
       engine.componentWaterEgress = false;
-      engine.apsAmmo = Array.isArray(engine.playerSave?.apsAmmo)
-        ? [...engine.playerSave.apsAmmo]
-        : [...APS.INITIAL_PER_LAUNCHER];
-      engine.missileAmmo = Number.isInteger(engine.playerSave?.missileAmmo)
-        ? Math.max(0, Math.min(MISSILE.MAX_AMMO, engine.playerSave.missileAmmo))
-        : 2;
-      const savedRepairCharges = Number.isInteger(engine.playerSave?.repairKitCharges)
-        ? engine.playerSave.repairKitCharges
-        : 0;
-      engine.repairKitState = createRepairKitState(savedRepairCharges, getMaxRepairKitCharges(engine.upgrades?.frame || 1));
-      engine.cannonAmmo = engine.getPlayerMaxCannonAmmo
-        ? engine.getPlayerMaxCannonAmmo()
-        : getMaxCannonAmmo(engine.upgrades?.frame || 1);
     }
     engine.recomputePlayerStats?.(false);
+    engine.syncTemporaryCredits?.();
   }
 
   applyUpgrades(newUpgrades) {
@@ -161,6 +197,11 @@ export class ProfileSaveController {
     const delta = Math.max(0, Math.floor(Number(amount) || 0));
     if (!delta || !engine.playerSave) return 0;
     engine.playerSave.credits = (engine.playerSave.credits || 0) + delta;
+    if (engine.isBattleActive?.()) {
+      engine.temporaryCredits = Math.max(0, Math.floor(engine.temporaryCredits ?? 0)) + delta;
+    } else {
+      engine.syncTemporaryCredits?.();
+    }
     engine.saveRepo?.savePlayerSave?.(engine.playerSave);
     engine.emitHudUpdate();
     return delta;

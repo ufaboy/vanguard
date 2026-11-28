@@ -16,6 +16,43 @@ import {
   StreakLayer,
 } from './pools.js';
 
+const EMP_DOME_VS = `
+  varying vec3 vNormalDir;
+  varying vec3 vViewDir;
+  varying float vY;
+  varying float vAngle;
+  void main() {
+    vY = clamp(position.y, 0.0, 1.0);
+    vAngle = atan(position.z, position.x);
+    vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+    vNormalDir = normalize(normalMatrix * normal);
+    vViewDir = normalize(-mvPos.xyz);
+    gl_Position = projectionMatrix * mvPos;
+  }
+`;
+
+const EMP_DOME_FS = `
+  uniform float uTime;
+  uniform float uAlpha;
+  uniform float uProgress;
+  varying vec3 vNormalDir;
+  varying vec3 vViewDir;
+  varying float vY;
+  varying float vAngle;
+  void main() {
+    float ndotv = abs(dot(normalize(vNormalDir), normalize(vViewDir)));
+    float fresnel = pow(1.0 - ndotv, 2.2);
+    float groundBand = smoothstep(0.22, 0.0, vY);
+    float scan = 0.5 + 0.5 * sin(vY * 30.0 - uTime * 20.0);
+    float shimmer = 0.72 + 0.28 * sin(vAngle * 10.0 + uTime * 14.0) * cos(vY * 14.0 - uTime * 9.0);
+    float intensity = (fresnel * 1.15 + groundBand * 0.95 + scan * 0.22 * (1.0 - vY * 0.5)) * shimmer;
+    float a = clamp(intensity * uAlpha, 0.0, 1.0);
+    if (a < 0.005) discard;
+    vec3 col = mix(vec3(0.18, 0.65, 1.0), vec3(0.88, 0.98, 1.0), clamp(fresnel * 0.85 + groundBand * 0.65 + (1.0 - uProgress) * 0.25, 0.0, 1.0));
+    gl_FragColor = vec4(col * a, a);
+  }
+`;
+
 export class FxSystem {
   /** @param {object} opts. */
   constructor({ lowQuality = false, light = null } = {}) {
@@ -67,6 +104,38 @@ export class FxSystem {
       this.rings.push({ mesh, mat, active: false });
     }
 
+    const empDomeGeo = new THREE.SphereGeometry(
+      1,
+      lowQuality ? 20 : 32,
+      lowQuality ? 10 : 16,
+      0,
+      Math.PI * 2,
+      0,
+      Math.PI * 0.5
+    );
+    this.empDomes = [];
+    for (let i = 0; i < 4; i++) {
+      const mat = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 },
+          uAlpha: { value: 0 },
+          uProgress: { value: 0 },
+        },
+        vertexShader: EMP_DOME_VS,
+        fragmentShader: EMP_DOME_FS,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
+      });
+      const mesh = new THREE.Mesh(empDomeGeo, mat);
+      mesh.visible = false;
+      mesh.renderOrder = 12;
+      this.root.add(mesh);
+      this.empDomes.push({ mesh, mat, active: false, age: 0, life: 1, r0: 0.5, r1: 7, arcAcc: 0, global: false });
+    }
+
     const decalGeo = new THREE.PlaneGeometry(1, 1);
     decalGeo.rotateX(-Math.PI / 2);
     this.decals = [];
@@ -78,7 +147,6 @@ export class FxSystem {
         transparent: true,
         depthWrite: false,
         polygonOffset: true,
-        polygonOffsetFactor: -2,
         polygonOffsetUnits: -2,
       });
       const mesh = new THREE.Mesh(decalGeo, mat);
@@ -104,6 +172,10 @@ export class FxSystem {
       r.active = false;
       r.mesh.visible = false;
     });
+    this.empDomes.forEach((d) => {
+      d.active = false;
+      d.mesh.visible = false;
+    });
     this.decals.forEach((d) => {
       d.active = false;
       d.mesh.visible = false;
@@ -124,6 +196,11 @@ export class FxSystem {
       this.rings[0].mesh.geometry.dispose();
       for (const r of this.rings) r.mat.dispose();
       this.rings.length = 0;
+    }
+    if (this.empDomes.length > 0) {
+      this.empDomes[0].mesh.geometry.dispose();
+      for (const d of this.empDomes) d.mat.dispose();
+      this.empDomes.length = 0;
     }
     if (this.decals.length > 0) {
       this.decals[0].mesh.geometry.dispose();
@@ -181,6 +258,45 @@ export class FxSystem {
       const k = 1 - Math.pow(1 - t, 3);
       r.mesh.scale.setScalar(r.r0 + (r.r1 - r.r0) * k);
       r.mat.opacity = r.alpha * Math.pow(1 - t, 1.3);
+    }
+
+    for (const d of this.empDomes) {
+      if (!d.active) continue;
+      d.age += dt;
+      const t = d.age / d.life;
+      if (t >= 1) {
+        d.active = false;
+        d.mesh.visible = false;
+        continue;
+      }
+      const k = 1 - Math.pow(1 - t, 2.4);
+      const curR = d.r0 + (d.r1 - d.r0) * k;
+      const curH = Math.min(curR * 0.55, d.global ? 14 : 6.5);
+      d.mesh.scale.set(curR, curH, curR);
+      d.mat.uniforms.uTime.value += dt;
+      d.mat.uniforms.uProgress.value = t;
+      const fadeIn = t < 0.08 ? t / 0.08 : 1;
+      d.mat.uniforms.uAlpha.value = Math.pow(1 - t, 1.15) * fadeIn * 0.85;
+
+      d.arcAcc += dt;
+      if (t < 0.85 && d.arcAcc >= 0.045) {
+        d.arcAcc -= 0.045;
+        const count = this.n(d.global ? 6 : 4);
+        const arcColor = [0.45, 0.88, 1.0];
+        const px = d.mesh.position.x;
+        const pz = d.mesh.position.z;
+        for (let i = 0; i < count; i++) {
+          const ang = Math.random() * Math.PI * 2;
+          const span = rand(0.18, 0.38);
+          const rA = curR * rand(0.95, 1.03);
+          const rB = curR * rand(0.95, 1.03);
+          const x0 = px + Math.cos(ang) * rA;
+          const z0 = pz + Math.sin(ang) * rA;
+          const x1 = px + Math.cos(ang + span) * rB;
+          const z1 = pz + Math.sin(ang + span) * rB;
+          this.segment(x0, rand(0.12, 0.55), z0, x1, rand(0.12, 0.55), z1, arcColor, 0.11, 0.12, 0.95);
+        }
+      }
     }
 
     for (const d of this.decals) {
@@ -1253,6 +1369,48 @@ export class FxSystem {
       }
     }
     this.point('glow', { x, y, z, life: 0.18, size: 1.4, tex: FxTex.GLOW, color: c, alpha: 0.5 });
+  }
+
+  /** Cinematic outgoing EMP wave: 3D energy dome, multi-ring shockwave, and wavefront arcs. */
+  empWave(x, z, { radius = 7, duration = 0.95, global = false } = {}) {
+    const dome = this.empDomes.find((d) => !d.active) || this.empDomes[0];
+    if (dome) {
+      dome.active = true;
+      dome.age = 0;
+      dome.life = duration;
+      dome.r0 = 0.5;
+      dome.r1 = radius;
+      dome.arcAcc = 0;
+      dome.global = global;
+      dome.mesh.position.set(x, 0.04, z);
+      dome.mesh.scale.set(0.5, 0.3, 0.5);
+      dome.mat.uniforms.uProgress.value = 0;
+      dome.mat.uniforms.uAlpha.value = 0.85;
+      dome.mesh.visible = true;
+    }
+
+    this.shockwave(x, 0.14, z, 0.4, radius, 0xe0f2fe, duration * 0.95, 0.95);
+    this.schedule(0.06, () => {
+      this.shockwave(x, 0.12, z, 0.4, radius * 0.96, 0x38bdf8, duration * 0.9, 0.8);
+    });
+    this.schedule(0.13, () => {
+      this.shockwave(x, 0.1, z, 0.4, radius * 0.9, 0x6366f1, duration * 0.85, 0.65);
+    });
+
+    this.flash(x, 1.4, z, 0x38bdf8, global ? 9.5 : 7.0);
+    this.point('glow', {
+      x,
+      y: 0.9,
+      z,
+      life: 0.42,
+      size: global ? 7.5 : 5.0,
+      size1: global ? 12.0 : 8.0,
+      tex: FxTex.GLOW,
+      color: [0.55, 0.92, 1.0],
+      alpha: 0.9,
+    });
+    this.electric(x, 0.8, z, 0x7dd3fc, global ? 8 : 5, 1.4);
+    this.sparks(x, 0.7, z, 0x38bdf8, global ? 42 : 28, { speed: global ? 5.2 : 3.8, up: 2.2 });
   }
 
   /** Low-HP hull smoke puff (with an occasional flicker of flame). */

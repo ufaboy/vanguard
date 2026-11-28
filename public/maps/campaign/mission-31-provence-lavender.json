@@ -8,87 +8,34 @@
   "gameMode": "extermination",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": true
-  },
-  "completionReward": {
-    "credits": 1150
-  },
-  "environment": {
-    "theme": "desert",
-    "tint": "#dec491",
-    "fogColor": "#6b6251",
-    "groundColor": "#b5a37b"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":true},
+  "completionReward": {"credits":1150},
+  "environment": {"theme":"desert","tint":"#dec491","fogColor":"#6b6251","groundColor":"#b5a37b"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Flush snipers, scouts, and stealth tanks out of parallel lavender hedge rows and stone-walled village lanes while crossing the dry riverbed to flank long-range fire.",
     "breaches": [
       {
         "name": "Lavender Terrace Wall",
-        "cells": [
-          {
-            "row": 17,
-            "col": 12
-          }
-        ],
-        "start": {
-          "row": 17,
-          "col": 10
-        },
-        "end": {
-          "row": 17,
-          "col": 15
-        },
+        "cells": [{"row":17,"col":12}],
+        "start": {"row":17,"col":10},
+        "end": {"row":17,"col":15},
         "purpose": "Blast through the dry-stone terrace wall to cut from the western lavender lane straight into the hill village."
       },
       {
         "name": "Olive-Press Courtyard Wall",
-        "cells": [
-          {
-            "row": 23,
-            "col": 25
-          },
-          {
-            "row": 24,
-            "col": 25
-          }
-        ],
-        "start": {
-          "row": 23,
-          "col": 23
-        },
-        "end": {
-          "row": 23,
-          "col": 27
-        },
+        "cells": [{"row":23,"col":25},{"row":24,"col":25}],
+        "start": {"row":23,"col":23},
+        "end": {"row":23,"col":27},
         "purpose": "Breach the eastern village yard wall to flank into the dry riverbed without looping south."
       },
       {
         "name": "South Quarry Retaining Wall",
-        "cells": [
-          {
-            "row": 30,
-            "col": 14
-          }
-        ],
-        "start": {
-          "row": 30,
-          "col": 12
-        },
-        "end": {
-          "row": 30,
-          "col": 16
-        },
+        "cells": [{"row":30,"col":14}],
+        "start": {"row":30,"col":12},
+        "end": {"row":30,"col":16},
         "purpose": "Open the quarry retaining wall to link the lower lavender lane directly to the southern HQ road."
       }
     ],
@@ -111,420 +58,74 @@
     "seed": 31062026,
     "theme": "desert",
     "zones": [
-      {
-        "id": "lavender-fields-north",
-        "bounds": [
-          6,
-          1,
-          13,
-          12
-        ],
-        "surface": "dirt",
-        "density": 0.35,
-        "details": [
-          "weeds",
-          "tracks"
-        ]
-      },
-      {
-        "id": "lavender-fields-south",
-        "bounds": [
-          18,
-          1,
-          28,
-          13
-        ],
-        "surface": "dirt",
-        "density": 0.35,
-        "details": [
-          "weeds",
-          "tracks"
-        ]
-      },
-      {
-        "id": "hill-village-square",
-        "bounds": [
-          16,
-          17,
-          22,
-          23
-        ],
-        "surface": "pavers",
-        "density": 0.25,
-        "details": [
-          "cracks",
-          "leaves"
-        ]
-      },
-      {
-        "id": "dry-riverbed-gravel",
-        "bounds": [
-          1,
-          30,
-          38,
-          36
-        ],
-        "surface": "sand",
-        "density": 0.25,
-        "details": [
-          "cracks",
-          "rubble"
-        ]
-      }
+      {"id":"lavender-fields-north","bounds":[6,1,13,12],"surface":"dirt","density":0.35,"details":["weeds","tracks"]},
+      {"id":"lavender-fields-south","bounds":[18,1,28,13],"surface":"dirt","density":0.35,"details":["weeds","tracks"]},
+      {"id":"hill-village-square","bounds":[16,17,22,23],"surface":"pavers","density":0.25,"details":["cracks","leaves"]},
+      {"id":"dry-riverbed-gravel","bounds":[1,30,38,36],"surface":"sand","density":0.25,"details":["cracks","rubble"]}
     ],
     "paths": [
-      {
-        "id": "west-distillery-track",
-        "points": [
-          [
-            1,
-            6
-          ],
-          [
-            12,
-            6
-          ],
-          [
-            12,
-            16
-          ]
-        ],
-        "width": 1,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "village-east-lane",
-        "points": [
-          [
-            20,
-            20
-          ],
-          [
-            20,
-            38
-          ]
-        ],
-        "width": 1,
-        "surface": "gravel",
-        "marking": "none"
-      }
+      {"id":"west-distillery-track","points":[[1,6],[12,6],[12,16]],"width":1,"surface":"dirt","marking":"none"},
+      {"id":"village-east-lane","points":[[20,20],[20,38]],"width":1,"surface":"gravel","marking":"none"}
     ],
-    "landmarks": [
-      {
-        "id": "label-valensole",
-        "kind": "label",
-        "row": 8,
-        "col": 6,
-        "text": "LAVENDER FIELDS"
-      },
-      {
-        "id": "label-village",
-        "kind": "label",
-        "row": 19,
-        "col": 19,
-        "text": "HILL VILLAGE"
-      },
-      {
-        "id": "label-riverbed",
-        "kind": "label",
-        "row": 17,
-        "col": 32,
-        "text": "DRY RIVERBED"
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "hq-approach-clear",
-        "bounds": [
-          37,
-          17,
-          39,
-          22
-        ]
-      }
-    ]
+    "exclusions": [{"id":"hq-approach-clear","bounds":[37,17,39,22]}]
   },
-  "landmarks3d": [],
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3,
     "entrances": [
-      {
-        "id": "west-ridge-track",
-        "row": 0,
-        "col": 6
-      },
-      {
-        "id": "north-upland-road",
-        "row": 0,
-        "col": 20
-      },
-      {
-        "id": "east-riverbed-pass",
-        "row": 0,
-        "col": 33
-      }
+      {"id":"west-ridge-track","row":0,"col":6},
+      {"id":"north-upland-road","row":0,"col":20},
+      {"id":"east-riverbed-pass","row":0,"col":33}
     ],
     "encounters": [
       {
         "id": "upland-recon-probe",
         "label": "UPLAND PROBE: Scouts and stealth tanks slip into the lavender rows while snipers cover the road.",
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "SCOUT",
-          "STEALTH",
-          "STANDARD",
-          "SCOUT",
-          "STANDARD",
-          "STEALTH"
-        ],
-        "initialCells": [
-          {
-            "row": 2,
-            "col": 6
-          },
-          {
-            "row": 2,
-            "col": 20
-          },
-          {
-            "row": 2,
-            "col": 33
-          },
-          {
-            "row": 5,
-            "col": 19
-          }
-        ],
-        "entrances": [
-          "west-ridge-track",
-          "north-upland-road",
-          "east-riverbed-pass"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 6
-          },
-          {
-            "row": 20,
-            "col": 9
-          },
-          {
-            "row": 20,
-            "col": 20
-          },
-          {
-            "row": 32,
-            "col": 19
-          }
-        ],
+        "enemies": ["SCOUT","STANDARD","SCOUT","STEALTH","STANDARD","SCOUT","STANDARD","STEALTH"],
+        "initialCells": [{"row":2,"col":6},{"row":2,"col":20},{"row":2,"col":33},{"row":5,"col":19}],
+        "entrances": ["west-ridge-track","north-upland-road","east-riverbed-pass"],
+        "patrolRoute": [{"row":12,"col":6},{"row":20,"col":9},{"row":20,"col":20},{"row":32,"col":19}],
         "recoverySec": 0
       },
       {
         "id": "village-sniper-screen",
         "label": "VILLAGE SCREEN: Snipers, strikers, and sappers lock down the hill village and riverbed crossings.",
-        "enemies": [
-          "STANDARD",
-          "STRIKER",
-          "SAPPER",
-          "STEALTH",
-          "STANDARD",
-          "SCOUT",
-          "HOWITZER",
-          "STANDARD",
-          "JAMMER"
-        ],
-        "entrances": [
-          "north-upland-road",
-          "east-riverbed-pass",
-          "west-ridge-track"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 18
-          },
-          {
-            "row": 20,
-            "col": 20
-          },
-          {
-            "row": 20,
-            "col": 32
-          },
-          {
-            "row": 34,
-            "col": 28
-          },
-          {
-            "row": 34,
-            "col": 19
-          }
-        ],
+        "enemies": ["STANDARD","STRIKER","SAPPER","STEALTH","STANDARD","SCOUT","HOWITZER","STANDARD","JAMMER"],
+        "entrances": ["north-upland-road","east-riverbed-pass","west-ridge-track"],
+        "patrolRoute": [{"row":12,"col":18},{"row":20,"col":20},{"row":20,"col":32},{"row":34,"col":28},{"row":34,"col":19}],
         "recoverySec": 8
       },
       {
         "id": "provence-hunter-group",
         "label": "FINAL HUNT: Heavy armor, jammers, and sniper-stealth teams converge across the upland.",
-        "enemies": [
-          "ARMOR",
-          "STANDARD",
-          "STEALTH",
-          "STRIKER",
-          "JAMMER",
-          "HOWITZER",
-          "STANDARD",
-          "SCOUT",
-          "ARMOR"
-        ],
-        "entrances": [
-          "west-ridge-track",
-          "north-upland-road",
-          "east-riverbed-pass"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 9
-          },
-          {
-            "row": 20,
-            "col": 9
-          },
-          {
-            "row": 32,
-            "col": 9
-          },
-          {
-            "row": 32,
-            "col": 19
-          },
-          {
-            "row": 35,
-            "col": 19
-          }
-        ],
+        "enemies": ["ARMOR","STANDARD","STEALTH","STRIKER","JAMMER","HOWITZER","STANDARD","SCOUT","ARMOR"],
+        "entrances": ["west-ridge-track","north-upland-road","east-riverbed-pass"],
+        "patrolRoute": [{"row":12,"col":9},{"row":20,"col":9},{"row":32,"col":9},{"row":32,"col":19},{"row":35,"col":19}],
         "recoverySec": 8
       }
     ],
-    "boss": {
-      "enabled": false
-    }
+    "boss": {"enabled":false}
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "STEALTH",
-    "STANDARD",
-    "SCOUT",
-    "STANDARD",
-    "STEALTH",
-    "STANDARD",
-    "STRIKER",
-    "SAPPER",
-    "STEALTH",
-    "STANDARD",
-    "SCOUT",
-    "HOWITZER",
-    "STANDARD",
-    "JAMMER",
-    "ARMOR",
-    "STANDARD",
-    "STEALTH",
-    "STRIKER",
-    "JAMMER",
-    "HOWITZER",
-    "STANDARD",
-    "SCOUT",
-    "ARMOR"
-  ],
-  "surfaceLayout": [
-    "^^^^^.R............RR.....^^^^^.SSS.....",
-    "^^^^^.R............RR.....^^^^^.SSS.....",
-    "^^^^^^R............RR.....^^^^^.SSS.....",
-    "^^^^^^R............RR.....^^^^^SSSS.....",
-    "^^^^^^R............RR.....^^^^^SSSS.....",
-    "^^^^^.R............RR.....^^^^^SSSS.....",
-    ".VVVVVRVVVVVV.....RR......^^^^^SSS......",
-    ".VVVVVRVVVVVV.....RR...........SSS......",
-    ".VVVVVRVVVVVV....RR............SSS..^^^^",
-    ".VVVVVRVVVVVV....RR............SSS..^^^^",
-    ".VVVVVRVVVVVV....RR...........SSSS..^^^^",
-    ".VVVVVRVVVVVV....RR...........SSSS..^^^^",
-    ".VVVVVRRRRRRRRRRRRR...........SSS...^^^^",
-    ".VVVVVVVVRVVV....RR...........SSS...^^^^",
-    "^^^^^....R.......RR...........SSS...^^^^",
-    "^^^^^....R.......RR...........SSS.......",
-    "^^^^^....R........RR..........SSSS......",
-    "^^^^^....R........RR...........SSS......",
-    ".VVVVVVVVRVVVV....RR.......^^^^SSSS.....",
-    ".VVVVVVVVRVVVV....RR.......^^^^SSSS.....",
-    ".VVVVVVVVRVVVV....RRRRRRRRRRRRRRSSSRRRRR",
-    ".VVVVVVVVRVVVV....RR.......^^^^.SSS.....",
-    ".VVVVVVVVRVVVV.....RR......^^^^.SSSS....",
-    ".VVVVVVVVRVVVV......RR.....^^^^.SSSS....",
-    ".VVVVVVVVRVVVV......RR...........SSS....",
-    ".VVVVVVVVRVVVV......RR...........SSS....",
-    ".VVVVVVVVRVVVV......RR...........SSSS...",
-    ".VVVVVVVVRVVVV......RR...........SSSS...",
-    ".VVVVVVVVRVVVV.....RR............SSSS...",
-    "^^^^.....R.........RR.......^^^^.SSS....",
-    "^^^^.....R.........RR.......^^^^.SSS....",
-    "^^^^.....R.........RR.......^^^^.SSS....",
-    "^^^^.....RRRRRRRRRRRR.......^^^^SSSS....",
-    "..VVVVVVVVVVV......RR.......^^^^SSSS....",
-    "..VVVVVVVVVVV......RRRRRRRRRRRRRSSSRRRRR",
-    "..VVVVVVVVVVV...................SSS.....",
-    "..VVVVVVVVVVV...................SSS.....",
-    "..VVVVVVVVVVV....................SSS....",
-    ".................................SSS....",
-    ".................................SSS...."
-  ],
-  "objectLayout": [
-    "........................................",
-    ".........Q.............K................",
-    ".........B..............U....B..........",
-    ".BBB.....B...FFF...........Q.B..K.......",
-    ".........B...FFF....................K...",
-    ".................X..X..FFF.......U...U..",
-    "..............AA.....AAFFF..............",
-    ".FFFF...FFFFF.AA.....AA.................",
-    "............................BBB.........",
-    "..FFFF....FFF...................K.......",
-    "..............AA.....PPPFFF.....U.......",
-    ".FFFF...FFFF..AA.....PPPFFF.........AA..",
-    ".....................PPP............AAQ.",
-    "...........................B............",
-    "............C.PPP..........B...K........",
-    "......AA....C.PPP....AAA.FF.............",
-    "......AAD...C.PPP....AQA.FF.........FFF.",
-    "........D...B.......................FFF.",
-    "............C.........T.....BBB.........",
-    ".FFFFF.....FCF..........................",
-    "..Q.AA..................................",
-    "..FFAA....FFFF...................U......",
-    "...............AAA........C.............",
-    ".FFFF......FFF.AAA....PPPB..............",
-    "......................PPPB...........AA.",
-    "..FFFF....FFF.........PPPC........K..AA.",
-    "......................D...FF.........FF.",
-    ".FFFF......FFF.AAA.....AAAFF.........FF.",
-    "..............CAAA.....AAA..BBB.........",
-    ".....AA.......C...........AA......U.....",
-    ".....AA.......B........FFFAA............",
-    "..............C........FFF..........AA..",
-    "................K.....AA............AA..",
-    "................BB....AA..U......K......",
-    "..FFFFF..FFFF...........................",
-    ".Q......................................",
-    "...FFFFF..FFF..X.......X..BBB.......B...",
-    "..................CCCC..............B...",
-    "...............Q.....................Q..",
-    "...................HH..................."
-  ]
+  "terrain": {
+    "stone": [[0,0,5,2],[0,26,7,5],[2,2,2,4],[4,4,1,2],[5,2],[8,36,7,4],[14,0,4,2],[14,3,1,2],[15,3],[17,2],[17,4],[18,27,2,4],[21,27,3,4],[29,0,4,4],[29,28,5,4],[31,4,2,1],[32,5]],
+    "sand": [[0,2,2,3],[0,32,5,3],[3,31,17,1],[4,2,1,2],[5,0,1,2],[5,3,1,2],[5,32,5,1],[5,34],[6,0],[6,4],[6,33,6,1],[10,12,1,2],[10,30,7,1],[11,12],[11,32,13,1],[13,2,1,3],[14,2,3,1],[15,4,1,2],[16,3,1,2],[16,33,5,1],[17,3],[18,34,11,1],[20,7,5,1],[22,6],[22,8,2,1],[22,33,18,1],[22,35,12,1],[26,6,2,1],[26,36,3,1],[27,7,3,1],[29,8],[30,34,10,1],[32,32,5,1],[33,2],[33,6,1,3],[33,11],[34,7],[35,8],[36,9,2,1],[37,3],[37,6,1,2],[37,12,1,2],[37,35,3,1],[38,5],[38,7],[38,11,1,2]],
+    "road": [[0,6,13,1],[0,19,6,2],[6,18,2,2],[8,17,10,2],[12,7,1,10],[13,9,20,1],[16,19,8,1],[18,18,4,1],[20,20,1,12],[20,35,1,5],[21,20,14,1],[22,21,8,1],[28,19,7,1],[32,10,1,9],[34,21,1,11],[34,35,1,5]],
+    "grass": [[6,1,7,3],[6,5,8,1],[6,7,4,6],[7,4,6,1],[10,7,2,5],[13,1],[13,6,1,3],[13,10,1,3],[15,15],[18,1,2,8],[18,10,11,4],[20,1,2,6],[20,8,2,1],[22,1,7,5],[23,6,3,1],[24,8,5,1],[25,7,2,1],[28,6],[33,3,4,3],[33,9,3,2],[33,12,4,1],[34,2,4,1],[34,6,3,1],[34,8],[34,11,4,1],[35,7,2,1],[36,8,2,1],[36,10,2,1],[37,4,1,2]],
+    "oil": [[11,22],[16,8,2,1],[17,6,1,2],[26,22,1,2]],
+    "boxes": [[1,9],[3,27],[12,38],[16,22],[20,2],[35,1],[38,15],[38,37]],
+    "crater": [[1,23],[3,32],[4,36],[9,32],[14,31],[25,34],[32,16],[33,33]],
+    "brick": [[2,9,3,1],[2,29,2,1],[3,1,1,3],[8,28,1,3],[13,27,2,1],[17,12],[18,18,2,2],[18,28,1,3],[23,25,2,1],[28,28,1,3],[30,14],[33,16,1,2],[36,26,1,3],[36,36,2,1]],
+    "rubble": [[2,24],[5,33],[5,37],[10,32],[21,33],[29,34],[33,26]],
+    "forest": [[3,13,2,3],[5,23,2,3],[7,1,1,4],[7,8,1,5],[9,2,1,4],[9,10,1,3],[10,24,2,3],[11,1,1,4],[11,8,1,4],[15,15],[15,25,2,2],[16,36,2,3],[19,1,1,5],[19,11],[19,13],[21,2,1,2],[21,10,1,4],[23,1,1,4],[23,11,1,3],[25,2,1,4],[25,10,1,3],[26,26,2,2],[26,37,2,2],[27,1,1,4],[27,11,1,3],[30,23,2,3],[34,2,1,5],[34,9,1,4],[36,3,1,5],[36,10,1,3]],
+    "hedgehog": [[5,17],[5,20],[36,15],[36,23]],
+    "barrel": [[11,22],[16,8,2,1],[26,22]],
+    "concrete": [[14,12,3,1],[18,12,2,1],[22,26],[25,25],[28,14,2,1],[31,14],[37,18,1,4]],
+    "water_tower": [[18,22]],
+    "sandbags": [[26,15],[26,24]],
+    "house1": [[6,14,2,2,11],[6,21,2,2,11],[10,14,2,2,9],[11,36,2,2,11],[15,6,2,2,11],[15,21,1,3,2],[16,21,1,1,2],[16,23,1,1,2],[20,4,2,2,9],[22,15,2,3,11],[24,37,2,2,2],[27,15,2,3,8],[27,23,2,3,9],[29,5,2,2,10],[29,26,2,2,7],[31,36,2,2,8],[32,22,2,2,10]],
+    "house2": [[10,21,1,3,1],[11,21,2,1,1],[11,23,2,1,1],[12,22,1,1,1],[14,14,1,3,10],[15,14,2,1,10],[15,16,2,1,10],[16,15,1,1,10],[23,22,1,3,9],[24,24,2,1,9],[25,22,1,2,9]],
+    "decal": [["label",8,6,1,"LAVENDER FIELDS"],["label",19,19,1,"HILL VILLAGE"],["label",17,32,1,"DRY RIVERBED"]],
+    "prop": [["shrub",14,8],["shrub",15,8],["shrub",14,30],["shrub",15,30],["shrub",16,30],["shrub",22,10],["shrub",23,10],["fence",21,18],["fence",21,21]]
+  }
 }

@@ -345,24 +345,6 @@ export function recordUnlockedAchievements(playerSave, earned = [], now = Date.n
   return playerSave.achievements;
 }
 
-/** Returns the full achievement catalog merged with the player's unlock history. */
-export function getAchievementsCatalog(unlockedMap = {}) {
-  return ACHIEVEMENT_DEFS.map((def) => {
-    const rec = unlockedMap?.[def.id];
-    return {
-      id: def.id,
-      title: def.title,
-      description: def.description,
-      icon: def.icon,
-      rarity: def.rarity,
-      rewardCredits: def.rewardCredits,
-      unlocked: Boolean(rec),
-      unlockedAt: rec?.unlockedAt || null,
-      count: Number(rec?.count) || 0,
-    };
-  });
-}
-
 function normalizeShareOrigin(origin) {
   if (typeof origin === 'string' && /^https?:\/\//i.test(origin)) {
     return origin.replace(/\/+$/, '');
@@ -405,7 +387,7 @@ function fromBase64Url(token) {
 }
 
 /** Encodes a battle share object into a compact, tamper-checked opaque token. */
-export function encodeShareToken(payload) {
+function encodeShareToken(payload) {
   const json = JSON.stringify(payload);
   const raw = new TextEncoder().encode(json);
   const chk = fnv1a16(raw);
@@ -419,7 +401,7 @@ export function encodeShareToken(payload) {
 }
 
 /** Decodes and verifies an opaque share token; returns null if invalid or tampered. */
-export function decodeShareToken(token) {
+function decodeShareToken(token) {
   if (!token || typeof token !== 'string' || token.length < 4) return null;
   try {
     const bytes = fromBase64Url(token);

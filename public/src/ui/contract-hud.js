@@ -255,7 +255,7 @@ export function renderContractHud(hud) {
         data-action="contract-load-cargo"
         class="pointer-events-auto cursor-pointer ${isSabotage ? 'bg-purple-500 hover:bg-purple-400 border-purple-200' : 'bg-sky-500 hover:bg-sky-400 border-sky-200'} text-slate-950 border-2 px-5 py-2.5 rounded shadow-2xl flex items-center gap-3 font-mono text-xs font-bold uppercase tracking-wider"
       >
-        <span class="px-2 py-0.5 rounded bg-slate-950 ${isSabotage ? 'text-purple-300' : 'text-sky-300'} text-xs">[E]</span>
+        <span class="px-2 py-0.5 rounded bg-slate-950 ${isSabotage ? 'text-purple-300' : 'text-sky-300'} text-xs">[F]</span>
         <span>${isSabotage ? t('PLANT DEMOLITION CHARGE #{slot} ({name}) — 2.5s', { slot: nc.slot, name: t(nc.shortName) }) : t('LOAD CARGO #{slot} ({name}) — 2.0s', { slot: nc.slot, name: t(nc.shortName) })}</span>
       </button>
     `);
@@ -314,7 +314,7 @@ export function renderContractHud(hud) {
         data-action="contract-extract"
         class="pointer-events-auto cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 border-2 border-emerald-200 px-5 py-2.5 rounded shadow-2xl flex items-center gap-3 font-mono text-xs font-bold uppercase tracking-wider"
       >
-        <span class="px-2 py-0.5 rounded bg-slate-950 text-emerald-300 text-xs">[E]</span>
+        <span class="px-2 py-0.5 rounded bg-slate-950 text-emerald-300 text-xs">[F]</span>
         <span>${t('EXTRACT NOW (3.0s)')} · ${bonusText}</span>
       </button>
     `);

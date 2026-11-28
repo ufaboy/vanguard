@@ -75,13 +75,14 @@ export async function inspectMap(projectRoot, mapPath) {
     for (const type of list) { const normalized = canonical(type); check(Boolean(normalized), `Unknown enemy type: ${type}`); counts[normalized] = (counts[normalized] || 0) + 1; }
     return counts;
   };
-  const pool = map.enemyPool || [];
+  const pool = groups.length
+    ? groups.flatMap(g => g.enemies || [])
+    : (map.enemyPool || cfg.enemyPool || []);
   const poolCounts = tally(pool);
   if (groups.length) {
+    check(!map.enemyPool && !cfg.enemyPool, 'Redundant enemyPool when enemies.encounters is defined; encounters is the single source of truth.');
     check(groups[0].initialCells?.length === initial, 'Opening initialCells must match initialSpawnCount.');
     check(groups[0].enemies?.length >= initial, 'Opening roster must include all initial tanks.');
-    const flattened = groups.flatMap(g => g.enemies || []);
-    check(JSON.stringify(flattened.map(canonical)) === JSON.stringify(pool.map(canonical)), 'Ordered encounters and enemyPool disagree.');
     for (const group of groups) {
       check(Array.isArray(group.enemies) && group.enemies.length > 0, `Encounter ${group.id} has no roster.`);
       check(Number.isFinite(group.recoverySec) && group.recoverySec >= 0, `Encounter ${group.id} has invalid recovery time.`);

@@ -1,12 +1,10 @@
 /** Map JSON loading, parsing, serialization, and File System Access / download saving. */
 import { TileType } from '/public/src/game/terrains/surfaces.js';
-import {
-  GRID_SIZE,
-  OBJECT_CHAR_TO_TILE,
-  OBJECT_TILE_TO_CHAR,
-  SURFACE_CHAR_TO_TILE,
-  SURFACE_TILE_TO_CHAR,
-} from './catalog.js';
+import { unpackTerrain } from '/public/src/game/terrains/terrain-format.js';
+import { computeBridgeLayout } from './bridge-layout.js';
+import { computeBuildingLayout } from './building-layout.js';
+import { packTerrain, formatMapJson } from './terrain-pack.js';
+import { GRID_SIZE } from './catalog.js';
 
 const MAP_COLLECTIONS = [
   { label: 'Campaign', indexUrl: '/public/maps/campaign/index.json' },
@@ -70,40 +68,37 @@ export function createBlankMap() {
       groundColor: '#687478',
     },
     defaultSurface: 'asphalt',
-    powerups: [],
-    landmarks3d: [],
-    surfaceLayout: Array.from({ length: GRID_SIZE }, () => '.'.repeat(GRID_SIZE)),
-    objectLayout: Array.from({ length: GRID_SIZE }, () => '.'.repeat(GRID_SIZE)),
+    terrain: {},
   };
 }
 
 export function parseMapState(rawJson) {
   const size = rawJson.gridSize || GRID_SIZE;
-  const surfaceGrid = Array.from({ length: size }, () => Array(size).fill(TileType.EMPTY));
-  const objectGrid = Array.from({ length: size }, () => Array(size).fill(null));
+  const {
+    surfaceGrid,
+    objectGrid,
+    tacticalStyles,
+    objectRotations,
+    railCurves,
+    railBridges,
+    fixedObjects,
+    landmarks3d,
+    powerups,
+    mines,
+    mineSigns,
+    decals,
+    props,
+  } = unpackTerrain(rawJson.terrain, size);
 
-  const rawSurface = rawJson.surfaceLayout || [];
-  const rawObject = rawJson.objectLayout || [];
-  for (let r = 0; r < size; r++) {
-    const sRow = rawSurface[r];
-    const oRow = rawObject[r];
-    for (let c = 0; c < size; c++) {
-      const sTok = sRow?.[c];
-      if (typeof sTok === 'number') {
-        surfaceGrid[r][c] = sTok;
-      } else if (typeof sTok === 'string') {
-        surfaceGrid[r][c] =
-          SURFACE_CHAR_TO_TILE[sTok] ?? SURFACE_CHAR_TO_TILE[sTok.toUpperCase()] ?? TileType.EMPTY;
-      }
-
-      const oTok = oRow?.[c];
-      if (typeof oTok === 'number') {
-        objectGrid[r][c] = oTok === TileType.EMPTY ? null : oTok;
-      } else if (typeof oTok === 'string') {
-        objectGrid[r][c] =
-          OBJECT_CHAR_TO_TILE[oTok] ?? OBJECT_CHAR_TO_TILE[oTok.toUpperCase()] ?? null;
-      }
-    }
+  let decoration = rawJson.decoration ? structuredClone(rawJson.decoration) : null;
+  if (decals.length > 0) {
+    decoration = {
+      version: 1,
+      seed: 1,
+      theme: rawJson.environment?.theme || 'urban',
+      ...(decoration || {}),
+      landmarks: decals,
+    };
   }
 
   return {
@@ -111,6 +106,11 @@ export function parseMapState(rawJson) {
     size,
     surfaceGrid,
     objectGrid,
+    tacticalStyles,
+    objectRotations,
+    railCurves,
+    railBridges,
+    fixedObjects,
     baseCell: {
       row: rawJson.baseCell?.row ?? 39,
       col: rawJson.baseCell?.col ?? 19,
@@ -119,9 +119,12 @@ export function parseMapState(rawJson) {
       row: rawJson.playerSpawnCell?.row ?? 35,
       col: rawJson.playerSpawnCell?.col ?? 19,
     },
-    powerups: structuredClone(rawJson.powerups || []),
-    landmarks3d: structuredClone(rawJson.landmarks3d || []),
-    decoration: rawJson.decoration ? structuredClone(rawJson.decoration) : null,
+    powerups,
+    landmarks3d,
+    mines,
+    mineSigns,
+    props,
+    decoration,
     environment: {
       theme: rawJson.environment?.theme || 'urban',
       tint: rawJson.environment?.tint || '#d6e7a0',
@@ -150,28 +153,57 @@ export function serializeMapState(state) {
     ...(out.environment || {}),
     ...state.environment,
   };
-  out.powerups = structuredClone(state.powerups);
-  if (state.landmarks3d.length > 0 || out.landmarks3d !== undefined) {
-    out.landmarks3d = structuredClone(state.landmarks3d);
-  }
+
+  delete out.surfaceLayout;
+  delete out.objectLayout;
+  delete out.bridges;
+  delete out.railBridges;
+  delete out.buildings;
+  delete out.landmarks3d;
+  delete out.powerups;
+  delete out.mines;
+  delete out.mineSigns;
+
   if (state.decoration) {
-    out.decoration = structuredClone(state.decoration);
+    const deco = structuredClone(state.decoration);
+    delete deco.landmarks;
+    const hasProcedural =
+      (Array.isArray(deco.zones) && deco.zones.length > 0) ||
+      (Array.isArray(deco.paths) && deco.paths.length > 0) ||
+      (Array.isArray(deco.exclusions) && deco.exclusions.length > 0);
+    if (hasProcedural) {
+      out.decoration = deco;
+    } else {
+      delete out.decoration;
+    }
+  } else {
+    delete out.decoration;
   }
-  out.surfaceLayout = state.surfaceGrid.map((row) =>
-    row.map((tile) => SURFACE_TILE_TO_CHAR.get(tile) ?? '.').join('')
+
+  const bridges = computeBridgeLayout(state.objectGrid, state.surfaceGrid);
+  const buildingLayout = computeBuildingLayout(
+    state.objectGrid,
+    state.environment?.theme || 'urban'
   );
-  out.objectLayout = state.objectGrid.map((row, r) =>
-    row
-      .map((tile, c) => {
-        if (r === state.baseCell.row && (c === state.baseCell.col || c === state.baseCell.col + 1)) {
-          return 'H';
-        }
-        if (tile === TileType.BASE) return '.';
-        return OBJECT_TILE_TO_CHAR.get(tile) ?? '.';
-      })
-      .join('')
-  );
-  return JSON.stringify(out, null, 2) + '\n';
+  out.terrain = packTerrain({
+    surfaceGrid: state.surfaceGrid,
+    objectGrid: state.objectGrid,
+    bridges,
+    railCurves: state.railCurves || [],
+    railBridges: state.railBridges || [],
+    fixedObjects: state.fixedObjects || [],
+    buildingLayout,
+    tacticalStyles: state.tacticalStyles || null,
+    objectRotations: state.objectRotations || null,
+    landmarks3d: state.landmarks3d || [],
+    powerups: state.powerups || [],
+    mines: state.mines || [],
+    mineSigns: state.mineSigns || [],
+    decals: state.decoration?.landmarks || [],
+    props: state.props || [],
+  });
+
+  return formatMapJson(out);
 }
 
 export async function saveJsonWithPicker(jsonText, suggestedName, existingHandle = null) {

@@ -47,9 +47,165 @@ const jsonLd = [
 
         <div class="menu-grid" style="margin-top:24px;">
           <article class="menu-card" style="cursor:default">
-            <span class="menu-kicker">{t("VERSION 4.7.0 // SHOWCASE DEMO")}</span>
+            <span class="menu-kicker">{t("VERSION 4.20.0 // SHOWCASE DEMO")}</span>
             <strong>{t("Interactive Showcase Demo on Prague Map")}</strong>
             <p>{t("Added an interactive 6-scene Prague showcase demo with scripted enemy formations, highlight sequences, and player control.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.19.0 // DAMAGE STATES, DIRECTIONAL HITS &amp; KAMIKAZE AI")}</span>
+            <strong>{t("4-Tier Tank Damage FX, Subsystem Hits &amp; Aggressive Kamikaze")}</strong>
+            <p>{t("Added 4-tier visual damage states (light smoke and scuffing below 100%, dark smoke and short-circuit sparks at 75%, thick soot and ember motes at 50%, and flames with heavy charring at 25%) with reversible repair recovery. Side and rear hits on regular enemies now damage tracks and engine subsystems, slowing or immobilizing them until repaired by an Engineer, while damaged enemy archetypes adapt their tactics. Overhauled Kamikaze AI to prevent wall-stuck stalls, boost interception priority, add a +25% nitro charge from 7 cells, and expand warhead proximity detonation.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.18.1 // APS HUD &amp; PICKUP FIX")}</span>
+            <strong>{t("Accurate Unowned APS Status &amp; Pickup Filtering")}</strong>
+            <p>{t("Fixed the battle HUD so the APS tile displays OFF instead of active intercept charges when the 4-Corner APS module is not installed, and prevented APS and ATGM field pickups or air drops from granting charges without owning the corresponding module.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.18.0 // MEDAL SPRITES &amp; CLEANER SAVE STORAGE")}</span>
+            <strong>{t("SVG Medal Icons &amp; Streamlined Tank Config Storage")}</strong>
+            <p>{t("Updated the Service Medals modal with custom SVG medal sprites and improved styling. Cleaned up browser storage keys by removing legacy version suffixes and unused parts inventory data, and separated persistent tank configuration (battle_tank_tank_config) from campaign profile saves so every mission starts with full ammo and intact components.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.17.1 // ROAD DEAD-ENDS &amp; CAMPAIGN POLISH")}</span>
+            <strong>{t("Square Road Dead-Ends &amp; Campaign Map Updates")}</strong>
+            <p>{t("Kept 2-lane road dead-ends square instead of rounding them like turns, so rounded corners only appear on actual 1-lane and 2-lane bends. Updated Campaign missions 11 (Moravian Karst) and 13 (Prague Charles Bridge).")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.17.0 // HARD MODE REWARDS &amp; TIERED MEDALS")}</span>
+            <strong>{t("Tiered Career Medals, Hard Mode Bonuses &amp; Air Support Honors")}</strong>
+            <p>{t("Added +25% bonus victory credits in Hard Mode and the new Vanguard-grade Iron Will medal for clearing the entire Campaign in Hard Mode. Reworked the Service Medal system into a 29-medal hybrid with progressive Bronze, Silver, and Gold tiers (Tank Ace, Double Strike, Air Support Ace, Mine Sweeper, Demolition Crew, Flank Master, Counter-Battery, Ghost Hunter, Amphibious Assault, Fortress Guardian, Hard Mode Veteran, and Paris Survivor) alongside new single-battle honors including Sky Hammer, Inferno Tamer, and Perfect Extraction.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.16.0 // ROUNDED ROADS, BUILDING ROOFS &amp; CAMPAIGN POLISH")}</span>
+            <strong>{t("Rounded Road Turns, Unified Industrial Roofs &amp; Campaign Map Fixes")}</strong>
+            <p>{t("Added smooth rounded corners, curved curbs, and arc lane markings to 1-lane and 2-lane road turns while keeping map-edge road exits straight. Fixed directional roofs on 1-story industrial building styles so multi-tile blocks unite cleanly, updated campaign maps, and improved map editor rubble rendering and decoration clearing. Trains now also run on dead-end railroads that start at the map edge: they pull in, wait at the buffer stop and back out. Maps with several railroads send trains down each of them in turn, one at a time.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.15.1 // FASTER RENDERING &amp; LIGHTER DOWNLOADS")}</span>
+            <strong>{t("Fewer Draw Calls on Bridge Maps &amp; Compressed Models")}</strong>
+            <p>{t("Merged the many small parts of procedural bridges and the Command Base into a few meshes, cutting draw calls by up to 77% on bridge-heavy maps like Amsterdam, Paris and Remagen. Compressed the Radar, battlefield props, railway bridge and defense turret models, shrinking them by about 90% with no visible change.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.15.0 // SMOOTHER COMBAT &amp; TRACK FIX")}</span>
+            <strong>{t("Shader Prewarm, Lighter Tank Models &amp; Visible Tracks on Roads")}</strong>
+            <p>{t("Removed combat freezes by compiling every map, effect and tank shader behind the loading screen, loading Survival waves and air support models between fights instead of mid-battle, and simplifying all tank models 3-5x with no visible loss of detail. Tank tracks no longer sink into roads, sand and other ground layers.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.14.0 // 3D RADAR TIERS, BOMBER AIR DROP &amp; GARAGE")}</span>
+            <strong>{t("Blender Radar R1-R5 Models, Bomber Supply Drops &amp; Garage Layout Fix")}</strong>
+            <p>{t("Added five distinct Blender-modeled 3D Radar tiers (R1-R5) with baked PBR textures mounted on the player tank turret, cleared overlapping turret mast and center antenna geometry while preserving the left-rear antenna, updated Supply Air Drop to deploy from a strategic bomber flyby, and stabilized Garage supply card heights and MAX button sizing.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.13.0 // HQ COMMAND, RECON HUD &amp; GARAGE")}</span>
+            <strong>{t("HQ Skill Tree, Recon Targeting Optics, Radar R1-R5 &amp; Garage Redesign")}</strong>
+            <p>{t("Added rank-gated air strike unlocks in Campaign, a full-screen recon plane targeting HUD with large aircraft silhouettes, a 3-branch HQ Command skill tree upgrading air support and passive radar/optics/base HP, a new 5-tier Radar component (R1-R5) enabling through-cover enemy detection up to 10 cells, purchasable APS and ATGM modules, and a redesigned Garage with inline component upgrades, 3D stage callout lines, right-side Tank Summary telemetry, and Buy Max resupply.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.12.2 // BATTLEFIELD PROPS &amp; 3D VEHICLES")}</span>
+            <strong>{t("Realistic Civilian Cars, Burnt Wrecks &amp; Larger Sandbags")}</strong>
+            <p>{t("Replaced the placeholder car prop with three detailed Blender models (C-class sedan, SUV, and full-size commercial van) with a 20-color runtime paint pool, added three matching burnt-out car wreck props (car_wreck) weathered with soot, ash, and rust patches, and scaled up sandbag barricades for clearer battlefield visibility.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.12.1 // MOBILE EDITION &amp; HOME LAYOUT")}</span>
+            <strong>{t("Mobile Edition Cross-Links &amp; Responsive Home View")}</strong>
+            <p>{t("Added direct links to BATTLE TANK Mobile (mobile.battletank.online) in the site footer across all locales and redesigned the mobile home hero to present a clean, centered mobile launch button while preserving desktop and landscape tablet layouts.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.12.0 // BATTLEFIELD OBJECTS &amp; EDITOR")}</span>
+            <strong>{t("Railroad Infrastructure, Tactical Props &amp; 3D Map Editor Upgrades")}</strong>
+            <p>{t("Added railroad tracks, 3×3 rail curves, steel through-truss railroad bridges, animated moving railway trains with horn warnings and ramming physics, diesel locomotives, freight rail cars, shipping containers, EMP transformers with outgoing shockwave FX, sandbags, and crushable 3D props across campaign missions, backed by single-mesh GLB models, static-page clean-URL routing fixes, fuel-barrel building damage fixes, and an upgraded 3D Map Editor with 4-way rotation, fixed-footprint placement, and defense turret previews.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.11.7 // CAMPAIGN MAPS")}</span>
+            <strong>{t("Campaign Missions 01–07 Terrain &amp; Layout Refinements")}</strong>
+            <p>{t("Refined road networks, bridge crossings, modular building footprints, and tactical cover across Campaign Missions 01 through 07 (Rome Forum &amp; Colosseum, Apennine Gorge, Milan Industrial, Lake Garda Verona, Dolomites Pass, Füssen Neuschwanstein, and Innsbruck Rail Tunnel).")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.11.6 // CAMPAIGN MAPS")}</span>
+            <strong>{t("Campaign Missions 28–38 Terrain &amp; Layout Polish")}</strong>
+            <p>{t("Refined terrain layouts, bridge alignments, building styles, and shoreline coverage across Campaign Missions 28 through 38 (Versailles, Lyon Industrial, Mont Blanc, Provence Lavender, Nice Côte d'Azur, Andorra Pas de la Casa, Bardenas Reales Range, Montserrat, Barcelona Gothic &amp; Sagrada Família, Barcelona Montjuïc, and Barcelona Port).")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.11.3 // CAMPAIGN MAPS &amp; EDITOR")}</span>
+            <strong>{t("Campaign Missions 24–27 Polish &amp; Map Editor Eraser Fix")}</strong>
+            <p>{t("Refined Missions 24–27 (Brussels Cinquantenaire, Antwerp Docks, Scheldt Delta Dams, and Paris Champs-Élysées) and fixed the 3D Map Editor eraser tool so it properly removes landmarks and powerup markers on their respective tabs.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.11.2 // MAP EDITOR &amp; LANDMARKS")}</span>
+            <strong>{t("3D Landmark Rotation, Real Editor Previews &amp; Rotterdam Fix")}</strong>
+            <p>{t("Added 90-degree rotation support for 3D map landmarks and aligned the Erasmus Bridge along the canal crossing on Mission 23 (Rotterdam Europoort). The 3D Map Editor now loads real GLB landmark models, supports rotating landmarks in place, and renders real ground textures, zones, paths, and decals matching the live battlefield.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.11.0 // MAP ARCHITECTURE &amp; EDITOR")}</span>
+            <strong>{t("Unified Compact Terrain Format &amp; Map Editor Improvements")}</strong>
+            <p>{t("Migrated all 47 battlefield maps to a unified compact terrain array of rectangular regions and point entities, offloading bridge orientation and building style layout from runtime loading into a parallel bake-map validation tool. The 3D Map Editor now synchronizes modular building styles in real time, merges and auto-orients bridges across water, ice, stone, swamp, and rubble, and moves objects independently of ground surfaces and decals.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.10.0 // TACTICAL MECHANICS")}</span>
+            <strong>{t("Proximity Mine Detection &amp; Radar Markers")}</strong>
+            <p>{t("Map-placed and enemy mines now remain hidden until detected within a 3-cell radius of the player tank (through obstacles) or revealed by the Recon Drone, fading smoothly into view with a mine-detector audio ping and staying marked permanently once discovered. Player air-dropped mines remain visible immediately, and all discovered mines within radar range appear as distinct amber markers on the tactical minimap unaffected by Jammer ECM.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.9.4 // PERFORMANCE")}</span>
+            <strong>{t("Combat Frame-Pacing, AI Pathfinding &amp; Rendering Optimizations")}</strong>
+            <p>{t("Eliminated mid-combat frame spikes by removing redundant TileBatcher syncs during multi-tile explosions, pre-warming procedural rubble/crater/sand/swamp assets at sector load, staggering AI alert replanning with pooled typed-array A* pathfinding, optimizing continuous water/ice surface generation, deferring mid-combat storage writes, coalescing per-frame HUD and pointer aim updates, batching oil slick tiles with lazy fire rigs, and removing per-frame material cloning and array allocations.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.9.3 // CAMPAIGN MAPS &amp; EDITOR")}</span>
+            <strong>{t("Campaign Mission 03–14 Map Refinements &amp; 3D Editor Cursor")}</strong>
+            <p>{t("Refined surface roads, tactical cover, and encounter placements across Campaign Missions 03 through 14 (Milan, Lake Garda, Dolomites, Füssen, Innsbruck, Hohensalzburg, Wachau, Vienna Hofburg, Moravian Karst, Prague Charles Bridge, and Bohemian Forest), and elevated the 3D editor tile cursor render order.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.9.2 // HOTFIX")}</span>
+            <strong>{t("Fix Import Map Ordering on Battlefield Reload")}</strong>
+            <p>{t("Moved the Three.js import map in battlefield.html ahead of render-blocking stylesheets and scripts so modulepreload links never resolve \"three\" before the import map is registered on page reload.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.9.1 // ENGINE &amp; MAP CLEANUP")}</span>
+            <strong>{t("Frame Spike PerfMonitor &amp; Encounter Roster Derivation")}</strong>
+            <p>{t("Added an opt-in ?perf frame-spike profiler (with __perfReport() console summary) to TankGameEngine, and updated map normalization to derive enemyPool and enemyCount directly from enemies.encounters across all 38 campaign missions and 5 contract maps.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.9.0 // THE IRON ROAD")}</span>
+            <strong>{t("Iron Road Campaign Story, Briefing UI &amp; /campaign/walkthrough")}</strong>
+            <p>{t("Integrated The Iron Road narrative and recon texts across all 38 missions and 5 locales, refined the Campaign briefing layout and HOSTILE FORCES roster, moved the walkthrough guide to /campaign/walkthrough with full 7-region and 38-mission coverage, and replaced legacy region thumbnails with mission renders.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.8.0 // BATTLE ECONOMY")}</span>
+            <strong>{t("Deferred Battle Credits &amp; Loss Protection")}</strong>
+            <p>{t("Battle earnings and expenses (air support, repair drones, recon drone, and in-battle garage purchases) now use temporary battle credits and are committed to your persistent balance only on victory. Defeat, aborting a mission, or reloading restores your pre-battle balance intact.")}</p>
+          </article>
+
+          <article class="menu-card" style="cursor:default">
+            <span class="menu-kicker">{t("VERSION 4.7.0 // CAMERA &amp; FPV")}</span>
+            <strong>{t("Discrete 90° Camera Rotation &amp; Victory Shell FPV")}</strong>
+            <p>{t("Added discrete 90-degree isometric camera rotation via Q/E keys and top HUD buttons with a synchronized camera-up radar minimap, moved Contract interactions to F, upgraded cannon shells to a 3D armor-piercing model, and enabled FPV chase camera tracking for predicted final victory shells.")}</p>
           </article>
 
           <article class="menu-card" style="cursor:default">
@@ -301,7 +457,7 @@ const jsonLd = [
           <article class="menu-card" style="cursor:default">
             <span class="menu-kicker">{t("VERSION 1.30.0 // FULL SPANISH SITE")}</span>
             <strong>{t("All Game Modes, Guides &amp; Info Pages in Spanish")}</strong>
-            <p>{t("Added Spanish versions under")} <code>{t("/es/")}</code> {t("for 13 more pages:")} <a href={h("./es/campaign")}>{t("Campaign")}</a>, <a href={h("./es/survival")}>{t("Survival")}</a>, <a href={h("./es/contracts")}>{t("Contracts")}</a>, <a href={h("./es/how-to-play")}>{t("How to Play")}</a>, <a href={h("./es/walkthrough")}>{t("Walkthrough")}</a>, <a href={h("./es/arsenal")}>{t("Arsenal")}</a>, <a href={h("./es/destructible-terrain")}>{t("Destructible Terrain")}</a>, <a href={h("./es/games-like-battle-city")}>{t("Games Like Battle City")}</a>, <a href={h("./es/webgl-tank-game")}>{t("Under the Hood")}</a>, <a href={h("./es/about")}>{t("About")}</a>, <a href={h("./es/privacy-policy")}>{t("Privacy Policy")}</a>, <a href={h("./es/terms")}>{t("Terms")}</a> {t("and")} <a href={h("./es/contact")}>{t("Contact")}</a>{t(", complete with")} <code>{t("hreflang")}</code> {t("links and sitemap entries.")}</p>
+            <p>{t("Added Spanish versions under")} <code>{t("/es/")}</code> {t("for 13 more pages:")} <a href={h("./es/campaign")}>{t("Campaign")}</a>, <a href={h("./es/survival")}>{t("Survival")}</a>, <a href={h("./es/contracts")}>{t("Contracts")}</a>, <a href={h("./es/how-to-play")}>{t("How to Play")}</a>, <a href={h("./es/campaign/walkthrough")}>{t("Walkthrough")}</a>, <a href={h("./es/arsenal")}>{t("Arsenal")}</a>, <a href={h("./es/destructible-terrain")}>{t("Destructible Terrain")}</a>, <a href={h("./es/games-like-battle-city")}>{t("Games Like Battle City")}</a>, <a href={h("./es/webgl-tank-game")}>{t("Under the Hood")}</a>, <a href={h("./es/about")}>{t("About")}</a>, <a href={h("./es/privacy-policy")}>{t("Privacy Policy")}</a>, <a href={h("./es/terms")}>{t("Terms")}</a> {t("and")} <a href={h("./es/contact")}>{t("Contact")}</a>{t(", complete with")} <code>{t("hreflang")}</code> {t("links and sitemap entries.")}</p>
           </article>
 
           <article class="menu-card" style="cursor:default">
@@ -673,7 +829,7 @@ const jsonLd = [
 
         <div class="menu-actions" style="margin-top:28px;">
           <a class="menu-primary" href={h("./campaign")}>{t("Launch Campaign →")}</a>
-          <a class="menu-secondary" href={h("./walkthrough")}>{t("Campaign Walkthrough")}</a>
+          <a class="menu-secondary" href={h("./campaign/walkthrough")}>{t("Campaign Walkthrough")}</a>
           <a class="menu-secondary" href={h("./enemies")}>{t("Enemy &amp; Boss Guide")}</a>
           <a class="menu-secondary" href={h("./arsenal")}>{t("Tank Arsenal")}</a>
         </div>

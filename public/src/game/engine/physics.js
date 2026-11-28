@@ -138,7 +138,7 @@ export class PhysicsController {
     }
   }
 
-  checkTankWallCollision(x, z, radius, canCrossWater = false) {
+  checkTankWallCollision(x, z, radius, canCrossWater = false, canCrushSandbags = false) {
     const { engine } = this;
     if (engine.defenseTurrets && engine.defenseTurrets.length > 0) {
       for (const t of engine.defenseTurrets) {
@@ -173,7 +173,7 @@ export class PhysicsController {
       for (let c = minCol; c <= maxCol; c++) {
         const cell = engine.grid[r]?.[c];
         if (!cell) continue;
-        if (!isTilePassable(cell.type, canCrossWater)) return true;
+        if (!isTilePassable(cell.type, canCrossWater, canCrushSandbags)) return true;
       }
     }
 

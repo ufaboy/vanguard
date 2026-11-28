@@ -4,6 +4,7 @@ import { DURABILITY } from '../constants.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { disposeOwned } from '../render/dispose.js';
 import { getSharedGltfLoader } from '../render/gltf-loader.js';
+import { warmupObject } from './gpu-warmup.js';
 import { GameStatus } from '../types.js';
 import { DRONE_CONFIGS } from '../vehicles/drones.js';
 
@@ -15,34 +16,53 @@ export class ReconDroneController {
   constructor(engine) {
     this.engine = engine;
     this.glbTemplate = null;
-    this.glbRequested = false;
+    /** Shared Promise of the running / finished preload (see preloadGlbModel). */
+    this.preloadPromise = null;
+    /** Identifies the current preload so a dispose() mid-load drops its late result. */
+    this.preloadToken = null;
   }
 
+  /**
+   * Loads the recon drone GLB, then compiles its shaders and uploads its textures
+   * off-screen so the first launch does not stall the fight. Returns a Promise that
+   * resolves (never rejects) once the drone is warm; repeated calls share it.
+   */
   preloadGlbModel() {
+    if (this.preloadPromise) return this.preloadPromise;
     if (
       typeof window === 'undefined' ||
       typeof document === 'undefined' ||
       this.engine?.isSoftwareGl ||
-      !this.engine?.fxGroup ||
-      this.glbRequested ||
-      this.glbTemplate
+      this.engine?.isDisposed ||
+      !this.engine?.fxGroup
     ) {
-      return;
+      return Promise.resolve();
     }
-    this.glbRequested = true;
+    const token = {};
+    this.preloadToken = token;
     const loader = getSharedGltfLoader(this.engine?.renderer);
     const relPath = DRONE_CONFIGS.RECON_DRONE.modelUrl;
     const url = document.baseURI ? new URL(relPath, document.baseURI).href : relPath;
-    loader.load(
-      url,
-      (gltf) => {
-        if (gltf?.scene) {
-          this.glbTemplate = gltf.scene;
-        }
-      },
-      undefined,
-      () => {}
-    );
+    const load = this.glbTemplate
+      ? Promise.resolve()
+      : new Promise((resolve) => {
+        loader.load(
+          url,
+          (gltf) => {
+            if (gltf?.scene && token === this.preloadToken) {
+              this.glbTemplate = gltf.scene;
+            }
+            resolve();
+          },
+          undefined,
+          () => resolve()
+        );
+      });
+    // The clone shares the template's materials, which keep the compiled programs alive.
+    this.preloadPromise = load
+      .then(() => (token === this.preloadToken ? warmupObject(this.engine, this.createDroneMesh()) : null))
+      .catch(() => {});
+    return this.preloadPromise;
   }
 
   createDroneMesh() {
@@ -108,6 +128,7 @@ export class ReconDroneController {
       engine.fxGroup.add(droneRig);
     }
 
+    const hq = engine.getHqBonuses?.();
     engine.reconDroneActiveTimer = 0;
     engine.reconDroneMission = {
       x: startX,
@@ -115,10 +136,10 @@ export class ReconDroneController {
       z: startZ,
       targetX: tx,
       targetZ: tz,
-      revealRadius: droneCfg.revealRadiusCells * TILE_SIZE,
+      revealRadius: (droneCfg.revealRadiusCells + (hq?.reconRadiusBonusCells || 0)) * TILE_SIZE,
       phase: 'approach',
       timer: 0,
-      duration: droneCfg.durationSec,
+      duration: droneCfg.durationSec + (hq?.reconDurationBonusSec || 0),
       mesh: droneRig,
     };
     engine.setStatusBanner(t('RECON DRONE DISPATCHED — SCANNING TARGET ZONE'), 2.4);
@@ -231,6 +252,8 @@ export class ReconDroneController {
 
   dispose() {
     this.clear();
+    this.preloadToken = null;
+    this.preloadPromise = null;
     if (!this.glbTemplate) return;
     const disposedMats = new Set();
     const disposedTex = new Set();
@@ -251,6 +274,5 @@ export class ReconDroneController {
       }
     });
     this.glbTemplate = null;
-    this.glbRequested = false;
   }
 }

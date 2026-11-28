@@ -299,10 +299,10 @@ export function checkMapVictory(rules, state) {
   }
 
   if (activeRules.victoryOnAllEnemiesDestroyed) {
-    const allVanguardGone =
-      (state.vanguardRemainingToSpawn || 0) <= 0 &&
+    const allEnemiesGone =
+      (state.enemiesRemainingToSpawn || 0) <= 0 &&
       (state.activeEnemiesCount || 0) === 0;
-    if (allVanguardGone && bossDone) {
+    if (allEnemiesGone && bossDone) {
       return {
         isVictory: true,
         reason: VICTORY_CONDITIONS.DESTROY_ALL_ENEMIES,

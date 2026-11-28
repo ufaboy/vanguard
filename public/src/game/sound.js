@@ -39,11 +39,6 @@ const PRIORITY_AUDIO_KEYS = Object.freeze([
   'engine_loop',
 ]);
 
-/** Returns the priority audio asset paths in `./audio/...` manifest form. */
-export function getPriorityAudioAssets() {
-  return PRIORITY_AUDIO_KEYS.map((key) => `./${AUDIO_ASSETS[key]}`);
-}
-
 export class SoundManager {
   constructor({ createContext = null, loadAssets = true, buffers = null } = {}) {
     this.ctx = null;
@@ -353,12 +348,6 @@ export class SoundManager {
     this.playBuffer(key, { volume: 0.35, pitchVariation: 0.08, pos });
   }
 
-  playSteelRicochet(pos = null) {
-    if (this.shouldThrottle('ricochet', 0.045)) return;
-    const key = this.buffers?.aps_intercept ? 'aps_intercept' : this.buffers?.ricochet ? 'ricochet' : 'armor_hit';
-    this.playBuffer(key, { volume: 0.55, pitchVariation: 0.06, pos });
-  }
-
   playApsIntercept(pos = null) {
     if (this.shouldThrottle('aps_intercept', 0.045)) return;
     const key = this.buffers?.aps_intercept ? 'aps_intercept' : 'armor_hit';
@@ -523,9 +512,64 @@ export class SoundManager {
     this.playBuffer('mine', { volume: 0.58, pitchVariation: 0.03, pos });
   }
 
+  playMineDetect() {
+    if (this.shouldThrottle('mine_detect', 0.25)) return;
+    const ctx = this.ensureContext();
+    if (!ctx || typeof ctx.createOscillator !== 'function') return;
+    try {
+      const t = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1550, t);
+      osc.frequency.exponentialRampToValueAtTime(1950, t + 0.11);
+
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.linearRampToValueAtTime(0.14, t + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+
+      osc.connect(gain);
+      gain.connect(this.compressor || ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.13);
+    } catch {
+      // Ignore Web Audio errors in headless/test environments.
+    }
+  }
+
   playBossAlarm(pos = null) {
     if (this.shouldThrottle('boss_alarm', 0.35)) return;
     this.playBuffer('boss_alarm', { volume: 0.85, pitchVariation: 0.02, pos });
+  }
+
+  /** Synthesizes a two-tone diesel locomotive air horn with distance attenuation. */
+  playTrainHorn({ x, z } = {}) {
+    if (!this._enabled || this.paused || !this.hasUserGesture()) return;
+    if (this.shouldThrottle('train_horn', 1.8)) return;
+    const ctx = this.ensureContext();
+    if (!ctx || typeof ctx.createOscillator !== 'function') return;
+    try {
+      const t = ctx.currentTime;
+      const dist = Math.hypot((x ?? this.listenerX) - this.listenerX, (z ?? this.listenerZ) - this.listenerZ);
+      const atten = Math.max(0.15, 1.0 - dist / (this.sightRadius * 1.4));
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.linearRampToValueAtTime(0.22 * atten, t + 0.05);
+      gain.gain.setValueAtTime(0.20 * atten, t + 0.42);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.65);
+      gain.connect(this.compressor || ctx.destination);
+
+      for (const freq of [185, 233]) {
+        const osc = ctx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, t);
+        osc.connect(gain);
+        osc.start(t);
+        osc.stop(t + 0.68);
+      }
+    } catch {
+      // Ignore Web Audio errors in headless/test environments.
+    }
   }
 
   playPowerUp() {

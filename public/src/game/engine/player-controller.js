@@ -17,12 +17,18 @@ import {
   getMaxCannonAmmo,
   getMaxMissileAmmo,
   getMaxRepairKitCharges,
+  TANK_RIDE_HEIGHT,
 } from '../constants.js';
 import { PLAYER_TANK_CONFIG } from '../vehicles/tanks.js';
 import { GameStatus, TileType } from '../types.js';
 import { SECTORS } from '../levels.js';
 import { sound } from '../sound.js';
 import { createMissileVisual } from '../effects/index.js';
+import {
+  getTankDamageTier,
+  stepTankDamageParticles,
+  syncTankDamageMaterials,
+} from '../effects/tank-damage-fx.js';
 import { markMaterialOwned, markOwned } from '../render/dispose.js';
 import { cellMovement } from '../terrains/layers.js';
 import { deckClearance } from '../render/models.js';
@@ -98,10 +104,14 @@ export class PlayerController {
     const frame = PLAYER_UPGRADES[UPGRADE.FRAME][(engine.effectiveUpgrades.frame || 1) - 1];
     const engineComp = PLAYER_UPGRADES[UPGRADE.ENGINE][(engine.effectiveUpgrades.engine || 1) - 1];
     const armor = PLAYER_UPGRADES[UPGRADE.ARMOR][(engine.effectiveUpgrades.armor || 1) - 1];
+    const radar = PLAYER_UPGRADES[UPGRADE.RADAR][(engine.effectiveUpgrades.radar || 1) - 1];
 
     const optEquip = [];
-    if (engine.missileAmmo > 0) {
+    if (engine.atgmOwned) {
       optEquip.push('ROCKET_LAUNCHER');
+    }
+    if (engine.apsOwned) {
+      optEquip.push('APS_MODULE');
     }
     if (engine.reconDroneOwned) {
       optEquip.push('RECON_DRONE');
@@ -113,8 +123,16 @@ export class PlayerController {
       frame,
       engine: engineComp,
       armor,
+      radar,
       optionalEquipment: optEquip,
     }, PLAYER_TANK_CONFIG.base);
+    const sightBonusCells = engine.getHqBonuses?.().sightBonusCells || 0;
+    if (sightBonusCells > 0) {
+      engine.playerStats = {
+        ...engine.playerStats,
+        sightRadius: (engine.playerStats.sightRadius || 0) + sightBonusCells * TILE_SIZE,
+      };
+    }
 
     engine.playerMaxHp = engine.playerStats.maxHP;
     if (preserveRatio) {
@@ -173,6 +191,7 @@ export class PlayerController {
 
   addApsRounds(count) {
     const engine = this.engine;
+    if (!engine.apsOwned) return;
     const maxTotal = engine.getPlayerMaxApsAmmo ? engine.getPlayerMaxApsAmmo() : this.getPlayerMaxApsAmmo();
     distributeApsRounds(engine.apsAmmo, count, maxTotal);
     engine.syncApsVisuals?.();
@@ -187,7 +206,7 @@ export class PlayerController {
     const engine = this.engine;
     if (!engine.playerSave) return;
     engine.playerSave.repairKitCharges = engine.repairKitState?.charges ?? 0;
-    engine.saveRepo?.savePlayerSave?.(engine.playerSave);
+    engine.saveRepo?.savePlayerSave?.(engine.playerSave, { defer: engine.status === GameStatus.PLAYING });
   }
 
   /** Activates installed player tactical module in slot 1, 2, or 3 (Section 7.2 & 11.4). */
@@ -383,6 +402,10 @@ export class PlayerController {
   firePlayerHomingMissile() {
     const engine = this.engine;
     if (engine.status !== GameStatus.PLAYING) return;
+    if (!engine.atgmOwned) {
+      engine.setStatusBanner(t('ATGM POD NOT INSTALLED — BUY IN GARAGE'), 2.0);
+      return;
+    }
     if (engine.missileAmmo <= 0 || engine.missileCooldown > 0) return;
     if (this.isInsideJammerSystemRadius()) {
       // A missile launched inside the ECM bubble would lose lock at the muzzle; keep it.
@@ -414,7 +437,7 @@ export class PlayerController {
     engine.missileAmmo--;
     engine.medalTracker?.recordPlayerMissileFired();
     engine.playerSave.missileAmmo = engine.missileAmmo;
-    engine.saveRepo.savePlayerSave(engine.playerSave);
+    engine.saveRepo.savePlayerSave(engine.playerSave, { defer: true });
     engine.missileCooldown = MISSILE.COOLDOWN;
     engine.recomputePlayerStats(true);
     sound.playMissileLaunch();
@@ -508,6 +531,9 @@ export class PlayerController {
     if (engine.apsRearmTimer > 0)
       engine.apsRearmTimer = Math.max(0, engine.apsRearmTimer - dt);
     if (engine.empTimer > 0) engine.empTimer = Math.max(0, engine.empTimer - dt);
+    if (engine.playerEmpDisruptTimer > 0) {
+      engine.playerEmpDisruptTimer = Math.max(0, engine.playerEmpDisruptTimer - dt);
+    }
     if (engine.smokeCooldown > 0) engine.smokeCooldown = Math.max(0, engine.smokeCooldown - dt);
 
     stepAutomaticTrackRepair(engine.subsystems, dt);
@@ -533,9 +559,18 @@ export class PlayerController {
       engine.playerX, engine.playerZ, TANK_HIT_RADIUS.PLAYER, false
     )) engine.componentWaterEgress = false;
     const canCrossWater = engine.playerStats.canCrossWater || engine.componentWaterEgress;
+    const canCrushSandbags = Boolean(
+      engine.playerLoadout?.optionalEquipment?.includes('DOZER_BLADE') ||
+      engine.playerLoadout?.frame === 'F5' ||
+      (engine.upgrades?.frame || 1) >= 5
+    );
     if (currentCell?.type === TileType.RUBBLE && engine.playerLoadout?.optionalEquipment?.includes('DOZER_BLADE')) {
       engine.terrainDestruction?.clearRubbleCell?.(currentCell);
     }
+    if (currentCell?.type === TileType.SANDBAGS && canCrushSandbags) {
+      engine.terrainDestruction?.crushSandbagsCell?.(currentCell);
+    }
+    engine.terrainDestruction?.crushPropsNear?.(engine.playerX, engine.playerZ, 0.95);
     engine.onWater = currentCell?.type === TileType.WATER;
     engine.onIce = !canHover && !allTerrain && currentCell?.type === TileType.ICE;
     engine.onSand = !canHover && !allTerrain && currentCell?.type === TileType.SAND;
@@ -577,7 +612,7 @@ export class PlayerController {
     }
 
     const hpRatio = engine.playerHp / engine.playerMaxHp;
-    const lowHpMult = hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
+    const lowHpMult = hpRatio <= DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
     const rawSurfMult = engine.currentSurface?.speedMultiplier || 1.0;
     const surfMult = engine.onWater && !canHover
       ? waterSpeedMult
@@ -591,9 +626,17 @@ export class PlayerController {
       engine.playerStats.moveSpeed * TILE_SIZE * lowHpMult * surfMult * subMods.speedMultiplier
     );
 
-    if (hpRatio < DURABILITY.LOW_RATIO && Math.random() < 0.25) {
-      engine.spawnSparks(engine.playerX, 0.65, engine.playerZ, 0x475569, 1);
-    }
+    const playerDamageTier = getTankDamageTier(engine.playerHp, engine.playerMaxHp);
+    syncTankDamageMaterials(engine.playerRig, playerDamageTier);
+    stepTankDamageParticles(engine.fx, this, dt, {
+      x: engine.playerX,
+      y: engine.playerRig?.root?.position?.y ?? TANK_RIDE_HEIGHT,
+      z: engine.playerZ,
+      hullAngle: engine.playerHullAngle,
+      tier: playerDamageTier,
+      scale: 1.0,
+      subsystems: engine.subsystems,
+    });
 
     const surfAccel = engine.currentSurface?.accelMultiplier || 1.0;
     const surfBrake = engine.currentSurface?.brakeMultiplier || 1.0;
@@ -602,8 +645,11 @@ export class PlayerController {
     const drag = (lowTraction ? 1.8 : 20.0) * (allTerrain ? Math.max(1.0, surfBrake) : surfBrake);
 
     if (!subMods.immobilized && len > 0) {
+      const activeAzimuth = Number.isFinite(engine.targetCameraAzimuth)
+        ? engine.targetCameraAzimuth
+        : engine.cameraAzimuth;
       const quadrantOffset =
-        Math.round((engine.cameraAzimuth - Math.PI * 0.25) / (Math.PI * 0.5)) *
+        Math.round((activeAzimuth - Math.PI * 0.25) / (Math.PI * 0.5)) *
         (Math.PI * 0.5);
       const rawX = inRight;
       const rawZ = -inFwd;
@@ -664,7 +710,8 @@ export class PlayerController {
         nextX,
         engine.playerZ,
         radius,
-        canCrossWater
+        canCrossWater,
+        canCrushSandbags
       )
     ) {
       engine.playerX = nextX;
@@ -681,7 +728,8 @@ export class PlayerController {
         engine.playerX,
         nextZ,
         radius,
-        canCrossWater
+        canCrossWater,
+        canCrushSandbags
       )
     ) {
       engine.playerZ = nextZ;
@@ -713,7 +761,8 @@ export class PlayerController {
             pushedX,
             pushedZ,
             radius,
-            canCrossWater
+            canCrossWater,
+            canCrushSandbags
           )
         ) {
           engine.playerX = pushedX;
@@ -772,7 +821,7 @@ export class PlayerController {
       engine.playerRig.muzzleFlash.material.opacity = 0;
     }
 
-    const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : 0;
+    const hoverY = canHover ? 0.05 + Math.sin(elapsed * 4.0) * 0.012 : TANK_RIDE_HEIGHT;
     engine.playerRig.root.position.set(engine.playerX, hoverY, engine.playerZ);
     engine.playerRig.hull.rotation.y = engine.playerHullAngle;
     engine.playerGearState = engine.playerGearState || {};
@@ -886,9 +935,10 @@ export class PlayerController {
     return false;
   }
 
-  /** True while the player is inside the close-range APS / ATGM disruption radius of a living JAMMER. */
+  /** True while the player is inside the close-range APS / ATGM disruption radius of a living JAMMER or EMP surge. */
   isInsideJammerSystemRadius() {
     const engine = this.engine;
+    if ((engine.playerEmpDisruptTimer || 0) > 0) return true;
     return isPointWithinJammerRadius(
       engine.playerX,
       engine.playerZ,
@@ -899,7 +949,7 @@ export class PlayerController {
 
   updateApsInterception() {
     const engine = this.engine;
-    if (engine.apsRearmTimer > 0 || this.isInsideJammerSystemRadius()) return;
+    if (!engine.apsOwned || engine.apsRearmTimer > 0 || this.isInsideJammerSystemRadius()) return;
     const totalAmmo = engine.apsAmmo.reduce((a, b) => a + b, 0);
     if (totalAmmo <= 0) return;
 
@@ -1162,6 +1212,7 @@ export class PlayerController {
       engine.fx?.tankDestroyed?.(engine.playerX, engine.playerZ, { boss: false, player: true });
       engine.terrainDestruction?.igniteOilAt?.(engine.playerX, engine.playerZ, 1.8);
       if (engine.survivalState) {
+        engine.rollbackBattlePurchases?.();
         const campaignSave = engine.campaignSaveRepo?.loadPlayerSave();
         if (campaignSave) {
           engine.survivalState.recordSummary = recordSurvivalRun(
@@ -1172,6 +1223,7 @@ export class PlayerController {
           engine.campaignSaveRepo.savePlayerSave(campaignSave);
         }
       } else {
+        engine.rollbackBattlePurchases?.();
         engine.restoreAllComponents();
         if (engine.activeMissionRun && !engine.activeMissionRun.rewardsCommitted) {
           engine.lastSettlementSummary = settleMission({

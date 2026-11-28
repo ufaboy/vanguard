@@ -7,126 +7,42 @@
   "gameMode": "stronghold_assault",
   "gridSize": 40,
   "tileSize": 2,
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 19
-  },
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "enemyBase": {
-    "cell": {
-      "row": 4,
-      "col": 20
-    },
-    "name": "Konopiště Document Depot",
-    "maxHp": 48,
-    "fortifyPerimeter": true
-  },
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": false
-  },
-  "completionReward": {
-    "credits": 700
-  },
-  "environment": {
-    "theme": "forest",
-    "tint": "#9fb484",
-    "fogColor": "#27342b",
-    "groundColor": "#72755b"
-  },
+  "playerSpawnCell": {"row":35,"col":19},
+  "baseCell": {"row":39,"col":19},
+  "enemyBase": {"cell":{"row":4,"col":20},"name":"Konopiště Document Depot","maxHp":48,"fortifyPerimeter":true},
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":false},
+  "completionReward": {"credits":700},
+  "environment": {"theme":"forest","tint":"#9fb484","fogColor":"#27342b","groundColor":"#72755b"},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "Assault Konopiště Castle on its wooded hill via the central pond causeway, the western Obora deer park, or the eastern estate road, then breach the curtain wall.",
     "breaches": [
       {
         "name": "South Gatehouse",
-        "cells": [
-          {
-            "row": 10,
-            "col": 19
-          },
-          {
-            "row": 10,
-            "col": 20
-          }
-        ],
-        "start": {
-          "row": 12,
-          "col": 19
-        },
-        "end": {
-          "row": 8,
-          "col": 19
-        },
+        "cells": [{"row":10,"col":19},{"row":10,"col":20}],
+        "start": {"row":12,"col":19},
+        "end": {"row":8,"col":19},
         "purpose": "Breach the main southern castle gatehouse directly into the courtyard."
       },
       {
         "name": "West Postern",
-        "cells": [
-          {
-            "row": 8,
-            "col": 13
-          },
-          {
-            "row": 9,
-            "col": 13
-          }
-        ],
-        "start": {
-          "row": 8,
-          "col": 11
-        },
-        "end": {
-          "row": 8,
-          "col": 15
-        },
+        "cells": [{"row":8,"col":13},{"row":9,"col":13}],
+        "start": {"row":8,"col":11},
+        "end": {"row":8,"col":15},
         "purpose": "Slip from the Obora deer park road into the western castle bailey."
       },
       {
         "name": "East Rampart",
-        "cells": [
-          {
-            "row": 8,
-            "col": 27
-          },
-          {
-            "row": 9,
-            "col": 27
-          }
-        ],
-        "start": {
-          "row": 8,
-          "col": 29
-        },
-        "end": {
-          "row": 8,
-          "col": 25
-        },
+        "cells": [{"row":8,"col":27},{"row":9,"col":27}],
+        "start": {"row":8,"col":29},
+        "end": {"row":8,"col":25},
         "purpose": "Cut from the eastern approach directly into the castle courtyard behind the keep."
       },
       {
         "name": "Estate Yard Wall",
-        "cells": [
-          {
-            "row": 25,
-            "col": 24
-          },
-          {
-            "row": 25,
-            "col": 25
-          }
-        ],
-        "start": {
-          "row": 27,
-          "col": 24
-        },
-        "end": {
-          "row": 23,
-          "col": 24
-        },
+        "cells": [{"row":25,"col":24},{"row":25,"col":25}],
+        "start": {"row":27,"col":24},
+        "end": {"row":23,"col":24},
         "purpose": "Open a shortcut between the central staging road and the eastern estate farm."
       }
     ],
@@ -150,456 +66,75 @@
     "seed": 12122026,
     "theme": "forest",
     "zones": [
-      {
-        "id": "obora-deer-park",
-        "bounds": [
-          0,
-          0,
-          39,
-          39
-        ],
-        "surface": "dirt",
-        "density": 0.16,
-        "details": [
-          "leaves",
-          "weeds"
-        ]
-      },
-      {
-        "id": "castle-courtyard",
-        "bounds": [
-          3,
-          14,
-          9,
-          26
-        ],
-        "surface": "pavers",
-        "density": 0.25,
-        "details": [
-          "cracks",
-          "rubble"
-        ]
-      },
-      {
-        "id": "rose-garden",
-        "bounds": [
-          12,
-          14,
-          19,
-          26
-        ],
-        "surface": "gravel",
-        "density": 0.2,
-        "details": [
-          "leaves",
-          "rubble"
-        ]
-      },
-      {
-        "id": "estate-yard",
-        "bounds": [
-          22,
-          24,
-          28,
-          30
-        ],
-        "surface": "dirt",
-        "density": 0.24,
-        "details": [
-          "tracks",
-          "oil"
-        ]
-      },
-      {
-        "id": "south-staging",
-        "bounds": [
-          28,
-          15,
-          36,
-          24
-        ],
-        "surface": "gravel",
-        "density": 0.2,
-        "details": [
-          "tracks",
-          "patches"
-        ]
-      }
+      {"id":"obora-deer-park","bounds":[0,0,39,39],"surface":"dirt","density":0.16,"details":["leaves","weeds"]},
+      {"id":"castle-courtyard","bounds":[3,14,9,26],"surface":"pavers","density":0.25,"details":["cracks","rubble"]},
+      {"id":"rose-garden","bounds":[12,14,19,26],"surface":"gravel","density":0.2,"details":["leaves","rubble"]},
+      {"id":"estate-yard","bounds":[22,24,28,30],"surface":"dirt","density":0.24,"details":["tracks","oil"]},
+      {"id":"south-staging","bounds":[28,15,36,24],"surface":"gravel","density":0.2,"details":["tracks","patches"]}
     ],
     "paths": [
-      {
-        "id": "castle-causeway-path",
-        "points": [
-          [
-            35,
-            19
-          ],
-          [
-            23,
-            19
-          ],
-          [
-            11,
-            19
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "none"
-      },
-      {
-        "id": "obora-trail",
-        "points": [
-          [
-            30,
-            6
-          ],
-          [
-            16,
-            6
-          ],
-          [
-            6,
-            6
-          ],
-          [
-            6,
-            12
-          ]
-        ],
-        "width": 2,
-        "surface": "dirt",
-        "marking": "none"
-      },
-      {
-        "id": "estate-lane",
-        "points": [
-          [
-            30,
-            31
-          ],
-          [
-            18,
-            31
-          ],
-          [
-            6,
-            33
-          ],
-          [
-            6,
-            28
-          ]
-        ],
-        "width": 2,
-        "surface": "gravel",
-        "marking": "none"
-      }
+      {"id":"castle-causeway-path","points":[[35,19],[23,19],[11,19]],"width":2,"surface":"gravel","marking":"none"},
+      {"id":"obora-trail","points":[[30,6],[16,6],[6,6],[6,12]],"width":2,"surface":"dirt","marking":"none"},
+      {"id":"estate-lane","points":[[30,31],[18,31],[6,33],[6,28]],"width":2,"surface":"gravel","marking":"none"}
     ],
-    "landmarks": [
-      {
-        "id": "lbl-castle",
-        "kind": "label",
-        "row": 2,
-        "col": 20,
-        "text": "KONOPISTE CASTLE"
-      },
-      {
-        "id": "lbl-pond",
-        "kind": "label",
-        "row": 20,
-        "col": 13,
-        "text": "KONOPISTE POND"
-      },
-      {
-        "id": "lbl-obora",
-        "kind": "label",
-        "row": 14,
-        "col": 6,
-        "text": "OBORA DEER PARK"
-      },
-      {
-        "id": "lbl-garden",
-        "kind": "label",
-        "row": 15,
-        "col": 21,
-        "text": "ROSE GARDEN"
-      }
-    ],
-    "exclusions": [
-      {
-        "id": "hq-clear",
-        "bounds": [
-          37,
-          18,
-          39,
-          21
-        ]
-      },
-      {
-        "id": "core-clear",
-        "bounds": [
-          3,
-          19,
-          5,
-          21
-        ]
-      }
-    ]
+    "exclusions": [{"id":"hq-clear","bounds":[37,18,39,21]},{"id":"core-clear","bounds":[3,19,5,21]}]
   },
-  "landmarks3d": [],
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 8,
     "spawnIntervalSec": 3.5,
-    "entrances": [
-      {
-        "id": "north-gate",
-        "row": 1,
-        "col": 20
-      },
-      {
-        "id": "west-deerpark",
-        "row": 2,
-        "col": 5
-      },
-      {
-        "id": "east-causeway",
-        "row": 2,
-        "col": 34
-      }
-    ],
+    "entrances": [{"id":"north-gate","row":1,"col":20},{"id":"west-deerpark","row":2,"col":5},{"id":"east-causeway","row":2,"col":34}],
     "encounters": [
       {
         "id": "outer-park-patrol",
         "label": "DEER PARK OUTPOST: Consortium recon units and hovercraft are patrolling the Konopiště parklands.",
-        "enemies": [
-          "SCOUT",
-          "STANDARD",
-          "SCOUT",
-          "HOVER",
-          "STANDARD",
-          "STEALTH",
-          "SCOUT"
-        ],
-        "entrances": [
-          "north-gate",
-          "west-deerpark"
-        ],
-        "patrolRoute": [
-          {
-            "row": 12,
-            "col": 20
-          },
-          {
-            "row": 21,
-            "col": 20
-          },
-          {
-            "row": 30,
-            "col": 19
-          }
-        ],
+        "enemies": ["SCOUT","STANDARD","SCOUT","HOVER","STANDARD","STEALTH","SCOUT"],
+        "entrances": ["north-gate","west-deerpark"],
+        "patrolRoute": [{"row":12,"col":20},{"row":21,"col":20},{"row":30,"col":19}],
         "recoverySec": 0,
-        "initialCells": [
-          {
-            "row": 8,
-            "col": 19
-          },
-          {
-            "row": 5,
-            "col": 6
-          },
-          {
-            "row": 6,
-            "col": 33
-          },
-          {
-            "row": 9,
-            "col": 25
-          }
-        ]
+        "initialCells": [{"row":8,"col":19},{"row":5,"col":6},{"row":6,"col":33},{"row":9,"col":25}]
       },
       {
         "id": "pond-flankers",
         "label": "POND CAUSEWAYS: Amphibious flankers and flame tanks are advancing across the Obora woods and Upper Pond.",
-        "enemies": [
-          "STANDARD",
-          "SAPPER",
-          "HOVER",
-          "FLAMETHROWER",
-          "HOWITZER",
-          "STANDARD",
-          "STEALTH",
-          "SCOUT"
-        ],
-        "entrances": [
-          "west-deerpark",
-          "east-causeway"
-        ],
-        "patrolRoute": [
-          {
-            "row": 18,
-            "col": 31
-          },
-          {
-            "row": 28,
-            "col": 31
-          },
-          {
-            "row": 30,
-            "col": 19
-          }
-        ],
+        "enemies": ["STANDARD","SAPPER","HOVER","FLAMETHROWER","HOWITZER","STANDARD","STEALTH","SCOUT"],
+        "entrances": ["west-deerpark","east-causeway"],
+        "patrolRoute": [{"row":18,"col":31},{"row":28,"col":31},{"row":30,"col":19}],
         "recoverySec": 8
       },
       {
         "id": "castle-garrison",
         "label": "CASTLE GARRISON: Heavy armour and siege artillery are defending the Konopiště document depot. Breach the curtain wall!",
-        "enemies": [
-          "ARMOR",
-          "STANDARD",
-          "SAPPER",
-          "HOWITZER",
-          "FLAMETHROWER",
-          "ARMOR",
-          "ENGINEER",
-          "STANDARD",
-          "STRIKER"
-        ],
-        "entrances": [
-          "north-gate",
-          "east-causeway"
-        ],
-        "patrolRoute": [
-          {
-            "row": 8,
-            "col": 14
-          },
-          {
-            "row": 14,
-            "col": 19
-          },
-          {
-            "row": 24,
-            "col": 24
-          }
-        ],
+        "enemies": ["ARMOR","STANDARD","SAPPER","HOWITZER","FLAMETHROWER","ARMOR","ENGINEER","STANDARD","STRIKER"],
+        "entrances": ["north-gate","east-causeway"],
+        "patrolRoute": [{"row":8,"col":14},{"row":14,"col":19},{"row":24,"col":24}],
         "recoverySec": 10
       }
     ],
-    "boss": {
-      "enabled": false
-    }
+    "boss": {"enabled":false}
   },
-  "enemyPool": [
-    "SCOUT",
-    "STANDARD",
-    "SCOUT",
-    "HOVER",
-    "STANDARD",
-    "STEALTH",
-    "SCOUT",
-    "STANDARD",
-    "SAPPER",
-    "HOVER",
-    "FLAMETHROWER",
-    "HOWITZER",
-    "STANDARD",
-    "STEALTH",
-    "SCOUT",
-    "ARMOR",
-    "STANDARD",
-    "SAPPER",
-    "HOWITZER",
-    "FLAMETHROWER",
-    "ARMOR",
-    "ENGINEER",
-    "STANDARD",
-    "STRIKER"
-  ],
-  "surfaceLayout": [
-    "VVVVVRRVVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVV",
-    "VVVVVRRVVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVV",
-    "VVVVVRRVVVVVVVVVVVVVRRVVVVVVVVVVVVRRVVVV",
-    "VVVVVRRVVVVVV^^^^^^^RR^^^^^^VVVVVVRRVVVV",
-    "VVVVVRRVVVVVV^.............^VVVVVVRRVVVV",
-    "VVVVVRRVVVVVV^.............^VVVVVVRRVVVV",
-    "VVVVVRRRRRRRRR.............RRRRRRRRRVVVV",
-    "VVVVVVRRRRRRRR.............RRRRRRRRVVVVV",
-    "VVVVVVRRVVVVV^.............^VVVRRVVVVVVV",
-    "VVVVVVRRVVVVV^.............^VVVRRVVVVVVV",
-    "VVVVVVRRVVVVV^^^^^^RR^^^^^^^VVVRRVVVVVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVVVVRRVVVVVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSSMRRSSSSVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSWWWWWWWSVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSWWWWWWWSVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSWWWWWWWSVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSWWWWWWWSVVV",
-    "VVVVVVRRVVVVVVVVVVVRRVVVVVVVSSSRRMMSSVVV",
-    "VVVVVSRRMMMMMMMSSSSRRVVVVVVVVVVRRVVVVVVV",
-    "VVVVVSWWWWWWWWWWWWWWWVVV.......RRVVVVVVV",
-    "VVVVVSWWWWWWWWWWWWWWWVVV.......RRVVVVVVV",
-    "VVVVVSWWWWWWWWWWWWWWWVVV.......RRVVVVVVV",
-    "VVVVVSWWWWWWWWWWWWWRRVVV.......RRVVVVVVV",
-    "VVVVVSRRSMMMMSSSSSSRRVVV.....LLRRVVVVVVV",
-    "VVVVVVRRVVVVVVV....RR........L.RRVVVVVVV",
-    "VVVVVVRRVVVVVVV....RR..........RRVVVVVVV",
-    "VVVVVVRRVVVVVVV....RR....VVVVVVRRVVVVVVV",
-    "VVVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVVVVV",
-    "VVVVVVRRRRRRRRRRRRRRRRRRRRRRRRRRRVVVVVVV",
-    "VVVVVVVVVVVVVVV....RR....VVVVVVVVVVVVVVV",
-    "VVVVVVVVVVVVVVV....RR....VVVVVVVVVVVVVVV",
-    "VVVVVVVVVVVVVVV....RR....VVVVVVVVVVVVVVV",
-    "VVVVVVVVVVVVVVV....RR....VVVVVVVVVVVVVVV",
-    "VVVVVVVVVVVVVVV..........VVVVVVVVVVVVVVV",
-    "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV",
-    "VVVVVVVVVVVVVVVVVV....VVVVVVVVVVVVVVVVVV",
-    "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
-  ],
-  "objectLayout": [
-    "..FF..........FFFF......FFFF..FFF.......",
-    ".FFF.....FFF.QFFFF......FFFF.FFFF....QFF",
-    ".FFF....FFFF................FFFFF....FFF",
-    ".FF.....FFFF.CCCC..CCC..CCCC.FFF.....FFF",
-    "..FF....FFF..C.....CEC.....C.FFF.....FFF",
-    ".FFF.........C.PP..CBC..PP.C.FF......FF.",
-    ".FFF.........C.PP.......PP.C............",
-    ".FFF.........C.PP.......PP.C............",
-    ".FF......FFF.B......K......B.FF......FF.",
-    "........FFFF.B.DX......XQ..B.FF.....FFF.",
-    "..QB....FFF..CCCCCCBBCCCCCCC.FF.....FFF.",
-    "..B.............F......F....AAF.....FFF.",
-    "..FFF....AA...F..........F..AA......FFF.",
-    ".FFFF....AA.......X..X...FF.........FFF.",
-    ".FFFF.....FFF..BBB....BBBFF.........FFF.",
-    ".FFFF....FFFF......K.F...FF..........FF.",
-    ".FFF.....FFFF..C..U...F.CFF....==....F..",
-    ".........FFFF..C....K...C......==.......",
-    "..AA.....FFFF....X....XU.......==.......",
-    "..AU.....FFF..FFF.K............==.......",
-    "..FF..........FFF....K..FF..............",
-    ".FFF...............................FFFF.",
-    ".FFF..==...........==.....AAA.....FFFFF.",
-    ".FFF..==...........==.....AAA.....FFFFF.",
-    ".FF...==...........==....T...Q....FFFFF.",
-    "......==..............CCBBC.......FFFF..",
-    ".............................DD.........",
-    "..FKF.....FFFQ..F....F.......D.....FFFF.",
-    ".FFFB....FFFFFFF.F....F.FFFF......FFFFF.",
-    ".FFFB....FFFFFFF........FFFF......FFFFF.",
-    ".FFFF.............................FFFFF.",
-    ".FFFF.............................FFFFF.",
-    ".FFF........AAD..F....F..AA.......FFFF..",
-    "..FFFFF..FF.AA...........AA.Q.......FFF.",
-    ".FFFFFF.FFF....X........X.....FFFF.FFFF.",
-    ".FFFFFF.FFF..F...........F...FFFFF.FFFF.",
-    ".FFFFFF.FF...................FFFFF.FFFF.",
-    ".FFFFF............CCCC.......FFFFF.FFF..",
-    ".Q...........................FFFF.......",
-    "...................HH..................."
-  ]
+  "terrain": {
+    "grass": [[0,0,40,5],[0,7,3,13],[0,22,3,12],[0,36,15,4],[3,7,3,6],[3,28,3,6],[7,5,14,1],[7,35,8,1],[8,8,13,5],[8,28,7,3],[8,33,7,2],[11,13,10,6],[11,21,11,7],[15,37,25,3],[21,28,1,3],[21,33,19,4],[22,21,5,3],[27,5,13,1],[27,8,3,7],[29,25,1,6],[32,6,8,9],[32,25,8,8],[37,15,1,10],[38,15,2,3],[38,22,2,3],[39,18,1,4]],
+    "road": [[0,5,7,2],[0,20,4,2],[0,34,7,2],[6,7,2,7],[6,27,2,7],[7,6,15,1],[7,34],[8,7,14,1],[8,31,8,2],[10,19,12,2],[20,31,12,2],[25,19,11,2],[26,6,6,2],[30,8,2,11],[30,21,2,10]],
+    "stone": [[3,13,1,7],[3,22,1,6],[4,13,2,1],[4,27,2,1],[8,13,3,1],[8,27,3,1],[10,14,1,5],[10,21,1,6]],
+    "sand": [[15,28,1,2],[15,33,1,4],[16,28,5,1],[16,36,5,1],[20,29,1,2],[20,35],[21,5,6,1],[21,15,1,4],[26,8],[26,13,1,6]],
+    "swamp": [[15,30],[20,33,1,2],[21,8,1,7],[26,9,1,4]],
+    "water": [[16,29,4,7],[22,6,3,15],[25,6,1,13]],
+    "oil": [[26,29,1,2],[27,29]],
+    "forest": [[0,2,3,2],[0,14,2,4],[0,24,2,4],[0,30,3,3],[1,1,3,1],[1,9,3,3],[1,29,5,1],[1,38,4,2],[2,8,3,1],[2,28],[2,37,4,1],[3,2,6,1],[3,30,2,2],[4,3,4,1],[4,9,1,2],[5,1,4,1],[5,30],[5,38],[8,9,2,3],[8,29,3,2],[8,37,8,2],[9,8,2,1],[9,36,6,1],[10,9,1,2],[11,16],[11,23],[11,30],[12,2,4,3],[12,14],[12,25,5,1],[13,1,4,1],[13,26,4,1],[14,10,5,3],[15,9,5,1],[15,21],[16,2,1,2],[16,22],[16,37],[19,10,1,2],[19,14,2,3],[20,2,4,2],[20,24,1,2],[21,1,4,1],[21,35,4,4],[22,34,4,1],[24,2],[25,35,1,3],[27,2,11,1],[27,4],[27,10,3,3],[27,16],[27,21],[27,35,5,4],[28,1,5,1],[28,3,10,1],[28,9,2,1],[28,13,2,3],[28,17],[28,22],[28,24,2,4],[28,34,5,1],[30,4,2,1],[32,17],[32,22],[32,35,1,3],[33,4,4,3],[33,9,3,2],[33,36,4,3],[34,1,4,1],[34,8,3,1],[34,30,4,4],[34,35,4,1],[35,13],[35,25],[35,29,4,1],[36,9],[37,4,1,2],[37,36,1,2],[38,30,1,3]],
+    "boxes": [[1,13],[1,37],[9,24],[10,2],[24,29],[27,13],[33,28],[38,1]],
+    "concrete": [[3,13,1,4],[3,19,1,3],[3,24,1,4],[4,13,4,1],[4,19,2,1],[4,21,2,1],[4,27,4,1],[10,13,1,6],[10,21,1,7],[16,15,2,1],[16,24,2,1],[25,22,1,2],[25,26],[37,18,1,4]],
+    "enemy_base": [[4,20]],
+    "brick": [[5,20],[8,13,2,1],[8,27,2,1],[10,3],[10,19,1,2],[11,2],[14,15,1,3],[14,22,1,3],[25,24,1,2],[28,4,2,1]],
+    "transformer": [[6,17],[6,23]],
+    "crater": [[8,20],[15,19],[17,20],[19,18],[20,21],[27,3]],
+    "barrel": [[9,15],[26,29,1,2],[27,29],[32,14]],
+    "hedgehog": [[9,16],[9,23],[13,18],[13,21],[18,17],[18,22],[34,15],[34,24]],
+    "rubble": [[16,18],[18,23],[19,3]],
+    "water_tower": [[24,25]],
+    "bridge": [[16,31,4,2,"ns"],[22,6,4,2,"ns"],[22,19,3,2,"ns"]],
+    "house2": [[5,15,3,2,0],[5,24,3,2,9]],
+    "house1": [[11,28,2,2,1],[12,9,2,2,9],[18,2,1,2,1],[19,2,1,1,1],[22,26,2,3,9],[32,12,2,2,6],[32,25,2,2,11]],
+    "decal": [["label",2,20,1,"KONOPISTE CASTLE"],["label",20,13,1,"KONOPISTE POND"],["label",14,6,1,"OBORA DEER PARK"],["label",15,21,1,"ROSE GARDEN"]]
+  }
 }

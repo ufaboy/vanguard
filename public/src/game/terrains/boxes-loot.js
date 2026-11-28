@@ -1,7 +1,7 @@
 import { POWERUP, POWERUP_DROP_TYPES } from '../powerups.js';
 
 export const BOX_POWERUP_DROP_CHANCE = 1;
-export const BOX_AMMO_DROP_CHANCE = 0.50;
+const BOX_AMMO_DROP_CHANCE = 0.50;
 
 /** One shuffled bag per match, replenished only after every entry has been drawn. */
 export class BoxPowerUpPool {

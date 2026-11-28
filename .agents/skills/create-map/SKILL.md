@@ -19,7 +19,7 @@ Follow the repository's AGENTS.md. Treat current code as the runtime contract; d
 
 ### 1. Load the vocabulary
 
-Read [catalog.md](references/catalog.md) (tile characters, what may stand on what, buildings, landmarks, map JSON fields), [realism.md](references/realism.md) (realism rules, scale, theme palettes) and [decoration.md](references/decoration.md) (the 2D `decoration` contract). Open one recent map of the same mode in `public/maps/` as a format example — copy its structure, not its layout. Before using a field or token, confirm it still exists in `public/src/game/levels.js` / `terrains/layers.js`; never invent keys.
+Read [catalog.md](references/catalog.md) (tile characters, what may stand on what, buildings, landmarks, map JSON fields), [realism.md](references/realism.md) (realism rules, scale, theme palettes), [buildings.md](references/buildings.md) (approved building footprint templates) and [decoration.md](references/decoration.md) (the 2D `decoration` contract). Open one recent map of the same mode in `public/maps/` as a format example — copy its structure, not its layout. Before using a field or token, confirm it still exists in `public/src/game/levels.js` / `terrains/layers.js`; never invent keys.
 
 ### 2. Research the place
 
@@ -47,12 +47,12 @@ Write `surfaceLayout` and `objectLayout` directly (40 strings of 40 characters e
 1. Base ground and natural terrain (grass, sand, stone, swamp, snow-type ice areas).
 2. Water bodies with natural banks.
 3. Road network (and bridges where roads cross water).
-4. Building blocks fronting the roads; yards; industrial plots.
+4. Building blocks fronting the roads; yards; industrial plots (avoid enclosed interior `core` cells on non-industrial `A`/`P` buildings — use courtyards or L/U/T/cross shapes; see `realism.md` and `buildings.md`).
 5. Vegetation masses, tree lines, parks.
 6. Context objects (barrels, oil, crates, water tower) and the **war layer** (defence lines, hedgehogs, craters, rubble, damaged blocks).
 7. Player base, player spawn, enemy entrances, enemy base (stronghold mode), BOX caches.
 8. `decoration` (zones, paths, labels, markings) with a unique `seed`; `landmarks3d` only when an existing kind fits.
-9. `enemies` + `enemyPool`, `design`, `environment`, `rules`, `completionReward`.
+9. `enemies`, `design`, `environment`, `rules`, `completionReward`.
 
 Fill in `design` with `enemySide: "north"`, `tacticalIdentity`, `breaches`, and a `reference` object: `{ "place": "...", "kind": "real" | "generic", "kept": [...], "simplified": [...] }`.
 
@@ -69,6 +69,7 @@ Gameplay wins over realism, but resolve conflicts by moving, compressing or addi
 - **HQ cover (always)**: the HQ must be shielded from direct fire from the north. Author a row of `CONCRETE` (`C`) in `objectLayout` two rows north of the HQ (`baseRow - 2`), covering at least `baseCol - 1` … `baseCol + 2` (4 cells), with exactly one open row between it and the HQ (`baseRow - 1`, same columns) so the player tank can drive up to the base. That gap row and the cells beside the HQ stay free of objects, and the gap is reachable from the side on at least one end (preferably both). The game never adds this wall or clears the lane at load: only the map file decides what is there.
 - **Stronghold mode**: the `E` enemy base sits deep in the north (rows 2–7), never mid-map, with `enemyBase.fortifyPerimeter: true` and concrete around it.
 - **Placement compatibility**: every object stands on a surface allowed by `canPlaceOnSurface` (see catalog.md).
+- **Railroad rules**: `RAIL` lines must never be interrupted by foreign objects or other surfaces (dead-ends into open ground are allowed). Turns may only use the 3×3 `rail_curve` (at most 2 per map; no sharp 90° corners). Any map with `RAIL` must include at least one coupled train consist (`LOCOMOTIVE` directly adjacent to `RAIL_CAR`); standalone single or coupled `RAIL_CAR`s are also allowed on straight track.
 
 ### 6. Tactical minimum
 
@@ -85,7 +86,7 @@ Gameplay wins over realism, but resolve conflicts by moving, compressing or addi
 
 ### 7. Draft enemy roster
 
-- Total budget **20–32 tanks**; `initialSpawnCount: 4`, `maxConcurrent: 8`; `enemyPool` equals the flattened `encounters[].enemies` in order.
+- Total budget **20–32 tanks**; `initialSpawnCount: 4`, `maxConcurrent: 8`; define the roster only in `enemies.encounters[].enemies` (do not add a separate `enemyPool`).
 - At most **3 encounters** (probe → pressure → finale), each with its own entrances and a `patrolRoute` that follows the routes you designed.
 - Types follow the terrain: `HOVER` only with water; `STEALTH` / `FLAMETHROWER` with forest and cover; `HOWITZER` / `STRIKER` with long sightlines; `SAPPER` with chokepoints; `ENGINEER` with lots of brick. `STANDARD` / `ARMOR` / `SCOUT` fill the rest.
 - **No sector bosses** unless the user asks.
@@ -99,7 +100,7 @@ node .agents/skills/create-map/scripts/audit-map.mjs <map-json-path>
 node .agents/skills/create-map/scripts/tactics-check.mjs <map-json-path>
 ```
 
-All three must report no errors / issues. `tactics-check` measures the tactical minimum: object-free squares (`open_area`), the best single overwatch cell in the player half (`overwatch`, using player sight and shot-blocking tiles), and ambush cover near routes per sector (`ambush`). It is a heuristic: if you keep a flagged feature on purpose, say why in the delivery report. Also check by reading the grid: entrance gaps on row 0, no full-width water line, breaches listed in `design` really exist, `enemyPool` matches the encounters. Scripts are evidence, not proof of realism or fun.
+All three must report no errors / issues. `tactics-check` measures the tactical minimum: object-free squares (`open_area`), the best single overwatch cell in the player half (`overwatch`, using player sight and shot-blocking tiles), and ambush cover near routes per sector (`ambush`). It is a heuristic: if you keep a flagged feature on purpose, say why in the delivery report. Also check by reading the grid: entrance gaps on row 0, no full-width water line, breaches listed in `design` really exist. Scripts are evidence, not proof of realism or fun.
 
 ### 9. Verify visually in the editor (required)
 

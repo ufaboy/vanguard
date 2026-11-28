@@ -10,7 +10,7 @@ const SEP = null;
 const LINKS = [
   ['', 'HOME'], ['campaign', 'CAMPAIGN'], ['survival', 'SURVIVAL'], ['contracts', 'CONTRACTS'],
   SEP,
-  ['how-to-play', 'HOW TO PLAY'], ['walkthrough', 'WALKTHROUGH'], ['enemies', 'ENEMIES'], ['arsenal', 'ARSENAL'],
+  ['how-to-play', 'HOW TO PLAY'], ['campaign/walkthrough', 'WALKTHROUGH'], ['enemies', 'ENEMIES'], ['arsenal', 'ARSENAL'],
   ['destructible-terrain', 'TERRAIN'], ['webgl-tank-game', 'TECH'], ['changelog', 'CHANGELOG'], ['about', 'ABOUT'],
   ['privacy-policy', 'PRIVACY POLICY'], ['terms', 'TERMS'], ['contact', 'CONTACT'],
   SEP,
@@ -23,8 +23,9 @@ const LINKS = [
         {LINKS.map((link) => link === SEP
           ? <span class="footer-sep" aria-hidden="true">|</span>
           : link[0] === slug
-            ? <a class="is-active" aria-current="page" href={pageHref(link[0], locale)}>{t(link[1])}</a>
-            : <a href={pageHref(link[0], locale)}>{t(link[1])}</a>)}
+            ? <a class="is-active" aria-current="page" href={pageHref(link[0], locale, slug)}>{t(link[1])}</a>
+            : <a href={pageHref(link[0], locale, slug)}>{t(link[1])}</a>)}
+        <a href="https://mobile.battletank.online/">{t('MOBILE VERSION')}</a>
         {isLocalized(slug) && <details class="lang-menu" data-lang-menu>
           <summary aria-label={t('Language')}><span data-lang-current>{locale.toUpperCase()}</span></summary>
           <div class="lang-menu-list">

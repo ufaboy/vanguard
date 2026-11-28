@@ -7,29 +7,13 @@
   "subtitle": "SECTOR 03 // VERSAILLES: DEFEND THE PALACE HQ",
   "objective": "Defend the palace HQ",
   "gameMode": "base_defense",
-  "rules": {
-    "spawnSectorBossOnClear": false,
-    "defeatOnBaseLoss": true
-  },
+  "rules": {"spawnSectorBossOnClear":false,"defeatOnBaseLoss":true},
   "gridSize": 40,
   "tileSize": 2,
-  "baseCell": {
-    "row": 39,
-    "col": 19
-  },
-  "playerSpawnCell": {
-    "row": 35,
-    "col": 20
-  },
-  "environment": {
-    "theme": "urban",
-    "tint": "#f4e8c6",
-    "fogColor": "#1c2a22",
-    "groundColor": "#6f7058"
-  },
-  "completionReward": {
-    "credits": 350
-  },
+  "baseCell": {"row":39,"col":19},
+  "playerSpawnCell": {"row":35,"col":20},
+  "environment": {"theme":"urban","tint":"#f4e8c6","fogColor":"#1c2a22","groundColor":"#6f7058"},
+  "completionReward": {"credits":350},
   "design": {
     "enemySide": "north",
     "tacticalIdentity": "A light defence of the Palace of Versailles in late spring: columns cross the park around the Grand Canal, the bosquets and the Trianon and must go around the palace to reach the HQ in the Marble Court. Each wave brings one new enemy kind: a sapper, a flamethrower and a stealth tank in the groves, a jammer, then a kamikaze.",
@@ -57,659 +41,121 @@
     "breaches": [
       {
         "name": "Orangerie terrace wall",
-        "cells": [
-          {
-            "row": 27,
-            "col": 7
-          },
-          {
-            "row": 28,
-            "col": 7
-          },
-          {
-            "row": 29,
-            "col": 7
-          }
-        ],
-        "start": {
-          "row": 28,
-          "col": 6
-        },
-        "end": {
-          "row": 28,
-          "col": 8
-        },
+        "cells": [{"row":27,"col":7},{"row":28,"col":7},{"row":29,"col":7}],
+        "start": {"row":28,"col":6},
+        "end": {"row":28,"col":8},
         "purpose": "The terrace wall separates the Orangerie parterre from the west lane; blast it to cut from the lake straight to the south wing."
       },
       {
         "name": "North parterre wall",
-        "cells": [
-          {
-            "row": 26,
-            "col": 32
-          },
-          {
-            "row": 27,
-            "col": 32
-          },
-          {
-            "row": 28,
-            "col": 32
-          },
-          {
-            "row": 29,
-            "col": 32
-          }
-        ],
-        "start": {
-          "row": 27,
-          "col": 31
-        },
-        "end": {
-          "row": 27,
-          "col": 33
-        },
+        "cells": [{"row":26,"col":32},{"row":27,"col":32},{"row":28,"col":32},{"row":29,"col":32}],
+        "start": {"row":27,"col":31},
+        "end": {"row":27,"col":33},
         "purpose": "The parterre wall closes the east terrace off from the north parterre; open it for a short east flank to the north wing."
       },
       {
         "name": "Queen's grove hedge gate",
-        "cells": [
-          {
-            "row": 23,
-            "col": 28
-          },
-          {
-            "row": 24,
-            "col": 28
-          }
-        ],
-        "start": {
-          "row": 24,
-          "col": 27
-        },
-        "end": {
-          "row": 24,
-          "col": 29
-        },
+        "cells": [{"row":23,"col":28},{"row":24,"col":28}],
+        "start": {"row":24,"col":27},
+        "end": {"row":24,"col":29},
         "purpose": "A walled gate closes the Queen's grove; breach it to cross the east bosquets without the long allee detour."
       }
     ]
   },
-  "landmarks3d": [
-    {
-      "kind": "APOLLO_FOUNTAIN",
-      "row": 11,
-      "col": 19
-    },
-    {
-      "kind": "LATONA_FOUNTAIN",
-      "row": 25,
-      "col": 19
-    },
-    {
-      "kind": "VERSAILLES_PALACE",
-      "row": 31,
-      "col": 12
-    }
-  ],
   "decoration": {
     "version": 1,
     "seed": 1682,
     "theme": "urban",
     "zones": [
-      {
-        "id": "outer-park",
-        "bounds": [
-          0,
-          0,
-          13,
-          39
-        ],
-        "surface": "dirt",
-        "density": 0.2,
-        "details": [
-          "leaves",
-          "weeds"
-        ]
-      },
-      {
-        "id": "bosquets",
-        "bounds": [
-          14,
-          6,
-          26,
-          33
-        ],
-        "surface": "gravel",
-        "density": 0.16,
-        "details": [
-          "leaves"
-        ]
-      },
-      {
-        "id": "terrace",
-        "bounds": [
-          27,
-          9,
-          30,
-          30
-        ],
-        "surface": "gravel",
-        "density": 0.12,
-        "details": [
-          "tracks"
-        ]
-      },
-      {
-        "id": "orangerie",
-        "bounds": [
-          27,
-          0,
-          31,
-          8
-        ],
-        "surface": "gravel",
-        "density": 0.18,
-        "details": [
-          "leaves",
-          "cracks"
-        ]
-      },
-      {
-        "id": "marble-court",
-        "bounds": [
-          35,
-          12,
-          39,
-          27
-        ],
-        "surface": "pavers",
-        "density": 0.14,
-        "details": [
-          "cracks",
-          "tracks"
-        ]
-      },
-      {
-        "id": "town",
-        "bounds": [
-          34,
-          0,
-          39,
-          39
-        ],
-        "surface": "pavers",
-        "density": 0.2,
-        "details": [
-          "cracks",
-          "patches"
-        ]
-      }
+      {"id":"outer-park","bounds":[0,0,13,39],"surface":"dirt","density":0.2,"details":["leaves","weeds"]},
+      {"id":"bosquets","bounds":[14,6,26,33],"surface":"gravel","density":0.16,"details":["leaves"]},
+      {"id":"terrace","bounds":[27,9,30,30],"surface":"gravel","density":0.12,"details":["tracks"]},
+      {"id":"orangerie","bounds":[27,0,31,8],"surface":"gravel","density":0.18,"details":["leaves","cracks"]},
+      {"id":"marble-court","bounds":[35,12,39,27],"surface":"pavers","density":0.14,"details":["cracks","tracks"]},
+      {"id":"town","bounds":[34,0,39,39],"surface":"pavers","density":0.2,"details":["cracks","patches"]}
     ],
     "paths": [
-      {
-        "id": "tapis-vert-west",
-        "points": [
-          [
-            14,
-            17
-          ],
-          [
-            27,
-            17
-          ]
-        ],
-        "width": 1,
-        "surface": "gravel",
-        "marking": "none"
-      },
-      {
-        "id": "tapis-vert-east",
-        "points": [
-          [
-            14,
-            22
-          ],
-          [
-            27,
-            22
-          ]
-        ],
-        "width": 1,
-        "surface": "gravel",
-        "marking": "none"
-      }
-    ],
-    "landmarks": [
-      {
-        "id": "label-grand-canal",
-        "kind": "label",
-        "row": 7,
-        "col": 26,
-        "size": 1.8,
-        "text": "GRAND CANAL"
-      },
-      {
-        "id": "label-tapis-vert",
-        "kind": "label",
-        "row": 18,
-        "col": 19,
-        "size": 1.5,
-        "text": "TAPIS VERT"
-      },
-      {
-        "id": "label-orangerie",
-        "kind": "label",
-        "row": 29,
-        "col": 4,
-        "size": 1.4,
-        "text": "ORANGERIE"
-      },
-      {
-        "id": "label-suisses",
-        "kind": "label",
-        "row": 27,
-        "col": 2,
-        "size": 1.2,
-        "text": "PIECE DES SUISSES"
-      },
-      {
-        "id": "label-trianon",
-        "kind": "label",
-        "row": 4,
-        "col": 35,
-        "size": 1.4,
-        "text": "TRIANON"
-      },
-      {
-        "id": "label-neptune",
-        "kind": "label",
-        "row": 22,
-        "col": 35,
-        "size": 1.3,
-        "text": "NEPTUNE"
-      },
-      {
-        "id": "label-palace",
-        "kind": "label",
-        "row": 30,
-        "col": 19,
-        "size": 1.8,
-        "text": "PALACE OF VERSAILLES"
-      },
-      {
-        "id": "label-marble-court",
-        "kind": "label",
-        "row": 36,
-        "col": 23,
-        "size": 1.3,
-        "text": "MARBLE COURT"
-      },
-      {
-        "id": "parking-commun",
-        "kind": "parking",
-        "row": 36,
-        "col": 5,
-        "size": 2,
-        "rotation": 0
-      },
-      {
-        "id": "manhole-court",
-        "kind": "manhole",
-        "row": 38,
-        "col": 24
-      }
+      {"id":"tapis-vert-west","points":[[14,17],[27,17]],"width":1,"surface":"gravel","marking":"none"},
+      {"id":"tapis-vert-east","points":[[14,22],[27,22]],"width":1,"surface":"gravel","marking":"none"}
     ]
   },
   "enemies": {
     "initialSpawnCount": 4,
     "maxConcurrent": 5,
     "spawnIntervalSec": 2.4,
-    "nextWave": {
-      "when": "cleared",
-      "delaySec": 3
-    },
+    "nextWave": {"when":"cleared","delaySec":3},
     "entrances": [
-      {
-        "id": "allee-de-saint-cyr",
-        "row": 0,
-        "col": 4
-      },
-      {
-        "id": "canal-head",
-        "row": 0,
-        "col": 13
-      },
-      {
-        "id": "trianon-drive",
-        "row": 0,
-        "col": 30
-      }
+      {"id":"allee-de-saint-cyr","row":0,"col":4},
+      {"id":"canal-head","row":0,"col":13},
+      {"id":"trianon-drive","row":0,"col":30}
     ],
     "encounters": [
       {
         "id": "park-scouts",
         "label": "GRAND CANAL: Scouts race through the park toward the palace. Guard the Marble Court.",
-        "enemies": [
-          "SCOUT",
-          "SCOUT",
-          "SCOUT",
-          "SCOUT"
-        ],
-        "initialCells": [
-          {
-            "row": 1,
-            "col": 4
-          },
-          {
-            "row": 1,
-            "col": 13
-          },
-          {
-            "row": 1,
-            "col": 30
-          },
-          {
-            "row": 7,
-            "col": 8
-          }
-        ],
-        "entrances": [
-          "allee-de-saint-cyr",
-          "canal-head",
-          "trianon-drive"
-        ],
-        "patrolRoute": [
-          {
-            "row": 10,
-            "col": 12
-          },
-          {
-            "row": 20,
-            "col": 17
-          },
-          {
-            "row": 30,
-            "col": 6
-          },
-          {
-            "row": 34,
-            "col": 10
-          },
-          {
-            "row": 36,
-            "col": 16
-          }
-        ],
+        "enemies": ["SCOUT","SCOUT","SCOUT","SCOUT"],
+        "initialCells": [{"row":1,"col":4},{"row":1,"col":13},{"row":1,"col":30},{"row":7,"col":8}],
+        "entrances": ["allee-de-saint-cyr","canal-head","trianon-drive"],
+        "patrolRoute": [{"row":10,"col":12},{"row":20,"col":17},{"row":30,"col":6},{"row":34,"col":10},{"row":36,"col":16}],
         "recoverySec": 0
       },
       {
         "id": "orangerie-sapper",
         "label": "ORANGERIE: A sapper mines the west allees. Clear the mines before the column follows.",
-        "enemies": [
-          "SAPPER",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD"
-        ],
-        "entrances": [
-          "allee-de-saint-cyr",
-          "canal-head"
-        ],
-        "patrolRoute": [
-          {
-            "row": 8,
-            "col": 4
-          },
-          {
-            "row": 17,
-            "col": 4
-          },
-          {
-            "row": 27,
-            "col": 6
-          },
-          {
-            "row": 34,
-            "col": 7
-          },
-          {
-            "row": 36,
-            "col": 13
-          }
-        ],
+        "enemies": ["SAPPER","STANDARD","STANDARD","STANDARD"],
+        "entrances": ["allee-de-saint-cyr","canal-head"],
+        "patrolRoute": [{"row":8,"col":4},{"row":17,"col":4},{"row":27,"col":6},{"row":34,"col":7},{"row":36,"col":13}],
         "recoverySec": 0
       },
       {
         "id": "bosquet-ambush",
         "label": "BOSQUETS: A flamethrower and a stealth tank lurk in the groves. Do not drive in blind.",
-        "enemies": [
-          "FLAMETHROWER",
-          "STEALTH",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD"
-        ],
-        "entrances": [
-          "canal-head",
-          "trianon-drive",
-          "allee-de-saint-cyr"
-        ],
+        "enemies": ["FLAMETHROWER","STEALTH","STANDARD","STANDARD","STANDARD"],
+        "entrances": ["canal-head","trianon-drive","allee-de-saint-cyr"],
         "patrolRoute": [
-          {
-            "row": 10,
-            "col": 26
-          },
-          {
-            "row": 17,
-            "col": 28
-          },
-          {
-            "row": 22,
-            "col": 24
-          },
-          {
-            "row": 30,
-            "col": 33
-          },
-          {
-            "row": 34,
-            "col": 30
-          },
-          {
-            "row": 36,
-            "col": 25
-          }
+          {"row":10,"col":26},
+          {"row":17,"col":28},
+          {"row":22,"col":24},
+          {"row":30,"col":33},
+          {"row":34,"col":30},
+          {"row":36,"col":25}
         ],
         "recoverySec": 0
       },
       {
         "id": "trianon-jammer",
         "label": "TRIANON: A jammer screens a column from the Trianon. Your radar and missiles will fail near it.",
-        "enemies": [
-          "JAMMER",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD",
-          "STANDARD"
-        ],
-        "entrances": [
-          "trianon-drive"
-        ],
-        "patrolRoute": [
-          {
-            "row": 2,
-            "col": 31
-          },
-          {
-            "row": 14,
-            "col": 34
-          },
-          {
-            "row": 24,
-            "col": 33
-          },
-          {
-            "row": 30,
-            "col": 34
-          },
-          {
-            "row": 34,
-            "col": 32
-          },
-          {
-            "row": 36,
-            "col": 24
-          }
-        ],
+        "enemies": ["JAMMER","SCOUT","STANDARD","STANDARD","STANDARD"],
+        "entrances": ["trianon-drive"],
+        "patrolRoute": [{"row":2,"col":31},{"row":14,"col":34},{"row":24,"col":33},{"row":30,"col":34},{"row":34,"col":32},{"row":36,"col":24}],
         "recoverySec": 0
       },
       {
         "id": "kamikaze-rush",
         "label": "ROYAL ALLEE: A kamikaze charges the palace with the last column. Stop it before it reaches the HQ.",
-        "enemies": [
-          "KAMIKAZE",
-          "SCOUT",
-          "STANDARD",
-          "STANDARD"
-        ],
-        "entrances": [
-          "canal-head",
-          "allee-de-saint-cyr",
-          "trianon-drive"
-        ],
-        "patrolRoute": [
-          {
-            "row": 14,
-            "col": 17
-          },
-          {
-            "row": 23,
-            "col": 22
-          },
-          {
-            "row": 30,
-            "col": 31
-          },
-          {
-            "row": 34,
-            "col": 26
-          },
-          {
-            "row": 37,
-            "col": 23
-          }
-        ],
+        "enemies": ["KAMIKAZE","SCOUT","STANDARD","STANDARD"],
+        "entrances": ["canal-head","allee-de-saint-cyr","trianon-drive"],
+        "patrolRoute": [{"row":14,"col":17},{"row":23,"col":22},{"row":30,"col":31},{"row":34,"col":26},{"row":37,"col":23}],
         "recoverySec": 0
       }
     ]
   },
-  "enemyPool": [
-    "SCOUT",
-    "SCOUT",
-    "SCOUT",
-    "SCOUT",
-    "SAPPER",
-    "STANDARD",
-    "STANDARD",
-    "STANDARD",
-    "FLAMETHROWER",
-    "STEALTH",
-    "STANDARD",
-    "STANDARD",
-    "STANDARD",
-    "JAMMER",
-    "SCOUT",
-    "STANDARD",
-    "STANDARD",
-    "STANDARD",
-    "KAMIKAZE",
-    "SCOUT",
-    "STANDARD",
-    "STANDARD"
-  ],
-  "surfaceLayout": [
-    "VVVVRRVVVVVVVRRVVVVVVVVVVVVVVVRRVVVVVVVV",
-    "VVVVRRVVVVVVVRRVVVWWWWVVVVVVVVRRVVVVVVVV",
-    "VVVVRRRRRRRRRRRVVVWWWWVVVVVVVVRRRR....RV",
-    "VVVVRRRRRRRRRRRVVVWWWWVVVVVVVVRRRR....RV",
-    "VVVVVVVWWWWWWWWWWWWWWWWWWWWWWWWWWVVVVVVV",
-    "VVVVVVVWWWWWWWWWWWWWWWWWWWWWWWWWWVVVVVVV",
-    "VVVRRVVVVVVVVVVVVVWWWWVVVVVVVVVVVVRRVVVV",
-    "VVVRRVVVVVVVVVVVVVWWWWVVVVVVVVVVVVRRVVVV",
-    "VVVRRVVVVVVVVVVVVVWWWWVVVVVVVVVVVVRRWWVV",
-    "VVVRRVVVVVVVVVVVVVWWWWVVVVVVVVVVVVRRWWVV",
-    "VVVRRVVVVVVVVVVVVWWWWWWVVVVVVVVVVVRRVVVV",
-    "VVVRRVVVVVVVVVVVVWW..WWVVVVVVVVVVVRRVVVV",
-    "VVVRRVVVVVVVVVVVVWW..WWVVVVVVVVVVVRRVVVV",
-    "VVVRRVVVVVVVVVVVVWWWWWWVVVVVVVVVVVRRVVVV",
-    "VVVRRVVVVVV.VVVVV.VVVV.VVVVV.VVVVVRRVVVV",
-    "VVVRRVVVVVV.VVVVV.VVVV.VVVVV.VVVVVRRVVVV",
-    "VVVRRVVVVVV.VVVVV.VVVV.VVVVV.VVVVVRRVVVV",
-    "VVVRRV............VVVV............RRVVVV",
-    "VVVRRVVVVVV.VVVVV.VVVV.VVVVV.VVVVVRRVVVV",
-    "WWWWWWVVVVV.VVVVV.VVVV.VVVVV.VVVVVVVVVVV",
-    "WWWWWVVVVVV.VVVVV.VVVV.VVVVV.VVVVVWWWWVV",
-    "WWWWWVVVVVV.VVVVV.VVVV.VVVVV.VVVVVWWWWVV",
-    "WWWWWV............VVVV..........VVVVVVVV",
-    "WWWWWVVVVVV.VVVVV.VVVV.VVVVV.VVVVVVVVVVV",
-    "WWWWWVVVVVV.VVVVVVVVVVVVVVVV.VVVVVVVVVVV",
-    "WWWWWWVVVVV.VVVVVVV..VVVVVVV.VVVVVVVVVVV",
-    "VVVVVVVVVVV.VVVVVVV..VVVVVVV.VVVVVVVVVVV",
-    "...............VVVVVVVVVV......VVVVVVVVV",
-    ".............WWWW......WWWW....VVVVVVVVV",
-    ".............WWWW......WWWW....VVVVVVVVV",
-    "...............................VVVVVVVVV",
-    "....L....VVV................VVVVVVVVVVVV",
-    ".........VVV................VVVVVVVVVVVV",
-    ".........VVV................VVVVVVVVVVVV",
-    "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
-    "........................................",
-    "RRRRRRRRRR....................RRRRRRRRRR",
-    "RR....................................RR",
-    "RR....................................RR",
-    "RR....................................RR"
-  ],
-  "objectLayout": [
-    "AAAF..FF...FF..FFFFFFFF....FFF..FFFFFAAA",
-    "AAAF..FF..QFF..FFF...........F..FAAAAAAF",
-    "FFFF...........FFF....FFFFFFFF...A.Q..AF",
-    "FFFF...........XFF....FFFFFFFX...A....AF",
-    "FFFFFFF..........................FFFFFFF",
-    "FFFFFFF..........................FFFAAAF",
-    "FFF..FF..FFFFFF..F....F..FFFFFF..F..AAAF",
-    "FFF..FF..FF...F..F....F..FFFFFF..F..FFFF",
-    "FFF..FF..FFFFKF..F....FQ.F...FF..F....FF",
-    "FFF..FF..FFFFFF..F....F..FFFFFF..F....FF",
-    "FFF..FFFF......................FFFAAAFFF",
-    "FFF..FFFFFFFFFFFF......FFFFFFFFFFF..FFFF",
-    "FFF..X...FFFFFFFF......FFFFFFFF.....FFFF",
-    "FFF......FFFFFFFF......FFFFFFFF..X..FFFF",
-    "......FFFFF.FFFFF......FFFFF.FFFFF......",
-    "......FFFFF.FFFFF.F..F.FFFFF.FFFFF......",
-    "....K.FFFFF.FFFFF......FFFFF.FFFFF.K....",
-    ".........................UU.............",
-    "FFF...FFFFF.FFFFF......FFFFF....FF......",
-    "......FC.CF.FFFFF.F..F.FFFFF..Q.FF......",
-    "......F..QC.FFFFF......FFFFF....FF......",
-    "......FC.CF.FFFFF......FFFFF.FFFFF......",
-    "........................................",
-    "......FFFFF.....F......FFFFFB....FF..F..",
-    "......FFFFF....KF......FFFFFB....F..Q...",
-    "......FFFFF.....F......FFFFF.....F.F..F.",
-    "FFF...FFFFF.FFFFF......FFFFF.FFFBF......",
-    ".......B........................B.F..F..",
-    ".F.F.F.B........................B.......",
-    "..Q....B........................B..FFFF.",
-    ".F.F.F...........................K.FFFF.",
-    "..DD....PPPP................PPPP.F..DD..",
-    "AAAAAAA.PPPP................PPPP.F......",
-    "AAAAAAA.PPPP................PPPP.F......",
-    "....K..............................K....",
-    "..PPPPPPPPPP................PPPPPPPPPP..",
-    "..........PP................PP..........",
-    "..PPPP.AAAPP......CCCC......PPAAAA.PPP..",
-    "..PPPP.AAAPP.............Q..PPAAAA.PPP..",
-    "..PPPP.AAA.........HH.........AAAA.PPP.."
-  ]
+  "terrain": {
+    "grass": [[0,0,6,4],[0,6,2,7],[0,15,1,15],[0,32,2,8],[1,15,3,3],[1,22,3,8],[2,39,32,1],[4,4,2,3],[4,33,2,6],[6,0,13,3],[6,5,4,13],[6,22,4,12],[6,36,2,3],[8,38,26,1],[10,5,4,12],[10,23,4,11],[10,36,10,2],[14,5,3,6],[14,12,3,5],[14,18,11,4],[14,23,3,5],[14,29,3,5],[17,5,2,1],[18,6,4,5],[18,12,4,5],[18,23,4,5],[18,29,4,5],[19,34,1,2],[20,5,5,1],[22,32,12,6],[23,6,4,5],[23,12,4,5],[23,23,4,5],[23,29,4,3],[24,17,4,1],[24,22,4,1],[25,18,3,1],[25,21,3,1],[26,0,1,6],[27,15,1,2],[27,19,1,2],[27,23,1,2],[27,31,7,1],[31,9,3,3],[31,28,3,3]],
+    "road": [[0,4,4,2],[0,13,4,2],[0,30,4,2],[2,6,2,7],[2,32,2,1],[6,3,13,2],[6,34,4,2],[11,34,8,2],[34,0,1,40],[36,0,1,10],[36,30,1,10],[37,0,3,2],[37,38,3,2]],
+    "water": [[1,18,10,4],[4,7,2,11],[4,22,2,11],[8,36,2,2],[10,17,4,1],[10,22,4,1],[11,18,3,1],[11,21,3,1],[13,19,1,2],[19,0,1,6],[20,0,6,5],[20,34,2,4],[25,5],[28,13,2,4],[28,23,2,4]],
+    "oil": [[31,2,1,3]],
+    "forest": [[0,3,6,1],[0,6,2,2],[0,11,2,2],[0,15,1,8],[0,27,1,3],[0,32,1,5],[1,15,2,3],[1,29,2,1],[1,32],[1,39,13,1],[2,0,12,3],[2,22,2,7],[3,16,1,2],[4,4,2,3],[4,33,1,6],[5,33,1,3],[6,5,6,2],[6,9,1,6],[6,17,4,1],[6,22,4,1],[6,25,2,6],[6,33,6,1],[7,9,3,2],[7,14,3,1],[7,36,1,3],[8,11,2,2],[8,25,2,1],[8,29,2,2],[8,38,6,1],[9,13],[9,26,1,3],[10,7,2,2],[10,31,2,2],[10,37,4,1],[11,9,3,8],[11,23,3,8],[11,36,3,1],[14,6,3,5],[14,12,3,5],[14,23,3,5],[14,29,3,5],[15,18],[15,21],[18,0,1,3],[18,6,1,5],[18,12,4,5],[18,23,4,5],[18,32,4,2],[19,6,3,1],[19,10],[19,18],[19,21],[21,10],[21,29,1,3],[23,6,4,5],[23,16,4,1],[23,23,4,5],[23,33,1,2],[23,37],[24,33,3,1],[25,35],[25,38],[26,0,1,3],[26,12,1,4],[26,29,1,3],[27,34],[27,37],[28,1],[28,3],[28,5],[29,35,2,4],[30,1],[30,3],[30,5],[31,33,3,1]],
+    "boxes": [[1,10],[2,35],[8,23],[19,30],[20,9],[24,36],[29,2],[38,25]],
+    "hedgehog": [[3,15],[3,29],[12,5],[13,33]],
+    "crater": [[8,13],[16,4],[16,35],[24,15],[30,33],[34,4],[34,35]],
+    "rubble": [[17,25,1,2]],
+    "concrete": [[19,7],[19,9],[20,10],[21,7],[21,9],[37,18,1,4]],
+    "brick": [[23,28,2,1],[26,32,4,1],[27,7,3,1]],
+    "barrel": [[31,2,1,2],[31,36,1,2]],
+    "house1": [[0,0,2,3,7],[0,37,1,3,1],[1,33,1,6,1],[2,33,2,1,1],[2,38,2,1,1],[5,36,2,3,0],[10,34,1,3,2],[32,0,2,7,5],[37,7,3,3,7],[37,30,3,4,3]],
+    "house2": [[31,8,3,4,7],[31,28,3,4,4],[35,2,1,10,0],[35,28,1,10,3],[36,10,3,2,0],[36,28,3,2,3],[37,2,3,4,0],[37,35,3,3,0]],
+    "landmark": [["APOLLO_FOUNTAIN",11,19],["LATONA_FOUNTAIN",25,19],["VERSAILLES_PALACE",31,12]],
+    "decal": [["label",7,26,1.8,"GRAND CANAL"],["label",18,19,1.5,"TAPIS VERT"],["label",29,4,1.4,"ORANGERIE"],["label",27,2,1.2,"PIECE DES SUISSES"],["label",4,35,1.4,"TRIANON"],["label",22,35,1.3,"NEPTUNE"],["label",30,19,1.8,"PALACE OF VERSAILLES"],["label",36,23,1.3,"MARBLE COURT"],["parking",36,5,2],["manhole",38,24]]
+  }
 }

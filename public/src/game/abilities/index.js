@@ -35,7 +35,7 @@ const ABILITIES = Object.freeze({
 });
 
 /** Ability objects for a tank config; unknown ids throw so a typo in tanks.js fails loudly. */
-export function resolveAbilities(ids = []) {
+function resolveAbilities(ids = []) {
   return ids.map((id) => {
     const ability = ABILITIES[id];
     if (!ability) throw new Error(`Unknown enemy ability "${id}"`);

@@ -265,7 +265,7 @@ export class PowerupsController {
     const hasEnemyBase = Boolean(engine._enemyBaseCell || engine.activeMapRules?.hasEnemyFortifiedBase);
     if (!hasEnemyBase) return null;
     if ((engine.enemies?.length || 0) > 0) return null;
-    if ((engine.vanguardRemainingToSpawn || 0) > 0) return null;
+    if ((engine.enemiesRemainingToSpawn || 0) > 0) return null;
     if (engine.activeMapRules?.spawnSectorBossOnClear && !engine.bossSpawned) return null;
 
     engine.enemyBaseClearAirDropTriggered = true;
@@ -287,10 +287,10 @@ export class PowerupsController {
     engine.airDrops ||= [];
     engine.airDropElapsed = (engine.airDropElapsed || 0) + dt;
     if (queue) {
-      const totalPool = Math.max(1, engine.initialVanguardCount || engine.vanguardRemainingToSpawn || 1);
+      const totalPool = Math.max(1, engine.initialEnemyCount || engine.enemiesRemainingToSpawn || 1);
       const activeNonBoss = (engine.enemies || []).filter((u) => !u.isBoss).length;
-      const remaining = (engine.vanguardRemainingToSpawn || 0) + activeNonBoss;
-      const progress = engine.initialVanguardCount > 0 ? 1 - remaining / totalPool : 0;
+      const remaining = (engine.enemiesRemainingToSpawn || 0) + activeNonBoss;
+      const progress = engine.initialEnemyCount > 0 ? 1 - remaining / totalPool : 0;
 
       for (const entry of queue) {
         if (entry.triggered) continue;
@@ -361,8 +361,8 @@ export class PowerupsController {
       ?? (engine.getPlayerMaxRepairKitCharges ? engine.getPlayerMaxRepairKitCharges() : getMaxRepairKitCharges(engine.upgrades?.frame || 1));
     const needsShells = (Number(config.shells) || 0) > 0 && engine.cannonAmmo < maxCannon;
     const curAps = engine.apsAmmo.reduce((sum, r) => sum + r, 0);
-    const needsAps = (Number(config.aps) || 0) > 0 && curAps < maxAps;
-    const needsMissiles = (Number(config.missiles) || 0) > 0 && engine.missileAmmo < maxMissiles;
+    const needsAps = Boolean(engine.apsOwned) && (Number(config.aps) || 0) > 0 && curAps < maxAps;
+    const needsMissiles = Boolean(engine.atgmOwned) && (Number(config.missiles) || 0) > 0 && engine.missileAmmo < maxMissiles;
     const needsRepairKits =
       (Number(config.repairKits) || 0) > 0 && (engine.repairKitState?.charges ?? 0) < maxRepairKits;
     return needsShells || needsAps || needsMissiles || needsRepairKits;
@@ -387,7 +387,7 @@ export class PowerupsController {
     }
 
     const maxAps = engine.getPlayerMaxApsAmmo ? engine.getPlayerMaxApsAmmo() : getMaxApsAmmo(engine.upgrades?.frame || 1);
-    const addAps = resolvePctAmount(maxAps, config.aps);
+    const addAps = engine.apsOwned ? resolvePctAmount(maxAps, config.aps) : 0;
     if (addAps > 0) {
       if (engine.addApsRounds) {
         engine.addApsRounds(addAps);
@@ -399,7 +399,7 @@ export class PowerupsController {
     }
 
     const maxMissiles = engine.getPlayerMaxMissileAmmo ? engine.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(engine.upgrades?.frame || 1);
-    const addMissiles = resolvePctAmount(maxMissiles, config.missiles);
+    const addMissiles = engine.atgmOwned ? resolvePctAmount(maxMissiles, config.missiles) : 0;
     if (addMissiles > 0) {
       engine.missileAmmo = Math.min(maxMissiles, engine.missileAmmo + addMissiles);
       parts.push(`ATGM ${engine.missileAmmo}/${maxMissiles}`);
@@ -419,7 +419,7 @@ export class PowerupsController {
       parts.push(`RM-1 ${engine.repairKitState.charges}/${maxRepairKits}`);
     }
 
-    if (engine.playerSave) {
+    if (engine.playerSave && !engine.isBattleActive?.()) {
       engine.playerSave.missileAmmo = engine.missileAmmo;
       engine.saveRepo?.savePlayerSave?.(engine.playerSave);
     }
@@ -487,6 +487,11 @@ export class PowerupsController {
 
       case POWERUP.EMP:
         engine.empTimer = POWERUP_TYPES[POWERUP.EMP].duration;
+        engine.screenShake = Math.max(engine.screenShake || 0, 0.55);
+        engine.fx?.empWave?.(engine.playerX, engine.playerZ, { radius: 44, duration: 1.45, global: true });
+        for (const e of engine.enemies || []) {
+          if (e && e.hp > 0) engine.fx?.electric?.(e.x, 0.85, e.z, 0x38bdf8, 3, 0.8);
+        }
         engine.setStatusBanner?.(
           t('EMP BLAST ACTIVATED! ALL HOSTILE ARMOR DISABLED FOR 10s!'),
           2.8
@@ -498,6 +503,7 @@ export class PowerupsController {
         break;
 
       case POWERUP.APS:
+        if (!engine.apsOwned) break;
         if (engine.addApsRounds) {
           engine.addApsRounds(APS.PICKUP_ROUNDS);
         } else {
@@ -523,13 +529,16 @@ export class PowerupsController {
       }
 
       case POWERUP.MISSILE: {
+        if (!engine.atgmOwned) break;
         const maxMissiles = engine.getPlayerMaxMissileAmmo ? engine.getPlayerMaxMissileAmmo() : getMaxMissileAmmo(engine.upgrades?.frame || 1);
         engine.missileAmmo = Math.min(
           maxMissiles,
           engine.missileAmmo + MISSILE.PICKUP_AMMO
         );
-        engine.playerSave.missileAmmo = engine.missileAmmo;
-        engine.saveRepo?.savePlayerSave?.(engine.playerSave);
+        if (engine.playerSave && !engine.isBattleActive?.()) {
+          engine.playerSave.missileAmmo = engine.missileAmmo;
+          engine.saveRepo?.savePlayerSave?.(engine.playerSave);
+        }
         engine.recomputePlayerStats?.(true);
         engine.setStatusBanner?.(
           t('HOMING ATGM MISSILE ACQUIRED ({missileAmmo}/{maxMissiles}) [SPACE / RMB]', { missileAmmo: engine.missileAmmo, maxMissiles }),

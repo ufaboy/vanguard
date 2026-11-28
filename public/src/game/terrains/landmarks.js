@@ -17,6 +17,7 @@
 import * as THREE from 'three';
 import { getSharedGltfLoader } from '../render/gltf-loader.js';
 import { autoDisposeOwned, disposeOwned, markOwned } from '../render/dispose.js';
+import { mergeStaticMeshes } from '../render/static-merge.js';
 
 const ALL = (cols, rows) => {
   const cells = [];
@@ -39,11 +40,6 @@ const LANDMARK_PACKS = Object.freeze({
   germany: '../../../models/landmarks/germany_landmarks.glb',
   rotterdam: '../../../models/landmarks/rotterdam_landmarks.glb',
 });
-
-/** Returns the GLB pack name that contains a given landmark kind. */
-export function getLandmarkPack(kind) {
-  return LANDMARK_SPECS[kind]?.pack || 'paris';
-}
 
 /** Cells `cols` of every row in a `cols` x `rows` footprint. */
 const COLUMNS = (cols, rows) => ALL(Math.max(...cols) + 1, rows).filter(([, dc]) => cols.includes(dc));
@@ -153,22 +149,44 @@ export const PLACEABLE_LANDMARKS = Object.freeze([
   'ERASMUS_BRIDGE',
 ]);
 
-/** Grid cells blocked by a `{ kind, row, col }` landmark entry. */
+function normalizeQuarterTurns(rotation = 0) {
+  return ((Math.round((Number(rotation) || 0) / 90) % 4) + 4) % 4;
+}
+
+/** Grid cells blocked by a `{ kind, row, col, rotation? }` landmark entry. */
 export function landmarkBlockedCells(entry) {
   const spec = LANDMARK_SPECS[entry?.kind];
   if (!spec) throw new Error(`Unknown landmark kind: ${entry?.kind}`);
-  return spec.blocked.map(([dr, dc]) => ({ row: entry.row + dr, col: entry.col + dc }));
+  const q = normalizeQuarterTurns(entry?.rotation);
+  return spec.blocked.map(([dr, dc]) => {
+    let rOff = dr;
+    let cOff = dc;
+    if (q === 1) {
+      rOff = spec.cols - 1 - dc;
+      cOff = dr;
+    } else if (q === 2) {
+      rOff = spec.rows - 1 - dr;
+      cOff = spec.cols - 1 - dc;
+    } else if (q === 3) {
+      rOff = dc;
+      cOff = spec.rows - 1 - dr;
+    }
+    return { row: entry.row + rOff, col: entry.col + cOff };
+  });
 }
 
 /** World-space centre of a landmark footprint whose top-left cell is (row, col). */
-export function landmarkFootprintCenter(kind, row, col, gridToWorld) {
+export function landmarkFootprintCenter(kind, row, col, gridToWorld, rotation = 0) {
   const spec = LANDMARK_SPECS[kind];
   if (!spec) throw new Error(`Unknown landmark kind: ${kind}`);
+  const q = normalizeQuarterTurns(rotation);
+  const effCols = q % 2 === 1 ? spec.rows : spec.cols;
+  const effRows = q % 2 === 1 ? spec.cols : spec.rows;
   const topLeft = gridToWorld(row, col);
   const cell = 2.0;
   return {
-    x: topLeft.x + ((spec.cols - 1) * cell) / 2,
-    z: topLeft.z + ((spec.rows - 1) * cell) / 2,
+    x: topLeft.x + ((effCols - 1) * cell) / 2,
+    z: topLeft.z + ((effRows - 1) * cell) / 2,
   };
 }
 
@@ -477,7 +495,8 @@ export class LandmarkModels {
     for (const sz of [-1, 1]) {
       box(width + 0.5, 0.59, 0.45, m.stone, 0, -0.225, sz * (halfL - 0.05));
     }
-    return markOwned(group, { geometries: true, materials: false });
+    // One draw per material instead of one per baluster / pier (~65 meshes per bridge)
+    return markOwned(mergeStaticMeshes(group, { disposeSources: true }), { geometries: true, materials: false });
   }
 
   /** Swaps an existing landmark group (e.g. ELYSEE -> ELYSEE_RUINED when HQ falls). */

@@ -519,12 +519,12 @@ export function recordSurvivalRun(playerSave, survivalState, kills = 0) {
 export function buildSurvivalHudSnapshot(
   survivalState,
   activeEnemiesCount = 0,
-  vanguardRemaining = 0
+  enemiesRemaining = 0
 ) {
   if (!survivalState) return null;
   const spec = survivalState.waveSpec;
   const nextSpec = survivalState.nextWaveSpec;
-  const bossPending = spec?.isBossWave && vanguardRemaining === 0 && activeEnemiesCount === 0 ? 1 : 0;
+  const bossPending = spec?.isBossWave && enemiesRemaining === 0 && activeEnemiesCount === 0 ? 1 : 0;
   const elapsedSec = Math.floor(survivalState.elapsedSec || 0);
   const holdTargetSec = survivalState.holdTargetSec || SURVIVAL_CONFIG.HOLD_DURATION_SEC;
   const holdRemainingSec = Math.max(0, Math.ceil(holdTargetSec - (survivalState.elapsedSec || 0)));
@@ -550,7 +550,7 @@ export function buildSurvivalHudSnapshot(
     victoryAchieved: Boolean(survivalState.victoryAchieved),
     overtime: Boolean(survivalState.overtime),
     bossesDefeated: survivalState.bossesDefeated || 0,
-    hostilesRemaining: activeEnemiesCount + vanguardRemaining + bossPending,
+    hostilesRemaining: activeEnemiesCount + enemiesRemaining + bossPending,
     totalWaveHostiles: spec?.totalHostiles || 1,
     waveRewardCredits: spec?.waveRewardCredits || 300,
     nextWaveNumber: nextSpec?.wave || survivalState.wave + 1,

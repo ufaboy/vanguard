@@ -7,9 +7,16 @@ const R_CENTER = 100;
 const R_MAP = 80;
 const R_BEZEL = 86;
 const R_OUTER = 92;
+const R_CARDINAL = 89;
 const TERRAIN_CELL_PX = 6;
 const TERRAIN_CANVAS_PX = GRID_SIZE * TERRAIN_CELL_PX;
 const FOV_HALF_ANGLE_RAD = (42 * Math.PI) / 180;
+const DEFAULT_CAMERA_AZIMUTH = Math.PI * 0.25;
+
+function getRadarCameraRotationRad(cameraAzimuth) {
+  const azimuth = Number.isFinite(cameraAzimuth) ? cameraAzimuth : DEFAULT_CAMERA_AZIMUTH;
+  return azimuth - DEFAULT_CAMERA_AZIMUTH;
+}
 
 function buildCompassTicksSvg() {
   const parts = [];
@@ -38,9 +45,9 @@ function buildCompassTicksSvg() {
   return parts.join('');
 }
 
-function buildCardinalBadge(cx, cy, label) {
+function buildCardinalBadge(cx, cy, label, key) {
   return `
-    <g transform="translate(${cx}, ${cy})">
+    <g data-mm="${key}" transform="translate(${cx}, ${cy})">
       <polygon points="-8,-6.5 8,-6.5 9.5,-4.5 9.5,4.5 8,6.5 -8,6.5 -9.5,4.5 -9.5,-4.5" fill="#15191e" stroke="rgba(255,255,255,0.22)" stroke-width="0.9" />
       <text x="0" y="0.4" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" font-size="10.5" font-weight="800" font-family="system-ui, -apple-system, sans-serif">${label}</text>
     </g>
@@ -88,6 +95,7 @@ const MINIMAP_SKELETON = `
         <g data-mm="contract"></g>
         <rect data-mm="hq" x="97" y="97" width="6" height="6" rx="0.8" fill="#22c55e" stroke="#052e16" stroke-width="0.7" />
         <g data-mm="loot"></g>
+        <g data-mm="mines"></g>
         <g data-mm="contacts"></g>
 
         <!-- Player Tank Silhouette (centered) -->
@@ -113,10 +121,10 @@ const MINIMAP_SKELETON = `
       ${buildCompassTicksSvg()}
 
       <!-- Cardinal Badges -->
-      ${buildCardinalBadge(R_CENTER, 11, 'N')}
-      ${buildCardinalBadge(189, R_CENTER, 'E')}
-      ${buildCardinalBadge(R_CENTER, 189, 'S')}
-      ${buildCardinalBadge(11, R_CENTER, 'W')}
+      ${buildCardinalBadge(R_CENTER, R_CENTER - R_CARDINAL, 'N', 'cardN')}
+      ${buildCardinalBadge(R_CENTER + R_CARDINAL, R_CENTER, 'E', 'cardE')}
+      ${buildCardinalBadge(R_CENTER, R_CENTER + R_CARDINAL, 'S', 'cardS')}
+      ${buildCardinalBadge(R_CENTER - R_CARDINAL, R_CENTER, 'W', 'cardW')}
     </svg>
 
     <div class="hud-radar-scale">
@@ -207,6 +215,29 @@ function renderOffscreenTerrain(grid) {
       } else if (type === TileType.CRATER || type === TileType.RUBBLE) {
         ctx.fillStyle = '#2c2f26';
         ctx.fillRect(x + 1, y + 1, s - 2, s - 2);
+      } else if (type === TileType.RAIL) {
+        ctx.fillStyle = '#3f3f46';
+        ctx.fillRect(x, y, s, s);
+      } else if (type === TileType.RAIL_BRIDGE) {
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(x, y, s, s);
+        ctx.fillStyle = '#3f3f46';
+        ctx.fillRect(x + 0.6, y + 0.6, s - 1.2, s - 1.2);
+      } else if (type === TileType.CONTAINER) {
+        ctx.fillStyle = '#2563eb';
+        ctx.fillRect(x + 0.5, y + 0.5, s - 1, s - 1);
+      } else if (type === TileType.TRANSFORMER) {
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(x + 0.5, y + 0.5, s - 1, s - 1);
+      } else if (type === TileType.SANDBAGS) {
+        ctx.fillStyle = '#c2a67d';
+        ctx.fillRect(x + 0.5, y + 0.5, s - 1, s - 1);
+      } else if (type === TileType.RAIL_CAR) {
+        ctx.fillStyle = '#9a3412';
+        ctx.fillRect(x + 0.4, y + 0.4, s - 0.8, s - 0.8);
+      } else if (type === TileType.LOCOMOTIVE) {
+        ctx.fillStyle = '#1e3a5f';
+        ctx.fillRect(x + 0.3, y + 0.3, s - 0.6, s - 0.6);
       }
     }
   }
@@ -241,27 +272,35 @@ function drawTerrainViewport(canvas, hud) {
   const playerCellZ = ((hud.playerZ || 0) + halfArena) / TILE_SIZE;
   const srcCenterX = playerCellX * TERRAIN_CELL_PX;
   const srcCenterY = playerCellZ * TERRAIN_CELL_PX;
-  const srcHalf = RADAR_RANGE_CELLS * TERRAIN_CELL_PX;
+  const radarRangeCells = hud.radarRangeCells || RADAR_RANGE_CELLS;
+  const srcHalf = radarRangeCells * TERRAIN_CELL_PX;
+  const camRotRad = getRadarCameraRotationRad(hud.cameraAzimuth);
+  const w = canvas.width;
+  const h = canvas.height;
 
   ctx.fillStyle = '#182216';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 0, w, h);
   ctx.imageSmoothingEnabled = true;
+  ctx.save();
+  ctx.translate(w * 0.5, h * 0.5);
+  ctx.rotate(camRotRad);
   ctx.drawImage(
     off,
     srcCenterX - srcHalf,
     srcCenterY - srcHalf,
     srcHalf * 2,
     srcHalf * 2,
-    0,
-    0,
-    canvas.width,
-    canvas.height
+    -w * 0.5,
+    -h * 0.5,
+    w,
+    h
   );
+  ctx.restore();
 }
 
 /**
  * The minimap is built once; each HUD tick only moves the existing SVG nodes and updates
- * the clipped terrain viewport, so moving contacts never rebuild the DOM.
+ * the clipped terrain viewport, rotated to match the active camera angle (Camera-Up).
  */
 export function renderNorthUpSensorMinimap(hud) {
   const el = document.getElementById('sensor-minimap');
@@ -285,13 +324,20 @@ export function renderNorthUpSensorMinimap(hud) {
   }
 
   const halfArena = (GRID_SIZE * TILE_SIZE) / 2;
+  const radarRangeCells = hud.radarRangeCells || RADAR_RANGE_CELLS;
   const RADAR_RADIUS = R_MAP - 3;
-  const RADAR_RANGE = RADAR_RANGE_CELLS * TILE_SIZE;
+  const RADAR_RANGE = radarRangeCells * TILE_SIZE;
   const playerX = hud.playerX || 0;
   const playerZ = hud.playerZ || 0;
+  const camRotRad = getRadarCameraRotationRad(hud.cameraAzimuth);
+  const camRotDeg = (camRotRad * 180) / Math.PI;
+  const cosCam = Math.cos(camRotRad);
+  const sinCam = Math.sin(camRotRad);
   const toRadar = (wx, wz) => {
-    const nx = ((wx - playerX) / RADAR_RANGE) * RADAR_RADIUS;
-    const ny = ((wz - playerZ) / RADAR_RANGE) * RADAR_RADIUS;
+    const rawX = ((wx - playerX) / RADAR_RANGE) * RADAR_RADIUS;
+    const rawY = ((wz - playerZ) / RADAR_RANGE) * RADAR_RADIUS;
+    const nx = rawX * cosCam - rawY * sinCam;
+    const ny = rawX * sinCam + rawY * cosCam;
     const dist = Math.hypot(nx, ny);
     if (dist > RADAR_RADIUS) {
       const scale = RADAR_RADIUS / dist;
@@ -304,6 +350,18 @@ export function renderNorthUpSensorMinimap(hud) {
   const hullDeg = ((hud.playerHullAngle || 0) * 180) / Math.PI;
   const turretDeg = ((hud.playerTurretAngle || 0) * 180) / Math.PI;
 
+  const updateCardinal = (node, baseAngleRad) => {
+    if (!node) return;
+    const ang = baseAngleRad + camRotRad;
+    const cx = R_CENTER + Math.cos(ang) * R_CARDINAL;
+    const cy = R_CENTER + Math.sin(ang) * R_CARDINAL;
+    setAttr(node, 'transform', `translate(${fmt(cx)}, ${fmt(cy)})`);
+  };
+  updateCardinal(mm.cardN, -Math.PI * 0.5);
+  updateCardinal(mm.cardE, 0);
+  updateCardinal(mm.cardS, Math.PI * 0.5);
+  updateCardinal(mm.cardW, Math.PI);
+
   if (mm.hq) {
     const baseCenter = hud.baseCenter || { x: 0, z: (GRID_SIZE / 2 - 1.5) * TILE_SIZE };
     const hqPos = toRadar(baseCenter.x, baseCenter.z);
@@ -312,6 +370,22 @@ export function renderNorthUpSensorMinimap(hud) {
     const hqOpacity = hud.baseAlive === false ? 0.25 : hqPos.clamped ? 0.7 : 0.95;
     setAttr(mm.hq, 'opacity', hqOpacity.toFixed(2));
   }
+
+  const mines = (hud.discoveredMines || []).filter(
+    (m) => Math.hypot(m.x - playerX, m.z - playerZ) <= RADAR_RANGE
+  );
+  const mineNodes = syncPool(mm.mines, 'g', mines.length);
+  mines.forEach((m, i) => {
+    const node = mineNodes[i];
+    if (!node.__built) {
+      node.__built = true;
+      node.innerHTML =
+        '<circle cx="0" cy="0" r="3.1" fill="#f59e0b" stroke="#1c1917" stroke-width="0.75" />' +
+        '<path d="M-1.5,-1.5 L1.5,1.5 M1.5,-1.5 L-1.5,1.5" stroke="#1c1917" stroke-width="0.9" stroke-linecap="round" />';
+    }
+    const pos = toRadar(m.x, m.z);
+    setAttr(node, 'transform', `translate(${fmt(pos.x)}, ${fmt(pos.y)})`);
+  });
 
   const contacts = hud.sensorContacts || [];
   const contactNodes = syncPool(mm.contacts, 'g', contacts.length);
@@ -375,17 +449,17 @@ export function renderNorthUpSensorMinimap(hud) {
         .join('');
       setHtml(
         mm.contract,
-        `<rect x="${(padPos.x - padW / 2).toFixed(1)}" y="${(padPos.y - padH / 2).toFixed(1)}" width="${padW.toFixed(1)}" height="${padH.toFixed(1)}" fill="#10b981" fill-opacity="0.28" stroke="#34d399" stroke-width="0.8" />${cargoMarks}`
+        `<rect x="${(padPos.x - padW / 2).toFixed(1)}" y="${(padPos.y - padH / 2).toFixed(1)}" width="${padW.toFixed(1)}" height="${padH.toFixed(1)}" transform="rotate(${fmt(camRotDeg)} ${padPos.x.toFixed(1)} ${padPos.y.toFixed(1)})" fill="#10b981" fill-opacity="0.28" stroke="#34d399" stroke-width="0.8" />${cargoMarks}`
       );
     } else {
       setHtml(mm.contract, '');
     }
   }
 
-  setAttr(mm.hull, 'transform', `rotate(${fmt(180 - hullDeg)})`);
-  setAttr(mm.turret, 'transform', `rotate(${fmt(180 - turretDeg)})`);
+  setAttr(mm.hull, 'transform', `rotate(${fmt(180 - hullDeg + camRotDeg)})`);
+  setAttr(mm.turret, 'transform', `rotate(${fmt(180 - turretDeg + camRotDeg)})`);
   if (mm.fov) {
-    setAttr(mm.fov, 'transform', `rotate(${fmt(180 - turretDeg)})`);
+    setAttr(mm.fov, 'transform', `rotate(${fmt(180 - turretDeg + camRotDeg)})`);
   }
 
   if (mm.ecmOverlay) {

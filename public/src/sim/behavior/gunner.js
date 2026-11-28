@@ -25,7 +25,7 @@ export const GUNNER = Object.freeze({
 });
 
 /** No-lead aim point: the target's current position, nothing else. */
-export function computeAimPoint(target) {
+function computeAimPoint(target) {
   return { x: target.x, z: target.z };
 }
 

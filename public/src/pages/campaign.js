@@ -1,9 +1,10 @@
-import { battlefieldUrl } from '../app/routes.js';
+import { battlefieldUrl, pageUrl } from '../app/routes.js';
 import { t } from '../i18n/index.js';
 import { attachSettingsModal } from '../app/shell.js';
 import { renderChallengeBannerIfPresent } from '../ui/challenge-banner.js';
 import { loadPlayerSave } from '../app/state.js';
 import { CAMPAIGN_CHAPTERS, CAMPAIGN_MISSIONS, isCampaignMissionUnlocked } from '../game/campaign.js';
+import { getEnemyDisplayInfo } from '../game/vehicles/tanks.js';
 import {
   getCampaignMissionAssets,
   getCoreAssets,
@@ -208,12 +209,6 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
     track.innerHTML = renderNavTrack(completedMissions, currentChapterIdx, expandedRegions, selectedId);
   }
 
-  const progressEl = document.querySelector('[data-campaign-progress]');
-  if (progressEl) {
-    const doneCount = CAMPAIGN_MISSIONS.filter((m) => Boolean(completedMissions[m.id])).length;
-    progressEl.textContent = `${doneCount} / ${CAMPAIGN_MISSIONS.length}`;
-  }
-
   const selIdx = visible.findIndex((m) => m.id === selectedId);
   const prevBtn = document.querySelector('[data-action="prev-campaign-mission"]');
   const nextBtn = document.querySelector('[data-action="next-campaign-mission"]');
@@ -319,19 +314,16 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
     }
   }
 
-  const sectorEl = document.querySelector('.campaign-brief-sector');
-  if (sectorEl) {
-    sectorEl.textContent = `${t('SECTOR {n} // 38', { n: String(selected.number).padStart(2, '0') })} · ${t(chapter.name).toUpperCase()}`;
-  }
-
   const titleEl = document.querySelector('.campaign-brief-title');
   if (titleEl) titleEl.textContent = t(selected.name);
   const objEl = document.querySelector('.campaign-brief-objective');
   if (objEl) objEl.textContent = t(selected.objective);
 
   const briefDetails = document.querySelector('.campaign-brief-details');
+  const situationBlock = document.querySelector('[data-mission-situation]');
   const briefClassified = document.querySelector('.campaign-brief-classified');
   if (briefDetails) briefDetails.hidden = isClassified;
+  if (situationBlock) situationBlock.hidden = isClassified;
   if (briefClassified) {
     briefClassified.hidden = !isClassified;
     if (isClassified) {
@@ -349,7 +341,12 @@ function syncCampaignPage(completedMissions, selectedId, expandedRegions) {
     const rosterEl = document.querySelector('.campaign-roster-chips');
     if (rosterEl) {
       rosterEl.innerHTML = aggregateRoster(selected.enemyRoster)
-        .map(([type, count]) => `<span class="campaign-roster-chip">${escapeHtml(type)} ×${count}</span>`)
+        .map(([type, count]) => {
+          const { name, anchor } = getEnemyDisplayInfo(type);
+          const href = `${pageUrl('enemies')}#${encodeURIComponent(anchor)}`;
+          const bossAttr = String(type || '').toUpperCase().startsWith('BOSS_') ? ' data-boss="true"' : '';
+          return `<a class="campaign-roster-chip" href="${escapeHtml(href)}"${bossAttr}><span class="campaign-roster-name">${escapeHtml(t(name))}</span><span class="campaign-roster-count">×${count}</span></a>`;
+        })
         .join('');
     }
   }
@@ -396,6 +393,7 @@ if (root) {
   };
 
   selectedMissionId = syncCampaignPage(completedMissions, selectedMissionId, expandedRegions);
+  document.documentElement.classList.remove('campaign-hydrating');
   syncMissionUrl(selectedMissionId);
   preloadBattlefieldAssets(getCoreAssets({ includeTerrain: true }));
   preloadMissionAssets(selectedMissionId);

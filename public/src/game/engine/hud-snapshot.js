@@ -16,6 +16,7 @@ import {
   isPointWithinJammerRadius,
 } from '../../sim/jammer.js';
 import { buildSurvivalHudSnapshot } from '../../sim/survival.js';
+import { getRankProgress } from '../../sim/medals.js';
 import { N_ } from '../../i18n/index.js';
 import { isActiveAirStrikeMission } from './air-support-controller.js';
 
@@ -66,28 +67,34 @@ export function buildHudSnapshot(engine) {
     engine.enemies,
     JAMMER_ECM.RADAR_RADIUS_CELLS * TILE_SIZE
   );
-  const apsJammed = isPointWithinJammerRadius(
-    engine.playerX,
-    engine.playerZ,
-    engine.enemies,
-    JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
-  );
+  const apsJammed =
+    (engine.playerEmpDisruptTimer || 0) > 0 ||
+    isPointWithinJammerRadius(
+      engine.playerX,
+      engine.playerZ,
+      engine.enemies,
+      JAMMER_ECM.SYSTEM_RADIUS_CELLS * TILE_SIZE
+    );
+  const hqBonuses = engine.getHqBonuses?.();
+  const radarSpec = PLAYER_UPGRADES[UPGRADE.RADAR][(engine.effectiveUpgrades?.radar || 1) - 1];
+  const radarRangeCells = (radarSpec?.radarRangeCells ?? RADAR_RANGE_CELLS) + (hqBonuses?.radarBonusCells || 0);
   const sensorContactsList = radarJammed
     ? applyRadarJamming(rawSensorContacts, {
         playerX: engine.playerX,
         playerZ: engine.playerZ,
         elapsed: engine.clock?.elapsedTime ?? (typeof performance !== 'undefined' ? performance.now() * 0.001 : 0),
-        radarRange: RADAR_RANGE_CELLS * TILE_SIZE,
+        radarRange: radarRangeCells * TILE_SIZE,
         halfArena: (GRID_SIZE * TILE_SIZE) / 2,
       })
     : rawSensorContacts;
 
   return {
     status: engine.status,
+    warmingUp: Boolean(engine.isWarmingUp),
     defeatCinematicsActive: (engine.defeatCinematicsTimer || 0) > 0,
     victoryCinematicsActive: (engine.victoryCinematicsTimer || 0) > 0,
     sectorId: engine.currentSectorIndex,
-    credits: engine.playerSave?.credits ?? 0,
+    credits: engine.getAvailableCredits ? engine.getAvailableCredits() : (engine.playerSave?.credits ?? 0),
     creditsEarnedThisMission: engine.creditsEarnedThisMission || 0,
     isGarageOpen: engine.isGarageOpen,
     isGaragePaused: engine.isGaragePaused,
@@ -118,6 +125,9 @@ export function buildHudSnapshot(engine) {
     priorityTargetId: engine.priorityTargetId,
     observedTarget,
     sensorContacts: sensorContactsList,
+    discoveredMines: (engine.mines || [])
+      .filter((m) => m && m.discovered)
+      .map((m) => ({ id: m.id, x: m.x, z: m.z })),
     lootContainers: engine.lootContainers.map((c) => ({
       id: c.id,
       x: c.x,
@@ -129,7 +139,7 @@ export function buildHudSnapshot(engine) {
     survival: buildSurvivalHudSnapshot(
       engine.survivalState,
       engine.enemies.length,
-      engine.vanguardRemainingToSpawn
+      engine.enemiesRemainingToSpawn
     ),
     playerSave: engine.playerSave,
     assembledTank: engine.assembledTank,
@@ -149,6 +159,8 @@ export function buildHudSnapshot(engine) {
     cannonAmmo: engine.cannonAmmo,
     cannonMaxAmmo: engine.getPlayerMaxCannonAmmo(),
     missileCooldown: engine.missileCooldown,
+    apsOwned: Boolean(engine.apsOwned),
+    atgmOwned: Boolean(engine.atgmOwned),
     reconDroneOwned: Boolean(engine.reconDroneOwned),
     reconDroneCooldown: Math.max(0, engine.reconDroneCooldown || 0),
     reconDroneActiveTimer: Math.max(0, engine.reconDroneActiveTimer || 0),
@@ -173,10 +185,10 @@ export function buildHudSnapshot(engine) {
     enemyBaseName: engine.enemyBaseName || N_('Enemy Fortified Citadel'),
     enemiesRemaining: engine.survivalState
       ? engine.enemies.length +
-        engine.vanguardRemainingToSpawn +
+        engine.enemiesRemainingToSpawn +
         (engine.survivalState.waveSpec?.isBossWave && !engine.bossSpawned ? 1 : 0)
       : engine.enemies.length +
-        engine.vanguardRemainingToSpawn +
+        engine.enemiesRemainingToSpawn +
         (sector.rules.spawnSectorBossOnClear
           ? sector.bossSequence?.length
             ? engine.bossSequenceStarted
@@ -188,7 +200,7 @@ export function buildHudSnapshot(engine) {
           : 0),
     totalEnemiesInSector: engine.survivalState
       ? engine.survivalState.waveSpec?.totalHostiles || 1
-      : sector.vanguardCount +
+      : sector.enemyCount +
         (sector.rules.spawnSectorBossOnClear
           ? sector.bossSequence?.length
             ? sector.bossSequence.reduce((s, st) => s + st.length, 0)
@@ -233,6 +245,12 @@ export function buildHudSnapshot(engine) {
     medalTrackerState: engine.medalTracker?.snapshot() || null,
     statusMessage: engine.statusMessage,
     airSupportTargeting: engine.airSupportTargeting ? { ...engine.airSupportTargeting } : null,
+    profileMode: engine.profileMode || 'campaign',
+    playerRankId:
+      engine.airSupportController?.getPlayerRankId?.() ||
+      getRankProgress(engine.campaignSaveRepo?.loadPlayerSave?.()).currentRank.id,
+    hqTree: engine.getHqTree?.() || null,
+    radarRangeCells,
     terrainGrid: engine.grid,
   };
 }

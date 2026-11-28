@@ -18,6 +18,7 @@ import {
   FRAMES,
   ENGINES,
   ARMORS,
+  RADARS,
   OPTIONAL_EQUIPMENT,
   PLAYER_ENGINE_POWER_MULT,
   PLAYER_UPGRADES,
@@ -41,6 +42,7 @@ export {
   FRAMES,
   ENGINES,
   ARMORS,
+  RADARS,
   OPTIONAL_EQUIPMENT,
   PLAYER_ENGINE_POWER_MULT,
   PLAYER_UPGRADES,
@@ -52,9 +54,10 @@ export const DURABILITY = Object.freeze({
   MAX_ARMOR: 95, // Maximum damage reduction cap (%) to prevent absolute invulnerability
   ARMOR_SCALE: 100, // Divisor for converting armor percentage to 0..1 multiplier
   ZERO_HP: 0.0001, // Epsilon threshold below which a unit is considered destroyed
-  LIGHT_RATIO: 0.66, // HP fraction threshold (66%) below which light damage state triggers
-  LOW_RATIO: 0.33, // Critical HP threshold (33%) triggering mobility penalty & repair kits
-  LOW_SPEED_MULT: 0.7, // Speed multiplier applied when tank HP drops below LOW_RATIO (30% slowdown)
+  LIGHT_RATIO: 0.75, // HP fraction threshold (75%) below/at which moderate damage state triggers
+  MEDIUM_RATIO: 0.5, // HP fraction threshold (50%) below/at which heavy smoke & soot trigger
+  LOW_RATIO: 0.25, // Critical HP threshold (25%) triggering mobility penalty, fire & critical tactics
+  LOW_SPEED_MULT: 0.7, // Speed multiplier applied when tank HP drops to/below LOW_RATIO (30% slowdown)
   STAGE_CLEAR_REPAIR: 12, // Flat HP restored to player hull upon clearing a sector stage
   REPAIR_POWERUP: 20, // Flat HP restored when picking up a battlefield Repair power-up
   OVERHEAL_MAX_RATIO: 1.4, // Maximum allowable HP cap from over-repair (up to 140% of max HP)
@@ -82,6 +85,7 @@ export const APS = Object.freeze({
   MAX_TOTAL_AMMO: 12, // Maximum intercept ammunition capacity across all 4 corner launchers (Frame Tier 5)
   MAX_TOTAL_BY_FRAME: Object.freeze([4, 6, 8, 10, 12]), // Max APS capacity per Frame tier 1..5
   CHARGE_CREDIT_PRICE: 1000, // Credit cost in Garage for one APS charge
+  MODULE_CREDIT_PRICE: 2000, // Credit cost in Garage to install the 4-Corner APS module
   INITIAL_PER_LAUNCHER: Object.freeze([1, 0, 0, 1]), // Starting ammo per launcher index [FR, RR, RL, FL]
   DETECT_RADIUS: 2.6, // Threat detection radius in grid cells (2.6 cells = 5.2m world units)
   REARM_TIME: 0.35, // Cooldown in seconds between consecutive APS launcher interceptions
@@ -134,7 +138,7 @@ export const TRACK_UPGRADE_COSTS = Object.freeze({
   5: 5000, // Upgrade price (Credits) from Tier 4 to Tier 5
 });
 
-export const SPEED_FORMULA = Object.freeze({
+const SPEED_FORMULA = Object.freeze({
   BASE_MULT: 1.89, // Global speed multiplier converting power-to-weight ratio to cells/sec
   MIN: 0.7, // Absolute minimum tank movement speed floor (cells/sec)
   MAX: 4.55, // Absolute maximum tank movement speed ceiling (cells/sec)
@@ -174,7 +178,7 @@ function aspectArmorOf(item, uniformKey) {
  *   Armour: always per side (front / left / right / rear) = base + armour component (+ module bonuses).
  *   Damage, penetration and reload: the cannon alone.
  *   Sight and radio: the base (+ module sightBonus / radioBonus).
- * @param {object} loadout gun|cannon, chassis, frame|vehicleFrame, engine, armor, optionalEquipment
+ * @param {object} loadout gun|cannon, chassis, frame, engine, armor, optionalEquipment
  * @param {object} [base] tank type base from tanks.js (tankBase); DEFAULT_TANK_BASE when omitted
  */
 export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
@@ -187,7 +191,7 @@ export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
     (typeof chassisKey === 'object' ? chassisKey : CHASSIS[chassisKey]) ||
     CHASSIS.CH1;
 
-  const frameKey = loadout.frame || loadout.vehicleFrame || 'F1';
+  const frameKey = loadout.frame || 'F1';
   const frame =
     (typeof frameKey === 'object' ? frameKey : FRAMES[frameKey]) || FRAMES.F1;
 
@@ -200,6 +204,11 @@ export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
   const armor =
     (typeof armorKey === 'object' ? armorKey : ARMORS[armorKey]) || ARMORS.A1;
 
+  const radarKey = loadout.radar || null;
+  const radar = radarKey
+    ? (typeof radarKey === 'object' ? radarKey : RADARS[radarKey]) || null
+    : null;
+
   const optionalEquipment = (loadout.optionalEquipment || [])
     .map((opt) =>
       typeof opt === 'object' ? opt : OPTIONAL_EQUIPMENT[opt] || null
@@ -207,7 +216,7 @@ export function computeTankStats(loadout = {}, base = DEFAULT_TANK_BASE) {
     .filter(Boolean);
 
   const hull = { ...DEFAULT_TANK_BASE, ...base };
-  const components = [gun, chassis, frame, engine, armor];
+  const components = radar ? [gun, chassis, frame, engine, armor, radar] : [gun, chassis, frame, engine, armor];
   const sum = (items, key) => items.reduce((total, item) => total + (Number(item?.[key]) || 0), 0);
 
   // 1. HP adds up: base + every component + every module.
@@ -294,7 +303,8 @@ export function computeEffectiveDamage(
 export const RADAR_RANGE_CELLS = 16;
 
 export const MISSILE = Object.freeze({
-  CREDIT_PRICE: 3000, // Price per missile in the garage
+  CREDIT_PRICE: 1500, // Price per missile in the garage
+  MODULE_CREDIT_PRICE: 2000, // Credit cost in Garage to install the Homing ATGM Pod
   GUIDED: true, // Whether missiles have active homing towards the target coordinate
   DAMAGE: 30, // Base explosion damage dealt upon impact
   PENETRATION: 80, // High armor penetration percentage (80%) of anti-tank guided missile
@@ -312,15 +322,16 @@ export const MISSILE = Object.freeze({
   POOL_SIZE: 6, // Maximum concurrent active missiles in the physics/rendering pool
   PLAYER_RESERVED_SLOTS: 2, // Reserved missile slots allocated exclusively for player fire
   FPV_TIME_SCALE: 0.75, // Slow-motion simulation time scale while riding a player missile in FPV
+  FPV_VICTORY_SHELL_TIME_SCALE: 0.35, // Slow-motion simulation time scale while riding the final victory cannon shell in FPV
   FPV_POST_EXPLOSION_DELAY: 1.0, // Seconds to hold the FPV view on the explosion before returning
   FPV_FOV: 62, // Vertical field of view (degrees) of the FPV chase camera
-  FPV_CHASE_DISTANCE: 3.0, // World units the chase camera trails behind the missile
-  FPV_CHASE_HEIGHT: 0.95, // World units the chase camera sits above the missile's flight altitude
+  FPV_CHASE_DISTANCE: 4.2, // World units the chase camera trails behind the missile
+  FPV_CHASE_HEIGHT: 1.5, // World units the chase camera sits above the missile's flight altitude
   FPV_MIN_HEIGHT: 1.1, // Lowest camera altitude so the chase cam never dips into the ground
   FPV_FOLLOW_DAMP: 18, // Position smoothing rate of the chase camera (higher = tighter)
-  FPV_LOOK_AHEAD: 9.0, // World units ahead of the missile the camera looks at
-  FPV_LOOK_DROP: 0.15, // World units the look-at point sits below the missile's altitude
-  FPV_MIN_LOOK_HEIGHT: 0.4, // Lowest altitude of the look-at point
+  FPV_LOOK_AHEAD: 7.5, // World units ahead of the missile the camera looks at
+  FPV_LOOK_DROP: 0.5, // World units the look-at point sits below the missile's altitude
+  FPV_MIN_LOOK_HEIGHT: 0.25, // Lowest altitude of the look-at point
 });
 
 /** Victory cinematics: the camera frames the final kill, orbits 90° around it and holds the results modal back. */
@@ -379,6 +390,8 @@ export const LAND_MINE = Object.freeze({
   PENETRATION: 25, // Under-hull shaped-charge armor penetration (%)
   BLAST_RADIUS_CELLS: 2.25, // Blast radius in grid cells (4.5m world units)
   TRIGGER_RADIUS: 1.65, // Proximity detonation radius in world units (~0.82 cells)
+  DETECT_RADIUS_CELLS: 3, // Proximity radius in grid cells to detect hidden mines
+  REVEAL_FADE_SEC: 0.25, // Smooth 3D fade-in duration when a mine is discovered
   ARM_SEC: 0.8, // Arming delay after deployment in seconds
   LIFE_SEC: 45.0, // Active mine lifetime on the battlefield in seconds
 });
@@ -506,6 +519,10 @@ export const ARTILLERY = Object.freeze({
 
 export const GRID_SIZE = 40; // Battlefield grid dimension (40x40 tiles per sector)
 export const TILE_SIZE = 2.0; // World size of one terrain tile in Three.js units (meters)
+// Render-only height of a tracked tank's root above y = 0. Flat ground layers (roads, sand,
+// mud, decals) stack up to ~0.015 above the ground plane; without this the lower track run
+// sinks into them. Below one pixel at every camera zoom, so tanks never look like they float.
+export const TANK_RIDE_HEIGHT = 0.025;
 
 export const DEFENSE_TURRET_TYPES = Object.freeze({
   CANNON: 'CANNON', // High-velocity direct-fire anti-tank bastion turret

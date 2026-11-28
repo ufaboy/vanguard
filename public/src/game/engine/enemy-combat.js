@@ -380,7 +380,7 @@ export class EnemyCombatController {
     }
   }
 
-  /** HOWITZER: aim for `artillery.aimSec` (turret tracks the target), then lob a shell. */
+  /** HOWITZER: aim for `artillery.aimSec` while stationary (turret tracks the target), then lob a shell. */
   updateIndirectFire(e, dt, shot, aim) {
     const { engine } = this;
     e.turretAngle = engine.lerpAngle(
@@ -388,6 +388,10 @@ export class EnemyCombatController {
       Math.atan2(shot.target.x - e.x, shot.target.z - e.z),
       4.5 * dt
     );
+    if (e.entryTarget) {
+      e.indirectAim = null;
+      return;
+    }
     if (e.indirectAim && e.indirectAim.key !== shot.key) e.indirectAim = null;
     if (!e.indirectAim) {
       if (e.fireCooldown > 0 || !aim.reacted) return;
@@ -864,6 +868,8 @@ export class EnemyCombatController {
         playerHpRatio,
         playerInWater,
         salvoId: hitMeta?.salvoId ?? null,
+        isAirSupport: Boolean(hitMeta?.isAirSupport),
+        airStrikeId: hitMeta?.airStrikeId ?? null,
         minesPlaced: enemy.minesPlaced || 0,
         engineerActing: Boolean((enemy.specialCooldown || 0) > 0),
         kamikazeChargingClose: enemy.enemyClass === EnemyClass.KAMIKAZE && distToPlayer <= TILE_SIZE * 5.5,
@@ -884,10 +890,14 @@ export class EnemyCombatController {
       const bounty =
         ENEMY_KILL_CREDITS[enemy.enemyClass] ||
         (enemy.isBoss ? 750 : 75);
-      engine.playerSave.credits = (engine.playerSave.credits || 0) + bounty;
-      engine.creditsEarnedThisMission = (engine.creditsEarnedThisMission || 0) + bounty;
-      engine.syncCampaignCredits();
-      engine.saveRepo.savePlayerSave(engine.playerSave);
+      if (engine.addBattleCredits) {
+        engine.addBattleCredits(bounty);
+      } else {
+        engine.playerSave.credits = (engine.playerSave.credits || 0) + bounty;
+        engine.creditsEarnedThisMission = (engine.creditsEarnedThisMission || 0) + bounty;
+        engine.syncCampaignCredits();
+        engine.saveRepo.savePlayerSave(engine.playerSave);
+      }
       engine.setStatusBanner(t('+ ${bounty} CREDITS ({unitName})', { bounty, unitName }), 1.8);
       if (enemy.isBoss) {
         analyticsManager.trackEvent('boss_defeated', {
@@ -915,7 +925,7 @@ export class EnemyCombatController {
         }
         const spec = engine.survivalState.waveSpec;
         if (
-          engine.vanguardRemainingToSpawn === 0 &&
+          engine.enemiesRemainingToSpawn === 0 &&
           (!spec?.isBossWave || engine.bossSpawned) &&
           engine.enemies.length === 0
         ) {
@@ -933,7 +943,7 @@ export class EnemyCombatController {
           Array.isArray(sector?.bossSequence) &&
           engine.bossStageIndex + 1 < sector.bossSequence.length &&
           !engine.enemies.some((u) => u.isBoss);
-        if (hasPendingBossStage && engine.vanguardRemainingToSpawn === 0 && engine.enemies.length === 0) {
+        if (hasPendingBossStage && engine.enemiesRemainingToSpawn === 0 && engine.enemies.length === 0) {
           detonateEnemy();
           engine.enemySpawner.spawnBossStage(engine.bossStageIndex + 1);
           engine.saveProgress();
@@ -945,7 +955,7 @@ export class EnemyCombatController {
           (engine.bossSequenceStarted && engine.bossStageIndex + 1 >= sector.bossSequence.length);
         const victoryRes = checkMapVictory(engine.activeMapRules, {
           enemyBaseDestroyed: !engine.enemyBaseAlive,
-          vanguardRemainingToSpawn: engine.vanguardRemainingToSpawn,
+          enemiesRemainingToSpawn: engine.enemiesRemainingToSpawn,
           activeEnemiesCount: engine.enemies.length,
           bossDefeated:
             allSequenceStagesDone &&
@@ -971,7 +981,6 @@ export class EnemyCombatController {
             engine.setStatusBanner(msg, 3.2);
           }
           engine.powerupsController?.checkEnemyBaseClearAirDrop?.();
-          engine.saveProgress();
         }
       }
     } else if (!engine.inSmoke && !engine.isSegmentInSmoke(enemy.x, enemy.z, engine.playerX, engine.playerZ)) {

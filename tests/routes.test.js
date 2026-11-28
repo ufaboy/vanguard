@@ -1,70 +1,48 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  PAGE_PATHS,
-  SURVIVAL_MAP_ID,
-  battlefieldUrl,
-  resolveBattlefieldMission,
-  resolveLegacyHashRedirect,
-} from '../public/src/app/routes.js';
-import { SECTORS, isContractMap } from '../public/src/game/levels.js';
-import { isCampaignMissionUnlocked } from '../public/src/game/campaign.js';
 
-const resolve = (search, completedMissions = {}) =>
-  resolveBattlefieldMission(search, {
-    sectors: SECTORS,
-    isContractMap,
-    isCampaignMissionUnlocked,
-    completedMissions,
-  });
+const { pageUrl, battlefieldUrl, resolveLegacyHashRedirect } = await import('../public/src/app/routes.js');
 
-test('every sector has a globally unique mapId for battlefield?mission=<mapId>', () => {
-  const ids = SECTORS.map((s) => s.mapId);
-  assert.equal(new Set(ids).size, ids.length, 'duplicate mapId in SECTORS');
-  assert.ok(ids.includes(SURVIVAL_MAP_ID), 'SURVIVAL_MAP_ID must exist in SECTORS');
-});
-
-test('battlefieldUrl builds canonical single-param ?mission=<mapId> URLs', () => {
-  assert.equal(battlefieldUrl('campaign-01'), './battlefield.html?mission=campaign-01');
-  assert.equal(battlefieldUrl('contract-last-cargo'), './battlefield.html?mission=contract-last-cargo');
-  assert.equal(battlefieldUrl(SURVIVAL_MAP_ID), `./battlefield.html?mission=${SURVIVAL_MAP_ID}`);
-  assert.equal(battlefieldUrl(), './battlefield.html');
-});
-
-test('resolveLegacyHashRedirect maps contract hashes to battlefield?mission=<id>', () => {
-  assert.equal(
-    resolveLegacyHashRedirect('#/contract/contract-last-cargo'),
-    './battlefield.html?mission=contract-last-cargo'
-  );
-  assert.equal(resolveLegacyHashRedirect('#/contract/unknown'), PAGE_PATHS.contracts);
-});
-
-test('resolveBattlefieldMission resolves campaign, contract and survival maps by mission param', () => {
-  const campaignIdx = SECTORS.findIndex((s) => s.mapId === 'campaign-01');
-  const contractIdx = SECTORS.findIndex((s) => s.mapId === 'contract-last-cargo');
-  const opContractIdx = SECTORS.findIndex((s) => s.mapId === 'contract-charles-bridge');
-  const survivalIdx = SECTORS.findIndex((s) => s.mapId === SURVIVAL_MAP_ID);
-
-  assert.deepEqual(resolve('?mission=campaign-01'), { index: campaignIdx });
-  assert.deepEqual(resolve('?mission=contract-last-cargo'), { index: contractIdx });
-  assert.deepEqual(resolve('?mission=contract-charles-bridge'), { index: opContractIdx });
-  assert.deepEqual(resolve(`?mission=${SURVIVAL_MAP_ID}`), { index: survivalIdx });
-});
-
-test('resolveBattlefieldMission redirects locked campaign missions to campaign page', () => {
-  assert.deepEqual(resolve('?mission=campaign-10', {}), { redirect: PAGE_PATHS.campaign });
-});
-
-test('resolveBattlefieldMission redirects missing, unknown, and legacy query params to home', () => {
-  for (const search of [
-    '',
-    '?mission=',
-    '?mission=does-not-exist',
-    '?mode=survival',
-    '?mode=contract&id=contract-last-cargo',
-    '?id=contract-last-cargo',
-    '?sector=0',
-  ]) {
-    assert.deepEqual(resolve(search), { redirect: PAGE_PATHS.index }, `expected home redirect for "${search}"`);
+function withPath(pathname, fn) {
+  const previous = globalThis.location;
+  globalThis.location = { pathname };
+  try {
+    fn();
+  } finally {
+    if (previous === undefined) delete globalThis.location;
+    else globalThis.location = previous;
   }
+}
+
+/** Resolves a relative link against the page it is used on. */
+const resolve = (href, pathname) => new URL(href, `https://example.test${pathname}`).pathname;
+
+test('clean-URL site never links to .html pages', () => {
+  withPath('/battlefield', () => {
+    for (const page of ['index', 'campaign', 'survival', 'contracts', 'howToPlay', 'walkthrough', 'changelog']) {
+      assert.doesNotMatch(pageUrl(page), /\.html/, page);
+    }
+    assert.equal(resolve(pageUrl('index'), '/battlefield'), '/');
+    assert.equal(resolve(pageUrl('unknown-page'), '/battlefield'), '/');
+    assert.doesNotMatch(resolveLegacyHashRedirect('#/about'), /\.html/);
+  });
+});
+
+test('translated pages reach the battlefield at the site root in every locale', () => {
+  for (const locale of ['es', 'pt-br', 'de', 'fr']) {
+    const from = `/${locale}/campaign`;
+    withPath(from, () => {
+      assert.equal(resolve(battlefieldUrl('mission_01'), from), '/battlefield', locale);
+      assert.equal(resolve(pageUrl('changelog'), from), '/changelog', locale);
+      // Translated twins stay inside the locale directory.
+      assert.equal(resolve(pageUrl('enemies'), from), `/${locale}/enemies`, locale);
+    });
+  }
+});
+
+test('itch.io build keeps .html links', () => {
+  withPath('/html/123/campaign.html', () => {
+    assert.equal(pageUrl('campaign'), './campaign.html');
+    assert.equal(battlefieldUrl('m1'), './battlefield.html?mission=m1');
+  });
 });

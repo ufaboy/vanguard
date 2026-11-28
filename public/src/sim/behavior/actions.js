@@ -83,7 +83,7 @@ export const ACTION_TUNING = Object.freeze({
   INDIRECT_MISS_RADII: Object.freeze([1.4, 2.4]),
 });
 
-export function clampLuck(value) {
+function clampLuck(value) {
   const v = Number(value);
   if (!Number.isFinite(v)) return 0;
   return Math.min(1, Math.max(0, v));
