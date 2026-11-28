@@ -5,7 +5,6 @@ import { resolveAssembledTank } from '../../sim/garage.js';
 import { createRepairKitState, createTankSubsystems } from '../../sim/subsystems.js';
 import { buildSurvivalWaveSpec, createSurvivalState } from '../../sim/survival.js';
 import {
-  APS,
   HYDRA,
   INFERNO,
   MAMMOTH,
@@ -767,16 +766,15 @@ export class SectorLoaderController {
       engine.setProfileMode('campaign');
     }
 
+    engine.componentDamage = Object.fromEntries(Object.keys(engine.componentDamage || { cannon: false, chassis: false, frame: false, engine: false, armor: false }).map((k) => [k, false]));
+    engine.componentDamageCooldown = 0;
+    engine.componentWaterEgress = false;
     engine.recomputePlayerStats(false);
 
-    engine.assembledTank = resolveAssembledTank(engine.playerSave);
+    engine.assembledTank = resolveAssembledTank();
     engine.subsystems = createTankSubsystems();
-    const savedRepairCharges = isIsolatedSector
-      ? 0
-      : Number.isInteger(engine.playerSave?.repairKitCharges)
-      ? engine.playerSave.repairKitCharges
-      : 0;
-    engine.repairKitState = createRepairKitState(savedRepairCharges, engine.getPlayerMaxRepairKitCharges());
+    const maxRepairCharges = engine.getPlayerMaxRepairKitCharges();
+    engine.repairKitState = createRepairKitState(maxRepairCharges, maxRepairCharges);
     engine.playerArmorPanels = {
       SOCKET_ARMOR_FRONT: {
         ...ARMOR_PANEL_CATALOG.sb_40,
@@ -840,33 +838,27 @@ export class SectorLoaderController {
 
     engine.playerHp = engine.playerMaxHp;
 
-    engine.apsOwned = isIsolatedSector ? false : Boolean(engine.playerSave?.apsOwned);
-    engine.atgmOwned = isIsolatedSector ? false : Boolean(engine.playerSave?.atgmOwned);
+    engine.apsOwned = isIsolatedSector ? false : Boolean(engine.apsOwned);
+    engine.atgmOwned = isIsolatedSector ? false : Boolean(engine.atgmOwned);
     engine.preBattleApsOwned = engine.apsOwned;
     engine.preBattleAtgmOwned = engine.atgmOwned;
     if (!engine.apsOwned) {
       engine.apsAmmo = [0, 0, 0, 0];
-    } else if (!isIsolatedSector && Array.isArray(engine.playerSave?.apsAmmo)) {
-      engine.apsAmmo = [...engine.playerSave.apsAmmo];
-      const total = engine.apsAmmo.reduce((a, b) => a + b, 0);
-      if (total < APS.START_ROUNDS) {
-        engine.addApsRounds(APS.START_ROUNDS - total);
-      }
     } else {
-      engine.playerController.initApsLaunchers(APS.START_ROUNDS);
+      engine.playerController.initApsLaunchers(engine.getPlayerMaxApsAmmo());
     }
     engine.apsRearmTimer = 0;
     if (!engine.atgmOwned) {
       engine.missileAmmo = 0;
-    } else if (!isIsolatedSector) {
-      engine.missileAmmo = Math.max(engine.missileAmmo, 2);
+    } else {
+      engine.missileAmmo = engine.getPlayerMaxMissileAmmo();
     }
     engine.cannonAmmo = engine.getPlayerMaxCannonAmmo();
     engine.cannonBaseRearmTimer = 0;
     engine.missileCooldown = 0;
     engine.reconDroneCooldown = 0;
     engine.reconDroneActiveTimer = 0;
-    engine.reconDroneOwned = isIsolatedSector ? false : Boolean(engine.playerSave?.reconDroneOwned);
+    engine.reconDroneOwned = isIsolatedSector ? false : Boolean(engine.reconDroneOwned);
     engine.preBattleReconDroneOwned = engine.reconDroneOwned;
     engine.repairKitCount = engine.getPlayerMaxRepairKitCharges();
 

@@ -6186,27 +6186,47 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
 
 /* --- Service Medals & Rank Progression --- */
 .medals-modal-panel {
-  max-width: 920px;
-  width: min(920px, 94vw);
+  max-width: 960px;
+  width: min(960px, 94vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.medals-modal-panel .settings-modal-header {
+  flex-shrink: 0;
 }
 
 .medals-modal-body {
-  max-height: 76vh;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  padding-right: 4px;
+}
+
+.medals-modal-body > * {
+  flex-shrink: 0;
 }
 
 .medal-rank-banner {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  gap: 12px;
   padding: 14px 16px;
   background: #0d131f;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
+}
+
+.medal-rank-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .medal-rank-left {
@@ -6280,7 +6300,6 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
   color: #f8fafc;
 }
 
-.medal-xp-bar-track,
 .battle-rank-bar-track {
   width: 100%;
   height: 7px;
@@ -6290,7 +6309,6 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.medal-xp-bar-fill,
 .battle-rank-bar-fill {
   height: 100%;
   background: linear-gradient(90deg, #f59e0b, #38bdf8);
@@ -6360,51 +6378,97 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
 
 .medal-case-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 10px;
 }
 
 .medal-case-card {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
   padding: 12px;
   border-radius: 8px;
   background: var(--medal-bg, rgba(255, 255, 255, 0.04));
   border: 1px solid var(--medal-border, rgba(255, 255, 255, 0.12));
 }
 
+.medal-case-card.medal-grade-bronze {
+  --medal-color: #cd7f32;
+  --medal-bg: rgba(205, 127, 50, 0.12);
+  --medal-border: rgba(205, 127, 50, 0.48);
+  --medal-glow: rgba(205, 127, 50, 0.25);
+}
+
+.medal-case-card.medal-grade-silver {
+  --medal-color: #cbd5e1;
+  --medal-bg: rgba(203, 213, 225, 0.12);
+  --medal-border: rgba(203, 213, 225, 0.48);
+  --medal-glow: rgba(203, 213, 225, 0.22);
+}
+
+.medal-case-card.medal-grade-gold {
+  --medal-color: #f59e0b;
+  --medal-bg: rgba(245, 158, 11, 0.14);
+  --medal-border: rgba(245, 158, 11, 0.58);
+  --medal-glow: rgba(245, 158, 11, 0.28);
+}
+
+.medal-case-card.medal-grade-vanguard {
+  --medal-color: #38bdf8;
+  --medal-bg: rgba(56, 189, 248, 0.15);
+  --medal-border: rgba(56, 189, 248, 0.65);
+  --medal-glow: rgba(56, 189, 248, 0.32);
+}
+
 .medal-case-card.is-locked {
-  opacity: 0.56;
+  opacity: 0.58;
   background: #0d131f;
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-.medal-case-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.medal-emblem-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
 }
 
-.medal-grade-badge {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+.medal-emblem-svg {
+  width: 52px;
+  height: 52px;
   color: var(--medal-color, #cbd5e1);
+  filter: drop-shadow(0 2px 6px var(--medal-glow, rgba(0, 0, 0, 0.35)));
+}
+
+.medal-case-card.is-locked .medal-emblem-svg {
+  color: #475569;
+  filter: grayscale(0.75);
 }
 
 .medal-count-badge {
-  font-size: 11px;
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  font-size: 10px;
   font-weight: 700;
+  line-height: 1;
   color: #f8fafc;
-  background: rgba(255, 255, 255, 0.12);
-  padding: 2px 6px;
+  background: #131b2b;
+  border: 1px solid var(--medal-border, rgba(255, 255, 255, 0.2));
+  padding: 2px 5px;
   border-radius: 4px;
 }
 
-.medal-xp-hint {
-  font-size: 10px;
-  color: #94a3b8;
+.medal-case-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: 100%;
 }
 
 .medal-case-name {
@@ -6418,14 +6482,6 @@ body.scrollable-page .menu-content:not(.command-home-content) .menu-card p {
   font-size: 12px;
   line-height: 1.4;
   color: #cbd5e1;
-}
-
-.medal-case-cat {
-  margin-top: auto;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #94a3b8;
 }
 
 .medal-progress-wrap {

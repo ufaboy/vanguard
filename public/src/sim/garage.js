@@ -3,20 +3,12 @@
  * Mission Settlement (Victory vs Defeat), and LocalStorage SaveRepository.
  */
 
-import {
-  ARMOR_PANEL_CATALOG,
-  GUN_CATALOG,
-  resolveUpgradedPartStats,
-  TURRET_CATALOG,
-} from './catalog.js';
+import { resolveUpgradedPartStats } from './catalog.js';
 import { settleContractMission } from './contract.js';
-import { t } from '../i18n/index.js';
 
 export function createInitialPlayerSave() {
   return {
-    saveVersion: 1,
     credits: 500,
-    activeTankId: 'tank_alpha',
     unlockedMissions: ['mission_01', 'mission_02', 'mission_03'],
     completedMissions: {},
     achievements: {},
@@ -29,137 +21,27 @@ export function createInitialPlayerSave() {
       totalVictories: 0,
       totalBlocksDestroyed: 0,
     },
-    parts: [
-      {
-        instanceId: 'part_hull_bars_1',
-        category: 'hull',
-        definitionId: 'bars_m1',
-        isFavorite: true,
-        equippedOnTankId: 'tank_alpha',
-        socketId: 'ROOT_HULL',
-      },
-      {
-        instanceId: 'part_turret_t01_1',
-        category: 'turret',
-        definitionId: 't_01',
-        isFavorite: true,
-        equippedOnTankId: 'tank_alpha',
-        socketId: 'SOCKET_TURRET',
-      },
-      {
-        instanceId: 'part_gun_sokol_1',
-        category: 'gun',
-        definitionId: 'sokol_90',
-        isFavorite: true,
-        equippedOnTankId: 'tank_alpha',
-        socketId: 'SOCKET_GUN',
-      },
-      {
-        instanceId: 'part_panel_sb40_1',
-        category: 'armorPanel',
-        definitionId: 'sb_40',
-        isFavorite: false,
-        equippedOnTankId: 'tank_alpha',
-        socketId: 'SOCKET_ARMOR_FRONT',
-      },
-      {
-        instanceId: 'part_panel_ekran_l_1',
-        category: 'armorPanel',
-        definitionId: 'ekran_b25_left',
-        isFavorite: false,
-        equippedOnTankId: 'tank_alpha',
-        socketId: 'SOCKET_ARMOR_LEFT',
-      },
-      {
-        instanceId: 'part_panel_ekran_r_1',
-        category: 'armorPanel',
-        definitionId: 'ekran_b25_right',
-        isFavorite: false,
-        equippedOnTankId: 'tank_alpha',
-        socketId: 'SOCKET_ARMOR_RIGHT',
-      },
-      {
-        instanceId: 'part_mod_rm1_1',
-        category: 'module',
-        definitionId: 'rm_1',
-        isFavorite: true,
-        equippedOnTankId: 'tank_alpha',
-        socketId: 'SOCKET_MODULE_1',
-      },
-      {
-        instanceId: 'part_mod_smoke_1',
-        category: 'module',
-        definitionId: 'smoke_gen',
-        isFavorite: false,
-        equippedOnTankId: 'tank_alpha',
-        socketId: 'SOCKET_MODULE_2',
-      },
-      {
-        instanceId: 'part_gun_kopye_spare',
-        category: 'gun',
-        definitionId: 'kopye_105',
-        isFavorite: false,
-        equippedOnTankId: null,
-        socketId: null,
-      },
-      {
-        instanceId: 'part_gun_grom_spare',
-        category: 'gun',
-        definitionId: 'grom_120',
-        isFavorite: false,
-        equippedOnTankId: null,
-        socketId: null,
-      },
-      {
-        instanceId: 'part_turret_t02_spare',
-        category: 'turret',
-        definitionId: 't_02',
-        isFavorite: false,
-        equippedOnTankId: null,
-        socketId: null,
-      },
-      {
-        instanceId: 'part_hull_bastion_spare',
-        category: 'hull',
-        definitionId: 'bastion_m2',
-        isFavorite: false,
-        equippedOnTankId: null,
-        socketId: null,
-      },
-    ],
   };
 }
 
-export function resolveAssembledTank(
-  playerSave,
-  tankId = playerSave?.activeTankId || 'tank_alpha'
-) {
-  const equipped = (playerSave?.parts || []).filter(
-    (p) => p.equippedOnTankId === tankId
-  );
+const DEFAULT_ARMOR_PANELS = [
+  { socketId: 'SOCKET_ARMOR_FRONT', definitionId: 'sb_40' },
+  { socketId: 'SOCKET_ARMOR_LEFT', definitionId: 'ekran_b25_left' },
+  { socketId: 'SOCKET_ARMOR_RIGHT', definitionId: 'ekran_b25_right' },
+];
 
-  const hullPart = equipped.find((p) => p.category === 'hull') || {
-    definitionId: 'bars_m1',
-  };
-  const turretPart = equipped.find((p) => p.category === 'turret') || {
-    definitionId: 't_01',
-  };
-  const gunPart = equipped.find((p) => p.category === 'gun') || {
-    definitionId: 'sokol_90',
-  };
-
-  const hull = resolveUpgradedPartStats('hull', hullPart.definitionId);
-  const turret = resolveUpgradedPartStats('turret', turretPart.definitionId);
-  const gun = resolveUpgradedPartStats('gun', gunPart.definitionId);
+export function resolveAssembledTank() {
+  const hull = resolveUpgradedPartStats('hull', 'bars_m1');
+  const turret = resolveUpgradedPartStats('turret', 't_01');
+  const gun = resolveUpgradedPartStats('gun', 'sokol_90');
 
   const armorPanels = {};
   let armorPanelsMass = 0;
-  for (const p of equipped.filter((item) => item.category === 'armorPanel')) {
-    const stats = resolveUpgradedPartStats('armorPanel', p.definitionId);
-    if (stats && p.socketId) {
-      armorPanels[p.socketId] = {
+  for (const { socketId, definitionId } of DEFAULT_ARMOR_PANELS) {
+    const stats = resolveUpgradedPartStats('armorPanel', definitionId);
+    if (stats) {
+      armorPanels[socketId] = {
         ...stats,
-        instanceId: p.instanceId,
         integrity: stats.maxIntegrity,
         destroyed: false,
       };
@@ -167,28 +49,8 @@ export function resolveAssembledTank(
     }
   }
 
-  const modules = {};
-  let modulesMass = 0;
-  for (const p of equipped.filter(
-    (item) => item.category === 'module' || item.category === 'aux'
-  )) {
-    const stats = resolveUpgradedPartStats(p.category, p.definitionId);
-    if (stats && p.socketId) {
-      modules[p.socketId] = {
-        ...stats,
-        instanceId: p.instanceId,
-      };
-      modulesMass += stats.mass || 0;
-    }
-  }
-
   const payloadMass = Number(
-    (
-      (turret.mass || 0) +
-      (gun.mass || 0) +
-      armorPanelsMass +
-      modulesMass
-    ).toFixed(2)
+    ((turret.mass || 0) + (gun.mass || 0) + armorPanelsMass).toFixed(2)
   );
   const totalMass = Number(((hull.mass || 22) + payloadMass).toFixed(2));
   const powerToWeight = Number(
@@ -203,12 +65,10 @@ export function resolveAssembledTank(
   );
 
   return {
-    tankId,
     hull,
     turret,
     gun,
     armorPanels,
-    modules,
     payloadMass,
     maxPayloadMass: hull.maxPayloadMass,
     totalMass,
@@ -225,95 +85,6 @@ export function resolveAssembledTank(
     effectiveTurnRate: Number((hull.turnRate * mobilityFactor).toFixed(1)),
     topSpeedKmh: Math.round(effectiveMaxSpeedForward),
   };
-}
-
-function validateMountCompatibility(
-  playerSave,
-  candidatePart,
-  targetSocketId,
-  tankId = playerSave.activeTankId
-) {
-  if (!candidatePart) {
-    return { valid: false, reason: t('Invalid part selection.') };
-  }
-  const currentAssembled = resolveAssembledTank(playerSave, tankId);
-
-  if (candidatePart.category === 'gun') {
-    const gunStats = GUN_CATALOG[candidatePart.definitionId];
-    if (!gunStats) return { valid: false, reason: t('Unknown gun definition.') };
-    if (gunStats.mass > currentAssembled.turret.maxGunMass) {
-      return {
-        valid: false,
-        reason: t('{name} mass ({mass}t) exceeds {name2} limit ({maxGunMass}t). Mount T-02 Heavy Turret first.', { name: t(gunStats.name), mass: gunStats.mass, name2: t(currentAssembled.turret.name), maxGunMass: currentAssembled.turret.maxGunMass }),
-      };
-    }
-    return { valid: true, reason: t('Compatible') };
-  }
-
-  if (candidatePart.category === 'turret') {
-    const turretStats = TURRET_CATALOG[candidatePart.definitionId];
-    if (!turretStats)
-      return { valid: false, reason: t('Unknown turret definition.') };
-    if (currentAssembled.gun.mass > turretStats.maxGunMass) {
-      return {
-        valid: false,
-        reason: t('Mounted {name} ({mass}t) is too heavy for {name2} (max {maxGunMass}t).', { name: t(currentAssembled.gun.name), mass: currentAssembled.gun.mass, name2: t(turretStats.name), maxGunMass: turretStats.maxGunMass }),
-      };
-    }
-    return { valid: true, reason: t('Compatible') };
-  }
-
-  return { valid: true, reason: t('Compatible') };
-}
-
-export function mountPartInGarage(
-  playerSave,
-  instanceId,
-  targetSocketId = null
-) {
-  const part = (playerSave?.parts || []).find(
-    (p) => p.instanceId === instanceId
-  );
-  if (!part) return { success: false, reason: t('Part not found in inventory.') };
-
-  const tankId = playerSave.activeTankId || 'tank_alpha';
-  const check = validateMountCompatibility(
-    playerSave,
-    part,
-    targetSocketId,
-    tankId
-  );
-  if (!check.valid) {
-    return { success: false, reason: check.reason };
-  }
-
-  let socket = targetSocketId;
-  if (!socket) {
-    if (part.category === 'hull') socket = 'ROOT_HULL';
-    else if (part.category === 'turret') socket = 'SOCKET_TURRET';
-    else if (part.category === 'gun') socket = 'SOCKET_GUN';
-    else if (part.category === 'armorPanel')
-      socket =
-        ARMOR_PANEL_CATALOG[part.definitionId]?.socketType ||
-        'SOCKET_ARMOR_FRONT';
-    else socket = 'SOCKET_MODULE_1';
-  }
-
-  for (const other of playerSave.parts) {
-    if (
-      other.equippedOnTankId === tankId &&
-      (other.socketId === socket ||
-        ( ['hull', 'turret', 'gun'].includes(part.category) &&
-          other.category === part.category))
-    ) {
-      other.equippedOnTankId = null;
-      other.socketId = null;
-    }
-  }
-
-  part.equippedOnTankId = tankId;
-  part.socketId = socket;
-  return { success: true, reason: t('Mounted {definitionId}', { definitionId: part.definitionId.toUpperCase() }) };
 }
 
 const HARD_MODE_VICTORY_CREDIT_BONUS_PCT = 0.25;
@@ -393,7 +164,7 @@ export function getSafeStorage(kind = 'local') {
 
 export class SaveRepository {
   constructor(
-    storageKey = 'battle_tank_player_save_v1',
+    storageKey = 'battle_tank_player_save',
     storage = getSafeStorage('local')
   ) {
     this.storageKey = storageKey;
@@ -435,12 +206,12 @@ export class SaveRepository {
       const raw = this.storage?.getItem(this.storageKey);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed && Array.isArray(parsed.parts)) {
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
           delete parsed.alloys;
           delete parsed.cannonAmmo;
-          parsed.parts = parsed.parts.filter(
-            (part) => part && typeof part === 'object' && typeof part.instanceId === 'string' && typeof part.category === 'string'
-          );
+          delete parsed.parts;
+          delete parsed.activeTankId;
+          delete parsed.saveVersion;
           if (!Number.isFinite(parsed.credits) || parsed.credits < 0) {
             parsed.credits = 500;
           }

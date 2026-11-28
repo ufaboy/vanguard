@@ -52,7 +52,7 @@ const jsonLd = [
           setTimeout(function () { document.documentElement.classList.remove('campaign-hydrating'); }, 2000);
           return;
         }
-        var raw = localStorage.getItem('battle_tank_player_save_v1');
+        var raw = localStorage.getItem('battle_tank_player_save');
         if (!raw) return;
         var save = JSON.parse(raw);
         var done = save && save.completedMissions;

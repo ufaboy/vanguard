@@ -6,13 +6,14 @@
 import { loadPlayerSave } from '../app/state.js';
 import {
   MEDAL_CATALOG,
-  MEDAL_GRADES,
   RANK_LADDER,
   getMedalCurrentState,
   getRankAirSupportUnlocks,
   getRankProgress,
 } from '../sim/medals.js';
 import { N_, formatNumber, t } from '../i18n/index.js';
+
+const MEDALS_SPRITE_URL = new URL('../../images/medals-sprite.svg', import.meta.url).href;
 
 const GRADE_FILTERS = Object.freeze([
   { id: 'all', label: N_('All ({n})') },
@@ -23,54 +24,52 @@ const GRADE_FILTERS = Object.freeze([
 ]);
 
 function renderRankHeader(progress) {
-  const { currentRank, nextRank, serviceXp, goldPlus, vanguard, totalUnlocked, xpProgressPct, missingGate } = progress;
+  const { currentRank, nextRank, serviceXp, goldPlus, vanguard, totalUnlocked, missingGate } = progress;
   const nextLabel = nextRank
     ? t('Next: {rank} ({xp} / {next} XP)', { rank: t(nextRank.title), xp: formatNumber(serviceXp), next: formatNumber(nextRank.minXp) })
     : t('Maximum Rank Reached');
 
   return `
     <div class="medal-rank-banner">
-      <div class="medal-rank-left">
-        <div class="medal-rank-insignia" aria-hidden="true">${currentRank.insignia}</div>
-        <div>
-          <span class="medal-rank-kicker">${t('COMMANDER RANK')}</span>
-          <h3 class="medal-rank-title">${t(currentRank.title)}</h3>
-          <p class="medal-rank-sub">${nextLabel}</p>
-          ${missingGate ? `<p class="medal-rank-gate">${missingGate}</p>` : ''}
+      <div class="medal-rank-top">
+        <div class="medal-rank-left">
+          <div class="medal-rank-insignia" aria-hidden="true">${currentRank.insignia}</div>
+          <div>
+            <span class="medal-rank-kicker">${t('COMMANDER RANK')}</span>
+            <h3 class="medal-rank-title">${t(currentRank.title)}</h3>
+            <p class="medal-rank-sub">${nextLabel}</p>
+            ${missingGate ? `<p class="medal-rank-gate">${missingGate}</p>` : ''}
+          </div>
+        </div>
+        <div class="medal-rank-stats">
+          <div class="medal-stat-pill"><span>${t('MEDALS')}</span><strong>${totalUnlocked} / ${MEDAL_CATALOG.length}</strong></div>
+          <div class="medal-stat-pill"><span>${t('GOLD+')}</span><strong>${goldPlus}</strong></div>
+          <div class="medal-stat-pill"><span>${t('VANGUARD')}</span><strong>${vanguard}</strong></div>
         </div>
       </div>
-      <div class="medal-rank-stats">
-        <div class="medal-stat-pill"><span>${t('MEDALS')}</span><strong>${totalUnlocked} / ${MEDAL_CATALOG.length}</strong></div>
-        <div class="medal-stat-pill"><span>${t('GOLD+')}</span><strong>${goldPlus}</strong></div>
-        <div class="medal-stat-pill"><span>${t('VANGUARD')}</span><strong>${vanguard}</strong></div>
+      <div class="medal-ladder-strip" aria-label="${t('Rank ladder')}">
+        ${RANK_LADDER.map((r) => {
+          const reached = serviceXp >= r.minXp && goldPlus >= r.minGoldPlus && vanguard >= r.minVanguard;
+          const active = r.id === currentRank.id;
+          const unlocks = getRankAirSupportUnlocks(r.id);
+          const unlockNames = unlocks.map((u) => t(u.label)).join(', ');
+          const tooltip = unlocks.length > 0
+            ? `${t(r.title)} (${r.minXp} XP) — ${t('Air Support: {items}', { items: unlockNames })}`
+            : `${t(r.title)} (${r.minXp} XP)`;
+          return `
+            <span class="medal-ladder-node ${active ? 'is-current' : reached ? 'is-reached' : ''}" title="${tooltip}">
+              <span>${r.insignia}</span>
+              ${unlocks.length > 0 ? `<span class="medal-ladder-unlock" aria-hidden="true">✈</span>` : ''}
+            </span>
+          `;
+        }).join('')}
       </div>
-    </div>
-    <div class="medal-xp-bar-track" role="progressbar" aria-valuenow="${xpProgressPct}" aria-valuemin="0" aria-valuemax="100">
-      <div class="medal-xp-bar-fill" style="width: ${xpProgressPct}%"></div>
-    </div>
-    <div class="medal-ladder-strip" aria-label="${t('Rank ladder')}">
-      ${RANK_LADDER.map((r) => {
-        const reached = serviceXp >= r.minXp && goldPlus >= r.minGoldPlus && vanguard >= r.minVanguard;
-        const active = r.id === currentRank.id;
-        const unlocks = getRankAirSupportUnlocks(r.id);
-        const unlockNames = unlocks.map((u) => t(u.label)).join(', ');
-        const tooltip = unlocks.length > 0
-          ? `${t(r.title)} (${r.minXp} XP) — ${t('Air Support: {items}', { items: unlockNames })}`
-          : `${t(r.title)} (${r.minXp} XP)`;
-        return `
-          <span class="medal-ladder-node ${active ? 'is-current' : reached ? 'is-reached' : ''}" title="${tooltip}">
-            <span>${r.insignia}</span>
-            ${unlocks.length > 0 ? `<span class="medal-ladder-unlock" aria-hidden="true">✈</span>` : ''}
-          </span>
-        `;
-      }).join('')}
     </div>
   `;
 }
 
 function renderMedalCard(medal, entry, medalProgress) {
   const state = getMedalCurrentState(medal, entry, medalProgress);
-  const grade = MEDAL_GRADES[state.grade];
   const unlocked = state.unlocked;
   const count = state.count;
 
@@ -94,25 +93,19 @@ function renderMedalCard(medal, entry, medalProgress) {
 
   return `
     <article
-      class="medal-case-card ${unlocked ? 'is-unlocked' : 'is-locked'}"
-      style="--medal-color: ${grade.color}; --medal-bg: ${grade.bgColor}; --medal-border: ${grade.borderColor};"
+      class="medal-case-card medal-grade-${state.grade} ${unlocked ? 'is-unlocked' : 'is-locked'}"
     >
-      <div class="medal-case-top">
-        <span class="medal-grade-badge">${t(grade.label).toUpperCase()}</span>
-        ${
-          state.isTiered
-            ? state.isMaxTier
-              ? `<span class="medal-count-badge">${t('GOLD')}</span>`
-              : `<span class="medal-xp-hint">+${MEDAL_GRADES[state.nextGrade || state.grade].firstXp} XP</span>`
-            : unlocked
-            ? `<span class="medal-count-badge">×${count}</span>`
-            : `<span class="medal-xp-hint">+${grade.firstXp} XP</span>`
-        }
+      <div class="medal-emblem-wrap" aria-hidden="true">
+        <svg class="medal-emblem-svg">
+          <use href="${MEDALS_SPRITE_URL}#medal-${medal.id}"></use>
+        </svg>
+        ${!state.isTiered && unlocked && count > 1 ? `<span class="medal-count-badge">×${count}</span>` : ''}
       </div>
-      <h4 class="medal-case-name">${t(medal.name)}</h4>
-      <p class="medal-case-desc">${t(medal.description)}</p>
-      ${progressHtml}
-      <span class="medal-case-cat">${t(medal.category)}</span>
+      <div class="medal-case-info">
+        <h4 class="medal-case-name">${t(medal.name)}</h4>
+        <p class="medal-case-desc">${t(medal.description)}</p>
+        ${progressHtml}
+      </div>
     </article>
   `;
 }

@@ -122,33 +122,30 @@ export class TankGameEngine {
     };
 
     this.campaignSaveRepo = new SaveRepository(
-      'battle_tank_player_save_v1',
+      'battle_tank_player_save',
       getSafeStorage('local')
     );
     this.survivalSaveRepo = new SaveRepository(
-      'battle_tank_survival_save_v1',
+      'battle_tank_survival_save',
       getSafeStorage('session')
     );
     this.contractSaveRepo = new SaveRepository(
-      'battle_tank_contract_save_v1',
+      'battle_tank_contract_save',
       getSafeStorage('session')
     );
     this.profileMode = 'campaign';
     this.saveRepo = this.campaignSaveRepo;
     this.playerSave = this.saveRepo.loadPlayerSave();
-    this.componentDamage = normalizeComponentDamage(this.playerSave.componentDamage);
-    this.componentDamageCooldown = Math.max(0, Math.min(8, Number(this.playerSave.componentDamageCooldown) || 0));
+    this.componentDamage = normalizeComponentDamage();
+    this.componentDamageCooldown = 0;
     this.wasDefeated = false;
     this.defeatCinematicsTimer = 0;
     this.victoryCinematicsTimer = 0;
     this.victoryCinematics = null;
     this.playerDeathState = null;
-    this.assembledTank = resolveAssembledTank(this.playerSave);
+    this.assembledTank = resolveAssembledTank();
     this.subsystems = createTankSubsystems();
-    const savedRepairCharges = Number.isInteger(this.playerSave?.repairKitCharges)
-      ? this.playerSave.repairKitCharges
-      : 0;
-    this.repairKitState = createRepairKitState(savedRepairCharges, this.getPlayerMaxRepairKitCharges());
+    this.repairKitState = createRepairKitState(0, this.getPlayerMaxRepairKitCharges());
     this.playerArmorPanels = {
       SOCKET_ARMOR_FRONT: { ...ARMOR_PANEL_CATALOG.sb_40, integrity: 100, destroyed: false },
       SOCKET_ARMOR_LEFT: { ...ARMOR_PANEL_CATALOG.ekran_b25_left, integrity: 70, destroyed: false },
@@ -183,18 +180,15 @@ export class TankGameEngine {
     this.playerSalvoResetTimer = 0;
     this.playerFlashTimer = 0;
 
-    this.apsOwned = Boolean(this.playerSave?.apsOwned);
-    this.atgmOwned = Boolean(this.playerSave?.atgmOwned);
-    this.apsAmmo = this.apsOwned && Array.isArray(this.playerSave?.apsAmmo)
-      ? [...this.playerSave.apsAmmo]
-      : [0, 0, 0, 0];
+    this.apsOwned = false;
+    this.atgmOwned = false;
+    this.apsAmmo = [0, 0, 0, 0];
     this.apsRearmTimer = 0;
-    this.missileAmmo = this.atgmOwned && Number.isInteger(this.playerSave?.missileAmmo)
-      ? Math.max(0, Math.min(MISSILE.MAX_AMMO, this.playerSave.missileAmmo)) : 0;
+    this.missileAmmo = 0;
     this.cannonAmmo = CANNON_AMMO.START_ROUNDS;
     this.cannonBaseRearmTimer = 0;
     this.missileCooldown = 0;
-    this.reconDroneOwned = Boolean(this.playerSave?.reconDroneOwned);
+    this.reconDroneOwned = false;
     this.reconDroneCooldown = 0;
     this.reconDroneActiveTimer = 0;
     this.reconDroneMission = null;
@@ -925,8 +919,6 @@ export class TankGameEngine {
 
   isSegmentInSmoke(x0, z0, x1, z1) { return this.playerController.isSegmentInSmoke(x0, z0, x1, z1); }
 
-  mountGaragePart(instanceId, socketId = null) { return this.garageOps.mountPart(instanceId, socketId); }
-
   setGarageOpen(open) { return this.garageOps.setOpen(open); }
 
   persistComponentDamage() { this.garageOps.persistComponentDamage(); }
@@ -965,8 +957,6 @@ export class TankGameEngine {
     return this.launchReconDrone(this.aimWorld.x, this.aimWorld.z);
   }
 
-  toggleFavoritePart(instanceId) { this.garageOps.toggleFavoritePart(instanceId); }
-
   abortMission() {
     // Players usually quit from the pause menu, so a paused mission counts as an abort too.
     if (this.status === GameStatus.PLAYING || this.status === GameStatus.PAUSED) {
@@ -1004,8 +994,6 @@ export class TankGameEngine {
         outcome: 'defeat',
       });
       this.lastSettlementSummary = summary;
-      this.playerSave.apsAmmo = [...this.apsAmmo];
-      this.playerSave.repairKitCharges = this.repairKitState?.charges ?? 0;
       this.saveRepo.savePlayerSave(this.playerSave);
       this.saveRepo.recordMissionRun(this.activeMissionRun);
       this.syncCampaignCredits();
@@ -1147,9 +1135,6 @@ export class TankGameEngine {
     if (!this.apsOwned) this.apsAmmo = [0, 0, 0, 0];
     if (!this.atgmOwned) this.missileAmmo = 0;
     if (this.playerSave) {
-      this.playerSave.reconDroneOwned = Boolean(this.preBattleReconDroneOwned);
-      this.playerSave.apsOwned = Boolean(this.preBattleApsOwned);
-      this.playerSave.atgmOwned = Boolean(this.preBattleAtgmOwned);
       if (this.profileMode === 'campaign') {
         this.playerSave.hqTree = normalizeHqTree(this.hqTree);
       }
@@ -1751,9 +1736,6 @@ export class TankGameEngine {
     sound.stopEngineLoop();
     if (this.activeMissionRun && !this.activeMissionRun.rewardsCommitted) {
       this.commitBattleCredits();
-      this.playerSave.reconDroneOwned = Boolean(this.reconDroneOwned);
-      this.playerSave.apsOwned = Boolean(this.apsOwned);
-      this.playerSave.atgmOwned = Boolean(this.atgmOwned);
       if (this.profileMode === 'campaign') {
         this.playerSave.hqTree = normalizeHqTree(this.hqTree);
       }
@@ -1780,9 +1762,6 @@ export class TankGameEngine {
       }
       this.garageOps.restoreAllComponents();
       this.playerHp = this.playerMaxHp;
-      this.playerSave.apsAmmo = [...this.apsAmmo];
-      this.playerSave.missileAmmo = this.missileAmmo;
-      this.playerSave.repairKitCharges = this.repairKitState?.charges ?? 0;
       this.saveRepo.savePlayerSave(this.playerSave);
       this.saveRepo.recordMissionRun(this.activeMissionRun);
     }

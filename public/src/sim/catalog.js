@@ -129,7 +129,7 @@ export const TURRET_CATALOG = {
   },
 };
 
-export const GUN_CATALOG = {
+const GUN_CATALOG = {
   sokol_90: {
     id: 'sokol_90',
     name: N_('Sokol-90 (90mm Rifled Gun)'),

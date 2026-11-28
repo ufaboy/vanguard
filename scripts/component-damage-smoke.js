@@ -31,7 +31,7 @@ try {
   assert(JSON.stringify(engine.upgrades) === purchased, 'Purchased tiers changed');
   engine.tryDamageComponent(1, { zone: 'hull', aspect: 'rear' });
   assert(Object.values(engine.componentDamage).filter(Boolean).length === 1, 'Cooldown failed');
-  assert(engine.saveRepo.loadPlayerSave().componentDamage.cannon, 'Fault was not saved');
+  assert(engine.componentDamage.cannon, 'Fault was not recorded');
   engine.isGarageOpen = false;
   assert(!engine.repairComponentInGarage('cannon').success, 'Repair outside garage');
   engine.isGarageOpen = true; engine.playerSave.credits = COMPONENT_REPAIR_COST - 1;
@@ -41,7 +41,7 @@ try {
   assert(engine.repairComponentInGarage('cannon').success, 'Paid repair failed');
   assert(engine.playerSave.credits === COMPONENT_REPAIR_COST && engine.effectiveUpgrades.cannon === 5, 'Wrong repair balance or tier');
   assert(!engine.repairComponentInGarage('cannon').success && engine.playerSave.credits === COMPONENT_REPAIR_COST, 'Duplicate repair charged');
-  assert(!engine.saveRepo.loadPlayerSave().componentDamage.cannon, 'Repair was not persisted');
+  assert(!engine.componentDamage.cannon, 'Repair did not clear fault');
   Math.random = originalRandom;
   const faults = { cannon: true, engine: true, armor: true };
   const hud = { componentDamage: faults, credits: 1500, apsTotal: 2, apsAmmo: [1, 0, 0, 1], missileAmmo: 0 };

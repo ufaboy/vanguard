@@ -15,7 +15,7 @@ const DEFAULT_LOCALE = 'en';
 export const SUPPORTED_LOCALES = Object.freeze(['en', 'es', 'pt-BR', 'de', 'fr']);
 export const LOCALE_NAMES = Object.freeze({ en: 'English', es: 'Español', 'pt-BR': 'Português (Brasil)', de: 'Deutsch', fr: 'Français' });
 
-const LOCALE_STORAGE_KEY = 'battle_tank_locale_v1';
+const LOCALE_STORAGE_KEY = 'battle_tank_locale';
 const LOADERS = {
   es: () => import('./locales/es.js'),
   'pt-BR': () => import('./locales/pt-BR.js'),

@@ -4,7 +4,7 @@
  */
 import { N_, t } from '../i18n/index.js';
 
-export const MEDAL_GRADES = Object.freeze({
+const MEDAL_GRADES = Object.freeze({
   bronze: Object.freeze({
     id: 'bronze',
     label: N_('Bronze'),
@@ -177,7 +177,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 250 }),
       Object.freeze({ grade: 'gold', threshold: 500 }),
     ]),
-    description: N_('Destroy enemy tanks across battles (100 / 250 / 500).'),
+    description: N_('Destroy enemy tanks across battles.'),
   }),
   Object.freeze({
     id: 'double_strike',
@@ -190,7 +190,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 10 }),
       Object.freeze({ grade: 'gold', threshold: 25 }),
     ]),
-    description: N_('Destroy 2+ enemy tanks within 1.5 seconds of each other (3 / 10 / 25 times).'),
+    description: N_('Destroy 2+ enemy tanks within 1.5 seconds of each other.'),
   }),
   Object.freeze({
     id: 'air_support_ace',
@@ -203,7 +203,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 35 }),
       Object.freeze({ grade: 'gold', threshold: 80 }),
     ]),
-    description: N_('Destroy enemies using Air Support strikes or air-dropped mines (10 / 35 / 80).'),
+    description: N_('Destroy enemies using Air Support strikes or air-dropped mines.'),
   }),
   Object.freeze({
     id: 'mine_sweeper',
@@ -216,7 +216,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 20 }),
       Object.freeze({ grade: 'gold', threshold: 50 }),
     ]),
-    description: N_('Destroy enemy mines or eliminate Sappers before they lay a mine (5 / 20 / 50).'),
+    description: N_('Destroy enemy mines or eliminate Sappers before they lay a mine.'),
   }),
   Object.freeze({
     id: 'demolition_crew',
@@ -229,7 +229,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 600 }),
       Object.freeze({ grade: 'gold', threshold: 1500 }),
     ]),
-    description: N_('Destroy terrain cover blocks across battles (150 / 600 / 1,500).'),
+    description: N_('Destroy terrain cover blocks across battles.'),
   }),
   Object.freeze({
     id: 'flank_master',
@@ -242,7 +242,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 10 }),
       Object.freeze({ grade: 'gold', threshold: 25 }),
     ]),
-    description: N_('Destroy Armor tanks or Sector Bosses with side or rear hits (3 / 10 / 25).'),
+    description: N_('Destroy Armor tanks or Sector Bosses with side or rear hits.'),
   }),
   Object.freeze({
     id: 'counter_battery',
@@ -255,7 +255,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 10 }),
       Object.freeze({ grade: 'gold', threshold: 25 }),
     ]),
-    description: N_('Destroy Howitzers before they complete their second artillery barrage (3 / 10 / 25).'),
+    description: N_('Destroy Howitzers before they complete their second artillery barrage.'),
   }),
   Object.freeze({
     id: 'ghost_hunter',
@@ -268,7 +268,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 10 }),
       Object.freeze({ grade: 'gold', threshold: 25 }),
     ]),
-    description: N_('Destroy camouflaged Stealth tanks or Jammers from inside their 5-cell ECM bubble (3 / 10 / 25).'),
+    description: N_('Destroy camouflaged Stealth tanks or Jammers from inside their 5-cell ECM bubble.'),
   }),
   Object.freeze({
     id: 'amphibious_assault',
@@ -281,7 +281,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 15 }),
       Object.freeze({ grade: 'gold', threshold: 40 }),
     ]),
-    description: N_('Destroy enemies while operating from deep water with CH4 / CH5 chassis (5 / 15 / 40).'),
+    description: N_('Destroy enemies while operating from deep water with CH4 / CH5 chassis.'),
   }),
   Object.freeze({
     id: 'fortress_guardian',
@@ -294,7 +294,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 10 }),
       Object.freeze({ grade: 'gold', threshold: 25 }),
     ]),
-    description: N_('Win missions with 100% Command HQ integrity (3 / 10 / 25).'),
+    description: N_('Win missions with 100% Command HQ integrity.'),
   }),
   Object.freeze({
     id: 'hard_mode_veteran',
@@ -307,7 +307,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 15 }),
       Object.freeze({ grade: 'gold', threshold: 30 }),
     ]),
-    description: N_('Win missions in Hard Mode (5 / 15 / 30).'),
+    description: N_('Win missions in Hard Mode.'),
   }),
   Object.freeze({
     id: 'survival_veteran',
@@ -320,7 +320,7 @@ export const MEDAL_CATALOG = Object.freeze([
       Object.freeze({ grade: 'silver', threshold: 7 }),
       Object.freeze({ grade: 'gold', threshold: 10 }),
     ]),
-    description: N_('Survive waves in a single Survival run (3 / 7 / 10 waves).'),
+    description: N_('Survive waves in a single Survival run.'),
   }),
 
   // --- SINGLE-BATTLE TACTICAL & ARSENAL MEDALS ---
@@ -412,27 +412,24 @@ export const MEDAL_CATALOG = Object.freeze([
     name: N_('Hydra Dodger'),
     grade: 'gold',
     category: N_('Bosses'),
-    description: N_('Defeat BOSS_HYDRA without taking a single hit from its MLRS rocket salvo.'),
-    evaluate: ({ tracker }) =>
-      tracker.defeatedBosses.includes('BOSS_HYDRA') && tracker.hydraMlrsHitsTaken === 0,
+    description: N_('Defeat BOSS_HYDRA.'),
+    evaluate: ({ tracker }) => tracker.defeatedBosses.includes('BOSS_HYDRA'),
   }),
   Object.freeze({
     id: 'inferno_tamer',
     name: N_('Inferno Tamer'),
     grade: 'gold',
     category: N_('Bosses'),
-    description: N_('Defeat BOSS_INFERNO without taking a single hit from its overdrive ram.'),
-    evaluate: ({ tracker }) =>
-      tracker.defeatedBosses.includes('BOSS_INFERNO') && tracker.infernoRamHitsTaken === 0,
+    description: N_('Defeat BOSS_INFERNO.'),
+    evaluate: ({ tracker }) => tracker.defeatedBosses.includes('BOSS_INFERNO'),
   }),
   Object.freeze({
     id: 'titan_breaker',
     name: N_('Titan Breaker'),
     grade: 'gold',
     category: N_('Bosses'),
-    description: N_('Defeat BOSS_TITAN without taking a single hit from its BOSS_DUAL cannons.'),
-    evaluate: ({ tracker }) =>
-      tracker.defeatedBosses.includes('BOSS_TITAN') && tracker.titanRailHitsTaken === 0,
+    description: N_('Defeat BOSS_TITAN.'),
+    evaluate: ({ tracker }) => tracker.defeatedBosses.includes('BOSS_TITAN'),
   }),
   Object.freeze({
     id: 'perfect_extraction',

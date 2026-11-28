@@ -416,14 +416,6 @@ export function setupDelegatedEvents(
         }
         break;
       }
-      case 'toggle-favorite-part': {
-        const instanceId = btn.getAttribute('data-instance');
-        if (instanceId && engine) {
-          engine.toggleFavoritePart(instanceId);
-          renderUI(true);
-        }
-        break;
-      }
       case 'activate-module-slot': {
         const slot = Number(btn.getAttribute('data-slot'));
         if (slot && engine) {

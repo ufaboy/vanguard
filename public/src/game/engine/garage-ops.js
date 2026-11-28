@@ -20,10 +20,6 @@ import {
   rollComponentDamage,
 } from '../../sim/component-damage.js';
 import {
-  mountPartInGarage,
-  resolveAssembledTank,
-} from '../../sim/garage.js';
-import {
   canUpgradeHqNode,
   getHqBonuses,
   getHqNodeSpec,
@@ -45,27 +41,6 @@ const trackLabel = (track) => t(TRACK_LABELS[track] || track).toUpperCase();
 export class GarageOps {
   constructor(engine) {
     this.engine = engine;
-  }
-
-  mountPart(instanceId, socketId = null) {
-    const e = this.engine;
-    const res = mountPartInGarage(e.playerSave, instanceId, socketId);
-    if (res.success) {
-      e.saveRepo.savePlayerSave(e.playerSave);
-      e.assembledTank = resolveAssembledTank(e.playerSave);
-      e.upgrades = {
-        ...e.upgrades,
-        cannon: e.assembledTank.gun?.visualTier || e.upgrades.cannon,
-        chassis: e.assembledTank.hull?.visualTiers?.chassis || e.upgrades.chassis,
-        frame: e.assembledTank.hull?.visualTiers?.frame || e.upgrades.frame,
-        engine: e.assembledTank.hull?.visualTiers?.engine || e.upgrades.engine,
-        armor: e.assembledTank.hull?.visualTiers?.armor || e.upgrades.armor,
-      };
-      e.recomputePlayerStats(true);
-      sound.playPowerUp();
-    }
-    e.emitHudUpdate();
-    return res;
   }
 
   setOpen(open) {
@@ -155,13 +130,7 @@ export class GarageOps {
     }
   }
 
-  persistComponentDamage() {
-    const e = this.engine;
-    if (!e.playerSave) return;
-    e.playerSave.componentDamage = { ...e.componentDamage };
-    e.playerSave.componentDamageCooldown = e.componentDamageCooldown;
-    e.saveRepo?.savePlayerSave?.(e.playerSave, { defer: e.status === GameStatus.PLAYING });
-  }
+  persistComponentDamage() {}
 
   tryDamageComponent(damage, hit) {
     const e = this.engine;
@@ -315,7 +284,6 @@ export class GarageOps {
     e.missileAmmo++;
     if (!inBattle) {
       e.syncCampaignCredits?.();
-      e.playerSave.missileAmmo = e.missileAmmo;
       e.saveRepo?.savePlayerSave?.(e.playerSave);
     }
     e.recomputePlayerStats?.(true);
@@ -354,8 +322,6 @@ export class GarageOps {
     }
     if (!inBattle) {
       e.syncCampaignCredits?.();
-      e.playerSave.apsAmmo = [...e.apsAmmo];
-      e.playerSave.repairKitCharges = e.repairKitState?.charges ?? 0;
       e.saveRepo?.savePlayerSave?.(e.playerSave);
     }
     sound.playPowerUp();
@@ -385,9 +351,9 @@ export class GarageOps {
     }
     e.reconDroneOwned = true;
     if (!inBattle) {
-      e.playerSave.reconDroneOwned = true;
       e.syncCampaignCredits();
       e.saveRepo.savePlayerSave(e.playerSave);
+      e.saveProgress?.();
     }
     e.recomputePlayerStats(true);
     sound.playPowerUp();
@@ -412,10 +378,9 @@ export class GarageOps {
       distributeApsRounds(e.apsAmmo, APS.START_ROUNDS, getMaxApsAmmo(e.upgrades?.frame || 1));
     }
     if (!inBattle && e.playerSave) {
-      e.playerSave.apsOwned = true;
-      e.playerSave.apsAmmo = [...e.apsAmmo];
       e.syncCampaignCredits?.();
       e.saveRepo?.savePlayerSave?.(e.playerSave);
+      e.saveProgress?.();
     }
     e.recomputePlayerStats?.(true);
     sound.playPowerUp();
@@ -436,26 +401,15 @@ export class GarageOps {
     e.atgmOwned = true;
     e.missileAmmo = Math.min(getMaxMissileAmmo(e.upgrades?.frame || 1), Math.max(e.missileAmmo || 0, 2));
     if (!inBattle && e.playerSave) {
-      e.playerSave.atgmOwned = true;
-      e.playerSave.missileAmmo = e.missileAmmo;
       e.syncCampaignCredits?.();
       e.saveRepo?.savePlayerSave?.(e.playerSave);
+      e.saveProgress?.();
     }
     e.recomputePlayerStats?.(true);
     sound.playPowerUp();
     e.setStatusBanner(t('ATGM POD INSTALLED! (-${cost})', { cost }), 2.5);
     e.emitHudUpdate();
     return { success: true, reason: t('ATGM pod installed.') };
-  }
-
-  toggleFavoritePart(instanceId) {
-    const e = this.engine;
-    const part = (e.playerSave.parts || []).find((p) => p.instanceId === instanceId);
-    if (part) {
-      part.isFavorite = !part.isFavorite;
-      e.saveRepo.savePlayerSave(e.playerSave);
-      e.emitHudUpdate();
-    }
   }
 
   upgradeHqNode(nodeId) {
@@ -486,7 +440,6 @@ export class GarageOps {
     if (!inBattle) {
       e.syncCampaignCredits?.();
       e.saveRepo?.savePlayerSave?.(e.playerSave);
-      e.saveProgress?.();
     }
 
     if (nodeId === 'HQ_FORTIFICATION' && e.baseAlive && e.baseMaxHp > 0) {
