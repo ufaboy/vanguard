@@ -4,6 +4,74 @@
  */
 import { t } from '../i18n/index.js';
 
+export function createEnemySubsystems(maxHp = 40) {
+  const trackHp = Math.max(12, Math.round(maxHp * 0.45));
+  const engineHp = Math.max(14, Math.round(maxHp * 0.5));
+  return {
+    leftTrack: {
+      id: 'leftTrack',
+      hp: trackHp,
+      maxHp: trackHp,
+      status: 'normal',
+      fieldRepairState: 'idle',
+      fieldRepairTimer: 0,
+      fieldRepairProgress: 0,
+    },
+    rightTrack: {
+      id: 'rightTrack',
+      hp: trackHp,
+      maxHp: trackHp,
+      status: 'normal',
+      fieldRepairState: 'idle',
+      fieldRepairTimer: 0,
+      fieldRepairProgress: 0,
+    },
+    engine: {
+      id: 'engine',
+      hp: engineHp,
+      maxHp: engineHp,
+      status: 'normal',
+      fieldRepairState: 'idle',
+      fieldRepairTimer: 0,
+      fieldRepairProgress: 0,
+    },
+  };
+}
+
+export function applyEnemyDirectionalSubsystemDamage(enemy, aspect, damage) {
+  if (!enemy || enemy.isBoss || !enemy.subsystems || damage <= 0) {
+    return { target: null, destroyed: false, status: 'normal' };
+  }
+  const target =
+    aspect === 'left'
+      ? 'leftTrack'
+      : aspect === 'right'
+        ? 'rightTrack'
+        : aspect === 'rear'
+          ? 'engine'
+          : null;
+  if (!target) {
+    return { target: null, destroyed: false, status: 'normal' };
+  }
+  // Flank and rear hits deal substantial mechanical damage to chassis tracks or engine.
+  const subDamage = damage * 1.4;
+  const res = applySubsystemDamage(enemy.subsystems, target, subDamage);
+  return { target, ...res };
+}
+
+export function repairEnemySubsystems(subsystems, fraction = 0.5) {
+  if (!subsystems) return;
+  for (const sub of Object.values(subsystems)) {
+    if (!sub || typeof sub.hp !== 'number' || typeof sub.maxHp !== 'number') continue;
+    if (sub.hp >= sub.maxHp) continue;
+    sub.hp = Math.min(sub.maxHp, sub.hp + Math.max(1, Math.round(sub.maxHp * fraction)));
+    sub.status = sub.hp <= 0 ? 'destroyed' : sub.hp < sub.maxHp * 0.5 ? 'damaged' : 'normal';
+    sub.fieldRepairState = 'idle';
+    sub.fieldRepairTimer = 0;
+    sub.fieldRepairProgress = 0;
+  }
+}
+
 export function createTankSubsystems() {
   return {
     leftTrack: {

@@ -24,6 +24,11 @@ import { GameStatus, TileType } from '../types.js';
 import { SECTORS } from '../levels.js';
 import { sound } from '../sound.js';
 import { createMissileVisual } from '../effects/index.js';
+import {
+  getTankDamageTier,
+  stepTankDamageParticles,
+  syncTankDamageMaterials,
+} from '../effects/tank-damage-fx.js';
 import { markMaterialOwned, markOwned } from '../render/dispose.js';
 import { cellMovement } from '../terrains/layers.js';
 import { deckClearance } from '../render/models.js';
@@ -607,7 +612,7 @@ export class PlayerController {
     }
 
     const hpRatio = engine.playerHp / engine.playerMaxHp;
-    const lowHpMult = hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
+    const lowHpMult = hpRatio <= DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
     const rawSurfMult = engine.currentSurface?.speedMultiplier || 1.0;
     const surfMult = engine.onWater && !canHover
       ? waterSpeedMult
@@ -621,9 +626,17 @@ export class PlayerController {
       engine.playerStats.moveSpeed * TILE_SIZE * lowHpMult * surfMult * subMods.speedMultiplier
     );
 
-    if (hpRatio < DURABILITY.LOW_RATIO && Math.random() < 0.25) {
-      engine.spawnSparks(engine.playerX, 0.65, engine.playerZ, 0x475569, 1);
-    }
+    const playerDamageTier = getTankDamageTier(engine.playerHp, engine.playerMaxHp);
+    syncTankDamageMaterials(engine.playerRig, playerDamageTier);
+    stepTankDamageParticles(engine.fx, this, dt, {
+      x: engine.playerX,
+      y: engine.playerRig?.root?.position?.y ?? TANK_RIDE_HEIGHT,
+      z: engine.playerZ,
+      hullAngle: engine.playerHullAngle,
+      tier: playerDamageTier,
+      scale: 1.0,
+      subsystems: engine.subsystems,
+    });
 
     const surfAccel = engine.currentSurface?.accelMultiplier || 1.0;
     const surfBrake = engine.currentSurface?.brakeMultiplier || 1.0;

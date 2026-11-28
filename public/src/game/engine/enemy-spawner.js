@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createEnemyAIState } from '../../sim/ai.js';
+import { createEnemySubsystems } from '../../sim/subsystems.js';
 import {
   createBrain,
   createGunnerState,
@@ -581,6 +582,7 @@ export class EnemySpawnerController {
       maxHp: stats.maxHP,
       hullHP: stats.maxHP * 10,
       maxHullHP: stats.maxHP * 10,
+      subsystems: isBoss ? null : createEnemySubsystems(stats.maxHP),
       hull: { ...hullDef },
       turret: { ...turretDef },
       armorPanels: isBoss

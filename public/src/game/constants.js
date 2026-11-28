@@ -54,9 +54,10 @@ export const DURABILITY = Object.freeze({
   MAX_ARMOR: 95, // Maximum damage reduction cap (%) to prevent absolute invulnerability
   ARMOR_SCALE: 100, // Divisor for converting armor percentage to 0..1 multiplier
   ZERO_HP: 0.0001, // Epsilon threshold below which a unit is considered destroyed
-  LIGHT_RATIO: 0.66, // HP fraction threshold (66%) below which light damage state triggers
-  LOW_RATIO: 0.33, // Critical HP threshold (33%) triggering mobility penalty & repair kits
-  LOW_SPEED_MULT: 0.7, // Speed multiplier applied when tank HP drops below LOW_RATIO (30% slowdown)
+  LIGHT_RATIO: 0.75, // HP fraction threshold (75%) below/at which moderate damage state triggers
+  MEDIUM_RATIO: 0.5, // HP fraction threshold (50%) below/at which heavy smoke & soot trigger
+  LOW_RATIO: 0.25, // Critical HP threshold (25%) triggering mobility penalty, fire & critical tactics
+  LOW_SPEED_MULT: 0.7, // Speed multiplier applied when tank HP drops to/below LOW_RATIO (30% slowdown)
   STAGE_CLEAR_REPAIR: 12, // Flat HP restored to player hull upon clearing a sector stage
   REPAIR_POWERUP: 20, // Flat HP restored when picking up a battlefield Repair power-up
   OVERHEAL_MAX_RATIO: 1.4, // Maximum allowable HP cap from over-repair (up to 140% of max HP)

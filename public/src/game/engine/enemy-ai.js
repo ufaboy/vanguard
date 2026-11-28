@@ -15,6 +15,12 @@ import { BASE_CELL, GRID_SIZE, SECTORS, TILE_SIZE } from '../levels.js';
 import { deckClearance } from '../render/models.js';
 import { cellMovement, doesTileBlockLineOfSight } from '../terrains/layers.js';
 import { inContactRange, updateAbilities } from '../abilities/index.js';
+import {
+  getTankDamageTier,
+  stepTankDamageParticles,
+  syncTankDamageMaterials,
+} from '../effects/tank-damage-fx.js';
+import { computeSubsystemModifiers } from '../../sim/subsystems.js';
 import { normalizeAngleSigned, stepAngleTowards } from '../../sim/ai.js';
 import {
   ACTION_KIND,
@@ -617,7 +623,18 @@ export class EnemyAiController {
     if (out.direct) {
       let ang = Math.atan2(engine.playerX - e.x, engine.playerZ - e.z);
       if (brain.role === 'hunter') {
-        ang += Math.sin(elapsed * Math.PI * 2.5 + e.id) * HUNTER_ZIGZAG_RAD;
+        const zigzagAng = ang + Math.sin(elapsed * Math.PI * 2.5 + e.id) * HUNTER_ZIGZAG_RAD;
+        const probeDist = 1.6;
+        const probeBlocked = engine.checkTankWallCollision?.(
+          e.x + Math.sin(zigzagAng) * probeDist,
+          e.z + Math.cos(zigzagAng) * probeDist,
+          0.72,
+          Boolean(e.stats?.canCrossWater),
+          false
+        );
+        if (canSeePlayer && !probeBlocked) {
+          ang = zigzagAng;
+        }
         if (Math.floor(elapsed * 6) !== e.chargeBlinkTick) {
           e.chargeBlinkTick = Math.floor(elapsed * 6);
           if (e.chargeBlinkTick % 2 === 0) engine.spawnSparks(e.x, 1.2, e.z, 0xef4444, 4);
@@ -1151,7 +1168,8 @@ export class EnemyAiController {
 
         const hpRatio = e.hp / e.maxHp;
         const lowSpeedMult =
-          !e.isBoss && hpRatio < DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
+          !e.isBoss && hpRatio <= DURABILITY.LOW_RATIO ? DURABILITY.LOW_SPEED_MULT : 1.0;
+        const subMods = !e.isBoss && e.subsystems ? computeSubsystemModifiers(e.subsystems) : null;
         const { row: eRow, col: eCol } = engine.worldToGrid?.(e.x, e.z) ?? { row: 0, col: 0 };
         const eCell = engine.grid?.[eRow]?.[eCol];
         const canCrushSandbags = Boolean(
@@ -1169,10 +1187,17 @@ export class EnemyAiController {
           eCell?.type === TileType.WATER && !e.stats.canHover
             ? e.stats.waterSpeedMultiplier || 0.6
             : tileMove?.speedMultiplier ?? 1.0;
+        const chargeSpeedMult = e.brainCharging ? 1.25 : 1.0;
         // Rough ground (STONE) caps the top speed in cells per second instead of scaling it.
         const worldSpeed = Math.min(
           (tileMove?.maxSpeedCells ?? Infinity) * TILE_SIZE,
-          e.stats.moveSpeed * TILE_SIZE * lowSpeedMult * terrainSpeedMult * dashSpeedMult
+          e.stats.moveSpeed *
+            TILE_SIZE *
+            lowSpeedMult *
+            (subMods ? subMods.speedMultiplier : 1.0) *
+            terrainSpeedMult *
+            dashSpeedMult *
+            chargeSpeedMult
         );
 
         if (e.yieldTimer > 0) {
@@ -1190,6 +1215,7 @@ export class EnemyAiController {
           e.brainHolding = true;
         }
 
+        const hullTurnRate = getEnemyHullTurnRate(e) * (subMods ? subMods.turnMultiplier : 1.0);
         if (e.enemyClass === EnemyClass.BOSS_TITAN && canSeePlayer) {
           const turnRate = e.titanOverload ? TITAN.HULL_TURN_RATE_OVERLOAD : TITAN.HULL_TURN_RATE;
           const bearingToPlayer = Math.atan2(toPlayerX, toPlayerZ);
@@ -1200,7 +1226,7 @@ export class EnemyAiController {
         } else if (Math.hypot(e.targetDirX, e.targetDirZ) > 0.05) {
           e.hullHoldReactTimer = null;
           const desiredHull = Math.atan2(e.targetDirX, e.targetDirZ);
-          e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+          e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, hullTurnRate * dt);
         } else if (e.brainHolding && canSeePlayer) {
           const desiredHull = Math.atan2(toPlayerX, toPlayerZ);
           const angleDiff = Math.abs(normalizeAngleSigned(desiredHull - e.hullAngle));
@@ -1211,11 +1237,11 @@ export class EnemyAiController {
             if (e.hullHoldReactTimer > 0) {
               e.hullHoldReactTimer = Math.max(0, e.hullHoldReactTimer - dt);
             } else {
-              e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+              e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, hullTurnRate * dt);
             }
           } else {
             e.hullHoldReactTimer = null;
-            e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, getEnemyHullTurnRate(e) * dt);
+            e.hullAngle = stepAngleTowards(e.hullAngle, desiredHull, hullTurnRate * dt);
           }
         } else {
           e.hullHoldReactTimer = null;
@@ -1282,13 +1308,10 @@ export class EnemyAiController {
             e.aiTimer = 0;
           }
           e.stuckTimer = (e.stuckTimer || 0) + dt;
-          // An unarmed rammer that sees the player keeps its charge heading instead of re-planning.
-          if (e.armed !== false || !canSeePlayer) {
-            e.aiTimer = 0;
-          }
+          e.aiTimer = 0;
 
-          // 1. Check if blocked by a destructible wall directly ahead:
-          if (e.stuckTimer > 0.35 && !e.breachTarget) {
+          // 1. Check if blocked by a destructible wall directly ahead (armed tanks only):
+          if (e.armed !== false && e.stuckTimer > 0.35 && !e.breachTarget) {
             const checkDist = radius + 0.85;
             const aheadX = e.x + (e.targetDirX || Math.sin(e.hullAngle)) * checkDist;
             const aheadZ = e.z + (e.targetDirZ || Math.cos(e.hullAngle)) * checkDist;
@@ -1381,6 +1404,20 @@ export class EnemyAiController {
       e.rig.hull.rotation.y = e.hullAngle;
       engine.driveGear?.(e.rig, e, e.x, e.z, e.hullAngle);
       engine.syncEnemyTurretVisuals?.(e, dt);
+
+      const enemyDmgTier = getTankDamageTier(e.hp, e.maxHp);
+      syncTankDamageMaterials(e.rig, enemyDmgTier);
+      if (e.rig.root.visible !== false) {
+        stepTankDamageParticles(engine.fx, e, dt, {
+          x: e.x,
+          y: enemyHoverY,
+          z: e.z,
+          hullAngle: e.hullAngle,
+          tier: enemyDmgTier,
+          scale: e.isBoss ? 1.45 : 1.0,
+          subsystems: e.subsystems,
+        });
+      }
 
       if (e.rig.hpBarFill) {
         const ratio = Math.max(0.01, e.hp / e.maxHp);

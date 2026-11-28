@@ -19,8 +19,8 @@ export const ROLE_CONFIGS = Object.freeze({
     coverSec: [1.4, 2.4],
     retreat: { minCells: 7, maxCells: 12, los: false, coverWeight: 1.2, travelWeight: 0.1, maxTravel: 14 },
     retreatSec: 4.0,
-    retreatHpRatio: 0.35,
-    retreatCooldownSec: 14,
+    retreatHpRatio: 0.5,
+    retreatCooldownSec: 12,
   }),
   // SCOUT: keep range, circle to the player's flank / rear, break contact when hit
   flanker: Object.freeze({
@@ -62,9 +62,9 @@ export const ROLE_CONFIGS = Object.freeze({
   }),
   // KAMIKAZE: approach through cells hidden from the player, then a telegraphed zigzag charge
   hunter: Object.freeze({
-    stalk: { minCells: 2, maxCells: 5, los: false, coverWeight: 0.3, travelWeight: 0.2, maxTravel: 20 },
-    chargeBelowCells: 5,
-    chargeKeepCells: 7,
+    stalk: { minCells: 1, maxCells: 4, los: false, coverWeight: 0.2, travelWeight: 0.15, maxTravel: 24 },
+    chargeBelowCells: 7,
+    chargeKeepCells: 9,
   }),
   // FLAMETHROWER: wait hidden near the player (forest, corners), rush when they come close
   ambusher: Object.freeze({
@@ -303,8 +303,13 @@ const timedActive = (brain) => TIMED_TACTICS.has(brain.tactic) && brain.tacticTi
 const investigating = (brain) => brain.tactic === 'investigate' && brain.goal;
 
 function decideLine(brain, ctx, cfg) {
-  if (ctx.hpRatio < cfg.retreatHpRatio && brain.retreatCooldown <= 0 && brain.tactic !== 'retreat') {
-    brain.retreatCooldown = cfg.retreatCooldownSec;
+  const critical = ctx.hpRatio <= 0.25;
+  if (
+    ctx.hpRatio <= cfg.retreatHpRatio &&
+    (critical || brain.retreatCooldown <= 0) &&
+    brain.tactic !== 'retreat'
+  ) {
+    brain.retreatCooldown = critical ? cfg.retreatCooldownSec * 0.5 : cfg.retreatCooldownSec;
     return startTactic(brain, ctx, 'retreat', cfg.retreat, cfg.retreatSec);
   }
   if (timedActive(brain)) return null;
@@ -322,7 +327,11 @@ function decideLine(brain, ctx, cfg) {
 }
 
 function decideFlanker(brain, ctx, cfg) {
-  if (ctx.tookHit && brain.evadeCooldown <= 0 && brain.random() < FLANKER_EVADE_CHANCE) {
+  const shouldEvadeOnDmg =
+    (ctx.hpRatio <= 0.25 && ctx.visible) ||
+    (ctx.hpRatio <= 0.5 && brain.evadeCooldown <= 0) ||
+    (ctx.tookHit && brain.evadeCooldown <= 0 && brain.random() < FLANKER_EVADE_CHANCE);
+  if (shouldEvadeOnDmg && brain.tactic !== 'evade') {
     brain.evadeCooldown = cfg.evadeCooldownSec;
     return startTactic(brain, ctx, 'evade', cfg.evade, cfg.evadeSec);
   }
@@ -348,7 +357,8 @@ function decideSpearhead(brain, ctx, cfg) {
 }
 
 function decideArtillery(brain, ctx, cfg) {
-  if (ctx.distCells < cfg.fleeBelowCells && brain.tactic !== 'flee') {
+  const fleeRange = ctx.hpRatio <= 0.25 ? cfg.fleeBelowCells + 3 : ctx.hpRatio <= 0.5 ? cfg.fleeBelowCells + 1.5 : cfg.fleeBelowCells;
+  if (ctx.distCells < fleeRange && brain.tactic !== 'flee') {
     return startTactic(brain, ctx, 'flee', cfg.flee, cfg.fleeSec);
   }
   if (timedActive(brain)) return null;
@@ -361,7 +371,8 @@ function decideArtillery(brain, ctx, cfg) {
 
 function decideMinelayer(brain, ctx, cfg) {
   if ((ctx.minesLeft ?? 0) <= 0) return decideLine(brain, ctx, ROLE_CONFIGS.line);
-  if (ctx.visible && ctx.distCells < cfg.evadeBelowCells && brain.tactic !== 'evade') {
+  const evadeRange = ctx.hpRatio <= 0.25 ? cfg.evadeBelowCells + 4 : ctx.hpRatio <= 0.5 ? cfg.evadeBelowCells + 2 : cfg.evadeBelowCells;
+  if (ctx.visible && ctx.distCells < evadeRange && brain.tactic !== 'evade') {
     return startTactic(brain, ctx, 'evade', cfg.evade, cfg.evadeSec);
   }
   if (timedActive(brain)) return null;
@@ -371,6 +382,9 @@ function decideMinelayer(brain, ctx, cfg) {
 
 function decideRaider(brain, ctx, cfg) {
   const water = ctx.playerCanCrossWater ? 1 : cfg.waterBonusVsDryPlayer;
+  if (ctx.hpRatio <= 0.25 && ctx.visible && brain.tactic !== 'withdraw') {
+    return startTactic(brain, ctx, 'withdraw', { ...cfg.withdraw, waterBonus: water }, range(brain.random, cfg.withdrawSec));
+  }
   if (timedActive(brain)) return null;
   if (!ctx.visible && brain.tactic !== 'withdraw') {
     if (investigating(brain)) return null;
@@ -390,6 +404,7 @@ function decideHunter(brain, ctx, cfg) {
     return null;
   }
   if (!ctx.visible) {
+    // Keep pursuing the last known player position instead of idling
     if (investigating(brain)) return null;
     return startTactic(brain, ctx, 'investigate', null, 0);
   }
@@ -409,12 +424,18 @@ function decideAmbusher(brain, ctx, cfg) {
 }
 
 function decideEwar(brain, ctx, cfg) {
+  if (ctx.hpRatio <= 0.25 && brain.tactic === 'screen') {
+    return startTactic(brain, ctx, 'withdraw', cfg.shadow, cfg.withdrawSec);
+  }
   if (timedActive(brain)) return null;
   if (ctx.alliesEngaged) {
     if (brain.tactic === 'screen') {
       // Hold the ECM screen for a while, then fall back out of sight so the
       // player's APS / ATGM get a window between screening runs.
-      if (brain.tacticTimer <= 0) return startTactic(brain, ctx, 'withdraw', cfg.shadow, cfg.withdrawSec);
+      const cutShort = ctx.hpRatio <= 0.5 && brain.tacticTimer <= cfg.screenSec * 0.5;
+      if (brain.tacticTimer <= 0 || cutShort) {
+        return startTactic(brain, ctx, 'withdraw', cfg.shadow, cfg.withdrawSec);
+      }
       if (brain.goal) return null;
       return startTactic(brain, ctx, 'screen', cfg.screen, brain.tacticTimer);
     }
@@ -425,7 +446,8 @@ function decideEwar(brain, ctx, cfg) {
 }
 
 function decideSupport(brain, ctx, cfg) {
-  if (ctx.visible && ctx.distCells < cfg.fleeBelowCells && brain.tactic !== 'flee') {
+  const fleeRange = ctx.hpRatio <= 0.25 ? cfg.fleeBelowCells + 4 : ctx.hpRatio <= 0.5 ? cfg.fleeBelowCells + 2 : cfg.fleeBelowCells;
+  if (ctx.visible && ctx.distCells < fleeRange && brain.tactic !== 'flee') {
     return startTactic(brain, ctx, 'flee', cfg.flee, cfg.fleeSec);
   }
   if (timedActive(brain)) return null;
@@ -440,7 +462,8 @@ function decideSupport(brain, ctx, cfg) {
 }
 
 function decideStandoff(brain, ctx, cfg) {
-  if (ctx.visible && ctx.distCells < cfg.backoffBelowCells && brain.tactic !== 'backoff') {
+  const backoffRange = ctx.hpRatio <= 0.25 ? cfg.backoffBelowCells + 3 : ctx.hpRatio <= 0.5 ? cfg.backoffBelowCells + 1.5 : cfg.backoffBelowCells;
+  if (ctx.visible && ctx.distCells < backoffRange && brain.tactic !== 'backoff') {
     return startTactic(brain, ctx, 'backoff', cfg.backoff, cfg.backoffSec);
   }
   if (timedActive(brain)) return null;
@@ -456,7 +479,8 @@ function decideStandoff(brain, ctx, cfg) {
 }
 
 function decideSniper(brain, ctx, cfg) {
-  if (ctx.visible && ctx.distCells < cfg.tooCloseCells && brain.tactic !== 'reposition') {
+  const tooClose = ctx.hpRatio <= 0.25 ? cfg.tooCloseCells + 3 : ctx.hpRatio <= 0.5 ? cfg.tooCloseCells + 2 : cfg.tooCloseCells;
+  if (ctx.visible && ctx.distCells < tooClose && brain.tactic !== 'reposition') {
     return startTactic(brain, ctx, 'reposition', cfg.reposition, range(brain.random, cfg.repositionSec));
   }
   if (timedActive(brain)) return null;

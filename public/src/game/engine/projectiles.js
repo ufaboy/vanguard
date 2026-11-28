@@ -2,7 +2,10 @@ import * as THREE from 'three';
 import { resolveArmorHit } from '../../sim/ballistics.js';
 import { resolveHardModeMissileGuidance } from '../../sim/atgm.js';
 import { HULL_CATALOG, TURRET_CATALOG } from '../../sim/catalog.js';
-import { applySubsystemDamage } from '../../sim/subsystems.js';
+import {
+  applyEnemyDirectionalSubsystemDamage,
+  applySubsystemDamage,
+} from '../../sim/subsystems.js';
 import {
   JAMMER_ECM,
   computeJammedMissileTarget,
@@ -1091,12 +1094,17 @@ export class ProjectilesController {
                 ? 1.15
                 : 1.0;
               engine.medalTracker?.recordEnemyHit();
-              engine.damageEnemy(enemy, legacyScaleDmg * aspectBonus, {
+              const inflictedDmg = legacyScaleDmg * aspectBonus;
+              const subRes = applyEnemyDirectionalSubsystemDamage(enemy, aspectStr, inflictedDmg);
+              engine.damageEnemy(enemy, inflictedDmg, {
                 aspect: aspectStr,
                 salvoId: p.salvoId ?? null,
                 isAirSupport: Boolean(p.isAirSupport),
                 airStrikeId: p.airStrikeId ?? null,
               });
+              if (enemy.hp > DURABILITY.ZERO_HP && subRes.destroyed) {
+                engine.spawnSparks(p.x, 0.72, p.z, 0xf97316, 12);
+              }
               if (p.isMissile) {
                 engine.detonateMissile(p);
               } else {

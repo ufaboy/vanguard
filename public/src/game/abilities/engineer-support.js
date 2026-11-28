@@ -12,6 +12,7 @@ import { TileType } from '../terrains/surfaces.js';
 import { setCellObject } from '../terrains/layers.js';
 import { GRID_SIZE, TILE_SIZE } from '../levels.js';
 import { rollTankSpecial } from '../../sim/behavior/actions.js';
+import { repairEnemySubsystems } from '../../sim/subsystems.js';
 
 const ENGINEER_SUPPORT = Object.freeze({
   /** Seconds between actions. */
@@ -31,9 +32,17 @@ const NEIGHBOURS = Object.freeze([[-1, 0], [1, 0], [0, -1], [0, 1]]);
 const WELD_COLOR = 0x10b981;
 const FAIL_COLOR = 0x94a3b8;
 
+function hasDamagedSubsystems(ally) {
+  if (!ally.subsystems) return false;
+  return Object.values(ally.subsystems).some(
+    (sub) => sub && typeof sub.hp === 'number' && sub.hp < sub.maxHp
+  );
+}
+
 function repairAlly(tank, game) {
   for (const ally of game.enemies) {
-    if (ally.id === tank.id || ally.hp >= ally.maxHp) continue;
+    if (ally.id === tank.id) continue;
+    if (ally.hp >= ally.maxHp && !hasDamagedSubsystems(ally)) continue;
     if (Math.hypot(ally.x - tank.x, ally.z - tank.z) > ENGINEER_SUPPORT.REPAIR_RANGE) continue;
     if (!rollTankSpecial(tank, 'repair_ally')) {
       // Failed roll: the weld is wasted
@@ -41,6 +50,7 @@ function repairAlly(tank, game) {
       return true;
     }
     ally.hp = Math.min(ally.maxHp, ally.hp + ENGINEER_SUPPORT.REPAIR_AMOUNT);
+    repairEnemySubsystems(ally.subsystems, 0.5);
     sound.playEngineerWeld(tank);
     game.spawnSparks(ally.x, 0.9, ally.z, WELD_COLOR, 8);
     return true;
